@@ -12,6 +12,7 @@ export interface EcosystemCmsConfig {
 
   // 2. Surge Protection & Competitive Pricing
   zomatoSurgeWarningText: string;
+  tier1SurgeWarningText?: string;
   surgeDisclaimerSubtext: string;
   transparentFeeHeader: string;
   freeDeliveryThresholdNotice: string;
@@ -155,6 +156,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
 
   // 2. Surge Protection & Competitive Pricing
   zomatoSurgeWarningText: "Zero Dynamic Surge Guarantee: Our delivery fees are strictly fixed regardless of peak hours or bad weather.",
+  tier1SurgeWarningText: "Zero Dynamic Surge Guarantee: Our delivery fees are strictly fixed regardless of peak hours or bad weather.",
   surgeDisclaimerSubtext: "Unlike aggregator surge models, restaurant menu rates remain authentic without inflated commission markups.",
   transparentFeeHeader: "Complete Operational Fee Transparency",
   freeDeliveryThresholdNotice: "Free delivery unlocked for orders above ₹399",

@@ -117,6 +117,14 @@ export const quickThrottleKitchen = createServerFn({ method: "POST" })
   });
 
 import { getSql } from "@/lib/db";
+import {
+  calculateMerchantCancellationPenalty,
+  calculateKptDelayPenalty,
+  calculateCustomerDisputeChargeback,
+  kitchenCircuitBreaker,
+  type CancellationPenaltyTier,
+  type DisputeCategory,
+} from "@/lib/penalties";
 
 export const acceptOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -125,6 +133,8 @@ export const acceptOrder = createServerFn({ method: "POST" })
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
       const res = await sql`UPDATE orders SET status = 'CONFIRMED' WHERE id = ${data.orderId} AND status = 'PENDING' AND restaurant_id = ${ctx.restaurantId}`;
       if (res.length === 0) throw new Error("Order not found or not in PENDING state");
+      // Reset circuit breaker consecutive missed orders counter on accepted order
+      kitchenCircuitBreaker.recordOrderAccepted(ctx.restaurantId);
       return { ok: true, status: 'CONFIRMED' };
     });
   });
@@ -137,6 +147,95 @@ export const rejectOrder = createServerFn({ method: "POST" })
       const res = await sql`UPDATE orders SET status = 'RESTAURANT_REJECTED', reject_reason = ${data.reason} WHERE id = ${data.orderId} AND status = 'PENDING' AND restaurant_id = ${ctx.restaurantId}`;
       if (res.length === 0) throw new Error("Order not found or not in PENDING state");
       return { ok: true, status: 'RESTAURANT_REJECTED' };
+    });
+  });
+
+export const cancelOrderWithMerchantPenalty = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; orderId: string; reason: string; tier?: CancellationPenaltyTier }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
+      const rows = await sql<{ id: string; food_value_paise: number; state: string }>`
+        SELECT id, food_value_paise, state FROM orders WHERE id = ${data.orderId} AND restaurant_id = ${ctx.restaurantId}
+      `;
+      const order = rows[0];
+      if (!order) throw new Error("Order not found");
+
+      const penalty = calculateMerchantCancellationPenalty({
+        orderId: order.id,
+        restaurantId: ctx.restaurantId,
+        foodValuePaise: asInt(order.food_value_paise),
+        tier: data.tier ?? "TIER_1_STANDARD",
+        cancellationReason: data.reason,
+      });
+
+      await sql`
+        UPDATE orders
+        SET state = 'CANCELLED',
+            reject_reason = ${data.reason},
+            other_deductions_paise = ${penalty.penaltyDebitedPaise},
+            other_deductions_code = ${penalty.reasonCode},
+            updated_at = now()
+        WHERE id = ${order.id} AND restaurant_id = ${ctx.restaurantId}
+      `;
+
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: "MERCHANT_CANCELLATION_DEBITED",
+        entityType: "order",
+        entityId: order.id,
+        detail: penalty.description,
+      });
+
+      return { ok: true, penalty };
+    });
+  });
+
+export const handleRingTimeoutMissedOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; orderId: string; timeoutSeconds?: number }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
+      const timeout = data.timeoutSeconds ?? 60;
+      const { state, circuitTripped, alertMessage } = kitchenCircuitBreaker.registerMissedOrder(
+        ctx.restaurantId,
+        data.orderId,
+        timeout
+      );
+
+      if (circuitTripped) {
+        await sql`UPDATE restaurants SET emergency_closed = true, updated_at = now() WHERE id = ${ctx.restaurantId}`;
+        await writeAudit(sql, {
+          restaurantId: ctx.restaurantId,
+          actorUserId: context.userId,
+          action: "CIRCUIT_BREAKER_AUTO_PAUSE",
+          entityType: "restaurant",
+          entityId: ctx.restaurantId,
+          detail: alertMessage ?? "3 consecutive missed orders (60s ring timeout)",
+        });
+      }
+
+      return { ok: true, circuitTripped, consecutiveMissedCount: state.consecutiveMissedCount, alertMessage };
+    });
+  });
+
+export const resumeKitchenCircuitBreaker = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "hours.edit", async (sql, ctx) => {
+      kitchenCircuitBreaker.resumeKitchen(ctx.restaurantId);
+      await sql`UPDATE restaurants SET emergency_closed = false, updated_at = now() WHERE id = ${ctx.restaurantId}`;
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: "CIRCUIT_BREAKER_RESUMED",
+        entityType: "restaurant",
+        entityId: ctx.restaurantId,
+        detail: "Merchant manually resumed kitchen after auto-pause timeout.",
+      });
+      return { ok: true, status: "ONLINE" };
     });
   });
 
@@ -153,12 +252,93 @@ export const markPreparing = createServerFn({ method: "POST" })
 
 export const markReady = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; orderId: string }) => d)
+  .validator((d: { restaurantId?: string; orderId: string; actualPrepMinutes?: number }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
-      const res = await sql`UPDATE orders SET status = 'READY' WHERE id = ${data.orderId} AND status = 'PREPARING' AND restaurant_id = ${ctx.restaurantId}`;
-      if (res.length === 0) throw new Error("Order not found or not in PREPARING state");
-      return { ok: true, status: 'READY' };
+      const rows = await sql<{ id: string; prep_minutes: number; placed_at: string }>`
+        SELECT id, prep_minutes, placed_at::text as placed_at FROM orders WHERE id = ${data.orderId} AND status = 'PREPARING' AND restaurant_id = ${ctx.restaurantId}
+      `;
+      if (rows.length === 0) throw new Error("Order not found or not in PREPARING state");
+      const ord = rows[0];
+      const promisedKpt = asInt(ord.prep_minutes, 20);
+      const placedTime = new Date(ord.placed_at).getTime();
+      const nowTime = Date.now();
+      const elapsedMins = Math.max(1, Math.round((nowTime - placedTime) / 60000));
+      const actualPrep = data.actualPrepMinutes ?? elapsedMins;
+
+      const kptPenalty = calculateKptDelayPenalty({
+        orderId: data.orderId,
+        restaurantId: ctx.restaurantId,
+        promisedKptMinutes: promisedKpt,
+        actualPrepMinutes: actualPrep,
+      });
+
+      if (kptPenalty.isPenaltyApplicable) {
+        await sql`
+          UPDATE orders
+          SET status = 'READY',
+              other_deductions_paise = other_deductions_paise + ${kptPenalty.penaltyDebitedPaise},
+              other_deductions_code = ${kptPenalty.reasonCode},
+              updated_at = now()
+          WHERE id = ${data.orderId} AND restaurant_id = ${ctx.restaurantId}
+        `;
+        await writeAudit(sql, {
+          restaurantId: ctx.restaurantId,
+          actorUserId: context.userId,
+          action: "KPT_DELAY_PENALTY_DEBITED",
+          entityType: "order",
+          entityId: data.orderId,
+          detail: kptPenalty.description,
+        });
+      } else {
+        await sql`UPDATE orders SET status = 'READY' WHERE id = ${data.orderId} AND restaurant_id = ${ctx.restaurantId}`;
+      }
+
+      return { ok: true, status: 'READY', kptPenalty };
+    });
+  });
+
+export const processCustomerChargeback = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    orderId: string;
+    disputeId: string;
+    category: DisputeCategory;
+    itemValuePaise: number;
+    isVerifiedWithProof: boolean;
+    proofDocumentUrls?: string[];
+  }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
+      const chargeback = calculateCustomerDisputeChargeback({
+        disputeId: data.disputeId,
+        orderId: data.orderId,
+        restaurantId: ctx.restaurantId,
+        category: data.category,
+        itemValuePaise: data.itemValuePaise,
+        isVerifiedWithProof: data.isVerifiedWithProof,
+        proofDocumentUrls: data.proofDocumentUrls,
+      });
+
+      if (chargeback.isDebited) {
+        await sql`
+          UPDATE orders
+          SET refund_adjustment_paise = refund_adjustment_paise - ${chargeback.totalDebitedPaise},
+              updated_at = now()
+          WHERE id = ${data.orderId} AND restaurant_id = ${ctx.restaurantId}
+        `;
+        await writeAudit(sql, {
+          restaurantId: ctx.restaurantId,
+          actorUserId: context.userId,
+          action: "CUSTOMER_CHARGEBACK_DEBITED",
+          entityType: "order",
+          entityId: data.orderId,
+          detail: chargeback.description,
+        });
+      }
+
+      return { ok: true, chargeback };
     });
   });
 

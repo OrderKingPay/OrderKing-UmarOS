@@ -2,11 +2,25 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { HomeFeed } from "@/components/market/home-feed";
 import { CustomerShell } from "@/components/market/shell";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { trackAnalytics } from "@/lib/server/quote";
 import { useLocationStore } from "@/lib/stores/location";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
-export const Route = createFileRoute('/')({ component: Home, head: () => ({ meta: [{ property: 'og:title', content: 'OrderKing - Uncompromising Culinary Excellence' }, { property: 'og:description', content: 'Curated gastronomy. Impeccable delivery.' }] }) });
+import { CustomerAppSkeleton } from "@/components/skeletons/customer-app-skeleton";
+import { AppErrorComponent } from "@/lib/error-component";
+
+export const Route = createFileRoute('/')({
+  component: Home,
+  pendingComponent: CustomerAppSkeleton,
+  errorComponent: AppErrorComponent,
+  head: () => ({
+    meta: [
+      { property: 'og:title', content: 'OrderKing - Uncompromising Culinary Excellence' },
+      { property: 'og:description', content: 'Curated gastronomy. Impeccable delivery.' },
+    ],
+  }),
+});
 
 function Home() {
   const navigate = useNavigate();
@@ -42,7 +56,9 @@ function Home() {
           </div>
         </div>
 
-        <HomeFeed />
+        <ErrorBoundary>
+          <HomeFeed />
+        </ErrorBoundary>
       </div>
     </CustomerShell>
   );

@@ -8,7 +8,7 @@ export type SyncAction = {
 
 export class OfflineSyncQueue {
   private queue: SyncAction[] = [];
-  private isOnline: boolean = typeof navigator !== 'undefined' ? navigator.onLine : true;
+  private isOnline: boolean = typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
   private isSyncing: boolean = false;
   private readonly storageKey = 'orderking:edge:sync-queue';
 

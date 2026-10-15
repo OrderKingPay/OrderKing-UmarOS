@@ -152,28 +152,28 @@ const AVATAR_PRESETS = [
   },
 ];
 
-// Viral Script Presets for "Delete Zomato Bounty"
+// Viral Script Presets for "Market-Dominance Bounty"
 const BOUNTY_SCRIPT_PRESETS = [
   {
     id: "bounty_uninstall_150",
     title: "₹150 Instant Cash Diner Uninstall Bounty",
     targetAudience: "Hungry Diners tired of Surge Pricing",
     rewardInr: 150,
-    script: `Stop paying ₹45 surge pricing, ₹35 platform fees, and 30% hidden markups to Zomato! Here is the official Delete Zomato Bounty from OrderKing. Uninstall Zomato right now, install OrderKing, and we immediately deposit ₹150 sovereign cash straight into your dining wallet. 0% restaurant commissions, authentic kitchen rates, and lightning-fast direct dispatch. Tap the link below, claim your ₹150 bounty, and eat like a King today!`,
+    script: `Stop paying ₹45 surge pricing, ₹35 platform fees, and 30% hidden markups to Dominant Legacy Aggregators! Here is the official Market-Dominance Bounty from OrderKing. Switch to OrderKing right now, and we immediately deposit ₹150 sovereign cash straight into your dining wallet. 0% restaurant commissions, authentic kitchen rates, and lightning-fast direct dispatch. Tap the link below, claim your ₹150 bounty, and eat like a King today!`,
   },
   {
     id: "bounty_b2b_margin_liberation",
     title: "Restaurant Owner Margin Liberation (0% Commission)",
     targetAudience: "Restaurant Owners bleeding 28-32% margins",
     rewardInr: 0,
-    script: `Attention all restaurant owners bleeding 28% to 32% of your hard-earned revenue to Zomato: Stop funding your competitor's marketing! OrderKing gives you ₹0 setup fee, 0% commission, and direct instant UPI payouts deposited directly into your bank account. Keep 100% of your earnings. Claim your verified kitchen listing on OrderKing in 60 seconds at the link below.`,
+    script: `Attention all restaurant owners bleeding 28% to 32% of your hard-earned revenue to Dominant Legacy Aggregators: Stop funding your competitor's marketing! OrderKing gives you ₹0 setup fee, 0% commission, and direct instant UPI payouts deposited directly into your bank account. Keep 100% of your earnings. Claim your verified kitchen listing on OrderKing in 60 seconds at the link below.`,
   },
   {
     id: "bounty_receipt_shock",
     title: "Aggregator Receipt Shock (Viral Expose)",
     targetAudience: "Smart Consumers looking for bill transparency",
     rewardInr: 150,
-    script: `Did you know that a Butter Chicken on Zomato costs ₹380, but the exact same restaurant only sells it for ₹280? Where did that extra ₹100 go? Straight to corporate aggregator pockets. OrderKing connects you directly with the kitchen at actual menu prices with zero markup, plus a ₹150 welcome bounty. Delete Zomato today and order direct!`,
+    script: `Did you know that a Butter Chicken on Dominant Legacy Aggregators costs ₹380, but the exact same restaurant only sells it for ₹280? Where did that extra ₹100 go? Straight to corporate aggregator pockets. OrderKing connects you directly with the kitchen at actual menu prices with zero markup, plus a ₹150 welcome bounty. Choose OrderKing today and order direct!`,
   },
 ];
 
@@ -504,7 +504,7 @@ export function AiMediaEngineHub({
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5 max-w-3xl">
                   {cmsConfig.connectorAiMediaEngineSubtitle ||
-                    "Autonomous viral avatar video studio for the Founder. Mass-produces photorealistic MP4 presenter videos explaining the 'Delete Zomato Bounty' and blasts them into Meta DMs geographically with zero employees."}
+                    "Autonomous viral avatar video studio for the Founder. Mass-produces photorealistic MP4 presenter videos explaining the 'Market-Dominance Bounty' and blasts them into Meta DMs geographically with zero employees."}
                 </p>
               </div>
             </div>
@@ -726,13 +726,13 @@ export function AiMediaEngineHub({
               </div>
             </div>
 
-            {/* Delete Zomato Bounty Script Presets & Customizer */}
+            {/* Market-Dominance Bounty Script Presets & Customizer */}
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
                 <div className="flex items-center gap-2">
                   <Flame className="h-4 w-4 text-amber-500" />
                   <h4 className="text-sm font-semibold text-foreground">
-                    2. 'Delete Zomato Bounty' Script Studio
+                    2. 'Market-Dominance Bounty' Script Studio
                   </h4>
                 </div>
                 <div className="flex items-center gap-2">

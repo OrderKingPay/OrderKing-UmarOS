@@ -208,7 +208,7 @@ export function PlatformIntegrationsModal({
                 <Input
                   value={directorySearch}
                   onChange={(e) => setDirectorySearch(e.target.value)}
-                  placeholder="Search 500+ apps by name, category, or capability (e.g. WhatsApp, Zomato, PhonePe, AWS, OpenAI, Shopify)..."
+                  placeholder="Search 500+ apps by name, category, or capability (e.g. WhatsApp, Dominant Legacy Aggregator, PhonePe, AWS, OpenAI, Shopify)..."
                   className="pl-10 h-10 bg-[#030a0d] border-cyan-500/30 text-xs text-slate-100 rounded-xl focus:border-cyan-400 placeholder:text-slate-500"
                 />
               </div>

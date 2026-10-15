@@ -25,8 +25,10 @@ export const calculateMerchantEconomics = async (restaurantId: string, orderValu
   const platformFeePercent = isSaaS ? 0 : 0.10; 
   const platformFeePaise = Math.floor(orderValuePaise * platformFeePercent);
   
-  // Payment Gateway Processing Fee (1.5% fixed)
-  const paymentGatewayFeePaise = Math.floor(orderValuePaise * 0.015);
+  // Payment Gateway Processing Fee (184 bps = 1.84% + 18% GST)
+  const pgFeeBase = Math.floor((orderValuePaise * 184) / 10000);
+  const pgFeeGst = Math.floor((pgFeeBase * 1800) / 10000);
+  const paymentGatewayFeePaise = pgFeeBase + pgFeeGst;
   
   // Net payout to merchant
   const netPayoutPaise = orderValuePaise - platformFeePaise - paymentGatewayFeePaise;

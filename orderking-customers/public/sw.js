@@ -141,24 +141,44 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigation requests: network-first with cache and offline.html fallback
+  // Navigation requests: fast-network with cache and offline fallback (guaranteed response under 2G/3G timeouts)
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
-          }
-          return response;
-        })
-        .catch(async () => {
+      (async () => {
+        // Race network fetch with 2200ms timeout on weak/slow 2G/3G mobile networks
+        const fetchWithTimeout = new Promise((resolve, reject) => {
+          const timer = setTimeout(() => reject(new Error("Slow 2G/3G navigation timeout")), 2200);
+          fetch(event.request)
+            .then((res) => {
+              clearTimeout(timer);
+              if (res.ok) {
+                const clone = res.clone();
+                caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
+              }
+              resolve(res);
+            })
+            .catch((err) => {
+              clearTimeout(timer);
+              reject(err);
+            });
+        });
+
+        try {
+          return await fetchWithTimeout;
+        } catch {
+          // Instantly fallback to cached route, cached root shell (which renders client skeleton in <16ms), or offline.html
           const cached = await caches.match(event.request);
           if (cached) return cached;
+          const rootCached = await caches.match("/");
+          if (rootCached) return rootCached;
           const offlinePage = await caches.match("/offline.html");
           if (offlinePage) return offlinePage;
-          return caches.match("/");
-        })
+          return new Response("<html><body>Offline</body></html>", {
+            status: 503,
+            headers: { "Content-Type": "text/html" },
+          });
+        }
+      })()
     );
     return;
   }

@@ -10,8 +10,14 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { listMyOrders } from "@/lib/server/orders";
 import { formatPaise } from "@/lib/money";
 import type { OrderStatus } from "@/lib/orders/state";
+import { OrdersPageSkeleton } from "@/components/skeletons/route-skeletons";
+import { AppErrorComponent } from "@/lib/error-component";
 
-export const Route = createFileRoute("/orders/")({ component: OrdersPage });
+export const Route = createFileRoute("/orders/")({
+  component: OrdersPage,
+  pendingComponent: OrdersPageSkeleton,
+  errorComponent: AppErrorComponent,
+});
 
 function statusKey(status: OrderStatus): string {
   const map: Partial<Record<OrderStatus, string>> = {

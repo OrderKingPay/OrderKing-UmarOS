@@ -41,7 +41,7 @@ export class PartnerOnboardingGate {
     );
 
     if (!signatureValid) {
-      throw new Error("ACCESS DENIED: Digital signature validation failed for Zomato-style partner agreement.");
+      throw new Error("ACCESS DENIED: Digital signature validation failed for statutory OrderKing partner agreement.");
     }
 
     this.logCompliance(partnerId, data);

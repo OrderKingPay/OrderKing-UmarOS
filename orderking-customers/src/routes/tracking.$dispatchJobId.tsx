@@ -13,9 +13,13 @@ import {
 import { supabase } from "@/lib/db-cloud";
 import { formatPaise } from "@/lib/money";
 import { Button } from "@/components/ui/button";
+import { lazyWithRetry } from "@/lib/lazy-retry";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { CustomerAppSkeleton } from "@/components/skeletons/customer-app-skeleton";
 
-const LazyLiveTrackingMap = lazy(() =>
-  import("@/components/tracking/live-tracking-map").then((m) => ({ default: m.LiveTrackingMap }))
+const LazyLiveTrackingMap = lazyWithRetry(
+  () => import("@/components/tracking/live-tracking-map"),
+  "LiveTrackingMap"
 );
 
 function TrackingMapSkeleton() {
@@ -42,6 +46,7 @@ type OrderTrackingDetails = {
 
 export const Route = createFileRoute("/tracking/$dispatchJobId")({
   component: TrackingRoute,
+  pendingComponent: CustomerAppSkeleton,
 });
 
 function getStepIndex(status: string): number {
@@ -217,13 +222,15 @@ function TrackingRoute() {
       {/* Main Map Viewport */}
       <div className="flex-1 w-full relative">
         {position ? (
-          <Suspense fallback={<TrackingMapSkeleton />}>
-            <LazyLiveTrackingMap
-              dispatchJobId={dispatchJobId}
-              initialLat={position.lat}
-              initialLng={position.lng}
-            />
-          </Suspense>
+          <ErrorBoundary inline sectionName="Live Telemetry Map">
+            <Suspense fallback={<TrackingMapSkeleton />}>
+              <LazyLiveTrackingMap
+                dispatchJobId={dispatchJobId}
+                initialLat={position.lat}
+                initialLng={position.lng}
+              />
+            </Suspense>
+          </ErrorBoundary>
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center bg-zinc-950 p-6 text-center text-zinc-300">
             <div className="mb-3 size-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl animate-pulse">

@@ -30,7 +30,7 @@ export interface PnrLiveStatusPayload {
   lastUpdated: string;
 }
 
-export const Route = createFileRoute("/api/travel/pnr-status" as never)({
+export const Route = createFileRoute("/api/travel/pnr-status")({
   server: {
     handlers: {
       GET: async ({ request }: { request: Request }) => {

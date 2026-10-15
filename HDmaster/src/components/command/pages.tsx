@@ -98,6 +98,7 @@ import { FounderSovereignDeck } from "./founder-sovereign-deck";
 import { FounderEconomics } from "../dashboard/FounderEconomics";
 import { UmarOS_AI_Terminal } from "../dashboard/UmarOS_AI_Terminal";
 import { LiveFounderProfitDashboard } from "../dashboard/LiveFounderProfitDashboard";
+import { CommercialCommandDials } from "./commercial-command-dials";
 import { MANDATE_1_SPECIALIST_DEPARTMENTS } from "@/lib/orderking/ai/specialists";
 
 
@@ -107,13 +108,17 @@ function useInvalidate() {
 }
 
 import { lazy, Suspense } from "react";
+import { lazyWithRetry } from "@/lib/lazy-retry";
+import { AdminErrorBoundary } from "@/components/error-boundary";
+import { WorldSkeleton } from "@/components/skeletons/world-skeleton";
+import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
 
-const EducationDashboard = lazy(() => import("../education/EducationDashboard").then(m => ({ default: m.EducationDashboard })));
-const TravelPage = lazy(() => import("../travel/TravelPage").then(m => ({ default: m.TravelPage })));
-const WorkMarketplaceControlCenter = lazy(() => import("../jobs/WorkMarketplaceControlCenter").then(m => ({ default: m.WorkMarketplaceControlCenter })));
-const EcosystemCMS = lazy(() => import("../dashboard/EcosystemCMS").then(m => ({ default: m.EcosystemCMS })));
-const PluginConnectors = lazy(() => import("../dashboard/PluginConnectors").then(m => ({ default: m.PluginConnectors })));
-const WorldTechCommandCenter = lazy(() => import("../dashboard/WorldTechCommandCenter").then(m => ({ default: m.WorldTechCommandCenter })));
+const EducationDashboard = lazyWithRetry(() => import("../education/EducationDashboard"), "EducationDashboard");
+const TravelPage = lazyWithRetry(() => import("../travel/TravelPage"), "TravelPage");
+const WorkMarketplaceControlCenter = lazyWithRetry(() => import("../jobs/WorkMarketplaceControlCenter"), "WorkMarketplaceControlCenter");
+const EcosystemCMS = lazyWithRetry(() => import("../dashboard/EcosystemCMS"), "EcosystemCMS");
+const PluginConnectors = lazyWithRetry(() => import("../dashboard/PluginConnectors"), "PluginConnectors");
+const WorldTechCommandCenter = lazyWithRetry(() => import("../dashboard/WorldTechCommandCenter"), "WorldTechCommandCenter");
 
 export function ModuleView({ module, id }: { module: string; id?: string }) {
   const emp = useEmployee();
@@ -127,6 +132,7 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
     return <Denied error={`Missing permission for ${item.id}`} />;
   }
   if (module === "ceo" || module === "founder-command") return <CeoPage />;
+  if (module === "commercial-dials" || module === "dials") return <CommercialCommandDials />;
   if (module === "approvals") return <ApprovalsPage />;
   if (module === "live") return <LivePage />;
   if (module === "orders") return id ? <OrderDetail id={id} /> : <OrdersPage />;
@@ -156,14 +162,14 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "notifications") return <NotificationsPage />;
   if (module === "audit") return <AuditPage />;
   if (module === "health") return <HealthPage />;
-  if (module === "tech-registry" || module === "world-tech") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><WorldTechCommandCenter /></Suspense>;
-  if (module === "travel") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><TravelPage /></Suspense>;
-  if (module === "education") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><EducationDashboard /></Suspense>;
-    if (module === "jio-airtel") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense>;
-  if (module === "meta-dm") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="metaOmnichannel" /></Suspense>;
-  if (module === "wifi-interception") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="wifiCaptivePortal" /></Suspense>;
-  if (module === "oem-lockscreen") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="oemLockScreen" /></Suspense>;
-  if (module === "jobs") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><WorkMarketplaceControlCenter jobs={[]} workers={[]} /></Suspense>;
+  if (module === "tech-registry" || module === "world-tech") return <AdminErrorBoundary inline sectionName="World Tech Command"><Suspense fallback={<WorldSkeleton world="tech" />}><WorldTechCommandCenter /></Suspense></AdminErrorBoundary>;
+  if (module === "travel") return <AdminErrorBoundary inline sectionName="Travel Engine"><Suspense fallback={<TravelSkeleton />}><TravelPage /></Suspense></AdminErrorBoundary>;
+  if (module === "education") return <AdminErrorBoundary inline sectionName="Education Dashboard"><Suspense fallback={<WorldSkeleton world="education" />}><EducationDashboard /></Suspense></AdminErrorBoundary>;
+  if (module === "jio-airtel") return <AdminErrorBoundary inline sectionName="Jio Airtel Connector"><Suspense fallback={<WorldSkeleton world="growth" />}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense></AdminErrorBoundary>;
+  if (module === "meta-dm") return <AdminErrorBoundary inline sectionName="Meta Omnichannel"><Suspense fallback={<WorldSkeleton world="omnichannel" />}><PluginConnectors forcedTab="metaOmnichannel" /></Suspense></AdminErrorBoundary>;
+  if (module === "wifi-interception") return <AdminErrorBoundary inline sectionName="WiFi Captive Portal"><Suspense fallback={<WorldSkeleton world="captive" />}><PluginConnectors forcedTab="wifiCaptivePortal" /></Suspense></AdminErrorBoundary>;
+  if (module === "oem-lockscreen") return <AdminErrorBoundary inline sectionName="OEM LockScreen"><Suspense fallback={<WorldSkeleton world="oem" />}><PluginConnectors forcedTab="oemLockScreen" /></Suspense></AdminErrorBoundary>;
+  if (module === "jobs") return <AdminErrorBoundary inline sectionName="Work Marketplace"><Suspense fallback={<WorldSkeleton world="jobs" />}><WorkMarketplaceControlCenter jobs={[]} workers={[]} /></Suspense></AdminErrorBoundary>;
   return <DashboardPage />;
 }
 
@@ -201,7 +207,11 @@ export function DashboardPage() {
         </div>
       </header>
       {!data ? (
-        <p className="text-muted">{q.data && !q.data.ok ? q.data.error : "Loading…"}</p>
+        q.data && !q.data.ok ? (
+          <p className="text-destructive font-mono text-xs">{q.data.error}</p>
+        ) : (
+          <WorldSkeleton world="live" />
+        )
       ) : (
         <>
           <div className="grid gap-3 md:grid-cols-3">
@@ -369,6 +379,7 @@ function CeoPage() {
     <div className="space-y-4">
       {/* UMAR OS: SOVEREIGN FOUNDER CONTROL DECK */}
       <UmarOS_AI_Terminal />
+      <CommercialCommandDials />
       <LiveFounderProfitDashboard />
       <FounderEconomics />
       <FounderSovereignDeck />
@@ -2263,7 +2274,7 @@ type AiLogEntry = {
   timestamp: string;
 };
 
-const ZOMATO_PARITY_ITEMS = [
+const TIER1_PARITY_ITEMS = [
   { tier: "P0", title: "Canonical LIVE order state transitions (Pending to Delivered)", status: "VERIFIED" },
   { tier: "P0", title: "Customer cancellation through HDmaster authority", status: "VERIFIED" },
   { tier: "P0", title: "Secure rider identity binding (never trust client riderId)", status: "VERIFIED" },
@@ -2426,7 +2437,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
               activeTab === "backlog" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-muted hover:text-foreground"
             )}
           >
-            Zomato-Parity Backlog
+            Tier-1 Market-Dominance Backlog
           </button>
           <button
             type="button"
@@ -2882,7 +2893,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                   onClick={() => runPreset("boost_fast_prep_kitchens: Reward kitchens preparing orders in <12 minutes with +35% organic ranking boost and fair 10% commission spotlight", "restaurant_ops")}
                 >
                   <span className="font-semibold">⚡ 1-Click Fast-Track Kitchen Boost</span>
-                  <p className="text-[11px] text-muted">Drive kitchens to cook OrderKing orders first before Zomato.</p>
+                  <p className="text-[11px] text-muted">Drive kitchens to cook OrderKing orders first before Dominant Legacy Aggregators.</p>
                 </button>
                 <button
                   type="button"
@@ -3023,10 +3034,10 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("founder_profit_maximizer_and_tax_arbitrage: Optimize GST Input Tax Credit (ITC) offsetting, retain 100% of breakage and glitch float, and benchmark Zomato-beating partner take-rates", "finance")}
+                  onClick={() => runPreset("founder_profit_maximizer_and_tax_arbitrage: Optimize GST Input Tax Credit (ITC) offsetting, retain 100% of breakage and glitch float, and benchmark Tier-1-beating partner take-rates", "finance")}
                 >
                   <span className="font-semibold">💎 1-Click AI Profit Maximizer &amp; GST Working Capital Arbitrage</span>
-                  <p className="text-[11px] text-muted">Confidential: Audit breakage float retention, zero net cash GST via Section 16 &amp; 17 ITC, and +13.3% Zomato partner profit moat.</p>
+                  <p className="text-[11px] text-muted">Confidential: Audit breakage float retention, zero net cash GST via Section 16 &amp; 17 ITC, and +13.3% Dominant Legacy Aggregator partner profit moat.</p>
                 </button>
                 <button
                   type="button"
@@ -3317,15 +3328,15 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
         </div>
       )}
 
-      {/* Zomato-Parity Backlog Tab */}
+      {/* Tier-1 Market-Dominance Backlog Tab */}
       {activeTab === "backlog" && (
         <div className="space-y-4">
-          <Panel title="Order King Zomato-Parity Engineering Roadmap">
+          <Panel title="Order King Tier-1 Market-Dominance Engineering Roadmap">
             <p className="text-xs text-muted mb-4">
               Canonical engineering milestones tracked by the Master AI. Every item requires verified implementation, automated test passes, and runtime evidence.
             </p>
             <div className="divide-y divide-border rounded-[16px] border border-border bg-surface overflow-hidden">
-              {ZOMATO_PARITY_ITEMS.map((item, idx) => (
+              {TIER1_PARITY_ITEMS.map((item, idx) => (
                 <div key={idx} className="flex flex-wrap items-center justify-between gap-3 p-3 text-xs">
                   <div className="flex items-center gap-2.5">
                     <span className="font-mono font-bold text-primary">{item.tier}</span>
@@ -4940,7 +4951,7 @@ export function ApprovalsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-base">Intelligent Dispatch Coordinator</h3>
-                      <p className="text-xs text-muted">Role: Fleet Orchestration (Zomato-level)</p>
+                      <p className="text-xs text-muted">Role: Fleet Orchestration (Tier-1 Market-Dominance level)</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-purple-500 border-purple-500/30">

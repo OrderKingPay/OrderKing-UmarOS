@@ -11,6 +11,8 @@ import { CustomerShell } from "@/components/market/shell";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { Button } from "@/components/ui/button";
 import { getViralSharePayload, shareViaWebShare, type DialectCode } from "@/lib/i18n/viral-copy";
+import { CustomerAppSkeleton } from "@/components/skeletons/customer-app-skeleton";
+import { SlowNetworkFallbackCard } from "@/components/ui/slow-network-fallback";
 
 // ============================================================================
 // Types
@@ -83,75 +85,97 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
       country_code: "IN",
     };
 
-    // 2. Query active restaurant outlets in the area/town
+    // 2. Query active restaurant outlets and concurrent hours/promotions (Eliminates sync waterfall)
     const isAllArea = normalizedArea === "all" || normalizedArea === "central" || normalizedArea === "";
 
-    let outletRows = await sql.query<any>(
-      `SELECT r.id, r.slug, r.name, r.description_en, r.description_bn, r.cover_image, r.cuisine_summary,
-              r.veg_only, r.rating_avg, r.rating_count, r.prep_minutes, r.min_order_paise, r.promoted, r.data_label,
-              o.id AS outlet_id, o.zone_id, z.name AS zone_name, o.address_line, o.area, o.lat, o.lng, o.open_override,
-              z.delivery_base_paise, z.delivery_per_km_paise, z.delivery_free_over_paise,
-              z.center_lat, z.center_lng
-       FROM restaurants r
-       JOIN restaurant_outlets o ON o.restaurant_id = r.id AND o.active = true
-       JOIN service_zones z ON z.id = o.zone_id AND z.active = true
-       JOIN cities c ON c.id = z.city_id AND c.active = true
-       WHERE r.active = true
-         AND (lower(c.id) = lower($1) OR lower(c.name) = lower($2) OR replace(lower(c.name), ' ', '-') = lower($1))
-         ${
-           isAllArea
-             ? ""
-             : `AND (
-                  lower(replace(o.area, ' ', '-')) = lower($3)
-                  OR lower(o.area) ILIKE '%' || $4 || '%'
-                  OR lower(replace(z.name, ' ', '-')) = lower($3)
-                  OR lower(z.name) ILIKE '%' || $4 || '%'
-                )`
-         }
-       ORDER BY r.promoted DESC, r.rating_avg DESC NULLS LAST`,
-      isAllArea ? [city.id, normalizedTown] : [city.id, normalizedTown, data.area, normalizedArea]
-    );
+    let outletRows: any[] = [];
+    let hoursRows: { outlet_id: string; weekday: number; open_minute: number; close_minute: number }[] = [];
+    let promos: { name_en: string; restaurant_id: string | null }[] = [];
+
+    try {
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Database query timeout on 2G/3G connection")), 2200)
+      );
+
+      const queryPromise = Promise.allSettled([
+        sql.query<any>(
+          `SELECT r.id, r.slug, r.name, r.description_en, r.description_bn, r.cover_image, r.cuisine_summary,
+                  r.veg_only, r.rating_avg, r.rating_count, r.prep_minutes, r.min_order_paise, r.promoted, r.data_label,
+                  o.id AS outlet_id, o.zone_id, z.name AS zone_name, o.address_line, o.area, o.lat, o.lng, o.open_override,
+                  z.delivery_base_paise, z.delivery_per_km_paise, z.delivery_free_over_paise,
+                  z.center_lat, z.center_lng
+           FROM restaurants r
+           JOIN restaurant_outlets o ON o.restaurant_id = r.id AND o.active = true
+           JOIN service_zones z ON z.id = o.zone_id AND z.active = true
+           JOIN cities c ON c.id = z.city_id AND c.active = true
+           WHERE r.active = true
+             AND (lower(c.id) = lower($1) OR lower(c.name) = lower($2) OR replace(lower(c.name), ' ', '-') = lower($1))
+             ${
+               isAllArea
+                 ? ""
+                 : `AND (
+                      lower(replace(o.area, ' ', '-')) = lower($3)
+                      OR lower(o.area) ILIKE '%' || $4 || '%'
+                      OR lower(replace(z.name, ' ', '-')) = lower($3)
+                      OR lower(z.name) ILIKE '%' || $4 || '%'
+                    )`
+             }
+           ORDER BY r.promoted DESC, r.rating_avg DESC NULLS LAST`,
+          isAllArea ? [city.id, normalizedTown] : [city.id, normalizedTown, data.area, normalizedArea]
+        ),
+        sql<{
+          outlet_id: string;
+          weekday: number;
+          open_minute: number;
+          close_minute: number;
+        }>`SELECT outlet_id, weekday, open_minute, close_minute FROM restaurant_hours`,
+        sql<{ name_en: string; restaurant_id: string | null }>`
+          SELECT name_en, restaurant_id FROM promotions WHERE active = true
+        `,
+      ]);
+
+      const [outletsRes, hoursRes, promosRes] = await Promise.race([queryPromise, timeoutPromise]);
+      outletRows = outletsRes.status === "fulfilled" ? outletsRes.value : [];
+      hoursRows = hoursRes.status === "fulfilled" ? hoursRes.value : [];
+      promos = promosRes.status === "fulfilled" ? promosRes.value : [];
+    } catch (_err) {
+      // Fallback cleanly on timeout or network degradation
+      outletRows = [];
+      hoursRows = [];
+      promos = [];
+    }
 
     let isTownLevelFallback = false;
 
     // Fallback gracefully to town-wide outlets if the specific neighborhood has no direct vendor storefront
     if (outletRows.length === 0 && !isAllArea) {
-      outletRows = await sql.query<any>(
-        `SELECT r.id, r.slug, r.name, r.description_en, r.description_bn, r.cover_image, r.cuisine_summary,
-                r.veg_only, r.rating_avg, r.rating_count, r.prep_minutes, r.min_order_paise, r.promoted, r.data_label,
-                o.id AS outlet_id, o.zone_id, z.name AS zone_name, o.address_line, o.area, o.lat, o.lng, o.open_override,
-                z.delivery_base_paise, z.delivery_per_km_paise, z.delivery_free_over_paise,
-                z.center_lat, z.center_lng
-         FROM restaurants r
-         JOIN restaurant_outlets o ON o.restaurant_id = r.id AND o.active = true
-         JOIN service_zones z ON z.id = o.zone_id AND z.active = true
-         JOIN cities c ON c.id = z.city_id AND c.active = true
-         WHERE r.active = true
-           AND (lower(c.id) = lower($1) OR lower(c.name) = lower($2) OR replace(lower(c.name), ' ', '-') = lower($1))
-         ORDER BY r.promoted DESC, r.rating_avg DESC NULLS LAST`,
-        [city.id, normalizedTown]
-      );
-      isTownLevelFallback = true;
+      try {
+        outletRows = await sql.query<any>(
+          `SELECT r.id, r.slug, r.name, r.description_en, r.description_bn, r.cover_image, r.cuisine_summary,
+                  r.veg_only, r.rating_avg, r.rating_count, r.prep_minutes, r.min_order_paise, r.promoted, r.data_label,
+                  o.id AS outlet_id, o.zone_id, z.name AS zone_name, o.address_line, o.area, o.lat, o.lng, o.open_override,
+                  z.delivery_base_paise, z.delivery_per_km_paise, z.delivery_free_over_paise,
+                  z.center_lat, z.center_lng
+           FROM restaurants r
+           JOIN restaurant_outlets o ON o.restaurant_id = r.id AND o.active = true
+           JOIN service_zones z ON z.id = o.zone_id AND z.active = true
+           JOIN cities c ON c.id = z.city_id AND c.active = true
+           WHERE r.active = true
+             AND (lower(c.id) = lower($1) OR lower(c.name) = lower($2) OR replace(lower(c.name), ' ', '-') = lower($1))
+           ORDER BY r.promoted DESC, r.rating_avg DESC NULLS LAST`,
+          [city.id, normalizedTown]
+        );
+        isTownLevelFallback = true;
+      } catch {}
     }
 
     // 3. Hours and Active Promotions
     const hoursMap = new Map<string, HourWindow[]>();
-    const hoursRows = await sql<{
-      outlet_id: string;
-      weekday: number;
-      open_minute: number;
-      close_minute: number;
-    }>`SELECT outlet_id, weekday, open_minute, close_minute FROM restaurant_hours`;
-
     for (const h of hoursRows) {
       const list = hoursMap.get(h.outlet_id) ?? [];
       list.push({ weekday: h.weekday, openMinute: h.open_minute, closeMinute: h.close_minute });
       hoursMap.set(h.outlet_id, list);
     }
-
-    const promos = await sql<{ name_en: string; restaurant_id: string | null }>`
-      SELECT name_en, restaurant_id FROM promotions WHERE active = true
-    `;
 
     // 4. Transform to RestaurantCard
     const cards: RestaurantCard[] = [];
@@ -336,7 +360,19 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
 // TanStack Router Route Definition
 // ============================================================================
 
-export const Route = createFileRoute("/delivery/$town/$area" as any)({
+export const Route = createFileRoute("/delivery/$town/$area")({
+  pendingComponent: CustomerAppSkeleton,
+  errorComponent: ({ reset, error }) => (
+    <CustomerShell>
+      <div className="p-4 sm:p-6">
+        <SlowNetworkFallbackCard
+          title="Delivery Menu Timeout"
+          message={error instanceof Error ? error.message : "The live delivery catalog took too long on 2G/3G. Tap below to retry."}
+          onRetry={() => reset?.()}
+        />
+      </div>
+    </CustomerShell>
+  ),
   loader: async ({ params }: any) => {
     return await getDeliveryAreaCatalog({
       data: {

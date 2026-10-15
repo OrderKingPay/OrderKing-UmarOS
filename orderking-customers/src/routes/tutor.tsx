@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { toast } from "sonner";
+import { AppErrorComponent } from "@/lib/error-component";
 
 const askIntelligenceFn = createServerFn({ method: "POST" })
   .validator((data: { 
@@ -604,6 +605,7 @@ const JOB_APPLICATIONS_STORAGE_KEY = "orderking_job_applications_v1";
 
 export const Route = createFileRoute('/tutor')({
   component: IntelligencePage,
+  errorComponent: AppErrorComponent,
 });
 
 function IntelligencePage() {
@@ -633,9 +635,9 @@ function IntelligencePage() {
   const [applicantContact, setApplicantContact] = useState("");
   const [applicantNote, setApplicantNote] = useState("");
 
-  const sectionHash = useRouterState({ select: (s) => s.location.hash });
+  const sectionHash = useRouterState({ select: (s) => s?.location?.hash ?? "" }) ?? "";
   useEffect(() => {
-    const cleanHash = sectionHash.replace(/^#/, "").toLowerCase();
+    const cleanHash = (sectionHash || "").replace(/^#/, "").toLowerCase();
     if (cleanHash === "jobs") setMode("jobs");
     else if (cleanHash === "tutor") setMode("tutor");
   }, [sectionHash]);

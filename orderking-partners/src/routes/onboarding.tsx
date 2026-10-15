@@ -818,7 +818,7 @@ function OnboardingPage() {
           </div>
           <div className="rounded-lg border border-slate-800/80 bg-slate-950/60 p-3 text-[11px] text-slate-400 flex items-center justify-between">
             <span>
-              💡 <strong>Zomato &amp; Swiggy GST Parity:</strong> If your restaurant turnover is below ₹20L, GST registration is not required. Order King calculates and remits 5% food GST directly under Section 9(5) of the CGST Act.
+              💡 <strong>Statutory Section 9(5) CGST Parity:</strong> If your restaurant turnover is below ₹20L, GST registration is not required. Order King calculates and remits 5% food GST directly under Section 9(5) of the CGST Act.
             </span>
           </div>
         </Card>

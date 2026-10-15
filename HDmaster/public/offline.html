@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Umar OS - Offline Mode</title>
+  <style>
+    body {
+      background-color: #0c0a09;
+      color: #fafaf9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: #1c1917;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 24px;
+      padding: 36px 28px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+    .icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: inline-block;
+      filter: drop-shadow(0 4px 12px rgba(245, 158, 11, 0.4));
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 8px 0;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #a8a29e;
+      line-height: 1.5;
+      margin: 0 0 24px 0;
+    }
+    .btn {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0c0a09;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+      transition: transform 0.1s ease, filter 0.2s ease;
+    }
+    .btn:active {
+      transform: scale(0.98);
+      filter: brightness(0.95);
+    }
+    .status {
+      margin-top: 18px;
+      font-size: 11px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">👑</div>
+    <div class="badge">Umar OS Offline Shield</div>
+    <h1 class="title">Command Center Offline</h1>
+    <p class="subtitle">
+      Network signal interrupted. Local cached worlds, telemetry, and platform configurations remain preserved. Auto-reconnecting...
+    </p>
+    <button class="btn" onclick="window.location.reload()">Retry Connection</button>
+    <div class="status">⚡ Service Worker Zero-Lag Cache Active</div>
+  </div>
+  <script>
+    window.addEventListener('online', function() {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

@@ -53,7 +53,7 @@ const SUPPORTED_POS_SYSTEMS: POSSystem[] = [
     name: "UrbanPiper (Hub & Prime)",
     tag: "Unified Omnichannel",
     icon: "🚀",
-    description: "Centralized routing across OrderKing, Swiggy, and Zomato directly into your existing billing terminal.",
+    description: "Centralized routing across OrderKing and legacy aggregator channels directly into your existing billing terminal.",
     webhookSlug: "urbanpiper",
     fields: [
       { key: "apiKey", label: "UrbanPiper API Key", placeholder: "e.g. up_live_key_384029" },
@@ -438,7 +438,7 @@ export function UniversalPosHardwareManager({
           event: "order_placed",
           store_id: posConfig.storeId,
           order_id: orderNum,
-          channel: "ZOMATO_ORDERKING_HUB",
+          channel: "AGGREGATOR_ORDERKING_HUB",
           items: [
             { title: "Murgh Tikka Roll", count: 2, rate: 280, station: "TANDOOR" },
             { title: "Sweet Lassi", count: 2, rate: 120, station: "BEVERAGE" },
@@ -478,7 +478,7 @@ export function UniversalPosHardwareManager({
           action: "ITEM_86_SYNC",
           status: "SUCCESS",
           statusCode: 200,
-          details: `Bidirectional 86 Sync: '${item.name}' toggled to ${statusLabel}. Pushed to POS & Swiggy/Zomato/OrderKing.`,
+          details: `Bidirectional 86 Sync: '${item.name}' toggled to ${statusLabel}. Pushed to POS & aggregator networks/OrderKing.`,
         });
 
         toast.info(`Item 86 Sync: '${item.name}' is now ${statusLabel}`);

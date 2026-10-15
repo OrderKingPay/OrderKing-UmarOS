@@ -8,9 +8,9 @@ import { Field } from "@/components/command/widgets";
 
 export function TravelPage() {
   const [mode, setMode] = useState<"FLIGHT" | "TRAIN">("FLIGHT");
-  const [origin, setOrigin] = useState("");
-  const [destination, setDestination] = useState("");
-  const [date, setDate] = useState("");
+  const [origin, setOrigin] = useState("DEL");
+  const [destination, setDestination] = useState("BOM");
+  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [passengers, setPassengers] = useState("1");
   const [error, setError] = useState<string | null>(null);
 
@@ -41,13 +41,37 @@ export function TravelPage() {
         <p className="mt-1 text-sm text-muted">Founder Dashboard: Monitor Affiliate Commission Engine metrics in real-time.</p>
       </header>
 
-      <div className="flex gap-2 border-b border-border pb-4">
-        <Button variant={mode === "FLIGHT" ? "primary" : "secondary"} onClick={() => setMode("FLIGHT")}>
-          Flights
-        </Button>
-        <Button variant={mode === "TRAIN" ? "primary" : "secondary"} onClick={() => setMode("TRAIN")}>
-          Indian Rail
-        </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+        <div className="flex gap-2">
+          <Button variant={mode === "FLIGHT" ? "primary" : "secondary"} onClick={() => setMode("FLIGHT")}>
+            ✈️ Flights
+          </Button>
+          <Button variant={mode === "TRAIN" ? "primary" : "secondary"} onClick={() => setMode("TRAIN")}>
+            🚆 Indian Rail
+          </Button>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-muted">
+          <span className="font-bold">Quick Routes:</span>
+          {[
+            { label: "DEL ➔ BOM", o: "DEL", d: "BOM", m: "FLIGHT" as const },
+            { label: "BLR ➔ DEL", o: "BLR", d: "DEL", m: "FLIGHT" as const },
+            { label: "NDLS ➔ MMCT", o: "NDLS", d: "MMCT", m: "TRAIN" as const },
+            { label: "SBC ➔ MAS", o: "SBC", d: "MAS", m: "TRAIN" as const },
+          ].map((r) => (
+            <button
+              key={r.label}
+              type="button"
+              onClick={() => {
+                setMode(r.m);
+                setOrigin(r.o);
+                setDestination(r.d);
+              }}
+              className="px-2 py-1 rounded-md bg-surface border border-border text-[11px] font-mono font-bold hover:bg-elevated transition"
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 items-end">

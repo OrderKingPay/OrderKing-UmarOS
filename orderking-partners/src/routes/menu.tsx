@@ -630,7 +630,7 @@ function MenuPage() {
         </div>
       )}
 
-      {/* Zomato Partner Menu Filter Bar & 1-Tap Stock Desk */}
+      {/* Tier-1 Partner Menu Filter Bar & 1-Tap Stock Desk */}
       <div className="rounded-xl border border-border bg-surface-1 p-3.5 shadow-sm space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Search input to filter dishes by name/description in real time */}
@@ -710,7 +710,7 @@ function MenuPage() {
           </div>
         </div>
 
-        {/* Zomato Partner Filter Pills: All Items, In Stock, Out of Stock, Veg Only, Non-Veg / Egg */}
+        {/* Partner Filter Pills: All Items, In Stock, Out of Stock, Veg Only, Non-Veg / Egg */}
         <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-border/60 font-mono">
           <span className="text-[11px] font-bold uppercase tracking-wider text-muted flex items-center gap-1 mr-1">
             <Zap className="size-3.5 text-amber-500" />
@@ -1198,7 +1198,7 @@ function MenuPage() {
         ) : null}
       </Card>
 
-      {/* Zomato-Grade Dish Studio Modal / Slide-Over Drawer */}
+      {/* Tier-1 Grade Dish Studio Modal / Slide-Over Drawer */}
       {editor ? (
         <div
           className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm"
@@ -1215,7 +1215,7 @@ function MenuPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
-                    Zomato-Grade Dish Studio
+                    Tier-1 Grade Dish Studio
                   </span>
                   <FssaiDietBadge diet={editor.diet} showLabel />
                 </div>

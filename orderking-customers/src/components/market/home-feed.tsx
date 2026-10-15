@@ -460,10 +460,10 @@ export function HomeFeed({
                 ? "Explore this category"
                 : dietFilter === "veg"
                 ? "Pure vegetarian restaurants"
-                : `Restaurants in ${location.cityName || "Your Area"}`}
+                : `Restaurants in ${location?.cityName || "Your Area"}`}
             </h2>
             <p className="text-xs text-gray-500 font-medium">
-              Explore menus and delivery options in {location.cityName || "your neighborhood"}
+              Explore menus and delivery options in {location?.cityName || "your neighborhood"}
             </p>
           </div>
         </div>
@@ -518,7 +518,7 @@ export function HomeFeed({
             <div className="space-y-1.5">
               <h3 className="font-black text-lg sm:text-xl text-gray-950 tracking-tight">
                 {(list.data?.restaurants?.length ?? 0) === 0
-                  ? location.cityName && location.cityName !== "Locating..."
+                  ? location?.cityName && location.cityName !== "Locating..."
                     ? `Restaurants in ${location.cityName} are preparing for upcoming service`
                     : "Select your delivery location to explore menus"
                   : "No restaurants match your active filter"}

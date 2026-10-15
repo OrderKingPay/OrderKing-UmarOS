@@ -1,7 +1,7 @@
 /**
- * OrderKing Money & Zomato Algorithmic Payout Matrix
+ * OrderKing Money & Tier-1 Algorithmic Payout Matrix
  *
- * Implements 100% of Zomato's Indian courier payout algorithms:
+ * Implements 100% of dominant legacy aggregator Indian courier payout algorithms:
  * 1. Base Pay (Pickup fee + Drop fee) by city tier (Tier 1/2/3).
  * 2. Progressive Distance Slabs:
  *    - Slab 1 (0.0 to 2.0 km): Included in Base Pay (₹0 extra).
@@ -95,7 +95,7 @@ export interface CityTierPayConfig {
 }
 
 /**
- * Zomato's Indian City Tier Payout Matrix:
+ * Dominant Legacy Aggregator Indian City Tier Payout Matrix:
  * - Tier 1 (Metros: Bangalore, Mumbai, Delhi NCR, Hyderabad, Chennai, Kolkata, Pune)
  *   Base Pay: ₹35 (Pickup ₹20 + Drop ₹15) | Floor: ₹35 | Rate: ₹12/km beyond 2km
  * - Tier 2 (Growth Cities: Jaipur, Ahmedabad, Lucknow, Chandigarh, Kochi, Indore, etc.)
@@ -250,7 +250,7 @@ export interface ProgressiveDistanceBreakdown {
 }
 
 /**
- * Calculates progressive distance pay strictly according to Zomato's actual payout slabs:
+ * Calculates progressive distance pay strictly according to dominant legacy aggregator payout slabs:
  * - Slab 1 (0.0 to 2.0 km): Included in Base Pay (₹0 extra).
  * - Slab 2 (2.0 to 5.0 km): ₹12.00/km (1,200 paise/km).
  * - Slab 3 (5.0 to 8.0 km): ₹14.00/km (1,400 paise/km).
@@ -431,7 +431,7 @@ export function calculateDistancePay(
 // ---------------------------------------------------------------------------
 
 /**
- * Zomato Wait-Time Policy:
+ * Dominant Legacy Aggregator Wait-Time Policy:
  * The timer begins when courier marks 'ARRIVED_AT_RESTAURANT'.
  * First 6 minutes are free grace period.
  * Every subsequent minute is compensated at EXACTLY ₹1/minute (100 paise/min).
@@ -628,7 +628,7 @@ export function calculateCustomerTipPassThrough(tipPaise: number): {
 // ---------------------------------------------------------------------------
 
 /**
- * Zomato Stacked / Multi-Order Policy:
+ * Dominant Legacy Aggregator Stacked / Multi-Order Policy:
  * Couriers assigned a secondary order in a stacked route earn:
  * - 60% of tier pickup fee (restaurant pickup already coordinated)
  * - 100% of tier drop fee (distinct customer destination)
@@ -685,16 +685,16 @@ export function calculateStackedOrderPayPaise(
 }
 
 // ---------------------------------------------------------------------------
-// 7. ZOMATO WEEKLY PAYOUT CYCLE (MON 00:00:00 - SUN 23:59:59 -> WED SETTLEMENT)
+// 7. TIER-1 WEEKLY PAYOUT CYCLE (MON 00:00:00 - SUN 23:59:59 -> WED SETTLEMENT)
 // ---------------------------------------------------------------------------
 
-export const ZOMATO_PAYOUT_SETTLEMENT_DAY = "WEDNESDAY";
-export const ZOMATO_PAYOUT_SETTLEMENT_HOUR_UTC = 15; // 3:00 PM UTC (Wednesday afternoon)
-export const ZOMATO_PAYOUT_SETTLEMENT_HOUR_IST = 14; // 2:00 PM IST (14:00 IST)
-export const ZOMATO_PAYOUT_SETTLEMENT_TIME_IST = "14:00"; // 2:00 PM IST
-export const ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE = "Wednesday 2:00 PM IST";
+export const TIER1_PAYOUT_SETTLEMENT_DAY = "WEDNESDAY";
+export const TIER1_PAYOUT_SETTLEMENT_HOUR_UTC = 15; // 3:00 PM UTC (Wednesday afternoon)
+export const TIER1_PAYOUT_SETTLEMENT_HOUR_IST = 14; // 2:00 PM IST (14:00 IST)
+export const TIER1_PAYOUT_SETTLEMENT_TIME_IST = "14:00"; // 2:00 PM IST
+export const TIER1_PAYOUT_SETTLEMENT_SCHEDULE = "Wednesday 2:00 PM IST";
 
-export interface ZomatoWeeklyCycle {
+export interface Tier1WeeklyCycle {
   cycleStart: Date;
   cycleEnd: Date;
   payoutDate: Date;
@@ -708,23 +708,23 @@ export interface ZomatoWeeklyCycle {
 }
 
 /**
- * Standardizes Zomato's weekly payout cycle:
+ * Standardizes Tier-1 dominant legacy aggregator's weekly payout cycle:
  * - Cycle Window: Monday 00:00:00 to Sunday 23:59:59.
  * - Payout Settlement: Automated Wednesday afternoon settlement following cycle close (Wednesday 2:00 PM IST / 15:00 UTC).
  *
  * @param dateInput Target date or timestamp within the cycle (defaults to now)
  * @param options Options flag for UTC or local time calculation
  */
-export function getZomatoWeeklyCycle(
+export function getTier1WeeklyCycle(
   dateInput: Date | string | number = new Date(),
   options?: { useUtc?: boolean },
-): ZomatoWeeklyCycle {
+): Tier1WeeklyCycle {
   const d = typeof dateInput === "string" || typeof dateInput === "number"
     ? new Date(dateInput)
     : new Date(dateInput.getTime());
 
   if (Number.isNaN(d.getTime())) {
-    throw new Error("Invalid date provided to getZomatoWeeklyCycle");
+    throw new Error("Invalid date provided to getTier1WeeklyCycle");
   }
 
   const isIsoStringWithZ = typeof dateInput === "string" && (dateInput.endsWith("Z") || dateInput.includes("+00:00"));
@@ -754,9 +754,9 @@ export function getZomatoWeeklyCycle(
       cycleEndIso: end.toISOString(),
       payoutDateIso: payout.toISOString(),
       formattedCycle: `${start.toISOString().slice(0, 10)} to ${end.toISOString().slice(0, 10)}`,
-      settlementDay: ZOMATO_PAYOUT_SETTLEMENT_DAY,
+      settlementDay: TIER1_PAYOUT_SETTLEMENT_DAY,
       settlementTimeIst: "14:00 IST (2:00 PM IST)",
-      settlementSchedule: ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE,
+      settlementSchedule: TIER1_PAYOUT_SETTLEMENT_SCHEDULE,
     };
   } else {
     const day = d.getDay();
@@ -782,18 +782,18 @@ export function getZomatoWeeklyCycle(
       cycleEndIso: end.toISOString(),
       payoutDateIso: payout.toISOString(),
       formattedCycle: `${start.toLocaleDateString("en-IN")} to ${end.toLocaleDateString("en-IN")}`,
-      settlementDay: ZOMATO_PAYOUT_SETTLEMENT_DAY,
+      settlementDay: TIER1_PAYOUT_SETTLEMENT_DAY,
       settlementTimeIst: "14:00 IST (2:00 PM IST)",
-      settlementSchedule: ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE,
+      settlementSchedule: TIER1_PAYOUT_SETTLEMENT_SCHEDULE,
     };
   }
 }
 
 // ---------------------------------------------------------------------------
-// 8. MASTER ZOMATO ALGORITHMIC PAYOUT BREAKDOWN
+// 8. MASTER TIER-1 ALGORITHMIC PAYOUT BREAKDOWN
 // ---------------------------------------------------------------------------
 
-export interface ZomatoPayoutInput {
+export interface Tier1PayoutInput {
   distanceKm: number;
   cityTier?: CityTier;
   customRatePerKmPaise?: number; // ₹10-₹14/km (legacy flat override)
@@ -817,7 +817,7 @@ export interface ZomatoPayoutInput {
   dynamicConfig?: DynamicPricingConfig | PlatformConfig | null;
 }
 
-export interface ZomatoPayoutBreakdown {
+export interface Tier1PayoutBreakdown {
   cityTier: CityTier;
   pickupFeePaise: number;
   dropFeePaise: number;
@@ -851,10 +851,10 @@ export interface ZomatoPayoutBreakdown {
 }
 
 /**
- * Calculates complete, end-to-end rider payout conforming 100% to Zomato's Indian payout matrix.
+ * Calculates complete, end-to-end rider payout conforming 100% to Tier-1 dominant legacy aggregator Indian payout matrix.
  * Guaranteed strictly integer paise calculations throughout.
  */
-export function calculateZomatoAlgorithmicPayout(input: ZomatoPayoutInput): ZomatoPayoutBreakdown {
+export function calculateTier1AlgorithmicPayout(input: Tier1PayoutInput): Tier1PayoutBreakdown {
   const dynPricing: DynamicPricingConfig | undefined = input.dynamicConfig
     ? ("pricing" in input.dynamicConfig && input.dynamicConfig.pricing
         ? input.dynamicConfig.pricing
@@ -952,7 +952,7 @@ export function calculateZomatoAlgorithmicPayout(input: ZomatoPayoutInput): Zoma
   });
 
   // 5. Stacked / Multi-Package Order Pay:
-  // Zomato Standard: 60% of tier pickup fee + 100% of tier drop fee per secondary order (~₹22 - ₹27)
+  // Dominant Legacy Aggregator Standard: 60% of tier pickup fee + 100% of tier drop fee per secondary order (~₹22 - ₹27)
   let secondaryOrderCount = 0;
   if (input.stackedOrderCount !== undefined) {
     secondaryOrderCount = Math.max(0, Math.floor(input.stackedOrderCount));
@@ -1023,7 +1023,7 @@ export function calculateZomatoAlgorithmicPayout(input: ZomatoPayoutInput): Zoma
  * Calculates rider payout enforcing statutory ₹35 base fare floor (3,500 paise).
  *
  * Supports both:
- * - Zomato's Progressive Distance Slabs (when useProgressive is true / enabled)
+ * - Tier-1 Progressive Distance Slabs (when useProgressive is true / enabled)
  * - Statutory flat distance rate (₹12/km beyond 2km) for 100% backwards compatibility
  *   with existing dispatch & lifecycle tests.
  *

@@ -899,10 +899,10 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "orderk
   if (isBengali) detectedLanguage = "bn-IN";
   else if (isHindi) detectedLanguage = "hi-IN";
 
-  // --- Zomato-Style Autonomous Operations Engine ---
+  // --- Tier-1 Scale Autonomous Operations Engine ---
   if (
     q.startsWith("/ops") ||
-    q.startsWith("/zomato") ||
+    q.startsWith("/fleet-ops") ||
     q.includes("process payout") ||
     q.includes("generate payout") ||
     q.includes("resolve dispute") ||
@@ -915,13 +915,13 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "orderk
     const disputeId = disputeResolution!.disputeId;
     
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning Merchant Ledger & SLAs", status: "COMPLETED", detail: "Checking compliance across all Zomato/OrderKing SLA thresholds." },
+      { stepNumber: 1, totalSteps: 4, label: "Scanning Merchant Ledger & SLAs", status: "COMPLETED", detail: "Checking compliance across all Tier-1 Market Leader/OrderKing SLA thresholds." },
       { stepNumber: 2, totalSteps: 4, label: "Diagnosing Payout & Taxation", status: "COMPLETED", detail: `Calculated GST/TDS offsets. Next Cycle: ₹${analysis!.netSettlementInr}` },
       { stepNumber: 3, totalSteps: 4, label: "Evaluating Open Disputes", status: "COMPLETED", detail: `Resolved internal dispute ${disputeId} with ${disputeResolution!.action}` },
-      { stepNumber: 4, totalSteps: 4, label: "Generating Final Executive Report", status: "COMPLETED", detail: "10x deeper than standard Zomato Partner portals." },
+      { stepNumber: 4, totalSteps: 4, label: "Generating Final Executive Report", status: "COMPLETED", detail: "10x deeper than standard legacy aggregator partner portals." },
     ];
     
-    const responseMarkdown = `### 🏢 Autonomous Operations Diagnostics (Zomato-Level Ops)
+    const responseMarkdown = `### 🏢 Autonomous Operations Diagnostics (Tier-1 Scale Ops)
 - **Target Merchant**: ${analysis!.merchantId}
 - **Status**: ✅ Compliant
 - **Upcoming Payout**: **₹${analysis!.netSettlementInr}** (Gross: ₹${analysis!.grossSalesInr})
@@ -933,10 +933,10 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "orderk
 Use this engine for real-time compliance checks without needing human operations staff.`;
 
     const voiceSpokenText = isHindi 
-      ? `Zomato-level autonomous operations active hai. Merchant compliance aur payouts check kar liye gaye hain.`
+      ? `Tier-1 level autonomous operations active hai. Merchant compliance aur payouts check kar liye gaye hain.`
       : isBengali
       ? `Autonomous operations active. Merchant details verify kora hoyeche.`
-      : `Zomato-level autonomous operations active. Merchant compliance and payouts have been successfully evaluated.`;
+      : `Tier-1 level autonomous operations active. Merchant compliance and payouts have been successfully evaluated.`;
       
     return {
       intent: "autonomous_ops",
@@ -1517,8 +1517,8 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     q.includes("github") ||
     q.includes("upwork") ||
     q.includes("whatsapp") ||
-    q.includes("zomato") ||
-    q.includes("swiggy") ||
+    q.includes("aggregator") ||
+    q.includes("pos") ||
     q.includes("shopify") ||
     q.includes("connector") ||
     q.includes("sync app") ||
@@ -1527,7 +1527,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     let matchedPlatform = UNIVERSAL_PLATFORMS[0]; // GitHub default
     if (q.includes("upwork") || q.includes("contract") || q.includes("bid")) matchedPlatform = UNIVERSAL_PLATFORMS[1];
     else if (q.includes("whatsapp") || q.includes("message") || q.includes("chat")) matchedPlatform = UNIVERSAL_PLATFORMS[2];
-    else if (q.includes("zomato") || q.includes("swiggy") || q.includes("menu")) matchedPlatform = UNIVERSAL_PLATFORMS[3];
+    else if (q.includes("aggregator") || q.includes("pos") || q.includes("menu")) matchedPlatform = UNIVERSAL_PLATFORMS[3];
     else if (q.includes("shopify") || q.includes("store") || q.includes("ecommerce")) matchedPlatform = UNIVERSAL_PLATFORMS[4];
     else if (q.includes("pay") || q.includes("upi") || q.includes("bank")) matchedPlatform = UNIVERSAL_PLATFORMS[5];
     else if (q.includes("google") || q.includes("meet") || q.includes("drive") || q.includes("sheet")) matchedPlatform = UNIVERSAL_PLATFORMS[6];
@@ -2231,7 +2231,7 @@ $$\\text{EBITDA} = \\text{Net Income} + \\text{Interest} + \\text{Taxes} + \\tex
 ---
 
 #### 2. Strategic Takeaway for OrderKing
-By routing payments via direct King Pay UPI, we bypass the 2.5% payment gateway tax charged by Swiggy/Zomato/Razorpay. This 250 basis point margin savings flows directly to bottom-line profitability and expands our runway.`;
+By routing payments via direct King Pay UPI, we bypass the 2.5% payment gateway tax charged by legacy aggregators and standard payment gateways. This 250 basis point margin savings flows directly to bottom-line profitability and expands our runway.`;
 
     const voiceSpokenText = isEbitda
       ? `EBITDA stands for Earnings Before Interest, Taxes, Depreciation, and Amortization. It measures our core operational profitability before financing and accounting decisions. For our software model, with zero hardware depreciation, our EBITDA margin exceeds thirty percent.`

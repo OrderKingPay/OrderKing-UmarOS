@@ -446,7 +446,7 @@ export function CentralPricingSwitch() {
               <div>
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                   <SlidersHorizontal className="w-4 h-4 text-emerald-600" />
-                  Custom Pricing & Zomato Parity Algorithmic Knobs
+                  Custom Pricing & Tier-1 Parity Algorithmic Knobs
                 </h3>
                 <p className="text-xs text-slate-600 mt-0.5">
                   Direct founder control over base floors, progressive slabs, kitchen wait pay, COD limits, and AI resolution.
@@ -601,11 +601,11 @@ export function CentralPricingSwitch() {
               </div>
             </div>
 
-            {/* Sub-Section 2: Zomato Indian City Tier Base Floors */}
+            {/* Sub-Section 2: Tier-1 Indian City Tier Base Floors */}
             <div className="space-y-3 pt-2 border-t border-slate-200">
               <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                 <Layers className="w-3.5 h-3.5 text-emerald-600" />
-                2. Indian City Tier Base Floors (Zomato Parity)
+                2. Indian City Tier Base Floors (Tier-1 Parity)
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-white p-3.5 rounded-lg border border-slate-200">
@@ -671,7 +671,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹25 Min</span>
-                    <span>₹35 Zomato</span>
+                    <span>₹35 Industry Benchmark</span>
                     <span>₹60 Max</span>
                   </div>
                 </div>
@@ -704,7 +704,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹20 Min</span>
-                    <span>₹30 Zomato</span>
+                    <span>₹30 Industry Benchmark</span>
                     <span>₹50 Max</span>
                   </div>
                 </div>
@@ -737,7 +737,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹15 Min</span>
-                    <span>₹25 Zomato</span>
+                    <span>₹25 Industry Benchmark</span>
                     <span>₹40 Max</span>
                   </div>
                 </div>
@@ -868,7 +868,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹8 Min</span>
-                    <span>₹12 Zomato</span>
+                    <span>₹12 Industry Benchmark</span>
                     <span>₹22 Max</span>
                   </div>
                 </div>
@@ -899,7 +899,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹10 Min</span>
-                    <span>₹14 Zomato</span>
+                    <span>₹14 Industry Benchmark</span>
                     <span>₹25 Max</span>
                   </div>
                 </div>
@@ -930,7 +930,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹12 Min</span>
-                    <span>₹16 Zomato</span>
+                    <span>₹16 Industry Benchmark</span>
                     <span>₹30 Max</span>
                   </div>
                 </div>
@@ -961,7 +961,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹0 None</span>
-                    <span>₹20 Zomato</span>
+                    <span>₹20 Industry Benchmark</span>
                     <span>₹50 Max</span>
                   </div>
                 </div>
@@ -972,7 +972,7 @@ export function CentralPricingSwitch() {
             <div className="space-y-3 pt-2 border-t border-slate-200">
               <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-emerald-600" />
-                4. Kitchen Wait-Time Pay Compensation (Zomato Benchmark)
+                4. Kitchen Wait-Time Pay Compensation (Industry Benchmark)
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-white p-3.5 rounded-lg border border-slate-200">
@@ -1001,7 +1001,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>0 mins</span>
-                    <span>6 mins (Zomato)</span>
+                    <span>6 mins (Industry Benchmark)</span>
                     <span>15 mins</span>
                   </div>
                 </div>
@@ -1063,7 +1063,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹10 Min</span>
-                    <span>₹30 (Zomato Cap)</span>
+                    <span>₹30 (Industry Benchmark Cap)</span>
                     <span>₹100 Max</span>
                   </div>
                 </div>
@@ -1103,7 +1103,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>₹500 Strict</span>
-                    <span>₹2,000 (Zomato)</span>
+                    <span>₹2,000 (Industry Benchmark)</span>
                     <span>₹10,000 Max</span>
                   </div>
                 </div>
@@ -1134,7 +1134,7 @@ export function CentralPricingSwitch() {
                   />
                   <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
                     <span>5 mins</span>
-                    <span>15 mins (Zomato)</span>
+                    <span>15 mins (Industry Benchmark)</span>
                     <span>60 mins</span>
                   </div>
                 </div>
@@ -1157,7 +1157,7 @@ export function CentralPricingSwitch() {
                     }
                     className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold bg-white"
                   >
-                    <option value="Wednesday">Wednesday (Zomato Parity)</option>
+                    <option value="Wednesday">Wednesday (Tier-1 Parity)</option>
                     <option value="Monday">Monday</option>
                     <option value="Friday">Friday</option>
                     <option value="Daily">Daily (T+1 Escrow)</option>

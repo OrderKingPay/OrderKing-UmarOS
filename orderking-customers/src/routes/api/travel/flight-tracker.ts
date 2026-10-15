@@ -27,7 +27,7 @@ export interface FlightTrackerPayload {
   lastUpdated: string;
 }
 
-export const Route = createFileRoute("/api/travel/flight-tracker" as never)({
+export const Route = createFileRoute("/api/travel/flight-tracker")({
   server: {
     handlers: {
       GET: async ({ request }: { request: Request }) => {

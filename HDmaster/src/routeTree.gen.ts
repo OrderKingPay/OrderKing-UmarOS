@@ -16,7 +16,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as ApiTestOpenaiRouteImport } from './routes/api/test-openai'
-import { Route as ApiZomatoKillerCronRouteImport } from './routes/api/zomato-killer-cron'
+import { Route as ApiMarketDominanceCronRouteImport } from './routes/api/market-dominance-cron'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppModuleRouteImport } from './routes/app/$module'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
@@ -80,9 +80,9 @@ const ApiTestOpenaiRoute = ApiTestOpenaiRouteImport.update({
   path: '/api/test-openai',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiZomatoKillerCronRoute = ApiZomatoKillerCronRouteImport.update({
-  id: '/api/zomato-killer-cron',
-  path: '/api/zomato-killer-cron',
+const ApiMarketDominanceCronRoute = ApiMarketDominanceCronRouteImport.update({
+  id: '/api/market-dominance-cron',
+  path: '/api/market-dominance-cron',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -235,7 +235,7 @@ export interface FileRoutesByFullPath {
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
-  '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
+  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -271,7 +271,7 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
-  '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
+  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -309,7 +309,7 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
-  '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
+  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -348,7 +348,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/telemetry'
     | '/api/test-openai'
-    | '/api/zomato-killer-cron'
+    | '/api/market-dominance-cron'
     | '/app/$module'
     | '/app/'
     | '/api/ai/chat'
@@ -384,7 +384,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/telemetry'
     | '/api/test-openai'
-    | '/api/zomato-killer-cron'
+    | '/api/market-dominance-cron'
     | '/app/$module'
     | '/app'
     | '/api/ai/chat'
@@ -421,7 +421,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/telemetry'
     | '/api/test-openai'
-    | '/api/zomato-killer-cron'
+    | '/api/market-dominance-cron'
     | '/app/$module'
     | '/app/'
     | '/api/ai/chat'
@@ -459,7 +459,7 @@ export interface RootRouteChildren {
   ApiHealthRoute: typeof ApiHealthRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
   ApiTestOpenaiRoute: typeof ApiTestOpenaiRoute
-  ApiZomatoKillerCronRoute: typeof ApiZomatoKillerCronRoute
+  ApiMarketDominanceCronRoute: typeof ApiMarketDominanceCronRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAiTestConnectionRoute: typeof ApiAiTestConnectionRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -535,11 +535,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTestOpenaiRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/zomato-killer-cron': {
-      id: '/api/zomato-killer-cron'
-      path: '/api/zomato-killer-cron'
-      fullPath: '/api/zomato-killer-cron'
-      preLoaderRoute: typeof ApiZomatoKillerCronRouteImport
+    '/api/market-dominance-cron': {
+      id: '/api/market-dominance-cron'
+      path: '/api/market-dominance-cron'
+      fullPath: '/api/market-dominance-cron'
+      preLoaderRoute: typeof ApiMarketDominanceCronRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -795,7 +795,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHealthRoute: ApiHealthRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
   ApiTestOpenaiRoute: ApiTestOpenaiRoute,
-  ApiZomatoKillerCronRoute: ApiZomatoKillerCronRoute,
+  ApiMarketDominanceCronRoute: ApiMarketDominanceCronRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAiTestConnectionRoute: ApiAiTestConnectionRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

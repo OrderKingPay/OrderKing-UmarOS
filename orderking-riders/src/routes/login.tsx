@@ -382,8 +382,8 @@ function Login() {
                     >
                       <option value="BIKE">Motorcycle (Petrol — DL & RC Required)</option>
                       <option value="SCOOTER">Scooter (Petrol — DL & RC Required)</option>
-                      <option value="EV">Low-Speed EV (No DL / RC — Zomato Standard)</option>
-                      <option value="CYCLE">Bicycle (No DL / RC — Zomato Standard)</option>
+                      <option value="EV">Low-Speed EV (No DL / RC — Statutory Standard)</option>
+                      <option value="CYCLE">Bicycle (No DL / RC — Statutory Standard)</option>
                     </select>
                   </div>
                 </div>
@@ -395,10 +395,10 @@ function Login() {
                       <Zap className="size-4 shrink-0 mt-0.5 text-emerald-400" />
                       <div>
                         <p className="font-bold text-emerald-400 text-xs">
-                          ⚡ Statutory Non-Mandatory DL (CMVR Rule 2(u) &amp; Zomato Standard)
+                          ⚡ Statutory Non-Mandatory DL (CMVR Rule 2(u) &amp; National Aggregator Standard)
                         </p>
                         <p className="text-[11px] text-emerald-200/90 leading-relaxed mt-0.5">
-                          Under Central Motor Vehicles Rules (CMVR Rule 2(u)) and national delivery aggregator standards (Zomato standard), <strong>Driving License &amp; Vehicle RC are NOT MANDATORY</strong> for Bicycle and Low-Speed EV delivery partners. Driving License &amp; Vehicle RC are strictly required ONLY for petrol two-wheelers (Motorcycle / Scooter).
+                          Under Central Motor Vehicles Rules (CMVR Rule 2(u)) and national delivery aggregator standards (Dominant Legacy Aggregator benchmark), <strong>Driving License &amp; Vehicle RC are NOT MANDATORY</strong> for Bicycle and Low-Speed EV delivery partners. Driving License &amp; Vehicle RC are strictly required ONLY for petrol two-wheelers (Motorcycle / Scooter).
                         </p>
                       </div>
                     </div>

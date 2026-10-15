@@ -54,6 +54,8 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPushSubscribeRouteImport } from './routes/api/push/subscribe'
 import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
 import { Route as ApiRazorpayVerifyRouteImport } from './routes/api/razorpay/verify'
+import { Route as ApiTravelFlightTrackerRouteImport } from './routes/api/travel/flight-tracker'
+import { Route as ApiTravelPnrStatusRouteImport } from './routes/api/travel/pnr-status'
 import { Route as DeliveryTownAreaRouteImport } from './routes/delivery/$town.$area'
 import { Route as ApiOrdersOrderIdStreamRouteImport } from './routes/api/orders/$orderId/stream'
 
@@ -282,6 +284,16 @@ const ApiRazorpayVerifyRoute = ApiRazorpayVerifyRouteImport.update({
   path: '/api/razorpay/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTravelFlightTrackerRoute = ApiTravelFlightTrackerRouteImport.update({
+  id: '/api/travel/flight-tracker',
+  path: '/api/travel/flight-tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTravelPnrStatusRoute = ApiTravelPnrStatusRouteImport.update({
+  id: '/api/travel/pnr-status',
+  path: '/api/travel/pnr-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DeliveryTownAreaRoute = DeliveryTownAreaRouteImport.update({
   id: '/delivery/$town/$area',
   path: '/delivery/$town/$area',
@@ -339,6 +351,8 @@ export interface FileRoutesByFullPath {
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
+  '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
@@ -388,6 +402,8 @@ export interface FileRoutesByTo {
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
+  '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
@@ -438,6 +454,8 @@ export interface FileRoutesById {
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
+  '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
@@ -489,6 +507,8 @@ export interface FileRouteTypes {
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/travel/flight-tracker'
+    | '/api/travel/pnr-status'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
   fileRoutesByTo: FileRoutesByTo
@@ -538,6 +558,8 @@ export interface FileRouteTypes {
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/travel/flight-tracker'
+    | '/api/travel/pnr-status'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
   id:
@@ -587,6 +609,8 @@ export interface FileRouteTypes {
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/travel/flight-tracker'
+    | '/api/travel/pnr-status'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
   fileRoutesById: FileRoutesById
@@ -635,6 +659,8 @@ export interface RootRouteChildren {
   ApiPushSubscribeRoute: typeof ApiPushSubscribeRoute
   ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
   ApiRazorpayVerifyRoute: typeof ApiRazorpayVerifyRoute
+  ApiTravelFlightTrackerRoute: typeof ApiTravelFlightTrackerRoute
+  ApiTravelPnrStatusRoute: typeof ApiTravelPnrStatusRoute
   DeliveryTownAreaRoute: typeof DeliveryTownAreaRoute
   ApiOrdersOrderIdStreamRoute: typeof ApiOrdersOrderIdStreamRoute
 }
@@ -956,6 +982,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRazorpayVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/travel/flight-tracker': {
+      id: '/api/travel/flight-tracker'
+      path: '/api/travel/flight-tracker'
+      fullPath: '/api/travel/flight-tracker'
+      preLoaderRoute: typeof ApiTravelFlightTrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel/pnr-status': {
+      id: '/api/travel/pnr-status'
+      path: '/api/travel/pnr-status'
+      fullPath: '/api/travel/pnr-status'
+      preLoaderRoute: typeof ApiTravelPnrStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/delivery/$town/$area': {
       id: '/delivery/$town/$area'
       path: '/delivery/$town/$area'
@@ -1039,6 +1079,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPushSubscribeRoute: ApiPushSubscribeRoute,
   ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,
   ApiRazorpayVerifyRoute: ApiRazorpayVerifyRoute,
+  ApiTravelFlightTrackerRoute: ApiTravelFlightTrackerRoute,
+  ApiTravelPnrStatusRoute: ApiTravelPnrStatusRoute,
   DeliveryTownAreaRoute: DeliveryTownAreaRoute,
   ApiOrdersOrderIdStreamRoute: ApiOrdersOrderIdStreamRoute,
 }

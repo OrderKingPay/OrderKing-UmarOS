@@ -11,6 +11,7 @@ export default defineConfig({
       "src/test/payment-security.test.ts",
       "src/test/sovereign-travel-engine.test.ts",
       "src/test/crypto-security.test.ts",
+      "src/test/navigation-integrity.test.ts",
     ],
     environment: "node",
   },

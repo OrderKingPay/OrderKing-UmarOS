@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { DeviceAvatar } from "@/components/common/device-avatar";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "passbook" | "account" | "wealth";
 
@@ -47,6 +48,22 @@ export function KingPayShell({
       .toLocaleLowerCase()
       .includes(serviceQuery.trim().toLocaleLowerCase())
   );
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const prevHtmlBg = document.documentElement.style.backgroundColor;
+      const prevBodyBg = document.body.style.backgroundColor;
+      document.documentElement.style.transition = "background-color 0.25s ease";
+      document.body.style.transition = "background-color 0.25s ease";
+      document.documentElement.style.backgroundColor = "#0a0a0f";
+      document.body.style.backgroundColor = "#0a0a0f";
+      return () => {
+        document.documentElement.style.backgroundColor = prevHtmlBg || "#FCFAF7";
+        document.body.style.backgroundColor = prevBodyBg || "#FCFAF7";
+      };
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 flex flex-col antialiased selection:bg-amber-400 selection:text-black pb-24">
       {/* PURE FINTECH DEDICATED KINGPAY TOP APP BAR */}
@@ -182,7 +199,11 @@ export function KingPayShell({
       </section>
 
       {/* MAIN FINTECH CONTENT AREA */}
-      <main className="flex-1 pb-24">{children}</main>
+      <main className="flex-1 pb-24">
+        <ErrorBoundary sectionName="KingPay Hub">
+          {children}
+        </ErrorBoundary>
+      </main>
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
       <CustomerFloatingBottomNav />

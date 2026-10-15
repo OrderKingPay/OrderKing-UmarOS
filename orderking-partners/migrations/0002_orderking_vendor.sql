@@ -394,5 +394,5 @@ create table if not exists assistant_messages (
 
 ALTER TABLE orders ADD CONSTRAINT check_positive_food_value_paise CHECK (food_value_paise >= 0);
 
--- Zomato-Killer Mandate: Strict Constraints
+-- Market-Dominance Mandate: Strict Constraints
 ALTER TABLE orders ADD CONSTRAINT check_positive_food_value CHECK (food_value_paise >= 0);

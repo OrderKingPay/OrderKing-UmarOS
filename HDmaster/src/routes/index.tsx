@@ -48,6 +48,7 @@ import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSetting
 import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
 import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
+import { WorldSkeleton } from "@/components/skeletons/world-skeleton";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
 import { LiveFounderProfitDashboard } from "@/components/dashboard/LiveFounderProfitDashboard";
 import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
@@ -60,11 +61,14 @@ import { MediaProductionStudio } from "@/components/dashboard/MediaProductionStu
 import { SocialPublishingStudio } from "@/components/dashboard/SocialPublishingStudio";
 import { MultimodelBenchmarkDashboard } from "@/components/dashboard/MultimodelBenchmarkDashboard";
 import { GigWorkerComplianceCenter } from "@/components/dashboard/GigWorkerComplianceCenter";
+import { TravelPage } from "@/components/travel/TravelPage";
+import { lazyWithRetry } from "@/lib/lazy-retry";
+import { AdminErrorBoundary } from "@/components/error-boundary";
+import { AppErrorComponent } from "@/lib/error-component";
 
-const LazyGlobalGodEyeMap = lazy(() =>
-  import("@/components/dashboard/GlobalGodEyeMap").then((m) => ({
-    default: m.GlobalGodEyeMap,
-  }))
+const LazyGlobalGodEyeMap = lazyWithRetry(
+  () => import("@/components/dashboard/GlobalGodEyeMap"),
+  "GlobalGodEyeMap"
 );
 
 function GodEyeMapSkeleton() {
@@ -77,6 +81,40 @@ function GodEyeMapSkeleton() {
       <p className="text-xs text-slate-400 mt-1">
         Connecting to PostgreSQL zone coordinates
       </p>
+    </div>
+  );
+}
+
+function WorldSuspenseShield({
+  worldTitle,
+  emoji,
+}: {
+  worldTitle: string;
+  emoji: string;
+}) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="w-full rounded-2xl bg-white border border-slate-200 p-8 shadow-xs flex flex-col items-center justify-center text-center min-h-[300px] animate-pulse space-y-3"
+    >
+      <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl shadow-xs">
+        {emoji}
+      </div>
+      <div>
+        <p className="text-xs font-black uppercase tracking-wider text-emerald-700">
+          Loading {worldTitle}...
+        </p>
+        <p className="text-xs text-slate-500 mt-1">
+          Connected to PostgreSQL & executive controls · Zero flash
+        </p>
+      </div>
+      <div className="flex items-center gap-2 pt-1">
+        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+        <span className="text-[11px] font-bold text-slate-600">
+          UmarOS Active
+        </span>
+      </div>
     </div>
   );
 }
@@ -195,59 +233,65 @@ export const getUmarOSStats = createServerFn({ method: "GET" }).handler(
     try {
       const sql = await getSql();
 
-      try {
-        savedSettings = await loadPlatformSettingBag(sql);
-      } catch (_e) {}
+      // Guard with timeout to ensure route never stalls on 2G/3G mobile networks
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Stats query timeout on slow 2G/3G connection")), 1800)
+      );
 
-      try {
-        const userRes = await sql<{ count: number }>`SELECT COUNT(*) FROM profiles`;
-        userCount = Number(userRes?.[0]?.count || 0);
-      } catch (_e) {}
+      // Concurrent execution: dispatch all 9 queries in parallel (Zero Waterfall)
+      const parallelQueries = Promise.allSettled([
+        loadPlatformSettingBag(sql),
+        sql<{ count: number }>`SELECT COUNT(*) FROM profiles`,
+        sql<{ count: number }>`SELECT COUNT(*) FROM restaurants`,
+        sql<{ count: number }>`SELECT COUNT(*) FROM riders`,
+        sql<{ count: number }>`SELECT COUNT(*) FROM orders`,
+        sql<PendingRestaurantRow>`SELECT id, name, status FROM restaurants WHERE status = 'PENDING' LIMIT 10`,
+        sql<RestaurantRow>`SELECT id, name, status FROM restaurants ORDER BY id DESC LIMIT 10`,
+        sql<RiderRow>`SELECT id, name, status FROM riders ORDER BY id DESC LIMIT 10`,
+        sql<OrderRow>`SELECT id, status FROM orders ORDER BY id DESC LIMIT 10`,
+      ]);
 
-      try {
-        const restRes = await sql<{ count: number }>`SELECT COUNT(*) FROM restaurants`;
-        restCount = Number(restRes?.[0]?.count || 0);
-      } catch (_e) {}
+      const [
+        settingsRes,
+        usersRes,
+        restsRes,
+        ridersRes,
+        ordersRes,
+        pendingRes,
+        recentRestsRes,
+        recentRidersRes,
+        recentOrdersRes,
+      ] = await Promise.race([parallelQueries, timeoutPromise]);
 
-      try {
-        const riderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM riders`;
-        riderCount = Number(riderRes?.[0]?.count || 0);
-      } catch (_e) {}
-
-      try {
-        const orderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM orders`;
-        orderCount = Number(orderRes?.[0]?.count || 0);
-      } catch (_e) {}
-
-      try {
-        pendingRestaurants =
-          (await sql<PendingRestaurantRow>`
-            SELECT id, name, status FROM restaurants WHERE status = 'PENDING' LIMIT 10
-          `) || [];
-      } catch (_e) {}
-
-      try {
-        recentRestaurants =
-          (await sql<RestaurantRow>`
-            SELECT id, name, status FROM restaurants ORDER BY id DESC LIMIT 10
-          `) || [];
-      } catch (_e) {}
-
-      try {
-        recentRiders =
-          (await sql<RiderRow>`
-            SELECT id, name, status FROM riders ORDER BY id DESC LIMIT 10
-          `) || [];
-      } catch (_e) {}
-
-      try {
-        recentOrders =
-          (await sql<OrderRow>`
-            SELECT id, status FROM orders ORDER BY id DESC LIMIT 10
-          `) || [];
-      } catch (_e) {}
+      if (settingsRes.status === "fulfilled" && settingsRes.value) {
+        savedSettings = settingsRes.value;
+      }
+      if (usersRes.status === "fulfilled" && usersRes.value?.[0]) {
+        userCount = Number(usersRes.value[0].count || 0);
+      }
+      if (restsRes.status === "fulfilled" && restsRes.value?.[0]) {
+        restCount = Number(restsRes.value[0].count || 0);
+      }
+      if (ridersRes.status === "fulfilled" && ridersRes.value?.[0]) {
+        riderCount = Number(ridersRes.value[0].count || 0);
+      }
+      if (ordersRes.status === "fulfilled" && ordersRes.value?.[0]) {
+        orderCount = Number(ordersRes.value[0].count || 0);
+      }
+      if (pendingRes.status === "fulfilled" && Array.isArray(pendingRes.value)) {
+        pendingRestaurants = pendingRes.value;
+      }
+      if (recentRestsRes.status === "fulfilled" && Array.isArray(recentRestsRes.value)) {
+        recentRestaurants = recentRestsRes.value;
+      }
+      if (recentRidersRes.status === "fulfilled" && Array.isArray(recentRidersRes.value)) {
+        recentRiders = recentRidersRes.value;
+      }
+      if (recentOrdersRes.status === "fulfilled" && Array.isArray(recentOrdersRes.value)) {
+        recentOrders = recentOrdersRes.value;
+      }
     } catch (_dbErr) {
-      // Gracefully return zero-initialized state when DATABASE_URL is not configured in edge worker
+      // Gracefully return zero-initialized state when DATABASE_URL is not configured or network times out
     }
 
     return {
@@ -649,6 +693,8 @@ All 10 Worlds (Home, OrderKing, King Pay, Travel & Work, B2B & CRM, UMAR AI, App
 
 export const Route = createFileRoute("/")({
   component: UmarOSDashboard,
+  pendingComponent: WorldSkeleton,
+  errorComponent: AppErrorComponent,
   loader: async () => await getUmarOSStats(),
 });
 
@@ -1306,6 +1352,75 @@ const TEN_WORLDS: WorldDefinition[] = [
   },
 ];
 
+export const SUB_CATEGORY_TABS: Record<WorldId, string[]> = {
+  home: ["dashboard", "worlds-map", "checklist", "legal", "settings"],
+  orderking: [
+    "dashboard",
+    "orders",
+    "restaurants",
+    "riders",
+    "customers",
+    "dispatch",
+    "settings",
+  ],
+  kingpay: [
+    "dashboard",
+    "profit",
+    "wallet-mdr",
+    "master-switch",
+    "commissions",
+    "settings",
+  ],
+  travel: [
+    "dashboard",
+    "travel-hub",
+    "my-trips",
+    "ai-tutor",
+    "jobs",
+    "settings",
+  ],
+  b2b: ["dashboard", "sales-deck", "franchise", "crm-pipeline", "settings"],
+  umarai: ["dashboard", "ask-ai", "teams", "benchmarks", "settings"],
+  design: [
+    "dashboard",
+    "app-look",
+    "banners",
+    "app-builder",
+    "design-studio",
+    "media-studio",
+    "social-studio",
+    "settings",
+  ],
+  connections: ["dashboard", "plugins", "map-zones", "settings"],
+  alerts: [
+    "dashboard",
+    "action-center",
+    "create-alert",
+    "fair-policy",
+    "settings",
+  ],
+  settings: [
+    "dashboard",
+    "all-worlds",
+    "languages",
+    "activity-log",
+    "settings",
+  ],
+};
+
+export const DEFAULT_WORLD_TAB: Record<WorldId, string> = {
+  home: "dashboard",
+  orderking: "dashboard",
+  kingpay: "dashboard",
+  travel: "travel-hub",
+  b2b: "dashboard",
+  umarai: "dashboard",
+  design: "dashboard",
+  connections: "dashboard",
+  alerts: "dashboard",
+  settings: "dashboard",
+};
+
 // ============================================================================
 // 3. REAL DATA structures FOR ALERTS, B2B CRM & SPECIALIST TEAMS
 // ============================================================================
@@ -1511,19 +1626,10 @@ function UmarOSDashboard() {
   // Active Bottom Navigation World (Only 1 World renders at a time!)
   const [activeWorldId, setActiveWorldId] = useState<WorldId>("home");
 
-  // Active Sub-Category Tab per World (Defaults to "dashboard" for every World)
-  const [activeTabs, setActiveTabs] = useState<Record<WorldId, string>>({
-    home: "dashboard",
-    orderking: "dashboard",
-    kingpay: "dashboard",
-    travel: "dashboard",
-    b2b: "dashboard",
-    umarai: "dashboard",
-    design: "dashboard",
-    connections: "dashboard",
-    alerts: "dashboard",
-    settings: "dashboard",
-  });
+  // Active Sub-Category Tab per World (Guaranteed valid default for every World via DEFAULT_WORLD_TAB)
+  const [activeTabs, setActiveTabs] = useState<Record<WorldId, string>>(
+    () => ({ ...DEFAULT_WORLD_TAB })
+  );
 
   // Merge default settings with real PostgreSQL saved settings
   const [worldSettings, setWorldSettings] = useState<
@@ -1737,18 +1843,41 @@ function UmarOSDashboard() {
     ]);
   };
 
-  // Switch World in Bottom Navigation Bar
-  const selectWorld = (worldId: WorldId, tabId = "dashboard") => {
-    setActiveWorldId(worldId);
-    setActiveTabs((prev) => ({ ...prev, [worldId]: tabId }));
+  // Switch World in Bottom Navigation Bar (Guarantees valid world and tab or fallback to dashboard)
+  const selectWorld = (worldId: WorldId, tabId?: string) => {
+    const validWorld: WorldId = TEN_WORLDS.some((w) => w.id === worldId)
+      ? worldId
+      : "home";
+    setActiveWorldId(validWorld);
+    const validTabs = SUB_CATEGORY_TABS[validWorld] || ["dashboard"];
+    const targetDefault = DEFAULT_WORLD_TAB[validWorld] || (validWorld === "travel" ? "travel-hub" : "dashboard");
+    const resolvedTab =
+      validWorld === "travel" && (!tabId || tabId === "dashboard")
+        ? "travel-hub"
+        : tabId && validTabs.includes(tabId)
+        ? tabId
+        : activeTabs[validWorld] && validTabs.includes(activeTabs[validWorld])
+        ? activeTabs[validWorld]
+        : targetDefault;
+
+    setActiveTabs((prev) => ({ ...prev, [validWorld]: resolvedTab }));
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  // Switch Sub-Category Tab inside current World
+  // Switch Sub-Category Tab inside current World (Guarantees valid tab for active world)
   const selectSubTab = (tabId: string) => {
-    setActiveTabs((prev) => ({ ...prev, [activeWorldId]: tabId }));
+    const currentActiveWorld: WorldId = TEN_WORLDS.some(
+      (w) => w.id === activeWorldId
+    )
+      ? activeWorldId
+      : "home";
+    const validTabs = SUB_CATEGORY_TABS[currentActiveWorld] || ["dashboard"];
+    const resolvedTab = validTabs.includes(tabId)
+      ? tabId
+      : DEFAULT_WORLD_TAB[currentActiveWorld] || "dashboard";
+    setActiveTabs((prev) => ({ ...prev, [currentActiveWorld]: resolvedTab }));
   };
 
   // Update a single field in a World's settings state
@@ -2265,11 +2394,19 @@ function UmarOSDashboard() {
     recordLog(`Tested connection for ${serviceName}: OK (${latencyMs}ms)`);
   };
 
+  const safeActiveWorldId: WorldId = TEN_WORLDS.some((w) => w.id === activeWorldId)
+    ? activeWorldId
+    : "home";
   const currentWorld =
-    TEN_WORLDS.find((w) => w.id === activeWorldId) || TEN_WORLDS[0];
-  const currentTabId = activeTabs[activeWorldId] || "dashboard";
+    TEN_WORLDS.find((w) => w.id === safeActiveWorldId) || TEN_WORLDS[0];
+  const worldAllowedTabs = SUB_CATEGORY_TABS[safeActiveWorldId] || ["dashboard"];
+  const rawTabId = activeTabs[safeActiveWorldId];
+  const currentTabId =
+    rawTabId && worldAllowedTabs.includes(rawTabId)
+      ? rawTabId
+      : DEFAULT_WORLD_TAB[safeActiveWorldId] || "dashboard";
   const currentSettings =
-    worldSettings[activeWorldId] || currentWorld.defaultSettings;
+    worldSettings[safeActiveWorldId] || currentWorld.defaultSettings;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-28">
@@ -2405,11 +2542,29 @@ function UmarOSDashboard() {
         </section>
 
         {/* ===================================================================
-            TAB 1 OF EVERY WORLD: 📊 WORLD DASHBOARD (ACTIONS & RESULTS)
-            - Box 1: Live Result (What is happening now)
-            - Box 2: Action Needed (What to do next)
-            - Box 3: Quick Settings & Customizations (Save to PostgreSQL)
+            WORLD VIEWPORT STAGE: SMOOTH TRANSITION + LOCALIZED SUSPENSE SHIELD
         =================================================================== */}
+        <AdminErrorBoundary
+          key={`${safeActiveWorldId}-${currentTabId}`}
+          sectionName={`${currentWorld.navLabel} World`}
+        >
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle={`${currentWorld.navLabel} World`}
+                emoji={currentWorld.emoji}
+              />
+            }
+          >
+            <div
+              className="world-stage-transition space-y-5"
+            >
+            {/* ===================================================================
+                TAB 1 OF EVERY WORLD: 📊 WORLD DASHBOARD (ACTIONS & RESULTS)
+                - Box 1: Live Result (What is happening now)
+                - Box 2: Action Needed (What to do next)
+                - Box 3: Quick Settings & Customizations (Save to PostgreSQL)
+            =================================================================== */}
         {currentTabId === "dashboard" && (
           <div className="space-y-5">
             {/* BOX 1: LIVE RESULT (What is happening now) */}
@@ -2515,31 +2670,25 @@ function UmarOSDashboard() {
                     label="Travel Affiliate Hub"
                     value={
                       currentSettings.enableTravelTabInCustomerApp
-                        ? "Enabled"
-                        : "Paused"
-                    }
-                    sub="Flights, Hotels, Trains & Buses"
-                  />
-                  <ResultMetricCard
-                    label="Hotel Partner Share"
-                    value={`${currentSettings.hotelAffiliateCommissionPct}%`}
-                    sub="Target affiliate commission"
-                  />
-                  <ResultMetricCard
-                    label="23-Language AI Tutor"
-                    value={
-                      currentSettings.enableAiTutorForRiders
                         ? "Active"
                         : "Paused"
                     }
-                    sub="Free rider & youth skill courses"
+                    sub="Flights, Hotels, IRCTC & Buses"
                   />
                   <ResultMetricCard
-                    label="Local Jobs Board"
-                    value={
-                      currentSettings.enableLocalJobsBoard ? "Open" : "Paused"
-                    }
-                    sub="Kitchen & rider hiring"
+                    label="Affiliate Commission"
+                    value={`${currentSettings.flightAffiliateMarkupPct || 1.5}% / ${currentSettings.hotelAffiliateCommissionPct || 6}%`}
+                    sub="Flight Markup & Hotel Share"
+                  />
+                  <ResultMetricCard
+                    label="Saved Itineraries"
+                    value={`${savedTrips.length} Bookings`}
+                    sub={`${savedTrips.filter((t) => t.mode.includes("Flight")).length} Flights · ${savedTrips.filter((t) => t.mode.includes("Train")).length} Trains`}
+                  />
+                  <ResultMetricCard
+                    label="Jobs & Spoken Tutor"
+                    value={`${localJobs.length} Jobs · ${completedLessons.length}/4 Done`}
+                    sub="Local hiring & 23-lang audio"
                   />
                 </div>
               )}
@@ -2820,21 +2969,21 @@ function UmarOSDashboard() {
                 {activeWorldId === "travel" && (
                   <>
                     <ActionCard
-                      title="Configure Flights, Hotels & Trains"
-                      description="Set affiliate partner links and commission rates for customer travel bookings."
-                      buttonLabel="Open Travel Affiliate Hub"
+                      title="Travel Provider Orchestration"
+                      description="Search live flight & Indian Rail routes, monitor provider quotes, and calculate affiliate revenue."
+                      buttonLabel="Open Travel Orchestrator"
                       onClick={() => selectSubTab("travel-hub")}
                     />
                     <ActionCard
-                      title="Manage 23-Language AI Tutor"
-                      description="Review spoken English and delivery hospitality lessons for riders and youth."
-                      buttonLabel="Open AI Tutor"
-                      onClick={() => selectSubTab("ai-tutor")}
+                      title="Manage Saved Trips & PNRs"
+                      description={`Track ${savedTrips.length} active customer booking(s) with 1-click live PNR status verification.`}
+                      buttonLabel="Open My Trips"
+                      onClick={() => selectSubTab("my-trips")}
                     />
                     <ActionCard
-                      title="Post Local Kitchen & Rider Jobs"
-                      description="Help restaurant partners hire cooks, staff, and delivery riders."
-                      buttonLabel="Open Jobs Board"
+                      title="Post Jobs & Spoken English Tutor"
+                      description={`${localJobs.length} active job opening(s) and 23-language voice hospitality lessons for fleet.`}
+                      buttonLabel="Open Jobs & Tutor"
                       onClick={() => selectSubTab("jobs")}
                     />
                   </>
@@ -2980,6 +3129,35 @@ function UmarOSDashboard() {
                 )}
               </div>
             </section>
+
+            {/* Travel World Live Provider Orchestration inside Dashboard */}
+            {activeWorldId === "travel" && (
+              <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                  <div>
+                    <h2 className="text-base font-black text-slate-900">
+                      ✈️ Live Travel Provider Orchestration &amp; Affiliate Commission Engine
+                    </h2>
+                    <p className="text-xs text-slate-600">
+                      Real-time inventory lookup and provider handoff with 0% balance-sheet inventory risk.
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Live Engine Ready
+                  </span>
+                </div>
+                <Suspense
+                  fallback={
+                    <WorldSuspenseShield
+                      worldTitle="Travel Provider Orchestration"
+                      emoji="✈️"
+                    />
+                  }
+                >
+                  <TravelPage />
+                </Suspense>
+              </section>
+            )}
 
             {/* BOX 3: QUICK SETTINGS & CUSTOMIZATIONS (Wired to PostgreSQL `saveUmarOsSettingsFn` + `localStorage`) */}
             <WorldSettingsPanel
@@ -3496,71 +3674,131 @@ function UmarOSDashboard() {
             WORLD 3 (`kingpay`) SUB-CATEGORY TABS
         =================================================================== */}
         {activeWorldId === "kingpay" && currentTabId === "profit" && (
-          <LiveFounderProfitDashboard />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Live Founder Profit Dashboard"
+                emoji="📈"
+              />
+            }
+          >
+            <LiveFounderProfitDashboard />
+          </Suspense>
         )}
 
         {activeWorldId === "kingpay" && currentTabId === "wallet-mdr" && (
-          <KingPayGlobalSettings />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="King Pay Wallet & MDR Settings"
+                emoji="🏦"
+              />
+            }
+          >
+            <KingPayGlobalSettings />
+          </Suspense>
         )}
 
         {activeWorldId === "kingpay" && currentTabId === "master-switch" && (
-          <KingPayMasterSwitch />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="King Pay Master Safety Switch"
+                emoji="🔒"
+              />
+            }
+          >
+            <KingPayMasterSwitch />
+          </Suspense>
         )}
 
         {activeWorldId === "kingpay" && currentTabId === "commissions" && (
-          <CentralPricingSwitch />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Central Commissions & Pricing Switch"
+                emoji="🏷️"
+              />
+            }
+          >
+            <CentralPricingSwitch />
+          </Suspense>
         )}
 
         {/* ===================================================================
             WORLD 4 (`travel`) SUB-CATEGORY TABS
         =================================================================== */}
         {activeWorldId === "travel" && currentTabId === "travel-hub" && (
-          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-            <h2 className="text-base font-black text-slate-900">
-              ✈️ Travel Affiliate Hub (Flights, Hotels, Trains & Buses)
-            </h2>
-            <p className="text-xs text-slate-600">
-              Earn affiliate commissions on customer travel bookings without
-              holding inventory or balance-sheet risk.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                {
-                  mode: "✈️ Flights",
-                  partner: "Domestic & International Flight Search",
-                  share: `${currentSettings.flightAffiliateMarkupPct}% Affiliate Fee`,
-                },
-                {
-                  mode: "🏨 Hotels & Stays",
-                  partner: "Pan-India Budget & Business Hotels",
-                  share: `${currentSettings.hotelAffiliateCommissionPct}% Partner Commission`,
-                },
-                {
-                  mode: "🚆 Trains (IRCTC Rail)",
-                  partner: "Authorized Rail Partner Redirect",
-                  share: "Zero Hidden Markup",
-                },
-                {
-                  mode: "🚌 Intercity Buses",
-                  partner: "AC Sleeper & State Bus Aggregator",
-                  share: "Instant Seat Confirmation",
-                },
-              ].map((item) => (
-                <div
-                  key={item.mode}
-                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
-                >
-                  <h3 className="text-sm font-black text-slate-900">
-                    {item.mode}
-                  </h3>
-                  <p className="text-xs text-slate-600">{item.partner}</p>
-                  <p className="text-xs font-bold text-emerald-700 pt-1">
-                    {item.share}
+          <div className="space-y-5">
+            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h2 className="text-base font-black text-slate-900">
+                    ✈️ Travel Affiliate Hub & Provider Orchestration
+                  </h2>
+                  <p className="text-xs text-slate-600">
+                    Earn affiliate commissions on customer travel bookings without holding inventory or balance-sheet risk.
                   </p>
                 </div>
-              ))}
-            </div>
-          </section>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Affiliate Engine Active
+                  </span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    mode: "✈️ Flights",
+                    partner: "Domestic & International Flight Search",
+                    share: `${currentSettings.flightAffiliateMarkupPct || 1.5}% Affiliate Fee`,
+                  },
+                  {
+                    mode: "🏨 Hotels & Stays",
+                    partner: "Pan-India Budget & Business Hotels",
+                    share: `${currentSettings.hotelAffiliateCommissionPct || 6}% Partner Commission`,
+                  },
+                  {
+                    mode: "🚆 Trains (IRCTC Rail)",
+                    partner: "Authorized Rail Partner Redirect",
+                    share: "Zero Hidden Markup",
+                  },
+                  {
+                    mode: "🚌 Intercity Buses",
+                    partner: "AC Sleeper & State Bus Aggregator",
+                    share: "Instant Seat Confirmation",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.mode}
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
+                  >
+                    <h3 className="text-sm font-black text-slate-900">
+                      {item.mode}
+                    </h3>
+                    <p className="text-xs text-slate-600">{item.partner}</p>
+                    <p className="text-xs font-bold text-emerald-700 pt-1">
+                      {item.share}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Live Travel Provider Orchestration & Commission Engine */}
+            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+              <Suspense
+                fallback={
+                  <WorldSuspenseShield
+                    worldTitle="Travel Provider Orchestration"
+                    emoji="✈️"
+                  />
+                }
+              >
+                <TravelPage />
+              </Suspense>
+            </section>
+          </div>
         )}
 
         {activeWorldId === "travel" && currentTabId === "my-trips" && (
@@ -4007,11 +4245,29 @@ function UmarOSDashboard() {
             WORLD 5 (`b2b`) SUB-CATEGORY TABS
         =================================================================== */}
         {activeWorldId === "b2b" && currentTabId === "sales-deck" && (
-          <B2BSaaSSalesDeckGenerator />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="B2B SaaS Sales Deck & ROI Generator"
+                emoji="📊"
+              />
+            }
+          >
+            <B2BSaaSSalesDeckGenerator />
+          </Suspense>
         )}
 
         {activeWorldId === "b2b" && currentTabId === "franchise" && (
-          <B2BFranchiseOnboardingEngine />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="City Franchise Onboarding Engine"
+                emoji="🤝"
+              />
+            }
+          >
+            <B2BFranchiseOnboardingEngine />
+          </Suspense>
         )}
 
         {activeWorldId === "b2b" && currentTabId === "crm-pipeline" && (
@@ -4339,47 +4595,121 @@ function UmarOSDashboard() {
         )}
 
         {activeWorldId === "umarai" && currentTabId === "benchmarks" && (
-          <MultimodelBenchmarkDashboard />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Multimodel AI Benchmark Dashboard"
+                emoji="⚡"
+              />
+            }
+          >
+            <MultimodelBenchmarkDashboard />
+          </Suspense>
         )}
 
         {/* ===================================================================
             WORLD 7 (`design`) SUB-CATEGORY TABS
         =================================================================== */}
         {activeWorldId === "design" && currentTabId === "app-look" && (
-          <CustomerAppUiSettings />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Customer App UI Settings & Theme"
+                emoji="📱"
+              />
+            }
+          >
+            <CustomerAppUiSettings />
+          </Suspense>
         )}
 
         {activeWorldId === "design" && currentTabId === "banners" && (
-          <EcosystemCMS />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Ecosystem CMS Home Banners"
+                emoji="📢"
+              />
+            }
+          >
+            <EcosystemCMS />
+          </Suspense>
         )}
 
         {activeWorldId === "design" && currentTabId === "app-builder" && (
-          <AppBuilderStudio />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="App Builder Studio"
+                emoji="🛠️"
+              />
+            }
+          >
+            <AppBuilderStudio />
+          </Suspense>
         )}
 
         {activeWorldId === "design" && currentTabId === "design-studio" && (
-          <DesignStudio />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Design Studio"
+                emoji="🎨"
+              />
+            }
+          >
+            <DesignStudio />
+          </Suspense>
         )}
 
         {activeWorldId === "design" && currentTabId === "media-studio" && (
-          <MediaProductionStudio />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Media Production Studio"
+                emoji="🎬"
+              />
+            }
+          >
+            <MediaProductionStudio />
+          </Suspense>
         )}
 
         {activeWorldId === "design" && currentTabId === "social-studio" && (
-          <SocialPublishingStudio />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Social Publishing Studio"
+                emoji="📲"
+              />
+            }
+          >
+            <SocialPublishingStudio />
+          </Suspense>
         )}
 
         {/* ===================================================================
             WORLD 8 (`connections`) SUB-CATEGORY TABS
         =================================================================== */}
         {activeWorldId === "connections" && currentTabId === "plugins" && (
-          <PluginConnectors />
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Payment, SMS & AI Plugin Connectors"
+                emoji="🔑"
+              />
+            }
+          >
+            <PluginConnectors />
+          </Suspense>
         )}
 
         {activeWorldId === "connections" && currentTabId === "map-zones" && (
-          <Suspense fallback={<GodEyeMapSkeleton />}>
-            <LazyGlobalGodEyeMap />
-          </Suspense>
+          <AdminErrorBoundary inline sectionName="Live Zone Map">
+            <Suspense fallback={<GodEyeMapSkeleton />}>
+              <LazyGlobalGodEyeMap />
+            </Suspense>
+          </AdminErrorBoundary>
         )}
 
         {/* ===================================================================
@@ -4712,7 +5042,35 @@ function UmarOSDashboard() {
             </div>
           </section>
         )}
-      </main>
+
+        {/* Safety Fallback Card: Guaranteed explicit dashboard view if tab is ever unmatched */}
+            {(!currentWorld.tabs.some((t) => t.id === currentTabId) ||
+              !worldAllowedTabs.includes(currentTabId)) && (
+              <section className="bg-white rounded-2xl border border-slate-200 p-8 shadow-xs text-center space-y-4">
+                <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl mx-auto">
+                  {currentWorld.emoji}
+                </div>
+                <div>
+                  <h2 className="text-base font-black text-slate-900">
+                    {currentWorld.title}
+                  </h2>
+                  <p className="text-xs text-slate-600 mt-1 max-w-md mx-auto">
+                    {currentWorld.explanation}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => selectSubTab("dashboard")}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-xs transition-colors"
+                >
+                  <span>📊 Open {currentWorld.navLabel} Dashboard</span>
+                </button>
+              </section>
+            )}
+          </div>
+        </Suspense>
+      </AdminErrorBoundary>
+    </main>
 
       {/* =====================================================================
           STICKY 10-ITEM BOTTOM NAVIGATION BAR (Just Like the Customer App!)

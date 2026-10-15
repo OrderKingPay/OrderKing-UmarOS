@@ -75,7 +75,7 @@ export function B2BSaaSSalesDeckGenerator() {
     unitsCount: 15,
     dailyOrdersPerUnit: 90,
     avgTicketValue: 450, // ₹450 INR, $30 USD, or 70 SAR
-    aggregatorFeePct: 28, // 28% Swiggy/Zomato/Jahez or 30% DoorDash
+    aggregatorFeePct: 28, // 28% Dominant Legacy Aggregators or 30% DoorDash
     orderkingCostPct: 5, // 5%-8% direct processing/platform cost
     currency: "INR",
     implementationCost: 49999,
@@ -120,7 +120,7 @@ export function B2BSaaSSalesDeckGenerator() {
     email: "",
     location: "",
     monthlyRevenueEst: "₹15,00,000",
-    painPoint: "High 28% Swiggy/Zomato commission bleed and lack of direct UPI ordering.",
+    painPoint: "High 28% Dominant Legacy Aggregator commission bleed and lack of direct UPI ordering.",
     selectedServiceId: SELLABLE_ORDERKING_SERVICES[0].id,
     dealValueInr: SELLABLE_ORDERKING_SERVICES[0].setupFeeInr,
     directDeliveryCostInr: SELLABLE_ORDERKING_SERVICES[0].estimatedDirectDeliveryCostInr,
@@ -1304,7 +1304,7 @@ export function B2BSaaSSalesDeckGenerator() {
                 1. Founder Authority & Operational Doctrine
               </h3>
               <p className="text-sm text-slate-300 print:text-gray-800 leading-relaxed">
-                OrderKing is architected by an enterprise operator with <strong>12 years of hands-on Burger King multi-unit franchise management</strong>. It is designed to solve the single largest threat to restaurant franchise profitability in the post-pandemic era: the 28%–32% aggregator commission tax imposed by Swiggy, Zomato, DoorDash, UberEats, Jahez, and HungerStation.
+                OrderKing is architected by an enterprise operator with <strong>12 years of hands-on Burger King multi-unit franchise management</strong>. It is designed to solve the single largest threat to restaurant franchise profitability in the post-pandemic era: the 28%–32% aggregator commission tax imposed by Dominant Legacy Aggregators, DoorDash, UberEats, Jahez, and HungerStation.
               </p>
               <p className="text-sm text-slate-300 print:text-gray-800 leading-relaxed">
                 Unlike generic POS plugins, OrderKing is an end-to-end sovereign dispatch, ordering, and anti-fraud operating system engineered specifically for multi-unit store portfolios.

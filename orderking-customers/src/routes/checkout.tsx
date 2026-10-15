@@ -51,8 +51,14 @@ import { newId } from "@/lib/ids";
 import { createRazorpayOrder } from "@/lib/server/razorpay-order";
 import { WhatsAppShare } from "@/components/market/whatsapp-share";
 import { WhatsAppViralBountiesWidget as ReferralGamifiedLoop } from "@/components/market/whatsapp-viral-bounties-widget";
+import { CheckoutPageSkeleton } from "@/components/skeletons/route-skeletons";
+import { AppErrorComponent } from "@/lib/error-component";
 
-export const Route = createFileRoute("/checkout")({ component: CheckoutPage });
+export const Route = createFileRoute("/checkout")({
+  component: CheckoutPage,
+  pendingComponent: CheckoutPageSkeleton,
+  errorComponent: AppErrorComponent,
+});
 
 function BillTooltip({ text, title }: { text: string; title?: string }) {
   const [open, setOpen] = useState(false);

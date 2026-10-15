@@ -197,7 +197,7 @@ const TRENDING_DISCOVERY_ITEMS = [
   { label: "🎯 Acquire 5 High-Paying Clients Now", query: "Find 5 high-paying client prospects and draft zero-commission pitches" },
   { label: "💼 Scan $80+/hr Remote Contracts", query: "Scan high-paying $80+/hr remote software contracts and generate Upwork bids" },
   { label: "⚡ Scaffold Hospital ERP System", query: "Scaffold a complete Sribhumi hospital ERP system with React 19, database schema, and live preview" },
-  { label: "🌐 Universal Platform Enforcer (GitHub/WhatsApp/Zomato)", query: "Connect and integrate external platforms to force task execution with zero data leak" },
+  { label: "🌐 Universal Platform Enforcer (GitHub/WhatsApp/Dominant Legacy Aggregator)", query: "Connect and integrate external platforms to force task execution with zero data leak" },
   { label: "🎬 World's #1 Fastest 4K Video Studio (9:16 & 16:9)", query: "Create and edit fastest 4K video commercial with realistic voiceover and auto subtitles" },
   { label: "🧹 Clean & Purge Storage Bloat", query: "purge_trigger" },
 ];
@@ -2547,7 +2547,7 @@ function FounderWorkHub({
       badge: "ENTERPRISE INTEGRATIONS",
       badgeColor: "border-cyan-500/40 text-cyan-300 bg-cyan-500/10",
       title: "🌐 Task 6: Universal App & Platform Orchestrator",
-      objective: "Directly integrate with GitHub, Upwork, WhatsApp, Zomato, Shopify, and King Pay to execute tasks with zero data leak and automatic rollback.",
+      objective: "Directly integrate with GitHub, Upwork, WhatsApp, Dominant Legacy Aggregators, Shopify, and King Pay to execute tasks with zero data leak and automatic rollback.",
       deliverables: [
         "Connected 8 platforms with sub-50ms RPC latency.",
         "Enforces automated task execution within HMAC-SHA256 sandbox.",
@@ -4154,7 +4154,7 @@ export function PremiumFounderAiChat({
               variant="ghost"
               onClick={() => setIsPlatformsModalOpen(true)}
               className="h-8 px-2.5 rounded-full text-[12px] font-medium text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 transition-colors hidden md:flex items-center gap-1.5"
-              title="Universal Platform Enforcer (GitHub, Upwork, WhatsApp, Zomato, Google, AWS, Telegram)"
+              title="Universal Platform Enforcer (GitHub, Upwork, WhatsApp, Dominant Legacy Aggregators, Google, AWS, Telegram)"
             >
               <Globe className="size-3.5" />
               <span>Platforms</span>
@@ -4320,7 +4320,7 @@ export function PremiumFounderAiChat({
                       type="button"
                       onClick={() => setIsPlatformsModalOpen(true)}
                       className="px-3 py-1 rounded-full bg-[#1e1e1e] hover:bg-sky-500/20 text-sky-300 hover:text-sky-200 border border-sky-500/30 text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm"
-                      title="Universal Platform Enforcer: Integrate & force work on GitHub, Upwork, WhatsApp, Zomato, Google, AWS, Telegram"
+                      title="Universal Platform Enforcer: Integrate & force work on GitHub, Upwork, WhatsApp, Dominant Legacy Aggregators, Google, AWS, Telegram"
                     >
                       <Globe className="size-3 text-sky-400" />
                       <span>App Integrations</span>
@@ -4757,7 +4757,7 @@ export function PremiumFounderAiChat({
                       type="button"
                       onClick={() => setIsPlatformsModalOpen(true)}
                       className="px-2.5 py-1 rounded-full bg-[#1e1e1e]/90 hover:bg-sky-500/20 text-sky-300 hover:text-sky-200 border border-sky-500/30 text-[10.5px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm backdrop-blur-sm"
-                      title="Universal Platform Enforcer: Integrate & force work on GitHub, Upwork, WhatsApp, Zomato, Google, AWS, Telegram"
+                      title="Universal Platform Enforcer: Integrate & force work on GitHub, Upwork, WhatsApp, Dominant Legacy Aggregators, Google, AWS, Telegram"
                     >
                       <Globe className="size-3 text-sky-400" />
                       <span>App Integrations</span>

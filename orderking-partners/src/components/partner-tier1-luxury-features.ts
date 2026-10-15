@@ -1,5 +1,5 @@
 /**
- * Zomato-parity feature components suite for OrderKing Restaurant Partner Portal.
+ * Tier-1 Legacy Market Leader parity feature components suite for OrderKing Restaurant Partner Portal.
  */
 
 export * from "./table-reservation-manager";

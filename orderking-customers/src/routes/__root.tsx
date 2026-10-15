@@ -1,6 +1,6 @@
 import { Suspense, useEffect } from "react";
 import { createServerFn } from "@tanstack/react-start";
-import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState, Link } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { AppProviders } from "@/components/providers";
@@ -10,6 +10,9 @@ import { OfflineDetector } from "@/components/offline-detector";
 import { PwaInstallPrompt } from "@/components/pwa/install-prompt";
 import appCss from "../styles.css?url";
 import { NextGenSeo } from "@/components/seo/NextGenSeo";
+import { installChunkErrorRecovery, isChunkLoadError, triggerSelfHealingReload } from "@/lib/lazy-retry";
+import { ResilientRouteOutlet } from "@/components/common/resilient-route-outlet";
+import { AlertCircle, RotateCcw, Home, RefreshCw, ShieldCheck } from "lucide-react";
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
   try {
@@ -45,15 +48,103 @@ export const Route = createRootRoute({
     }
     return { sessionUser, config };
   },
+  pendingComponent: CustomerAppSkeleton,
   errorComponent: ({ error }) => {
+    const isChunk = isChunkLoadError(error);
+    const errorMessage = (error as Error)?.message || String(error);
+
+    const handleClearCacheAndReload = async () => {
+      try {
+        if (typeof window !== "undefined") {
+          if ("caches" in window) {
+            const keys = await window.caches.keys();
+            await Promise.all(keys.map((k) => window.caches.delete(k)));
+          }
+          sessionStorage.clear();
+          localStorage.removeItem("orderking_chunk_reload_lock");
+          window.location.reload();
+        }
+      } catch {
+        if (typeof window !== "undefined") window.location.reload();
+      }
+    };
+
     return (
-      <div className="min-h-screen bg-white p-8 text-gray-900 flex flex-col items-center justify-center text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">OrderKing Initialization Error</h2>
-        <p className="text-sm text-gray-600 mb-4 max-w-md">Please check the database connection strings and environment variables.</p>
-        <pre className="max-w-lg rounded-xl bg-red-50 border border-red-200 p-4 text-xs text-red-600 text-left overflow-auto">
-          {(error as Error)?.message || String(error)}
-        </pre>
-      </div>
+      <html lang="en" className="antialiased bg-[#FCFAF7] text-gray-900" suppressHydrationWarning>
+        <head>
+          <HeadContent />
+        </head>
+        <body className="bg-[#FCFAF7] text-gray-900 min-h-screen">
+          <main
+            role="alert"
+            className="min-h-screen w-full bg-[#FAF7F2] text-gray-900 flex flex-col items-center justify-center p-6 select-none"
+          >
+            <div className="w-full max-w-md rounded-3xl bg-white border border-amber-200/90 p-8 text-center shadow-[0_20px_50px_rgba(245,158,11,0.12)] space-y-5">
+              <div className="relative mx-auto flex size-16 items-center justify-center">
+                <div className="absolute inset-0 rounded-2xl bg-amber-400/25 blur-md animate-pulse" />
+                <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/15 to-amber-600/20 border border-amber-300 text-amber-700 shadow-sm">
+                  <AlertCircle className="size-8 stroke-[2.2]" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-xl font-black text-gray-950 tracking-tight">
+                  {isChunk ? "Platform Update Detected" : "OrderKing Core Recovery"}
+                </h2>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  {isChunk
+                    ? "A newer version of the OrderKing customer app was deployed. Tap below to synchronize instantly."
+                    : "OrderKing encountered a startup or network interruption. SafeShield is protecting your cart and profile."}
+                </p>
+              </div>
+
+              {errorMessage && (
+                <div className="rounded-2xl bg-red-50/80 border border-red-200/70 p-3 text-left">
+                  <p className="text-[11px] font-mono text-red-900 break-words line-clamp-3">
+                    {errorMessage}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== "undefined") window.location.reload();
+                  }}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-amber-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
+                >
+                  <RotateCcw className="size-4 stroke-[2.2]" />
+                  Reload OrderKing
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleClearCacheAndReload}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200/70 px-5 py-3 text-sm font-bold text-amber-900 transition-all active:scale-98 cursor-pointer"
+                >
+                  <RefreshCw className="size-4 stroke-[2]" />
+                  Clear Cache & Refresh
+                </button>
+
+                <a
+                  href="/"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-stone-100 hover:bg-stone-200/80 px-5 py-3 text-sm font-semibold text-stone-800 transition-all active:scale-98 cursor-pointer"
+                >
+                  <Home className="size-4 stroke-[2]" />
+                  Back to Food Delivery
+                </a>
+              </div>
+
+              <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-emerald-700 pt-1">
+                <ShieldCheck className="size-4 text-emerald-600 stroke-[2.2]" />
+                <span>OrderKing Zero-White-Screen SafeShield</span>
+              </div>
+            </div>
+          </main>
+          <Scripts />
+        </body>
+      </html>
     );
   },
   head: ({ loaderData, match }) => {
@@ -65,7 +156,7 @@ export const Route = createRootRoute({
         { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
         { title: config.brand.seoTitle },
         { name: "description", content: config.brand.seoDescription },
-        { name: "theme-color", content: "#FFFFFF" },
+        { name: "theme-color", content: "#FCFAF7" },
         { name: "mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-status-bar-style", content: "default" },
@@ -96,7 +187,7 @@ export const Route = createRootRoute({
   component: Root,
 });
 
-function CustomerAppSkeleton() {
+export function CustomerAppSkeleton() {
   return (
     <div
       className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-[#FCFAF7] pb-24 md:max-w-5xl"
@@ -166,7 +257,13 @@ function CustomerAppSkeleton() {
 function Root() {
   const context = Route.useRouteContext();
   const config = context.config ?? DEFAULT_CONFIG;
-  const location = useRouterState({ select: (s) => s.location });
+  const location = useRouterState({ select: (s) => s?.location });
+
+  useEffect(() => {
+    // Install self-healing chunk error listeners for zero-white-screens
+    const cleanup = installChunkErrorRecovery();
+    return cleanup;
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -192,30 +289,43 @@ function Root() {
         sessionStorage.setItem("orderking_attribution", JSON.stringify(attribution));
       }
     } catch {}
-  }, [location.search]);
+  }, [location?.search]);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.style.transition = "background-color 0.25s ease";
+      document.body.style.transition = "background-color 0.25s ease";
+      if (!window.location.pathname.startsWith("/king-pay")) {
+        document.documentElement.style.backgroundColor = "#FCFAF7";
+        document.body.style.backgroundColor = "#FCFAF7";
+      }
+    }
+  }, [location?.pathname]);
 
   return (
-    <html lang="en" className="antialiased bg-white text-gray-900" suppressHydrationWarning>
+    <html lang="en" className="antialiased bg-[#FCFAF7] text-gray-900" suppressHydrationWarning>
       <head>
         <HeadContent />
         <NextGenSeo config={config} />
         <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
       </head>
-      <body className="bg-white text-gray-900 min-h-screen pb-20">
+      <body className="bg-[#FCFAF7] text-gray-900 min-h-screen pb-20">
         <PreviewHostBridge />
         <OfflineDetector />
         <PwaInstallPrompt />
-        <AuthProvider>
-          <AppProviders config={config}>
-            <ErrorBoundary>
-              <div className="min-h-screen flex flex-col w-full relative">
-                <Suspense fallback={<CustomerAppSkeleton />}>
-                  <Outlet />
-                </Suspense>
-              </div>
-            </ErrorBoundary>
-          </AppProviders>
-        </AuthProvider>
+        {/* Outer boundary protecting all top-level providers */}
+        <ErrorBoundary sectionName="Root Providers">
+          <AuthProvider>
+            <AppProviders config={config}>
+              {/* Inner boundary protecting route transitions and children */}
+              <ErrorBoundary sectionName="App Outlet">
+                <div className="min-h-screen flex flex-col w-full relative">
+                  <ResilientRouteOutlet fallback={<CustomerAppSkeleton />} />
+                </div>
+              </ErrorBoundary>
+            </AppProviders>
+          </AuthProvider>
+        </ErrorBoundary>
         <Scripts />
         <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(()=>{}))}` }} />
       </body>

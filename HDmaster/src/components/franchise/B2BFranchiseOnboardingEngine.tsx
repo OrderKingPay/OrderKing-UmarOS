@@ -1115,14 +1115,14 @@ export function B2BFranchiseOnboardingEngine() {
                   </h4>
                   <div className="rounded-xl bg-amber-50/60 border border-amber-200 p-4 text-amber-950 space-y-2 italic font-sans text-xs">
                     <p>
-                      "Zomato and Swiggy charge you 28% to 32% on every single order, and during rainy or peak hours, they turn on surge fees and starve your kitchen of delivery riders.
+                      "Dominant Legacy Aggregators charge you 28% to 32% on every single order, and during rainy or peak hours, they turn on surge fees and starve your kitchen of delivery riders.
                     </p>
                     <p>
                       OrderKing is our city’s native hyper-dedicated delivery network. We only accept <strong>25 handpicked restaurants</strong> for our official grand launch.
                       Because we limit spots, our rider fleet is physically stationed outside your outlet with guaranteed sub-8 minute pick-up.
                     </p>
                     <p>
-                      Our Priority Setup Fee is ₹25,000. In return, you get professional food photography, VIP placement on day one, and we cap your commission at just 16.5%—saving you over ₹1.5 Lakhs every single year compared to Zomato."
+                      Our Priority Setup Fee is ₹25,000. In return, you get professional food photography, VIP placement on day one, and we cap your commission at just 16.5%—saving you over ₹1.5 Lakhs every single year compared to Dominant Legacy Aggregators."
                     </p>
                   </div>
                 </div>

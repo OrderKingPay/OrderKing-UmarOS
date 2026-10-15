@@ -28,7 +28,7 @@ async function isAuthorizedCronOrAdmin(request: Request): Promise<boolean> {
 }
 
 // @ts-ignore: Router tree is generated during build
-export const Route = createFileRoute("/api/zomato-killer-cron")({
+export const Route = createFileRoute("/api/market-dominance-cron")({
   
   server: {
     handlers: {
@@ -110,4 +110,3 @@ export const Route = createFileRoute("/api/zomato-killer-cron")({
     },
   },
 });
-

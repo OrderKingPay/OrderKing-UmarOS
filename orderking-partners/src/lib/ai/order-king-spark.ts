@@ -30,7 +30,7 @@ export interface SparkSettlementSummary {
   period: string;
   grossSalesPaise: number;
   commissionPaidPaise: number; // 0 paise with OrderKing!
-  swiggyZomatoLossAvoidedPaise: number; // ~24% of gross sales
+  legacyAggregatorLossAvoidedPaise: number; // ~24% of gross sales
   netSettlementPaise: number;
   status: "SETTLED" | "PENDING_BANK" | "PROCESSING";
   settlementAccount: string;
@@ -238,7 +238,7 @@ export class OrderKingSpark {
         type: "SALES_DECLINE",
         severity: "LOW",
         headline: "0% Commission Retained Savings: ₹14,280 Saved Today",
-        rootCauseHypothesis: "Customer direct ordering retained 24% that Swiggy/Zomato would have deducted.",
+        rootCauseHypothesis: "Customer direct ordering retained 24% that dominant legacy aggregators would have deducted.",
         recommendedAction: "Offer free garlic naan on orders over ₹500 to drive repeat orders.",
         authorizedActionLabel: "Launch Repeat Customer Offer",
         detectedAt: "Today, 9:00 PM",
@@ -346,13 +346,13 @@ export class OrderKingSpark {
 
   public getSettlementSummary(): SparkSettlementSummary {
     const grossSalesPaise = 18500000;
-    const swiggyZomatoLossAvoidedPaise = Math.round(grossSalesPaise * 0.24);
+    const legacyAggregatorLossAvoidedPaise = Math.round(grossSalesPaise * 0.24);
 
     return {
       period: "Trailing 7 Days",
       grossSalesPaise,
       commissionPaidPaise: 0,
-      swiggyZomatoLossAvoidedPaise,
+      legacyAggregatorLossAvoidedPaise,
       netSettlementPaise: grossSalesPaise,
       status: "SETTLED",
       settlementAccount: "HDFC Bank (**** 4821)",
@@ -576,7 +576,7 @@ export class OrderKingSpark {
     const summary = `Namaste Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
 - **Delivered Orders**: **${deliveredOrders} orders** successfully completed (${cancelledOrders} cancelled).
 - **Gross Sales & Packaging**: **₹${(grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (Food: ₹${(grossFoodSalesPaise / 100).toLocaleString("en-IN")} · Packaging: ₹${(packagingChargesPaise / 100).toLocaleString("en-IN")}).
-- **OrderKing Platform Commission**: **₹0.00 (0% Commission)**. You saved **₹${(aggregatorCommissionAvoidedPaise / 100).toLocaleString("en-IN")}** vs Swiggy/Zomato (24% standard aggregator deduction).
+- **OrderKing Platform Commission**: **₹0.00 (0% Commission)**. You saved **₹${(aggregatorCommissionAvoidedPaise / 100).toLocaleString("en-IN")}** vs dominant legacy aggregators (24% standard aggregator deduction).
 - **Statutory GST Sec 9(5) Remitted**: **₹${(gst95RemittedByPlatformPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (5% food GST remitted directly to the government by Order King on your behalf).
 - **Withholding Taxes Deducted**: TCS Sec 52 (0.5%): **₹${(tcsSection52Paise / 100).toFixed(2)}** · TDS Sec 194-O (0.1%): **₹${(tdsSection194OPaise / 100).toFixed(2)}**.
 - **Customer Dispute Adjustments**: **-₹${(customerDisputeDeductionsPaise / 100).toFixed(2)}** (Missing Naan #ORD-8845).
@@ -737,7 +737,7 @@ ${recon.conversationalSummary}`,
         text: `### 💰 Settlement & Commission Savings Report
 - **Trailing 7 Days Gross Sales**: **₹${(summary.grossSalesPaise / 100).toLocaleString("en-IN")}**
 - **OrderKing Platform Commission**: **₹0 (0% Commission)**
-- **Aggregator Cut Avoided**: You saved **₹${(summary.swiggyZomatoLossAvoidedPaise / 100).toLocaleString("en-IN")}** compared to Swiggy/Zomato (24% standard rate).
+- **Aggregator Cut Avoided**: You saved **₹${(summary.legacyAggregatorLossAvoidedPaise / 100).toLocaleString("en-IN")}** compared to dominant legacy aggregators (24% standard rate).
 - **Settlement Account**: **${summary.settlementAccount}** (Status: 🟢 **${summary.status}**)`,
         timestamp,
         actionCard: {
@@ -887,24 +887,25 @@ I am your restaurant growth, operations & financial partner. I can:
   }
 
   /**
-   * Calculates avoided Zomato/Swiggy commission loss with integer-paise rigor
+   * Calculates avoided legacy aggregator commission loss with integer-paise rigor
    */
-  public calculateAvoidedZomatoLoss(grossSalesPaise: number) {
+  public calculateAvoidedLegacyAggregatorLoss(grossSalesPaise: number) {
     const takeRateBps = 2400; // 24% standard aggregator take rate
-    const zomatoLossAvoidedPaise = Math.round((grossSalesPaise * takeRateBps) / 10000);
-    const gstOnCommissionSavedPaise = Math.round((zomatoLossAvoidedPaise * 18) / 100);
+    const legacyAggregatorLossAvoidedPaise = Math.round((grossSalesPaise * takeRateBps) / 10000);
+    const gstOnCommissionSavedPaise = Math.round((legacyAggregatorLossAvoidedPaise * 18) / 100);
     const totalPartnerTakeHomeRetainedPaise =
-      zomatoLossAvoidedPaise + gstOnCommissionSavedPaise;
+      legacyAggregatorLossAvoidedPaise + gstOnCommissionSavedPaise;
 
     return {
       grossSalesPaise,
       orderKingCommissionPaise: 0,
-      standardZomatoSwiggyTakeRateBps: takeRateBps,
-      zomatoLossAvoidedPaise,
+      standardLegacyAggregatorTakeRateBps: takeRateBps,
+      legacyAggregatorLossAvoidedPaise,
       gstOnCommissionSavedPaise,
       totalPartnerTakeHomeRetainedPaise,
     };
   }
+
 }
 
 export const orderKingSpark = new OrderKingSpark();

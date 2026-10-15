@@ -146,9 +146,9 @@ export const STANDARD_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: numb
 ];
 
 /**
- * Extended Zomato Daily Milestone Ladder (includes 20-order super champion target)
+ * Extended Tier-1 Daily Milestone Ladder (includes 20-order super champion target)
  */
-export const ZOMATO_FULL_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: number; label: string }> = [
+export const TIER1_FULL_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: number; label: string }> = [
   { orders: 4, bonusPaise: 6000, label: "₹60" },
   { orders: 8, bonusPaise: 14000, label: "₹140" },
   { orders: 12, bonusPaise: 25000, label: "₹250" },
@@ -157,7 +157,7 @@ export const ZOMATO_FULL_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: n
 ];
 
 /**
- * Zomato Multi-day Touchpoint Targets:
+ * Tier-1 Multi-day Touchpoint Targets:
  * 1. Weekend Sprint (Friday - Sunday, 3 Days):
  *    - 25 orders: ₹500 bonus (50,000 paise)
  *    - 40 orders: ₹1,000 bonus (100,000 paise)
@@ -438,41 +438,41 @@ export function calculateCompositeSurge(
 }
 
 // ---------------------------------------------------------------------------
-// ZOMATO SETTLEMENT & WEEKLY MARATHON INTEGRATION
+// TIER-1 SETTLEMENT & WEEKLY MARATHON INTEGRATION
 // ---------------------------------------------------------------------------
 
 import {
-  getZomatoWeeklyCycle,
-  type ZomatoWeeklyCycle,
+  getTier1WeeklyCycle,
+  type Tier1WeeklyCycle,
   calculateProgressiveDistancePay,
   type ProgressiveDistanceBreakdown,
   calculateStackedOrderPay,
   type StackedOrderPayBreakdown,
-  ZOMATO_PAYOUT_SETTLEMENT_DAY,
-  ZOMATO_PAYOUT_SETTLEMENT_HOUR_UTC,
-  ZOMATO_PAYOUT_SETTLEMENT_HOUR_IST,
-  ZOMATO_PAYOUT_SETTLEMENT_TIME_IST,
-  ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE,
+  TIER1_PAYOUT_SETTLEMENT_DAY,
+  TIER1_PAYOUT_SETTLEMENT_HOUR_UTC,
+  TIER1_PAYOUT_SETTLEMENT_HOUR_IST,
+  TIER1_PAYOUT_SETTLEMENT_TIME_IST,
+  TIER1_PAYOUT_SETTLEMENT_SCHEDULE,
 } from "./money.ts";
 
 export {
-  getZomatoWeeklyCycle,
-  type ZomatoWeeklyCycle,
+  getTier1WeeklyCycle,
+  type Tier1WeeklyCycle,
   calculateProgressiveDistancePay,
   type ProgressiveDistanceBreakdown,
   calculateStackedOrderPay,
   type StackedOrderPayBreakdown,
-  ZOMATO_PAYOUT_SETTLEMENT_DAY,
-  ZOMATO_PAYOUT_SETTLEMENT_HOUR_UTC,
-  ZOMATO_PAYOUT_SETTLEMENT_HOUR_IST,
-  ZOMATO_PAYOUT_SETTLEMENT_TIME_IST,
-  ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE,
+  TIER1_PAYOUT_SETTLEMENT_DAY,
+  TIER1_PAYOUT_SETTLEMENT_HOUR_UTC,
+  TIER1_PAYOUT_SETTLEMENT_HOUR_IST,
+  TIER1_PAYOUT_SETTLEMENT_TIME_IST,
+  TIER1_PAYOUT_SETTLEMENT_SCHEDULE,
 };
 
 /**
- * Returns the standardized Zomato weekly marathon cycle (Monday 00:00:00 to Sunday 23:59:59 with Wednesday settlement)
+ * Returns the standardized Tier-1 weekly marathon cycle (Monday 00:00:00 to Sunday 23:59:59 with Wednesday settlement)
  * corresponding to the given date or current timestamp.
  */
-export function getWeeklyMarathonCycle(date?: Date | string | number): ZomatoWeeklyCycle {
-  return getZomatoWeeklyCycle(date);
+export function getWeeklyMarathonCycle(date?: Date | string | number): Tier1WeeklyCycle {
+  return getTier1WeeklyCycle(date);
 }

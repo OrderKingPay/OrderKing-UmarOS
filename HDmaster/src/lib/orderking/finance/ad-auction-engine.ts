@@ -1,5 +1,5 @@
 /**
- * Zomato-Style Generalized Second-Price (GSP) Ad Auction Engine
+ * Dominant Legacy Aggregator-Grade Generalized Second-Price (GSP) Ad Auction Engine
  *
  * Implements real-time ad ranking and pricing for sponsored restaurants:
  * - Quality Score = f(Restaurant Rating, Historical CTR, Distance to Customer)

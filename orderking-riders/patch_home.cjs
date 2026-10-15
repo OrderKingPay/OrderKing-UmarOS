@@ -101,8 +101,8 @@ content = content.replace(
   'type Home = Awaited<ReturnType<typeof getHomeFn>>;\n' + newComponents
 );
 
-// 3. Replace the Zomato and HPCL sections with our Gamification & Thermal Bag tracking
-content = content.replace(/\{\/\*\s*OrderKing Rider Advantage vs Zomato\s*\*\/\}(.|\n)*?<\/section>/g, '<GamificationPanel completed={home.completedToday} earnings={home.todayEarningsPaise} />');
+// 3. Replace the Dominant Legacy Aggregator and HPCL sections with our Gamification & Thermal Bag tracking
+content = content.replace(/\{\/\*\s*OrderKing Rider Advantage vs Dominant Legacy Aggregator\s*\*\/\}(.|\n)*?<\/section>/g, '<GamificationPanel completed={home.completedToday} earnings={home.todayEarningsPaise} />');
 content = content.replace(/\{\/\*\s*HPCL & IOCL Partner Fuel Pump Quick Navigator\s*\*\/\}(.|\n)*?<\/section>/g, '<ThermalBagTracker />');
 
 // 4. Inject PredictiveRouting if active

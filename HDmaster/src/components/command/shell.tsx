@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, Suspense, type CSSProperties } from "react";
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AdminErrorBoundary } from "@/components/error-boundary";
+import { ResilientRouteOutlet } from "@/components/common/resilient-route-outlet";
 import {
   Activity,
   AlertTriangle,
@@ -806,9 +808,9 @@ export function CommandShell() {
                 : "px-3 py-4 md:px-6 md:py-6"
             )}
           >
-            <Suspense fallback={<CommandContentSkeleton />}>
-              <Outlet />
-            </Suspense>
+            <AdminErrorBoundary inline sectionName="Command Viewport">
+              <ResilientRouteOutlet fallback={<CommandContentSkeleton />} />
+            </AdminErrorBoundary>
           </main>
 
           {/* Floating Scroll Up / Scroll Down Viewport Controls */}

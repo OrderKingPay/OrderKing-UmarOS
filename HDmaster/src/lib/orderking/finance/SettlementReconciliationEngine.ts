@@ -27,7 +27,7 @@ import {
   calculateSection52TCS,
   calculateSection194OTDS,
   calculatePlatformServiceGST,
-} from "../revenue/tax-calculator";
+} from "../revenue/tax-calculator.ts";
 
 export type SettlementCycleType = "STANDARD_WEEKLY" | "EXPRESS_DAILY";
 

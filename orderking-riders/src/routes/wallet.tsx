@@ -67,7 +67,7 @@ function WalletPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
                     <ShieldCheck className="size-3.5" />
-                    Zomato Discipline Architecture
+                    Tier-1 Discipline Architecture
                   </span>
                   <span className="text-[11px] font-semibold text-muted-foreground">
                     COD Pocket Balance &amp; Treasury

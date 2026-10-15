@@ -536,7 +536,7 @@ function AssistantPage() {
     };
   }, [menu.data]);
 
-  // DoorDash + Zomato Automated Growth & Margin Playbook Computations
+  // Global Best-Practice Automated Growth & Margin Playbook Computations
   const growthPlaybook = useMemo(() => {
     const liveAovPaise =
       dash.data?.today.aovPaise && dash.data.today.aovPaise > 0

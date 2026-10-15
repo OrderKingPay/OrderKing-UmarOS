@@ -16,7 +16,7 @@ import { saveProfileFn, submitKycFn } from "@/lib/server/rider-fns";
 import type { RiderProfile, VehicleType } from "@/lib/rider/types";
 import { ZONES } from "@/lib/rider/catalog";
 
-interface ZomatoSwiggySwitchFlowProps {
+interface LegacyAggregatorSwitchFlowProps {
   rider: RiderProfile | null;
   onSuccess?: (updatedRider: RiderProfile) => void;
 }
@@ -86,8 +86,8 @@ function formatFileSize(bytes: number): string {
   return `${(kb / 1024).toFixed(2)} MB`;
 }
 
-export function ZomatoSwiggySwitchFlow({ rider, onSuccess }: ZomatoSwiggySwitchFlowProps) {
-  const [platform, setPlatform] = useState<"ZOMATO" | "SWIGGY" | "OTHER_FLEET">("ZOMATO");
+export function LegacyAggregatorSwitchFlow({ rider, onSuccess }: LegacyAggregatorSwitchFlowProps) {
+  const [platform, setPlatform] = useState<"DOMINANT_AGGREGATOR" | "SWIGGY" | "OTHER_FLEET">("DOMINANT_AGGREGATOR");
   const [partnerId, setPartnerId] = useState(
     rider?.insuranceRef?.includes(":") ? rider.insuranceRef.split(":")[1] || "" : "",
   );
@@ -491,9 +491,9 @@ export function ZomatoSwiggySwitchFlow({ rider, onSuccess }: ZomatoSwiggySwitchF
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <button
                 type="button"
-                onClick={() => setPlatform("ZOMATO")}
+                onClick={() => setPlatform("DOMINANT_AGGREGATOR")}
                 className={`flex items-center justify-center gap-2 rounded-xl p-3 text-xs font-bold border transition ${
-                  platform === "ZOMATO"
+                  platform === "DOMINANT_AGGREGATOR"
                     ? "border-slate-900 bg-slate-900 text-white"
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}

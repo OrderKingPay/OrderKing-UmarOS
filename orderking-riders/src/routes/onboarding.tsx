@@ -9,7 +9,7 @@ import { ZONES } from "@/lib/rider/catalog";
 import { bootstrapRiderFn, saveProfileFn, submitKycFn } from "@/lib/server/rider-fns";
 import type { RiderProfile, VehicleType } from "@/lib/rider/types";
 import { useEffect, useMemo, useState } from "react";
-import { ZomatoSwiggySwitchFlow } from "@/components/rider/zomato-swiggy-switch-flow";
+import { LegacyAggregatorSwitchFlow } from "@/components/rider/legacy-aggregator-switch-flow";
 import { toast } from "sonner";
 import {
   AlertCircle,
@@ -569,7 +569,7 @@ function Page() {
           `CityZone:${cityZone.trim()}`,
           `Vehicle:${vehicleCategory}`,
           isExemptVehicle
-            ? `DLExemption:CMVR_Rule_2u_NonMandatory(Zomato_Standard)`
+            ? `DLExemption:CMVR_Rule_2u_NonMandatory(Statutory_Standard)`
             : `DL:${dlNumber.trim()}`,
           ifsc.trim() ? `IFSC:${ifsc.trim().toUpperCase()}` : null,
           `StatutoryAgreement:CSS2020_Enforced`,
@@ -757,7 +757,7 @@ function Page() {
                       : "Motor Vehicles Act 1988 (DL & RC Verified)"}
                   </span>
                   <span className="text-[10px] text-slate-500">
-                    {isExemptVehicle ? "Zomato standard verified" : "Two-wheeler fleet standard"}
+                    {isExemptVehicle ? "Statutory national standard verified" : "Two-wheeler fleet standard"}
                   </span>
                 </div>
               </div>
@@ -825,9 +825,9 @@ function Page() {
       id: "roadSafety" as const,
       title: "2. Road Safety, CMVR Rule 2(u) Fleet Standards & Zero-Intoxication Undertaking (Motor Vehicles Act, 1988)",
       summary:
-        "Strictly non-mandatory Driving License for Bicycle & Low-Speed EV (CMVR Rule 2(u) & Zomato standard); mandatory DL & RC for petrol two-wheelers.",
+        "Strictly non-mandatory Driving License for Bicycle & Low-Speed EV (CMVR Rule 2(u) & statutory standard); mandatory DL & RC for petrol two-wheelers.",
       fullText:
-        "While logged into active duty, you undertake to adhere to national road safety standards. In accordance with Central Motor Vehicles Rules (CMVR Rule 2(u)) and national aggregator standards (Zomato standard), Driving License and Vehicle RC are strictly non-mandatory for pedal bicycles and low-speed electric scooters (<250W, <25 km/h). Valid Driving License, Vehicle RC, and Third-Party Insurance are strictly mandatory ONLY for petrol two-wheelers (Motorcycle/Scooter). All riders must wear BIS/ISI certified helmets, obey traffic regulations, and maintain zero tolerance for alcohol or prohibited substances.",
+        "While logged into active duty, you undertake to adhere to national road safety standards. In accordance with Central Motor Vehicles Rules (CMVR Rule 2(u)) and national aggregator standards (Dominant Legacy Aggregator benchmark), Driving License and Vehicle RC are strictly non-mandatory for pedal bicycles and low-speed electric scooters (<250W, <25 km/h). Valid Driving License, Vehicle RC, and Third-Party Insurance are strictly mandatory ONLY for petrol two-wheelers (Motorcycle/Scooter). All riders must wear BIS/ISI certified helmets, obey traffic regulations, and maintain zero tolerance for alcohol or prohibited substances.",
     },
     {
       id: "foodHygiene" as const,
@@ -894,7 +894,7 @@ function Page() {
         </div>
 
         {flowMode === "switch" ? (
-          <ZomatoSwiggySwitchFlow rider={rider} onSuccess={(updated) => setRider(updated)} />
+          <LegacyAggregatorSwitchFlow rider={rider} onSuccess={(updated) => setRider(updated)} />
         ) : (
           <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs space-y-6 text-slate-900">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
@@ -1167,12 +1167,12 @@ function Page() {
                         {
                           id: "EV",
                           title: "Low-Speed EV",
-                          sub: "<25 km/h · Non-Mandatory DL (Zomato Std)",
+                          sub: "<25 km/h · Non-Mandatory DL (Statutory Std)",
                         },
                         {
                           id: "CYCLE",
                           title: "Bicycle (CYCLE)",
-                          sub: "Pedal Cycle · Non-Mandatory DL (Zomato Std)",
+                          sub: "Pedal Cycle · Non-Mandatory DL (Statutory Std)",
                         },
                       ] as const
                     ).map((v) => (
@@ -1207,14 +1207,14 @@ function Page() {
                   <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-950 dark:text-emerald-200 space-y-2">
                     <p className="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5 text-sm">
                       <ShieldCheck className="size-4.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                      Statutory Non-Mandatory Driving License Notice — CMVR Rule 2(u) &amp; Zomato Standard (
+                      Statutory Non-Mandatory Driving License Notice — CMVR Rule 2(u) &amp; National Aggregator Standard (
                       {vehicleCategory === "CYCLE"
                         ? "Pedal Bicycle"
                         : "Low-Speed EV Scooter / Electric Cycle"}
                       )
                     </p>
                     <p className="leading-relaxed">
-                      In accordance with national delivery partner fleet standards (Zomato standard) and Rule 2(u) of the Central Motor Vehicles Rules (CMVR), <strong>Driving Licence (DL) &amp; Vehicle RC are STRICTLY NON-MANDATORY</strong> for Bicycle and Low-Speed Electric Scooter (EV &lt; 25 km/h) couriers.
+                      In accordance with national delivery partner fleet standards (Dominant Legacy Aggregator benchmark) and Rule 2(u) of the Central Motor Vehicles Rules (CMVR), <strong>Driving Licence (DL) &amp; Vehicle RC are STRICTLY NON-MANDATORY</strong> for Bicycle and Low-Speed Electric Scooter (EV &lt; 25 km/h) couriers.
                     </p>
                     <div className="rounded-lg bg-white/80 dark:bg-slate-900/80 border border-emerald-200 dark:border-emerald-800/60 p-2.5 text-[11px] space-y-1">
                       <span className="font-bold text-emerald-900 dark:text-emerald-300 block">

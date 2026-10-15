@@ -185,7 +185,7 @@ describe("Volume-Based Commission Tier Discounts & Floor Protection", () => {
   });
 });
 
-describe("Zomato-Class Weekly Settlement Cycle", () => {
+describe("Dominant Legacy Aggregator-Grade Weekly Settlement Cycle", () => {
   it("generates Monday to Sunday cycle with Wednesday payout (3 days post-Sunday)", () => {
     // Reference date: Wednesday, 2026-10-07
     const cycle = getWeeklySettlementCycle("2026-10-07T12:00:00Z");

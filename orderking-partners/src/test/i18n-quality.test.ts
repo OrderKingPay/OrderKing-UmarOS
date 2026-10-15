@@ -81,7 +81,7 @@ describe("i18n Localization & Copy Quality Standards", () => {
     expect(bn.orders.rejectHint).not.toContain("চুপচাপ প্রত্যাখ্যান করা যাবে না");
   });
 
-  it("verifies Zomato document parity and commercial standard 28% commission", () => {
+  it("verifies Tier-1 legacy market leader document parity and commercial standard 28% commission", () => {
     expect(en.onboarding.gst).toContain("Optional");
     expect(en.onboarding.gst).toContain("20L");
     expect(en.onboarding.fssai).toContain("14 digits");

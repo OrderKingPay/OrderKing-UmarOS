@@ -35,15 +35,15 @@ import {
   STACKED_DROP_FEE_PERCENTAGE,
   calculateStackedOrderPay,
   calculateStackedOrderPayPaise,
-  getZomatoWeeklyCycle,
-  ZOMATO_PAYOUT_SETTLEMENT_DAY,
-  ZOMATO_PAYOUT_SETTLEMENT_HOUR_UTC,
-  ZOMATO_PAYOUT_SETTLEMENT_HOUR_IST,
-  ZOMATO_PAYOUT_SETTLEMENT_TIME_IST,
-  ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE,
+  getTier1WeeklyCycle,
+  TIER1_PAYOUT_SETTLEMENT_DAY,
+  TIER1_PAYOUT_SETTLEMENT_HOUR_UTC,
+  TIER1_PAYOUT_SETTLEMENT_HOUR_IST,
+  TIER1_PAYOUT_SETTLEMENT_TIME_IST,
+  TIER1_PAYOUT_SETTLEMENT_SCHEDULE,
   calculateSurgePay,
   calculateCustomerTipPassThrough,
-  calculateZomatoAlgorithmicPayout,
+  calculateTier1AlgorithmicPayout,
   calculateRiderPayout,
   enforcePayoutFloor,
   RESTAURANT_WAIT_GRACE_PERIOD_MINUTES,
@@ -57,12 +57,12 @@ import {
   calculateMultiDayTouchpointProgress,
   calculateCompositeSurge,
   STANDARD_DAILY_MILESTONES,
-  ZOMATO_FULL_DAILY_MILESTONES,
+  TIER1_FULL_DAILY_MILESTONES,
   getWeeklyMarathonCycle,
 } from "../lib/rider/gig-engine.ts";
 import type { DynamicPricingConfig, PlatformConfig, ProgressiveDistanceSlabs } from "../lib/rider/types.ts";
 
-describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", () => {
+describe("Tier-1 Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", () => {
   describe("1. Base Pay (Pickup Fee + Drop Fee) by City Tier (Tier 1/2/3)", () => {
     it("Tier 1 Metros: ₹20 Pickup + ₹15 Drop = ₹35 Base Pay (3,500 paise)", () => {
       const tier1 = getBasePay("TIER_1");
@@ -350,18 +350,18 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
     });
   });
 
-  describe("5. Zomato Weekly Payout Cycle (Mon 00:00:00 - Sun 23:59:59 with Automated Wednesday Afternoon Settlement)", () => {
+  describe("5. Tier-1 Weekly Payout Cycle (Mon 00:00:00 - Sun 23:59:59 with Automated Wednesday Afternoon Settlement)", () => {
     it("confirms Wednesday settlement day and hour constants", () => {
-      expect(ZOMATO_PAYOUT_SETTLEMENT_DAY).toBe("WEDNESDAY");
-      expect(ZOMATO_PAYOUT_SETTLEMENT_HOUR_UTC).toBe(15); // 3:00 PM UTC
-      expect(ZOMATO_PAYOUT_SETTLEMENT_HOUR_IST).toBe(14); // 2:00 PM IST
-      expect(ZOMATO_PAYOUT_SETTLEMENT_TIME_IST).toBe("14:00");
-      expect(ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE).toBe("Wednesday 2:00 PM IST");
+      expect(TIER1_PAYOUT_SETTLEMENT_DAY).toBe("WEDNESDAY");
+      expect(TIER1_PAYOUT_SETTLEMENT_HOUR_UTC).toBe(15); // 3:00 PM UTC
+      expect(TIER1_PAYOUT_SETTLEMENT_HOUR_IST).toBe(14); // 2:00 PM IST
+      expect(TIER1_PAYOUT_SETTLEMENT_TIME_IST).toBe("14:00");
+      expect(TIER1_PAYOUT_SETTLEMENT_SCHEDULE).toBe("Wednesday 2:00 PM IST");
     });
 
     it("correctly identifies cycle window and payout date for mid-week date (Wednesday)", () => {
       // 2026-10-14 is a Wednesday
-      const cycle = getZomatoWeeklyCycle("2026-10-14T12:00:00.000Z");
+      const cycle = getTier1WeeklyCycle("2026-10-14T12:00:00.000Z");
 
       // Cycle Start: Monday 2026-10-12 00:00:00.000Z
       expect(cycle.cycleStart.getUTCDay()).toBe(1); // Monday
@@ -382,7 +382,7 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
 
     it("correctly places Sunday orders in the concluding week cycle", () => {
       // Sunday 2026-10-18 at 22:30 UTC
-      const cycle = getZomatoWeeklyCycle("2026-10-18T22:30:00.000Z");
+      const cycle = getTier1WeeklyCycle("2026-10-18T22:30:00.000Z");
       expect(cycle.cycleStart.toISOString()).toBe("2026-10-12T00:00:00.000Z");
       expect(cycle.cycleEnd.toISOString()).toBe("2026-10-18T23:59:59.999Z");
       expect(cycle.payoutDate.toISOString()).toBe("2026-10-21T15:00:00.000Z");
@@ -390,7 +390,7 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
 
     it("correctly rolls over to new cycle on Monday morning", () => {
       // Monday 2026-10-19 at 08:00 UTC
-      const cycle = getZomatoWeeklyCycle("2026-10-19T08:00:00.000Z");
+      const cycle = getTier1WeeklyCycle("2026-10-19T08:00:00.000Z");
       expect(cycle.cycleStart.toISOString()).toBe("2026-10-19T00:00:00.000Z");
       expect(cycle.cycleEnd.toISOString()).toBe("2026-10-25T23:59:59.999Z");
       expect(cycle.payoutDate.toISOString()).toBe("2026-10-28T15:00:00.000Z");
@@ -485,12 +485,12 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
   });
 
   describe("8. Daily Milestones & Multi-Day Touchpoint Targets", () => {
-    it("evaluates Zomato daily milestones ladder (4, 8, 12, 16, 20 orders)", () => {
+    it("evaluates Tier-1 daily milestones ladder (4, 8, 12, 16, 20 orders)", () => {
       expect(STANDARD_DAILY_MILESTONES).toHaveLength(4);
-      expect(ZOMATO_FULL_DAILY_MILESTONES).toHaveLength(5);
-      expect(ZOMATO_FULL_DAILY_MILESTONES[4]).toEqual({ orders: 20, bonusPaise: 60000, label: "₹600" });
+      expect(TIER1_FULL_DAILY_MILESTONES).toHaveLength(5);
+      expect(TIER1_FULL_DAILY_MILESTONES[4]).toEqual({ orders: 20, bonusPaise: 60000, label: "₹600" });
 
-      const p20 = calculateDailyMilestoneProgress(20, ZOMATO_FULL_DAILY_MILESTONES);
+      const p20 = calculateDailyMilestoneProgress(20, TIER1_FULL_DAILY_MILESTONES);
       expect(p20.unlockedBonusPaise).toBe(60000); // ₹600
       expect(p20.nextMilestone).toBeNull();
       expect(p20.progressPct).toBe(100);
@@ -513,7 +513,7 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
     });
   });
 
-  describe("9. Master Zomato Algorithmic Payout Integration & Integer Paise Arithmetic", () => {
+  describe("9. Master Tier-1 Algorithmic Payout Integration & Integer Paise Arithmetic", () => {
     it("calculates complex scenario with 100% precision in integer paise (Progressive Slabs + Stacked Standard)", () => {
       // Scenario:
       // City: Tier 1 Metro (Bangalore)
@@ -523,7 +523,7 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
       // Hour: Peak dinner (1.20x multiplier -> 6500 * 0.20 = 1300 paise boost)
       // Tip: ₹50 from generous customer (5000 paise direct pass-through)
       // Packages: 2 packages -> 1 secondary order (60% pickup ₹12 + 100% drop ₹15 = ₹27 / 2700 paise)
-      const payout = calculateZomatoAlgorithmicPayout({
+      const payout = calculateTier1AlgorithmicPayout({
         distanceKm: 4.5,
         cityTier: "TIER_1",
         waitMinutes: 16,
@@ -607,7 +607,7 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
       // Subtotal before tip: 3500 + 13000 + 3000 + 5400 = 24,900 paise (₹249.00)
       // Tip: ₹40 (4000 paise)
       // Total Payout: 28,900 paise (₹289.00)
-      const ldoPayout = calculateZomatoAlgorithmicPayout({
+      const ldoPayout = calculateTier1AlgorithmicPayout({
         distanceKm: 10.0,
         cityTier: "TIER_1",
         waitMinutes: 45,
@@ -631,7 +631,7 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
     });
 
     it("guarantees statutory ₹35 floor even when route is short (0.5 km) with 0 wait and 0 tip", () => {
-      const payout = calculateZomatoAlgorithmicPayout({
+      const payout = calculateTier1AlgorithmicPayout({
         distanceKm: 0.5,
         cityTier: "TIER_1",
         waitMinutes: 2,
@@ -717,7 +717,7 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
       expect(belowCapPay).toBe(600);
     });
 
-    it("honors dynamic pricing configuration end-to-end in calculateZomatoAlgorithmicPayout", () => {
+    it("honors dynamic pricing configuration end-to-end in calculateTier1AlgorithmicPayout", () => {
       const dynamicConfig: DynamicPricingConfig = {
         cityTier: "TIER_1",
         tier1BaseFloorPaise: 4000,
@@ -741,7 +741,7 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
         kingAiAutonomousResolution: true,
       };
 
-      const payout = calculateZomatoAlgorithmicPayout({
+      const payout = calculateTier1AlgorithmicPayout({
         distanceKm: 10.0,
         cityTier: "TIER_1",
         waitMinutes: 20,
@@ -818,8 +818,8 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
       // (35 - 5) * 120 = 3600 -> capped at 2400
       expect(waitCapped).toBe(2400);
 
-      // 4. calculateZomatoAlgorithmicPayout seamlessly handles PlatformConfig
-      const fullPayout = calculateZomatoAlgorithmicPayout({
+      // 4. calculateTier1AlgorithmicPayout seamlessly handles PlatformConfig
+      const fullPayout = calculateTier1AlgorithmicPayout({
         distanceKm: 10.0,
         cityTier: "TIER_1",
         waitMinutes: 25,

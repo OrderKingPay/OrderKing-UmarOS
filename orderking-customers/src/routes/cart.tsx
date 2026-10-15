@@ -27,8 +27,14 @@ import { quoteCart, trackAnalytics } from "@/lib/server/quote";
 import { useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
+import { CartPageSkeleton } from "@/components/skeletons/route-skeletons";
+import { AppErrorComponent } from "@/lib/error-component";
 
-export const Route = createFileRoute("/cart")({ component: CartPage });
+export const Route = createFileRoute("/cart")({
+  component: CartPage,
+  pendingComponent: CartPageSkeleton,
+  errorComponent: AppErrorComponent,
+});
 
 function CartPage() {
   const { t, lang } = useT();

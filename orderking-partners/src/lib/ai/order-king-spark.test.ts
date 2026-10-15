@@ -79,13 +79,13 @@ describe("Order King Spark - Partner AI Assistant", () => {
     assert.ok(types.includes("SALES_DECLINE"));
   });
 
-  test("calculates 0% platform commission settlement with Swiggy/Zomato avoided loss", () => {
+  test("calculates 0% platform commission settlement with legacy aggregator avoided loss", () => {
     const summary = orderKingSpark.getSettlementSummary();
 
     assert.equal(summary.commissionPaidPaise, 0); // 0% commission!
     assert.ok(summary.grossSalesPaise > 0);
     assert.equal(summary.netSettlementPaise, summary.grossSalesPaise);
-    assert.equal(summary.swiggyZomatoLossAvoidedPaise, Math.round(summary.grossSalesPaise * 0.24));
+    assert.equal(summary.legacyAggregatorLossAvoidedPaise, Math.round(summary.grossSalesPaise * 0.24));
     assert.equal(summary.status, "SETTLED");
   });
 

@@ -3,12 +3,18 @@ import { ArrowRight, BadgeCheck, BriefcaseBusiness, Crown, Gift, LockKeyhole, Ma
 import { CustomerShell } from "@/components/market/shell";
 import { useLocationStore } from "@/lib/stores/location";
 import { TASK_DEFINITIONS } from "@/lib/earn/micro-tasks";
+import { EarnPageSkeleton } from "@/components/skeletons/route-skeletons";
+import { AppErrorComponent } from "@/lib/error-component";
 
-export const Route = createFileRoute("/earn")({ component: CrownOpportunitiesPage });
+export const Route = createFileRoute("/earn")({
+  component: CrownOpportunitiesPage,
+  pendingComponent: EarnPageSkeleton,
+  errorComponent: AppErrorComponent,
+});
 
 function CrownOpportunitiesPage() {
   const location = useLocationStore((s) => s.location);
-  const city = location.cityName || "your city";
+  const city = location?.cityName || "your city";
   return (
     <CustomerShell>
       <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-6 pb-32 text-stone-900">

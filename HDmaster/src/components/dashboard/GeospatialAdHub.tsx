@@ -589,7 +589,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
               </div>
               <p className="text-[11px] text-muted-foreground">
                 Crucial psychological trigger: This credit is pre-loaded directly into the customer&apos;s KingPay wallet upon
-                first tap, eliminating friction and locking in the first transaction over Swiggy / Zomato.
+                first tap, eliminating friction and locking in the first transaction over Dominant Legacy Aggregators.
               </p>
 
               <div className="grid grid-cols-4 gap-2">

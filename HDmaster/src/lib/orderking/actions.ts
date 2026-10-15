@@ -1453,7 +1453,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
 
         return {
           ok: true as const,
-          message: `${providerLabel} Handshake Verified. Neural avatar model [${avatarId}] loaded. Voice synthesis profile [${voiceId}] active. Aspect ratio ${ratio} optimized for Meta Direct Messages. Synthetic Media Engine operational for 'Delete Zomato Bounty' mass-rendering.`,
+          message: `${providerLabel} Handshake Verified. Neural avatar model [${avatarId}] loaded. Voice synthesis profile [${voiceId}] active. Aspect ratio ${ratio} optimized for Meta Direct Messages. Synthetic Media Engine operational for 'Market-Dominance Bounty' mass-rendering.`,
         };
       }
 
@@ -1978,7 +1978,7 @@ export const renderAiAvatarVideoFn = createServerFn({ method: "POST" })
                   },
                 ],
                 dimension: aspectRatio === "9:16" ? { width: 1080, height: 1920 } : aspectRatio === "1:1" ? { width: 1080, height: 1080 } : { width: 1920, height: 1080 },
-                title: title || "Delete Zomato Bounty Drop",
+                title: title || "Market-Dominance Bounty Drop",
               }),
             });
             if (resp.ok) {

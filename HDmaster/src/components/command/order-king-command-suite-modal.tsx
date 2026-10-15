@@ -248,7 +248,7 @@ export function OrderKingCommandSuiteModal({
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">
-                    Weekly Wednesday Settlement Cycle (Zomato/Swiggy Formula)
+                    Weekly Wednesday Settlement Cycle (Dominant Legacy Aggregator Formula)
                   </h3>
                   <Badge className="bg-emerald-500/20 text-emerald-300">Audited &amp; Balanced</Badge>
                 </div>

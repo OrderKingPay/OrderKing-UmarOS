@@ -555,6 +555,70 @@ describe("money & Indian statutory settlement", () => {
     assert.ok(Number.isSafeInteger(s.totalDeductionsPaise));
     assert.ok(Number.isSafeInteger(s.restaurantPayablePaise));
   });
+
+  it("strictly enforces 0% dine-in commission on Table QR orders (sovereign ordering)", () => {
+    // ₹1,000 dine-in bill on Table QR ordering
+    const sTableQr = computeRestaurantPayable({
+      foodValuePaise: 100000,
+      packingPaise: 0,
+      restaurantDiscountPaise: 0,
+      platformFundedDiscountPaise: 0,
+      commissionBps: 2800, // Even if 28% delivery commission is passed, Table QR forces 0%
+      isTableQrOrder: true,
+      orderType: "TABLE_QR",
+    });
+
+    // Zero commission and zero GST on commission
+    assert.equal(sTableQr.commissionPaise, 0);
+    assert.equal(sTableQr.commissionGstPaise, 0);
+    assert.equal(sTableQr.commissionCgstPaise, 0);
+    assert.equal(sTableQr.commissionSgstPaise, 0);
+
+    // Statutory TCS 1% (1000 paise) + TDS 1% (1000 paise) still comply with tax law
+    assert.equal(sTableQr.tcsSec52Paise, 1000);
+    assert.equal(sTableQr.tdsSec194OPaise, 1000);
+    assert.equal(sTableQr.totalDeductionsPaise, 2000);
+
+    // Net Restaurant Payable: 100000 - 2000 = 98000 paise (₹980.00)
+    assert.equal(sTableQr.restaurantPayablePaise, 98000);
+  });
+
+  it("calculates 184 bps payment gateway fee pass-through (1.84% + 18% GST) with exact paise math", () => {
+    assert.equal(PAYMENT_GATEWAY_CONFIG.FEE_BPS, 184);
+    assert.equal(PAYMENT_GATEWAY_CONFIG.GST_BPS, 1800);
+
+    // For ₹100.00 (10000 paise):
+    // Base PG fee = 10000 * 184 / 10000 = 184 paise
+    // 18% GST = 184 * 1800 / 10000 = 33 paise
+    // Total = 217 paise
+    const pg = calculatePaymentGatewayFee(10000);
+    assert.equal(pg.pgFeeBasePaise, 184);
+    assert.equal(pg.pgFeeGstPaise, 33);
+    assert.equal(pg.totalPgFeePaise, 217);
+
+    // Compute settlement with applyPaymentGatewayPassThrough: true
+    const s = computeRestaurantPayable({
+      foodValuePaise: 50000, // ₹500.00
+      packingPaise: 0,
+      restaurantDiscountPaise: 0,
+      platformFundedDiscountPaise: 0,
+      commissionBps: 2800, // 28%
+      applyPaymentGatewayPassThrough: true,
+    });
+
+    // Gross = 50000 paise
+    // PG fee: 50000 * 184 / 10000 = 920 paise (₹9.20)
+    assert.equal(s.gatewayFeePaise, 920);
+    // 18% GST on PG fee: 920 * 1800 / 10000 = 165.6 -> rounded to 166 paise (₹1.66)
+    assert.equal(s.gatewayFeeGstPaise, 166);
+    // Commission: 28% of 50000 = 14000
+    // 18% GST on commission: 2520
+    // 1% TCS: 500
+    // 1% TDS: 500
+    // Total deductions = 14000 + 2520 + 920 + 166 + 500 + 500 = 18606 paise
+    assert.equal(s.totalDeductionsPaise, 18606);
+    assert.equal(s.restaurantPayablePaise, 50000 - 18606);
+  });
 });
 
 

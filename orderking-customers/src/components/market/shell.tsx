@@ -8,20 +8,26 @@ import {
   Gift,
   Mic,
 } from "lucide-react";
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { OrderKingMark } from "@/components/brand/wordmark";
+import { resilientLazy, ModalErrorBoundary } from "@/components/common/resilient-lazy";
+import { ErrorBoundary } from "@/components/error-boundary";
 
-const LazyLocationDialog = lazy(() =>
-  import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog }))
+const LazyLocationDialog = resilientLazy(
+  () => import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog })),
+  "Location Selector"
 );
-const LazyLanguageSelectorModal = lazy(() =>
-  import("@/components/common/language-selector-modal").then((m) => ({ default: m.LanguageSelectorModal }))
+const LazyLanguageSelectorModal = resilientLazy(
+  () => import("@/components/common/language-selector-modal").then((m) => ({ default: m.LanguageSelectorModal })),
+  "Language Selector"
 );
-const LazyCustomerConciergeDrawer = lazy(() =>
-  import("@/components/ai/customer-concierge-drawer").then((m) => ({ default: m.CustomerConciergeDrawer }))
+const LazyCustomerConciergeDrawer = resilientLazy(
+  () => import("@/components/ai/customer-concierge-drawer").then((m) => ({ default: m.CustomerConciergeDrawer })),
+  "AI Concierge"
 );
-const LazyExpiringViralShareModal = lazy(() =>
-  import("@/components/growth/expiring-viral-share-modal").then((m) => ({ default: m.ExpiringViralShareModal }))
+const LazyExpiringViralShareModal = resilientLazy(
+  () => import("@/components/growth/expiring-viral-share-modal").then((m) => ({ default: m.ExpiringViralShareModal })),
+  "Gift Share Reward"
 );
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
 import { useDietStore } from "@/lib/stores/diet";
@@ -286,7 +292,9 @@ export function CustomerShell({
 
       {/* Main Content Area */}
       <main id="main" className="flex-1 w-full">
-        {children}
+        <ErrorBoundary sectionName="Page Content">
+          {children}
+        </ErrorBoundary>
       </main>
 
       {/* Floating View Cart Bar positioned safely above the floating luxury dock */}
@@ -316,31 +324,39 @@ export function CustomerShell({
       <CustomerFloatingBottomNav />
 
       {conciergeOpen ? (
-        <Suspense fallback={null}>
-          <LazyCustomerConciergeDrawer open={conciergeOpen} onClose={() => setConciergeOpen(false)} area="food" />
-        </Suspense>
+        <ModalErrorBoundary onClose={() => setConciergeOpen(false)} componentName="AI Support Concierge">
+          <Suspense fallback={null}>
+            <LazyCustomerConciergeDrawer open={conciergeOpen} onClose={() => setConciergeOpen(false)} area="food" />
+          </Suspense>
+        </ModalErrorBoundary>
       ) : null}
       {shareOpen ? (
-        <Suspense fallback={null}>
-          <LazyExpiringViralShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
-        </Suspense>
+        <ModalErrorBoundary onClose={() => setShareOpen(false)} componentName="Gift Share Modal">
+          <Suspense fallback={null}>
+            <LazyExpiringViralShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
+          </Suspense>
+        </ModalErrorBoundary>
       ) : null}
       {locOpen ? (
-        <Suspense fallback={null}>
-          <LazyLocationDialog open={locOpen} onOpenChange={setLocOpen} />
-        </Suspense>
+        <ModalErrorBoundary onClose={() => setLocOpen(false)} componentName="Location Picker">
+          <Suspense fallback={null}>
+            <LazyLocationDialog open={locOpen} onOpenChange={setLocOpen} />
+          </Suspense>
+        </ModalErrorBoundary>
       ) : null}
       {langOpen ? (
-        <Suspense fallback={null}>
-          <LazyLanguageSelectorModal
-            isOpen={langOpen}
-            onClose={() => setLangOpen(false)}
-            selectedCode={lang}
-            onSelectLanguage={(l) => {
-              setLang(l.code as any);
-            }}
-          />
-        </Suspense>
+        <ModalErrorBoundary onClose={() => setLangOpen(false)} componentName="Language Selector">
+          <Suspense fallback={null}>
+            <LazyLanguageSelectorModal
+              isOpen={langOpen}
+              onClose={() => setLangOpen(false)}
+              selectedCode={lang}
+              onSelectLanguage={(l: any) => {
+                setLang(l.code as any);
+              }}
+            />
+          </Suspense>
+        </ModalErrorBoundary>
       ) : null}
     </div>
   );

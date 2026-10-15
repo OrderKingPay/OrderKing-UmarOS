@@ -43,7 +43,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
   return (
     <Link
       to="/r/$slug"
-      params={{ slug: restaurant.slug || "" }}
+      params={{ slug: restaurant.slug || restaurant.id || "restaurant" }}
       onClick={hapticTap}
       className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl bg-white border border-gray-100/90 shadow-[0_2px_16px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12),0_4px_16px_-2px_rgba(0,0,0,0.06)] hover:border-amber-300/40 hover:-translate-y-1 active:scale-[0.97] active:brightness-[0.98] transition-all duration-200 ease-out will-change-transform no-underline"
     >

@@ -1,8 +1,20 @@
-
 import type { ErrorComponentProps } from "@tanstack/react-router";
-import { AlertTriangle, RotateCcw, Home, ShieldCheck } from "lucide-react";
+import { AlertTriangle, RotateCcw, Home, ShieldCheck, RefreshCw } from "lucide-react";
+import { isChunkLoadError, triggerSelfHealingReload } from "@/lib/lazy-retry";
+import { SlowNetworkFallbackCard } from "@/components/ui/slow-network-fallback";
+
+export function isNetworkTimeoutError(error: unknown): boolean {
+  if (!error) return false;
+  const msg = error instanceof Error ? error.message : String(error);
+  return (
+    /network|timeout|timed out|offline|fetch failed|failed to fetch|networkerror|abort|connection refused/i.test(msg) ||
+    (typeof navigator !== "undefined" && !navigator.onLine)
+  );
+}
 
 export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
+  const isChunk = isChunkLoadError(error);
+  const isNetwork = isNetworkTimeoutError(error);
   const errorMessage =
     error instanceof Error ? error.message : typeof error === "string" ? error : "An unexpected transition error occurred.";
 
@@ -17,6 +29,35 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
     }
     window.location.reload();
   };
+
+  const handleClearCacheAndReload = async () => {
+    try {
+      if ("caches" in window) {
+        const keys = await window.caches.keys();
+        await Promise.all(keys.map((k) => window.caches.delete(k)));
+      }
+      sessionStorage.clear();
+      localStorage.removeItem("orderking_chunk_reload_lock");
+    } catch {}
+    window.location.reload();
+  };
+
+  if (isNetwork) {
+    return (
+      <main
+        role="alert"
+        className="fixed inset-0 z-[9999] flex min-h-screen w-full flex-col items-center justify-center bg-[#FAF7F2] p-6 text-slate-900 select-none overflow-y-auto"
+      >
+        <SlowNetworkFallbackCard
+          title="Slow Network Timeout"
+          message={errorMessage.includes("timeout") || errorMessage.includes("timed out")
+            ? errorMessage
+            : "Live data took too long to respond on your current mobile connection. Your session is safe."}
+          onRetry={handleRetry}
+        />
+      </main>
+    );
+  }
 
   return (
     <main
@@ -35,10 +76,12 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
         {/* Headings */}
         <div className="space-y-2">
           <h1 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-            Seamless Recovery
+            {isChunk ? "Version Synchronization" : "Seamless Recovery"}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
-            We caught a momentary transition hiccup. Your cart, orders, and wallet balance remain 100% secure.
+            {isChunk
+              ? "A fresh update was published. Synchronizing your active customer session..."
+              : "We caught a momentary transition hiccup. Your cart, orders, and wallet balance remain 100% secure."}
           </p>
         </div>
 
@@ -60,6 +103,15 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
           >
             <RotateCcw className="size-4 stroke-[2.4]" />
             Try Again Instantly
+          </button>
+
+          <button
+            type="button"
+            onClick={handleClearCacheAndReload}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-6 py-3 text-sm font-bold text-amber-900 transition-all active:scale-98 cursor-pointer"
+          >
+            <RefreshCw className="size-4 stroke-[2]" />
+            Clear Cache & Refresh
           </button>
 
           <a

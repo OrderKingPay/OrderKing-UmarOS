@@ -20,8 +20,14 @@ import { CUSTOMER_TRACK_STEPS } from "@/lib/orders/state";
 import { formatPaise } from "@/lib/money";
 import { useOrderSSE } from "@/lib/hooks/use-order-sse";
 import { useCartStore } from "@/lib/stores/cart";
+import { OrdersPageSkeleton } from "@/components/skeletons/route-skeletons";
+import { AppErrorComponent } from "@/lib/error-component";
 
-export const Route = createFileRoute("/orders/$id")({ component: OrderDetailPage });
+export const Route = createFileRoute("/orders/$id")({
+  component: OrderDetailPage,
+  pendingComponent: OrdersPageSkeleton,
+  errorComponent: AppErrorComponent,
+});
 
 function OrderDetailPage() {
   const { id } = Route.useParams();

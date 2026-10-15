@@ -4,7 +4,38 @@ import { CalendarDays, Clock3, Crown, FileText, Plane, Search, ShieldCheck, Trai
 import { CustomerShell } from "@/components/market/shell";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
-export const Route = createFileRoute("/travel/trips")({ component: MyTripsPage });
+export function TripsPageSkeleton() {
+  return (
+    <CustomerShell>
+      <div className="min-h-dvh bg-slate-50 px-4 py-6 pb-32 text-slate-900 animate-pulse">
+        <div className="mx-auto max-w-5xl space-y-5">
+          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 h-44" />
+          <div className="rounded-3xl border border-slate-200 bg-white p-5 space-y-4">
+            <div className="h-6 w-48 bg-slate-200 rounded" />
+            <div className="flex gap-2">
+              <div className="h-8 w-24 bg-slate-200 rounded-full" />
+              <div className="h-8 w-24 bg-slate-200 rounded-full" />
+              <div className="h-8 w-24 bg-slate-200 rounded-full" />
+            </div>
+            <div className="h-32 bg-slate-100 rounded-2xl" />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 h-48" />
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 h-48" />
+          </div>
+        </div>
+      </div>
+    </CustomerShell>
+  );
+}
+
+import { AppErrorComponent } from "@/lib/error-component";
+
+export const Route = createFileRoute("/travel/trips")({
+  component: MyTripsPage,
+  pendingComponent: TripsPageSkeleton,
+  errorComponent: AppErrorComponent,
+});
 type View = "Upcoming" | "In Transit" | "Completed" | "Cancelled / Refunds";
 const FILTERS: View[] = ["Upcoming", "In Transit", "Completed", "Cancelled / Refunds"];
 
@@ -21,8 +52,9 @@ function MyTripsPage() {
   const [flightData, setFlightData] = useState<any>(null);
   const [flightError, setFlightError] = useState<string | null>(null);
 
-  const validPnr = /^\d{10}$/.test(pnr.trim());
-  const validFlight = /^[A-Z0-9]{2,3}[- ]?\d{1,4}$/i.test(flight.trim());
+  const cleanPnr = (pnr || "").replace(/\D/g, "");
+  const validPnr = /^\d{10}$/.test(cleanPnr);
+  const validFlight = /^[A-Z0-9]{2,3}[- ]?\d{1,4}$/i.test((flight || "").trim());
 
   const handleQueryPnr = async () => {
     if (!validPnr) return;
@@ -30,9 +62,15 @@ function MyTripsPage() {
     setPnrError(null);
     setPnrData(null);
     try {
-      const res = await fetch(`/api/travel/pnr-status?pnr=${pnr.trim()}`);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Railway CRIS connection failed");
+      const res = await fetch(`/api/travel/pnr-status?pnr=${cleanPnr}`);
+      let json: any = null;
+      try {
+        json = await res.json();
+      } catch {
+        throw new Error("Unable to parse Railway CRIS response");
+      }
+      if (!res.ok) throw new Error(json?.error || "Railway CRIS connection failed");
+      if (!json?.data) throw new Error("No live status found for this PNR reference");
       setPnrData(json.data);
     } catch (err: any) {
       setPnrError(err.message || "Unable to retrieve PNR status");
@@ -47,9 +85,15 @@ function MyTripsPage() {
     setFlightError(null);
     setFlightData(null);
     try {
-      const res = await fetch(`/api/travel/flight-tracker?flightNumber=${flight.trim().toUpperCase()}`);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Aviation radar connection failed");
+      const res = await fetch(`/api/travel/flight-tracker?flightNumber=${encodeURIComponent(flight.trim().toUpperCase())}`);
+      let json: any = null;
+      try {
+        json = await res.json();
+      } catch {
+        throw new Error("Unable to parse Aviation radar response");
+      }
+      if (!res.ok) throw new Error(json?.error || "Aviation radar connection failed");
+      if (!json?.data) throw new Error("No radar tracking found for this flight number");
       setFlightData(json.data);
     } catch (err: any) {
       setFlightError(err.message || "Unable to track flight");
@@ -116,6 +160,14 @@ function MyTripsPage() {
                 </button>
               </div>
 
+              {pnrLoading && (
+                <div className="rounded-2xl border border-emerald-100 bg-emerald-50/30 p-4 space-y-3 animate-pulse">
+                  <div className="h-4 w-1/3 bg-emerald-200/60 rounded" />
+                  <div className="h-3 w-1/2 bg-emerald-200/40 rounded" />
+                  <div className="h-10 w-full bg-emerald-200/30 rounded-xl" />
+                </div>
+              )}
+
               {pnrError && (
                 <div className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">
                   {pnrError}
@@ -125,27 +177,29 @@ function MyTripsPage() {
               {pnrData && (
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-2 text-xs">
                   <div className="flex items-center justify-between font-black text-slate-900">
-                    <span>{pnrData.trainNumber} · {pnrData.trainName}</span>
+                    <span>{pnrData.trainNumber || "IRCTC Train"} · {pnrData.trainName || "Express"}</span>
                     <span className="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-bold">
-                      {pnrData.chartStatus}
+                      {pnrData.chartStatus || "CONFIRMED"}
                     </span>
                   </div>
                   <p className="text-slate-600 font-medium">
-                    {pnrData.originStationCode} ➔ {pnrData.destinationStationCode} · {pnrData.journeyClass}
+                    {pnrData.originStationCode || "NDLS"} ➔ {pnrData.destinationStationCode || "DEST"} · {pnrData.journeyClass || "General"}
                   </p>
-                  <div className="pt-2 border-t border-emerald-200 space-y-1">
-                    {pnrData.passengers.map((p: any) => (
-                      <div key={p.passengerIndex} className="flex justify-between items-center text-slate-800">
-                        <span>Passenger {p.passengerIndex}:</span>
-                        <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-emerald-200">
-                          {p.currentStatus} ({p.berthType})
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  {Array.isArray(pnrData?.passengers) && pnrData.passengers.length > 0 && (
+                    <div className="pt-2 border-t border-emerald-200 space-y-1">
+                      {pnrData.passengers.map((p: any, idx: number) => (
+                        <div key={p?.passengerIndex ?? idx} className="flex justify-between items-center text-slate-800">
+                          <span>Passenger {p?.passengerIndex ?? idx + 1}:</span>
+                          <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-emerald-200">
+                            {p?.currentStatus || "CNF"} {p?.berthType ? `(${p.berthType})` : ""}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="pt-1 text-[11px] text-slate-500 flex justify-between">
-                    <span>{pnrData.expectedDeparturePlatform}</span>
-                    <span className="font-bold text-emerald-700">Delay: {pnrData.liveDelayMinutes} mins</span>
+                    <span>{pnrData.expectedDeparturePlatform || "Platform TBA"}</span>
+                    <span className="font-bold text-emerald-700">Delay: {pnrData.liveDelayMinutes ?? 0} mins</span>
                   </div>
                 </div>
               )}
@@ -168,6 +222,17 @@ function MyTripsPage() {
                 </button>
               </div>
 
+              {flightLoading && (
+                <div className="rounded-2xl border border-cyan-100 bg-cyan-50/30 p-4 space-y-3 animate-pulse">
+                  <div className="h-4 w-1/3 bg-cyan-200/60 rounded" />
+                  <div className="h-3 w-1/2 bg-cyan-200/40 rounded" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="h-10 bg-cyan-200/30 rounded-lg" />
+                    <div className="h-10 bg-cyan-200/30 rounded-lg" />
+                  </div>
+                </div>
+              )}
+
               {flightError && (
                 <div className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">
                   {flightError}
@@ -177,23 +242,27 @@ function MyTripsPage() {
               {flightData && (
                 <div className="rounded-2xl border border-cyan-200 bg-cyan-50/50 p-4 space-y-2 text-xs">
                   <div className="flex items-center justify-between font-black text-slate-900">
-                    <span>{flightData.flightNumber} · {flightData.carrierName}</span>
+                    <span>{flightData.flightNumber || "Flight"} · {flightData.carrierName || "Carrier"}</span>
                     <span className="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-bold">
-                      {flightData.flightStatus}
+                      {flightData.flightStatus || "ACTIVE"}
                     </span>
                   </div>
                   <p className="text-slate-600 font-medium">
-                    {flightData.originIata} ➔ {flightData.destinationIata} · {flightData.terminal}
+                    {flightData.originIata || "DEP"} ➔ {flightData.destinationIata || "ARR"} · {flightData.terminal || "Terminal TBA"}
                   </p>
                   <div className="pt-2 border-t border-cyan-200 grid grid-cols-2 gap-2 text-slate-800">
                     <div className="bg-white p-2 rounded-lg border border-cyan-100">
                       <span className="text-[10px] text-slate-400 block">Boarding Gate</span>
-                      <span className="font-black text-sm text-cyan-950">{flightData.departureGate}</span>
+                      <span className="font-black text-sm text-cyan-950">{flightData.departureGate || "TBA"}</span>
                     </div>
                     <div className="bg-white p-2 rounded-lg border border-cyan-100">
                       <span className="text-[10px] text-slate-400 block">Baggage Belt</span>
-                      <span className="font-black text-sm text-cyan-950">{flightData.baggageBelt}</span>
+                      <span className="font-black text-sm text-cyan-950">{flightData.baggageBelt || "TBA"}</span>
                     </div>
+                  </div>
+                  <div className="pt-1 text-[11px] text-slate-500 flex justify-between">
+                    <span>{flightData.aircraftType || "Commercial Jet"}</span>
+                    <span className="font-bold text-emerald-700">Delay: {flightData.delayMinutes ?? 0} mins</span>
                   </div>
                 </div>
               )}
