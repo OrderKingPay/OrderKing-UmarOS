@@ -43,6 +43,7 @@ export interface RiderStore {
   ): Promise<DispatchOffer | null>;
 
   getActiveDeliveryForRider(riderId: string): Promise<Delivery | null>;
+  getActiveDeliveriesForRider(riderId: string): Promise<Delivery[]>;
   getDeliveryById(id: string): Promise<Delivery | null>;
   listDeliveriesForUser(userId: string, range?: DateRange): Promise<Delivery[]>;
   insertDelivery(d: Delivery): Promise<void>;

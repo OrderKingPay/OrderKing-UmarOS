@@ -869,7 +869,7 @@ export function FoodAiConcierge({
       };
     }
 
-    // 7. Discounts / Offers / Coupons / 0% Markup vs Zomato & Swiggy
+    // 7. Discounts / Offers / Coupons / 0% Markup vs Dominant Legacy Aggregators
     if (
       q.includes("discount") ||
       q.includes("offer") ||
@@ -880,8 +880,8 @@ export function FoodAiConcierge({
       q.includes("kam daam") ||
       q.includes("bachat") ||
       q.includes("save") ||
-      q.includes("swiggy") ||
-      q.includes("zomato") ||
+      q.includes("aggregator") ||
+      q.includes("legacy") ||
       q.includes("price") ||
       q.includes("कूपन") ||
       q.includes("অফার")
@@ -889,10 +889,10 @@ export function FoodAiConcierge({
       let replyText = "";
       if (lang.code === "hi") {
         replyText =
-          `हुज़ूर, ज़ोमैटो और स्विगी रेस्टोरेंट की कीमतों पर 30% तक अतिरिक्त मार्कअप लगाते हैं। आर्डरकिंग पर सभी मेन्यू 0% मार्कअप पर हैं—यानी जो रेट रेस्टोरेंट के मेन्यू कार्ड पर है, वही रेट आपको यहाँ मिलता है! आप प्रति आर्डर ₹150–₹350 बचाते हैं। साथ ही कूपन कोड 'KINGVIP' से फ़्री डिलीवरी और हर आर्डर पर 24K डिजिटल गोल्ड कैशबैक मिलता है! ${selectedPersona.encouragement}`;
+          `हुज़ूर, पुराने लीगेसी एग्रीगेटर्स रेस्टोरेंट की कीमतों पर 30% तक अतिरिक्त मार्कअप लगाते हैं। आर्डरकिंग पर सभी मेन्यू 0% मार्कअप पर हैं—यानी जो रेट रेस्टोरेंट के मेन्यू कार्ड पर है, वही रेट आपको यहाँ मिलता है! आप प्रति आर्डर ₹150–₹350 बचाते हैं। साथ ही कूपन कोड 'KINGVIP' से फ़्री डिलीवरी और हर आर्डर पर 24K डिजिटल गोल्ड कैशबैक मिलता है! ${selectedPersona.encouragement}`;
       } else if (lang.code === "bn") {
         replyText =
-          `মহারাজ, সুইগি বা জোম্যাটোর মতো দাম ৩০% বাড়িয়ে নেওয়া হয় না। অর্ডারকিং-এ ০% মেনু মার্কআপ গ্যারান্টি—রেস্তোরাঁর আসল মেনু কার্ডের দামেই খাবার পাবেন! আপনি প্রতি অর্ডারে ₹১৫০–₹৩৫০ সাশ্রয় করবেন। কুপন 'KINGVIP' দিয়ে ফ্রি ডেলিভারি ও ২৪K গোল্ড ক্যাশব্যাক উপভোগ করুন। ${selectedPersona.encouragement}`;
+          `মহারাজ, পুরোনো লিগেসি এগ্রিগেটরদের মতো দাম ৩০% বাড়িয়ে নেওয়া হয় না। অর্ডারকিং-এ ০% মেনু মার্কআপ গ্যারান্টি—রেস্তোরাঁর আসল মেনু কার্ডের দামেই খাবার পাবেন! আপনি প্রতি অর্ডারে ₹১৫০–₹৩৫০ সাশ্রয় করবেন। কুপন 'KINGVIP' দিয়ে ফ্রি ডেলিভারি ও ২৪K গোল্ড ক্যাশব্যাক উপভোগ করুন। ${selectedPersona.encouragement}`;
       } else {
         replyText =
           `Unlike other apps that inflate prices by up to 30%, OrderKing guarantees 0% menu markup—you pay exact offline restaurant dine-in prices! You save ₹150–₹350 on every single meal. Use code 'KINGVIP' for Free Delivery and code 'ROYAL50' for 50% off on your first feasts, plus 24K digital gold cashback on every dish! ${selectedPersona.encouragement}`;

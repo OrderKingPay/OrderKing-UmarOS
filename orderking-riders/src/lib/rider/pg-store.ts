@@ -455,6 +455,17 @@ export class PgStore implements RiderStore {
     return rows[0] ? deliveryFromRow(rows[0]) : null;
   }
 
+  async getActiveDeliveriesForRider(riderId: string) {
+    const rows = await this.sql.query<Record<string, unknown>>(
+      `select * from deliveries
+       where rider_id = $1
+         and state not in ('DELIVERED','OFFER_EXPIRED','RIDER_DECLINED','RIDER_CANCELLED','DELIVERY_FAILED','ORDER_CANCELLED','OFFERED')
+       order by created_at desc`,
+      [riderId],
+    );
+    return rows.map((r) => deliveryFromRow(r));
+  }
+
   async getDeliveryById(id: string) {
     const rows = await this.sql.query<Record<string, unknown>>("select * from deliveries where id = $1", [
       id,

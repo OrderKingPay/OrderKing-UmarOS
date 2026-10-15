@@ -486,7 +486,7 @@ export function FounderCrmHub({
               <div>
                 <label className="block font-bold mb-1">Key Pain Point</label>
                 <Input
-                  placeholder="e.g. Losing 28% to Swiggy/Zomato commissions"
+                  placeholder="e.g. Losing 28% to legacy aggregator commissions"
                   value={newPainPoint}
                   onChange={(e) => setNewPainPoint(e.target.value)}
                 />

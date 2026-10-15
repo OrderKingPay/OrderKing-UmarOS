@@ -8,6 +8,8 @@ export const FINANCIAL_SETTING_KEYS = [
   "riderBasePaise",
   "riderDistancePaise",
   "refundLimitPaise",
+  "rainSurgePaise",
+  "nightSurchargePaise",
 ] as const satisfies readonly (keyof PlatformSettings)[];
 
 export function financialSettingsChanged(prev: PlatformSettings, next: PlatformSettings): boolean {

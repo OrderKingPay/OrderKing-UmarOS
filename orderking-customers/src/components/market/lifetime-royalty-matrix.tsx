@@ -640,11 +640,11 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
       <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm space-y-4">
         <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
           <Building2 className="size-4 text-slate-700" />
-          <span>The Economics: Why OrderKing Pays 1% Forever (Unlike Swiggy or Zomato)</span>
+          <span>The Economics: Why OrderKing Pays 1% Forever (Unlike Dominant Legacy Aggregators)</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed text-slate-600">
           <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-4 space-y-2">
-            <span className="font-bold text-rose-800 uppercase tracking-wider block">Legacy Platforms (Zomato / Swiggy)</span>
+            <span className="font-bold text-rose-800 uppercase tracking-wider block">Dominant Legacy Aggregators</span>
             <p>
               Legacy apps spend ₹500 - ₹800 per customer acquisition on Meta, Google, and billboard ads. When that user orders, zero revenue goes back to the consumer network. All profits evaporate into advertising monopolies.
             </p>

@@ -2648,6 +2648,172 @@ export const bookSyndicateRiderSponsorFn = createServerFn({ method: "POST" })
     }
   });
 
+// --------------------------------------------------------------------------
+// COMMERCIAL MASTER DIALS ACTIONS (Squad 5)
+// --------------------------------------------------------------------------
+
+export const loadCommercialDialsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { getCommercialDials } = await import("./server/commercial-dials.server");
+      return { ok: true as const, data: await getCommercialDials(ws.ctx) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const updatePlatformFeeFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { feePaise: number; reason?: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { updatePlatformFeeDial } = await import("./server/commercial-dials.server");
+      const res = await updatePlatformFeeDial(ws, data.feePaise, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const loadOutletCommissionsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { listOutletCommissions } = await import("./server/commercial-dials.server");
+      return { ok: true as const, data: await listOutletCommissions(ws.ctx) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const updateOutletCommissionFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { restaurantId: string; commissionBps: number; reason?: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { updateOutletCommission } = await import("./server/commercial-dials.server");
+      const res = await updateOutletCommission(ws, data.restaurantId, data.commissionBps, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const updateSurgeDialsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    rainSurgeActive: boolean;
+    rainSurgePaise?: number;
+    nightSurchargeActive: boolean;
+    nightSurchargePaise?: number;
+    demandSurgeMultiplier: number;
+    reason?: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { updateSurgeDials } = await import("./server/commercial-dials.server");
+      const res = await updateSurgeDials(ws, data, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const loadPenaltyDisputesFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { statusFilter?: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { listPenaltyDisputes } = await import("./server/commercial-dials.server");
+      return { ok: true as const, data: await listPenaltyDisputes(ws.ctx, data.statusFilter) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const resolvePenaltyDisputeFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { disputeId: string; decision: "WAIVED" | "ENFORCED"; reason: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { resolvePenaltyDispute } = await import("./server/commercial-dials.server");
+      const res = await resolvePenaltyDispute(ws, data.disputeId, data.decision, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const loadWeeklyWednesdayPayoutBatchFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { loadWeeklyWednesdayPayoutBatch } = await import("./server/commercial-dials.server");
+      return { ok: true as const, data: await loadWeeklyWednesdayPayoutBatch(ws.ctx) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const releaseWeeklyWednesdayPayoutsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { reason?: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { releaseWeeklyWednesdayPayouts } = await import("./server/commercial-dials.server");
+      const res = await releaseWeeklyWednesdayPayouts(ws, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const loadFeaturedAdStudioFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { loadFeaturedAdStudio } = await import("./server/commercial-dials.server");
+      return { ok: true as const, data: await loadFeaturedAdStudio(ws.ctx) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const updateFeaturedAdBidFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    campaignId?: string;
+    restaurantId: string;
+    maxBidCpcPaise: number;
+    dailyBudgetPaise: number;
+    campaignName?: string;
+    placementSlot?: string;
+    status?: "ACTIVE" | "PAUSED";
+    reason?: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { updateFeaturedAdBid } = await import("./server/commercial-dials.server");
+      const res = await updateFeaturedAdBid(ws, data, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+
 
 
 

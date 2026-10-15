@@ -50,6 +50,7 @@ export const NAV: NavGroup[] = [
     i18n: "groups.executive",
     items: [
       { id: "ceo", path: "/app/ceo", i18n: "nav.ceo", permission: "access_CEO_dashboard", icon: "crown" },
+      { id: "commercial-dials", path: "/app/commercial-dials", i18n: "Commercial Master Dials", permission: "access_CEO_dashboard", icon: "activity" },
       { id: "founder-command", path: "/app/founder-command", i18n: "nav.founderCommand", permission: "access_CEO_dashboard", icon: "spark" },
       { id: "approvals", path: "/app/approvals", i18n: "nav.approvals", permission: "manage_ai_workforce", icon: "shield" },
       { id: "education", path: "/app/education", i18n: "nav.education", permission: "access_CEO_dashboard", icon: "spark" },

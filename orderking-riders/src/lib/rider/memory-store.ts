@@ -141,6 +141,15 @@ export class MemoryStore implements RiderStore {
     }
     return null;
   }
+  async getActiveDeliveriesForRider(riderId: string): Promise<Delivery[]> {
+    const list: Delivery[] = [];
+    for (const d of this.deliveries.values()) {
+      if (d.riderId === riderId && isActiveDelivery(d.state)) {
+        list.push(structuredClone(d));
+      }
+    }
+    return list;
+  }
   async getDeliveryById(id: string) {
     const d = this.deliveries.get(id);
     return d ? structuredClone(d) : null;

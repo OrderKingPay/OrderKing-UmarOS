@@ -155,12 +155,40 @@ export const STATUTORY_TAX_RATES = {
   /** 1% TDS under Section 194-O of Income Tax Act 1961 on gross sales */
   TDS_SEC194_O_BPS: 100,
 
+  /** Express Daily Cycle (T+1) nominal early-liquidity fee: 0.5% (50 bps) */
+  EXPRESS_DAILY_EARLY_LIQUIDITY_FEE_BPS: 50,
+
+  /** Standard Payment Gateway processing fee: 1.84% (184 bps) */
+  PAYMENT_GATEWAY_FEE_BPS: 184,
+  PAYMENT_GATEWAY_GST_BPS: 1800,
+
   /** Amortized recurring platform onboarding fee per batch/cycle (₹99.00 = 9900 paise) */
   AMORTIZED_ONBOARDING_FEE_PAISE: 9900,
 
   /** One-Time Direct Settlement platform onboarding fee (₹499.00 = 49900 paise) */
   ONE_TIME_ONBOARDING_FEE_PAISE: 49900,
 } as const;
+
+export const PAYMENT_GATEWAY_CONFIG = {
+  FEE_BPS: 184, // 184 bps = 1.84% Payment gateway processing fee
+  GST_BPS: 1800, // 1800 bps = 18.00% GST on Payment gateway fee
+} as const;
+
+export function calculatePaymentGatewayFee(grossTransactionPaise: Paise): {
+  pgFeeBasePaise: Paise;
+  pgFeeGstPaise: Paise;
+  totalPgFeePaise: Paise;
+} {
+  const base = mulBps(grossTransactionPaise, PAYMENT_GATEWAY_CONFIG.FEE_BPS);
+  const gst = mulBps(base, PAYMENT_GATEWAY_CONFIG.GST_BPS);
+  return {
+    pgFeeBasePaise: base,
+    pgFeeGstPaise: gst,
+    totalPgFeePaise: addPaise(base, gst),
+  };
+}
+
+export type SettlementCycleType = "STANDARD_WEEKLY" | "EXPRESS_DAILY";
 
 export const ONBOARDING_FEE_CONFIG = {
   /** Option A: Zero Upfront Barrier / Default: ₹99/month for 6 months */
@@ -233,8 +261,18 @@ export type SettlementBreakdown = {
   netTaxableSupplyPaise: Paise;
   platformFundedDiscountPaise: Paise;
 
+  // Settlement Cycle
+  cycleType: SettlementCycleType;
+
   // Commercial Commission
   commissionPaise: Paise;
+
+  // Payment Gateway Fee & 18% GST (SAC 9985)
+  gatewayFeePaise: Paise;
+  gatewayFeeGstPaise: Paise;
+
+  // Penalties & Dispute Adjustments
+  penaltiesPaise: Paise;
 
   // Statutory Tax Deductions Debited from Restaurant
   commissionGstPaise: Paise;
@@ -250,6 +288,10 @@ export type SettlementBreakdown = {
   sec9_5CgstPaise: Paise;
   sec9_5SgstPaise: Paise;
   platformLiabilitySec9_5Paise: Paise;
+
+  // Express Daily Cycle (T+1) Early Liquidity Fee (0.5% + 18% GST)
+  expressEarlyLiquidityFeePaise: Paise;
+  expressEarlyLiquidityFeeGstPaise: Paise;
 
   // Amortized Onboarding Fee (₹99.00 / 9900 paise recurring deduction per batch/cycle)
   amortizedOnboardingFeePaise: Paise;
@@ -274,6 +316,11 @@ export type ComputeRestaurantPayableInput = {
   platformFundedDiscountPaise: Paise;
   commissionBps?: number;
   commissionPaise?: Paise;
+  cycleType?: SettlementCycleType;
+  gatewayFeePaise?: Paise;
+  gatewayFeeBps?: number;
+  penaltiesPaise?: Paise;
+  earlyLiquidityFeeBps?: number;
   otherDeductionsPaise?: Paise;
   otherDeductionsCode?: string | null;
   refundAdjustmentPaise?: Paise;
@@ -288,6 +335,9 @@ export type ComputeRestaurantPayableInput = {
   sec9_5GstBps?: number;
   tcsSec52Bps?: number;
   tdsSec194OBps?: number;
+  isTableQrOrder?: boolean;
+  orderType?: "DELIVERY" | "DINE_IN" | "TABLE_QR" | "PICKUP";
+  applyPaymentGatewayPassThrough?: boolean;
 };
 
 /**
@@ -295,11 +345,14 @@ export type ComputeRestaurantPayableInput = {
  * Handles:
  * - Food Value & Packaging Charges (+ credit)
  * - Restaurant-Funded Discounts (- debit to derive Net Taxable Supply)
- * - Platform Commission (- debit)
+ * - Platform Commission (- debit; strictly 0% for Table QR dine-in orders)
  * - 18% GST on Platform Commission (- debit, 9% CGST + 9% SGST)
+ * - Payment Gateway Fees (184 bps = 1.84% + 18% GST) (- debit when passed through)
+ * - Penalties & Merchant Deductions (- debit)
  * - CGST Act Section 9(5) 5% GST calculation (tracked and recorded as platform liability remitted directly to Govt, not debited from restaurant payable)
  * - TCS under Section 52 of CGST Act (1% on net taxable supply) (- debit)
  * - TDS under Section 194-O of Income Tax Act (1% on gross sales) (- debit)
+ * - Express Daily (T+1) early liquidity fee (0.5% + 18% GST) (- debit when cycleType = "EXPRESS_DAILY")
  * - Amortized Onboarding Fee (₹99.00 / 9900 paise recurring deduction per batch/cycle) (- debit)
  * - Platform-Funded Promotional Subsidies (+ credit)
  * - Other Permitted Deductions (with mandatory reason code) (- debit)
@@ -315,7 +368,10 @@ export function computeRestaurantPayable(input: ComputeRestaurantPayableInput): 
     "platformFundedDiscountPaise",
   );
   const other = assertPaise(input.otherDeductionsPaise ?? 0, "otherDeductionsPaise");
+  const penalties = assertPaise(input.penaltiesPaise ?? 0, "penaltiesPaise");
   const refund = assertPaise(input.refundAdjustmentPaise ?? 0, "refundAdjustmentPaise");
+  const cycleType: SettlementCycleType = input.cycleType ?? "STANDARD_WEEKLY";
+  const isTableQr = input.isTableQrOrder === true || input.orderType === "TABLE_QR" || input.orderType === "DINE_IN";
 
   if (other !== 0 && !input.otherDeductionsCode) {
     throw new MoneyError("other deductions require an explicit reason code");
@@ -329,7 +385,9 @@ export function computeRestaurantPayable(input: ComputeRestaurantPayableInput): 
   const taxableBase = netTaxableSupply < 0 ? 0 : netTaxableSupply;
 
   // 3. Platform Commission (- debit)
-  if (input.commissionBps !== undefined) {
+  // Enforce 0% dine-in commission on Table QR orders
+  const effectiveCommissionBps = isTableQr ? 0 : (input.commissionBps ?? 0);
+  if (input.commissionBps !== undefined && !isTableQr) {
     if (!Number.isInteger(input.commissionBps)) {
       throw new MoneyError("commissionBps must be an integer");
     }
@@ -338,35 +396,51 @@ export function computeRestaurantPayable(input: ComputeRestaurantPayableInput): 
     }
   }
 
-  const commission = input.commissionPaise !== undefined
-    ? assertPaise(input.commissionPaise, "commissionPaise")
-    : mulBps(taxableBase, input.commissionBps ?? 0);
+  const commission = isTableQr
+    ? 0
+    : input.commissionPaise !== undefined
+      ? assertPaise(input.commissionPaise, "commissionPaise")
+      : mulBps(taxableBase, effectiveCommissionBps);
 
   // 4. 18% GST on Platform Commission (- debit, 9% CGST + 9% SGST)
   const commGstBps = input.commissionGstBps ?? STATUTORY_TAX_RATES.COMMISSION_GST_BPS;
-  const commissionGst = input.applyGstOnCommission === false ? 0 : mulBps(commission, commGstBps);
+  const commissionGst = input.applyGstOnCommission === false || isTableQr ? 0 : mulBps(commission, commGstBps);
   const commissionCgst = Math.floor(commissionGst / 2);
   const commissionSgst = subPaise(commissionGst, commissionCgst);
 
-  // 5. CGST Act Section 9(5) 5% GST calculation (tracked and recorded as platform liability remitted directly to Govt, not debited from restaurant payable)
+  // 5. Payment Gateway Processing Fee & 18% GST (184 bps = 1.84% + 18% GST)
+  let gatewayFee = 0;
+  let gatewayFeeGst = 0;
+  if (input.gatewayFeePaise !== undefined) {
+    gatewayFee = assertPaise(input.gatewayFeePaise, "gatewayFeePaise");
+  } else if (input.gatewayFeeBps !== undefined) {
+    gatewayFee = mulBps(grossSales, input.gatewayFeeBps);
+  } else if (input.applyPaymentGatewayPassThrough === true) {
+    gatewayFee = mulBps(grossSales, PAYMENT_GATEWAY_CONFIG.FEE_BPS);
+  }
+  if (gatewayFee > 0) {
+    gatewayFeeGst = mulBps(gatewayFee, STATUTORY_TAX_RATES.PAYMENT_GATEWAY_GST_BPS);
+  }
+
+  // 6. CGST Act Section 9(5) 5% GST calculation (tracked and recorded as platform liability remitted directly to Govt, not debited from restaurant payable)
   const sec9_5Bps = input.sec9_5GstBps ?? STATUTORY_TAX_RATES.SEC9_5_FOOD_GST_BPS;
   const sec9_5Gst = input.applySec9_5Gst === false ? 0 : mulBps(taxableBase, sec9_5Bps);
   const sec9_5Cgst = Math.floor(sec9_5Gst / 2);
   const sec9_5Sgst = subPaise(sec9_5Gst, sec9_5Cgst);
   const platformLiabilitySec9_5 = sec9_5Gst;
 
-  // 6. TCS under Section 52 of CGST Act (1% on net taxable supply) (- debit)
+  // 7. TCS under Section 52 of CGST Act (1% on net taxable supply) (- debit)
   const tcsBps = input.tcsSec52Bps ?? STATUTORY_TAX_RATES.TCS_SEC52_BPS;
   const tcsSec52 = input.applyTcsSec52 === false ? 0 : mulBps(taxableBase, tcsBps);
   const tcsCgst = Math.floor(tcsSec52 / 2);
   const tcsSgst = subPaise(tcsSec52, tcsCgst);
 
-  // 7. TDS under Section 194-O of Income Tax Act (1% on gross sales) (- debit)
+  // 8. TDS under Section 194-O of Income Tax Act (1% on gross sales) (- debit)
   const tdsBps = input.tdsSec194OBps ?? STATUTORY_TAX_RATES.TDS_SEC194_O_BPS;
   const tdsBase = grossSales < 0 ? 0 : grossSales;
   const tdsSec194O = input.applyTdsSec194O === false ? 0 : mulBps(tdsBase, tdsBps);
 
-  // 8. Amortized Onboarding Fee (₹99.00 / 9900 paise recurring deduction per batch/cycle) (- debit)
+  // 9. Amortized Onboarding Fee (₹99.00 / 9900 paise recurring deduction per batch/cycle) (- debit)
   let onboardingFee = 0;
   if (input.amortizedOnboardingFeePaise !== undefined) {
     onboardingFee = assertPaise(input.amortizedOnboardingFeePaise, "amortizedOnboardingFeePaise");
@@ -374,12 +448,34 @@ export function computeRestaurantPayable(input: ComputeRestaurantPayableInput): 
     onboardingFee = STATUTORY_TAX_RATES.AMORTIZED_ONBOARDING_FEE_PAISE;
   }
 
+  // 10. Express Daily (T+1) Early Liquidity Fee (0.5% + 18% GST)
+  let expressFee = 0;
+  let expressFeeGst = 0;
+  if (cycleType === "EXPRESS_DAILY") {
+    const preliminaryNet = Math.max(
+      0,
+      grossSales -
+        restDisc +
+        platDisc -
+        (commission + commissionGst + gatewayFee + gatewayFeeGst + penalties + other + tcsSec52 + tdsSec194O + onboardingFee) +
+        refund
+    );
+    const expressBps = input.earlyLiquidityFeeBps ?? STATUTORY_TAX_RATES.EXPRESS_DAILY_EARLY_LIQUIDITY_FEE_BPS;
+    expressFee = mulBps(preliminaryNet, expressBps);
+    expressFeeGst = mulBps(expressFee, STATUTORY_TAX_RATES.COMMISSION_GST_BPS);
+  }
+
   // Total debited deductions (note: Section 9(5) is platform liability, NOT debited from restaurant)
   const totalDeductions = addPaise(
     commission,
     commissionGst,
+    gatewayFee,
+    gatewayFeeGst,
+    penalties,
     tcsSec52,
     tdsSec194O,
+    expressFee,
+    expressFeeGst,
     onboardingFee,
     other,
   );
@@ -400,7 +496,11 @@ export function computeRestaurantPayable(input: ComputeRestaurantPayableInput): 
     restaurantDiscountPaise: restDisc,
     netTaxableSupplyPaise: netTaxableSupply,
     platformFundedDiscountPaise: platDisc,
+    cycleType,
     commissionPaise: commission,
+    gatewayFeePaise: gatewayFee,
+    gatewayFeeGstPaise: gatewayFeeGst,
+    penaltiesPaise: penalties,
     commissionGstPaise: commissionGst,
     commissionCgstPaise: commissionCgst,
     commissionSgstPaise: commissionSgst,
@@ -412,6 +512,8 @@ export function computeRestaurantPayable(input: ComputeRestaurantPayableInput): 
     tcsCgstPaise: tcsCgst,
     tcsSgstPaise: tcsSgst,
     tdsSec194OPaise: tdsSec194O,
+    expressEarlyLiquidityFeePaise: expressFee,
+    expressEarlyLiquidityFeeGstPaise: expressFeeGst,
     amortizedOnboardingFeePaise: onboardingFee,
     otherDeductionsPaise: other,
     otherDeductionsCode: input.otherDeductionsCode ?? null,

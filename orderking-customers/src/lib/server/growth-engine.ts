@@ -4,7 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 /**
  * OrderKing Growth Engine - Merchant Economics (The Wedge)
  * 
- * Zomato/Swiggy effectively charge 25-30% commissions.
+ * Dominant legacy aggregators effectively charge 25-30% commissions.
  * OrderKing operates on a Zero-Commission SaaS tier or a flat 10% Pay-As-You-Go tier.
  * We instantly settle payments using KingPay (vs T+2 for competitors).
  */
@@ -32,7 +32,7 @@ export const calculateMerchantEconomics = async (restaurantId: string, orderValu
   const netPayoutPaise = orderValuePaise - platformFeePaise - paymentGatewayFeePaise;
   
   // Competitor comparison (for merchant dashboard visibility)
-  const competitorFeePercent = 0.28; // Standard 28% assumed Zomato/Swiggy fee
+  const competitorFeePercent = 0.28; // Standard 28% assumed legacy aggregator fee
   const competitorPayoutPaise = Math.floor(orderValuePaise * (1 - competitorFeePercent));
   
   // OrderKing Savings

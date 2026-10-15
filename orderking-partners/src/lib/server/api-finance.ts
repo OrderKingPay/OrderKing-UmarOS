@@ -70,18 +70,100 @@ export const getSettlements = createServerFn({ method: "GET" })
           totalPayablePaise: asInt(b.total_payable_paise),
           lines: lines
             .filter((l) => l.batch_id === b.id)
-            .map((l) => ({
-              ...l,
-              foodValuePaise: asInt(l.food_value_paise),
-              packingPaise: asInt(l.packing_paise),
-              restaurantDiscountPaise: asInt(l.restaurant_discount_paise),
-              platformFundedDiscountPaise: asInt(l.platform_funded_discount_paise),
-              commissionPaise: asInt(l.commission_paise),
-              otherDeductionsPaise: asInt(l.other_deductions_paise),
-              refundAdjustmentPaise: asInt(l.refund_adjustment_paise),
-              restaurantPayablePaise: asInt(l.restaurant_payable_paise),
-            })),
+            .map((l) => {
+              const food = asInt(l.food_value_paise);
+              const packing = asInt(l.packing_paise);
+              const restDisc = asInt(l.restaurant_discount_paise);
+              const gross = food + packing;
+              const netTaxable = Math.max(0, gross - restDisc);
+              const comm = asInt(l.commission_paise);
+              const commGst = Math.round((comm * 18) / 100);
+              const gwFee = Math.round((gross * 180) / 10000); // 1.8% PG fee
+              const gwGst = Math.round((gwFee * 18) / 100);
+              const tcs = Math.round((netTaxable * 100) / 10000); // 1% TCS Sec 52
+              const tds = Math.round((gross * 100) / 10000); // 1% TDS Sec 194-O
+              const sec9_5 = Math.round((netTaxable * 500) / 10000); // 5% Food GST remitted by platform
+
+              return {
+                ...l,
+                foodValuePaise: food,
+                packingPaise: packing,
+                grossSalesPaise: gross,
+                restaurantDiscountPaise: restDisc,
+                platformFundedDiscountPaise: asInt(l.platform_funded_discount_paise),
+                netTaxableSupplyPaise: netTaxable,
+                commissionPaise: comm,
+                commissionGstPaise: commGst,
+                gatewayFeePaise: gwFee,
+                gatewayFeeGstPaise: gwGst,
+                tcsSec52Paise: tcs,
+                tdsSec194OPaise: tds,
+                sec9_5GstPaise: sec9_5,
+                otherDeductionsPaise: asInt(l.other_deductions_paise),
+                refundAdjustmentPaise: asInt(l.refund_adjustment_paise),
+                restaurantPayablePaise: asInt(l.restaurant_payable_paise),
+              };
+            }),
         })),
+      };
+    });
+  });
+
+export const requestExpressDailyPayout = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; idempotencyKey?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "settlements.view", async (sql, ctx) => {
+      const current = await sql<{ amt: number }>`
+        select coalesce(sum(restaurant_payable_paise),0)::int as amt
+        from orders
+        where restaurant_id = ${ctx.restaurantId}
+          and state = 'DELIVERED'
+          and id not in (select order_id from settlement_lines where restaurant_id = ${ctx.restaurantId})
+      `;
+      const amountPaise = asInt(current[0]?.amt, 0);
+      if (amountPaise <= 0) {
+        throw new Error("No accrued balance available for Express Daily (T+1) payout.");
+      }
+
+      // Check registered settlement bank account
+      const rest = await sql<{ bank_account: string | null; bank_ifsc: string | null }>`
+        select bank_account, bank_ifsc from restaurants where id = ${ctx.restaurantId} limit 1
+      `;
+      if (!rest[0]?.bank_account || !rest[0]?.bank_ifsc) {
+        throw new Error("Settlement bank account and IFSC must be configured before requesting Express Daily payout.");
+      }
+
+      // 0.5% nominal early liquidity fee + 18% GST on early liquidity fee
+      const liquidityFeeBps = 50; // 0.5%
+      const earlyLiquidityFeePaise = Math.round((amountPaise * liquidityFeeBps) / 10000);
+      const feeGstPaise = Math.round((earlyLiquidityFeePaise * 18) / 100);
+      const totalEarlyFeePaise = earlyLiquidityFeePaise + feeGstPaise;
+      const netPayoutPaise = Math.max(0, amountPaise - totalEarlyFeePaise);
+
+      const idempotencyKey = data.idempotencyKey || `exp_${ctx.restaurantId}_${Date.now()}`;
+      const batchId = newId("stl");
+
+      await sql`
+        insert into settlement_batches (
+          id, restaurant_id, status, period_start, period_end, scheduled_for, settled_at,
+          total_payable_paise, data_label
+        ) values (
+          ${batchId}, ${ctx.restaurantId}, 'PROCESSING',
+          (now() - interval '1 day')::date::text, now()::date::text, now()::date::text, now()::date::text,
+          ${netPayoutPaise}, ${ctx.dataLabel}
+        )
+      `;
+
+      return {
+        ok: true,
+        batchId,
+        grossAmountPaise: amountPaise,
+        earlyLiquidityFeePaise,
+        feeGstPaise,
+        netPayoutPaise,
+        idempotencyKey,
+        payoutDate: new Date().toISOString().split("T")[0],
       };
     });
   });

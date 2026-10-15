@@ -13,6 +13,9 @@ export type RiderDispatchQueueRow = {
   pickupAddress: string;
   pickupInstructions: string | null;
   readyAt: string;
+  expectedReadyAt?: string;
+  optimalDispatchTriggerAt?: string;
+  calculatedKptMinutes?: number;
   status: "queued" | "offered" | "assigned" | "cancelled" | "expired";
   dataLabel: string;
 };
@@ -27,6 +30,9 @@ export function buildDispatchQueueRow(input: {
   pickupInstructions?: string | null;
   dataLabel: string;
   readyAt?: string;
+  expectedReadyAt?: string;
+  optimalDispatchTriggerAt?: string;
+  calculatedKptMinutes?: number;
 }): RiderDispatchQueueRow {
   const orderCode =
     input.orderNumber.length >= 4 ? input.orderNumber.slice(-4) : input.orderNumber;
@@ -40,6 +46,9 @@ export function buildDispatchQueueRow(input: {
     pickupAddress: input.pickupAddress || "",
     pickupInstructions: input.pickupInstructions ?? null,
     readyAt: input.readyAt ?? new Date().toISOString(),
+    expectedReadyAt: input.expectedReadyAt,
+    optimalDispatchTriggerAt: input.optimalDispatchTriggerAt,
+    calculatedKptMinutes: input.calculatedKptMinutes,
     status: "queued",
     dataLabel: input.dataLabel,
   };

@@ -16,6 +16,27 @@ export const DELIVERY_COMMISSION_TIERS = {
 export type DeliveryCommissionTierKey = keyof typeof DELIVERY_COMMISSION_TIERS;
 
 export const DEFAULT_DELIVERY_COMMISSION_BPS = DELIVERY_COMMISSION_TIERS.FULL_SERVICE; // 2800 bps (28%)
+export const STANDARD_DELIVERY_COMMISSION_BPS = 2800; // 28% standard delivery take-rate
+export const DINE_IN_TABLE_QR_COMMISSION_BPS = 0; // 0% dine-in commission on Table QR orders
+export const MIN_DELIVERY_COMMISSION_BPS = 1800; // 18% enterprise take-rate floor
+export const MAX_DELIVERY_COMMISSION_BPS = 2800; // 28% standard take-rate ceiling
+export const PAYMENT_GATEWAY_FEE_BPS = 184; // 184 bps = 1.84% base gateway fee
+export const PAYMENT_GATEWAY_GST_BPS = 1800; // 1800 bps = 18.00% GST on payment gateway fee
+
+export function validateCommissionTakeRate(bps: number, isDineIn = false): number {
+  if (isDineIn) {
+    if (bps !== DINE_IN_TABLE_QR_COMMISSION_BPS) {
+      throw new Error(`Dine-in / Table QR commission must be strictly 0% (0 bps). Received: ${bps}`);
+    }
+    return DINE_IN_TABLE_QR_COMMISSION_BPS;
+  }
+  if (!Number.isInteger(bps) || bps < MIN_DELIVERY_COMMISSION_BPS || bps > MAX_DELIVERY_COMMISSION_BPS) {
+    throw new Error(
+      `Delivery take-rate must be an integer between ${MIN_DELIVERY_COMMISSION_BPS} and ${MAX_DELIVERY_COMMISSION_BPS} bps (18% to 28%). Received: ${bps}`
+    );
+  }
+  return bps;
+}
 
 export const COMMISSION_OPTIONS_BPS = [
   DELIVERY_COMMISSION_TIERS.DINE_IN,

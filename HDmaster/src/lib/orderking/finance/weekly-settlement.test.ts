@@ -2,12 +2,14 @@ import test, { describe } from "node:test";
 import assert from "node:assert/strict";
 import {
   getWeeklyCycle,
+  getExpressDailyCycle,
   calculateRestaurantWeeklySettlement,
+  calculateRestaurantDualCycleSettlement,
   calculateRiderWeeklySettlement,
 } from "./weekly-settlement.ts";
 
-describe("Zomato Weekly Settlement Cycle & Formula", () => {
-  test("generates Monday to Sunday cycle with Wednesday payout", () => {
+describe("Tier-1 Legacy Market Leader Dual Settlement Cycle & Statutory Formula", () => {
+  test("generates Monday to Sunday cycle with Wednesday payout for Standard Cycle", () => {
     // Wednesday 2026-09-16 reference date
     const cycle = getWeeklyCycle(new Date("2026-09-16T12:00:00Z"));
     assert.ok(cycle.cycleId.includes("cycle_"));
@@ -21,7 +23,16 @@ describe("Zomato Weekly Settlement Cycle & Formula", () => {
     assert.equal(diffDays, 3);
   });
 
-  test("calculates restaurant statement with statutory GST, TCS, and TDS", () => {
+  test("generates Express Daily Cycle (T+1) for yesterday's orders", () => {
+    const ref = new Date("2026-10-15T10:00:00Z");
+    const cycle = getExpressDailyCycle(ref);
+    assert.ok(cycle.cycleId.includes("cycle_express_"));
+    assert.equal(cycle.earlyLiquidityFeeBps, 50); // 0.5% fee
+    assert.ok(cycle.startDate);
+    assert.ok(cycle.payoutDate);
+  });
+
+  test("calculates restaurant statement with statutory GST, TCS, TDS, and Section 9(5)", () => {
     const cycle = getWeeklyCycle();
     // 50,000 INR food sales (5,000,000 paise), 2,000 INR restaurant discount (200,000 paise)
     const result = calculateRestaurantWeeklySettlement({
@@ -47,9 +58,46 @@ describe("Zomato Weekly Settlement Cycle & Formula", () => {
     assert.equal(result.tcsDeductionPaise, 48_000);
     // TDS 1% on net food = 48,000 paise (480 INR)
     assert.equal(result.tdsDeductionPaise, 48_000);
+    // Section 9(5) 5% GST = 240,000 paise (2,400 INR) remitted by OrderKing
+    assert.equal(result.sec9_5FoodGstPaise, 240_000);
     // Net payable must be positive and less than gross sales
     assert.ok(result.netPayablePaise > 0);
     assert.ok(result.netPayablePaise < result.grossSalesPaise);
+  });
+
+  test("calculates Express Daily settlement deducting nominal 0.5% early liquidity fee + 18% GST", () => {
+    const standard = calculateRestaurantDualCycleSettlement({
+      restaurantId: "rest_1",
+      restaurantName: "Biryani House",
+      cycleType: "STANDARD_WEEKLY",
+      deliveredOrdersCount: 20,
+      grossSalesPaise: 1_000_000, // 10,000 INR
+      restaurantDiscountsPaise: 50_000,
+      packagingChargesPaise: 10_000,
+      commissionBps: 1500, // 15%
+    });
+
+    const express = calculateRestaurantDualCycleSettlement({
+      restaurantId: "rest_1",
+      restaurantName: "Biryani House",
+      cycleType: "EXPRESS_DAILY",
+      deliveredOrdersCount: 20,
+      grossSalesPaise: 1_000_000,
+      restaurantDiscountsPaise: 50_000,
+      packagingChargesPaise: 10_000,
+      commissionBps: 1500,
+    });
+
+    assert.equal(standard.cycleType, "STANDARD_WEEKLY");
+    assert.equal(express.cycleType, "EXPRESS_DAILY");
+    // Standard has 0 early liquidity fee
+    assert.equal(standard.expressLiquidityFeePaise ?? 0, 0);
+    // Express has 0.5% early liquidity fee
+    assert.ok((express.expressLiquidityFeePaise ?? 0) > 0);
+    assert.ok((express.gstOnExpressLiquidityFeePaise ?? 0) > 0);
+    // Express net payout is standard minus liquidity fee and GST
+    const feeDiff = (express.expressLiquidityFeePaise ?? 0) + (express.gstOnExpressLiquidityFeePaise ?? 0);
+    assert.equal(express.netPayablePaise, standard.netPayablePaise - feeDiff);
   });
 
   test("calculates rider statement subtracting cash collected", () => {

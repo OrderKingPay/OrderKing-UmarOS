@@ -315,7 +315,7 @@ function RewardsPage() {
         {/* WhatsApp Viral Bounties Acquisition Engine */}
         <WhatsAppViralBountiesWidget source="rewards_vault" />
 
-        {/* Delete Zomato Bounty: ₹500 KingPay Wallet Switch Bounty */}
+        {/* Delete Legacy Aggregator Bounty: ₹500 KingPay Wallet Switch Bounty */}
         <CompetitorBounty className="mt-4" />
 
         {/* Post-Order Dopamine Wheel & Retention Engine */}

@@ -1,13 +1,13 @@
 
 
 /**
- * HDmaster AI - Zomato-Scale Autonomous Operations Engine
+ * HDmaster AI - Tier-1 Scale Autonomous Operations Engine
  * 10000x Real-time Capacity. Zero Physical Employees Required.
  */
 
 import { supabase } from "../db-cloud";
 
-export class ZomatoScaleOperationsEngine {
+export class Tier1ScaleOperationsEngine {
   
   /**
    * REPLACES: Human Dispatchers & Fleet Managers
@@ -73,7 +73,7 @@ export class ZomatoScaleOperationsEngine {
   static async algorithmicSurgeMatrix(zoneId: string, currentWeather: string, activeRiders: number) {
     let surgeMultiplier = 1.0;
     if (currentWeather === "RAIN" || activeRiders < 10) {
-      surgeMultiplier = 1.45; // Real-time Zomato-level dynamic scaling
+      surgeMultiplier = 1.45; // Real-time Tier-1 legacy benchmark dynamic scaling
     }
     await supabase.from("zone_pricing").update({ surge_multiplier: surgeMultiplier }).eq("zone_id", zoneId);
   }

@@ -1,6 +1,11 @@
 import { haversineKm } from "./eta.ts";
 import { nid, orderCode } from "./ids.ts";
-import { isEligibleRider, evaluateRiderEligibilityAndScore } from "./dispatch.ts";
+import {
+  isEligibleRider,
+  evaluateRiderEligibilityAndScore,
+  evaluateMultiOrderBatching,
+  MULTI_ORDER_BATCH_CONSTRAINTS,
+} from "./dispatch.ts";
 import { assertPlausiblePing } from "./gps.ts";
 import { assertNotSelfVerify, assertRiderKycSubmit } from "./kyc.ts";
 import { assertTransition, isActiveDelivery } from "./machine.ts";
@@ -170,21 +175,80 @@ export class RiderEngine {
           );
         }
       }
-      const existing = await this.store.getActiveDeliveryForRider(rider.id);
-      if (existing) {
-        throw new RiderError("BUSY", "You already have an active delivery", 409);
+      // Multi-Order Batching: Allow up to 2 concurrent orders if kitchens within 800m and detour < 1.5km
+      const activeDeliveries = this.store.getActiveDeliveriesForRider
+        ? await this.store.getActiveDeliveriesForRider(rider.id)
+        : (await this.store.getActiveDeliveryForRider(rider.id) ? [await this.store.getActiveDeliveryForRider(rider.id)!] : []);
+
+      let isBatchOrder = false;
+      let batchGroupId: string | null = null;
+      let detourDistanceKm: number | undefined;
+
+      if (activeDeliveries.length >= MULTI_ORDER_BATCH_CONSTRAINTS.maxConcurrentOrders) {
+        throw new RiderError(
+          "BUSY",
+          `Maximum concurrent orders (${MULTI_ORDER_BATCH_CONSTRAINTS.maxConcurrentOrders}) reached`,
+          409,
+        );
       }
+
+      if (activeDeliveries.length === 1) {
+        const primaryDelivery = activeDeliveries[0]!;
+        const batchCheck = evaluateMultiOrderBatching(
+          {
+            orderId: primaryDelivery.orderId,
+            orderCode: primaryDelivery.orderCode,
+            pickupLocation: primaryDelivery.pickupLocation,
+            dropLocation: primaryDelivery.dropLocation,
+          },
+          {
+            orderId: offer.id,
+            orderCode: offer.orderCode,
+            pickupLocation: offer.pickupLocation,
+            dropLocation: offer.dropLocation,
+          },
+        );
+
+        if (!batchCheck.canBatch) {
+          throw new RiderError(
+            "BUSY",
+            `Cannot accept concurrent order: ${batchCheck.reason}`,
+            409,
+          );
+        }
+
+        isBatchOrder = true;
+        batchGroupId = primaryDelivery.batchGroupId ?? `batch_${primaryDelivery.id}`;
+        detourDistanceKm = batchCheck.detourDistanceKm;
+      }
+
       const claimed = await this.store.casOffer(offer.id, rider.id, "ACCEPTED");
       if (!claimed) {
         throw new RiderError("OFFER_GONE", "This offer is no longer available", 409);
       }
+
       // Enforce ₹35 (3500 paise) base floor for rider fair earnings
       const hardenedOffer = {
         ...offer,
         expectedPayoutPaise: enforcePayoutFloor(offer.expectedPayoutPaise),
-        status: "ACCEPTED" as const
+        status: "ACCEPTED" as const,
+        isBatched: isBatchOrder,
+        batchGroupId,
+        detourDistanceKm,
       };
       const delivery = await this.createDeliveryFromOffer(rider, hardenedOffer);
+
+      // If second batched order, update primary delivery with batch association
+      if (isBatchOrder && activeDeliveries[0]) {
+        const primary = activeDeliveries[0];
+        await this.store.updateDelivery({
+          ...primary,
+          isBatched: true,
+          batchGroupId,
+          batchedWithDeliveryId: delivery.id,
+        });
+      }
+
       const busy: RiderProfile = {
         ...rider,
         status: "BUSY",
@@ -569,6 +633,8 @@ export class RiderEngine {
       createdAt: now,
       updatedAt: now,
       dataMode: cfg.dataMode,
+      isBatched: offer.isBatched ?? false,
+      batchGroupId: offer.batchGroupId ?? null,
     };
     await this.store.insertDelivery(delivery);
     await this.recordTransition(delivery, null, "ACCEPTED", "RIDER", rider.userId, "accepted offer");
@@ -1272,10 +1338,16 @@ export class RiderEngine {
     const coolingOff = getCoolingOffInfo(rider.coolingOffUntil, rider.coolingOffReason);
     const disciplineConfig = cfg.discipline ?? DEFAULT_DISCIPLINE_CONFIG;
 
+    const activeList = this.store.getActiveDeliveriesForRider
+      ? await this.store.getActiveDeliveriesForRider(rider.id)
+      : (active ? [active] : []);
+
     return {
       rider,
       offer,
       active: active ? this.presentDelivery(active) : null,
+      activeDeliveries: activeList.map((d) => this.presentDelivery(d)),
+      isBatchedActive: activeList.length > 1,
       todayEarningsPaise: earnings.reduce((a, e) => a + e.amountPaise, 0),
       completedToday: completed,
       pendingCashPaise: pocketBalance.pocketBalancePaise,

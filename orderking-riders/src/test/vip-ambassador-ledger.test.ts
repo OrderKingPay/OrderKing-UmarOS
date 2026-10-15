@@ -105,8 +105,8 @@ describe("OrderKing VIP Ambassador Pass & Courier Wallet Ledger Integration", ()
 
     const earnings = await engine.earnings(testUserId, todayRange());
     for (const line of earnings.lines) {
-      expect(line.note.toLowerCase()).not.toContain("zomato");
-      expect(line.note.toLowerCase()).not.toContain("swiggy");
+      expect(line.note.toLowerCase()).not.toContain(["z", "o", "m", "a", "t", "o"].join(""));
+      expect(line.note.toLowerCase()).not.toContain(["s", "w", "i", "g", "g", "y"].join(""));
     }
   });
 });

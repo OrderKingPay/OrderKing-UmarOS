@@ -216,7 +216,7 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
       totalOutlets,
       1
     )}+ top restaurants. Authentic ${topCuisines}, 0% menu markup, live tracking & 24K Gold rewards on OrderKing.`;
-    const keywords = `food delivery ${areaDisplayName}, restaurants in ${areaDisplayName}, order food online ${city.name}, best food delivery in ${city.name}, biryani delivery ${areaDisplayName}, swiggy alternative ${city.name}, zomato alternative ${city.name}, OrderKing ${city.name}`;
+    const keywords = `food delivery ${areaDisplayName}, restaurants in ${areaDisplayName}, order food online ${city.name}, best food delivery in ${city.name}, biryani delivery ${areaDisplayName}, best food delivery alternative ${city.name}, direct ordering ${city.name}, OrderKing ${city.name}`;
 
     // Schema.org Structured Data Graph
     const jsonLd = {

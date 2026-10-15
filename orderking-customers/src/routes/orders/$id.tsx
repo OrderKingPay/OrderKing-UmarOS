@@ -39,7 +39,7 @@ function OrderDetailPage() {
   const [reviewComment, setReviewComment] = useState("");
   const [splitCount, setSplitCount] = useState(2);
 
-  // Zomato-style Verified Customer Complaint Room State
+  // Gold-Standard Verified Customer Complaint Room State
   const [complaintOpen, setComplaintOpen] = useState(false);
   const [complaintCategory, setComplaintCategory] = useState<
     "MISSING_ITEMS" | "SPILLED_FOOD" | "COLD_FOOD" | "DELAYED_DELIVERY" | "RIDER_CONDUCT" | "BILLING_ISSUE"
@@ -227,7 +227,7 @@ function OrderDetailPage() {
           </div>
         </div>
         
-        {/* Zomato-style Instant Cancellation Grace Alert for New Orders */}
+        {/* Instant Cancellation Grace Alert for New Orders */}
         {order.status === "PLACED" ? (
           <div className="mt-4 flex items-center justify-between rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs shadow-xs">
             <div className="flex items-center gap-2.5">
@@ -278,7 +278,7 @@ function OrderDetailPage() {
           </div>
         ) : null}
 
-        {/* Zomato-standard Delivery Partner Live Card */}
+        {/* Platinum Delivery Partner Live Card */}
         {["RIDER_ASSIGNED", "PICKED_UP", "ON_THE_WAY"].includes(order.status) ? (
           <div className="mt-4 rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-sm">
             <div className="flex items-center justify-between">
@@ -564,7 +564,7 @@ function OrderDetailPage() {
               </div>
             </div>
           )}
-          {/* ZOMATO-STYLE VERIFIED CUSTOMER COMPLAINT ROOM (STRICTLY DELIVERED ORDERS ONLY) */}
+          {/* GOLD-STANDARD VERIFIED CUSTOMER COMPLAINT ROOM (STRICTLY DELIVERED ORDERS ONLY) */}
         {order.status === "DELIVERED" && (
           <div className="mt-4 rounded-[var(--radius-xl)] border-2 border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-surface to-rose-500/5 p-4 shadow-sm">
             <div className="flex items-center justify-between">
@@ -576,7 +576,7 @@ function OrderDetailPage() {
                   <div className="flex items-center gap-1.5">
                     <h3 className="font-bold text-sm text-foreground">Order Complaint & Resolution Room</h3>
                     <span className="rounded-full bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-800 dark:text-rose-300">
-                      Zomato-Standard Redressal
+                      Tier-1 Standard Redressal
                     </span>
                   </div>
                   <p className="text-xs text-muted">Direct complaint channel exclusively for verified delivered orders</p>

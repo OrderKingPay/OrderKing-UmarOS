@@ -66,7 +66,7 @@ export function VipGoldPassHub({
               </span>
               <div>
                 <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-amber-200 border border-amber-300/30">
-                  Zomato Gold / VIP Equivalent
+                  Tier-1 Luxury VIP Pass
                 </span>
                 <h3 className="font-display text-xl font-black text-white">OrderKing VIP Pass</h3>
               </div>

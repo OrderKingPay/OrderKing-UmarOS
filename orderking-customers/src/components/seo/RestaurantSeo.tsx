@@ -26,7 +26,7 @@ export function getRestaurantSeoMeta(restaurant: RestaurantDetail | null | undef
     ? `Order food online from ${cleanName} in ${area}. Fast ${eta}-min food delivery near me, authentic ${cuisine}, ${rating} rating, live order tracking, and exclusive discounts on OrderKing.`
     : `Order food online from ${cleanName}. Fast 30-min food delivery near me, live order tracking, and best offers on OrderKing.`;
 
-  const dynamicKeywords = `${cleanName}, ${cleanName} menu, ${cleanName} online order, ${cleanName} ${area}, food delivery near me, order food online near me, restaurants near me, online food delivery in ${area}, best food delivery near me, 30 min food delivery, late night food delivery near me, veg food delivery near me, zomato alternative, swiggy alternative, OrderKing delivery, food order near me, ${cuisine} near me`;
+  const dynamicKeywords = `${cleanName}, ${cleanName} menu, ${cleanName} online order, ${cleanName} ${area}, food delivery near me, order food online near me, restaurants near me, online food delivery in ${area}, best food delivery near me, 30 min food delivery, late night food delivery near me, veg food delivery near me, direct delivery alternative, aggregator alternative, OrderKing delivery, food order near me, ${cuisine} near me`;
 
   const canonicalUrl = `https://orderking.in/r/${slug}`;
 

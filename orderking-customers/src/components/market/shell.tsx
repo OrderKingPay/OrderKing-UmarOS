@@ -114,7 +114,7 @@ export function CustomerShell({
         {t("a11y.skip")}
       </a>
 
-      {/* Pristine Zomato-Superior Ultra-Luxury Header */}
+      {/* Pristine Ultra-Luxury Header */}
       <header
         className={cn(
           "sticky top-0 z-40 bg-gradient-to-b from-[#FFFDF9]/95 via-[#FAF6F0]/95 to-[#F5EFEB]/90 backdrop-blur-md px-3 sm:px-4 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 space-y-2 transition-all duration-300",

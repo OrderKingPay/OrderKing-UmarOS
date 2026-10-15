@@ -1,5 +1,5 @@
 /**
- * Complete Zomato-parity feature components suite for OrderKing Customer App.
+ * Complete Tier-1 legacy benchmark feature components suite for OrderKing Customer App.
  */
 
 export * from "./dietary-filters";

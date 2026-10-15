@@ -10,6 +10,8 @@ import {
   subPaise,
   STATUTORY_TAX_RATES,
   DELIVERY_COMMISSION_TIERS,
+  PAYMENT_GATEWAY_CONFIG,
+  calculatePaymentGatewayFee,
 } from "./money.ts";
 
 describe("money & Indian statutory settlement", () => {
@@ -490,6 +492,68 @@ describe("money & Indian statutory settlement", () => {
       s.refundAdjustmentPaise,
     );
     assert.equal(s.restaurantPayablePaise, expected);
+  });
+
+  it("calculates Express Daily (T+1) cycle settlement deducting nominal 0.5% early-liquidity fee and 18% GST", () => {
+    const standard = computeRestaurantPayable({
+      foodValuePaise: 100000, // ₹1,000.00
+      packingPaise: 0,
+      restaurantDiscountPaise: 0,
+      platformFundedDiscountPaise: 0,
+      commissionBps: 1000, // 10%
+      cycleType: "STANDARD_WEEKLY",
+    });
+
+    const express = computeRestaurantPayable({
+      foodValuePaise: 100000,
+      packingPaise: 0,
+      restaurantDiscountPaise: 0,
+      platformFundedDiscountPaise: 0,
+      commissionBps: 1000,
+      cycleType: "EXPRESS_DAILY",
+    });
+
+    assert.equal(standard.cycleType, "STANDARD_WEEKLY");
+    assert.equal(express.cycleType, "EXPRESS_DAILY");
+    assert.equal(standard.expressEarlyLiquidityFeePaise, 0);
+
+    // Express early liquidity fee (0.5% on preliminary net earnings)
+    assert.ok(express.expressEarlyLiquidityFeePaise > 0);
+    assert.ok(express.expressEarlyLiquidityFeeGstPaise > 0);
+    // 18% GST on early liquidity fee
+    assert.equal(
+      express.expressEarlyLiquidityFeeGstPaise,
+      Math.round((express.expressEarlyLiquidityFeePaise * 18) / 100)
+    );
+
+    const expressDeductionDiff = express.expressEarlyLiquidityFeePaise + express.expressEarlyLiquidityFeeGstPaise;
+    assert.equal(express.restaurantPayablePaise, standard.restaurantPayablePaise - expressDeductionDiff);
+  });
+
+  it("calculates order-level settlement with payment gateway fee (1.8% + 18% GST) and penalties", () => {
+    const s = computeRestaurantPayable({
+      foodValuePaise: 200000, // ₹2,000.00
+      packingPaise: 5000,     // ₹50.00
+      restaurantDiscountPaise: 10000, // ₹100.00
+      platformFundedDiscountPaise: 0,
+      commissionBps: 1200,   // 12%
+      gatewayFeeBps: 180,    // 1.8% PG fee
+      penaltiesPaise: 2500,  // ₹25.00 delay penalty
+    });
+
+    assert.equal(s.grossSalesPaise, 205000);
+    assert.equal(s.netTaxableSupplyPaise, 195000);
+
+    // Gateway fee: 1.8% of 205000 = 3690 paise
+    assert.equal(s.gatewayFeePaise, 3690);
+    // 18% GST on PG fee = 664 paise (round half away)
+    assert.equal(s.gatewayFeeGstPaise, 664);
+    // Penalties = 2500 paise
+    assert.equal(s.penaltiesPaise, 2500);
+
+    // Check all values are integers
+    assert.ok(Number.isSafeInteger(s.totalDeductionsPaise));
+    assert.ok(Number.isSafeInteger(s.restaurantPayablePaise));
   });
 });
 

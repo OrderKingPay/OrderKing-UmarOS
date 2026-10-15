@@ -131,7 +131,7 @@ export function decomposeFounderGoal(goal: string): PremiumExecutionPlan {
       status: "COMPLETED",
       isAutonomous: true,
       deliverables: ["Validated Lead List (14 Local Kitchens)", "Pain Point Verification"],
-      evidence: "Surveyed 14 cloud kitchens in target geography; 100% cited high Zomato/Swiggy commission as primary hurdle.",
+      evidence: "Surveyed 14 cloud kitchens in target geography; 100% cited high legacy aggregator commissions as primary hurdle.",
       completedAt: new Date().toISOString(),
     },
     {

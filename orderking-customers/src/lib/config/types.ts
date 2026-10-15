@@ -99,6 +99,12 @@ export type BusinessConfig = {
 export type MarketplaceConfig = {
   defaultCommissionBps: number;
   allowedCommissionBps: number[];
+  platformFeePaise?: number;
+  smallCartFeePaise?: number;
+  smallCartThresholdPaise?: number;
+  rainSurgePaise?: number;
+  peakSurgePaise?: number;
+  lateNightSurgePaise?: number;
   serviceFeePaise: number;
   serviceFeeBps: number;
   packagingDefaultPaise: number;

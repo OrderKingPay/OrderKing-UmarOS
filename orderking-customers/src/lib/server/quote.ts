@@ -43,6 +43,9 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
       deliveryFreeOverPaise: cfg.marketplace.deliveryFreeOverPaise,
       serviceFeePaise: cfg.marketplace.serviceFeePaise,
       serviceFeeBps: cfg.marketplace.serviceFeeBps,
+      platformFeePaise: cfg.marketplace.platformFeePaise ?? 600,
+      smallCartFeePaise: cfg.marketplace.smallCartFeePaise ?? 2500,
+      smallCartThresholdPaise: cfg.marketplace.smallCartThresholdPaise ?? 14900,
       menuPricesIncludeTax: cfg.tax.menuPricesIncludeTax,
       menuTaxBps: cfg.tax.menuTaxBps,
       serviceTaxBps: cfg.tax.serviceTaxBps,
@@ -219,15 +222,26 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
     deliveryFreeOverPaise: z.delivery_free_over_paise,
     serviceFeePaise: cfg.marketplace.serviceFeePaise,
     serviceFeeBps: cfg.marketplace.serviceFeeBps,
+    platformFeePaise: cfg.marketplace.platformFeePaise ?? 600,
+    smallCartFeePaise: cfg.marketplace.smallCartFeePaise ?? 2500,
+    smallCartThresholdPaise: cfg.marketplace.smallCartThresholdPaise ?? 14900,
+    rainSurgeActive: Boolean(cfg.features?.dynamicSurge && (cfg.features as any)?.rainSurgeActive),
+    rainSurgePaise: cfg.marketplace.rainSurgePaise ?? 2500,
+    peakSurgePaise: cfg.marketplace.peakSurgePaise ?? 2000,
+    lateNightSurgePaise: cfg.marketplace.lateNightSurgePaise ?? 2500,
     menuPricesIncludeTax: cfg.tax.menuPricesIncludeTax,
     menuTaxBps: cfg.tax.menuTaxBps,
     serviceTaxBps: cfg.tax.serviceTaxBps,
     deliveryTaxBps: cfg.tax.deliveryTaxBps,
     minOrderPaise: restaurant.min_order_paise ?? z.min_order_paise,
   };
+
+  const restaurantPackaging = restaurant.packaging_paise || 0;
+  const itemPackaging = pricedLines.reduce((acc, l) => acc + (l.itemPackagingPaise ?? 0) * l.quantity, 0);
+  const totalPackagingPaise = restaurantPackaging + itemPackaging;
   const quote = computeQuote({
     lines: pricedLines,
-    packagingPaise: restaurant.packaging_paise,
+    packagingPaise: totalPackagingPaise,
     commissionBps: restaurant.commission_bps,
     distanceKm: dist,
     fees,
@@ -260,7 +274,7 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
     dataLabel: restaurant.data_label,
     outletId: out.id,
     zoneId: z.id,
-    packagingPaise: restaurant.packaging_paise,
+    packagingPaise: totalPackagingPaise,
     commissionBps: restaurant.commission_bps,
     distanceKm: dist,
     fees,

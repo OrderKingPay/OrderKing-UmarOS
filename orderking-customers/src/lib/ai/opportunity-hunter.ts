@@ -86,7 +86,7 @@ export const VERIFIED_OPPORTUNITIES: Opportunity[] = [
     statedBudget: 149999,
     currency: "INR",
     deadline: "2026-10-05",
-    evidence: ["Field interview with Owner Rajesh Singha", "Swiggy/Zomato commission tax statements verified"],
+    evidence: ["Field interview with Owner Rajesh Singha", "Dominant legacy aggregator commission tax statements verified"],
     status: "QUALIFIED",
     nextAction: "Emit Milestone 1 Advance Invoice (₹45,000)",
     frictionMetrics: calculateFrictionMetrics(149999, 16, 4, 4, true),

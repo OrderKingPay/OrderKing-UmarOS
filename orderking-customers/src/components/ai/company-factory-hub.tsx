@@ -43,7 +43,7 @@ export const FACTORY_STAGES: CompanyStage[] = [
     icon: "📊",
     artifactTitle: "Market Opportunity & Competitor Gap Analysis",
     artifactSummary: "TAM: ₹4,800 Cr in Tier 2/3 Indian cities. Primary competitor weakness: 28% aggregator fees.",
-    artifactContent: `# Market Research Brief\n\n- **Target Market:** Hyperlocal quick commerce & regional restaurant direct ordering.\n- **Primary Pain Point:** Merchants lose 24-28% of gross margin to Zomato/Swiggy commissions.\n- **Market Size (Barak Valley / Assam Cluster):** 1,200+ food outlets with ₹18 Cr monthly food GMV.\n- **Competitive Advantage:** Zero-commission direct ordering with WhatsApp order alerts and 1-tap UPI QR.`,
+    artifactContent: `# Market Research Brief\n\n- **Target Market:** Hyperlocal quick commerce & regional restaurant direct ordering.\n- **Primary Pain Point:** Merchants lose 24-28% of gross margin to dominant legacy aggregator commissions.\n- **Market Size (Barak Valley / Assam Cluster):** 1,200+ food outlets with ₹18 Cr monthly food GMV.\n- **Competitive Advantage:** Zero-commission direct ordering with WhatsApp order alerts and 1-tap UPI QR.`,
   },
   {
     step: 2,

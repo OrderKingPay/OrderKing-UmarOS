@@ -19,6 +19,11 @@ import {
   ArrowLeft,
   ChevronRight,
   Edit3,
+  Info,
+  CloudRain,
+  Zap,
+  Moon,
+  Receipt,
 } from "lucide-react";
 import { toast } from "sonner";
 import { QuoteLines } from "@/components/market/quote-lines";
@@ -48,6 +53,39 @@ import { WhatsAppShare } from "@/components/market/whatsapp-share";
 import { WhatsAppViralBountiesWidget as ReferralGamifiedLoop } from "@/components/market/whatsapp-viral-bounties-widget";
 
 export const Route = createFileRoute("/checkout")({ component: CheckoutPage });
+
+function BillTooltip({ text, title }: { text: string; title?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative inline-flex items-center">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        className="text-zinc-400 hover:text-amber-500 transition p-0.5 rounded-full cursor-pointer focus:outline-none"
+        aria-label={title || "More information"}
+      >
+        <Info className="size-3.5" />
+      </button>
+      {open && (
+        <div
+          role="tooltip"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-64 rounded-xl border border-amber-400/40 bg-zinc-950 p-3 text-xs text-zinc-100 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 pointer-events-none"
+        >
+          {title && (
+            <div className="font-extrabold text-amber-400 mb-1 flex items-center gap-1.5">
+              <span>👑</span>
+              <span>{title}</span>
+            </div>
+          )}
+          <p className="text-[11px] leading-relaxed text-zinc-300 font-medium">{text}</p>
+          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-950" />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function CheckoutPage() {
   const { t, lang } = useT();
@@ -471,7 +509,7 @@ function CheckoutPage() {
                 </div>
               )}
 
-              {/* Ordering for someone else (Zomato-style) */}
+              {/* Ordering for someone else */}
               <section className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
                 <label className="flex cursor-pointer items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -580,7 +618,7 @@ function CheckoutPage() {
                 />
               </section>
 
-              {/* Delivery Partner Tip (Zomato-style) */}
+              {/* Delivery Partner Tip */}
               <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
@@ -812,41 +850,230 @@ function CheckoutPage() {
                 </label>
               </section>
 
-              {/* 3. ORDER SUMMARY WITH PREMIUM TYPOGRAPHY */}
-              <div className="rounded-3xl border border-amber-400/30 bg-gradient-to-b from-white via-zinc-50/50 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-900 p-5 sm:p-6 shadow-md space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-                  <h3 className="font-display text-base font-extrabold text-zinc-900 dark:text-zinc-50">
-                    Final Bill Summary
-                  </h3>
-                  <span className="text-xs font-bold text-emerald-600">FSSAI &amp; GST Tax Compliant</span>
+              {/* 3. ORDER SUMMARY WITH CRISP LUXURY BILL BREAKDOWN */}
+              <div className="rounded-3xl border border-amber-400/40 bg-gradient-to-b from-white via-zinc-50/70 to-amber-50/20 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-5 sm:p-6 shadow-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-amber-400/20 dark:border-zinc-800 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 shadow-xs">
+                      <Receipt className="size-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-base font-black text-zinc-950 dark:text-amber-100">
+                        Royal Bill Breakdown
+                      </h3>
+                      <p className="text-[11px] text-zinc-500">100% Transparent · Zero Hidden Charges</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-emerald-700 dark:text-emerald-300 flex items-center gap-1 shadow-2xs">
+                    <ShieldCheck className="size-3" />
+                    GST Sec 9(5) Compliant
+                  </span>
                 </div>
 
                 {quote.data ? (
-                  <>
-                    <QuoteLines lines={quote.data.quote.lines} locale={locale} />
-
-                    <div className="rounded-xl border border-dashed border-amber-400/30 p-3 bg-amber-500/5 text-xs text-zinc-600 dark:text-zinc-400 space-y-1">
-                      <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
-                        <span>CGST Sec 9(5) Platform Facilitator</span>
-                        <span>FSSAI Verified Commercial Kitchen</span>
+                  <div className="space-y-3">
+                    {/* Food Total */}
+                    <div className="flex items-center justify-between text-sm py-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-semibold text-zinc-800 dark:text-zinc-200">Food Total</span>
+                        <BillTooltip
+                          title="Kitchen Food Bill"
+                          text="Sum of all ordered delicacies from the master kitchen menu at genuine restaurant prices without aggregator markups."
+                        />
                       </div>
-                      <div className="flex justify-between font-medium">
-                        <span>Statutory Restaurant GST (2.5% + 2.5%)</span>
-                        <span>
+                      <span className="tabular-nums font-bold text-zinc-950 dark:text-zinc-50">
+                        {formatPaise(quote.data.quote.foodSubtotalPaise, { locale })}
+                      </span>
+                    </div>
+
+                    {/* Discounts */}
+                    {quote.data.quote.restaurantDiscountPaise > 0 && (
+                      <div className="flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 py-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span>🎁 {quote.data.promoName || "Kitchen Discount"}</span>
+                        </div>
+                        <span className="tabular-nums">-{formatPaise(quote.data.quote.restaurantDiscountPaise, { locale })}</span>
+                      </div>
+                    )}
+                    {quote.data.quote.platformDiscountPaise > 0 && (
+                      <div className="flex items-center justify-between text-xs font-bold text-amber-600 dark:text-amber-400 py-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span>👑 Platform Royal Discount</span>
+                        </div>
+                        <span className="tabular-nums">-{formatPaise(quote.data.quote.platformDiscountPaise, { locale })}</span>
+                      </div>
+                    )}
+
+                    {/* Packaging */}
+                    {quote.data.quote.packagingPaise > 0 && (
+                      <div className="flex items-center justify-between text-sm py-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-zinc-700 dark:text-zinc-300">Kitchen Packaging</span>
+                          <BillTooltip
+                            title="Tamper-Proof Packaging"
+                            text="Set directly by the kitchen to guarantee spill-proof, food-grade, tamper-evident thermal packaging."
+                          />
+                        </div>
+                        <span className="tabular-nums font-semibold text-zinc-800 dark:text-zinc-200">
+                          {formatPaise(quote.data.quote.packagingPaise, { locale })}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Delivery Fee with Distance Slabs & Dynamic Surge Breakdown */}
+                    <div className="rounded-2xl border border-amber-400/25 dark:border-zinc-800 bg-amber-500/5 dark:bg-zinc-850/60 p-3.5 space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1">
+                            <Bike className="size-3.5 text-amber-600" />
+                            <span>Delivery Fee</span>
+                          </span>
+                          <BillTooltip
+                            title="Distance Slab Delivery"
+                            text="Calculated using verified distance slabs: Base delivery 0-3km (₹25-₹35), 3-7km (+₹10/km), >7km (+₹14/km) plus any active dynamic surge."
+                          />
+                          {quote.data.quote.surgeFeePaise > 0 && (
+                            <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 text-[9px] font-black uppercase px-2 py-0.5 flex items-center gap-0.5 shadow-2xs animate-pulse">
+                              <Zap className="size-2.5" />
+                              Surge Active
+                            </span>
+                          )}
+                        </div>
+                        <span className="tabular-nums font-extrabold text-zinc-950 dark:text-zinc-50">
+                          {quote.data.quote.deliveryFeePaise === 0 ? (
+                            <span className="text-emerald-600 dark:text-emerald-400 font-black text-xs uppercase bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                              FREE
+                            </span>
+                          ) : (
+                            formatPaise(quote.data.quote.deliveryFeePaise, { locale })
+                          )}
+                        </span>
+                      </div>
+
+                      {/* Distance slab fee component */}
+                      <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
+                        <span>Base slab fee ({quote.data.quote.baseDeliveryFeePaise === 0 ? "Waived" : "0-3km standard slab"})</span>
+                        <span className="tabular-nums font-medium">{formatPaise(quote.data.quote.baseDeliveryFeePaise, { locale })}</span>
+                      </div>
+
+                      {/* Dynamic Surge itemized breakdown if active */}
+                      {quote.data.quote.surgeFeePaise > 0 && (
+                        <div className="space-y-1.5 border-t border-dashed border-amber-400/30 pt-2">
+                          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                            <span>Active Surge Breakdown</span>
+                            <span>+{formatPaise(quote.data.quote.surgeFeePaise, { locale })}</span>
+                          </div>
+                          {quote.data.quote.surgeBreakdown?.activeSurges.map((surge) => (
+                            <div key={surge.type} className="flex items-center justify-between text-xs py-0.5 bg-amber-500/10 dark:bg-amber-500/5 rounded-lg px-2">
+                              <div className="flex items-center gap-1.5">
+                                {surge.type === "RAIN" ? (
+                                  <CloudRain className="size-3.5 text-sky-500" />
+                                ) : surge.type === "PEAK_DEMAND" ? (
+                                  <Zap className="size-3.5 text-amber-500" />
+                                ) : (
+                                  <Moon className="size-3.5 text-indigo-400" />
+                                )}
+                                <span className="font-semibold text-zinc-800 dark:text-zinc-200">{surge.label}</span>
+                                <BillTooltip title={surge.label} text={surge.description} />
+                              </div>
+                              <span className="tabular-nums font-bold text-amber-800 dark:text-amber-300">
+                                +{formatPaise(surge.amountPaise, { locale })}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Small Cart Fee */}
+                    {quote.data.quote.smallCartFeePaise > 0 && (
+                      <div className="flex items-center justify-between text-sm py-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-zinc-700 dark:text-zinc-300">Small Cart Fee</span>
+                          <BillTooltip
+                            title="Small Cart Fee"
+                            text="Standard ₹25.00 fee applied for orders with food value under ₹149.00 to maintain logistics viability and fair rider payouts."
+                          />
+                        </div>
+                        <span className="tabular-nums font-semibold text-zinc-800 dark:text-zinc-200">
+                          +{formatPaise(quote.data.quote.smallCartFeePaise, { locale })}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Platform Fee */}
+                    <div className="flex items-center justify-between text-sm py-1 rounded-xl bg-amber-500/10 dark:bg-amber-500/5 px-2.5 border border-amber-400/20">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-amber-950 dark:text-amber-100 flex items-center gap-1.5">
+                          <span>👑</span>
+                          <span>Consumer Platform Fee</span>
+                        </span>
+                        <BillTooltip
+                          title="Platform Fee (Founder Gross Profit)"
+                          text="Flat ₹6.00 to ₹10.00 platform fee representing 100% founder gross profit. Supports high-reliability 24/7 cloud servers, bank-grade payment encryption, and round-the-clock live dispatch monitoring."
+                        />
+                      </div>
+                      <span className="tabular-nums font-extrabold text-amber-950 dark:text-amber-200">
+                        {formatPaise(quote.data.quote.platformFeePaise, { locale })}
+                      </span>
+                    </div>
+
+                    {/* Govt Taxes: 5% Food GST + 18% Services GST */}
+                    <div className="space-y-1.5 rounded-2xl border border-dashed border-amber-400/30 p-3 bg-amber-500/5 dark:bg-zinc-850/40 text-xs text-zinc-600 dark:text-zinc-400">
+                      <div className="flex items-center justify-between font-bold text-zinc-850 dark:text-zinc-150">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-zinc-900 dark:text-zinc-100 font-bold">Govt Taxes (GST)</span>
+                          <BillTooltip
+                            title="Statutory GST Compliance"
+                            text="Includes 5% restaurant food GST levied under Section 9(5) CGST (collected and remitted by OrderKing as an Electronic Commerce Operator) plus statutory 18% services GST on platform charges."
+                          />
+                        </div>
+                        <span className="tabular-nums font-bold text-zinc-900 dark:text-zinc-100">
                           {quote.data.quote.taxPaise > 0
                             ? formatPaise(quote.data.quote.taxPaise, { locale })
-                            : "Inclusive"}
+                            : "Included"}
                         </span>
+                      </div>
+
+                      <div className="flex justify-between items-center text-[10px] text-zinc-500 dark:text-zinc-400 font-mono pt-1">
+                        <span>• Restaurant Food GST (Sec 9(5) CGST 5%)</span>
+                        <span>{quote.data.quote.taxBreakdown?.foodGstIncludedInMenu ? "Included in Item Prices" : formatPaise(quote.data.quote.taxBreakdown?.foodGstPaise ?? 0, { locale })}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
+                        <span>• Services GST (18% on Platform &amp; Services)</span>
+                        <span>{formatPaise(quote.data.quote.taxBreakdown?.servicesGstPaise ?? 0, { locale })}</span>
                       </div>
                     </div>
 
+                    {/* Delivery Partner Tip */}
                     {safeTipPaise > 0 && (
-                      <div className="flex justify-between border-t border-zinc-200 dark:border-zinc-800 pt-2 text-sm font-bold">
-                        <span className="text-zinc-600 dark:text-zinc-300">Delivery Partner Tip</span>
-                        <span className="text-amber-600">+{formatPaise(safeTipPaise, { locale })}</span>
+                      <div className="flex items-center justify-between text-sm font-bold border-t border-zinc-200 dark:border-zinc-800 pt-2">
+                        <div className="flex items-center gap-1.5">
+                          <Heart className="size-4 text-rose-500 fill-rose-500" />
+                          <span className="text-zinc-800 dark:text-zinc-200">Delivery Partner Tip</span>
+                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+                            100% to Rider
+                          </span>
+                        </div>
+                        <span className="text-amber-600 font-extrabold tabular-nums">+{formatPaise(safeTipPaise, { locale })}</span>
                       </div>
                     )}
-                  </>
+
+                    {/* Total Payable (Ultra-Crisp 3D Golden Card) */}
+                    <div className="flex items-center justify-between rounded-2xl border-2 border-amber-400/60 bg-gradient-to-r from-amber-500/15 via-yellow-400/20 to-amber-500/10 dark:from-amber-950/40 dark:to-zinc-900 p-3.5 mt-3 shadow-md">
+                      <div>
+                        <span className="block font-display text-sm sm:text-base font-black text-zinc-950 dark:text-zinc-50 tracking-tight">
+                          Total Payable
+                        </span>
+                        <span className="block text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold">
+                          All taxes &amp; operational fees included
+                        </span>
+                      </div>
+                      <span className="font-display text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-300 tabular-nums tracking-tight">
+                        {formatPaise(totalPayable, { locale })}
+                      </span>
+                    </div>
+                  </div>
                 ) : (
                   <p className="text-sm text-zinc-400">{t("common.loading") || "Calculating bill..."}</p>
                 )}

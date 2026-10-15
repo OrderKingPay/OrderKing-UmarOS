@@ -653,7 +653,7 @@ function RestaurantPage() {
                             </div>
                           </div>
 
-                          {/* Image & Add Button (Zomato/Swiggy Overlap Style) */}
+                          {/* Image & Add Button (Elevated Floating Overlap Style) */}
                           <div className="relative shrink-0 flex flex-col items-center">
                             <div className="size-24 sm:size-28 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 shadow-sm">
                               {it.imageUrl ? (
@@ -728,7 +728,7 @@ function RestaurantPage() {
               );
             })}
 
-            {/* Zomato-standard FSSAI License & Regulatory Card */}
+            {/* Statutory FSSAI License & Regulatory Card */}
             <div className="my-8 rounded-3xl border border-amber-500/20 bg-gradient-to-br from-white via-zinc-50/50 to-amber-50/10 dark:from-zinc-900 dark:to-zinc-900 p-5 text-xs text-zinc-500 space-y-3 shadow-sm">
               <div className="flex items-center gap-3 border-b border-zinc-200 dark:border-zinc-800 pb-3">
                 <div className="flex h-8 w-14 items-center justify-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-black tracking-tight text-[11px] shadow-2xs">

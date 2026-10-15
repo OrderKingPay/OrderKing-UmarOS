@@ -265,10 +265,10 @@ export type RiderProfile = {
   riderType: RiderType;
   vehicleType: VehicleType;
   vehicleRegistration: string | null;
-  licenceNumber: string | null;
-  insuranceRef: string | null;
-  payoutUpi: string | null;
-  payoutBankLast4: string | null;
+  licenceNumber?: string | null;
+  insuranceRef?: string | null;
+  payoutUpi?: string | null;
+  payoutBankLast4?: string | null;
   preferredZones: string[];
   availabilityNotes: string;
   status: AvailabilityStatus;
@@ -280,6 +280,11 @@ export type RiderProfile = {
   consecutiveDeclines?: number;
   coolingOffUntil?: string | null;
   coolingOffReason?: string | null;
+  batteryPct?: number | null;
+  appVersion?: string | null;
+  ratingAvg?: number | null;
+  lifetimeDeliveries?: number | null;
+  joinedAt?: string | null;
 };
 
 export type RestaurantSlice = {
@@ -322,6 +327,9 @@ export type DispatchOffer = {
   status: OfferStatus;
   createdAt: string;
   dataMode: DataMode;
+  isBatched?: boolean;
+  batchGroupId?: string | null;
+  detourDistanceKm?: number;
 };
 
 export type Delivery = {
@@ -359,6 +367,9 @@ export type Delivery = {
   waitMinutes?: number;
   waitPayPaise?: number;
   earningsBreakdown?: DeliveryEarningsBreakdown;
+  isBatched?: boolean;
+  batchGroupId?: string | null;
+  batchedWithDeliveryId?: string | null;
 };
 
 export type DeliveryEarningsBreakdown = {
