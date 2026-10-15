@@ -3103,9 +3103,9 @@ function UmarOSDashboard() {
                       onClick={() => selectSubTab("all-worlds")}
                     />
                     <ActionCard
-                      title="Configure 23 Indian Languages"
-                      description="Enable native script and voice support across all 22 Eighth Schedule languages + English."
-                      buttonLabel="Open 23 Languages"
+                      title="Configure 10 Indian Languages"
+                      description="Enable native script and voice support across all 10 benchmark languages."
+                      buttonLabel="Open 10 Languages"
                       onClick={() => selectSubTab("languages")}
                     />
                     <ActionCard
@@ -3444,7 +3444,7 @@ function UmarOSDashboard() {
                 },
                 {
                   step: "5. Doorstep Handover",
-                  desc: "Rider delivers order with 23-language voice guidance.",
+                  desc: "Rider delivers order with 10-language voice guidance.",
                 },
                 {
                   step: "6. Instant Payout",
