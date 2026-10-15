@@ -257,7 +257,7 @@ export function UniversalPosHardwareManager({
     restaurantName,
     orderNumber: "OK-7841",
     orderType: "DELIVERY",
-    tableOrArea: "Zone-B / Swiggy-OrderKing Delivery",
+    tableOrArea: "Zone-B / Order King Express Delivery",
     timestamp: new Date().toLocaleString("en-IN"),
     prepMinutes: 20,
     items: [
