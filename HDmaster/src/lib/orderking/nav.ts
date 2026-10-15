@@ -1057,7 +1057,7 @@ export const UMAR_OS_BOTTOM_HUBS: BottomNavHub[] = [
     emoji: "⚙️",
     badge: "Master Control",
     tagline:
-      "Executive Operations Dashboard, White-Label Design & Branding, 23-Language Indian Localization & Founder Settings",
+      "Executive Operations Dashboard, White-Label Design & Branding, 10-Language Indian Localization & Founder Settings",
     categories: [
       {
         id: "exec_ops_dashboard",
@@ -1130,19 +1130,19 @@ export const UMAR_OS_BOTTOM_HUBS: BottomNavHub[] = [
         ],
       },
       {
-        id: "localization_23",
-        label: "23-Language Localization",
-        summary: "All 22 Eighth Schedule Indian Constitutional Languages plus English across every surface.",
-        badge: "23 Languages",
+        id: "localization_10",
+        label: "10-Language Localization",
+        summary: "10 Indian Food Delivery Benchmark Languages across every surface.",
+        badge: "10 Languages",
         options: [
           {
             id: "loc-matrix",
-            subCategory: "Constitutional Languages",
-            label: "23-Language Dictionary & Script Governance",
-            description: "Manage Hindi, Bengali, Telugu, Marathi, Tamil, Urdu, Gujarati, Kannada, Malayalam & more.",
+            subCategory: "Benchmark Languages",
+            label: "10-Language Dictionary & Script Governance",
+            description: "Manage Hindi, Bengali, Gujarati, Kannada, Malayalam, Marathi, Punjabi, Tamil, Telugu & English.",
             to: "/app/settings",
-            query: { tab: "localization-23" },
-            badge: "22 + English",
+            query: { tab: "localization-10" },
+            badge: "10 Languages",
           },
           {
             id: "loc-cms",
@@ -1156,7 +1156,7 @@ export const UMAR_OS_BOTTOM_HUBS: BottomNavHub[] = [
           {
             id: "loc-notifications",
             subCategory: "Multilingual Alerts",
-            label: "23-Language Rider & Customer Alert Templates",
+            label: "10-Language Rider & Customer Alert Templates",
             description: "Deliver order status and dispatch notifications in the user's preferred language.",
             to: "/app/notifications",
             query: { tab: "templates-i18n" },
@@ -1953,13 +1953,13 @@ export const UMAR_OS_10_WORLDS: BottomNavWorld[] = [
       {
         id: "st_settings",
         label: "Settings & Customizations",
-        summary: "Customize theme tokens, 23 Indian languages, and banner display rules.",
+        summary: "Customize theme tokens, 10 Indian benchmark languages, and banner display rules.",
         badge: "Customize",
         options: [
           {
             id: "st-cfg-brand",
             subCategory: "Design Rules",
-            label: "Theme & 23-Language Customizations",
+            label: "Theme & 10-Language Customizations",
             description: "Configure default app colors, typography, and regional language options.",
             to: "/app/branding",
             badge: "Settings",

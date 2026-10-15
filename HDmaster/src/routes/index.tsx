@@ -3942,7 +3942,7 @@ function UmarOSDashboard() {
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🎓</span>
                   <h2 className="text-base font-black text-slate-900">
-                    23-Language AI Tutor & Voice Lessons
+                    10-Language AI Tutor & Voice Lessons
                   </h2>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                     {completedLessons.length}/4 Completed
@@ -3963,16 +3963,13 @@ function UmarOSDashboard() {
                   <option value="English">English</option>
                   <option value="Hindi">हिंदी (Hindi)</option>
                   <option value="Bengali">বাংলা (Bengali)</option>
-                  <option value="Assamese">অসমীয়া (Assamese)</option>
-                  <option value="Tamil">தமிழ் (Tamil)</option>
-                  <option value="Telugu">తెలుగు (Telugu)</option>
-                  <option value="Marathi">मराठी (Marathi)</option>
                   <option value="Gujarati">ગુજરાતી (Gujarati)</option>
                   <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
                   <option value="Malayalam">മലയാളം (Malayalam)</option>
+                  <option value="Marathi">मराठी (Marathi)</option>
                   <option value="Punjabi">ਪੰਜਾਬੀ (Punjabi)</option>
-                  <option value="Odia">ଓଡ଼ିଆ (Odia)</option>
-                  <option value="Urdu">اردو (Urdu)</option>
+                  <option value="Tamil">தமிழ் (Tamil)</option>
+                  <option value="Telugu">తెలుగు (Telugu)</option>
                 </select>
               </div>
             </div>
@@ -4991,7 +4988,7 @@ function UmarOSDashboard() {
         {activeWorldId === "settings" && currentTabId === "languages" && (
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <h2 className="text-base font-black text-slate-900">
-              🗣️ All 23 Indian Constitutional Languages + English
+              🗣️ 10 Indian Food Delivery Benchmark Languages
             </h2>
             <p className="text-xs text-slate-600">
               Active across Customer App, Restaurant Partner App, and Delivery
