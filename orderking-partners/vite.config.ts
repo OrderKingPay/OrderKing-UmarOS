@@ -189,7 +189,12 @@ export default defineConfig(({ command, isPreview }) => ({
     port: 8081,
     strictPort: true,
   },
-  resolve: { tsconfigPaths: true },
+  resolve: {
+    tsconfigPaths: true,
+    alias: {
+      "@orderking/ui": join(process.cwd(), "../packages/ui/src"),
+    },
+  },
   plugins: [
     
     // Before tanstackStart so /auth/popup never falls through to the SPA.

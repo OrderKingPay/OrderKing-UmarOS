@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { QuoteLines } from "@/components/market/quote-lines";
 import { CheckoutUpsellEngine } from "@/components/market/checkout-upsell-engine";
 import { CustomerShell } from "@/components/market/shell";
+import { ScheduleOrderModal } from "@/components/market/schedule-order-modal";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
 import { formatPaise } from "@/lib/money";
@@ -42,6 +43,8 @@ function CartPage() {
   const { restaurantId, restaurantName, items, coupon, updateQty, remove, setCoupon, clear } = useCartStore();
   const location = useLocationStore((s) => s.location);
   const [code, setCode] = useState(coupon);
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [scheduledTime, setScheduledTime] = useState<{ date: string; timeSlot: string } | null>(null);
   const navigate = useNavigate();
   const isDeliveryActive = isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
 
@@ -121,10 +124,14 @@ function CartPage() {
                 </div>
               </div>
 
-              <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-400/30 border border-amber-500/40 px-3 py-1 text-xs font-black text-amber-900 dark:text-amber-200">
+              <button
+                type="button"
+                onClick={() => setScheduleModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-full bg-amber-400/30 hover:bg-amber-400/50 border border-amber-500/40 px-3 py-1.5 text-xs font-black text-amber-900 dark:text-amber-200 transition cursor-pointer active:scale-95 shadow-2xs"
+              >
                 <Clock className="size-3.5" />
-                <span>30-Min Guarantee</span>
-              </div>
+                <span>{scheduledTime ? `${scheduledTime.date} (${scheduledTime.timeSlot})` : "Schedule Delivery"}</span>
+              </button>
             </div>
           </div>
 
@@ -419,6 +426,13 @@ function CartPage() {
 
         </div>
       </div>
+
+      <ScheduleOrderModal
+        isOpen={scheduleModalOpen}
+        onClose={() => setScheduleModalOpen(false)}
+        restaurantName={restaurantName}
+        onSchedule={(s) => setScheduledTime(s)}
+      />
     </CustomerShell>
   );
 }

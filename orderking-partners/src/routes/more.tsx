@@ -8,6 +8,7 @@ import { useClientState } from "@/lib/client-state";
 import { can } from "@/lib/rbac";
 import { UserButton } from "@/lib/auth/gates";
 import { ALL_INDIAN_LANGUAGES } from "./settings";
+import { useCommissionTokens } from "@orderking/ui";
 import {
   ArrowUpRight,
   CalendarDays,
@@ -81,8 +82,12 @@ function MorePage() {
   const setSoundOn = useClientState((s) => s.setSoundOn);
   const items = MORE_NAV.filter((item) => !role || can(role, item.perm));
 
-  const commissionBps = vendor.selected?.commissionBps ?? 2800;
+  const commissionTokens = useCommissionTokens();
+  const defaultDeliveryBps = commissionTokens.standardDeliveryBps ?? 2800;
+  const commissionBps = vendor.selected?.commissionBps ?? defaultDeliveryBps;
   const deliveryCommissionDisplay = `${Math.round(commissionBps / 100)}%`;
+  const dineInCommissionDisplay =
+    commissionTokens.dineInBps === 0 ? "0%" : `${Math.round(commissionTokens.dineInBps / 100)}%`;
 
   return (
     <VendorShell
@@ -119,7 +124,7 @@ function MorePage() {
               </span>
               <span>·</span>
               <span>
-                Dine-In: <strong className="font-mono text-emerald-300">0% Commission</strong>
+                Dine-In: <strong className="font-mono text-emerald-300">{dineInCommissionDisplay} Commission</strong>
               </span>
             </div>
           </div>
@@ -156,7 +161,7 @@ function MorePage() {
                   <div className="font-semibold text-slate-100 flex items-center gap-2">
                     <span>{t("nav.dining") || "Dining & Table Reservations"}</span>
                     <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[9.5px] font-bold text-emerald-300">
-                      0% Dine-In Commission
+                      {dineInCommissionDisplay} Dine-In Commission
                     </span>
                   </div>
                   <div className="text-xs text-slate-400 mt-0.5">
@@ -292,7 +297,7 @@ function MorePage() {
                     Fair Commercial Terms &amp; Payouts
                   </div>
                   <div className="text-[11px] text-slate-400">
-                    28% delivery take-rate, 0% dine-in &amp; direct tax clarity
+                    {Math.round(defaultDeliveryBps / 100)}% delivery take-rate, {dineInCommissionDisplay} dine-in &amp; direct tax clarity
                   </div>
                 </div>
               </div>

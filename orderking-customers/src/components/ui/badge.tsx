@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import type { HTMLAttributes } from "react";
 
@@ -12,7 +11,7 @@ export function Badge({
     primary: "bg-primary/10 text-primary",
     warn: "bg-warn/15 text-warn",
     danger: "bg-danger/10 text-danger",
-    success: "bg-emerald-500/15 text-emerald-500 dark:text-emerald-400",
+    success: "bg-success/15 text-success",
   };
   return (
     <span

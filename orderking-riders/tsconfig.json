@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-
     "target": "ES2022",
     "lib": [
       "ES2022",
@@ -22,10 +21,12 @@
       "vite/client",
       "node"
     ],
-
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@orderking/ui": [
+        "../packages/ui/src"
       ]
     },
     "allowImportingTsExtensions": true,
@@ -43,6 +44,3 @@
     ".vercel"
   ]
 }
-
-
-

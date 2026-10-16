@@ -1,5 +1,27 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
+export const VIBRATION_PATTERN_RADAR_SIREN = [400, 150, 400, 150, 600] as const;
+
+export function triggerRadarVibration() {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    try {
+      navigator.vibrate([400, 150, 400, 150, 600]);
+    } catch {
+      // Haptics not allowed or unsupported
+    }
+  }
+}
+
+export function cancelRadarVibration() {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    try {
+      navigator.vibrate(0);
+    } catch {
+      // Ignore
+    }
+  }
+}
+
 class AudioAlertSynthesizer {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = false;
@@ -24,6 +46,9 @@ class AudioAlertSynthesizer {
 
   public setMuted(muted: boolean) {
     this.isMuted = muted;
+    if (muted) {
+      cancelRadarVibration();
+    }
   }
 
   public getMuted(): boolean {
@@ -31,41 +56,62 @@ class AudioAlertSynthesizer {
   }
 
   /**
-   * Plays a 2-tone melodic dispatch notification chime (A5 880Hz -> D6 1175Hz).
+   * Plays an authentic piercing high-decibel dispatch radar siren horn pattern
+   * (Zomato/Swiggy dual-tone klaxon horn with harmonic overtone & native vibration).
    */
   public playDispatchChime() {
+    this.playPiercingRadarSiren();
+  }
+
+  public playPiercingRadarSiren() {
     if (this.isMuted) return;
+
+    // Trigger authentic native hardware vibration pattern
+    triggerRadarVibration();
+
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
 
       const now = ctx.currentTime;
 
-      // Note 1: 880Hz (A5)
+      // Master gain for high-decibel acoustic penetration through traffic noise
+      const masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0.001, now);
+      masterGain.gain.linearRampToValueAtTime(0.85, now + 0.02);
+      masterGain.gain.setValueAtTime(0.85, now + 0.85);
+      masterGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+      masterGain.connect(ctx.destination);
+
+      // Primary Horn Oscillator: Sawtooth wave sweeping 850Hz -> 1450Hz -> 920Hz (Piercing Klaxon)
       const osc1 = ctx.createOscillator();
       const gain1 = ctx.createGain();
-      osc1.type = "sine";
-      osc1.frequency.setValueAtTime(880, now);
-      gain1.gain.setValueAtTime(0.001, now);
-      gain1.gain.exponentialRampToValueAtTime(0.25, now + 0.03);
-      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.start(now);
-      osc1.stop(now + 0.25);
+      osc1.type = "sawtooth";
+      osc1.frequency.setValueAtTime(850, now);
+      osc1.frequency.exponentialRampToValueAtTime(1450, now + 0.25);
+      osc1.frequency.exponentialRampToValueAtTime(920, now + 0.55);
+      osc1.frequency.exponentialRampToValueAtTime(1600, now + 0.85);
 
-      // Note 2: 1175Hz (D6) - delayed slightly for authentic mobile alert chime
+      gain1.gain.setValueAtTime(0.5, now);
+      osc1.connect(gain1);
+      gain1.connect(masterGain);
+      osc1.start(now);
+      osc1.stop(now + 1.1);
+
+      // Secondary Overtone Oscillator: Square wave for harsh acoustic harmonics (1150Hz -> 1750Hz)
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
-      osc2.type = "sine";
-      osc2.frequency.setValueAtTime(1175, now + 0.12);
-      gain2.gain.setValueAtTime(0.001, now + 0.12);
-      gain2.gain.exponentialRampToValueAtTime(0.3, now + 0.15);
-      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+      osc2.type = "square";
+      osc2.frequency.setValueAtTime(1150, now + 0.08);
+      osc2.frequency.exponentialRampToValueAtTime(1750, now + 0.35);
+      osc2.frequency.exponentialRampToValueAtTime(1250, now + 0.65);
+      osc2.frequency.exponentialRampToValueAtTime(1880, now + 0.95);
+
+      gain2.gain.setValueAtTime(0.35, now + 0.08);
       osc2.connect(gain2);
-      gain2.connect(ctx.destination);
-      osc2.start(now + 0.12);
-      osc2.stop(now + 0.48);
+      gain2.connect(masterGain);
+      osc2.start(now + 0.08);
+      osc2.stop(now + 1.1);
     } catch {
       // Audio playback errors are non-fatal (e.g. autoplay restrictions)
     }
@@ -84,16 +130,24 @@ class AudioAlertSynthesizer {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(critical ? 1200 : 750, now);
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(critical ? 1400 : 950, now);
       gain.gain.setValueAtTime(0.001, now);
-      gain.gain.exponentialRampToValueAtTime(critical ? 0.2 : 0.1, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(critical ? 0.35 : 0.2, now + 0.01);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(now);
       osc.stop(now + 0.09);
+
+      if (critical && typeof navigator !== "undefined" && "vibrate" in navigator) {
+        try {
+          navigator.vibrate(80);
+        } catch {
+          // Ignore
+        }
+      }
     } catch {
       // Ignore audio error
     }
@@ -126,12 +180,18 @@ export function useDispatchAudioAlert(isActive: boolean, remainingSeconds: numbe
         // Ignore
       }
       dispatchAudioSynthesizer.setMuted(next);
+      if (next) {
+        cancelRadarVibration();
+      }
       return next;
     });
   }, []);
 
   useEffect(() => {
     dispatchAudioSynthesizer.setMuted(muted);
+    if (muted) {
+      cancelRadarVibration();
+    }
   }, [muted]);
 
   useEffect(() => {
@@ -140,26 +200,24 @@ export function useDispatchAudioAlert(isActive: boolean, remainingSeconds: numbe
         window.clearInterval(chimeIntervalRef.current);
         chimeIntervalRef.current = null;
       }
+      cancelRadarVibration();
       return;
     }
 
-    // Play initial alert chime when offer activates
-    dispatchAudioSynthesizer.playDispatchChime();
+    // Play initial piercing siren horn & native vibration immediately
+    dispatchAudioSynthesizer.playPiercingRadarSiren();
 
-    // Pulse melodic chime every 4 seconds while timer is > 10s
-    if (!chimeIntervalRef.current) {
-      chimeIntervalRef.current = window.setInterval(() => {
-        if (remainingSeconds > 10) {
-          dispatchAudioSynthesizer.playDispatchChime();
-        }
-      }, 4000);
-    }
+    // Loop siren horn & vibration every 2.8 seconds while offer is active
+    chimeIntervalRef.current = window.setInterval(() => {
+      dispatchAudioSynthesizer.playPiercingRadarSiren();
+    }, 2800);
 
     return () => {
       if (chimeIntervalRef.current) {
         window.clearInterval(chimeIntervalRef.current);
         chimeIntervalRef.current = null;
       }
+      cancelRadarVibration();
     };
   }, [isActive, muted]);
 

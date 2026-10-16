@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Clock, Calendar, Check, X, BellRing, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -17,6 +17,10 @@ export function ScheduleOrderModal({
   restaurantName = "Tandoori Nights",
 }: ScheduleOrderModalProps) {
   const [open, setOpen] = useState(isOpen);
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
   const [selectedDay, setSelectedDay] = useState<string>("TODAY");
   const [selectedSlot, setSelectedSlot] = useState<string>("8:00 PM - 8:30 PM");
 

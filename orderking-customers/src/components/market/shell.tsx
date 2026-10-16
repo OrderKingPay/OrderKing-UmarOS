@@ -29,6 +29,7 @@ const LazyExpiringViralShareModal = resilientLazy(
   () => import("@/components/growth/expiring-viral-share-modal").then((m) => ({ default: m.ExpiringViralShareModal })),
   "Gift Share Reward"
 );
+import { VipGoldPassHub } from "@/components/market/vip-gold-pass-hub";
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
 import { useDietStore } from "@/lib/stores/diet";
 import { useBrand, useT } from "@/components/providers";
@@ -68,6 +69,7 @@ export function CustomerShell({
   const [langOpen, setLangOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [vipPassOpen, setVipPassOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchPlaceholderIndex, setSearchPlaceholderIndex] = useState(0);
   const { dietFilter, toggleVeg } = useDietStore();
@@ -185,8 +187,21 @@ export function CustomerShell({
             </span>
           </button>
 
-          {/* Row 1 Right: 24K Gold Crown Wallet gem icon + Join/Profile button */}
+          {/* Row 1 Right: 24K Gold Crown Wallet gem icon + VIP Pass + Join/Profile button */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* VIP Gold Pass Crown Trigger */}
+            <button
+              type="button"
+              onClick={() => setVipPassOpen(true)}
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 border border-amber-500/80 text-amber-950 text-xs font-black shadow-[0_2px_8px_rgba(245,158,11,0.25)] hover:shadow-[0_2px_14px_rgba(245,158,11,0.4)] transition-all active:scale-95 cursor-pointer group"
+              title="OrderKing VIP Gold Pass"
+            >
+              <Crown className="size-3 text-amber-900 fill-amber-700 group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-tight hidden xs:inline">
+                VIP Gold
+              </span>
+            </button>
+
             {/* 24K Gold Crown Wallet Gem */}
             <Link
               to="/earn"
@@ -357,6 +372,9 @@ export function CustomerShell({
             />
           </Suspense>
         </ModalErrorBoundary>
+      ) : null}
+      {vipPassOpen ? (
+        <VipGoldPassHub isOpen={vipPassOpen} onClose={() => setVipPassOpen(false)} />
       ) : null}
     </div>
   );

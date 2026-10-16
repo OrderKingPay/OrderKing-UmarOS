@@ -27,6 +27,7 @@ import {
   DELIVERY_COMMISSION_TIERS,
 } from "@/lib/money";
 import { platformConfig } from "@/lib/platform-config";
+import { useCommissionTokens } from "@orderking/ui";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
 import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware";
 import { KitchenKdsOperationsPanel } from "@/components/settings/kitchen-kds-operations-panel";
@@ -178,7 +179,14 @@ function SettingsPage() {
   const r = restQ.data?.restaurant;
 
   // Commercial Commission Schedule & Negotiation State
-  const contractedBps = r?.commission_bps ?? vendor.selected?.commissionBps ?? platformConfig.commission.targetBps;
+  const commissionTokens = useCommissionTokens();
+  const standardDeliveryBps = commissionTokens.standardDeliveryBps ?? platformConfig.commission.targetBps;
+  const dineInBps = commissionTokens.dineInBps ?? 0;
+  const contractedBps = r?.commission_bps ?? vendor.selected?.commissionBps ?? standardDeliveryBps;
+  const deliveryTiers =
+    commissionTokens.tiers && commissionTokens.tiers.length > 0
+      ? commissionTokens.tiers
+      : DELIVERY_COMMISSION_TIER_LIST;
   const [negotiatedBps, setNegotiatedBps] = useState<number | null>(null);
   const [previewBasketInr, setPreviewBasketInr] = useState<number>(500);
   const [commissionSaving, setCommissionSaving] = useState(false);
@@ -408,11 +416,11 @@ function SettingsPage() {
                 className="h-9 rounded-lg border border-slate-800 bg-slate-900 px-3 text-xs font-semibold text-emerald-300 outline-none focus:border-emerald-500"
                 value={vendor.restaurantId ?? ""}
                 onChange={(e) => {
-                  const m = memberships.find((x) => x.restaurantId === e.target.value);
+                  const m = memberships.find((x: any) => x.restaurantId === e.target.value);
                   if (m) handleSwitchOutlet(m.restaurantId, m.restaurantName);
                 }}
               >
-                {memberships.map((m) => (
+                {memberships.map((m: any) => (
                   <option key={m.restaurantId} value={m.restaurantId}>
                     {m.restaurantName} ({m.role}) — {m.restaurantId}
                   </option>
@@ -423,7 +431,7 @@ function SettingsPage() {
 
           {/* Detailed Branch Matrix */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {memberships.map((m) => {
+            {memberships.map((m: any) => {
               const isActive = m.restaurantId === vendor.restaurantId;
               return (
                 <div
@@ -885,13 +893,13 @@ function SettingsPage() {
                   Partner Commission &amp; Revenue Rates
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Transparent, restaurateur-friendly commission structure. Our standard delivery take-rate is 28%, funding dedicated logistics, rider fleet payouts, and live order tracking. Dine-in and takeaway orders always enjoy 0% commission. Per-outlet negotiation is supported from 0% to 35%.
+                  Transparent, restaurateur-friendly commission structure. Our standard delivery take-rate is {(standardDeliveryBps / 100).toFixed(0)}%, funding dedicated logistics, rider fleet payouts, and live order tracking. Dine-in and takeaway orders always enjoy {dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} commission. Per-outlet negotiation is supported from 0% to 35%.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-center">
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
-                STANDARD: 28.0% (2800 BPS) · OUTLET: {(effectiveBps / 100).toFixed(1)}%
+                STANDARD: {(standardDeliveryBps / 100).toFixed(1)}% ({standardDeliveryBps} BPS) · OUTLET: {(effectiveBps / 100).toFixed(1)}%
               </span>
             </div>
           </div>
@@ -901,7 +909,7 @@ function SettingsPage() {
             <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
               <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Standard Delivery Rate</div>
               <div className="text-2xl font-bold font-display text-emerald-400">
-                28.0%
+                {(standardDeliveryBps / 100).toFixed(1)}%
               </div>
               <div className="text-[11px] text-slate-400">
                 Standard full-service delivery tier funding rider logistics
@@ -915,10 +923,10 @@ function SettingsPage() {
                 <span className="text-xs font-mono text-emerald-400 font-normal">({effectiveBps} bps)</span>
               </div>
               <div className="text-[11px] text-slate-300">
-                {effectiveBps === 0
-                  ? "0% Dine-In Sovereign"
-                  : effectiveBps === 2800
-                    ? "28% Standard Delivery (Default)"
+                {effectiveBps === dineInBps
+                  ? `${dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} Dine-In Sovereign`
+                  : effectiveBps === standardDeliveryBps
+                    ? `${(standardDeliveryBps / 100).toFixed(0)}% Standard Delivery (Default)`
                     : `${(effectiveBps / 100).toFixed(1)}% Negotiated Tier for this Outlet`}
               </div>
             </div>
@@ -926,10 +934,10 @@ function SettingsPage() {
             <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
               <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Dine-In Commission</div>
               <div className="text-2xl font-bold font-display text-emerald-400">
-                0.0%
+                {(dineInBps / 100).toFixed(1)}%
               </div>
               <div className="text-[11px] text-slate-400">
-                Always 0% commission on in-house dining and guest takeaway
+                Always {dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} commission on in-house dining and guest takeaway
               </div>
             </div>
           </div>
@@ -940,12 +948,12 @@ function SettingsPage() {
               <Label className="text-xs font-semibold text-slate-200">
                 Select Delivery Tier for This Outlet:
               </Label>
-              <span className="text-[10px] font-mono text-slate-400">5 CURATED TIERS</span>
+              <span className="text-[10px] font-mono text-slate-400">{deliveryTiers.length} CURATED TIERS</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-              {DELIVERY_COMMISSION_TIER_LIST.map((tier) => {
+              {deliveryTiers.map((tier) => {
                 const isSelected = effectiveBps === tier.bps;
-                const isDefault = tier.bps === 2800;
+                const isDefault = tier.bps === standardDeliveryBps;
                 return (
                   <button
                     key={tier.key}
@@ -1015,9 +1023,9 @@ function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-4 items-center pt-1">
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-mono text-slate-400">
-                    <span>0% (Dine-In)</span>
+                    <span>{dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} (Dine-In)</span>
                     <span>18% (Enterprise)</span>
-                    <span className="text-emerald-400 font-bold">28% (Standard Default)</span>
+                    <span className="text-emerald-400 font-bold">{(standardDeliveryBps / 100).toFixed(0)}% (Standard Default)</span>
                     <span>35% (Max)</span>
                   </div>
                   <input

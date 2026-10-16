@@ -17,7 +17,7 @@ export function Badge({
   variant,
   className,
 }: {
-  children: React.ReactNode;
+  children?: any;
   tone?: keyof typeof tones | string;
   variant?: keyof typeof tones | string;
   className?: string;

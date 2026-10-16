@@ -1,4 +1,5 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useMemo } from "react";
+import { CustomizationProvider, useCustomizationSync, type DynamicCustomizationState } from "@orderking/ui";
 import { createServerFn } from "@tanstack/react-start";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -259,6 +260,77 @@ function Root() {
   const config = context.config ?? DEFAULT_CONFIG;
   const location = useRouterState({ select: (s) => s?.location });
 
+  const { state: liveSyncState } = useCustomizationSync({
+    url: "/api/sync/customizations",
+    latestUrl: "/api/sync/customizations/latest",
+    autoConnect: true,
+  });
+
+  const staticCustomizationState = useMemo<Partial<DynamicCustomizationState>>(() => {
+    if (!config?.brand) return {};
+    const isDark = config.brand.themeMode === "dark";
+    return {
+      designTokens: {
+        palette: {
+          primary: config.brand.primaryColor || "#E23744",
+          primaryForeground: "#FFFFFF",
+          accent: config.brand.accentColor || config.brand.primaryColor || "#E23744",
+          background: isDark ? "#0f172a" : (config.brand.backgroundColor || "#FCFAF7"),
+          surface: isDark ? "#1e293b" : (config.brand.surfaceColor || "#FCFAF7"),
+          surfaceElevated: isDark ? "#334155" : "#FFFFFF",
+          foreground: isDark ? "#f8fafc" : (config.brand.textColor || "#1C1C1C"),
+          muted: isDark ? "#94a3b8" : (config.brand.mutedColor || "#6B7280"),
+          subtle: "#9CA3AF",
+          border: isDark ? "#334155" : "#E5E7EB",
+          danger: "#EF4444",
+          success: "#24963F",
+        },
+        radius: {
+          xsPx: 4,
+          smPx: 8,
+          mdPx: config.brand.radiusPx ? Math.min(config.brand.radiusPx, 12) : 12,
+          lgPx: config.brand.radiusPx || 16,
+          xlPx: 20,
+        },
+      },
+    };
+  }, [config]);
+
+  const customizationState = useMemo<Partial<DynamicCustomizationState>>(() => {
+    const base = staticCustomizationState || {};
+    const live = liveSyncState || {};
+
+    return {
+      ...base,
+      ...live,
+      designTokens: {
+        ...base.designTokens,
+        ...live.designTokens,
+        palette: {
+          ...base.designTokens?.palette,
+          ...live.designTokens?.palette,
+        },
+        radius: {
+          ...base.designTokens?.radius,
+          ...live.designTokens?.radius,
+        },
+        shadows: {
+          ...base.designTokens?.shadows,
+          ...live.designTokens?.shadows,
+        },
+        elementOverrides: {
+          ...base.designTokens?.elementOverrides,
+          ...live.designTokens?.elementOverrides,
+        },
+      },
+      pageLayouts: {
+        ...base.pageLayouts,
+        ...live.pageLayouts,
+      },
+      layout: (live as any).layout || (base as any).layout,
+    };
+  }, [staticCustomizationState, liveSyncState]);
+
   useEffect(() => {
     // Install self-healing chunk error listeners for zero-white-screens
     const cleanup = installChunkErrorRecovery();
@@ -296,8 +368,8 @@ function Root() {
       document.documentElement.style.transition = "background-color 0.25s ease";
       document.body.style.transition = "background-color 0.25s ease";
       if (!window.location.pathname.startsWith("/king-pay")) {
-        document.documentElement.style.backgroundColor = "#FCFAF7";
-        document.body.style.backgroundColor = "#FCFAF7";
+        document.documentElement.style.backgroundColor = "var(--color-bg, #FCFAF7)";
+        document.body.style.backgroundColor = "var(--color-bg, #FCFAF7)";
       }
     }
   }, [location?.pathname]);
@@ -315,7 +387,8 @@ function Root() {
         <PwaInstallPrompt />
         {/* Outer boundary protecting all top-level providers */}
         <ErrorBoundary sectionName="Root Providers">
-          <AuthProvider>
+          <CustomizationProvider customization={customizationState}>
+            <AuthProvider>
             <AppProviders config={config}>
               {/* Inner boundary protecting route transitions and children */}
               <ErrorBoundary sectionName="App Outlet">
@@ -325,6 +398,7 @@ function Root() {
               </ErrorBoundary>
             </AppProviders>
           </AuthProvider>
+          </CustomizationProvider>
         </ErrorBoundary>
         <Scripts />
         <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(()=>{}))}` }} />

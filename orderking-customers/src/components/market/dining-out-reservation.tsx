@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, Clock, Users, Utensils, CheckCircle2, X, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,10 @@ export function DiningOutReservationModal({
   cuisineSummary = "North Indian · Mughlai · Kebabs",
 }: DiningOutReservationModalProps) {
   const [open, setOpen] = useState(isOpen);
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
   const [guestCount, setGuestCount] = useState<number>(2);
   const [selectedDate, setSelectedDate] = useState<string>("TODAY");
   const [selectedSlot, setSelectedSlot] = useState<string>("8:00 PM");
@@ -283,3 +287,6 @@ export function DiningOutReservationModal({
     </div>
   );
 }
+
+export const DiningOutReservation = DiningOutReservationModal;
+

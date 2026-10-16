@@ -6,6 +6,9 @@ import { toast } from "sonner";
 import { CustomerShell } from "@/components/market/shell";
 import { QuoteLines } from "@/components/market/quote-lines";
 import { LiveDeliveryMap } from "@/components/market/live-delivery-map";
+import { ResilientLiveMap } from "@/components/tracking/resilient-live-map";
+import { DishReviewModal } from "@/components/market/dish-review-modal";
+import { LiveOrderVoiceAlerts } from "@/components/market/live-order-voice-alerts";
 import { Button } from "@/components/ui/button";
 import { RetentionRoulette } from "@/components/RetentionRoulette";
 import { useT } from "@/components/providers";
@@ -44,6 +47,7 @@ function OrderDetailPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>(["Fresh & hot", "Advanced fast delivery"]);
   const [reviewComment, setReviewComment] = useState("");
   const [splitCount, setSplitCount] = useState(2);
+  const [dishReviewOpen, setDishReviewOpen] = useState(false);
 
   // Gold-Standard Verified Customer Complaint Room State
   const [complaintOpen, setComplaintOpen] = useState(false);
@@ -184,6 +188,23 @@ function OrderDetailPage() {
           {order.summary.restaurantName}
         </h1>
 
+        {/* Live Spoken Voice Alerts */}
+        <div className="mt-3">
+          <LiveOrderVoiceAlerts
+            orderStatus={
+              order.status === "DELIVERED"
+                ? "DELIVERED"
+                : order.status === "ON_THE_WAY"
+                  ? "NEARBY"
+                  : ["RIDER_ASSIGNED", "PICKED_UP"].includes(order.status)
+                    ? "DISPATCHED"
+                    : ["ACCEPTED", "PREPARING", "READY"].includes(order.status)
+                      ? "PREPARING"
+                      : "PLACED"
+            }
+          />
+        </div>
+
         {/* Live Order Timeline Card */}
         <div className="mt-4 rounded-3xl border border-amber-300/80 bg-gradient-to-br from-white via-amber-50/40 to-yellow-50/20 p-5 shadow-[0_8px_30px_rgba(245,158,11,0.1)]">
           <div className="flex items-center justify-between pb-3 mb-4 border-b border-amber-900/10">
@@ -319,13 +340,41 @@ function OrderDetailPage() {
           </div>
         ) : null}
 
-        {/* Live Vector & GPS Tracking Map */}
-        <LiveDeliveryMap
-          status={lastEvent?.status || order.status}
-          restaurantName={order.summary.restaurantName}
-          riderProgressOverride={lastEvent?.step ? lastEvent.step / 20 : undefined}
-          etaOverride={lastEvent?.eta}
-        />
+        {/* Live Vector & GPS Tracking Map: Resilient Mapbox Fail-Safe (Zero API Keys) */}
+        {(typeof import.meta !== "undefined" && import.meta.env?.VITE_MAPBOX_TOKEN) ? (
+          <LiveDeliveryMap
+            status={lastEvent?.status || order.status}
+            restaurantName={order.summary.restaurantName}
+            orderId={order.summary.publicId || id}
+            dispatchJobId={order.summary.id || id}
+            riderProgressOverride={lastEvent?.step ? lastEvent.step / 20 : undefined}
+            etaOverride={lastEvent?.eta}
+          />
+        ) : (
+          <div className="mt-6 space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <div className="flex items-center gap-2">
+                <span className="flex size-6 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 text-xs shadow-2xs">
+                  🛵
+                </span>
+                <span className="text-sm font-black text-stone-900">
+                  Live Resilient Tracking (Zero API Keys)
+                </span>
+              </div>
+              <span className="rounded-full bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 text-[10px] font-black text-emerald-800 uppercase tracking-wider">
+                Telemetry Active
+              </span>
+            </div>
+            <ResilientLiveMap
+              orderId={order.summary.publicId || id}
+              dispatchJobId={order.summary.id || id}
+              status={lastEvent?.status || order.status}
+              restaurantName={order.summary.restaurantName}
+              riderProgressOverride={lastEvent?.step ? lastEvent.step / 20 : undefined}
+              etaOverride={lastEvent?.eta}
+            />
+          </div>
+        )}
 
         {/* POST-ORDER RETENTION ROULETTE GAMIFICATION WHEEL */}
         {order.status === "DELIVERED" && (
@@ -334,6 +383,33 @@ function OrderDetailPage() {
             orderTotalPaise={order.summary.totalPaise}
             className="mt-6"
           />
+        )}
+
+        {/* Dish Review Modal with 3-Photo Upload & ₹25 Gold Reward */}
+        {order.status === "DELIVERED" && (
+          <div className="mt-4">
+            <Button
+              type="button"
+              onClick={() => setDishReviewOpen(true)}
+              className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black py-3 rounded-2xl shadow-md shadow-amber-500/25 flex items-center justify-center gap-2 border border-amber-300 transition-all active:scale-98 cursor-pointer"
+            >
+              <span className="text-base">📸</span>
+              <span>Review Dishes &amp; Earn ₹25 Gold Reward</span>
+              <span className="rounded-full bg-stone-950 text-amber-300 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider">
+                ₹25 Free
+              </span>
+            </Button>
+            <DishReviewModal
+              isOpen={dishReviewOpen}
+              onClose={() => setDishReviewOpen(false)}
+              orderId={order.summary.publicId || id}
+              restaurantName={order.summary.restaurantName}
+              items={order.items?.map((it, idx) => ({ id: `dish-${idx}`, name: it.name }))}
+              onSubmit={() => {
+                void reviewQuery.refetch();
+              }}
+            />
+          </div>
         )}
 
         {/* Multi-Category Post-Delivery Review Card (Restaurant + Food + Rider + App) */}

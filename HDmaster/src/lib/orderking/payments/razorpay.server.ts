@@ -1,5 +1,6 @@
 import { resilientFetch } from "../sre/resilient-fetch.ts";
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { paymentIdempotency } from "./idempotency.ts";
 
 const API_BASE = "https://api.razorpay.com/v1";
 
@@ -24,6 +25,37 @@ type RazorpayPayment = {
   error_code?: string | null;
   error_description?: string | null;
 };
+
+export interface RazorpayWebhookPayload {
+  id?: string;
+  entity?: string;
+  event: string;
+  contains?: string[];
+  payload?: {
+    payment?: {
+      entity?: RazorpayPayment & {
+        notes?: Record<string, string>;
+      };
+    };
+    order?: {
+      entity?: RazorpayOrder & {
+        notes?: Record<string, string>;
+      };
+    };
+  };
+  created_at?: number;
+}
+
+export interface RazorpayWebhookProcessingResult {
+  success: boolean;
+  duplicate?: boolean;
+  event?: string;
+  paymentId?: string;
+  orderId?: string;
+  amountPaise?: number;
+  status?: string;
+  error?: string;
+}
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
@@ -69,6 +101,9 @@ async function razorpay<T>(path: string, init: RequestInit): Promise<T> {
   return body as T;
 }
 
+/**
+ * Creates a Razorpay Order with strict idempotency key enforcement and double-spend protection
+ */
 export async function createRazorpayOrder(input: {
   amountPaise: number;
   receipt: string;
@@ -78,23 +113,45 @@ export async function createRazorpayOrder(input: {
   if (!Number.isSafeInteger(input.amountPaise) || input.amountPaise <= 0) {
     throw new Error("Payment amount must be a positive integer number of paise");
   }
-  return razorpay<RazorpayOrder>("/orders", {
-    method: "POST",
-    headers: input.idempotencyKey ? { "X-Razorpay-Idempotency-Key": input.idempotencyKey } : undefined,
-    body: JSON.stringify({
-      amount: input.amountPaise,
-      currency: "INR",
-      receipt: input.receipt,
-      notes: input.notes,
-    }),
-  });
+
+  // Double-spend check on order receipt
+  paymentIdempotency.assertOrderNotSettled(input.receipt);
+
+  const requestFn = () =>
+    razorpay<RazorpayOrder>("/orders", {
+      method: "POST",
+      headers: input.idempotencyKey ? { "X-Razorpay-Idempotency-Key": input.idempotencyKey } : undefined,
+      body: JSON.stringify({
+        amount: input.amountPaise,
+        currency: "INR",
+        receipt: input.receipt,
+        notes: input.notes,
+      }),
+    });
+
+  if (input.idempotencyKey?.trim()) {
+    const { result } = await paymentIdempotency.executeIdempotent(
+      input.idempotencyKey,
+      { amountPaise: input.amountPaise, receipt: input.receipt, notes: input.notes },
+      requestFn
+    );
+    return result;
+  }
+
+  return requestFn();
 }
 
+/**
+ * Fetches verified payment status from Razorpay
+ */
 export async function fetchRazorpayPayment(paymentId: string): Promise<RazorpayPayment> {
   if (!paymentId.trim()) throw new Error("paymentId is required");
   return razorpay<RazorpayPayment>(`/payments/${encodeURIComponent(paymentId)}`, { method: "GET" });
 }
 
+/**
+ * Verifies standard checkout signature (HMAC SHA-256 of orderId|paymentId)
+ */
 export function verifyCheckoutSignature(input: {
   orderId: string;
   paymentId: string;
@@ -107,10 +164,124 @@ export function verifyCheckoutSignature(input: {
   return safeEqualHex(expected, input.signature);
 }
 
-export function verifyWebhookSignature(rawBody: string, signature: string): boolean {
-  const secret = required("RAZORPAY_WEBHOOK_SECRET");
+/**
+ * Cryptographically verifies raw webhook body using HMAC SHA-256 and constant-time comparison
+ */
+export function verifyWebhookSignature(rawBody: string, signature: string, customSecret?: string): boolean {
+  if (!rawBody || !signature) return false;
+  const secret = customSecret?.trim() || required("RAZORPAY_WEBHOOK_SECRET");
   const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
   return safeEqualHex(expected, signature);
+}
+
+/**
+ * Verifies the X-Razorpay-Signature HTTP header (case-insensitive and whitespace-safe)
+ */
+export function verifyRazorpayWebhookHeader(
+  rawBody: string,
+  signatureHeader: string | null | undefined,
+  customSecret?: string
+): boolean {
+  if (!signatureHeader || typeof signatureHeader !== "string") return false;
+  return verifyWebhookSignature(rawBody, signatureHeader.trim(), customSecret);
+}
+
+/**
+ * Processes Razorpay Webhook event with cryptographic verification, duplicate suppression,
+ * and double-spend prevention.
+ */
+export async function processRazorpayWebhookEvent(input: {
+  rawBody: string;
+  signatureHeader: string | null | undefined;
+  webhookSecret?: string;
+}): Promise<RazorpayWebhookProcessingResult> {
+  const isValid = verifyRazorpayWebhookHeader(input.rawBody, input.signatureHeader, input.webhookSecret);
+  if (!isValid) {
+    return { success: false, error: "Invalid Razorpay webhook signature (X-Razorpay-Signature)" };
+  }
+
+  let payload: RazorpayWebhookPayload;
+  try {
+    payload = JSON.parse(input.rawBody);
+  } catch {
+    return { success: false, error: "Malformed webhook JSON payload" };
+  }
+
+  // Deduplicate webhook delivery events
+  const eventId = payload.id;
+  if (eventId) {
+    if (paymentIdempotency.isWebhookEventProcessed(eventId)) {
+      return { success: true, duplicate: true, event: payload.event };
+    }
+  }
+
+  const payment = payload.payload?.payment?.entity;
+  const order = payload.payload?.order?.entity;
+
+  if (payload.event === "payment.captured" && payment) {
+    // Strict Double-Spend Prevention on payment ID
+    try {
+      paymentIdempotency.recordPaymentCapture({
+        paymentId: payment.id,
+        orderId: payment.order_id || "direct_pay",
+        amountPaise: payment.amount,
+        method: payment.method,
+      });
+    } catch (err: unknown) {
+      if ((err as Error).name === "DoubleSpendError") {
+        return {
+          success: true,
+          duplicate: true,
+          event: payload.event,
+          paymentId: payment.id,
+          orderId: payment.order_id ?? undefined,
+          amountPaise: payment.amount,
+          status: "ALREADY_CAPTURED",
+        };
+      }
+      throw err;
+    }
+
+    if (eventId) {
+      paymentIdempotency.markWebhookEventProcessed(eventId);
+    }
+
+    return {
+      success: true,
+      duplicate: false,
+      event: payload.event,
+      paymentId: payment.id,
+      orderId: payment.order_id ?? undefined,
+      amountPaise: payment.amount,
+      status: "CAPTURED",
+    };
+  }
+
+  if (payload.event === "payment.failed" && payment) {
+    if (eventId) paymentIdempotency.markWebhookEventProcessed(eventId);
+    return {
+      success: true,
+      event: payload.event,
+      paymentId: payment.id,
+      orderId: payment.order_id ?? undefined,
+      status: "FAILED",
+    };
+  }
+
+  if (payload.event === "order.paid" && order) {
+    paymentIdempotency.markOrderSettled(order.id);
+    if (eventId) paymentIdempotency.markWebhookEventProcessed(eventId);
+    return {
+      success: true,
+      event: payload.event,
+      orderId: order.id,
+      amountPaise: order.amount_paid,
+      status: "PAID",
+    };
+  }
+
+  if (eventId) paymentIdempotency.markWebhookEventProcessed(eventId);
+  return { success: true, event: payload.event };
 }
 
 function safeEqualHex(expected: string, received: string): boolean {

@@ -30,6 +30,7 @@ import { QuoteLines } from "@/components/market/quote-lines";
 import { CheckoutUpsellEngine } from "@/components/market/checkout-upsell-engine";
 import { LocationDialog } from "@/components/market/location-dialog";
 import { CustomerShell } from "@/components/market/shell";
+import { ScheduleOrderModal } from "@/components/market/schedule-order-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useT } from "@/components/providers";
@@ -109,13 +110,15 @@ function CheckoutPage() {
   const [noCutlery, setNoCutlery] = useState(true);
   const [busy, setBusy] = useState(false);
   const [locationPickerOpen, setLocationPickerOpen] = useState(false);
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [scheduledSlot, setScheduledSlot] = useState<{ date: string; timeSlot: string } | null>(null);
   const navigate = useNavigate();
 
   const DELIVERY_INSTRUCTIONS = [
     "Leave at door",
-    "Ring doorbell",
+    "Do not ring bell / Baby sleeping",
     "Avoid calling",
-    "Leave with guard",
+    "Leave with security / guard",
     "Pet at home",
   ];
 
@@ -478,6 +481,34 @@ function CheckoutPage() {
                       </span>
                     </div>
                   </div>
+                </div>
+              </section>
+
+              {/* Delivery Timing & Scheduling Section */}
+              <section className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-700">
+                      <Clock className="size-5" />
+                    </div>
+                    <div>
+                      <span className="block font-display text-sm font-bold text-zinc-900 dark:text-zinc-50">
+                        {scheduledSlot ? `Scheduled: ${scheduledSlot.date} (${scheduledSlot.timeSlot})` : "Standard Express Delivery (~25-30 mins)"}
+                      </span>
+                      <span className="block text-xs text-zinc-500">
+                        {scheduledSlot ? "Order will be prepared fresh right before your chosen slot" : "Food prepared and delivered right away"}
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setScheduleModalOpen(true)}
+                    className="rounded-xl border-amber-400/40 text-xs font-bold hover:bg-amber-50"
+                  >
+                    {scheduledSlot ? "Change Slot" : "Schedule for Later"}
+                  </Button>
                 </div>
               </section>
 
@@ -1134,6 +1165,17 @@ function CheckoutPage() {
           <LocationDialog
             open={locationPickerOpen}
             onOpenChange={setLocationPickerOpen}
+          />
+
+          {/* Schedule Order Modal */}
+          <ScheduleOrderModal
+            isOpen={scheduleModalOpen}
+            onClose={() => setScheduleModalOpen(false)}
+            restaurantName={restaurantName}
+            onSchedule={(slot) => {
+              setScheduledSlot(slot);
+              toast.success(`Delivery slot reserved for ${slot.date} (${slot.timeSlot})`);
+            }}
           />
 
         </div>

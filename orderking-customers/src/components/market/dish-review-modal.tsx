@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, Camera, ThumbsUp, ThumbsDown, X, Check, Heart, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,10 @@ export function DishReviewModal({
   onSubmit,
 }: DishReviewModalProps) {
   const [open, setOpen] = useState(isOpen);
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
   const [foodRating, setFoodRating] = useState<number>(5);
   const [deliveryRating, setDeliveryRating] = useState<number>(5);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);

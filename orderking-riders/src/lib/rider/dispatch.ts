@@ -500,7 +500,8 @@ export class HDmasterAutonomousDispatchAdapter implements DispatchPort {
     this.url = (
       config?.hdmasterUrl ||
       (typeof process !== "undefined" ? process.env?.HDMASTER_URL : undefined) ||
-      "http://localhost:8081"
+      (typeof window !== "undefined" && (window as any).ENV?.VITE_HDMASTER_URL) ||
+      "https://admin.orderkingpay.com"
     ).replace(/\/+$/, "");
     this.token =
       config?.serviceToken ||

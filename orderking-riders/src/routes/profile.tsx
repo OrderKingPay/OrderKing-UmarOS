@@ -14,10 +14,12 @@ import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { bootstrapRiderFn, saveProfileFn, setLocaleFn } from "@/lib/server/rider-fns";
 import type { LocaleCode, RiderProfile, RiderType } from "@/lib/rider/types";
 import {
+  ArrowRight,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
   FileText,
+  Gift,
   Lock,
   Scale,
   Settings2,
@@ -226,6 +228,30 @@ function Page() {
           <Link to="/onboarding" className="inline-block pt-1 text-sm font-medium underline">
             Manage KYC Identity &amp; Vehicle Documents
           </Link>
+        </Card>
+
+        {/* Partner Benefits & Affiliate Hub Callout */}
+        <Card className="border-primary/20 bg-gradient-to-br from-emerald-500/10 via-primary/5 to-amber-500/10 p-4 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                <Gift className="size-5" />
+              </span>
+              <div>
+                <CardTitle className="text-sm font-bold">Partner Benefits &amp; Affiliate Hub</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  15% EV discounts (Yulu, Zypp), HPCL/IOCL ₹2.50/L fuel cashback &amp; ₹10L insurance
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/benefits"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition"
+            >
+              <span>Explore</span>
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
         </Card>
 
         {/* Self-Service Partner Payout, Zone & Emergency Contact Settings */}

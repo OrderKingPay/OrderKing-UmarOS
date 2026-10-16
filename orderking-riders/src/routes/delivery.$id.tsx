@@ -19,6 +19,7 @@ import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 import type { GeoPoint, TicketTopic } from "@/lib/rider/types";
 import { ArrowLeft, Clock3, FileQuestion } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
 export const Route = createFileRoute("/delivery/$id")({ component: Page });
 
@@ -33,6 +34,7 @@ const TRIP_TICKET_TOPICS: ReadonlyArray<{ topic: TicketTopic; label: string }> =
 function Page() {
   const { id } = Route.useParams();
   const { t } = useI18n();
+  const { payout, surge, weather } = useRiderCustomization();
   const [pack, setPack] = useState<Awaited<ReturnType<typeof getDeliveryFn>> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [riderPos, setRiderPos] = useState<GeoPoint | null>(null);
@@ -110,7 +112,7 @@ function Page() {
       : 0;
   const waitBonusPaise = calculateRestaurantWaitPayPaise(kitchenWaitMins, 6, 100);
   const distanceComponentPaise = d
-    ? Math.max(0, d.expectedPayoutPaise - STATUTORY_BASE_FARE_PAISE)
+    ? Math.max(0, d.expectedPayoutPaise - payout.baseFarePaise)
     : 0;
 
   return (
@@ -179,12 +181,12 @@ function Page() {
             <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5 text-xs">
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">
-                  Statutory Base Fare (first {STATUTORY_BASE_DISTANCE_KM} km)
+                  {payout.labels.baseFareText} ({payout.baseDistanceKm} km)
                 </dt>
-                <dd className="font-mono">{formatPaise(STATUTORY_BASE_FARE_PAISE)}</dd>
+                <dd className="font-mono">{formatPaise(payout.baseFarePaise)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Distance &amp; Order Rate Component</dt>
+                <dt className="text-muted-foreground">{payout.labels.distanceRateText}</dt>
                 <dd className="font-mono">{formatPaise(distanceComponentPaise)}</dd>
               </div>
               <div className="flex justify-between">
@@ -193,6 +195,12 @@ function Page() {
                 </dt>
                 <dd className="font-mono">{formatPaise(waitBonusPaise)}</dd>
               </div>
+              {surge.isWeatherAllowanceActive ? (
+                <div className="flex justify-between text-sky-500 dark:text-sky-400">
+                  <dt>{surge.badges.weatherAllowanceText}</dt>
+                  <dd className="font-mono font-semibold">+{formatPaise(surge.weatherAllowancePaise)}</dd>
+                </div>
+              ) : null}
               {d.tipPaise ? (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Customer Tip (100% Retained)</dt>

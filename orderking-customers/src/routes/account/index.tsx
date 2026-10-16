@@ -8,6 +8,9 @@ import { DeviceAvatar } from "@/components/common/device-avatar";
 import { useBrand, useT } from "@/components/providers";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { ensureProfile, getLoyalty, requestDeletion, updateProfile } from "@/lib/server/account";
+import { VipGoldPassHub } from "@/components/market/vip-gold-pass-hub";
+import { useLocationStore, type AddressTag } from "@/lib/stores/location";
+import { Home, Briefcase, MapPin, Plus, Trash2, CheckCircle2, Crown, Sparkles, Navigation } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -30,6 +33,51 @@ function AccountPage() {
     queryFn: () => getLoyalty(),
     enabled: Boolean(user),
   });
+
+  const [vipHubOpen, setVipHubOpen] = useState(false);
+  const [newAddressOpen, setNewAddressOpen] = useState(false);
+  const [newAddressTag, setNewAddressTag] = useState<AddressTag>("HOME");
+  const [newHouseNo, setNewHouseNo] = useState("");
+  const [newArea, setNewArea] = useState("");
+  const [newLandmark, setNewLandmark] = useState("");
+  const [newCity, setNewCity] = useState("Kolkata");
+
+  const savedAddresses = useLocationStore((s) => s.savedAddresses);
+  const addSavedAddress = useLocationStore((s) => s.addSavedAddress);
+  const deleteSavedAddress = useLocationStore((s) => s.deleteSavedAddress);
+  const selectSavedAddress = useLocationStore((s) => s.selectSavedAddress);
+  const activeLocation = useLocationStore((s) => s.location);
+
+  const handleSaveAddress = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newArea.trim()) {
+      toast.error("Please enter your area or street");
+      return;
+    }
+    const fullLine = [newHouseNo.trim(), newArea.trim(), newLandmark.trim(), newCity.trim()]
+      .filter(Boolean)
+      .join(", ");
+    const title = newAddressTag === "HOME" ? "Home" : newAddressTag === "WORK" ? "Office" : (newArea.trim() || "Other");
+    addSavedAddress({
+      tag: newAddressTag,
+      title,
+      houseNo: newHouseNo.trim(),
+      area: newArea.trim(),
+      landmark: newLandmark.trim(),
+      line1: fullLine,
+      cityName: newCity.trim(),
+      cityId: newCity.toLowerCase().replace(/\s+/g, "-"),
+      zoneName: newArea.trim(),
+      zoneId: `zone-${newArea.toLowerCase().replace(/\s+/g, "-")}`,
+      lat: 22.55,
+      lng: 88.35,
+    });
+    toast.success(`${title} address added to your address book!`);
+    setNewAddressOpen(false);
+    setNewHouseNo("");
+    setNewArea("");
+    setNewLandmark("");
+  };
 
   useEffect(() => {
     if (profile.data?.profile?.display_name) setName(profile.data.profile.display_name);
@@ -97,6 +145,31 @@ function AccountPage() {
                   {phone && <p className="text-[11px] font-mono text-amber-200 mt-0.5">📞 {phone}</p>}
                 </div>
               </div>
+            </div>
+
+            {/* VIP Gold Pass Hub Trigger Card */}
+            <div className="mt-4 overflow-hidden rounded-3xl border-2 border-amber-400/80 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 p-4 text-stone-950 shadow-md flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-2xl bg-stone-950 text-amber-300 text-xl shadow-md">
+                  👑
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="font-display font-black text-sm text-stone-950">OrderKing VIP Gold Pass</h3>
+                    <span className="rounded-full bg-stone-950 text-amber-300 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider">
+                      Tier-1 Luxury
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-800 font-medium">Free Delivery • Zero Surge • VIP Priority Support</p>
+                </div>
+              </div>
+              <Button
+                type="button"
+                onClick={() => setVipHubOpen(true)}
+                className="rounded-xl bg-stone-950 hover:bg-stone-900 text-amber-300 font-extrabold text-xs px-3.5 py-2 shadow-sm shrink-0 cursor-pointer"
+              >
+                Manage Pass
+              </Button>
             </div>
 
             {/* Profile Edit Form */}
@@ -264,6 +337,215 @@ function AccountPage() {
             </div>
           </section>
         ) : null}
+
+        {/* SAVED ADDRESS BOOK (Home, Work, Other) */}
+        <section className="mt-8 rounded-3xl border border-amber-900/15 bg-white/95 backdrop-blur-md p-5 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-amber-900/10">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/15 text-amber-800 text-lg">
+                📍
+              </span>
+              <div>
+                <h3 className="font-display text-base font-extrabold text-stone-900">
+                  Saved Address Book
+                </h3>
+                <p className="text-xs text-stone-500">
+                  Manage Home, Work, and Other delivery destinations
+                </p>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => setNewAddressOpen(!newAddressOpen)}
+              className="rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs gap-1 cursor-pointer"
+            >
+              <Plus className="size-3.5" />
+              <span>Add New</span>
+            </Button>
+          </div>
+
+          {/* Add New Address Form */}
+          {newAddressOpen && (
+            <form onSubmit={handleSaveAddress} className="rounded-2xl border border-amber-300 bg-amber-50/40 p-4 space-y-3">
+              <h4 className="font-bold text-xs text-stone-900 flex items-center gap-1.5">
+                <span>➕</span> Add Delivery Destination
+              </h4>
+
+              {/* Tag Selector */}
+              <div>
+                <label className="text-[11px] font-bold text-stone-700 block mb-1">Address Label / Tag</label>
+                <div className="flex gap-2">
+                  {[
+                    { tag: "HOME", label: "Home", icon: Home },
+                    { tag: "WORK", label: "Work", icon: Briefcase },
+                    { tag: "OTHER", label: "Other", icon: MapPin },
+                  ].map(({ tag, label, icon: IconComponent }) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => setNewAddressTag(tag as AddressTag)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                        newAddressTag === tag
+                          ? "border-amber-500 bg-amber-500 text-white shadow-2xs"
+                          : "border-stone-200 bg-white text-stone-700 hover:border-amber-300"
+                      }`}
+                    >
+                      <IconComponent className="size-3.5" />
+                      <span>{label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div>
+                  <label className="text-[11px] font-bold text-stone-700 block mb-1">House / Flat / Floor No</label>
+                  <Input
+                    value={newHouseNo}
+                    onChange={(e) => setNewHouseNo(e.target.value)}
+                    placeholder="e.g. Flat 3A, Tower 4"
+                    className="h-9 text-xs rounded-xl bg-white border-amber-200"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-stone-700 block mb-1">Area / Street *</label>
+                  <Input
+                    required
+                    value={newArea}
+                    onChange={(e) => setNewArea(e.target.value)}
+                    placeholder="e.g. Park Street / Koramangala"
+                    className="h-9 text-xs rounded-xl bg-white border-amber-200"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div>
+                  <label className="text-[11px] font-bold text-stone-700 block mb-1">Landmark (Optional)</label>
+                  <Input
+                    value={newLandmark}
+                    onChange={(e) => setNewLandmark(e.target.value)}
+                    placeholder="e.g. Near St. Xavier's Gate"
+                    className="h-9 text-xs rounded-xl bg-white border-amber-200"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-stone-700 block mb-1">City</label>
+                  <Input
+                    value={newCity}
+                    onChange={(e) => setNewCity(e.target.value)}
+                    placeholder="e.g. Kolkata"
+                    className="h-9 text-xs rounded-xl bg-white border-amber-200"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setNewAddressOpen(false)}
+                  className="rounded-xl text-xs h-8 cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs h-8 cursor-pointer"
+                >
+                  Save Address
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {/* List of Saved Addresses */}
+          <div className="space-y-2.5">
+            {savedAddresses.map((addr) => {
+              const isSelected = activeLocation?.addressId === addr.id || activeLocation?.line1 === addr.line1;
+              const TagIcon = addr.tag === "HOME" ? Home : addr.tag === "WORK" ? Briefcase : MapPin;
+              return (
+                <div
+                  key={addr.id}
+                  className={`flex items-start justify-between p-3.5 rounded-2xl border transition ${
+                    isSelected
+                      ? "border-emerald-500 bg-emerald-50/50 shadow-2xs ring-1 ring-emerald-400"
+                      : "border-stone-200/80 bg-white hover:border-amber-300"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`flex size-9 items-center justify-center rounded-xl shrink-0 mt-0.5 ${
+                        addr.tag === "HOME"
+                          ? "bg-amber-100 text-amber-800"
+                          : addr.tag === "WORK"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-purple-100 text-purple-800"
+                      }`}
+                    >
+                      <TagIcon className="size-4.5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-xs text-stone-900">{addr.title}</h4>
+                        <span className="rounded-full bg-stone-100 px-2 py-0.2 text-[9px] font-black uppercase text-stone-600 border border-stone-200">
+                          {addr.tag}
+                        </span>
+                        {isSelected && (
+                          <span className="inline-flex items-center gap-0.5 text-[9px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.2 rounded-full">
+                            <CheckCircle2 className="size-2.5" /> Active Location
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-stone-600 mt-0.5 line-clamp-2 leading-relaxed">
+                        {addr.line1}
+                      </p>
+                      {addr.landmark && (
+                        <p className="text-[11px] text-stone-400 mt-0.5">
+                          Landmark: {addr.landmark}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={isSelected ? "outline" : "primary"}
+                      onClick={() => {
+                        selectSavedAddress(addr.id);
+                        toast.success(`Delivery address set to ${addr.title}`);
+                      }}
+                      className={`h-7 px-2.5 rounded-lg text-[11px] font-bold cursor-pointer ${
+                        isSelected
+                          ? "border-emerald-500 text-emerald-700 bg-emerald-50"
+                          : "bg-amber-500 hover:bg-amber-600 text-white"
+                      }`}
+                    >
+                      {isSelected ? "Delivering Here" : "Deliver Here"}
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        deleteSavedAddress(addr.id);
+                        toast.success("Address removed");
+                      }}
+                      className="p-1 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                      title="Delete Address"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
         {user ? (
           <section className="mt-4 rounded-[var(--radius-xl)] border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-surface to-emerald-500/5 p-5 shadow-sm">
@@ -469,6 +751,9 @@ function AccountPage() {
         ) : null}
         <p className="mt-2 text-xs text-muted">{t("account.deleteHint")}</p>
         <p className="mt-8 text-xs text-subtle">{domain.webUrl}</p>
+        {vipHubOpen ? (
+          <VipGoldPassHub isOpen={vipHubOpen} onClose={() => setVipHubOpen(false)} />
+        ) : null}
       </div>
     </CustomerShell>
   );

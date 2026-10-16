@@ -19,6 +19,8 @@ import {
   saveCategory,
   saveItem,
   setAvailability,
+  type ModifierGroup,
+  type ModifierOption,
 } from "@/lib/server/api-menu";
 import { OneTapStockToggle } from "@/components/one-tap-stock-toggle";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
@@ -96,6 +98,7 @@ type DishEditorState = {
   aiGenerated?: boolean;
   studioStyle?: CulinaryStudioLightingStyle;
   availableVisualAngles?: string[];
+  modifierGroups: ModifierGroup[];
 };
 
 const QUICK_CATEGORY_TEMPLATES = [
@@ -478,6 +481,7 @@ function MenuPage() {
       availableVisualAngles: [],
       addonIds: [],
       variants: [{ name: "Regular", price: "" }],
+      modifierGroups: [],
     });
   }
 
@@ -515,6 +519,7 @@ function MenuPage() {
               price: String(v.pricePaise / 100),
             }))
           : [{ name: "Regular", price: "" }],
+      modifierGroups: (item as any).modifierGroups ?? [],
     });
   }
 
@@ -805,6 +810,7 @@ function MenuPage() {
       availableVisualAngles: [tax.suggestedPhotoUrl, ...tax.alternatePhotoUrls],
       addonIds: [],
       variants: [{ name: "Regular", price: String(tax.basePriceRupees) }],
+      modifierGroups: [],
     });
   }
 
@@ -2453,6 +2459,340 @@ function MenuPage() {
                   </div>
                 </div>
               ) : null}
+
+              {/* 8. Nested Item Modifiers & Customization Groups */}
+              <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Layers className="size-4 text-amber-400" />
+                      <Label className="mb-0 text-sm font-bold text-slate-100">
+                        Customization &amp; Modifier Groups
+                      </Label>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Configure nested modifier groups (Group Title, Min/Max limits, Radio vs Checkbox, and variant price adders like Extra Cheese +₹30 Regular / +₹60 Large).
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                      const newGroupId = `mod-grp-${Date.now()}`;
+                      const newGroup: ModifierGroup = {
+                        id: newGroupId,
+                        title: "Customization Group",
+                        type: "CHECKBOX",
+                        minSelect: 0,
+                        maxSelect: 3,
+                        required: false,
+                        options: [
+                          {
+                            id: `opt-${Date.now()}-1`,
+                            name: "Extra Cheese",
+                            price: "30",
+                            pricePaise: 3000,
+                            variantPriceAdders: {
+                              Regular: 3000,
+                              Large: 6000,
+                            },
+                          },
+                        ],
+                      };
+                      setEditor({
+                        ...editor,
+                        modifierGroups: [...editor.modifierGroups, newGroup],
+                      });
+                    }}
+                    className="border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold"
+                  >
+                    <Plus className="mr-1 size-3.5" />
+                    Add Modifier Group
+                  </Button>
+                </div>
+
+                {editor.modifierGroups.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-slate-800 p-4 text-center space-y-2">
+                    <p className="text-xs text-slate-400">
+                      No custom modifier groups added yet. You can add crust choices, sauce levels, or variant-linked toppings.
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newGroup: ModifierGroup = {
+                            id: `mod-grp-${Date.now()}`,
+                            title: "Choose Crust / Base",
+                            type: "RADIO",
+                            minSelect: 1,
+                            maxSelect: 1,
+                            required: true,
+                            options: [
+                              { id: `opt-${Date.now()}-1`, name: "Pan Tossed", price: "0", pricePaise: 0 },
+                              { id: `opt-${Date.now()}-2`, name: "Thin Crust", price: "20", pricePaise: 2000 },
+                              {
+                                id: `opt-${Date.now()}-3`,
+                                name: "Cheese Burst",
+                                price: "60",
+                                pricePaise: 6000,
+                                variantPriceAdders: { Regular: 4000, Large: 8000 },
+                              },
+                            ],
+                          };
+                          setEditor({ ...editor, modifierGroups: [...editor.modifierGroups, newGroup] });
+                        }}
+                        className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] text-slate-200 hover:bg-slate-700 hover:text-white"
+                      >
+                        + Choose Crust (Radio · Min 1, Max 1)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newGroup: ModifierGroup = {
+                            id: `mod-grp-${Date.now()}`,
+                            title: "Extra Cheese & Toppings",
+                            type: "CHECKBOX",
+                            minSelect: 0,
+                            maxSelect: 4,
+                            required: false,
+                            options: [
+                              {
+                                id: `opt-${Date.now()}-1`,
+                                name: "Extra Mozzarella Cheese",
+                                price: "30",
+                                pricePaise: 3000,
+                                variantPriceAdders: { Regular: 3000, Large: 6000 },
+                              },
+                              { id: `opt-${Date.now()}-2`, name: "Black Olives", price: "25", pricePaise: 2500 },
+                              { id: `opt-${Date.now()}-3`, name: "Jalapenos", price: "20", pricePaise: 2000 },
+                            ],
+                          };
+                          setEditor({ ...editor, modifierGroups: [...editor.modifierGroups, newGroup] });
+                        }}
+                        className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] text-slate-200 hover:bg-slate-700 hover:text-white"
+                      >
+                        + Extra Cheese &amp; Toppings (Checkbox · Min 0, Max 4)
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {editor.modifierGroups.map((group, grpIdx) => (
+                      <div
+                        key={group.id}
+                        className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-3"
+                      >
+                        {/* Group Header Controls */}
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex-1 min-w-[200px]">
+                            <Input
+                              value={group.title}
+                              onChange={(e) => {
+                                const updated = [...editor.modifierGroups];
+                                updated[grpIdx] = { ...group, title: e.target.value };
+                                setEditor({ ...editor, modifierGroups: updated });
+                              }}
+                              placeholder="Group Title (e.g. Choose Crust, Toppings)"
+                              className="h-8 text-xs font-semibold bg-slate-900 border-slate-700 text-slate-100"
+                            />
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Radio vs Checkbox Selector */}
+                            <div className="flex rounded-lg border border-slate-800 bg-slate-900 p-0.5 text-xs">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...editor.modifierGroups];
+                                  updated[grpIdx] = { ...group, type: "RADIO", maxSelect: 1 };
+                                  setEditor({ ...editor, modifierGroups: updated });
+                                }}
+                                className={`rounded px-2 py-0.5 font-medium transition ${
+                                  group.type === "RADIO"
+                                    ? "bg-amber-500 text-slate-950 font-bold"
+                                    : "text-slate-400 hover:text-white"
+                                }`}
+                              >
+                                Radio (Single)
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...editor.modifierGroups];
+                                  updated[grpIdx] = { ...group, type: "CHECKBOX" };
+                                  setEditor({ ...editor, modifierGroups: updated });
+                                }}
+                                className={`rounded px-2 py-0.5 font-medium transition ${
+                                  group.type === "CHECKBOX"
+                                    ? "bg-amber-500 text-slate-950 font-bold"
+                                    : "text-slate-400 hover:text-white"
+                                }`}
+                              >
+                                Checkbox (Multi)
+                              </button>
+                            </div>
+
+                            {/* Min / Max Selection Limits */}
+                            <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                              <span>Min:</span>
+                              <input
+                                type="number"
+                                min="0"
+                                max="10"
+                                value={group.minSelect}
+                                onChange={(e) => {
+                                  const updated = [...editor.modifierGroups];
+                                  updated[grpIdx] = { ...group, minSelect: Math.max(0, parseInt(e.target.value, 10) || 0) };
+                                  setEditor({ ...editor, modifierGroups: updated });
+                                }}
+                                className="w-10 rounded border border-slate-700 bg-slate-900 px-1 py-0.5 text-center text-xs text-white"
+                              />
+                              <span>Max:</span>
+                              <input
+                                type="number"
+                                min="1"
+                                max="20"
+                                value={group.maxSelect}
+                                onChange={(e) => {
+                                  const updated = [...editor.modifierGroups];
+                                  updated[grpIdx] = { ...group, maxSelect: Math.max(1, parseInt(e.target.value, 10) || 1) };
+                                  setEditor({ ...editor, modifierGroups: updated });
+                                }}
+                                className="w-10 rounded border border-slate-700 bg-slate-900 px-1 py-0.5 text-center text-xs text-white"
+                              />
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = editor.modifierGroups.filter((_, idx) => idx !== grpIdx);
+                                setEditor({ ...editor, modifierGroups: updated });
+                              }}
+                              className="text-slate-500 hover:text-rose-400 p-1"
+                              title="Delete Modifier Group"
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Options List */}
+                        <div className="space-y-2 border-t border-slate-800/80 pt-2">
+                          <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                            <span>Options &amp; Variant Price Adders</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = [...editor.modifierGroups];
+                                const optId = `opt-${Date.now()}`;
+                                updated[grpIdx].options.push({
+                                  id: optId,
+                                  name: "New Option",
+                                  price: "0",
+                                  pricePaise: 0,
+                                  variantPriceAdders: {},
+                                });
+                                setEditor({ ...editor, modifierGroups: updated });
+                              }}
+                              className="text-amber-400 hover:underline font-bold"
+                            >
+                              + Add Option
+                            </button>
+                          </div>
+
+                          {group.options.map((opt, optIdx) => (
+                            <div
+                              key={opt.id}
+                              className="rounded-lg border border-slate-800 bg-slate-900/90 p-2.5 space-y-2"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  value={opt.name}
+                                  onChange={(e) => {
+                                    const updated = [...editor.modifierGroups];
+                                    updated[grpIdx].options[optIdx] = { ...opt, name: e.target.value };
+                                    setEditor({ ...editor, modifierGroups: updated });
+                                  }}
+                                  placeholder="Option Name (e.g. Extra Cheese)"
+                                  className="h-7 text-xs bg-slate-950 border-slate-800 text-slate-200 flex-1"
+                                />
+                                <div className="flex items-center gap-1 text-xs">
+                                  <span className="text-slate-400">Base ₹</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    value={opt.price ?? String((opt.pricePaise ?? 0) / 100)}
+                                    onChange={(e) => {
+                                      const p = e.target.value;
+                                      const updated = [...editor.modifierGroups];
+                                      updated[grpIdx].options[optIdx] = {
+                                        ...opt,
+                                        price: p,
+                                        pricePaise: Math.round((parseFloat(p) || 0) * 100),
+                                      };
+                                      setEditor({ ...editor, modifierGroups: updated });
+                                    }}
+                                    className="w-14 rounded border border-slate-800 bg-slate-950 px-1 py-0.5 text-xs text-right text-emerald-400 font-mono"
+                                  />
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = [...editor.modifierGroups];
+                                    updated[grpIdx].options = group.options.filter((_, idx) => idx !== optIdx);
+                                    setEditor({ ...editor, modifierGroups: updated });
+                                  }}
+                                  className="text-slate-500 hover:text-rose-400"
+                                >
+                                  <Trash2 className="size-3.5" />
+                                </button>
+                              </div>
+
+                              {/* Variant Price Adders (e.g. Regular +₹30 / Large +₹60) */}
+                              {editor.variants.length > 0 && (
+                                <div className="rounded-md border border-slate-800/80 bg-slate-950/60 p-1.5 flex flex-wrap items-center gap-2 text-[11px]">
+                                  <span className="font-semibold text-slate-400">Variant Price Adders:</span>
+                                  {editor.variants.map((v) => {
+                                    const vName = v.name || "Variant";
+                                    const currentAdderPaise = opt.variantPriceAdders?.[vName] ?? (opt.pricePaise ?? 0);
+                                    const currentAdderRs = Math.round(currentAdderPaise / 100);
+                                    return (
+                                      <div
+                                        key={v.id || vName}
+                                        className="flex items-center gap-1 rounded bg-slate-900 border border-slate-800 px-1.5 py-0.5"
+                                      >
+                                        <span className="text-slate-300 font-medium">{vName}:</span>
+                                        <span className="text-emerald-400 font-mono">+₹</span>
+                                        <input
+                                          type="number"
+                                          min="0"
+                                          value={currentAdderRs}
+                                          onChange={(e) => {
+                                            const val = Math.max(0, parseInt(e.target.value, 10) || 0);
+                                            const updated = [...editor.modifierGroups];
+                                            const currentAdders = { ...(opt.variantPriceAdders || {}) };
+                                            currentAdders[vName] = val * 100;
+                                            updated[grpIdx].options[optIdx] = {
+                                              ...opt,
+                                              variantPriceAdders: currentAdders,
+                                            };
+                                            setEditor({ ...editor, modifierGroups: updated });
+                                          }}
+                                          className="w-12 bg-slate-950 border border-slate-800 text-right px-1 text-emerald-400 font-mono rounded"
+                                        />
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Sticky Drawer Footer */}
@@ -2491,6 +2831,7 @@ function MenuPage() {
                             name: v.name.trim(),
                             pricePaise: rupeesToPaise(Number(v.price)),
                           })),
+                          modifierGroups: editor.modifierGroups,
                         },
                       });
                       setEditor(null);

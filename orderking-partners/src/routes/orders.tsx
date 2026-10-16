@@ -12,6 +12,9 @@ import { useClientState } from "@/lib/client-state";
 import { listOrders } from "@/lib/server/api-orders";
 import { formatINR } from "@/lib/money";
 import { isFeatureEnabled } from "@/lib/platform-config";
+import { supabaseCloud } from "@/lib/db-cloud";
+import { isAutoPrintEnabled } from "@/lib/hardware/thermal-printer";
+import { kotHardware } from "@/lib/printer/persistent-kot-printer";
 import { BellOff, FileSpreadsheet, Search, Volume2, VolumeX } from "lucide-react";
 
 export const Route = createFileRoute("/orders")({ component: OrdersPage });
@@ -27,73 +30,12 @@ const STATE_PILLS: { id: StateFilter; label: string }[] = [
   { id: "CANCELLED", label: "Rejected / Cancelled" },
 ];
 
-// Global continuous alarm state
-let alarmAudioCtx: AudioContext | null = null;
-let alarmOscillator: OscillatorNode | null = null;
-let alarmGain: GainNode | null = null;
-let isAlarmPlaying = false;
-
 function startContinuousAlarm() {
-  if (isAlarmPlaying) return;
-  try {
-    const AudioContextClass =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    if (!alarmAudioCtx) {
-      alarmAudioCtx = new AudioContextClass();
-    }
-
-    if (alarmAudioCtx.state === "suspended") {
-      void alarmAudioCtx.resume();
-    }
-
-    alarmOscillator = alarmAudioCtx.createOscillator();
-    alarmGain = alarmAudioCtx.createGain();
-
-    alarmOscillator.type = "square";
-    const lfo = alarmAudioCtx.createOscillator();
-    lfo.type = "square";
-    lfo.frequency.value = 2;
-
-    const lfoGain = alarmAudioCtx.createGain();
-    lfoGain.gain.value = 800;
-
-    lfo.connect(lfoGain);
-    lfoGain.connect(alarmOscillator.frequency);
-
-    alarmOscillator.frequency.value = 800;
-    alarmGain.gain.value = 0.05;
-
-    alarmOscillator.connect(alarmGain);
-    alarmGain.connect(alarmAudioCtx.destination);
-
-    alarmOscillator.start();
-    lfo.start();
-
-    isAlarmPlaying = true;
-  } catch (e) {
-    console.error("Failed to start continuous alarm", e);
-  }
+  kotHardware.startIncomingOrderSiren();
 }
 
 function stopContinuousAlarm() {
-  if (!isAlarmPlaying) return;
-  try {
-    if (alarmOscillator) {
-      alarmOscillator.stop();
-      alarmOscillator.disconnect();
-      alarmOscillator = null;
-    }
-    if (alarmGain) {
-      alarmGain.disconnect();
-      alarmGain = null;
-    }
-    isAlarmPlaying = false;
-  } catch (e) {
-    console.error("Failed to stop alarm", e);
-  }
+  kotHardware.stopIncomingOrderSiren();
 }
 
 function matchesStateFilter(state: string, filter: StateFilter): boolean {
@@ -137,6 +79,57 @@ function OrdersPage() {
 
     return () => stopContinuousAlarm();
   }, [pending, soundOn, scope]);
+
+  // Supabase Realtime WebSocket for live order changes and silent KOT thermal auto-print
+  useEffect(() => {
+    if (!vendor.restaurantId) return;
+
+    const channel = supabaseCloud
+      .channel(`partner-orders-live-${vendor.restaurantId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+          filter: `restaurant_id=eq.${vendor.restaurantId}`,
+        },
+        async (payload) => {
+          console.log("[Realtime:Orders] Order change detected:", payload.eventType);
+          void qc.invalidateQueries({ queryKey: ["orders"] });
+          void qc.invalidateQueries({ queryKey: ["dashboard"] });
+
+          const newOrder = payload.new as any;
+          if (!newOrder) return;
+
+          const isAccepted = newOrder.state === "ACCEPTED" || newOrder.state === "CONFIRMED";
+          const isNewArrival = payload.eventType === "INSERT";
+          const autoPrint = isAutoPrintEnabled();
+
+          // Trigger automatic dispatch of ESC/POS binary bytes to paired printer
+          // when an order transitions to ACCEPTED or arrives with auto-print enabled
+          if (isAccepted || (isNewArrival && autoPrint)) {
+            try {
+              await kotHardware.autoPrintEscPos(newOrder, {
+                restaurantName: vendor.selected?.restaurantName,
+              });
+            } catch (err) {
+              console.error("[Realtime:Orders] Silent KOT auto-print error:", err);
+            }
+          }
+
+          // Trigger kitchen siren on live incoming order arrival
+          if (isNewArrival && isFeatureEnabled("new_order_sound") && soundOn) {
+            kotHardware.startIncomingOrderSiren();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabaseCloud.removeChannel(channel);
+    };
+  }, [vendor.restaurantId, vendor.selected?.restaurantName, qc]);
 
   if (!vendor.restaurantId && !vendor.isPending) {
     return (

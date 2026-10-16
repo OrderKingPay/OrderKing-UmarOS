@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Users, Share2, Copy, Check, QrCode, X, Sparkles, UserPlus, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,10 @@ export function GroupOrderingModal({
   groupSessionId = "GRP-88412",
 }: GroupOrderingModalProps) {
   const [open, setOpen] = useState(isOpen);
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
   const [copied, setCopied] = useState(false);
   const [spendLimit, setSpendLimit] = useState<number | null>(null);
   const [members, setMembers] = useState<GroupOrderingMember[]>([

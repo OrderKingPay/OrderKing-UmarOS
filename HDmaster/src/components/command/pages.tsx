@@ -100,6 +100,8 @@ import { UmarOS_AI_Terminal } from "../dashboard/UmarOS_AI_Terminal";
 import { LiveFounderProfitDashboard } from "../dashboard/LiveFounderProfitDashboard";
 import { CommercialCommandDials } from "./commercial-command-dials";
 import { MANDATE_1_SPECIALIST_DEPARTMENTS } from "@/lib/orderking/ai/specialists";
+import { UmarOsVisualCustomizationStudio } from "@/components/customization/UmarOsVisualCustomizationStudio";
+
 
 
 function useInvalidate() {
@@ -156,6 +158,7 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "ai") return <AiPage mode="ops" />;
   if (module === "employees") return <EmployeesPage />;
   if (module === "branding") return <BrandingPage />;
+  if (module === "customization-studio" || module === "visual-studio") return <UmarOsVisualCustomizationStudio />;
   if (module === "flags") return <FlagsPage />;
   if (module === "settings") return <SettingsPage />;
   if (module === "golive") return <GoLivePage />;

@@ -7,6 +7,7 @@ import { Input, Label } from "@/components/ui/input";
 import { OrderKingMark } from "@/components/mark";
 import { useT } from "@/components/use-t";
 import { platformConfig } from "@/lib/platform-config";
+import { useMerchantBranding, useCommissionTokens } from "@orderking/ui";
 import { cn } from "@/lib/utils";
 import {
   ShieldCheck,
@@ -46,6 +47,8 @@ function resolveIdentifierToEmail(rawInput: string): { email: string; isMobile: 
 
 function Login() {
   const t = useT();
+  const branding = useMerchantBranding();
+  const commissionTokens = useCommissionTokens();
   const { user } = useCurrentUserState();
   const [mode, setMode] = useState<"in" | "up">(() => {
     if (typeof window !== "undefined") {
@@ -119,7 +122,7 @@ function Login() {
           <OrderKingMark className="size-10 text-chili transition-transform duration-200 group-hover:scale-105" />
           <div>
             <div className="font-display text-2xl font-bold tracking-tight flex items-center gap-2">
-              <span>{platformConfig.brand.appName}</span>
+              <span>{branding.appName || platformConfig.brand.appName}</span>
               <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
                 PORTAL
               </span>
@@ -134,7 +137,9 @@ function Login() {
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-3.5 py-2.5 shadow-sm text-center">
           <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-300">
             <Sparkles className="size-3.5 text-emerald-400 shrink-0" />
-            <span>0% Commission on Dine-In • 28% Delivery • 24h Express Go-Live</span>
+            <span>
+              {commissionTokens.dineInBps === 0 ? "0%" : `${(commissionTokens.dineInBps / 100).toFixed(0)}%`} Commission on Dine-In • {(commissionTokens.standardDeliveryBps / 100).toFixed(0)}% Delivery • 24h Express Go-Live
+            </span>
           </div>
         </div>
 
@@ -172,7 +177,7 @@ function Login() {
 
           <div className="pb-4">
             <h1 className="font-display text-xl sm:text-2xl font-bold text-white">
-              {mode === "in" ? "Welcome Back to Your Kitchen" : "Partner With Order King"}
+              {mode === "in" ? "Welcome Back to Your Kitchen" : `Partner With ${branding.shortAppName || branding.appName || "Order King"}`}
             </h1>
             <p className="mt-1 text-xs text-slate-400">
               {mode === "in"
@@ -276,8 +281,8 @@ function Login() {
             >
               <span>
                 {mode === "in"
-                  ? "New to Order King? Join our restaurant network"
-                  : "Already registered with Order King? Sign in to your portal"}
+                  ? `New to ${branding.shortAppName || branding.appName || "Order King"}? Join our restaurant network`
+                  : `Already registered with ${branding.shortAppName || branding.appName || "Order King"}? Sign in to your portal`}
               </span>
               <ArrowRight className="size-3 text-emerald-400" />
             </button>

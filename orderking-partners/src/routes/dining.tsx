@@ -27,12 +27,16 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCommissionTokens } from "@orderking/ui";
 
 export const Route = createFileRoute("/dining")({ component: DiningPage });
 
 function DiningPage() {
   const t = useT();
   const vendor = useVendor();
+  const commissionTokens = useCommissionTokens();
+  const dineInCommissionDisplay =
+    commissionTokens.dineInBps === 0 ? "0%" : `${(commissionTokens.dineInBps / 100).toFixed(0)}%`;
   const reservationState = useTableReservations();
 
   const {
@@ -112,14 +116,14 @@ function DiningPage() {
                   <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-100 flex flex-wrap items-center gap-2">
                     Order King Dining &amp; Table Reservations
                     <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
-                      0% MERCHANT COMMISSION
+                      {dineInCommissionDisplay} MERCHANT COMMISSION
                     </span>
                     <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
                       5% GUEST CONVENIENCE FEE
                     </span>
                   </h1>
                   <p className="text-xs text-slate-400">
-                    Live guest seating orchestration across AC, Rooftop, Patio &amp; Cabana zones with 0% merchant commission on all dine-in covers.
+                    Live guest seating orchestration across AC, Rooftop, Patio &amp; Cabana zones with {dineInCommissionDisplay} merchant commission on all dine-in covers.
                   </p>
                 </div>
               </div>
@@ -242,13 +246,13 @@ function DiningPage() {
             <div className="flex items-center gap-2.5">
               <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
               <span>
-                <strong className="text-emerald-300">Order King Hospitality Promise:</strong> 0% merchant commission on all dine-in reservations. You retain 100% of guest food &amp; beverage bills.
+                <strong className="text-emerald-300">Order King Hospitality Promise:</strong> {dineInCommissionDisplay} merchant commission on all dine-in reservations. You retain 100% of guest food &amp; beverage bills.
               </span>
             </div>
             <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400 shrink-0">
               <span className="flex items-center gap-1.5">
                 <span className="size-1.5 rounded-full bg-emerald-400" />
-                0% Dine-In Commission
+                {dineInCommissionDisplay} Dine-In Commission
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="size-1.5 rounded-full bg-amber-400" />

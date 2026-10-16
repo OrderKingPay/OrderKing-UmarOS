@@ -1,3 +1,5 @@
+export * from "./profit-engine.ts";
+
 export interface TransactionEconomics {
   grossValue: number;
   customerSaved: number;

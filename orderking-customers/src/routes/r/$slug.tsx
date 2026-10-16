@@ -18,10 +18,18 @@ import {
   Flame,
   X,
   Bike,
+  Users,
+  Utensils,
+  ChefHat,
+  Activity,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { CustomizeDialog } from "@/components/market/customize-dialog";
+import { CookingInstructionsModal } from "@/components/market/cooking-instructions-modal";
+import { GroupOrderingModal } from "@/components/market/group-ordering-modal";
+import { DiningOutReservationModal } from "@/components/market/dining-out-reservation";
+import { NutritionAllergenDrawer } from "@/components/market/nutrition-allergen-drawer";
 import { CustomerShell } from "@/components/market/shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -97,6 +105,12 @@ function RestaurantPage() {
   const [onlyBestsellers, setOnlyBestsellers] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [isFav, setIsFav] = useState(false);
+  const [showGroupOrder, setShowGroupOrder] = useState(false);
+  const [showDiningReservation, setShowDiningReservation] = useState(false);
+  const [showCookingInstructions, setShowCookingInstructions] = useState(false);
+  const [cookingInstructionsItem, setCookingInstructionsItem] = useState<string>("");
+  const [showNutritionDrawer, setShowNutritionDrawer] = useState(false);
+  const [nutritionItem, setNutritionItem] = useState<MenuItemView | null>(null);
 
   const detail = useQuery({
     queryKey: ["restaurant", slug, location.lat, location.lng, lang],
@@ -449,6 +463,51 @@ function RestaurantPage() {
                 <span className="text-[11px] text-zinc-500 font-medium">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
               </div>
 
+              {/* Luxury Quick Action Ribbon: Group Order, Dining Reservation, Chef Notes, Nutrition */}
+              <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGroupOrder(true)}
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 hover:from-amber-500/20 hover:to-yellow-500/20 p-2.5 text-xs font-bold text-amber-950 dark:text-amber-100 transition shadow-2xs active:scale-95"
+                >
+                  <Users className="size-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Group Order</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowDiningReservation(true)}
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 hover:from-amber-500/20 hover:to-yellow-500/20 p-2.5 text-xs font-bold text-amber-950 dark:text-amber-100 transition shadow-2xs active:scale-95"
+                >
+                  <Utensils className="size-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Book Table</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCookingInstructionsItem(restaurant.card.name);
+                    setShowCookingInstructions(true);
+                  }}
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 hover:from-amber-500/20 hover:to-yellow-500/20 p-2.5 text-xs font-bold text-amber-950 dark:text-amber-100 transition shadow-2xs active:scale-95"
+                >
+                  <ChefHat className="size-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Chef Notes</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNutritionItem(null);
+                    setShowNutritionDrawer(true);
+                  }}
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 p-2.5 text-xs font-bold text-emerald-950 dark:text-emerald-100 transition shadow-2xs active:scale-95"
+                >
+                  <Activity className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span>Nutrition</span>
+                </button>
+              </div>
+
               {/* WhatsApp Deep-Link Sharing Component */}
               <WhatsAppShare
                 variant="restaurant"
@@ -650,6 +709,17 @@ function RestaurantPage() {
                               >
                                 {it.veg ? "🌱 100% Pure Veg" : "🍗 Halal Certified"}
                               </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setNutritionItem(it);
+                                  setShowNutritionDrawer(true);
+                                }}
+                                className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 transition cursor-pointer"
+                              >
+                                <Activity className="size-3" />
+                                <span>Nutrition</span>
+                              </button>
                             </div>
                           </div>
 
@@ -825,6 +895,42 @@ function RestaurantPage() {
               </div>
             </div>
           )}
+          {/* Orphaned Luxury Modals Mounted */}
+          <GroupOrderingModal
+            isOpen={showGroupOrder}
+            onClose={() => setShowGroupOrder(false)}
+            restaurantName={restaurant.card.name}
+            groupSessionId={`GRP-${restaurant.card.id.slice(0, 6)}`}
+          />
+
+          <DiningOutReservationModal
+            isOpen={showDiningReservation}
+            onClose={() => setShowDiningReservation(false)}
+            restaurantId={restaurant.card.id}
+            restaurantName={restaurant.card.name}
+            restaurantArea={restaurant.area}
+            cuisineSummary={restaurant.card.cuisineSummary}
+          />
+
+          <CookingInstructionsModal
+            isOpen={showCookingInstructions}
+            onClose={() => setShowCookingInstructions(false)}
+            itemName={cookingInstructionsItem || restaurant.card.name}
+            onSave={(inst) => {
+              toast.success(`Chef instructions saved: ${inst}`);
+            }}
+          />
+
+          <NutritionAllergenDrawer
+            isOpen={showNutritionDrawer}
+            onClose={() => {
+              setShowNutritionDrawer(false);
+              setNutritionItem(null);
+            }}
+            dishName={nutritionItem?.name || "Selected Dish"}
+            caloriesKcal={nutritionItem?.veg ? 280 : 420}
+            dietaryBadges={nutritionItem?.veg ? ["100% Pure Veg", "Fresh Ingredients"] : ["Halal Certified", "High Protein"]}
+          />
         </article>
       )}
       <span className="sr-only">{brand.appName}</span>

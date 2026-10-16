@@ -32,6 +32,7 @@ import { useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
 import { PartnerFloatingBottomNav } from "./navigation/partner-bottom-nav";
+import { useMerchantBranding } from "@orderking/ui";
 import type { AppLanguage } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
 
@@ -69,6 +70,7 @@ export function VendorShell({
   restaurantName?: string;
 }) {
   const t = useT();
+  const branding = useMerchantBranding();
   const { user, isPending } = useCurrentUserState();
   const vendor = useVendor();
   const qc = useQueryClient();
@@ -87,7 +89,7 @@ export function VendorShell({
     return (
       <div className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 p-6">
         <div className="mx-auto max-w-md space-y-3">
-          <div className="font-display text-xl text-slate-50">{t("app.name")}</div>
+          <div className="font-display text-xl text-slate-50">{branding.appName || t("app.name")}</div>
           <div className="h-10 w-40 animate-pulse rounded-full bg-line" />
           <div className="h-32 animate-pulse rounded-[24px] bg-line" />
           <div className="h-32 animate-pulse rounded-[24px] bg-line" />
@@ -104,8 +106,8 @@ export function VendorShell({
           <div className="mb-6 flex items-center gap-2">
             <OrderKingMark className="size-8 text-chili" />
             <div>
-              <div className="font-display text-base leading-tight">{t("app.name")}</div>
-              <div className="text-xs text-slate-400">{restaurantName ?? t("app.tagline")}</div>
+              <div className="font-display text-base leading-tight">{branding.appName || t("app.name")}</div>
+              <div className="text-xs text-slate-400">{restaurantName ?? (branding.tagline || t("app.tagline"))}</div>
             </div>
           </div>
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto scrollbar-none" aria-label="Partner Navigation">
@@ -135,7 +137,7 @@ export function VendorShell({
             <div className="min-w-0">
               <div className="flex items-center gap-2 md:hidden">
                 <OrderKingMark className="size-7 shrink-0 text-chili" />
-                <span className="truncate font-display text-lg">{restaurantName ?? t("app.name")}</span>
+                <span className="truncate font-display text-lg">{restaurantName ?? (branding.appName || t("app.name"))}</span>
               </div>
               <h1 className="hidden font-display text-2xl md:block">{title}</h1>
             </div>
@@ -156,7 +158,7 @@ export function VendorShell({
                     title="Switch Restaurant Location"
                     aria-label="Switch Restaurant Location"
                   >
-                    {vendor.memberships.map((m) => (
+                    {vendor.memberships.map((m: any) => (
                       <option key={m.restaurantId} value={m.restaurantId} className="bg-slate-900 text-slate-100">
                         {m.restaurantName} ({m.role})
                       </option>

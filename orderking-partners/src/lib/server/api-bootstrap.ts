@@ -9,9 +9,83 @@ import { newId } from "@/lib/utils";
 import { loadMemberships, writeAudit } from "./helpers";
 import { validateUpload } from "@/lib/adapters/storage";
 
+import { type DynamicCustomizationState } from "@orderking/ui";
+
+export function buildPartnerCustomizationState(): DynamicCustomizationState {
+  return {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    designTokens: {
+      palette: {
+        primary: platformConfig.theme.primary,
+        primaryForeground: "#FFFFFF",
+        primaryFg: "#FFFFFF",
+        background: platformConfig.theme.background,
+        bg: platformConfig.theme.background,
+        surface: platformConfig.theme.surface,
+        surfaceElevated: "#251E1B",
+        surface2: "#251E1B",
+        foreground: platformConfig.theme.text,
+        fg: platformConfig.theme.text,
+        muted: platformConfig.theme.textMuted,
+        subtle: "#9A8D82",
+        accent: platformConfig.theme.accent,
+        border: platformConfig.theme.border,
+        borderStrong: "#D3C4B0",
+        danger: platformConfig.theme.danger,
+        success: platformConfig.theme.success,
+        warn: platformConfig.theme.warning,
+        card: "#1C1714",
+      },
+      radius: {
+        xsPx: 4,
+        smPx: 8,
+        mdPx: 12,
+        lgPx: 16,
+        xlPx: 24,
+        full: false,
+      },
+      shadows: {
+        sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        md: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+      },
+    },
+    commissionConfig: {
+      standardDeliveryBps: platformConfig.commission.defaultDeliveryCommissionBps,
+      dineInBps: platformConfig.commission.defaultDineInCommissionBps,
+      minDeliveryBps: 1800,
+      maxDeliveryBps: 3500,
+      defaultBps: platformConfig.commission.defaultBps,
+      tiers: platformConfig.commission.tierList.map((t) => ({
+        key: t.key,
+        bps: t.bps,
+        percentage: t.percentage,
+        label: t.label,
+        description: t.description,
+      })),
+    },
+    merchantBranding: {
+      appName: platformConfig.brand.appName,
+      shortAppName: platformConfig.brand.shortAppName,
+      restaurantFacingBrandName: platformConfig.brand.restaurantFacingBrandName,
+      tagline: platformConfig.brand.tagline,
+      logo: platformConfig.brand.restaurantFacingLogo,
+      darkLogo: platformConfig.brand.darkLogo,
+      lightLogo: platformConfig.brand.lightLogo,
+      primaryColor: platformConfig.theme.primary,
+      accentColor: platformConfig.theme.accent,
+      supportEmail: platformConfig.support.email,
+    },
+    textOverrides: {},
+    featureSwitches: platformConfig.featureFlags,
+  };
+}
+
 export const getBootstrap = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
+    const customization = buildPartnerCustomizationState();
     try {
       const sql = await getSql();
       const memberships = await loadMemberships(sql, context.userId);
@@ -26,6 +100,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
           primary: platformConfig.theme.primary,
           supportEmail: platformConfig.support.email,
         },
+        customization,
         featureFlags: platformConfig.featureFlags,
         adapters: {
           notifications: notificationChannelStatus(),
@@ -49,6 +124,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
           primary: platformConfig.theme.primary,
           supportEmail: platformConfig.support.email,
         },
+        customization,
         featureFlags: platformConfig.featureFlags,
         adapters: {
           notifications: notificationChannelStatus(),

@@ -1,14 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { HomeFeed } from "@/components/market/home-feed";
 import { CustomerShell } from "@/components/market/shell";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { trackAnalytics } from "@/lib/server/quote";
 import { useLocationStore } from "@/lib/stores/location";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
-
 import { CustomerAppSkeleton } from "@/components/skeletons/customer-app-skeleton";
 import { AppErrorComponent } from "@/lib/error-component";
+import { DynamicSectionRenderer } from "@orderking/ui";
+import { homeSectionRegistry, HomeSectionFallback } from "@/components/sdui/home-sections";
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -56,8 +56,14 @@ function Home() {
           </div>
         </div>
 
-        <ErrorBoundary>
-          <HomeFeed />
+        {/* Server-Driven UI (SDUI) Dynamic Section Renderer */}
+        <ErrorBoundary sectionName="SDUI Home Feed">
+          <DynamicSectionRenderer
+            pageId="customer_home"
+            registry={homeSectionRegistry}
+            fallback={HomeSectionFallback}
+            className="w-full space-y-4 px-3 py-3 sm:px-4 sm:py-4"
+          />
         </ErrorBoundary>
       </div>
     </CustomerShell>

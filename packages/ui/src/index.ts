@@ -2,3 +2,6 @@ export * from "./badge";
 export * from "./button";
 export * from "./input";
 export * from "./skeleton";
+export * from "./customization-provider";
+export * from "./sync-client";
+export * from "./supabase-sync-client";

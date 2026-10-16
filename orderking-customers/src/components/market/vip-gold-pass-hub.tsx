@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Crown, Sparkles, Truck, Tag, ShieldCheck, Zap, Check, ArrowRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,10 @@ export function VipGoldPassHub({
   totalSavedPaise = 184500, // ₹1,845
 }: VipGoldPassHubProps) {
   const [open, setOpen] = useState(isOpen);
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
   const [selectedPlan, setSelectedPlan] = useState<"3_MONTH" | "12_MONTH">("12_MONTH");
 
   const BENEFITS = [

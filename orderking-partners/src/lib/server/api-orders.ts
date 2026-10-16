@@ -116,6 +116,31 @@ export const quickThrottleKitchen = createServerFn({ method: "POST" })
     });
   });
 
+export const delayOrderPrep = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; orderId: string; extraMinutes: number; idempotencyKey?: string }) => d)
+  .handler(async ({ context, data }): Promise<{ ok: true; orderId: string; extraMinutes: number; newPrepMinutes: number }> => {
+    return withVendor(context.userId, data.restaurantId, "orders.prepare", async (sql, ctx) => {
+      const extra = Math.max(1, Math.min(60, asInt(data.extraMinutes, 5)));
+      const rows = await sql<{ id: string; prep_minutes: number; state: string }>`
+        select id, prep_minutes, state from orders where id = ${data.orderId} and restaurant_id = ${ctx.restaurantId}
+      `;
+      if (!rows[0]) throw new Error("Order not found");
+      const currentPrep = asInt(rows[0].prep_minutes, 20);
+      const updatedPrepMinutes = currentPrep + extra;
+      await sql`
+        update orders
+        set prep_minutes = ${updatedPrepMinutes}
+        where id = ${data.orderId} and restaurant_id = ${ctx.restaurantId}
+      `;
+      await sql`
+        insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
+        values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, ${rows[0].state}, ${rows[0].state}, 'kitchen', ${context.userId}, ${`Kitchen prep delay: +${extra} mins (Prep SLA: ${updatedPrepMinutes}m)`})
+      `;
+      return { ok: true as const, orderId: data.orderId, extraMinutes: extra, newPrepMinutes: updatedPrepMinutes };
+    });
+  });
+
 import { getSql } from "@/lib/db";
 import {
   calculateMerchantCancellationPenalty,

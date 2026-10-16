@@ -7,6 +7,45 @@ import type { AvailabilityStatus, DietFlag } from "@/lib/contracts";
 import { createPresignedUpload } from "./storage.server";
 import { getMenuLockState, assertMenuUnlocked } from "@/lib/merchant-kyc";
 
+export type ModifierOption = {
+  id: string;
+  name: string;
+  pricePaise?: number; // base price in paise (e.g. 3000 for ₹30)
+  price?: string; // string price in rupees (e.g. "30")
+  isDefault?: boolean;
+  inStock?: boolean;
+  isActive?: boolean;
+  // Variant price adders (e.g. Extra Cheese +₹30 on Regular / +₹60 on Large)
+  variantPriceAdders?: Record<string, number>;
+  variantPriceOverrides?: Record<string, number>;
+};
+
+export type ModifierGroup = {
+  id: string;
+  title: string; // Group Title
+  minSelect: number; // Min selection limits (0 for optional, 1 for required)
+  maxSelect: number; // Max selection limits (1 for radio, >1 for checkbox)
+  type: "RADIO" | "CHECKBOX"; // Radio vs Checkbox
+  required?: boolean;
+  options: ModifierOption[];
+};
+
+type MenuItemRow = {
+  id: string;
+  category_id: string;
+  name: string;
+  description: string;
+  diet: string;
+  tags: string;
+  recommended: boolean;
+  best_seller: boolean;
+  prep_minutes: number | null;
+  sort_order: number;
+  is_active: boolean;
+  image_url: string | null;
+  modifier_groups?: string | ModifierGroup[] | null;
+};
+
 export const getMenu = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .validator((d: { restaurantId?: string }) => d)
@@ -17,25 +56,22 @@ export const getMenu = createServerFn({ method: "GET" })
         where restaurant_id = ${ctx.restaurantId}
         order by sort_order, name
       `;
-      const items = await sql<{
-        id: string;
-        category_id: string;
-        name: string;
-        description: string;
-        diet: string;
-        tags: string;
-        recommended: boolean;
-        best_seller: boolean;
-        prep_minutes: number | null;
-        sort_order: number;
-        is_active: boolean;
-        image_url: string | null;
-      }>`
-        select id, category_id, name, description, diet, tags, recommended, best_seller,
-               prep_minutes, sort_order, is_active, image_url
-        from items where restaurant_id = ${ctx.restaurantId}
-        order by sort_order, name
-      `;
+      let items: MenuItemRow[] = [];
+      try {
+        items = await sql<MenuItemRow>`
+          select id, category_id, name, description, diet, tags, recommended, best_seller,
+                 prep_minutes, sort_order, is_active, image_url, modifier_groups
+          from items where restaurant_id = ${ctx.restaurantId}
+          order by sort_order, name
+        `;
+      } catch {
+        items = await sql<MenuItemRow>`
+          select id, category_id, name, description, diet, tags, recommended, best_seller,
+                 prep_minutes, sort_order, is_active, image_url
+          from items where restaurant_id = ${ctx.restaurantId}
+          order by sort_order, name
+        `;
+      }
       const variants = await sql<{
         id: string;
         item_id: string;
@@ -95,20 +131,34 @@ export const getMenu = createServerFn({ method: "GET" })
         isMenuLocked: lockState.isLocked,
         menuLockReason: lockState.reason,
         categories,
-        items: items.map((it) => ({
-          ...it,
-          recommended: asBool(it.recommended),
-          bestSeller: asBool(it.best_seller),
-          isActive: asBool(it.is_active),
-          availability: availability.find((a) => a.item_id === it.id)?.status ?? "available",
-          nextAvailableAt: availability.find((a) => a.item_id === it.id)?.next_available_at ?? null,
-          variants: variants.filter((v) => v.item_id === it.id).map((v) => ({
-            ...v,
-            pricePaise: asInt(v.price_paise),
-            isActive: asBool(v.is_active),
-          })),
-          addonIds: links.filter((l) => l.item_id === it.id).map((l) => l.addon_id),
-        })),
+        items: items.map((it) => {
+          let modifierGroups: ModifierGroup[] = [];
+          if (it.modifier_groups) {
+            try {
+              modifierGroups = typeof it.modifier_groups === "string"
+                ? JSON.parse(it.modifier_groups)
+                : (it.modifier_groups as ModifierGroup[]);
+            } catch {
+              modifierGroups = [];
+            }
+          }
+          const { modifier_groups: _rawMg, ...itemFields } = it;
+          return {
+            ...itemFields,
+            recommended: asBool(it.recommended),
+            bestSeller: asBool(it.best_seller),
+            isActive: asBool(it.is_active),
+            availability: availability.find((a) => a.item_id === it.id)?.status ?? "available",
+            nextAvailableAt: availability.find((a) => a.item_id === it.id)?.next_available_at ?? null,
+            variants: variants.filter((v) => v.item_id === it.id).map((v) => ({
+              ...v,
+              pricePaise: asInt(v.price_paise),
+              isActive: asBool(v.is_active),
+            })),
+            addonIds: links.filter((l) => l.item_id === it.id).map((l) => l.addon_id),
+            modifierGroups,
+          };
+        }),
         addons: addons.map((a) => ({ ...a, pricePaise: asInt(a.price_paise), isActive: asBool(a.is_active) })),
       };
     });
@@ -187,6 +237,7 @@ export const saveItem = createServerFn({ method: "POST" })
     imageUrl?: string | null;
     variants: { id?: string; name: string; pricePaise: number }[];
     addonIds?: string[];
+    modifierGroups?: ModifierGroup[];
   }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
@@ -201,35 +252,66 @@ export const saveItem = createServerFn({ method: "POST" })
       `;
       if (!cat[0]) throw new Error("Category not found");
 
+      const modifierGroupsJson = JSON.stringify(data.modifierGroups ?? []);
+
       let itemId = data.id;
       if (itemId) {
         const owned = await sql<{ id: string }>`
           select id from items where id = ${itemId} and restaurant_id = ${ctx.restaurantId}
         `;
         if (!owned[0]) throw new Error("Item not found");
-        await sql`
-          update items set
-            category_id = ${data.categoryId},
-            name = ${name},
-            description = ${data.description ?? ""},
-            diet = ${data.diet ?? "NONVEG"},
-            tags = ${data.tags ?? ""},
-            recommended = ${Boolean(data.recommended)},
-            prep_minutes = ${data.prepMinutes ?? null},
-            image_url = coalesce(${data.imageUrl ?? null}, image_url)
-          where id = ${itemId} and restaurant_id = ${ctx.restaurantId}
-        `;
+        try {
+          await sql`
+            update items set
+              category_id = ${data.categoryId},
+              name = ${name},
+              description = ${data.description ?? ""},
+              diet = ${data.diet ?? "NONVEG"},
+              tags = ${data.tags ?? ""},
+              recommended = ${Boolean(data.recommended)},
+              prep_minutes = ${data.prepMinutes ?? null},
+              image_url = coalesce(${data.imageUrl ?? null}, image_url),
+              modifier_groups = ${modifierGroupsJson}::jsonb
+            where id = ${itemId} and restaurant_id = ${ctx.restaurantId}
+          `;
+        } catch {
+          await sql`
+            update items set
+              category_id = ${data.categoryId},
+              name = ${name},
+              description = ${data.description ?? ""},
+              diet = ${data.diet ?? "NONVEG"},
+              tags = ${data.tags ?? ""},
+              recommended = ${Boolean(data.recommended)},
+              prep_minutes = ${data.prepMinutes ?? null},
+              image_url = coalesce(${data.imageUrl ?? null}, image_url)
+            where id = ${itemId} and restaurant_id = ${ctx.restaurantId}
+          `;
+        }
       } else {
         itemId = newId("itm");
-        await sql`
-          insert into items (
-            id, restaurant_id, category_id, name, description, diet, tags, recommended, prep_minutes, image_url
-          ) values (
-            ${itemId}, ${ctx.restaurantId}, ${data.categoryId}, ${name},
-            ${data.description ?? ""}, ${data.diet ?? "NONVEG"}, ${data.tags ?? ""},
-            ${Boolean(data.recommended)}, ${data.prepMinutes ?? null}, ${data.imageUrl ?? null}
-          )
-        `;
+        try {
+          await sql`
+            insert into items (
+              id, restaurant_id, category_id, name, description, diet, tags, recommended, prep_minutes, image_url, modifier_groups
+            ) values (
+              ${itemId}, ${ctx.restaurantId}, ${data.categoryId}, ${name},
+              ${data.description ?? ""}, ${data.diet ?? "NONVEG"}, ${data.tags ?? ""},
+              ${Boolean(data.recommended)}, ${data.prepMinutes ?? null}, ${data.imageUrl ?? null},
+              ${modifierGroupsJson}::jsonb
+            )
+          `;
+        } catch {
+          await sql`
+            insert into items (
+              id, restaurant_id, category_id, name, description, diet, tags, recommended, prep_minutes, image_url
+            ) values (
+              ${itemId}, ${ctx.restaurantId}, ${data.categoryId}, ${name},
+              ${data.description ?? ""}, ${data.diet ?? "NONVEG"}, ${data.tags ?? ""},
+              ${Boolean(data.recommended)}, ${data.prepMinutes ?? null}, ${data.imageUrl ?? null}
+            )
+          `;
+        }
         await sql`
           insert into item_availability (item_id, restaurant_id, status)
           values (${itemId}, ${ctx.restaurantId}, 'available')
@@ -297,13 +379,23 @@ export const duplicateItem = createServerFn({ method: "POST" })
       `;
       if (!items[0]) throw new Error("Item not found");
       const nid = newId("itm");
-      await sql`
-        insert into items (
-          id, restaurant_id, category_id, name, description, diet, tags, recommended, prep_minutes, sort_order
-        )
-        select ${nid}, restaurant_id, category_id, name || ' (copy)', description, diet, tags, false, prep_minutes, sort_order + 1
-        from items where id = ${data.itemId} and restaurant_id = ${ctx.restaurantId}
-      `;
+      try {
+        await sql`
+          insert into items (
+            id, restaurant_id, category_id, name, description, diet, tags, recommended, prep_minutes, sort_order, modifier_groups
+          )
+          select ${nid}, restaurant_id, category_id, name || ' (copy)', description, diet, tags, false, prep_minutes, sort_order + 1, modifier_groups
+          from items where id = ${data.itemId} and restaurant_id = ${ctx.restaurantId}
+        `;
+      } catch {
+        await sql`
+          insert into items (
+            id, restaurant_id, category_id, name, description, diet, tags, recommended, prep_minutes, sort_order
+          )
+          select ${nid}, restaurant_id, category_id, name || ' (copy)', description, diet, tags, false, prep_minutes, sort_order + 1
+          from items where id = ${data.itemId} and restaurant_id = ${ctx.restaurantId}
+        `;
+      }
       const variants = await sql<{
         name: string;
         price_paise: number;

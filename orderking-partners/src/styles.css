@@ -24,6 +24,10 @@
   --color-danger-soft: light-dark(#f4d6d2, #381212);
   --color-info: light-dark(#3d4f66, #7496c2);
   --color-info-soft: light-dark(#e4eaf1, #182330);
+  --color-primary: var(--color-primary, var(--primary, light-dark(#b33a1b, #e55c3c)));
+  --color-primary-fg: var(--color-primary-fg, var(--primary-fg, #ffffff));
+  --color-accent: var(--color-accent, var(--accent, light-dark(#b33a1b, #e55c3c)));
+  --color-border: var(--color-border, var(--border, light-dark(#e4d8c8, #3b322c)));
 
   --radius-xs: 4px;
   --radius-sm: 8px;

@@ -3,6 +3,7 @@ import { QrCode, Printer, Sparkles, Copy, Check, Gift, Layers, Utensils, IndianR
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
+import { useCommissionTokens } from "@orderking/ui";
 import { toast } from "sonner";
 
 interface InStoreMarketingKitProps {
@@ -14,6 +15,9 @@ export function InStoreMarketingKit({
   restaurantId = "default-outlet",
   restaurantName = "Your Restaurant Kitchen",
 }: InStoreMarketingKitProps) {
+  const commissionTokens = useCommissionTokens();
+  const dineInCommissionDisplay =
+    commissionTokens.dineInBps === 0 ? "0%" : `${(commissionTokens.dineInBps / 100).toFixed(0)}%`;
   const [selectedFormat, setSelectedFormat] = useState<"table_tent" | "counter_standee" | "bill_insert">("table_tent");
   const [isBatchMode, setIsBatchMode] = useState<boolean>(false);
   const [batchCount, setBatchCount] = useState<number>(10);
@@ -57,7 +61,7 @@ export function InStoreMarketingKit({
                   In-Store Viral Customer Acquisition &amp; Table QR Kit
                 </h3>
                 <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-300">
-                  0% COMMISSION DINE-IN
+                  {dineInCommissionDisplay} COMMISSION DINE-IN
                 </span>
               </div>
               <p className="text-xs text-slate-300 mt-0.5">
@@ -349,7 +353,7 @@ export function InStoreMarketingKit({
                     <span>
                       Powered by <strong>Order King</strong>
                     </span>
-                    <span>0% Commission Network</span>
+                    <span>{dineInCommissionDisplay} Commission Network</span>
                   </div>
                 </div>
               ))}

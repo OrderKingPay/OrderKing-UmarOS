@@ -1,6 +1,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCustomization } from "@orderking/ui";
 import { Toaster } from "sonner";
 import { DEFAULT_CONFIG } from "@/lib/config/defaults";
 import type { PublicAppConfig } from "@/lib/config/types";
@@ -52,6 +53,7 @@ export function AppProviders({
   children: ReactNode;
   config: PublicAppConfig;
 }) {
+  const { cssVariables } = useCustomization();
   const [lang, setLangState] = useState<Lang>(() => {
     if (typeof window === "undefined") return "en";
     const stored = window.localStorage.getItem("marketplace-lang");
@@ -135,7 +137,7 @@ export function AppProviders({
   );
 
   const isDark = config.brand?.themeMode === "dark";
-  const brandStyle = {
+  const brandStyle = useMemo(() => ({
     ["--color-primary" as string]: config.brand.primaryColor,
     ["--color-accent" as string]: config.brand.accentColor || config.brand.primaryColor,
     ["--color-bg" as string]: isDark ? "#0f172a" : (config.brand.backgroundColor || "#FFFFFF"),
@@ -144,7 +146,8 @@ export function AppProviders({
     ["--color-fg" as string]: isDark ? "#f8fafc" : (config.brand.textColor || "#1C1C1C"),
     ["--color-muted" as string]: isDark ? "#94a3b8" : (config.brand.mutedColor || "#6B7280"),
     ["--color-border" as string]: isDark ? "#334155" : "#E5E7EB",
-  };
+    ...cssVariables,
+  }), [config.brand, isDark, cssVariables]);
 
   return (
     <QueryClientProvider client={queryClient}>

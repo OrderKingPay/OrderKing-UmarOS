@@ -11,17 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as CustomizationStudioRouteImport } from './routes/customization-studio'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as ApiMarketDominanceCronRouteImport } from './routes/api/market-dominance-cron'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as ApiTestOpenaiRouteImport } from './routes/api/test-openai'
-import { Route as ApiMarketDominanceCronRouteImport } from './routes/api/market-dominance-cron'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppModuleRouteImport } from './routes/app/$module'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
 import { Route as ApiAiTestConnectionRouteImport } from './routes/api/ai/test-connection'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiSyncCustomizationsRouteImport } from './routes/api/sync/customizations'
 import { Route as AppModuleIdRouteImport } from './routes/app/$module.$id'
 import { Route as V1AdminSplatRouteImport } from './routes/v1/admin/$'
 import { Route as V1AdminCustomerOrderRouteImport } from './routes/v1/admin/customer-order'
@@ -31,6 +33,7 @@ import { Route as V1AdminRiderOffersRouteImport } from './routes/v1/admin/rider-
 import { Route as V1AdminSettlementEscalationsRouteImport } from './routes/v1/admin/settlement-escalations'
 import { Route as V1PaymentsSplatRouteImport } from './routes/v1/payments/$'
 import { Route as V1TravelSplatRouteImport } from './routes/v1/travel/$'
+import { Route as ApiSyncCustomizationsLatestRouteImport } from './routes/api/sync/customizations/latest'
 import { Route as ApiV1AdminSettingsRouteImport } from './routes/api/v1/admin/settings'
 import { Route as ApiV1FounderSweepRouteImport } from './routes/api/v1/founder/sweep'
 import { Route as ApiV1KingpayPayoneerWebhookRouteImport } from './routes/api/v1/kingpay/payoneer-webhook'
@@ -55,6 +58,11 @@ const AppRouteRoute = AppRouteRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomizationStudioRoute = CustomizationStudioRouteImport.update({
+  id: '/customization-studio',
+  path: '/customization-studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -70,6 +78,11 @@ const ApiHealthRoute = ApiHealthRouteImport.update({
   path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMarketDominanceCronRoute = ApiMarketDominanceCronRouteImport.update({
+  id: '/api/market-dominance-cron',
+  path: '/api/market-dominance-cron',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
   id: '/api/telemetry',
   path: '/api/telemetry',
@@ -78,11 +91,6 @@ const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
 const ApiTestOpenaiRoute = ApiTestOpenaiRouteImport.update({
   id: '/api/test-openai',
   path: '/api/test-openai',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiMarketDominanceCronRoute = ApiMarketDominanceCronRouteImport.update({
-  id: '/api/market-dominance-cron',
-  path: '/api/market-dominance-cron',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -108,6 +116,11 @@ const ApiAiTestConnectionRoute = ApiAiTestConnectionRouteImport.update({
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSyncCustomizationsRoute = ApiSyncCustomizationsRouteImport.update({
+  id: '/api/sync/customizations',
+  path: '/api/sync/customizations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppModuleIdRoute = AppModuleIdRouteImport.update({
@@ -156,6 +169,12 @@ const V1TravelSplatRoute = V1TravelSplatRouteImport.update({
   path: '/v1/travel/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSyncCustomizationsLatestRoute =
+  ApiSyncCustomizationsLatestRouteImport.update({
+    id: '/latest',
+    path: '/latest',
+    getParentRoute: () => ApiSyncCustomizationsRoute,
+  } as any)
 const ApiV1AdminSettingsRoute = ApiV1AdminSettingsRouteImport.update({
   id: '/api/v1/admin/settings',
   path: '/api/v1/admin/settings',
@@ -230,17 +249,19 @@ const V1AdminOrdersIdRiderTransitionRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
+  '/customization-studio': typeof CustomizationStudioRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
-  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
   '/v1/admin/customer-order': typeof V1AdminCustomerOrderRoute
@@ -250,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
   '/api/v1/kingpay/payoneer-webhook': typeof ApiV1KingpayPayoneerWebhookRoute
@@ -266,17 +288,19 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/customization-studio': typeof CustomizationStudioRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
-  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
   '/v1/admin/customer-order': typeof V1AdminCustomerOrderRoute
@@ -286,6 +310,7 @@ export interface FileRoutesByTo {
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
   '/api/v1/kingpay/payoneer-webhook': typeof ApiV1KingpayPayoneerWebhookRoute
@@ -304,17 +329,19 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
+  '/customization-studio': typeof CustomizationStudioRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
-  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
   '/v1/admin/customer-order': typeof V1AdminCustomerOrderRoute
@@ -324,6 +351,7 @@ export interface FileRoutesById {
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
   '/api/v1/kingpay/payoneer-webhook': typeof ApiV1KingpayPayoneerWebhookRoute
@@ -343,17 +371,19 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/customization-studio'
     | '/login'
     | '/settings'
     | '/api/health'
+    | '/api/market-dominance-cron'
     | '/api/telemetry'
     | '/api/test-openai'
-    | '/api/market-dominance-cron'
     | '/app/$module'
     | '/app/'
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/sync/customizations'
     | '/app/$module/$id'
     | '/v1/admin/$'
     | '/v1/admin/customer-order'
@@ -363,6 +393,7 @@ export interface FileRouteTypes {
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
+    | '/api/sync/customizations/latest'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
     | '/api/v1/kingpay/payoneer-webhook'
@@ -379,17 +410,19 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/customization-studio'
     | '/login'
     | '/settings'
     | '/api/health'
+    | '/api/market-dominance-cron'
     | '/api/telemetry'
     | '/api/test-openai'
-    | '/api/market-dominance-cron'
     | '/app/$module'
     | '/app'
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/sync/customizations'
     | '/app/$module/$id'
     | '/v1/admin/$'
     | '/v1/admin/customer-order'
@@ -399,6 +432,7 @@ export interface FileRouteTypes {
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
+    | '/api/sync/customizations/latest'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
     | '/api/v1/kingpay/payoneer-webhook'
@@ -416,17 +450,19 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/customization-studio'
     | '/login'
     | '/settings'
     | '/api/health'
+    | '/api/market-dominance-cron'
     | '/api/telemetry'
     | '/api/test-openai'
-    | '/api/market-dominance-cron'
     | '/app/$module'
     | '/app/'
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/sync/customizations'
     | '/app/$module/$id'
     | '/v1/admin/$'
     | '/v1/admin/customer-order'
@@ -436,6 +472,7 @@ export interface FileRouteTypes {
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
+    | '/api/sync/customizations/latest'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
     | '/api/v1/kingpay/payoneer-webhook'
@@ -454,15 +491,17 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
+  CustomizationStudioRoute: typeof CustomizationStudioRoute
   LoginRoute: typeof LoginRoute
   SettingsRoute: typeof SettingsRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiMarketDominanceCronRoute: typeof ApiMarketDominanceCronRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
   ApiTestOpenaiRoute: typeof ApiTestOpenaiRoute
-  ApiMarketDominanceCronRoute: typeof ApiMarketDominanceCronRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAiTestConnectionRoute: typeof ApiAiTestConnectionRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiSyncCustomizationsRoute: typeof ApiSyncCustomizationsRouteWithChildren
   V1AdminSplatRoute: typeof V1AdminSplatRoute
   V1AdminCustomerOrderRoute: typeof V1AdminCustomerOrderRoute
   V1AdminCustomerOrdersRoute: typeof V1AdminCustomerOrdersRouteWithChildren
@@ -500,6 +539,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/customization-studio': {
+      id: '/customization-studio'
+      path: '/customization-studio'
+      fullPath: '/customization-studio'
+      preLoaderRoute: typeof CustomizationStudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -521,6 +567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/market-dominance-cron': {
+      id: '/api/market-dominance-cron'
+      path: '/api/market-dominance-cron'
+      fullPath: '/api/market-dominance-cron'
+      preLoaderRoute: typeof ApiMarketDominanceCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/telemetry': {
       id: '/api/telemetry'
       path: '/api/telemetry'
@@ -533,13 +586,6 @@ declare module '@tanstack/react-router' {
       path: '/api/test-openai'
       fullPath: '/api/test-openai'
       preLoaderRoute: typeof ApiTestOpenaiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/market-dominance-cron': {
-      id: '/api/market-dominance-cron'
-      path: '/api/market-dominance-cron'
-      fullPath: '/api/market-dominance-cron'
-      preLoaderRoute: typeof ApiMarketDominanceCronRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -575,6 +621,13 @@ declare module '@tanstack/react-router' {
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sync/customizations': {
+      id: '/api/sync/customizations'
+      path: '/api/sync/customizations'
+      fullPath: '/api/sync/customizations'
+      preLoaderRoute: typeof ApiSyncCustomizationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/$module/$id': {
@@ -639,6 +692,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/v1/travel/$'
       preLoaderRoute: typeof V1TravelSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/sync/customizations/latest': {
+      id: '/api/sync/customizations/latest'
+      path: '/latest'
+      fullPath: '/api/sync/customizations/latest'
+      preLoaderRoute: typeof ApiSyncCustomizationsLatestRouteImport
+      parentRoute: typeof ApiSyncCustomizationsRoute
     }
     '/api/v1/admin/settings': {
       id: '/api/v1/admin/settings'
@@ -760,6 +820,19 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
   AppRouteRouteChildren,
 )
 
+interface ApiSyncCustomizationsRouteChildren {
+  ApiSyncCustomizationsLatestRoute: typeof ApiSyncCustomizationsLatestRoute
+}
+
+const ApiSyncCustomizationsRouteChildren: ApiSyncCustomizationsRouteChildren = {
+  ApiSyncCustomizationsLatestRoute: ApiSyncCustomizationsLatestRoute,
+}
+
+const ApiSyncCustomizationsRouteWithChildren =
+  ApiSyncCustomizationsRoute._addFileChildren(
+    ApiSyncCustomizationsRouteChildren,
+  )
+
 interface V1AdminCustomerOrdersIdRouteChildren {
   V1AdminCustomerOrdersIdCancelRoute: typeof V1AdminCustomerOrdersIdCancelRoute
 }
@@ -790,15 +863,17 @@ const V1AdminCustomerOrdersRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
+  CustomizationStudioRoute: CustomizationStudioRoute,
   LoginRoute: LoginRoute,
   SettingsRoute: SettingsRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ApiMarketDominanceCronRoute: ApiMarketDominanceCronRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
   ApiTestOpenaiRoute: ApiTestOpenaiRoute,
-  ApiMarketDominanceCronRoute: ApiMarketDominanceCronRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAiTestConnectionRoute: ApiAiTestConnectionRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiSyncCustomizationsRoute: ApiSyncCustomizationsRouteWithChildren,
   V1AdminSplatRoute: V1AdminSplatRoute,
   V1AdminCustomerOrderRoute: V1AdminCustomerOrderRoute,
   V1AdminCustomerOrdersRoute: V1AdminCustomerOrdersRouteWithChildren,

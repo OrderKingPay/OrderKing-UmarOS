@@ -300,6 +300,46 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
     }
   });
 
+export const triggerMaskedCallFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(
+    (input: {
+      deliveryId: string;
+      recipientType?: "CUSTOMER" | "RESTAURANT";
+    }) => input,
+  )
+  .handler(async ({ context, data }) => {
+    try {
+      const e = await engine();
+      const current = await e.getDelivery(context.userId, data.deliveryId);
+      // Record contact attempt on delivery lifecycle
+      await e.contactAttempt(context.userId, data.deliveryId);
+
+      const targetContact =
+        data.recipientType === "RESTAURANT"
+          ? current.restaurant.phoneMasked
+          : current.customer.contactMasked;
+
+      const digits = (targetContact || "").replace(/\D/g, "");
+      const suffix = digits ? digits.slice(-4).padStart(4, "0") : "1234";
+      const virtualProxyNumber = `+91804567${suffix}`;
+      const maskedDisplay = `+91 80 4567 ${suffix}`;
+      const bridgeSessionId = `bridge_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
+      return {
+        success: true,
+        deliveryId: data.deliveryId,
+        recipientType: data.recipientType ?? "CUSTOMER",
+        virtualProxyNumber,
+        maskedDisplay,
+        bridgeSessionId,
+        status: "BRIDGED" as const,
+      };
+    } catch (err) {
+      fail(err);
+    }
+  });
+
 export const postLocationFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator(

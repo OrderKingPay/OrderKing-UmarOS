@@ -14,6 +14,7 @@ import { validateIfsc } from "@/lib/merchant-kyc";
 import { formatINR, STATUTORY_TAX_RATES } from "@/lib/money";
 import { can } from "@/lib/rbac";
 import { platformConfig } from "@/lib/platform-config";
+import { useCommissionTokens } from "@orderking/ui";
 import {
   Banknote,
   Building2,
@@ -206,8 +207,12 @@ function SettlementsPage() {
     }
   }
 
+  const commissionTokens = useCommissionTokens();
   const effectiveCommissionPct = (
-    (vendor.selected?.commissionBps ?? platformConfig.commission.targetBps) / 100
+    (vendor.selected?.commissionBps ??
+      commissionTokens.standardDeliveryBps ??
+      platformConfig.commission.targetBps) /
+    100
   ).toFixed(1);
 
   const allLines = (q.data?.batches ?? []).flatMap((b) => b.lines);

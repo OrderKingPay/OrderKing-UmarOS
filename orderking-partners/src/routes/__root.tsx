@@ -8,6 +8,8 @@ import { OfflineDetector } from "@/components/offline-detector";
 import { platformConfig } from "@/lib/platform-config";
 import { flushQueue, registerDefaultTransitionFn } from "@/lib/offline/durable-queue";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
+import { CustomizationProvider, useCustomizationSync } from "@orderking/ui";
+import { useVendor } from "@/components/use-vendor";
 import appCss from "../styles.css?url";
 
 const queryClient = new QueryClient({
@@ -61,7 +63,7 @@ export const Route = createRootRoute({
   component: Root,
 });
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { supabaseCloud } from "@/lib/db-cloud";
 
 function Root() {
@@ -116,20 +118,22 @@ function Root() {
         <OfflineDetector />
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
-            <ErrorBoundary>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={location}
-                  initial={{ opacity: 0, scale: 0.98, filter: "blur(5px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 1.02, filter: "blur(5px)" }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-                >
-                  <Outlet />
-                </motion.div>
-              </AnimatePresence>
-            </ErrorBoundary>
+            <PartnerCustomizationBridge>
+              <ErrorBoundary>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={location}
+                    initial={{ opacity: 0, scale: 0.98, filter: "blur(5px)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, scale: 1.02, filter: "blur(5px)" }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+                  >
+                    <Outlet />
+                  </motion.div>
+                </AnimatePresence>
+              </ErrorBoundary>
+            </PartnerCustomizationBridge>
           </QueryClientProvider>
         </AuthProvider>
         <Scripts />
@@ -148,5 +152,37 @@ function Root() {
         />
       </body>
     </html>
+  );
+}
+
+function PartnerCustomizationBridge({ children }: { children: React.ReactNode }) {
+  const vendor = useVendor();
+
+  // Mount Live SSE Customization Sync to /api/sync/customizations
+  // UmarOS commission tiers and dining settings update live in real-time
+  const sync = useCustomizationSync({
+    url: "/api/sync/customizations",
+    latestUrl: "/api/sync/customizations/latest",
+    platform: "partner_app",
+    autoConnect: true,
+  });
+
+  const mergedCustomization = useMemo(() => {
+    const base: any = vendor.customization ?? {};
+    const live: any = sync.state ?? {};
+    return {
+      ...base,
+      ...live,
+      commissionConfig: live.commissionConfig ?? base.commissionConfig,
+      diningSettings: live.diningSettings ?? base.diningSettings,
+      merchantEconomics: live.merchantEconomics ?? base.merchantEconomics,
+      merchantBranding: live.merchantBranding ?? base.merchantBranding,
+    };
+  }, [vendor.customization, sync.state]);
+
+  return (
+    <CustomizationProvider customization={mergedCustomization}>
+      {children}
+    </CustomizationProvider>
   );
 }

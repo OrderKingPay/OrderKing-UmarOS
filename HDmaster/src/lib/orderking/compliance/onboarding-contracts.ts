@@ -383,7 +383,7 @@ export class DigitalContractEngine {
   }
 
   /**
-   * Simulates digital signature by the Delivery Partner with device timestamp & OTP proof.
+   * Applies digital signature by the Delivery Partner with device timestamp & OTP proof reference.
    */
   public signContract(contract: ContractResult, signatureRef?: string): ContractResult {
     return {

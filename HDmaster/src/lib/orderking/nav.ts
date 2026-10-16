@@ -142,6 +142,7 @@ export const NAV: NavGroup[] = [
     items: [
       { id: "employees", path: "/app/employees", i18n: "nav.employees", permission: "manage_users", icon: "id" },
       { id: "branding", path: "/app/branding", i18n: "nav.branding", permission: "manage_branding", icon: "palette" },
+      { id: "customization-studio", path: "/app/customization-studio", i18n: "Visual Studio", permission: "manage_branding", icon: "spark" },
       { id: "flags", path: "/app/flags", i18n: "nav.flags", permission: "manage_feature_flags", icon: "flag" },
       { id: "settings", path: "/app/settings", i18n: "nav.settings", permission: "manage_platform_settings", icon: "settings" },
       { id: "golive", path: "/app/golive", i18n: "nav.golive", permission: "manage_platform_settings", icon: "activity" },

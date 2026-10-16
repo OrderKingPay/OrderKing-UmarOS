@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Flame, Activity, ShieldAlert, Heart, X, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -38,6 +38,10 @@ export function NutritionAllergenDrawer({
   healthScore = 88,
 }: NutritionAllergenDrawerProps) {
   const [open, setOpen] = useState(isOpen);
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
 
   if (!open && !isOpen) return null;
 

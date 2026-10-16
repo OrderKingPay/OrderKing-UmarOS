@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as DiningRouteImport } from './routes/dining'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as KingPayRouteImport } from './routes/king-pay'
 import { Route as KingpayBbpsRouteImport } from './routes/kingpay-bbps'
@@ -54,10 +55,12 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPushSubscribeRouteImport } from './routes/api/push/subscribe'
 import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
 import { Route as ApiRazorpayVerifyRouteImport } from './routes/api/razorpay/verify'
+import { Route as ApiSyncCustomizationsRouteImport } from './routes/api/sync/customizations'
 import { Route as ApiTravelFlightTrackerRouteImport } from './routes/api/travel/flight-tracker'
 import { Route as ApiTravelPnrStatusRouteImport } from './routes/api/travel/pnr-status'
 import { Route as DeliveryTownAreaRouteImport } from './routes/delivery/$town.$area'
 import { Route as ApiOrdersOrderIdStreamRouteImport } from './routes/api/orders/$orderId/stream'
+import { Route as ApiSyncCustomizationsLatestRouteImport } from './routes/api/sync/customizations/latest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -77,6 +80,11 @@ const CartRoute = CartRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiningRoute = DiningRouteImport.update({
+  id: '/dining',
+  path: '/dining',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EarnRoute = EarnRouteImport.update({
@@ -284,6 +292,11 @@ const ApiRazorpayVerifyRoute = ApiRazorpayVerifyRouteImport.update({
   path: '/api/razorpay/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSyncCustomizationsRoute = ApiSyncCustomizationsRouteImport.update({
+  id: '/api/sync/customizations',
+  path: '/api/sync/customizations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTravelFlightTrackerRoute = ApiTravelFlightTrackerRouteImport.update({
   id: '/api/travel/flight-tracker',
   path: '/api/travel/flight-tracker',
@@ -304,12 +317,19 @@ const ApiOrdersOrderIdStreamRoute = ApiOrdersOrderIdStreamRouteImport.update({
   path: '/api/orders/$orderId/stream',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSyncCustomizationsLatestRoute =
+  ApiSyncCustomizationsLatestRouteImport.update({
+    id: '/latest',
+    path: '/latest',
+    getParentRoute: () => ApiSyncCustomizationsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
   '/king-pay': typeof KingPayRouteWithChildren
   '/kingpay-bbps': typeof KingpayBbpsRoute
@@ -351,16 +371,19 @@ export interface FileRoutesByFullPath {
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
   '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
   '/king-pay': typeof KingPayRouteWithChildren
   '/kingpay-bbps': typeof KingpayBbpsRoute
@@ -402,10 +425,12 @@ export interface FileRoutesByTo {
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
   '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -413,6 +438,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
   '/king-pay': typeof KingPayRouteWithChildren
   '/kingpay-bbps': typeof KingpayBbpsRoute
@@ -454,10 +480,12 @@ export interface FileRoutesById {
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
   '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -466,6 +494,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/cart'
     | '/checkout'
+    | '/dining'
     | '/earn'
     | '/king-pay'
     | '/kingpay-bbps'
@@ -507,16 +536,19 @@ export interface FileRouteTypes {
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/sync/customizations'
     | '/api/travel/flight-tracker'
     | '/api/travel/pnr-status'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
+    | '/api/sync/customizations/latest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/cart'
     | '/checkout'
+    | '/dining'
     | '/earn'
     | '/king-pay'
     | '/kingpay-bbps'
@@ -558,16 +590,19 @@ export interface FileRouteTypes {
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/sync/customizations'
     | '/api/travel/flight-tracker'
     | '/api/travel/pnr-status'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
+    | '/api/sync/customizations/latest'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/cart'
     | '/checkout'
+    | '/dining'
     | '/earn'
     | '/king-pay'
     | '/kingpay-bbps'
@@ -609,10 +644,12 @@ export interface FileRouteTypes {
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/sync/customizations'
     | '/api/travel/flight-tracker'
     | '/api/travel/pnr-status'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
+    | '/api/sync/customizations/latest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -620,6 +657,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  DiningRoute: typeof DiningRoute
   EarnRoute: typeof EarnRoute
   KingPayRoute: typeof KingPayRouteWithChildren
   KingpayBbpsRoute: typeof KingpayBbpsRoute
@@ -659,6 +697,7 @@ export interface RootRouteChildren {
   ApiPushSubscribeRoute: typeof ApiPushSubscribeRoute
   ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
   ApiRazorpayVerifyRoute: typeof ApiRazorpayVerifyRoute
+  ApiSyncCustomizationsRoute: typeof ApiSyncCustomizationsRouteWithChildren
   ApiTravelFlightTrackerRoute: typeof ApiTravelFlightTrackerRoute
   ApiTravelPnrStatusRoute: typeof ApiTravelPnrStatusRoute
   DeliveryTownAreaRoute: typeof DeliveryTownAreaRoute
@@ -693,6 +732,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dining': {
+      id: '/dining'
+      path: '/dining'
+      fullPath: '/dining'
+      preLoaderRoute: typeof DiningRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/earn': {
@@ -982,6 +1028,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRazorpayVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sync/customizations': {
+      id: '/api/sync/customizations'
+      path: '/api/sync/customizations'
+      fullPath: '/api/sync/customizations'
+      preLoaderRoute: typeof ApiSyncCustomizationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/travel/flight-tracker': {
       id: '/api/travel/flight-tracker'
       path: '/api/travel/flight-tracker'
@@ -1010,6 +1063,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOrdersOrderIdStreamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sync/customizations/latest': {
+      id: '/api/sync/customizations/latest'
+      path: '/latest'
+      fullPath: '/api/sync/customizations/latest'
+      preLoaderRoute: typeof ApiSyncCustomizationsLatestRouteImport
+      parentRoute: typeof ApiSyncCustomizationsRoute
+    }
   }
 }
 
@@ -1035,11 +1095,25 @@ const TravelRouteChildren: TravelRouteChildren = {
 const TravelRouteWithChildren =
   TravelRoute._addFileChildren(TravelRouteChildren)
 
+interface ApiSyncCustomizationsRouteChildren {
+  ApiSyncCustomizationsLatestRoute: typeof ApiSyncCustomizationsLatestRoute
+}
+
+const ApiSyncCustomizationsRouteChildren: ApiSyncCustomizationsRouteChildren = {
+  ApiSyncCustomizationsLatestRoute: ApiSyncCustomizationsLatestRoute,
+}
+
+const ApiSyncCustomizationsRouteWithChildren =
+  ApiSyncCustomizationsRoute._addFileChildren(
+    ApiSyncCustomizationsRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  DiningRoute: DiningRoute,
   EarnRoute: EarnRoute,
   KingPayRoute: KingPayRouteWithChildren,
   KingpayBbpsRoute: KingpayBbpsRoute,
@@ -1079,6 +1153,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPushSubscribeRoute: ApiPushSubscribeRoute,
   ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,
   ApiRazorpayVerifyRoute: ApiRazorpayVerifyRoute,
+  ApiSyncCustomizationsRoute: ApiSyncCustomizationsRouteWithChildren,
   ApiTravelFlightTrackerRoute: ApiTravelFlightTrackerRoute,
   ApiTravelPnrStatusRoute: ApiTravelPnrStatusRoute,
   DeliveryTownAreaRoute: DeliveryTownAreaRoute,

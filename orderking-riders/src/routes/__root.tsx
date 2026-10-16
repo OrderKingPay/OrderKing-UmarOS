@@ -6,6 +6,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { OfflineDetector } from "@/components/offline-detector";
 import { I18nProvider } from "@/lib/rider/i18n-context";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
+import { CustomizationProvider, DEFAULT_RIDER_CUSTOMIZATION_STATE } from "@orderking/ui";
 import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 
@@ -28,7 +29,7 @@ export const Route = createRootRoute({
       { name: "description", content: DEFAULT_BRANDING.tagline },
     ],
     links: [
-      { rel: "icon", type: 'image/png', href: '/icon-192.png' },
+      { rel: "icon", type: "image/png", href: "/icon-192.png" },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
@@ -48,10 +49,12 @@ export const Route = createRootRoute({
         <OfflineDetector />
         <AuthProvider>
           <I18nProvider>
-            <ErrorBoundary>
-              <Outlet />
-            </ErrorBoundary>
-            <Toaster position="top-center" richColors={false} />
+            <CustomizationProvider initialState={DEFAULT_RIDER_CUSTOMIZATION_STATE}>
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
+              <Toaster position="top-center" richColors={false} />
+            </CustomizationProvider>
           </I18nProvider>
         </AuthProvider>
         <Scripts />

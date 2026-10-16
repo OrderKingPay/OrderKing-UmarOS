@@ -1,12 +1,13 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, ChefHat } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
 import { formatPaise } from "@/lib/money";
 import type { MenuItemView } from "@/lib/market-types";
 import { cartKey, type CartItem } from "@/lib/stores/cart";
+import { CookingInstructionsModal } from "@/components/market/cooking-instructions-modal";
 
 export function CustomizeDialog({
   item,
@@ -27,6 +28,7 @@ export function CustomizeDialog({
   const [addonIds, setAddonIds] = useState<string[]>([]);
   const [qty, setQty] = useState(1);
   const [note, setNote] = useState("");
+  const [showChefModal, setShowChefModal] = useState(false);
 
   const reset = (next: MenuItemView | null) => {
     const v = next?.variants.find((x) => x.isDefault) ?? next?.variants[0] ?? null;
@@ -126,15 +128,25 @@ export function CustomizeDialog({
               </div>
             </fieldset>
           ))}
-          <label className="mt-4 block text-sm font-medium">
-            {t("customize.instructions")}
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value.slice(0, 180))}
-              placeholder={t("customize.instructionsPlaceholder")}
-              className="mt-1 min-h-20 w-full rounded-[var(--radius-md)] border border-border bg-bg p-3 text-base"
-            />
-          </label>
+          <div className="mt-4 flex items-center justify-between">
+            <label className="block text-sm font-medium">
+              {t("customize.instructions")}
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowChefModal(true)}
+              className="flex items-center gap-1.5 text-xs font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400 cursor-pointer"
+            >
+              <ChefHat className="size-3.5" />
+              <span>Special Chef Request</span>
+            </button>
+          </div>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value.slice(0, 180))}
+            placeholder={t("customize.instructionsPlaceholder")}
+            className="mt-1 min-h-20 w-full rounded-[var(--radius-md)] border border-border bg-bg p-3 text-base"
+          />
           <div className="mt-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button
@@ -171,6 +183,14 @@ export function CustomizeDialog({
               {t("customize.addFor", { amount: formatPaise(unit * qty, { locale }) })}
             </Button>
           </div>
+
+          <CookingInstructionsModal
+            isOpen={showChefModal}
+            onClose={() => setShowChefModal(false)}
+            itemName={item.name}
+            initialInstructions={note}
+            onSave={(instructions) => setNote(instructions)}
+          />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

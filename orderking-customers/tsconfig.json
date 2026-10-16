@@ -28,6 +28,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@orderking/ui": [
+        "../packages/ui/src"
       ]
     },
     "allowImportingTsExtensions": true,

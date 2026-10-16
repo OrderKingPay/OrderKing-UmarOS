@@ -137,6 +137,7 @@ create table if not exists items (
   tax_bps integer not null default 0,
   sort_order integer not null default 0,
   is_active boolean not null default true,
+  modifier_groups jsonb default '[]'::jsonb,
   created_at timestamptz not null default now()
 );
 create index if not exists items_rest_idx on items (restaurant_id, category_id, sort_order);

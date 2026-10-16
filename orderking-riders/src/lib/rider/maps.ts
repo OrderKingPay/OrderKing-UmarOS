@@ -19,6 +19,29 @@ export function googleNavigationUrl(point: GeoPoint): string {
 }
 
 /**
+ * Generates native Android turn-by-turn navigation intent URI:
+ * `google.navigation:q=${lat},${lng}&mode=b` (mode=b for two-wheeler / bike).
+ */
+export function androidTwoWheelerNavigationIntent(point: GeoPoint): string {
+  const lat = Number(point?.lat) || 0;
+  const lng = Number(point?.lng) || 0;
+  return `google.navigation:q=${lat},${lng}&mode=b`;
+}
+
+/**
+ * Returns complete navigation URIs for two-wheelers: Android intent, geo URI, and web fallback.
+ */
+export function getTwoWheelerNavigationUris(point: GeoPoint, label = "Destination") {
+  const lat = Number(point?.lat) || 0;
+  const lng = Number(point?.lng) || 0;
+  return {
+    intentUri: `google.navigation:q=${lat},${lng}&mode=b`,
+    geoUri: `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(label)})&mode=b`,
+    webUrl: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=two-wheeler`,
+  };
+}
+
+/**
  * Direct Apple Maps Turn-by-Turn navigation URL.
  */
 export function appleMapsUrl(point: GeoPoint, label = "Destination"): string {

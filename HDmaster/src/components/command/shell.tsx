@@ -63,6 +63,7 @@ import { OrderKingMark } from "@/components/brand/mark";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { UmarAiOmnibar } from "./UmarAiOmnibar";
 
 const ICONS = {
   layout: LayoutDashboard,
@@ -1511,6 +1512,9 @@ export function CommandShell() {
           })}
         </div>
       </nav>
+
+      {/* UMAR AI INTERACTIVE FLOATING COMMAND OMNIBAR (CTRL+K) */}
+      <UmarAiOmnibar />
     </div>
   );
 }

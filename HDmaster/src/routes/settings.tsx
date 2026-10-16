@@ -37,6 +37,7 @@ import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSetti
 import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSettings";
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
+import { UmarOsVisualCustomizationStudio } from "@/components/customization/UmarOsVisualCustomizationStudio";
 import {
   loadSettings,
   saveSettingsFn,
@@ -217,7 +218,7 @@ function SettingsPage() {
   const [showLiveCustomerPreview, setShowLiveCustomerPreview] = useState(false);
   const [showDeepAlgorithmMatrix, setShowDeepAlgorithmMatrix] = useState(false);
   const [showDeepKingPayMatrix, setShowDeepKingPayMatrix] = useState(false);
-  const [activeSubsystemTab, setActiveSubsystemTab] = useState<"none" | "cms" | "connectors">("none");
+  const [activeSubsystemTab, setActiveSubsystemTab] = useState<"none" | "cms" | "connectors" | "visual_studio">("none");
   const [confirmResetAll, setConfirmResetAll] = useState(false);
 
   // Category 1 State: Brand, Colors, Typography & UI Design
@@ -2552,7 +2553,20 @@ function SettingsPage() {
                       Configure global customer/partner UI copy strings and external gateways (Razorpay, Mapbox, FSSAI, ClearTax, WhatsApp).
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveSubsystemTab((t) => (t === "visual_studio" ? "none" : "visual_studio"))
+                      }
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
+                        activeSubsystemTab === "visual_studio"
+                          ? "bg-rose-600 text-white border-rose-600"
+                          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Palette className="h-3.5 w-3.5" /> Visual Customization Studio
+                    </button>
                     <button
                       type="button"
                       onClick={() =>
@@ -2582,6 +2596,11 @@ function SettingsPage() {
                   </div>
                 </div>
 
+                {activeSubsystemTab === "visual_studio" && (
+                  <div className="pt-4 border-t border-slate-200">
+                    <UmarOsVisualCustomizationStudio />
+                  </div>
+                )}
                 {activeSubsystemTab === "cms" && (
                   <div className="pt-4 border-t border-slate-200">
                     <EcosystemCMS />

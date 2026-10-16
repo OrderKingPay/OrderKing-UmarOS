@@ -13,7 +13,7 @@ export function useVendor() {
   });
   const memberships = q.data?.memberships ?? [];
   const selected =
-    memberships.find((m) => m.restaurantId === restaurantId) ?? memberships[0] ?? null;
+    memberships.find((m: any) => m.restaurantId === restaurantId) ?? memberships[0] ?? null;
 
   useEffect(() => {
     if (selected && selected.restaurantId !== restaurantId) {
@@ -30,5 +30,6 @@ export function useVendor() {
     role: selected?.role,
     adapters: q.data?.adapters,
     featureFlags: q.data?.featureFlags,
+    customization: q.data?.customization,
   };
 }

@@ -23,6 +23,7 @@ import {
   calculateDailyMilestoneProgress,
 } from "@/lib/rider/gig-engine";
 import { VipAmbassadorPass } from "@/components/rider/vip-ambassador-pass";
+import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
 export const Route = createFileRoute("/earnings")({ component: Page });
 
@@ -33,6 +34,7 @@ const MILESTONES = STANDARD_DAILY_MILESTONES;
 
 function Page() {
   const { t } = useI18n();
+  const { payout, surge, weather } = useRiderCustomization();
   const [preset, setPreset] = useState<Preset>("today");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
@@ -198,7 +200,7 @@ function Page() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="font-semibold text-foreground">
-                Tier-1 Algorithmic Payout Rate Card
+                {payout.labels.rateCardTitle}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Exact Indian delivery matrix · SafeInteger paise arithmetic (100 paise = 1 INR)
@@ -212,19 +214,24 @@ function Page() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-2 text-xs border-t border-border">
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
               <span className="font-semibold text-foreground block">Base Order Pay</span>
-              <span className="text-muted-foreground">₹20.00 – ₹35.00 by City Tier (0–2km included)</span>
+              <span className="text-muted-foreground">{payout.labels.baseFareText}</span>
             </div>
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
               <span className="font-semibold text-foreground block">Progressive Distance</span>
-              <span className="text-muted-foreground">₹7.00 – ₹12.00/km (Up to ₹16/km + ₹20 LDO Bonus)</span>
+              <span className="text-muted-foreground">
+                {payout.formattedDistanceRate}/km · Slabs up to ₹{payout.slabs.slab4RatePerKmPaise / 100}/km + ₹{payout.slabs.ldoBonusPaise / 100} LDO Bonus
+              </span>
             </div>
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
               <span className="font-semibold text-foreground block">Wait-Time Pay</span>
-              <span className="text-muted-foreground">₹1.00/min (&gt;5 mins wait at kitchen, cap ₹30)</span>
+              <span className="text-muted-foreground">₹1.00/min (&gt;6 mins wait at kitchen, cap ₹30)</span>
             </div>
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
               <span className="font-semibold text-foreground block">Surge &amp; Weather</span>
-              <span className="text-muted-foreground">Monsoon (+₹20–₹45) · Peak Dinner (+₹15–₹30)</span>
+              <span className="text-muted-foreground">
+                {surge.badges.monsoonText} · {surge.badges.peakDinnerText}
+                {surge.isWeatherAllowanceActive ? ` · ${surge.badges.weatherAllowanceText}` : ""}
+              </span>
             </div>
           </div>
         </div>

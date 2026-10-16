@@ -213,10 +213,11 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   
-  ssr: { noExternal: ['nanostores', '@nanostores/react'] },
+  ssr: { noExternal: ['nanostores', '@nanostores/react', '@orderking/ui'] },
   resolve: { 
     tsconfigPaths: true,
     alias: {
+      '@orderking/ui': join(__dirname, '../packages/ui/src'),
       'pg': '@neondatabase/serverless', '@better-auth/telemetry': join(__dirname, './scripts/empty.mjs')
     }
   },

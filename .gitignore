@@ -38,6 +38,8 @@ api_matches.txt
 search_results.json
 todos.txt
 todos_and_mocks.json
+UPLOAD_READY/
+work/
 
 # Logs
 *.log

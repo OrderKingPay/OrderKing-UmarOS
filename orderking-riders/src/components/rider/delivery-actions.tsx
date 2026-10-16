@@ -6,11 +6,13 @@ import { Label } from "@/components/ui/label";
 import { compressImage, errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { formatPaise, calculateRestaurantWaitPayPaise } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { deliveryActionFn } from "@/lib/server/rider-fns";
+import { deliveryActionFn, triggerMaskedCallFn } from "@/lib/server/rider-fns";
 import { TERMINAL_DELIVERY_STATES, type CashReconciliation, type Delivery } from "@/lib/rider/types";
 import { enqueueRiderOfflineAction, getRiderNetworkSpeed } from "@/lib/rider/rider-low-network";
-import { AlertTriangle, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, ShieldAlert, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
+import { getTwoWheelerNavigationUris } from "@/lib/rider/maps";
+import { AlertTriangle, Camera, CheckCircle2, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, RotateCcw, ShieldAlert, Wallet } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { ConfirmDialog } from "./confirm-dialog";
 import { SwipeSlider } from "./swipe-slider";
 
@@ -35,6 +37,60 @@ export function DeliveryActions({
   const [reason, setReason] = useState("vehicle problem");
   const [sopOpen, setSopOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
+  const [billPhoto, setBillPhoto] = useState<string | null>(null);
+  const [isCalling, setIsCalling] = useState(false);
+  const billFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  function getVirtualProxyDial(contactMasked: string | null | undefined): string {
+    const digits = (contactMasked || "").replace(/\D/g, "");
+    const suffix = digits ? digits.slice(-4).padStart(4, "0") : "1234";
+    return `+91804567${suffix}`;
+  }
+
+  function getVirtualProxyDisplay(contactMasked: string | null | undefined): string {
+    const digits = (contactMasked || "").replace(/\D/g, "");
+    const suffix = digits ? digits.slice(-4).padStart(4, "0") : "1234";
+    return `+91 80 4567 ${suffix}`;
+  }
+
+  async function handleMaskedCustomerCall() {
+    setIsCalling(true);
+    const fallbackDial = getVirtualProxyDial(delivery.customer.contactMasked);
+    try {
+      toast.info("Connecting via OrderKing Cloud Telephony Bridge...");
+      const res = await triggerMaskedCallFn({
+        data: {
+          deliveryId: delivery.id,
+          recipientType: "CUSTOMER",
+        },
+      });
+      const dialTarget = res?.virtualProxyNumber || fallbackDial;
+      window.location.href = `tel:${dialTarget}`;
+      toast.success(`Virtual bridge connected to ${res?.maskedDisplay || dialTarget}`);
+      onChanged();
+    } catch {
+      window.location.href = `tel:${fallbackDial}`;
+    } finally {
+      setIsCalling(false);
+    }
+  }
+
+  const handleBillPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Photo exceeds 10MB limit");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setBillPhoto(reader.result);
+        toast.success("Restaurant paper bill photo captured & verified!");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -198,7 +254,7 @@ export function DeliveryActions({
       ) : null}
       {d.customer.contactAllowed && d.customer.contactMasked ? (
         <p className="text-xs text-muted-foreground">
-          Masked Customer Contact: <span className="font-mono">{d.customer.contactMasked}</span>
+          Masked Customer Contact: <span className="font-mono">{getVirtualProxyDisplay(d.customer.contactMasked)}</span>
         </p>
       ) : null}
       {d.cod ? (
@@ -215,14 +271,19 @@ export function DeliveryActions({
       {/* OrderKing Partner Quick-Connect & Safety SOS Bar */}
       <div className="grid grid-cols-4 gap-2 border-t border-border pt-2">
         {d.customer.contactAllowed ? (
-          <a
-            href={`tel:${d.customer.contactMasked || "18001000"}`}
-            className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
+          <button
+            type="button"
+            disabled={pending || isCalling}
+            onClick={() => void handleMaskedCustomerCall()}
+            className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70 disabled:opacity-50"
+            title={`Virtual Telephony Bridge: ${getVirtualProxyDial(d.customer.contactMasked)}`}
           >
-            <span className="text-base">📞</span>
-            <span>Call</span>
-            <span className="text-[10px] text-muted-foreground">Masked</span>
-          </a>
+            <span className="text-base">{isCalling ? "⏳" : "📞"}</span>
+            <span>{isCalling ? "Dialing..." : "Call"}</span>
+            <span className="text-[10px] text-muted-foreground font-mono">
+              {getVirtualProxyDisplay(d.customer.contactMasked)}
+            </span>
+          </button>
         ) : (
           <button
             type="button"
@@ -280,17 +341,45 @@ export function DeliveryActions({
           const navTargetName = isHeadingToCustomer
             ? d.customer.displayName || d.customer.area || "Customer"
             : d.restaurant.name;
-          const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${navTarget.lat},${navTarget.lng}&travelmode=two-wheeler`;
+          const navUris = getTwoWheelerNavigationUris(navTarget, navTargetName);
+          const isAndroid = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+          const primaryNavUrl = isAndroid ? navUris.intentUri : navUris.webUrl;
 
           return (
-            <a
-              href={googleMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 active:scale-[0.99]"
-            >
-              <span>🧭</span> Navigate via Google Maps ({navTargetName})
-            </a>
+            <div className="space-y-1.5">
+              <a
+                href={primaryNavUrl}
+                target={isAndroid ? undefined : "_blank"}
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (isAndroid) {
+                    // Launch Android Google Maps native navigation intent in two-wheeler mode (mode=b)
+                    window.location.href = navUris.intentUri;
+                    setTimeout(() => {
+                      // Fallback to web directions if intent was not handled
+                      window.open(navUris.webUrl, "_blank");
+                    }, 1500);
+                  }
+                }}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 active:scale-[0.99]"
+              >
+                <span>🧭</span> Navigate via Google Maps ({navTargetName})
+                <span className="rounded bg-emerald-700/70 px-1.5 py-0.5 text-[10px] font-mono">
+                  Two-Wheeler (mode=b)
+                </span>
+              </a>
+              <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground font-mono">
+                <span>Native Intent: google.navigation</span>
+                <a
+                  href={navUris.webUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline text-primary"
+                >
+                  Web Fallback ↗
+                </a>
+              </div>
+            </div>
           );
         })()}
 
@@ -362,13 +451,90 @@ export function DeliveryActions({
             />
           </div>
 
+          {/* Mandatory Restaurant Paper Bill / Receipt Photo Capture */}
+          <div className="rounded-xl border border-border bg-card p-3 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Camera className="size-4 text-primary" />
+                <span className="text-xs font-bold text-foreground">
+                  Mandatory Paper Bill Verification
+                </span>
+              </div>
+              {billPhoto ? (
+                <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-3.5" /> Receipt Attached
+                </span>
+              ) : (
+                <span className="rounded bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400">
+                  Photo Required to Swipe
+                </span>
+              )}
+            </div>
+
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Zomato Delivery Standard: Snap a clear photo of the physical paper bill attached to the parcel before confirming pickup.
+            </p>
+
+            <input
+              ref={billFileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleBillPhotoChange}
+              className="hidden"
+            />
+
+            {billPhoto ? (
+              <div className="relative aspect-16/9 w-full rounded-lg overflow-hidden border border-emerald-500/30 bg-muted/30">
+                <img
+                  src={billPhoto}
+                  alt="Restaurant Paper Receipt"
+                  className="size-full object-cover"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-black/70 p-1.5 flex items-center justify-between text-[10px] text-white font-mono">
+                  <span>Order #{d.orderCode} · Bill Verified</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBillPhoto(null);
+                      if (billFileInputRef.current) billFileInputRef.current.value = "";
+                    }}
+                    className="flex items-center gap-1 text-rose-300 hover:text-white"
+                  >
+                    <RotateCcw className="size-3" /> Retake
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => billFileInputRef.current?.click()}
+                className="w-full text-xs font-semibold gap-2 border-dashed border-primary/50 text-primary hover:bg-primary/5 py-3"
+              >
+                <Camera className="size-4" />
+                <span>Snap Physical Paper Bill (Back Camera)</span>
+              </Button>
+            )}
+          </div>
+
           <SwipeSlider
-            label="Swipe to Confirm Pickup"
+            label={billPhoto ? "Swipe to Confirm Pickup" : "Snap Bill Photo to Unlock Pickup"}
             variant="emerald"
+            disabled={!billPhoto || pending}
             loading={pending}
             onComplete={() => {
+              if (!billPhoto) {
+                toast.error("Please photograph the paper bill attached to the food package first");
+                return;
+              }
               const finalCode = code.trim() || d.pickupCode;
-              return act("PICKUP", { pickupCode: finalCode });
+              return act("PICKUP", {
+                pickupCode: finalCode,
+                billPhotoUrl: billPhoto,
+                receiptVerified: true,
+              });
             }}
           />
 

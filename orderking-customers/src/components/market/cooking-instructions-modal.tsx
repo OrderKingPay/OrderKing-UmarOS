@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChefHat, Flame, Sparkles, X, Check, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -19,6 +19,10 @@ export function CookingInstructionsModal({
   onSave,
 }: CookingInstructionsModalProps) {
   const [open, setOpen] = useState(isOpen);
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
   const [spiceLevel, setSpiceLevel] = useState<"MILD" | "MEDIUM" | "SPICY" | "FIERY">("MEDIUM");
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [customText, setCustomText] = useState(initialInstructions);

@@ -36,12 +36,14 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
 export const Route = createFileRoute("/wallet")({ component: WalletPage });
 
 type HomeData = Awaited<ReturnType<typeof getHomeFn>>;
 
 function WalletPage() {
+  const { cod } = useRiderCustomization();
   const [home, setHome] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [quickAmountRupees, setQuickAmountRupees] = useState<number>(500);
@@ -65,9 +67,17 @@ function WalletPage() {
   }, []);
 
   const unreconciledPaise = home?.pocketBalance?.pocketBalancePaise ?? home?.pendingCashPaise ?? 0;
-  const limitPaise = home?.pocketBalance?.limitPaise ?? 200000;
+  const limitPaise = home?.disciplineConfig?.floatingCashLimitInr
+    ? home.disciplineConfig.floatingCashLimitInr * 100
+    : home?.pocketBalance?.limitPaise ?? cod.hardLockPaise;
   const isBlocked = home?.pocketBalance?.isCodBlocked ?? (unreconciledPaise >= limitPaise);
-  const utilizationPct = home?.pocketBalance?.utilizationPct ?? Math.min(100, Math.round((unreconciledPaise / limitPaise) * 100));
+  const isSoftWarning =
+    !isBlocked &&
+    (unreconciledPaise >= cod.softWarningPaise ||
+      (unreconciledPaise / Math.max(1, limitPaise)) * 100 >= cod.warningThresholdPct);
+  const utilizationPct =
+    home?.pocketBalance?.utilizationPct ??
+    Math.min(100, Math.round((unreconciledPaise / Math.max(1, limitPaise)) * 100));
   const remainingPaise = Math.max(0, limitPaise - unreconciledPaise);
 
   const lifetimeTrips = home?.rider?.lifetimeDeliveries ?? home?.completedToday ?? 0;
@@ -158,8 +168,8 @@ function WalletPage() {
 
           <p className="text-xs text-muted-foreground leading-relaxed">
             Manage your in-hand physical cash collected from Cash-on-Delivery (COD) orders.
-            OrderKing fleet architecture enforces a strict <strong>₹2,000 float threshold</strong>.
-            If your balance exceeds ₹2,000, new COD dispatch offers are paused until settled via
+            OrderKing fleet architecture enforces a strict <strong>₹{(limitPaise / 100).toLocaleString("en-IN")} hard lock</strong> (Soft warning at ₹{(cod.softWarningPaise / 100).toLocaleString("en-IN")}).
+            If your balance reaches ₹{(limitPaise / 100).toLocaleString("en-IN")}, new COD dispatch offers are paused until settled via
             1-tap instant UPI QR or weekly automated Wednesday settlement offset.
           </p>
         </div>
@@ -179,6 +189,8 @@ function WalletPage() {
           }
           disciplineConfig={home?.disciplineConfig}
           onRefresh={loadData}
+          lifetimeDeliveries={lifetimeTrips}
+          riderName={home?.rider?.fullName}
         />
 
         {/* 3 Overview Metric Tiles */}
@@ -199,7 +211,7 @@ function WalletPage() {
               ₹{(limitPaise / 100).toLocaleString("en-IN")}.00
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Active operational float limit before dispatch pause
+              Hard lock: ₹{(limitPaise / 100).toLocaleString("en-IN")} · Soft warning: ₹{(cod.softWarningPaise / 100).toLocaleString("en-IN")}
             </p>
           </Card>
 

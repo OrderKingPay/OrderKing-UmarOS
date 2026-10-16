@@ -9,8 +9,10 @@ import { formatINR, mulBps } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { REJECT_REASONS, type OrderState } from "@/lib/orders/state-machine";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
+import { delayOrderPrep } from "@/lib/server/api-orders";
 import { enqueueMutation } from "@/lib/offline/durable-queue";
 import { toast } from "sonner";
+import { Clock } from "lucide-react";
 
 export type OrderView = {
   id: string;
@@ -100,6 +102,58 @@ export function OrderCard({
   const [handoverModalOpen, setHandoverModalOpen] = useState(false);
   const [reason, setReason] = useState<(typeof REJECT_REASONS)[number]>("item_unavailable");
   const [error, setError] = useState<string | null>(null);
+  const [localPrepMinutes, setLocalPrepMinutes] = useState(order.prepMinutes);
+  const [delaying, setDelaying] = useState(false);
+
+  useEffect(() => {
+    setLocalPrepMinutes(order.prepMinutes);
+  }, [order.prepMinutes]);
+
+  async function handleAddPrepDelay(extraMinutes: number) {
+    if (delaying || busy) return;
+    setDelaying(true);
+    const newPrep = localPrepMinutes + extraMinutes;
+    setLocalPrepMinutes(newPrep);
+
+    try {
+      if (restaurantId) {
+        await delayOrderPrep({
+          data: {
+            restaurantId,
+            orderId: order.id,
+            extraMinutes,
+          },
+        });
+      }
+
+      // Optimistically update query client cache
+      qc.setQueriesData({ queryKey: ["orders"] }, (old: any) => {
+        if (!old || typeof old !== "object" || !("orders" in old)) return old;
+        return {
+          ...old,
+          orders: old.orders.map((o: any) =>
+            o.id === order.id ? { ...o, prepMinutes: newPrep } : o
+          ),
+        };
+      });
+
+      // Calculate updated rider arrival window & delivery ETA
+      const placedMs = new Date(order.placedAt).getTime() || Date.now();
+      const arrivalEta = new Date(placedMs + (newPrep + prepThrottleBuffer) * 60000);
+      const formattedEta = arrivalEta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      toast.warning(
+        `⏳ Kitchen Prep Delay (+${extraMinutes}m): Order #${order.orderNumber} prep extended to ${newPrep}m. Rider arrival window & delivery ETA updated to ${formattedEta}.`
+      );
+      onChanged?.();
+    } catch (err) {
+      console.error("Failed to add kitchen prep delay:", err);
+      toast.error("Failed to update prep delay on server.");
+      setLocalPrepMinutes(order.prepMinutes);
+    } finally {
+      setDelaying(false);
+    }
+  }
 
   // 120-second order acceptance countdown
   const [acceptanceRemainingSec, setAcceptanceRemainingSec] = useState(() => {
@@ -443,7 +497,7 @@ export function OrderCard({
           {order.isCod ? t("orders.cod") : t("orders.paid")}
         </span>
         <span className="rounded-full border border-line px-2 py-1">
-          {t("orders.prepTime")} {order.prepMinutes + prepThrottleBuffer} {t("common.minutes")}
+          {t("orders.prepTime")} {localPrepMinutes + prepThrottleBuffer} {t("common.minutes")}
           {prepThrottleBuffer > 0 ? ` (+${prepThrottleBuffer}m Rush)` : ""}
         </span>
         {order.prices.restaurantDiscountPaise > 0 ? (
@@ -567,14 +621,42 @@ export function OrderCard({
             </Button>
           ) : null}
           {order.state === "PREPARING" ? (
-            <Button
-              size={large ? "lg" : "md"}
-              variant="leaf"
-              disabled={busy}
-              onClick={() => void act("ready")}
-            >
-              {t("orders.ready")}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                size={large ? "lg" : "md"}
+                variant="leaf"
+                disabled={busy || delaying}
+                onClick={() => void act("ready")}
+              >
+                {t("orders.ready")}
+              </Button>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size={large ? "lg" : "sm"}
+                  variant="secondary"
+                  disabled={busy || delaying}
+                  type="button"
+                  onClick={() => void handleAddPrepDelay(5)}
+                  className="border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold"
+                  title="Push back rider arrival window and update delivery ETA (+5 mins)"
+                >
+                  <Clock className="mr-1 size-3.5 text-amber-400" />
+                  +5m Delay
+                </Button>
+                <Button
+                  size={large ? "lg" : "sm"}
+                  variant="secondary"
+                  disabled={busy || delaying}
+                  type="button"
+                  onClick={() => void handleAddPrepDelay(10)}
+                  className="border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold"
+                  title="Push back rider arrival window and update delivery ETA (+10 mins)"
+                >
+                  <Clock className="mr-1 size-3.5 text-amber-400" />
+                  +10m Delay
+                </Button>
+              </div>
+            </div>
           ) : null}
           {["READY", "RIDER_ASSIGNED"].includes(order.state) ? (
             <Button

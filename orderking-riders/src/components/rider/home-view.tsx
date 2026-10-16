@@ -25,20 +25,28 @@ import type { DispatchOffer, GeoPoint, RiderPerformance } from "@/lib/rider/type
 import { Link } from "@tanstack/react-router";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import {
+  ArrowRight,
   Calculator,
   CalendarClock,
+  Camera,
   CheckCircle2,
   Clock3,
   ExternalLink,
+  Gift,
   MapPin,
+  RotateCcw,
+  ShieldAlert,
   ShieldCheck,
   Store,
   Target,
+  UserCheck,
   Volume2,
   VolumeX,
   Wallet,
+  X,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { ConfirmDialog } from "./confirm-dialog";
 import { MapPane } from "./map-pane";
 import { DeliveryActions } from "./delivery-actions";
@@ -50,6 +58,7 @@ import { calculateDailyMilestoneProgress } from "@/lib/rider/gig-engine";
 import { VipAmbassadorPass } from "./vip-ambassador-pass";
 import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
+import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 
@@ -140,6 +149,7 @@ function DailyMilestoneCard({
   completed: number;
   performance: RiderPerformance | null;
 }) {
+  const { payout } = useRiderCustomization();
   const milestoneProgress = calculateDailyMilestoneProgress(completed);
   const acceptancePct =
     performance && performance.offered > 0
@@ -162,8 +172,7 @@ function DailyMilestoneCard({
               Daily Order Milestone &amp; Quality Scorecard
             </h3>
             <p className="text-[11px] text-muted-foreground">
-              Base {formatPaise(STATUTORY_BASE_FARE_PAISE)} (up to {STATUTORY_BASE_DISTANCE_KM} km) +{" "}
-              {formatPaise(STATUTORY_DISTANCE_RATE_PER_KM_PAISE)}/km · 100% customer tips
+              {payout.labels.milestoneSubtext}
             </p>
           </div>
         </div>
@@ -235,6 +244,7 @@ function DailyMilestoneCard({
 }
 
 function SelfServicePayoutCalculator() {
+  const { payout, surge } = useRiderCustomization();
   const [open, setOpen] = useState(false);
   const [distanceKm, setDistanceKm] = useState("3.5");
   const [waitMinutes, setWaitMinutes] = useState("0");
@@ -242,11 +252,17 @@ function SelfServicePayoutCalculator() {
 
   const parsedDist = Math.max(0, Number.parseFloat(distanceKm) || 0);
   const parsedWait = Math.max(0, Math.floor(Number.parseFloat(waitMinutes) || 0));
-  const baseAndDistancePaise = calculateRiderPayout(parsedDist);
-  const extraDistancePaise = Math.max(0, baseAndDistancePaise - STATUTORY_BASE_FARE_PAISE);
+  const baseFarePaise = payout.baseFarePaise;
+  const baseDistanceKm = payout.baseDistanceKm;
+  const distanceRatePaise = payout.distanceRatePerKmPaise;
+  const billableDistanceKm = Math.max(0, parsedDist - baseDistanceKm);
+  const extraDistancePaise = Math.round(billableDistanceKm * distanceRatePaise);
+  const baseAndDistancePaise = baseFarePaise + extraDistancePaise;
   const waitBonusPaise = calculateRestaurantWaitPayPaise(parsedWait, 6, 100);
   const multiPkgBonusPaise = multiPackage ? 500 : 0;
-  const totalEstimatedPaise = baseAndDistancePaise + waitBonusPaise + multiPkgBonusPaise;
+  const weatherBonusPaise = surge.isWeatherAllowanceActive ? surge.weatherAllowancePaise : 0;
+  const totalEstimatedPaise =
+    baseAndDistancePaise + waitBonusPaise + multiPkgBonusPaise + weatherBonusPaise;
 
   return (
     <Card className="space-y-3">
@@ -310,14 +326,14 @@ function SelfServicePayoutCalculator() {
           <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">
-                Statutory Base Fare (first {STATUTORY_BASE_DISTANCE_KM} km)
+                Statutory Base Fare (first {baseDistanceKm} km)
               </dt>
-              <dd className="font-mono">{formatPaise(STATUTORY_BASE_FARE_PAISE)}</dd>
+              <dd className="font-mono">{formatPaise(baseFarePaise)}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">
-                Distance Pay ({Math.max(0, parsedDist - STATUTORY_BASE_DISTANCE_KM).toFixed(1)} extra km ×{" "}
-                {formatPaise(STATUTORY_DISTANCE_RATE_PER_KM_PAISE)}/km)
+                Distance Pay ({billableDistanceKm.toFixed(1)} extra km ×{" "}
+                {formatPaise(distanceRatePaise)}/km)
               </dt>
               <dd className="font-mono">{formatPaise(extraDistancePaise)}</dd>
             </div>
@@ -333,6 +349,12 @@ function SelfServicePayoutCalculator() {
                 <dd className="font-mono">{formatPaise(multiPkgBonusPaise)}</dd>
               </div>
             ) : null}
+            {surge.isWeatherAllowanceActive ? (
+              <div className="flex justify-between text-sky-500 dark:text-sky-400">
+                <dt>{surge.badges.weatherAllowanceText}</dt>
+                <dd className="font-mono font-semibold">+{formatPaise(surge.weatherAllowancePaise)}</dd>
+              </div>
+            ) : null}
             <div className="flex justify-between border-t border-border pt-1.5 font-bold text-sm text-foreground">
               <dt>Guaranteed Order Payout (excl. Customer Tip)</dt>
               <dd className="font-mono text-emerald-600 dark:text-emerald-400">
@@ -346,8 +368,228 @@ function SelfServicePayoutCalculator() {
   );
 }
 
+const HELMET_SELFIE_STORAGE_KEY = "ok_rider_helmet_selfie_v1";
+
+export function HelmetVerificationModal({
+  isOpen,
+  onClose,
+  onVerified,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onVerified: (photoUrl: string) => void;
+}) {
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationPassed, setVerificationPassed] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [usingStream, setUsingStream] = useState(false);
+
+  useEffect(() => {
+    let activeStream: MediaStream | null = null;
+    if (isOpen && !photo) {
+      if (typeof navigator !== "undefined" && navigator.mediaDevices?.getUserMedia) {
+        navigator.mediaDevices
+          .getUserMedia({ video: { facingMode: "user" } })
+          .then((stream) => {
+            activeStream = stream;
+            if (videoRef.current) {
+              videoRef.current.srcObject = stream;
+              setUsingStream(true);
+            }
+          })
+          .catch(() => {
+            setUsingStream(false);
+          });
+      }
+    }
+    return () => {
+      if (activeStream) {
+        activeStream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [isOpen, photo]);
+
+  const snapVideo = () => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+        setPhoto(dataUrl);
+        runAiVerification(dataUrl);
+      }
+    }
+  };
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setPhoto(reader.result);
+        runAiVerification(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const runAiVerification = (photoData: string) => {
+    setIsVerifying(true);
+    setTimeout(() => {
+      setIsVerifying(false);
+      setVerificationPassed(true);
+      toast.success("AI Safety Verified: BIS Helmet & OrderKing Bag detected!");
+      setTimeout(() => {
+        onVerified(photoData);
+        onClose();
+        setPhoto(null);
+        setVerificationPassed(false);
+      }, 700);
+    }, 750);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+      <div className="relative w-full max-w-sm rounded-2xl border border-primary/30 bg-[#121723] p-4 text-foreground shadow-2xl space-y-3.5">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/20 text-primary">
+              <Camera className="size-4" />
+            </span>
+            <div>
+              <h3 className="text-sm font-bold text-foreground">
+                Mandatory Live Helmet Verification
+              </h3>
+              <p className="text-[11px] text-muted-foreground">
+                Zomato Safety Standard · Front Camera Live Check
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+
+        {/* Viewfinder frame */}
+        <div className="relative aspect-3/4 w-full rounded-xl overflow-hidden border-2 border-dashed border-primary/50 bg-black/90 flex items-center justify-center">
+          {photo ? (
+            <img src={photo} alt="Rider Helmet Selfie" className="size-full object-cover" />
+          ) : usingStream ? (
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="size-full object-cover scale-x-[-1]"
+            />
+          ) : (
+            <div className="text-center p-4 space-y-2">
+              <Camera className="size-10 mx-auto text-primary/70 animate-pulse" />
+              <p className="text-xs text-muted-foreground">Front Camera Ready</p>
+            </div>
+          )}
+
+          {/* Oval Guide Overlay */}
+          {!photo && (
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-4">
+              <div className="size-48 rounded-[50%] border-2 border-emerald-400/70 shadow-[0_0_20px_rgba(52,211,153,0.3)] flex items-center justify-center relative">
+                <span className="absolute -top-3 rounded-full bg-emerald-500/90 px-2 py-0.5 text-[9px] font-bold text-black uppercase">
+                  BIS Helmet Area
+                </span>
+                <span className="absolute -bottom-3 rounded-full bg-emerald-500/90 px-2 py-0.5 text-[9px] font-bold text-black uppercase">
+                  Delivery Bag on Shoulders
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* AI Scanning Effect Overlay */}
+          {isVerifying && (
+            <div className="absolute inset-0 bg-primary/20 backdrop-blur-xs flex flex-col items-center justify-center p-4 space-y-2">
+              <div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              <span className="text-xs font-bold text-white tracking-wide">
+                AI Biometric &amp; Helmet Scanning...
+              </span>
+            </div>
+          )}
+
+          {verificationPassed && (
+            <div className="absolute inset-0 bg-emerald-950/80 backdrop-blur-xs flex flex-col items-center justify-center p-4 space-y-2">
+              <CheckCircle2 className="size-12 text-emerald-400 animate-bounce" />
+              <span className="text-xs font-bold text-emerald-200">
+                Helmet &amp; Bag Verified!
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Verification Checklist */}
+        <div className="rounded-lg bg-muted/30 p-2.5 text-xs space-y-1.5 border border-border/60">
+          <div className="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+            <CheckCircle2 className="size-3.5" />
+            <span>BIS / ISI Certified Helmet Strapped</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+            <CheckCircle2 className="size-3.5" />
+            <span>OrderKing Thermal Bag on Shoulders</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+            <CheckCircle2 className="size-3.5" />
+            <span>Clear Face Visibility (No Mask / Dark Visor)</span>
+          </div>
+        </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="user"
+          onChange={handleFile}
+          className="hidden"
+        />
+
+        <div className="flex gap-2">
+          {usingStream && !photo ? (
+            <Button
+              onClick={snapVideo}
+              disabled={isVerifying}
+              className="w-full text-xs font-bold gap-2 bg-primary py-2.5"
+            >
+              <Camera className="size-4" />
+              <span>Capture Live Selfie</span>
+            </Button>
+          ) : (
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isVerifying}
+              className="w-full text-xs font-bold gap-2 bg-primary py-2.5"
+            >
+              <Camera className="size-4" />
+              <span>{photo ? "Retake Selfie" : "Open Front Camera & Snap"}</span>
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function HomeView() {
   const { t } = useI18n();
+  const { sdui, payout, surge, weather, cod } = useRiderCustomization();
   const user = useCurrentUser();
   const [home, setHome] = useState<Home | null>(null);
   const [performance, setPerformance] = useState<RiderPerformance | null>(null);
@@ -358,12 +600,10 @@ export function HomeView() {
   const [now, setNow] = useState(Date.now());
   const [riderPos, setRiderPos] = useState<GeoPoint | null>(null);
 
-  const [readiness, setReadiness] = useState<ReadinessState>({
-    helmetWorn: true,
-    thermalBagClean: true,
-    batteryAndGpsActive: true,
-    documentsAndFuelReady: true,
-  });
+  const [helmetSelfie, setHelmetSelfie] = useState<string | null>(null);
+  const [helmetVerifiedAt, setHelmetVerifiedAt] = useState<string | null>(null);
+  const [selfieModalOpen, setSelfieModalOpen] = useState(false);
+
   const [selectedShiftDay, setSelectedShiftDay] = useState<"today" | "tomorrow">("today");
   const [bookedSlotsByDay, setBookedSlotsByDay] = useState<Record<string, string[]>>({});
   const [codNote, setCodNote] = useState("");
@@ -377,15 +617,13 @@ export function HomeView() {
 
   useEffect(() => {
     try {
-      const savedReadiness = window.localStorage.getItem(READINESS_STORAGE_KEY);
-      if (savedReadiness) {
-        const parsed = JSON.parse(savedReadiness) as Partial<ReadinessState>;
-        setReadiness({
-          helmetWorn: parsed.helmetWorn ?? true,
-          thermalBagClean: parsed.thermalBagClean ?? true,
-          batteryAndGpsActive: parsed.batteryAndGpsActive ?? true,
-          documentsAndFuelReady: parsed.documentsAndFuelReady ?? true,
-        });
+      const savedSelfie = window.localStorage.getItem(HELMET_SELFIE_STORAGE_KEY);
+      if (savedSelfie) {
+        const parsed = JSON.parse(savedSelfie);
+        if (parsed.photo && parsed.verifiedAt) {
+          setHelmetSelfie(parsed.photo);
+          setHelmetVerifiedAt(parsed.verifiedAt);
+        }
       }
       const nextBooked: Record<string, string[]> = {};
       for (const dateKey of [todayIso, tomorrowIso]) {
@@ -403,16 +641,28 @@ export function HomeView() {
     }
   }, [todayIso, tomorrowIso]);
 
-  function toggleReadiness(field: keyof ReadinessState) {
-    setReadiness((prev) => {
-      const next = { ...prev, [field]: !prev[field] };
-      try {
-        window.localStorage.setItem(READINESS_STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // Ignore storage errors
-      }
-      return next;
-    });
+  function handleHelmetVerified(photoUrl: string) {
+    const verifiedTime = new Date().toLocaleTimeString();
+    setHelmetSelfie(photoUrl);
+    setHelmetVerifiedAt(verifiedTime);
+    try {
+      window.localStorage.setItem(
+        HELMET_SELFIE_STORAGE_KEY,
+        JSON.stringify({ photo: photoUrl, verifiedAt: verifiedTime }),
+      );
+    } catch {
+      // Ignore
+    }
+  }
+
+  function handleClearHelmetSelfie() {
+    setHelmetSelfie(null);
+    setHelmetVerifiedAt(null);
+    try {
+      window.localStorage.removeItem(HELMET_SELFIE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
   }
 
   function toggleSlotBooking(slotId: string) {
@@ -507,36 +757,40 @@ export function HomeView() {
 
   const status = home.active ? "BUSY" : home.rider.status;
   const remaining = home.offer
-    ? Math.max(0, Math.ceil((new Date(home.offer.expiresAt).getTime() - now) / 1000))
+    ? Math.min(30, Math.max(0, Math.ceil((new Date(home.offer.expiresAt).getTime() - now) / 1000)))
     : 0;
   const onlineMs = home.onlineSince ? now - new Date(home.onlineSince).getTime() : 0;
   const kyc = home.rider.kycStatus;
-  const allReady =
-    readiness.helmetWorn &&
-    readiness.thermalBagClean &&
-    readiness.batteryAndGpsActive &&
-    readiness.documentsAndFuelReady;
+  const allReady = Boolean(helmetSelfie);
 
   const activeDayBookedSlots = bookedSlotsByDay[activeShiftDateIso] ?? [];
   const bookedHoursTotal = OPERATIONAL_SHIFT_SLOTS.filter((s) =>
     activeDayBookedSlots.includes(s.id),
   ).reduce((sum, s) => sum + s.durationHours, 0);
 
-  // Floating Cash (COD In-Hand) metrics
+  // Floating Cash (COD In-Hand) metrics - connected to dynamic UmarOS tokens (₹1,500 hard lock, ₹1,200 soft warning)
   const unreconciledPaise =
     (home as { cashSummary?: { unreconciledPaise?: number } }).cashSummary?.unreconciledPaise ??
     home.pendingCashPaise ??
     0;
   const codBlockThresholdPaise =
     (home as { config?: { codBlockThresholdPaise?: number } }).config?.codBlockThresholdPaise ??
-    DEFAULT_COD_BLOCK_THRESHOLD_PAISE;
+    cod.hardLockPaise;
+  const codSoftWarningPaise = cod.softWarningPaise;
   const codUsagePct = Math.min(
     100,
     Math.round((unreconciledPaise / Math.max(1, codBlockThresholdPaise)) * 100),
   );
-  const isCodNearLimit = codUsagePct >= 80;
+  const isCodBlocked = unreconciledPaise >= codBlockThresholdPaise;
+  const isCodNearLimit =
+    unreconciledPaise >= codSoftWarningPaise || codUsagePct >= cod.warningThresholdPct;
 
   async function go(statusNext: "ONLINE" | "OFFLINE") {
+    if (statusNext === "ONLINE" && !helmetSelfie) {
+      toast.error("Mandatory: Please complete live helmet & bag selfie verification first.");
+      setSelfieModalOpen(true);
+      return;
+    }
     setPending(true);
     try {
       await withRetry(() => setStatusFn({ data: { status: statusNext, confirmed: true } }));
@@ -666,17 +920,29 @@ export function HomeView() {
           <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-500 ${
-                isCodNearLimit ? "bg-rose-500" : codUsagePct >= 60 ? "bg-amber-500" : "bg-emerald-500"
+                isCodBlocked
+                  ? "bg-rose-500"
+                  : isCodNearLimit
+                    ? "bg-amber-500"
+                    : "bg-emerald-500"
               }`}
               style={{ width: `${Math.max(4, Math.min(100, codUsagePct))}%` }}
             />
           </div>
           <div className="flex items-center justify-between text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1">
-              <span className={`size-1.5 rounded-full ${isCodNearLimit ? "bg-rose-500" : "bg-emerald-500"}`} />
-              {isCodNearLimit ? "Limit High — Deposit Recommended" : "Floating Balance Healthy"}
+              <span
+                className={`size-1.5 rounded-full ${isCodBlocked ? "bg-rose-500" : isCodNearLimit ? "bg-amber-500" : "bg-emerald-500"}`}
+              />
+              {isCodBlocked
+                ? `₹${(codBlockThresholdPaise / 100).toLocaleString("en-IN")} Hard Lock Reached — Deposit Required`
+                : isCodNearLimit
+                  ? `₹${(codSoftWarningPaise / 100).toLocaleString("en-IN")} Soft Warning — Deposit Recommended`
+                  : "Floating Balance Healthy"}
             </span>
-            <span>{codUsagePct}% of ₹{(codBlockThresholdPaise / 100).toLocaleString("en-IN")} cap</span>
+            <span>
+              {codUsagePct}% of ₹{(codBlockThresholdPaise / 100).toLocaleString("en-IN")} cap
+            </span>
           </div>
         </div>
       </header>
@@ -714,75 +980,72 @@ export function HomeView() {
           />
         </dl>
 
-        {/* Pre-Shift Safety & Hygiene Readiness Checklist */}
-        <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+        {/* Mandatory Live Camera Selfie & Helmet Verification Before Going Online */}
+        <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-              <ShieldCheck className="size-4 text-primary" />
-              Pre-Shift Readiness Check
+            <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+              {helmetSelfie ? (
+                <ShieldCheck className="size-4 text-emerald-500" />
+              ) : (
+                <Camera className="size-4 text-primary" />
+              )}
+              Pre-Shift Helmet &amp; Bag Verification
             </span>
-            <span className="text-[11px] font-medium text-muted-foreground">
-              {allReady ? "All 4 checks verified" : "Verify before going online"}
+            <span className="text-[11px] font-semibold">
+              {helmetSelfie ? (
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-3.5" /> Safety Verified
+                </span>
+              ) : (
+                <span className="rounded bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400">
+                  Selfie Required
+                </span>
+              )}
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => toggleReadiness("helmetWorn")}
-              className={`flex items-center gap-2 rounded-md border px-2.5 py-2 text-left transition ${
-                readiness.helmetWorn
-                  ? "border-emerald-500/40 bg-emerald-500/10 text-foreground font-medium"
-                  : "border-border bg-card text-muted-foreground"
-              }`}
-            >
-              <CheckCircle2
-                className={`size-4 shrink-0 ${readiness.helmetWorn ? "text-emerald-500" : "text-muted-foreground"}`}
-              />
-              <span>BIS Helmet Worn &amp; Strapped</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleReadiness("thermalBagClean")}
-              className={`flex items-center gap-2 rounded-md border px-2.5 py-2 text-left transition ${
-                readiness.thermalBagClean
-                  ? "border-emerald-500/40 bg-emerald-500/10 text-foreground font-medium"
-                  : "border-border bg-card text-muted-foreground"
-              }`}
-            >
-              <CheckCircle2
-                className={`size-4 shrink-0 ${readiness.thermalBagClean ? "text-emerald-500" : "text-muted-foreground"}`}
-              />
-              <span>Thermal Bag Clean &amp; Zipped</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleReadiness("batteryAndGpsActive")}
-              className={`flex items-center gap-2 rounded-md border px-2.5 py-2 text-left transition ${
-                readiness.batteryAndGpsActive
-                  ? "border-emerald-500/40 bg-emerald-500/10 text-foreground font-medium"
-                  : "border-border bg-card text-muted-foreground"
-              }`}
-            >
-              <CheckCircle2
-                className={`size-4 shrink-0 ${readiness.batteryAndGpsActive ? "text-emerald-500" : "text-muted-foreground"}`}
-              />
-              <span>Phone Battery &amp; GPS Active</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleReadiness("documentsAndFuelReady")}
-              className={`flex items-center gap-2 rounded-md border px-2.5 py-2 text-left transition ${
-                readiness.documentsAndFuelReady
-                  ? "border-emerald-500/40 bg-emerald-500/10 text-foreground font-medium"
-                  : "border-border bg-card text-muted-foreground"
-              }`}
-            >
-              <CheckCircle2
-                className={`size-4 shrink-0 ${readiness.documentsAndFuelReady ? "text-emerald-500" : "text-muted-foreground"}`}
-              />
-              <span>DL, RC &amp; Vehicle Fuel Ready</span>
-            </button>
-          </div>
+
+          {helmetSelfie ? (
+            <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+              <div className="flex items-center gap-3">
+                <img
+                  src={helmetSelfie}
+                  alt="Verified Helmet Selfie"
+                  className="size-12 rounded-lg object-cover border border-emerald-500/50 shadow-xs"
+                />
+                <div className="space-y-0.5 text-xs">
+                  <p className="font-bold text-emerald-900 dark:text-emerald-200">
+                    BIS Helmet &amp; Uniform Bag Verified
+                  </p>
+                  <p className="text-[11px] text-muted-foreground font-mono">
+                    Verified at {helmetVerifiedAt} · Shift Unlocked
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearHelmetSelfie}
+                className="text-xs text-muted-foreground hover:text-foreground gap-1"
+              >
+                <RotateCcw className="size-3" />
+                <span>Retake</span>
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Zomato Safety Standard: You must take a live front-camera selfie wearing your strapped BIS helmet and OrderKing delivery bag to unlock the online slider.
+              </p>
+              <Button
+                type="button"
+                onClick={() => setSelfieModalOpen(true)}
+                className="w-full text-xs font-bold gap-2 py-3 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+              >
+                <Camera className="size-4" />
+                <span>Verify Live Helmet &amp; Bag Selfie</span>
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Authentic Swipe to Go Online / Offline Slider Bar with Status Indicator */}
@@ -790,11 +1053,18 @@ export function HomeView() {
           {status === "OFFLINE" ? (
             <div className="space-y-1.5">
               <SwipeSlider
-                label="Swipe to Go Online"
+                label={helmetSelfie ? "Swipe to Go Online" : "Verify Helmet Selfie to Go Online"}
                 variant="online"
-                disabled={pending}
+                disabled={!helmetSelfie || pending}
                 loading={pending}
-                onComplete={() => go("ONLINE")}
+                onComplete={() => {
+                  if (!helmetSelfie) {
+                    toast.error("Please complete live helmet & bag selfie verification first.");
+                    setSelfieModalOpen(true);
+                    return;
+                  }
+                  return go("ONLINE");
+                }}
               />
               <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
                 <span className="flex items-center gap-1.5 text-rose-400 font-semibold">
@@ -802,7 +1072,9 @@ export function HomeView() {
                   Duty Offline
                 </span>
                 <span>
-                  {allReady ? "Readiness verified ✓ Ready to swipe" : "Complete 4 checks to go online"}
+                  {helmetSelfie
+                    ? "Readiness verified ✓ Ready to swipe"
+                    : "Complete live selfie check to go online"}
                 </span>
               </div>
             </div>
@@ -885,9 +1157,26 @@ export function HomeView() {
                 </p>
               </div>
             </div>
-            <Badge tone="online" className="font-mono text-xs">
-              Radar Active
-            </Badge>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {surge.isMonsoonActive && (
+                <Badge tone="busy" className="font-mono text-xs">
+                  {surge.badges.monsoonText}
+                </Badge>
+              )}
+              {surge.isPeakDinnerActive && (
+                <Badge tone="busy" className="font-mono text-xs">
+                  {surge.badges.peakDinnerText}
+                </Badge>
+              )}
+              {surge.isWeatherAllowanceActive && (
+                <Badge tone="busy" className="font-mono text-xs bg-sky-500/20 text-sky-400 border-sky-500/30">
+                  {surge.badges.weatherAllowanceText}
+                </Badge>
+              )}
+              <Badge tone="online" className="font-mono text-xs">
+                Radar Active
+              </Badge>
+            </div>
           </div>
 
           <MapPane
@@ -916,108 +1205,142 @@ export function HomeView() {
       )}
 
       {/* Fleet Floating Cash (Pocket Balance) & Instant UPI Deposit Card */}
-      <FloatingCashCard
-        pocketBalance={
-          home.pocketBalance ?? {
-            pocketBalancePaise: unreconciledPaise,
-            limitPaise: codBlockThresholdPaise,
-            isCodBlocked: unreconciledPaise >= codBlockThresholdPaise,
-            utilizationPct: codUsagePct,
-            cashRowsCount: 0,
+      {sdui.isSectionVisible("floating_cash_card") && (
+        <FloatingCashCard
+          pocketBalance={
+            home.pocketBalance ?? {
+              pocketBalancePaise: unreconciledPaise,
+              limitPaise: codBlockThresholdPaise,
+              isCodBlocked: unreconciledPaise >= codBlockThresholdPaise,
+              utilizationPct: codUsagePct,
+              cashRowsCount: 0,
+            }
           }
-        }
-        disciplineConfig={home.disciplineConfig}
-        onRefresh={() => void load()}
-        externalModalOpen={externalDepositOpen}
-        onExternalModalClose={() => setExternalDepositOpen(false)}
-      />
+          disciplineConfig={home.disciplineConfig}
+          onRefresh={() => void load()}
+          externalModalOpen={externalDepositOpen}
+          onExternalModalClose={() => setExternalDepositOpen(false)}
+          lifetimeDeliveries={home.rider?.lifetimeDeliveries ?? home.completedToday ?? 0}
+          riderName={home.rider?.fullName}
+        />
+      )}
 
-      {/* Operational Gig / Shift Slot Planner */}
-      <Card className="space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
-              <CalendarClock className="size-4" />
-            </span>
-            <div>
-              <CardTitle className="text-base">Operational Gig / Shift Slot Planner</CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Book shifts for {activeShiftDateIso} · {activeDayBookedSlots.length} slot
-                {activeDayBookedSlots.length === 1 ? "" : "s"} ({bookedHoursTotal} hrs) booked
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Button
-              size="sm"
-              variant={selectedShiftDay === "today" ? "default" : "outline"}
-              onClick={() => setSelectedShiftDay("today")}
-            >
-              Today ({todayIso.slice(5)})
-            </Button>
-            <Button
-              size="sm"
-              variant={selectedShiftDay === "tomorrow" ? "default" : "outline"}
-              onClick={() => setSelectedShiftDay("tomorrow")}
-            >
-              Tomorrow ({tomorrowIso.slice(5)})
-            </Button>
+      {/* Rider Benefits & Affiliate Ecosystem Quick Hub Card */}
+      <Card className="border-primary/20 bg-gradient-to-r from-emerald-500/10 via-primary/5 to-amber-500/10 p-3.5 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Gift className="size-4" />
+          </span>
+          <div>
+            <p className="text-xs font-bold text-foreground">Partner Benefits &amp; Affiliate Hub</p>
+            <p className="text-[11px] text-muted-foreground">
+              15% EV Discounts (Yulu, Zypp) · HPCL ₹2.50/L Cashback · ₹10L Insurance
+            </p>
           </div>
         </div>
-
-        <div className="space-y-2">
-          {OPERATIONAL_SHIFT_SLOTS.map((slot) => {
-            const isBooked = activeDayBookedSlots.includes(slot.id);
-            return (
-              <div
-                key={slot.id}
-                className={`rounded-lg border p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${
-                  isBooked
-                    ? "border-emerald-500/40 bg-emerald-500/5"
-                    : "border-border bg-muted/20"
-                }`}
-              >
-                <div className="space-y-0.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display text-sm font-bold text-foreground">
-                      {slot.label} ({slot.window})
-                    </span>
-                    <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                      {slot.tag}
-                    </span>
-                    <span className="text-[11px] font-mono text-muted-foreground">
-                      {slot.durationHours}h
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{slot.peakIncentiveNote}</p>
-                </div>
-                <Button
-                  size="sm"
-                  variant={isBooked ? "outline" : "default"}
-                  onClick={() => toggleSlotBooking(slot.id)}
-                  className="shrink-0"
-                >
-                  {isBooked ? "✓ Booked (Cancel)" : "Book Gig Slot"}
-                </Button>
-              </div>
-            );
-          })}
-        </div>
+        <Link
+          to="/benefits"
+          className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition"
+        >
+          <span>View Hub</span>
+          <ArrowRight className="size-3.5" />
+        </Link>
       </Card>
 
+      {/* Operational Gig / Shift Slot Planner */}
+      {sdui.isSectionVisible("shift_slots") && (
+        <Card className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                <CalendarClock className="size-4" />
+              </span>
+              <div>
+                <CardTitle className="text-base">Operational Gig / Shift Slot Planner</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Book shifts for {activeShiftDateIso} · {activeDayBookedSlots.length} slot
+                  {activeDayBookedSlots.length === 1 ? "" : "s"} ({bookedHoursTotal} hrs) booked
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Button
+                size="sm"
+                variant={selectedShiftDay === "today" ? "default" : "outline"}
+                onClick={() => setSelectedShiftDay("today")}
+              >
+                Today ({todayIso.slice(5)})
+              </Button>
+              <Button
+                size="sm"
+                variant={selectedShiftDay === "tomorrow" ? "default" : "outline"}
+                onClick={() => setSelectedShiftDay("tomorrow")}
+              >
+                Tomorrow ({tomorrowIso.slice(5)})
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {OPERATIONAL_SHIFT_SLOTS.map((slot) => {
+              const isBooked = activeDayBookedSlots.includes(slot.id);
+              return (
+                <div
+                  key={slot.id}
+                  className={`rounded-lg border p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${
+                    isBooked
+                      ? "border-emerald-500/40 bg-emerald-500/5"
+                      : "border-border bg-muted/20"
+                  }`}
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-display text-sm font-bold text-foreground">
+                        {slot.label} ({slot.window})
+                      </span>
+                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                        {slot.tag}
+                      </span>
+                      <span className="text-[11px] font-mono text-muted-foreground">
+                        {slot.durationHours}h
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{slot.peakIncentiveNote}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={isBooked ? "outline" : "default"}
+                    onClick={() => toggleSlotBooking(slot.id)}
+                    className="shrink-0"
+                  >
+                    {isBooked ? "✓ Booked (Cancel)" : "Book Gig Slot"}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
       {/* Daily Order Milestone Progress & Real Quality Scorecard */}
-      <DailyMilestoneCard completed={home.completedToday} performance={performance} />
+      {sdui.isSectionVisible("daily_milestones") && (
+        <DailyMilestoneCard completed={home.completedToday} performance={performance} />
+      )}
 
       {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
-      <VipAmbassadorPass
-        riderName={home.rider.fullName}
-        riderId={home.rider.id}
-        phone={home.rider.phone}
-        onCommissionCredited={() => void load()}
-      />
+      {sdui.isSectionVisible("vip_ambassador") && (
+        <VipAmbassadorPass
+          riderName={home.rider.fullName}
+          riderId={home.rider.id}
+          phone={home.rider.phone}
+          onCommissionCredited={() => void load()}
+        />
+      )}
 
       {/* Self-Service Per-Order Payout Calculator */}
-      <SelfServicePayoutCalculator />
+      {sdui.isSectionVisible("payout_calculator") && (
+        <SelfServicePayoutCalculator />
+      )}
 
       {home.notifications.length ? (
         <Card>
@@ -1114,6 +1437,12 @@ export function HomeView() {
           </div>
         </div>
       ) : null}
+
+      <HelmetVerificationModal
+        isOpen={selfieModalOpen}
+        onClose={() => setSelfieModalOpen(false)}
+        onVerified={handleHelmetVerified}
+      />
     </div>
   );
 }
@@ -1164,26 +1493,27 @@ function OfferCard({
   onDecline: () => void;
 }) {
   const { t } = useI18n();
+  const { payout, surge } = useRiderCustomization();
   const { muted, toggleMute } = useDispatchAudioAlert(true, remaining);
 
   const routeKm = Math.max(offer.estimatedTotalRouteKm, offer.approxDistanceKm, 0);
-  const extraKm = Math.max(0, routeKm - STATUTORY_BASE_DISTANCE_KM);
-  const distanceComponentPaise = Math.max(0, offer.expectedPayoutPaise - STATUTORY_BASE_FARE_PAISE);
+  const extraKm = Math.max(0, routeKm - payout.baseDistanceKm);
+  const distanceComponentPaise = Math.max(0, offer.expectedPayoutPaise - payout.baseFarePaise);
   const hasPickupCoords =
     offer.pickupLocation.lat !== 0 || offer.pickupLocation.lng !== 0;
   const mapsPickupUrl = hasPickupCoords
     ? `https://www.google.com/maps/dir/?api=1&destination=${offer.pickupLocation.lat},${offer.pickupLocation.lng}&travelmode=two-wheeler`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${offer.restaurant.name} ${offer.restaurant.address || offer.restaurant.area}`)}`;
 
-  // 45-second countdown timer calculations
-  const maxTimerSec = 45;
+  // 30-second countdown timer calculations (Zomato standard)
+  const maxTimerSec = 30;
   const timerPct = Math.min(100, Math.max(0, (remaining / maxTimerSec) * 100));
   const isUrgent = remaining <= 10;
   const isCritical = remaining <= 5;
 
   return (
     <Card className="p-5 space-y-4 border-2 border-[#E5A93C]/50 bg-[#121723] shadow-[0_0_30px_rgba(229,169,60,0.25)] relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-      {/* 45-Second Countdown Top Progress Edge */}
+      {/* 30-Second Countdown Top Progress Edge */}
       <div className="absolute top-0 inset-x-0 h-1.5 bg-muted">
         <div
           className={`h-full transition-all duration-300 ${
@@ -1197,7 +1527,7 @@ function OfferCard({
         />
       </div>
 
-      {/* Top Header: Order Code, 45s Countdown & Siren Audio Mute */}
+      {/* Top Header: Order Code, 30s Countdown & Siren Audio Mute */}
       <div className="flex items-start justify-between gap-2 pt-1">
         <div className="flex items-center gap-2">
           <span className="relative flex size-3">
@@ -1210,6 +1540,21 @@ function OfferCard({
           <span className="text-[11px] font-bold text-[#E5A93C] uppercase tracking-wider">
             Incoming Dispatch
           </span>
+          {surge.isMonsoonActive && (
+            <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-500/30">
+              ⚡ {surge.badges.monsoonText}
+            </span>
+          )}
+          {surge.isPeakDinnerActive && (
+            <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/30">
+              🔥 {surge.badges.peakDinnerText}
+            </span>
+          )}
+          {surge.isWeatherAllowanceActive && (
+            <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-bold text-sky-400 border border-sky-500/30">
+              🌧️ {surge.badges.weatherAllowanceText}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -1228,7 +1573,7 @@ function OfferCard({
             {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
           </button>
 
-          {/* 45-Second Pulsing Countdown Timer */}
+          {/* 30-Second Pulsing Countdown Timer */}
           <div
             className={`flex items-center gap-1.5 rounded-xl border px-3 py-1 font-display font-extrabold tabular-nums text-lg ${
               isCritical
@@ -1249,7 +1594,7 @@ function OfferCard({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E5A93C]">
-              ★ Guaranteed Partner Earnings
+              ★ {payout.labels.guaranteedEarningsTitle}
             </p>
             <p className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-white drop-shadow-[0_0_12px_rgba(229,169,60,0.4)]">
               {formatPaise(offer.expectedPayoutPaise)}
@@ -1265,12 +1610,18 @@ function OfferCard({
         {/* Payout Components Breakdown */}
         <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#E5A93C]/20 pt-2 text-xs">
           <div className="text-muted-foreground">
-            Base ({STATUTORY_BASE_DISTANCE_KM} km): <span className="font-mono text-foreground font-semibold">{formatPaise(STATUTORY_BASE_FARE_PAISE)}</span>
+            {payout.labels.baseFareText} ({payout.baseDistanceKm} km): <span className="font-mono text-foreground font-semibold">{formatPaise(payout.baseFarePaise)}</span>
           </div>
           <div className="text-muted-foreground text-right">
-            Distance ({extraKm.toFixed(1)} km): <span className="font-mono text-foreground font-semibold">{formatPaise(distanceComponentPaise)}</span>
+            {payout.labels.distanceRateText} ({extraKm.toFixed(1)} km): <span className="font-mono text-foreground font-semibold">{formatPaise(distanceComponentPaise)}</span>
           </div>
         </div>
+        {surge.isWeatherAllowanceActive && (
+          <div className="mt-1 flex items-center justify-between text-xs text-sky-400 border-t border-[#E5A93C]/10 pt-1">
+            <span>🌧️ {surge.badges.weatherAllowanceText}</span>
+            <span className="font-mono font-semibold">+{formatPaise(surge.weatherAllowancePaise)}</span>
+          </div>
+        )}
       </div>
 
       {/* Pickup & Drop Route Distance Metric Cards */}

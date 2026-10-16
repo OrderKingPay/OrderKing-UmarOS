@@ -15,8 +15,11 @@ import {
   MapPin,
   Utensils,
   ChevronRight,
+  CloudRain,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
+import { CuratedCollections } from "@/components/market/curated-collections";
+import { useCustomization } from "@orderking/ui";
 import { useBrand, useT } from "@/components/providers";
 import { listCategories } from "@/lib/server/catalog";
 import { listMyOrders, reorderItems } from "@/lib/server/orders";
@@ -122,6 +125,15 @@ export function HomeFeed({
 
   // Global reactive diet preference: "all" | "veg"
   const { dietFilter, setDietFilter } = useDietStore();
+  const customization = useCustomization();
+  const isRainSurge = Boolean(
+    (customization?.payoutPolicy as any)?.monsoonSurgePaise > 0 ||
+    (customization?.payoutPolicy as any)?.rainSurgeBonusPaise > 0 ||
+    (customization?.logistics as any)?.rainSurgeActive ||
+    (customization?.state as any)?.features?.rainSurgeActive ||
+    customization?.isFeatureEnabled?.("rain_surge") ||
+    customization?.isFeatureEnabled?.("monsoon_mode")
+  );
 
   // Secondary quick filter tags
   const [filterFast, setFilterFast] = useState(false);
@@ -284,6 +296,31 @@ export function HomeFeed({
 
   return (
     <div className="space-y-5 px-3 py-3 sm:px-4 sm:py-4 bg-[#FCFAF7] text-gray-900">
+      {/* MONSOON / RAIN EMERGENCY SURGE ALERT BANNER */}
+      {isRainSurge && (
+        <div className="rounded-2xl border border-sky-400/50 bg-gradient-to-r from-sky-500/20 via-blue-500/15 to-indigo-500/20 p-4 text-sky-950 dark:text-sky-100 shadow-sm flex items-center justify-between gap-3 animate-in fade-in duration-300">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/20 text-sky-600 dark:text-sky-300 text-xl font-bold">
+              🌧️
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-display text-sm font-black text-sky-950 dark:text-sky-100">
+                  Monsoon Rain Surge Active
+                </span>
+                <span className="rounded-full bg-sky-500/30 border border-sky-400/40 px-2 py-0.5 text-[9px] font-black uppercase text-sky-900 dark:text-sky-200">
+                  Priority Dispatch
+                </span>
+              </div>
+              <p className="text-xs text-sky-800/90 dark:text-sky-300/90 mt-0.5">
+                Heavy monsoon showers in your sector. Delivery champions receive 100% of weather hardship bonuses. Please allow a few extra minutes for road safety.
+              </p>
+            </div>
+          </div>
+          <CloudRain className="size-6 text-sky-500 shrink-0 hidden sm:block animate-bounce" />
+        </div>
+      )}
+
       {/* 1. ULTRA-LUXURY HORIZONTAL CIRCULAR FOOD CATEGORIES (Distinct Gradient Border & Emoji Labels) */}
       {!q && (
         <section aria-label="Food Categories" className="pt-1">
@@ -449,6 +486,11 @@ export function HomeFeed({
             </Link>
           </div>
         </section>
+      )}
+
+      {/* 4. CURATED COLLECTIONS */}
+      {!q && (
+        <CuratedCollections className="pt-2" />
       )}
 
       {/* 5. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
