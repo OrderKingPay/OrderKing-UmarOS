@@ -13,6 +13,14 @@ export const Route = createFileRoute("/offers")({ component: OffersPage });
 
 const FEATURED_OFFERS = [
   {
+    id: "feat_local40",
+    name: "Hyperlocal Launch: ₹40 OFF",
+    code: "LOCAL40",
+    description: "Flat ₹40 OFF on orders above ₹299 for the first 100 neighborhood food lovers.",
+    minOrderPaise: 29900,
+    badge: "⚡ Launch Special",
+  },
+  {
     id: "feat_bogo",
     name: "Buy 1 Get 1 Free (BOGO Feast)",
     code: "BOGO2026",

@@ -14,6 +14,8 @@ export default defineConfig({
       "src/test/navigation-integrity.test.ts",
       "src/test/sdui-token-ingestion.test.ts",
       "src/test/resilient-live-map.test.ts",
+      "src/test/razorpay-edge-webhook.test.ts",
+      "src/test/service-worker-resilience.test.ts",
     ],
     environment: "node",
   },

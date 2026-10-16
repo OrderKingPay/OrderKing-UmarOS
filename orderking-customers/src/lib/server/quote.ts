@@ -197,6 +197,20 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
         firstOrderOnly: p.first_order_only,
       };
     }
+    if (!promo && code === "LOCAL40") {
+      promo = {
+        id: "promo_local40_launch",
+        code: "LOCAL40",
+        name: "Launch Special: ₹40 OFF",
+        kind: "fixed",
+        percentBps: null,
+        amountPaise: 4000,
+        minOrderPaise: 29900,
+        maxDiscountPaise: 4000,
+        fundedBy: "PLATFORM",
+        firstOrderOnly: false,
+      };
+    }
   }
 
   let dist = distanceKm({ lat: input.lat, lng: input.lng }, { lat: out.lat, lng: out.lng });

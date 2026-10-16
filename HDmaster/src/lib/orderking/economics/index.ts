@@ -1,4 +1,5 @@
 export * from "./profit-engine.ts";
+export * from "./ccpa-gst-engine.ts";
 
 export interface TransactionEconomics {
   grossValue: number;

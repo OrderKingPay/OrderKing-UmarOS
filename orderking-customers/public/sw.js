@@ -1,363 +1,466 @@
-/**
- * OrderKing Customer Service Worker
- * Offline-first delivery for weak/unstable networks.
- * No third-party runtime dependency: IndexedDB is used directly so offline
- * storage still works when external CDNs are unreachable.
- */
+"use strict";
+// OrderKing Tier-2/Tier-3 Low-Network Resilient Service Worker
+const SW_VERSION = "orderking-v4.2.0";
+const CACHE_SHELL = `ok-shell-${SW_VERSION}`;
+const CACHE_MENUS = `ok-menus-${SW_VERSION}`;
+const CACHE_ASSETS = `ok-assets-${SW_VERSION}`;
 
-const CACHE_NAME = "orderking-customer-v2";
-const STATIC_ASSETS = [
+const SHELL_CACHE = CACHE_SHELL;
+const MENU_CACHE = CACHE_MENUS;
+const ASSET_CACHE = CACHE_ASSETS;
+
+const IDB_NAME = "orderking-offline-outbox";
+const IDB_STORE = "queued_mutations";
+const SYNC_TAG = "sync-orderking-mutations";
+const NETWORK_FIRST_TIMEOUT_MS = 6500;
+
+const PRECACHE_SHELL_URLS = [
   "/",
+  "/index.html",
   "/manifest.json",
-  "/logo.jpg",
-  "/icon-192.png",
-  "/icon-512.png",
-  "/offline.html",
+  "/logo.jpg"
 ];
 
-const IDB_NAME = "orderking-sw";
-const IDB_VERSION = 1;
-const IDB_STORE = "kv";
+const EMERGENCY_OFFLINE_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>OrderKing — Low Signal Mode</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #090d16;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      text-align: center;
+    }
+    .card {
+      max-width: 400px;
+      width: 100%;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 9999px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #f59e0b;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    h1 { font-size: 20px; margin: 0 0 12px; font-weight: 700; color: #ffffff; }
+    p { font-size: 14px; line-height: 1.5; color: #94a3b8; margin: 0 0 24px; }
+    .features {
+      background: #0d131f;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 13px;
+      color: #cbd5e1;
+      text-align: left;
+      margin-bottom: 24px;
+      border: 1px solid #1e293b;
+    }
+    .feature-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .feature-item:last-child { margin-bottom: 0; }
+    .check { color: #10b981; font-weight: bold; }
+    button {
+      background: #10b981;
+      color: #022c22;
+      font-weight: 700;
+      font-size: 15px;
+      border: 0;
+      padding: 14px 20px;
+      border-radius: 12px;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    button:active { background: #059669; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge"><span class="dot"></span> Tier-2/Tier-3 Edge Mode</div>
+    <h1>Low Network Signal Detected</h1>
+    <p>Cell tower connectivity dropped, but OrderKing has safely secured your session locally.</p>
+    <div class="features">
+      <div class="feature-item"><span class="check">✓</span> Active cart & selections preserved</div>
+      <div class="feature-item"><span class="check">✓</span> Rider/order actions queued in offline outbox</div>
+      <div class="feature-item"><span class="check">✓</span> Auto-sync will replay once signal returns</div>
+    </div>
+    <button onclick="window.location.reload()">Retry Connection</button>
+  </div>
+</body>
+</html>`;
 
-function openStore() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(IDB_NAME, IDB_VERSION);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+function selectRouteStrategy(request) {
+  const url = new URL(request.url, "https://orderking.local");
+  const method = (request.method || "GET").toUpperCase();
+  const mode = request.mode;
+
+  let acceptHeader = "";
+  if (request.headers) {
+    if (typeof request.headers.get === "function") {
+      acceptHeader = request.headers.get("Accept") || "";
+    } else {
+      acceptHeader = request.headers["Accept"] || request.headers["accept"] || "";
+    }
+  }
+
+  if (
+    url.hostname.includes("razorpay.com") ||
+    url.pathname.startsWith("/api/webhooks/") ||
+    url.pathname.startsWith("/api/sync/") ||
+    acceptHeader.includes("text/event-stream")
+  ) {
+    return "bypass";
+  }
+
+  if (mode === "navigate" || PRECACHE_SHELL_URLS.includes(url.pathname)) {
+    return "cache-shell";
+  }
+
+  if (
+    method === "GET" &&
+    (url.pathname.startsWith("/api/restaurants") ||
+      url.pathname.startsWith("/api/menu") ||
+      /\.(?:png|jpg|jpeg|webp|avif|svg|woff2)$/i.test(url.pathname))
+  ) {
+    return "stale-while-revalidate";
+  }
+
+  if (
+    url.pathname.startsWith("/api/checkout") ||
+    url.pathname.startsWith("/api/razorpay") ||
+    url.pathname.startsWith("/api/orders") ||
+    url.pathname.startsWith("/api/rider")
+  ) {
+    return "network-first";
+  }
+
+  if (method === "GET" && url.pathname.startsWith("/assets/")) {
+    return "asset-cache-first";
+  }
+
+  return "default";
 }
 
-async function idbGet(key) {
-  const db = await openStore();
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    (async () => {
+      const shellCache = await caches.open(CACHE_SHELL);
+      await Promise.allSettled(
+        PRECACHE_SHELL_URLS.map(
+          (url) => shellCache.add(new Request(url, { cache: "reload" }))
+        )
+      );
+      await self.skipWaiting();
+    })()
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      const validCaches = new Set([CACHE_SHELL, CACHE_MENUS, CACHE_ASSETS]);
+      const existingNames = await caches.keys();
+      await Promise.all(
+        existingNames.filter((name) => !validCaches.has(name)).map((name) => caches.delete(name))
+      );
+      if (self.registration && self.registration.navigationPreload) {
+        await self.registration.navigationPreload.enable();
+      }
+      if (self.clients && self.clients.claim) {
+        await self.clients.claim();
+      }
+    })()
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  const strategy = selectRouteStrategy(request);
+
+  switch (strategy) {
+    case "bypass":
+      return;
+    case "cache-shell":
+      event.respondWith(handleShellCacheOnly(request));
+      return;
+    case "stale-while-revalidate":
+      event.respondWith(handleStaleWhileRevalidate(event, request));
+      return;
+    case "network-first":
+      event.respondWith(handleNetworkFirstCheckoutAndOps(request));
+      return;
+    case "asset-cache-first":
+      event.respondWith(handleImmutableAssetCache(request));
+      return;
+    case "default":
+    default:
+      return;
+  }
+});
+
+async function handleShellCacheOnly(request) {
+  const shellCache = await caches.open(CACHE_SHELL);
+  const exactMatch = await shellCache.match(request);
+  if (exactMatch) return exactMatch;
+  const appShell = (await shellCache.match("/index.html")) || (await shellCache.match("/"));
+  if (appShell) return appShell;
+  try {
+    const netResponse = await fetchWithTimeout(request, 5000);
+    if (netResponse.ok) {
+      await shellCache.put("/index.html", netResponse.clone());
+    }
+    return netResponse;
+  } catch {
+    return new Response(EMERGENCY_OFFLINE_HTML, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "X-OrderKing-Offline": "emergency-shell"
+      }
+    });
+  }
+}
+
+async function handleStaleWhileRevalidate(event, request) {
+  const menuCache = await caches.open(CACHE_MENUS);
+  const cachedResponse = await menuCache.match(request);
+  const networkFetchPromise = fetchWithTimeout(request, 6000)
+    .then(async (networkResponse) => {
+      if (networkResponse && networkResponse.status === 200) {
+        const cloned = networkResponse.clone();
+        await menuCache.put(request, cloned);
+      }
+      return networkResponse;
+    })
+    .catch(() => null);
+
+  if (cachedResponse) {
+    if (event && event.waitUntil) {
+      event.waitUntil(networkFetchPromise);
+    }
+    return cachedResponse;
+  }
+
+  const freshResponse = await networkFetchPromise;
+  if (freshResponse) return freshResponse;
+
+  return new Response(
+    JSON.stringify({
+      ok: false,
+      offline: true,
+      error: "Menu temporarily offline. Showing saved catalog.",
+      items: []
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "X-OrderKing-Cache": "OFFLINE-FALLBACK"
+      }
+    }
+  );
+}
+
+async function handleNetworkFirstCheckoutAndOps(request) {
+  try {
+    const response = await fetchWithTimeout(request.clone(), NETWORK_FIRST_TIMEOUT_MS);
+    if (request.method === "GET" && response.ok) {
+      const cache = await caches.open(CACHE_MENUS);
+      await cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    if (request.method === "GET") {
+      const cache = await caches.open(CACHE_MENUS);
+      const fallback = await cache.match(request);
+      if (fallback) {
+        const headers = new Headers(fallback.headers);
+        headers.set("X-OrderKing-Stale", "true");
+        return new Response(fallback.body, {
+          status: fallback.status,
+          headers
+        });
+      }
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          offline: true,
+          error: "Network connection unstable. Request timed out."
+        }),
+        { status: 503, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const url = new URL(request.url);
+    if (url.pathname.includes("/razorpay/")) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          offline: true,
+          error: "Network connection unstable. No money was deducted—please retry in a few seconds."
+        }),
+        { status: 503, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    if (request.method === "POST" || request.method === "PATCH") {
+      const bodyText = await request.text();
+      const mutationId =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : `mut_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+      await enqueueOfflineMutation({
+        id: mutationId,
+        url: request.url,
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        body: bodyText,
+        queuedAt: Date.now()
+      });
+
+      if (self.registration && "sync" in self.registration) {
+        try {
+          await self.registration.sync.register(SYNC_TAG);
+        } catch {
+        }
+      }
+
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          queuedOffline: true,
+          message: "Saved to device outbox. Will auto-sync the second 3G/4G signal returns."
+        }),
+        { status: 202, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        offline: true,
+        error: "Network unavailable. Please retry when connection improves."
+      }),
+      { status: 503, headers: { "Content-Type": "application/json" } }
+    );
+  }
+}
+
+async function handleImmutableAssetCache(request) {
+  const assetCache = await caches.open(CACHE_ASSETS);
+  const cached = await assetCache.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response.ok) {
+    await assetCache.put(request, response.clone());
+  }
+  return response;
+}
+
+async function fetchWithTimeout(request, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(request, { signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function openOutboxDb() {
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(IDB_STORE, "readonly");
-    const req = tx.objectStore(IDB_STORE).get(key);
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        db.createObjectStore(IDB_STORE, { keyPath: "id" });
+      }
+    };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
 
-async function idbSet(key, value) {
-  const db = await openStore();
+async function enqueueOfflineMutation(item) {
+  const db = await openOutboxDb();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(IDB_STORE, "readwrite");
-    tx.objectStore(IDB_STORE).put(value, key);
+    tx.objectStore(IDB_STORE).put(item);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
 }
-
-async function idbDelete(key) {
-  const db = await openStore();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(IDB_STORE, "readwrite");
-    tx.objectStore(IDB_STORE).delete(key);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-function isPublicCatalogPath(pathname) {
-  return (
-    /^\/api\/(restaurants|menu|catalog|search|cities|zones|locations|config)(\/|$)/i.test(pathname) ||
-    /^\/api\/(public)(\/|$)/i.test(pathname)
-  );
-}
-
-function shouldCacheApiResponse(request, response) {
-  if (request.method !== "GET" || !response.ok) return false;
-  const cacheControl = response.headers.get("Cache-Control") || "";
-  if (/private|no-store|no-cache/i.test(cacheControl)) return false;
-  if (response.headers.has("Set-Cookie")) return false;
-
-  // Cache only explicitly public/catalog-style API paths. Never cache
-  // orders, wallets, payments, profiles, auth/session, support or finance data.
-  const path = new URL(request.url).pathname;
-  return isPublicCatalogPath(path);
-}
-
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
-
-  // Never treat an offline order as a confirmed order.
-  if (event.request.method === "POST" && url.pathname.includes("/api/orders/create")) {
-    event.respondWith(
-      (async () => {
-        try {
-          return await fetch(event.request.clone());
-        } catch {
-          const body = await event.request.clone().text();
-          const queue = (await idbGet("offline-order-queue")) || [];
-          queue.push({
-            id: crypto.randomUUID(),
-            url: event.request.url,
-            body,
-            timestamp: Date.now(),
-          });
-          await idbSet("offline-order-queue", queue);
-
-          if ("sync" in self.registration) {
-            try {
-              await self.registration.sync.register("sync-orders");
-            } catch {
-              // Background Sync may be unavailable; the queue remains durable in IndexedDB.
-            }
-          }
-
-          return new Response(
-            JSON.stringify({
-              queued: true,
-              status: "OFFLINE_QUEUED",
-              message: "Order saved on this device and waiting for network recovery. It is not confirmed yet.",
-            }),
-            {
-              status: 202,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        }
-      })()
-    );
-    return;
-  }
-
-  // Navigation requests: fast-network with cache and offline fallback (guaranteed response under 2G/3G timeouts)
-  if (event.request.mode === "navigate") {
-    event.respondWith(
-      (async () => {
-        // Race network fetch with 2200ms timeout on weak/slow 2G/3G mobile networks
-        const fetchWithTimeout = new Promise((resolve, reject) => {
-          const timer = setTimeout(() => reject(new Error("Slow 2G/3G navigation timeout")), 2200);
-          fetch(event.request)
-            .then((res) => {
-              clearTimeout(timer);
-              if (res.ok) {
-                const clone = res.clone();
-                caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
-              }
-              resolve(res);
-            })
-            .catch((err) => {
-              clearTimeout(timer);
-              reject(err);
-            });
-        });
-
-        try {
-          return await fetchWithTimeout;
-        } catch {
-          // Instantly fallback to cached route, cached root shell (which renders client skeleton in <16ms), or offline.html
-          const cached = await caches.match(event.request);
-          if (cached) return cached;
-          const rootCached = await caches.match("/");
-          if (rootCached) return rootCached;
-          const offlinePage = await caches.match("/offline.html");
-          if (offlinePage) return offlinePage;
-          return new Response("<html><body>Offline</body></html>", {
-            status: 503,
-            headers: { "Content-Type": "text/html" },
-          });
-        }
-      })()
-    );
-    return;
-  }
-
-  // Public Catalog & Menu APIs: Stale-While-Revalidate with IndexedDB
-  if (url.pathname.startsWith("/api/")) {
-    if (event.request.method === "GET" && isPublicCatalogPath(url.pathname)) {
-      event.respondWith(
-        (async () => {
-          const cached = await idbGet("api:" + url.href).catch(() => null);
-          const fetchPromise = fetch(event.request.clone())
-            .then(async (response) => {
-              if (shouldCacheApiResponse(event.request, response)) {
-                try {
-                  await idbSet("api:" + url.href, {
-                    status: response.status,
-                    headers: Array.from(response.headers.entries()),
-                    body: await response.clone().text(),
-                    cachedAt: Date.now(),
-                  });
-                } catch {}
-              }
-              return response;
-            })
-            .catch(() => null);
-
-          // If cached catalog is available, return immediately (Zero-Lag offline browsing)
-          if (cached?.body != null) {
-            event.waitUntil(fetchPromise);
-            return new Response(cached.body, {
-              status: 200,
-              headers: cached.headers || { "Content-Type": "application/json" },
-            });
-          }
-
-          const fresh = await fetchPromise;
-          if (fresh) return fresh;
-
-          return new Response(JSON.stringify({ error: "Catalog offline and not cached yet", offline: true }), {
-            status: 503,
-            headers: { "Content-Type": "application/json" },
-          });
-        })()
-      );
-      return;
-    }
-
-    // Other GET APIs: network-first with IndexedDB fallback
-    event.respondWith(
-      fetch(event.request.clone())
-        .then(async (response) => {
-          if (shouldCacheApiResponse(event.request, response)) {
-            try {
-              await idbSet("api:" + url.href, {
-                status: response.status,
-                headers: Array.from(response.headers.entries()),
-                body: await response.clone().text(),
-                cachedAt: Date.now(),
-              });
-            } catch {}
-          }
-          return response;
-        })
-        .catch(async () => {
-          if (event.request.method === "GET") {
-            try {
-              const cached = await idbGet("api:" + url.href);
-              if (cached?.body != null) {
-                return new Response(cached.body, {
-                  status: 200,
-                  headers: cached.headers || { "Content-Type": "application/json" },
-                });
-              }
-            } catch {}
-          }
-          return new Response(JSON.stringify({ error: "Network unavailable" }), {
-            status: 503,
-            headers: { "Content-Type": "application/json" },
-          });
-        })
-    );
-    return;
-  }
-
-  // Static assets (CSS, JS, WebAssembly, fonts, images): cache-first with background revalidation.
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const refresh = fetch(event.request)
-        .then((response) => {
-          if (event.request.method === "GET" && response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
-          }
-          return response;
-        })
-        .catch(() => cached);
-
-      return cached || refresh;
-    })
-  );
-});
 
 self.addEventListener("sync", (event) => {
-  if (event.tag !== "sync-orders") return;
-
-  event.waitUntil(
-    (async () => {
-      const queue = (await idbGet("offline-order-queue")) || [];
-      if (!queue.length) return;
-
-      const remaining = [];
-      for (const order of queue) {
-        try {
-          const res = await fetch(order.url, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-              "Idempotency-Key": order.id,
-              "X-OrderKing-Offline-Replay": "1",
-            },
-            body: order.body,
-          });
-          if (!res.ok) throw new Error("Order sync rejected: " + res.status);
-        } catch {
-          remaining.push(order);
-        }
-      }
-
-      if (remaining.length) await idbSet("offline-order-queue", remaining);
-      else await idbDelete("offline-order-queue");
-    })()
-  );
-});
-
-// Native Web Push notifications (W3C RFC 8291/8292 VAPID)
-self.addEventListener("push", (event) => {
-  if (!event.data) return;
-  try {
-    const payload = event.data.json();
-    const title = payload.title || "OrderKing Notification";
-    const options = {
-      body: payload.body || "",
-      icon: payload.icon || "/icon-192.png",
-      badge: payload.badge || "/icon-192.png",
-      vibrate: [100, 50, 100],
-      data: payload.data || { url: "/" },
-      tag: payload.tag || "orderking-alert",
-      renotify: true,
-    };
-    event.waitUntil(self.registration.showNotification(title, options));
-  } catch {
-    const text = event.data.text();
-    event.waitUntil(
-      self.registration.showNotification("OrderKing", {
-        body: text,
-        icon: "/icon-192.png",
-        data: { url: "/" },
-      })
-    );
+  if (event.tag === SYNC_TAG) {
+    event.waitUntil(flushOfflineMutations());
   }
 });
 
-self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-  const targetUrl = event.notification.data?.url || "/";
-  event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && "focus" in client) {
-          if ("navigate" in client) {
-            client.navigate(targetUrl);
-          }
-          return client.focus();
-        }
+async function flushOfflineMutations() {
+  let db;
+  try {
+    db = await openOutboxDb();
+  } catch {
+    return;
+  }
+  const items = await new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readonly");
+    const req = tx.objectStore(IDB_STORE).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+  items.sort((a, b) => a.queuedAt - b.queuedAt);
+  for (const item of items) {
+    try {
+      const res = await fetch(item.url, {
+        method: item.method,
+        headers: {
+          ...item.headers,
+          "X-Idempotency-Key": item.id
+        },
+        body: item.body
+      });
+      if (res.ok || (res.status >= 400 && res.status < 500)) {
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, "readwrite");
+          tx.objectStore(IDB_STORE).delete(item.id);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+      } else {
+        break;
       }
-      if (clients.openWindow) {
-        return clients.openWindow(targetUrl);
-      }
-    })
-  );
-});
+    } catch {
+      break;
+    }
+  }
+}

@@ -30,6 +30,9 @@ import {
   RefreshCw,
   Zap,
   X,
+  Rocket,
+  Store,
+  ChevronRight,
 } from "lucide-react";
 import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
@@ -38,6 +41,7 @@ import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSetting
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
 import { UmarOsVisualCustomizationStudio } from "@/components/customization/UmarOsVisualCustomizationStudio";
+import { LaunchPlaybookView } from "@/components/playbook/launch-playbook-view";
 import {
   loadSettings,
   saveSettingsFn,
@@ -218,7 +222,8 @@ function SettingsPage() {
   const [showLiveCustomerPreview, setShowLiveCustomerPreview] = useState(false);
   const [showDeepAlgorithmMatrix, setShowDeepAlgorithmMatrix] = useState(false);
   const [showDeepKingPayMatrix, setShowDeepKingPayMatrix] = useState(false);
-  const [activeSubsystemTab, setActiveSubsystemTab] = useState<"none" | "cms" | "connectors" | "visual_studio">("none");
+  const [showLaunchPlaybook, setShowLaunchPlaybook] = useState(false);
+  const [activeSubsystemTab, setActiveSubsystemTab] = useState<"none" | "cms" | "connectors" | "visual_studio" | "hyperlocal_playbook">("none");
   const [confirmResetAll, setConfirmResetAll] = useState(false);
 
   // Category 1 State: Brand, Colors, Typography & UI Design
@@ -841,6 +846,13 @@ function SettingsPage() {
       "algorithm",
       "economics",
       "rates",
+      "playbook",
+      "hyperlocal",
+      "battlecard",
+      "launch",
+      "recruitment",
+      "cash envelope",
+      "floor guarantee",
     ].some((k) => k.includes(queryLower) || queryLower.includes(k));
 
   const isCat3Visible =
@@ -1972,6 +1984,53 @@ function SettingsPage() {
               <div className="pt-2">
                 <CentralPricingSwitch />
               </div>
+
+              {/* Sub-Category 2F: 5-Day Hyperlocal Launch Playbook & Ground Execution Engine */}
+              <div className="rounded-2xl border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-50/40 via-white to-slate-50 p-5 space-y-4 shadow-sm">
+                <div className="border-b border-emerald-100 pb-3 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold uppercase tracking-wider mb-1">
+                      <Sparkles className="w-3 h-3 text-emerald-600" />
+                      Astra 6 Ground Execution Playbook
+                    </div>
+                    <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                      <Rocket className="h-5 w-5 text-emerald-600" />
+                      Sub-Category 2F · 5-Day Hyperlocal Launch Playbook &amp; Field Operations Engine
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      15-min walk-in battlecards, ₹500/day rider floor guarantee, LOCAL40 customer launch, 5-day street timetable, and ₹85,000 cash envelope ledger.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowLaunchPlaybook((v) => !v)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-emerald-600 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs shadow-sm transition-all"
+                  >
+                    <Rocket className="h-4 w-4" />
+                    {showLaunchPlaybook ? "Collapse Launch Playbook" : "Open Launch Playbook Studio"}
+                  </button>
+                </div>
+
+                {showLaunchPlaybook ? (
+                  <div className="pt-2">
+                    <LaunchPlaybookView />
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-600 bg-emerald-50/60 p-3 rounded-xl border border-emerald-200">
+                    <span className="flex items-center gap-2">
+                      <Store className="w-4 h-4 text-emerald-700" />
+                      Targets: 20 Restaurants · 15 Delivery Partners · 500 Customer Leads (3km Cluster)
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowLaunchPlaybook(true)}
+                      className="text-emerald-700 font-bold hover:underline flex items-center gap-1"
+                    >
+                      Launch Interactive Studio <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </section>
@@ -2593,6 +2652,19 @@ function SettingsPage() {
                     >
                       <Cpu className="h-3.5 w-3.5" /> Plugin Connectors
                     </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveSubsystemTab((t) => (t === "hyperlocal_playbook" ? "none" : "hyperlocal_playbook"))
+                      }
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
+                        activeSubsystemTab === "hyperlocal_playbook"
+                          ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Rocket className="h-3.5 w-3.5 text-amber-500" /> 5-Day Launch Playbook
+                    </button>
                   </div>
                 </div>
 
@@ -2609,6 +2681,11 @@ function SettingsPage() {
                 {activeSubsystemTab === "connectors" && (
                   <div className="pt-4 border-t border-slate-200">
                     <PluginConnectors />
+                  </div>
+                )}
+                {activeSubsystemTab === "hyperlocal_playbook" && (
+                  <div className="pt-4 border-t border-slate-200">
+                    <LaunchPlaybookView />
                   </div>
                 )}
               </div>
