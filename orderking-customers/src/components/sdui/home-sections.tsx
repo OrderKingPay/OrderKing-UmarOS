@@ -707,39 +707,50 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
         </div>
       )}
 
-      {/* Reorder past items if available */}
+      {/* 3D ULTRA-LUXURY REORDER PAST ITEMS */}
       {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && (
-        <div className="pt-3">
-          <div className="flex items-center justify-between mb-2.5">
-            <h3 className="text-base font-extrabold text-gray-900 tracking-tight">
-              Order Again
-            </h3>
-            <Link to="/orders" className="text-xs font-bold text-[#E23744] hover:underline">
-              View all orders
+        <div className="pt-4 mt-2 border-t border-amber-900/10">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-md text-xs">
+                👑
+              </span>
+              <h3 className="text-base font-black text-gray-950 tracking-tight">
+                Quick Reorder · Your Favorites
+              </h3>
+            </div>
+            <Link to="/orders" className="text-xs font-black text-amber-700 hover:text-amber-900 flex items-center gap-0.5 no-underline">
+              <span>View all</span>
+              <ChevronRight className="size-3.5" />
             </Link>
           </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none">
             {pastOrders.data.orders.slice(0, 3).map((o) => (
               <div
                 key={o.id}
-                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-gray-200 bg-white p-3.5 shadow-sm"
+                className="flex w-72 shrink-0 flex-col justify-between rounded-2xl border border-amber-500/30 bg-gradient-to-br from-white via-amber-50/20 to-white p-4 shadow-[0_8px_20px_rgba(40,25,10,0.06)] hover:border-amber-400 transition"
               >
                 <div>
-                  <h4 className="line-clamp-1 text-sm font-bold text-gray-900">
-                    {o.restaurantName}
-                  </h4>
-                  <p className="mt-1 line-clamp-1 text-xs text-gray-500">
-                    {o.itemPreview || "Previous order"}
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="line-clamp-1 text-sm font-black text-gray-950">
+                      {o.restaurantName}
+                    </h4>
+                    <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800">
+                      Verified
+                    </span>
+                  </div>
+                  <p className="mt-1 line-clamp-1 text-xs text-gray-600 font-medium">
+                    {o.itemPreview || "Previous delicious order"}
                   </p>
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5">
-                  <span className="text-xs font-bold text-gray-700">
+                <div className="mt-3.5 flex items-center justify-between border-t border-amber-100 pt-3">
+                  <span className="text-xs font-black text-gray-900 font-mono">
                     {formatPaise(o.totalPaise, { locale: "en-IN" })}
                   </span>
                   <button
                     type="button"
                     onClick={() => void handleReorder(o.id)}
-                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 hover:bg-[#E23744] hover:text-white px-3 py-1 text-xs font-bold text-gray-800 transition cursor-pointer"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3.5 py-1.5 text-xs font-black shadow-sm transition active:scale-95 cursor-pointer"
                   >
                     <RotateCcw className="size-3" />
                     <span>Reorder</span>

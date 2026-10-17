@@ -31,6 +31,7 @@ const LazyExpiringViralShareModal = resilientLazy(
 );
 import { VipGoldPassHub } from "@/components/market/vip-gold-pass-hub";
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
+import { UltraLuxuryEcosystemFooter } from "@/components/market/ultra-luxury-ecosystem-footer";
 import { useDietStore } from "@/lib/stores/diet";
 import { useBrand, useT } from "@/components/providers";
 import { cartCount, useCartStore } from "@/lib/stores/cart";
@@ -319,6 +320,9 @@ export function CustomerShell({
           {children}
         </ErrorBoundary>
       </main>
+
+      {/* ULTRA-LUXURY 3D ECOSYSTEM PORTAL & FOOTER */}
+      <UltraLuxuryEcosystemFooter />
 
       {/* Floating View Cart Bar positioned safely above the floating luxury dock */}
       {isDeliveryActive && count > 0 && path !== "/cart" && path !== "/checkout" ? (
