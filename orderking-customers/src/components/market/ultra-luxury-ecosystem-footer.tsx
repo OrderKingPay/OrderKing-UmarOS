@@ -46,7 +46,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             World’s Simplest. <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">10x More Luxurious.</span>
           </h2>
           <p className="max-w-md text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
-            Uncompromising culinary perfection, real-time NPCI payments, zero-fee sovereign travel, and master AI intelligence — architected for absolute zero-friction living.
+            Uncompromising culinary perfection, real-time NPCI payments, 24K gold rewards, and VIP dining table reservations — architected for absolute zero-friction living.
           </p>
         </div>
 
@@ -238,10 +238,10 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             <div className="rounded-2xl border border-sky-500/20 bg-sky-950/20 p-3">
               <div className="text-[11px] font-bold text-sky-400 flex items-center gap-1">
                 <CheckCircle2 className="size-3.5" />
-                <span>Zero Travel Convenience Fees</span>
+                <span>Zero Table Booking Fees</span>
               </div>
               <p className="mt-1 text-[11px] text-slate-300">
-                MakeMyTrip charges ₹399–₹600 convenience fees. OrderKing charges exactly ₹0 on confirmed flights.
+                Dining clubs charge hefty recurring subscriptions. OrderKing gives free VIP table reservations with up to 40% bill savings.
               </p>
             </div>
 

@@ -637,7 +637,7 @@ export function HomeFeed({
 
         {/* Place Count */}
         <span className="text-[11px] font-black text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0 shadow-2xs">
-          {filteredRestaurants.length} places
+          {filteredRestaurants.length === 0 ? "0 places delivering" : `${filteredRestaurants.length} places delivering`}
         </span>
       </div>
 
@@ -731,7 +731,7 @@ export function HomeFeed({
             </Button>
           </div>
         ) : filteredRestaurants.length === 0 ? (
-          isZeroDeliveryInRadius ? (
+          isZeroDeliveryInRadius || (!q && !selectedCategory && dietFilter === "all") ? (
             <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
           ) : (
             <div className="rounded-2xl border border-amber-200/80 bg-white p-8 text-center space-y-3 shadow-sm">

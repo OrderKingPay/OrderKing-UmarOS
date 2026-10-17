@@ -3,14 +3,14 @@ import {
   ZomatoFleetEngine,
   DEFAULT_FLEET_CONFIG,
   calculateHaversineDistanceMeters,
-} from "./zomato-fleet-engine";
+} from "./tier1-fleet-engine";
 
 describe("Supreme Rider Fleet Operations & Autonomous Dispatch Engine (OrderKing Core)", () => {
   // ==========================================================================
   // 1. INITIALIZATION & UMAROS UNIVERSAL CUSTOMIZATION
   // ==========================================================================
   describe("UmarOS Universal Customization & Dials", () => {
-    it("initializes with authentic Zomato/Swiggy operational defaults", () => {
+    it("initializes with authentic Tier-1 operational defaults", () => {
       const engine = new ZomatoFleetEngine();
       const config = engine.getConfig();
 

@@ -41,7 +41,7 @@ type Preset = "today" | "yesterday" | "week" | "month";
 
 const ACK_STORAGE_KEY = "orderking_acknowledged_settlements_v1";
 
-function SettlementsDesk() {
+export function SettlementsDesk() {
   const { t } = useI18n();
   const [preset, setPreset] = useState<Preset>("week");
   const [rider, setRider] = useState<RiderProfile | null>(null);

@@ -1292,7 +1292,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<EnterpriseAiMe
                 onClick={() => {
                   autonomousModelUpdater.applyUpgrade(u.id);
                   EnterpriseAudioDsp.playTone("success_chime");
-                  toast.success(`Hot-Upgraded Umar OS to ${u.name}! Zero downtime.`);
+                  toast.success(`Hot-Upgraded King AI to ${u.name}! Zero downtime.`);
                 }}
               >
                 <Check className="size-3.5 mr-1" />
@@ -1909,7 +1909,7 @@ You can ask me anything across software engineering, architecture, business anal
                   <Crown className="size-4" />
                 </div>
                 <div>
-                  <span className="font-extrabold text-sm tracking-tight text-fg block">Umar OS</span>
+                  <span className="font-extrabold text-sm tracking-tight text-fg block">Order King</span>
                   <span className="text-[10px] text-muted block font-medium">Single Founder Control</span>
                 </div>
               </div>
@@ -2297,7 +2297,7 @@ You can ask me anything across software engineering, architecture, business anal
                   {liveTranscript ? (
                     <span className="text-cyan-300">&quot;{liveTranscript}&quot;</span>
                   ) : isSpeaking ? (
-                    <span className="text-amber-300">Umar OS is speaking...</span>
+                    <span className="text-amber-300">King AI is speaking...</span>
                   ) : (
                     <span className="text-subtle">Speak freely in English, Hindi, Bengali, or any language...</span>
                   )}
@@ -2351,7 +2351,7 @@ You can ask me anything across software engineering, architecture, business anal
             >
               <div className="flex items-center gap-2 text-[10px] text-muted px-1">
                 <span className="font-semibold uppercase">
-                  {m.sender === "founder" ? "👑 You (Founder)" : `⚡ Umar OS (${currentPersonaObj.name})`}
+                  {m.sender === "founder" ? "👑 You (Founder)" : `⚡ King AI (${currentPersonaObj.name})`}
                 </span>
                 {m.modelUsed && <span className="font-mono text-amber-400">[{m.modelUsed}]</span>}
                 <span>{m.timestamp}</span>
@@ -2386,7 +2386,7 @@ You can ask me anything across software engineering, architecture, business anal
           {isProcessing && (
             <div className="flex items-center gap-2 text-xs text-amber-400 font-mono p-2">
               <Sparkles className="size-4 animate-spin text-amber-400" />
-              <span>Umar OS executing consensus, telemetry &amp; live edge pipeline...</span>
+              <span>King AI executing consensus, telemetry &amp; live edge pipeline...</span>
             </div>
           )}
 
@@ -2509,7 +2509,7 @@ You can ask me anything across software engineering, architecture, business anal
             <Input
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
-              placeholder="Message Umar OS... Ask anything, deploy apps, or give an executive order"
+              placeholder="Message King AI... Ask anything, deploy apps, or give an executive order"
               className="flex-1 bg-transparent border-0 text-xs sm:text-sm text-gray-400 placeholder:text-subtle focus-visible:ring-0 shadow-none px-2"
             />
 

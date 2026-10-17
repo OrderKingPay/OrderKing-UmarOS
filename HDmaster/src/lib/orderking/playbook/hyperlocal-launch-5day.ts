@@ -341,7 +341,7 @@ export const COMMERCIAL_TIERS: Record<MerchantCategory, CommercialOfferTier> = {
     onboardingFeePaise: 0,
     hardwareCompulsion: "Zero Hardware Compulsion (BYO Phone & BT Printer)",
     keySellingPoint: "Special low 16% rate for strategic volume anchors driving local demand.",
-    competitorComparison: "Zomato/Swiggy charges 28-32% with delayed weekly settlements. OrderKing saves ~12-16% margin with T+1 payouts.",
+    competitorComparison: "Legacy aggregators charge 28-32% with delayed weekly settlements. OrderKing saves ~12-16% margin with T+1 payouts.",
   },
   CLOUD_KITCHEN: {
     category: "CLOUD_KITCHEN",
@@ -374,12 +374,12 @@ export const RESTAURANT_WALK_IN_SCRIPT: WalkInScriptStage[] = [
     goal: "Respect owner's post-lunch calm, establish non-threatening local presence, surface aggregator commission & payout frustration.",
     englishScript: `Good afternoon, boss. I'm building OrderKing right here for restaurants in this local area. I can see your lunch rush is over, so I'll only take two minutes initially.
 
-I'm not here to ask you to stop Zomato or Swiggy. Just one honest question: after commissions, deductions, sponsored ads and discounts, are you genuinely satisfied with what actually hits your bank account every week from online orders?
+I'm not here to ask you to stop existing delivery apps. Just one honest question: after commissions, deductions, sponsored ads and discounts, are you genuinely satisfied with what actually hits your bank account every week from online orders?
 
 We are launching an additional sales channel with a simple, written rate card and live kitchen KOT printing on your existing phone. If it makes financial sense, we can do a small test trial.`,
     hinglishScript: `Namaste bhaiya, main OrderKing ka founder hoon. Yahin local area mein food delivery start kar rahe hain. Lunch ka rush abhi khatam hua hoga, bas do minute lunga.
 
-Aapse Zomato ya Swiggy band karwane nahi aaya hoon. Ek seedhi baat poochhun? Online order mein 28-30% commission, deductions aur customer discount ke baad jo haath mein paisa aata hai, kya aap usse satisfied hain?
+Aapse purane delivery apps band karwane nahi aaya hoon. Ek seedhi baat poochhun? Online order mein 28-30% commission, deductions aur customer discount ke baad jo haath mein paisa aata hai, kya aap usse satisfied hain?
 
 Hum ek additional order channel de rahe hain. Rate pehle se written rahega—koi hidden deduction nahi. Aapko live demo dikha deta hoon. Pasand aaye toh chhota trial kar sakte hain.`,
     fieldActionNote: "Field Rule: Stop speaking immediately after asking the question. Let the owner vent about deductions, weekly payment holds, fake cancellations, or device rental fees. Frame the rest of the pitch around their exact stated pain.",
@@ -395,7 +395,7 @@ You keep all existing platforms running. There is ₹0 joining fee, no lock-in c
 Watch this 30-second live test: I will place a real order from my phone right now. Your phone chimes immediately, you tap 'Accept', and your existing Bluetooth thermal printer automatically prints the KOT ticket with exact items and kitchen modifiers.`,
     hinglishScript: `Hamara commission card bilkul saaf hai: standalone restaurant ke liye 22%, cloud kitchen ke liye 20%, aur strategic anchor ke liye 16%.
 
-Aapka Zomato-Swiggy jaisa chal raha hai, waise hi chalega. Joining fee zero hai. Koi naya hardware ya machine kharidne ki zaroorat nahi hai.
+Aapke purane delivery apps jaise chal rahe hain, waise hi chalenge. Joining fee zero hai. Koi naya hardware ya machine kharidne ki zaroorat nahi hai.
 
 Dekhiye, main apne phone se live test order karta hoon. Aapke phone par ring bajegi, aap 'Accept' karenge, aur aapke existing Bluetooth printer par bina kisi jhanjhat ke KOT print nikal aayega.`,
     fieldActionNote: "Field Rule: Fire a live test order. Verify Bluetooth KOT prints with correct item names, customization notes, order number, and timestamp. If Bluetooth fails, demonstrate the instant on-screen kitchen display ticket.",
@@ -406,7 +406,7 @@ Dekhiye, main apne phone se live test order karta hoon. Aapke phone par ring baj
     goal: "Prove on paper that the restaurant earns ₹25-₹30 more per order on OrderKing vs legacy aggregators.",
     englishScript: `Let's look at the real math on your standard ₹300 thali or biryani order before tax adjustments:
 
-On Zomato at 30% commission:
+On legacy aggregators at 30% commission:
 • Food Subtotal: ₹300.00
 • Commission (30%): -₹90.00
 • GST on Commission (18%): -₹16.20
@@ -422,7 +422,7 @@ On OrderKing at 22% transparent commission:
 You save ₹28.02 extra pure cash on EVERY single ₹300 order. At 300 orders a month, that is over ₹8,400 in direct savings, credited T+1 daily into your bank account.`,
     hinglishScript: `Aapke ₹300 ke food order ka hisaab saamne dekh lijiye:
 
-Zomato par 30% commission:
+Legacy aggregator par 30% commission:
 • Food order: ₹300
 • Commission (30%): -₹90
 • GST on Commission: -₹16.20
@@ -458,8 +458,8 @@ Aap agree karein toh abhi 5 minute mein trial activate kar dete hain. Commission
 
 export const OBJECTION_COUNTERS: ObjectionCounter[] = [
   {
-    id: "obj-already-have-zomato",
-    objectionTitle: "Already have Zomato / Swiggy. Don't want another machine.",
+    id: "obj-already-have-apps",
+    objectionTitle: "Already have existing food delivery apps. Don't want another machine.",
     merchantPainPoint: "Counter clutter, device fatigue, fear of upfront investment and double commissions.",
     founderResponseEnglish: `Completely understand, boss. You should definitely not buy another machine. 
 
@@ -470,7 +470,7 @@ We are an additional sales channel, not a replacement. If you receive zero order
 
 Humne OrderKing is tarah design kiya hai ki aapke existing Android phone par chalega aur KOT aapke existing Bluetooth printer se nikal aayega. 
 
-Hum aapka extra order channel hain, Zomato ka replacement nahi. Agar din mein zero order aaya toh aapse ₹1 bhi nahi liya jayega. Ek demo order karke dekh lein?`,
+Hum aapka extra order channel hain, purane apps ka replacement nahi. Agar din mein zero order aaya toh aapse ₹1 bhi nahi liya jayega. Ek demo order karke dekh lein?`,
     operationalCommitment: "Zero hardware required. Full compatibility with standard ESC/POS 58mm & 80mm Bluetooth printers and Android/iOS smartphones.",
     fieldMove: "Ask permission to pair their existing printer or use a 58mm pocket demo printer from the executive's kit. Never take the owner's phone without permission.",
   },
@@ -568,7 +568,7 @@ Let's verify your DL, Aadhaar, and bike documents, run one quick test pickup, an
     "Local 2-wheeler mechanic and puncture repair shops where gig riders get servicing",
     "High-traffic petrol pumps with food joints / waiting bays",
     "Direct referrals from signed restaurant owners (trusted local boys)",
-    "Existing gig rider WhatsApp communities (Swiggy/Zomato/Dunzo/Shadowfax off-peak meetups)",
+    "Existing gig rider WhatsApp communities (off-peak local courier meetups)",
   ],
   kycVerificationChecklist: [
     "Aadhaar Card / Government Identity Verification (Age >= 18)",
@@ -691,7 +691,7 @@ export const FIVE_DAY_STREET_TIMETABLE: StreetTimetableDay[] = [
       {
         timeSlot: "02:30–05:00 PM",
         taskTitle: "Owner 15-Minute Walk-in Demonstrations",
-        operationalDetail: "Execute 6 walk-ins using 3:30 PM hook; run Bluetooth KOT live demo; present 16-22% rate card vs Zomato math; close first 3 anchor partners.",
+        operationalDetail: "Execute 6 walk-ins using 3:30 PM hook; run Bluetooth KOT live demo; present 16-22% rate card vs legacy aggregator math; close first 3 anchor partners.",
         ownerRole: "Founder",
         deliverable: "3 signed paper agreements, menu photos taken, bank details captured.",
       },
@@ -756,7 +756,7 @@ export const FIVE_DAY_STREET_TIMETABLE: StreetTimetableDay[] = [
       {
         timeSlot: "02:30–05:00 PM",
         taskTitle: "Merchant Acquisition: Complementary Cuisines",
-        operationalDetail: "Pitch 8 restaurants (focusing on Biryani, Chinese, South Indian, Pizza); overcome 'Already have Zomato' objection; close 4 new restaurants.",
+        operationalDetail: "Pitch 8 restaurants (focusing on Biryani, Chinese, South Indian, Pizza); overcome 'Already have existing delivery apps' objection; close 4 new restaurants.",
         ownerRole: "Merchant Executive",
         deliverable: "4 new signed merchant agreements; cumulative 7 signed.",
       },
@@ -1201,7 +1201,7 @@ export function calculateRiderShiftPayout(input: RiderShiftEconomicsInput): Ride
 }
 
 /**
- * Performs side-by-side merchant net payout comparison between OrderKing and legacy aggregator (Zomato/Swiggy).
+ * Performs side-by-side merchant net payout comparison between OrderKing and legacy aggregator (30%).
  */
 export function compareMerchantNetPayout(
   orderSubtotalPaise: number,

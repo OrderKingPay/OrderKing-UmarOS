@@ -42,15 +42,16 @@ import type { AppLanguage } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
 
 export const PRIMARY_NAV = [
-  { to: "/dashboard", key: "nav.home", icon: Home, perm: "dashboard.view" as Permission },
   { to: "/orders", key: "nav.orders", icon: ClipboardList, perm: "orders.view" as Permission },
-  { to: "/kitchen", key: "nav.kitchen", icon: ChefHat, perm: "kitchen.view" as Permission },
-  { to: "/dining", key: "nav.dining", icon: CalendarDays, perm: "orders.view" as Permission },
+  { to: "/kds", key: "nav.kitchen", icon: ChefHat, perm: "kitchen.view" as Permission },
   { to: "/menu", key: "nav.menu", icon: UtensilsCrossed, perm: "menu.view" as Permission },
   { to: "/settlements", key: "nav.settlements", icon: Wallet, perm: "settlements.view" as Permission },
+  { to: "/more", key: "nav.more", icon: MoreHorizontal, perm: "dashboard.view" as Permission },
 ] as const;
 
 export const MORE_NAV = [
+  { to: "/dashboard", key: "nav.home", icon: Home, perm: "dashboard.view" as Permission },
+  { to: "/dining", key: "nav.dining", icon: CalendarDays, perm: "orders.view" as Permission },
   { to: "/promotions", key: "nav.promotions", icon: Tag, perm: "promotions.view" as Permission },
   { to: "/analytics", key: "nav.analytics", icon: LineChart, perm: "analytics.view" as Permission },
   { to: "/reviews", key: "nav.reviews", icon: Star, perm: "reviews.view" as Permission },
@@ -263,6 +264,18 @@ export function VendorShell({
           </main>
         </div>
       </div>
+
+      {/* KING AI FLOATING ACTION BUTTON (FAB) FOR INSTANT 1-TAP CO-PILOT ACCESS */}
+      <button
+        type="button"
+        onClick={() => setSparkOpen(true)}
+        aria-label="Open King AI Assistant"
+        title="King AI — Restaurant Culinary & Growth Co-Pilot"
+        className="fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 px-3.5 py-2.5 text-slate-950 font-black shadow-lg shadow-amber-500/30 transition hover:scale-105 active:scale-95 md:hidden"
+      >
+        <Sparkles className="size-4.5 text-slate-950 animate-pulse" />
+        <span className="text-xs font-black tracking-tight">King AI</span>
+      </button>
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
       <PartnerFloatingBottomNav

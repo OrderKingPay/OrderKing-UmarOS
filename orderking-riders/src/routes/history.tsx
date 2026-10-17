@@ -64,7 +64,7 @@ function getTripDurationMinutes(d: Delivery, distanceKm: number): number {
   return Math.max(8, Math.round(distanceKm * 4.5));
 }
 
-function Page() {
+export function Page() {
   const { t } = useI18n();
   const [preset, setPreset] = useState<"today" | "yesterday" | "week" | "month">("week");
   const [trips, setTrips] = useState<Awaited<ReturnType<typeof getHistoryFn>>>([]);

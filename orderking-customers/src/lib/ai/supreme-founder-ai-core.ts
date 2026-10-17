@@ -1222,7 +1222,7 @@ The video is ready for playback below with full audio-visual motion capabilities
 
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 5, label: "Scanning Market Radar", status: "COMPLETED", detail: "Scanned 14 local food brands in Karimganj & Silchar" },
-      { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, Loss: 28% to Swiggy)` },
+      { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, Loss: 28% to legacy aggregator commissions)` },
       { stepNumber: 3, totalSteps: 5, label: "Compiling Turnkey Pitch", status: "COMPLETED", detail: "Generated 0% Commission & Price Parity ROI calculation" },
       { stepNumber: 4, totalSteps: 5, label: "Minting Advance Invoice", status: "COMPLETED", detail: `50% Advance Lock: ₹${invoice.advanceRequiredInr.toLocaleString("en-IN")} via King Pay UPI` },
       { stepNumber: 5, totalSteps: 5, label: "Deploying Edge Preview", status: "COMPLETED", detail: "Client sandbox ready at https://royal-darbar.orderking.in" },
@@ -2017,7 +2017,7 @@ The live standalone preview bundle is compiled and ready for instant in-browser 
 - **Current Active Generation**: **Gen-5.6 / Gen-4.6 (GPT-5.6, Claude 4.Opus, Grok 4.6)**
 - **Next-Generation Releases Available**: **${updateReport.notifications.length} Hot-Swaps Ready**
 - **Upgrade Policy**: **Autonomous Detection with 1-Click Founder Consent**
-- **Guarantee**: Umar OS will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system auto-configures and upgrades smoothly.
+- **Guarantee**: King AI will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system auto-configures and upgrades smoothly.
 
 Review available model upgrades below and click **"1-Click Hot-Upgrade"** to switch engine generations instantly.`;
 
@@ -2025,7 +2025,7 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
       intent: "general_executive",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `I have scanned the frontier AI laboratories. Three next-generation model upgrades are ready for hot-swapping into Umar OS. You can authorize any upgrade in one click with zero downtime.`,
+      voiceSpokenText: `I have scanned the frontier AI laboratories. Three next-generation model upgrades are ready for hot-swapping into King AI. You can authorize any upgrade in one click with zero downtime.`,
       executionSteps,
       actionCard: {
         type: "model_updates",

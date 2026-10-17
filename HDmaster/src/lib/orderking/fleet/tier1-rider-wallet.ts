@@ -1,7 +1,7 @@
 /**
- * OrderKing Core - Supreme Zomato Rider Wallet, Accounting & Onboarding Economics Engine
- * Authority: Supreme Zomato Rider Wallet, Accounting & Onboarding Economics Specialist
- * Model: Exact Zomato / Swiggy Operational Parity (Indian Hyper-Local Micro-Ledger Mechanics)
+ * OrderKing Core - Supreme Rider Wallet, Accounting & Onboarding Economics Engine
+ * Authority: Supreme Rider Wallet, Accounting & Onboarding Economics Specialist
+ * Model: Tier-1 Operational Parity (Indian Hyper-Local Micro-Ledger Mechanics)
  *
  * Mathematical Foundations:
  * 1. Integer Paise Precision:
@@ -1152,7 +1152,7 @@ export function processEarlyPayout(params: {
 
 /**
  * Process Standard Weekly Settlement Cycle:
- * In Zomato/Swiggy model, weekly payouts (e.g. Tuesday midnight) disburse
+ * In Tier-1 weekly payout model, weekly payouts (e.g. Tuesday midnight) disburse
  * all remaining withdrawable earnings directly to the rider's bank account with ₹0 fee.
  */
 export interface WeeklySettlementResult {

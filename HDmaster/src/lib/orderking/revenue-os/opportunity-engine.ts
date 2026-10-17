@@ -152,7 +152,7 @@ export class OpportunityEngine {
         statedBudget: 149999,
         currency: "INR",
         deadline: "2026-10-05",
-        evidence: ["Client audit meeting notes, Swiggy commission statements (₹5.18L/mo bleed)"],
+        evidence: ["Client audit meeting notes, legacy 30% aggregator commission statements (₹5.18L/mo bleed)"],
         status: "WORK_ACQUIRED",
         nextAction: "Execute delivery factory task graph and release 14-day production build.",
       },

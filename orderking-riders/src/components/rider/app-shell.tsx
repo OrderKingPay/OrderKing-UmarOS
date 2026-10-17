@@ -102,7 +102,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const nav = [
     { to: "/", icon: House, label: t("duty") || "Duty & Orders" },
-    { to: "/history", icon: Navigation, label: t("trips") || "Trips" },
+    { to: "/trips", icon: Navigation, label: t("trips") || "Trips" },
     { to: "/earnings", icon: Banknote, label: t("earnings") || "Earnings & COD" },
     { to: "/settlements", icon: Building2, label: t("payouts") || "Weekly Payouts" },
     { to: "/profile", icon: UserCheck, label: t("profile") || "Profile & Fleet KYC" },

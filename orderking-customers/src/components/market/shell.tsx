@@ -89,27 +89,27 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
     icon: Crown,
     iconGradient: "from-yellow-400 via-amber-500 to-amber-700",
     to: "/king-pay",
-    match: (p: string) => p.startsWith("/king-pay") || p.startsWith("/earn"),
+    match: (p: string) => p.startsWith("/king-pay"),
   },
   {
-    id: "travel",
-    name: "Sovereign Travel",
-    badge: "₹0 Fee",
-    badgeColor: "bg-sky-500/20 text-sky-900 border-sky-400/50",
-    icon: Plane,
-    iconGradient: "from-sky-400 via-blue-500 to-indigo-800",
-    to: "/travel",
-    match: (p: string) => p.startsWith("/travel"),
+    id: "earn",
+    name: "24K Gold Vault",
+    badge: "24K Gold",
+    badgeColor: "bg-yellow-500/20 text-yellow-900 border-yellow-400/50",
+    icon: Coins,
+    iconGradient: "from-yellow-300 via-amber-500 to-yellow-700",
+    to: "/earn",
+    match: (p: string) => p.startsWith("/earn"),
   },
   {
-    id: "tutor",
-    name: "LearnKing & JobKing",
-    badge: "NCERT • Jobs",
-    badgeColor: "bg-purple-500/20 text-purple-900 border-purple-400/50",
-    icon: GraduationCap,
-    iconGradient: "from-indigo-400 via-purple-500 to-purple-800",
-    to: "/tutor",
-    match: (p: string) => p.startsWith("/tutor"),
+    id: "orders",
+    name: "Live Orders",
+    badge: "Live GPS",
+    badgeColor: "bg-emerald-500/20 text-emerald-800 border-emerald-400/50",
+    icon: Store,
+    iconGradient: "from-emerald-400 via-teal-600 to-slate-900",
+    to: "/orders",
+    match: (p: string) => p.startsWith("/orders") || p.startsWith("/tracking"),
   },
 ];
 
@@ -511,7 +511,7 @@ export function CustomerShell({
                       OrderKing Sovereign Ecosystem
                     </h3>
                     <p className="text-xs text-amber-400/70 font-semibold mt-1">
-                      One Super-App for Food, Travel, Jobs & FinTech
+                      One Super-App for Food Delivery, VIP Dining &amp; FinTech
                     </p>
                   </div>
                 </div>
@@ -527,54 +527,54 @@ export function CustomerShell({
 
               {/* Business Units List */}
               <div className="mt-4 space-y-2.5">
-                {/* 1. Sovereign Travel */}
+                {/* 1. OrderKing Food Delivery */}
                 <Link
-                  to="/travel"
+                  to="/"
                   onClick={() => setEcosystemDrawerOpen(false)}
-                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-sky-950/60 via-stone-900/80 to-slate-950/80 border border-sky-500/40 hover:border-sky-400 hover:bg-sky-950/80 transition-all no-underline group shadow-sm active:scale-98"
+                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-stone-900/80 to-slate-950/80 border border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/80 transition-all no-underline group shadow-sm active:scale-98"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 via-sky-600 to-blue-900 text-white shadow-md group-hover:scale-105 transition-transform">
-                      <Plane className="size-5 stroke-[2.2]" />
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-emerald-500 to-teal-800 text-white shadow-md group-hover:scale-105 transition-transform">
+                      <UtensilsCrossed className="size-5 stroke-[2.2]" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-black text-sky-200">Sovereign Travel</span>
-                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/40">
-                          ₹0 Convenience Fee
+                        <span className="text-sm font-black text-emerald-200">OrderKing Food Delivery</span>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+                          0% Restaurant Markup
                         </span>
                       </div>
                       <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
-                        Flights, IRCTC Trains, Airport & Outstation Cabs
+                        Authentic Dum Biryani, Pure Veg, &amp; Rapid 25m Delivery
                       </p>
                     </div>
                   </div>
-                  <ArrowRight className="size-4 text-sky-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                  <ArrowRight className="size-4 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0" />
                 </Link>
 
-                {/* 2. LearnKing & JobKing */}
+                {/* 2. VIP Fine Dining */}
                 <Link
-                  to="/tutor"
+                  to="/dining"
                   onClick={() => setEcosystemDrawerOpen(false)}
-                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-purple-950/60 via-stone-900/80 to-slate-950/80 border border-purple-500/40 hover:border-purple-400 hover:bg-purple-950/80 transition-all no-underline group shadow-sm active:scale-98"
+                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-rose-950/60 via-stone-900/80 to-slate-950/80 border border-rose-500/40 hover:border-rose-400 hover:bg-rose-950/80 transition-all no-underline group shadow-sm active:scale-98"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-purple-400 via-indigo-600 to-purple-900 text-white shadow-md group-hover:scale-105 transition-transform">
-                      <GraduationCap className="size-5 stroke-[2.2]" />
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-rose-400 via-pink-500 to-rose-800 text-white shadow-md group-hover:scale-105 transition-transform">
+                      <Wine className="size-5 stroke-[2.2]" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-black text-purple-200">LearnKing & JobKing</span>
-                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/40">
-                          NCERT • CBSE • Jobs
+                        <span className="text-sm font-black text-rose-200">VIP Fine Dining</span>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40">
+                          Up to 40% Off
                         </span>
                       </div>
                       <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
-                        Instant AI Doubt Solver & Verified High-Paying Jobs
+                        Reserved Tables &amp; Exclusive FSSAI Dine-In Menus
                       </p>
                     </div>
                   </div>
-                  <ArrowRight className="size-4 text-purple-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                  <ArrowRight className="size-4 text-rose-400 group-hover:translate-x-1 transition-transform shrink-0" />
                 </Link>
 
                 {/* 3. KingPay 24K Gold FinTech */}
@@ -595,61 +595,36 @@ export function CustomerShell({
                         </span>
                       </div>
                       <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
-                        256-Bit Bank Grade UPI, Split Bills & Vault
+                        256-Bit Bank Grade UPI, Split Bills &amp; Vault
                       </p>
                     </div>
                   </div>
                   <ArrowRight className="size-4 text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
                 </Link>
 
-                {/* 4. OrderKing Food Delivery */}
+                {/* 4. 24K Gold Rewards Vault */}
                 <Link
-                  to="/"
+                  to="/earn"
                   onClick={() => setEcosystemDrawerOpen(false)}
-                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-stone-900/80 to-slate-950/80 border border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/80 transition-all no-underline group shadow-sm active:scale-98"
+                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-yellow-950/60 via-stone-900/80 to-slate-950/80 border border-yellow-500/40 hover:border-yellow-400 hover:bg-yellow-950/80 transition-all no-underline group shadow-sm active:scale-98"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-emerald-500 to-teal-800 text-white shadow-md group-hover:scale-105 transition-transform">
-                      <UtensilsCrossed className="size-5 stroke-[2.2]" />
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-300 via-amber-500 to-yellow-700 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
+                      <Coins className="size-5 stroke-[2.2]" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-black text-emerald-200">OrderKing Food Delivery</span>
-                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
-                          0% Restaurant Markup
+                        <span className="text-sm font-black text-yellow-200">24K Gold Rewards Vault</span>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/40">
+                          24K Digital Gold
                         </span>
                       </div>
                       <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
-                        Authentic Dum Biryani, Pure Veg, & Rapid Delivery
+                        Earn 24K digital gold cashback on every transaction
                       </p>
                     </div>
                   </div>
-                  <ArrowRight className="size-4 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0" />
-                </Link>
-
-                {/* 5. VIP Fine Dining */}
-                <Link
-                  to="/dining"
-                  onClick={() => setEcosystemDrawerOpen(false)}
-                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-rose-950/60 via-stone-900/80 to-slate-950/80 border border-rose-500/40 hover:border-rose-400 hover:bg-rose-950/80 transition-all no-underline group shadow-sm active:scale-98"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-rose-400 via-pink-500 to-rose-800 text-white shadow-md group-hover:scale-105 transition-transform">
-                      <Wine className="size-5 stroke-[2.2]" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-black text-rose-200">VIP Fine Dining</span>
-                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40">
-                          Up to 40% Off
-                        </span>
-                      </div>
-                      <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
-                        Reserved Tables & Exclusive FSSAI Dine-In Menus
-                      </p>
-                    </div>
-                  </div>
-                  <ArrowRight className="size-4 text-rose-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                  <ArrowRight className="size-4 text-yellow-400 group-hover:translate-x-1 transition-transform shrink-0" />
                 </Link>
               </div>
 

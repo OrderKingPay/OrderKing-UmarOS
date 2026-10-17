@@ -3,9 +3,9 @@ import {
   ZomatoRiderAlgorithmEngine,
   DEFAULT_ZOMATO_CONFIG,
   resolveCityTier,
-} from "./zomato-rider-algorithm";
+} from "./tier1-rider-algorithm";
 
-describe("Zomato-Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () => {
+describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () => {
   it("initializes with authentic Indian food delivery pricing configuration", () => {
     const engine = new ZomatoRiderAlgorithmEngine();
     const config = engine.getConfig();

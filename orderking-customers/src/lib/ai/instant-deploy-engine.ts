@@ -49,7 +49,7 @@ export class InstantDeployEngine {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${prompt.slice(0, 40)} | Umar OS Sandbox</title>
+  <title>${prompt.slice(0, 40)} | Order King Sandbox</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { background-color: #09090b; color: #f4f4f5; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -60,7 +60,7 @@ export class InstantDeployEngine {
   <header class="max-w-4xl mx-auto w-full flex justify-between items-center py-4 border-b border-white/10">
     <div class="flex items-center gap-2">
       <span class="text-2xl">👑</span>
-      <span class="font-bold text-lg text-amber-400">Umar OS Engine</span>
+      <span class="font-bold text-lg text-amber-400">Order King Engine</span>
     </div>
     <span class="px-3 py-1 rounded-full bg-[#D4AF37]/10 text-emerald-400 text-xs font-mono font-semibold">Interactive Sandbox Ready</span>
   </header>
@@ -74,11 +74,11 @@ export class InstantDeployEngine {
     </p>
     <div class="flex flex-wrap justify-center gap-4 pt-4">
       <a href="https://orderking.in/king-pay" target="_blank" rel="noreferrer" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold shadow-lg hover:scale-105 transition">Open via King Pay UPI</a>
-      <button onclick="alert('Umar OS Local Sandbox operational! All reactive states functional.')" class="px-6 py-3 rounded-xl border border-white/20 bg-surface hover:bg-surface-2 font-semibold text-zinc-200 transition">Verify Local State</button>
+      <button onclick="alert('Order King Local Sandbox operational! All reactive states functional.')" class="px-6 py-3 rounded-xl border border-white/20 bg-surface hover:bg-surface-2 font-semibold text-zinc-200 transition">Verify Local State</button>
     </div>
   </main>
   <footer class="max-w-4xl mx-auto w-full text-center text-xs text-subtle border-t border-white/10 pt-4">
-    Powered by Umar OS · Sovereign Autonomous Founder Infrastructure · Zero Simulated Verification
+    Powered by King AI · Sovereign Autonomous Founder Infrastructure · Zero Simulated Verification
   </footer>
 </body>
 </html>`;

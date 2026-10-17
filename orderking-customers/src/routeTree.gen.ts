@@ -22,6 +22,7 @@ import { Route as KingpayWalletRouteImport } from './routes/kingpay-wallet'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as OffersRouteImport } from './routes/offers'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -126,6 +127,11 @@ const NewsRoute = NewsRouteImport.update({
 const OffersRoute = OffersRouteImport.update({
   id: '/offers',
   path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RewardsRoute = RewardsRouteImport.update({
@@ -344,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
+  '/profile': typeof ProfileRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -399,6 +406,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
+  '/profile': typeof ProfileRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -455,6 +463,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
+  '/profile': typeof ProfileRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
@@ -512,6 +521,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/news'
     | '/offers'
+    | '/profile'
     | '/rewards'
     | '/search'
     | '/settings'
@@ -567,6 +577,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/news'
     | '/offers'
+    | '/profile'
     | '/rewards'
     | '/search'
     | '/settings'
@@ -622,6 +633,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/news'
     | '/offers'
+    | '/profile'
     | '/rewards'
     | '/search'
     | '/settings'
@@ -678,6 +690,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NewsRoute: typeof NewsRoute
   OffersRoute: typeof OffersRoute
+  ProfileRoute: typeof ProfileRoute
   RewardsRoute: typeof RewardsRoute
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
@@ -808,6 +821,13 @@ declare module '@tanstack/react-router' {
       path: '/offers'
       fullPath: '/offers'
       preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rewards': {
@@ -1142,6 +1162,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NewsRoute: NewsRoute,
   OffersRoute: OffersRoute,
+  ProfileRoute: ProfileRoute,
   RewardsRoute: RewardsRoute,
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,

@@ -91,7 +91,7 @@ export class LocalDeterministicProvider implements AIProvider {
     } else if (lower.startsWith("hello") || lower.startsWith("hi ") || lower === "hi") {
       responseText = [
         "### 👑 Greetings, Founder",
-        "I am your unified AI interface for OrderKing / Umar OS.",
+        "I am your unified AI interface for Order King / King AI.",
         "I am ready to help you with general knowledge, software engineering, business intelligence, order operations, financial ledgers, and multilingual communication.",
         "*How may I assist you right now?*",
       ].join("\n");

@@ -107,43 +107,43 @@ describe("NPCI UPI Intent & Dynamic BharatQR Engine", () => {
 
   describe("Deep-Link Triggers for Major Indian UPI Apps", () => {
     const params: UPIIntentParams = {
-      vpa: "swiggy@icici",
-      payeeName: "Swiggy Foods",
+      vpa: "merchant@icici",
+      payeeName: "Direct Merchant Foods",
       amountPaise: 15000, // ₹150.00
       transactionNote: "Lunch delivery",
-      transactionRef: "SWG-998811",
+      transactionRef: "ORD-998811",
     };
 
     it("generates correct scheme for PhonePe", () => {
       const link = generateAppDeepLink("phonepe", params);
       expect(link.startsWith("phonepe://pay?")).toBe(true);
-      expect(link).toContain("pa=swiggy%40icici");
+      expect(link).toContain("pa=merchant%40icici");
       expect(link).toContain("am=150.00");
     });
 
     it("generates correct scheme for Google Pay (Tez)", () => {
       const link = generateAppDeepLink("gpay", params);
       expect(link.startsWith("tez://upi/pay?")).toBe(true);
-      expect(link).toContain("pa=swiggy%40icici");
+      expect(link).toContain("pa=merchant%40icici");
       expect(link).toContain("am=150.00");
     });
 
     it("generates correct scheme for Paytm", () => {
       const link = generateAppDeepLink("paytm", params);
       expect(link.startsWith("paytmmp://pay?")).toBe(true);
-      expect(link).toContain("pa=swiggy%40icici");
+      expect(link).toContain("pa=merchant%40icici");
     });
 
     it("generates correct scheme for CRED", () => {
       const link = generateAppDeepLink("cred", params);
       expect(link.startsWith("cred://pay?")).toBe(true);
-      expect(link).toContain("pa=swiggy%40icici");
+      expect(link).toContain("pa=merchant%40icici");
     });
 
     it("generates correct scheme for BHIM", () => {
       const link = generateAppDeepLink("bhim", params);
       expect(link.startsWith("bhim://pay?")).toBe(true);
-      expect(link).toContain("pa=swiggy%40icici");
+      expect(link).toContain("pa=merchant%40icici");
     });
 
     it("generates correct Universal Intent fallback", () => {

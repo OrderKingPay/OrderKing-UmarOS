@@ -6,7 +6,7 @@ import {
   Flame,
   Wine,
   Utensils,
-  Crown,
+  Search,
   Sparkles,
   ShoppingBag,
   Receipt,
@@ -27,9 +27,18 @@ export interface BenchmarkTabItem {
   description: string;
 }
 
+/**
+ * 👑 CANONICAL BENCHMARK 5-TAB FOOD SUPER-APP SPECIFICATION
+ * Strict Indian & Global Benchmark Parity:
+ * 1. Delivery ('/')
+ * 2. Dining Out ('/dining')
+ * 3. Search ('/search')
+ * 4. Cart ('/cart')
+ * 5. Orders ('/orders')
+ */
 export const BENCHMARK_FOOD_TABS: readonly BenchmarkTabItem[] = [
   { id: "delivery", label: "Delivery", to: "/", description: "Food Delivery & Kitchens" },
-  { id: "dining", label: "Dining Out", to: "/dining", description: "Table Booking & Dining Out" },
+  { id: "dining", label: "Dining Out", to: "/dining", description: "VIP Dining Out & Table Booking" },
   { id: "search", label: "Search", to: "/search", description: "Search Cuisines & Dishes" },
   { id: "cart", label: "Cart", to: "/cart", description: "Shopping Cart & Checkout" },
   { id: "orders", label: "Orders", to: "/orders", description: "Order Tracking & History" },
@@ -100,12 +109,12 @@ export interface FloatingBottomNavProps {
 /**
  * 👑 ULTRA-LUXURIOUS 3D FOOD SUPER-APP DOCKED BOTTOM NAVIGATION
  * 
- * Unbundled & Dedicated 5-Tab Food Architecture:
- * 1. Delivery (`/` or `/delivery`) — Utensils & Flame icon, Emerald platter glow.
- * 2. Dine-In (`/dining`) — Wine & Utensils icon, Sapphire glow, table booking & FSSAI dine-in menus.
- * 3. King AI Concierge (Centerpiece) — Raised 3D 24K Gold Crown with ambient pulsing glow, micro-spring haptics.
- * 4. Cart & Bag (`/cart`) — ShoppingBag with live cart badge counter (`cartCount`).
- * 5. Orders & Live Track (`/orders`) — Receipt / Bike with live radar pulse.
+ * Permanent, Clean 5-Tab Food Delivery Architecture:
+ * 1. Delivery (`/`) — Utensils & Flame, Emerald Platter Glow, 0% Markup.
+ * 2. Dining Out (`/dining`) — Wine & Utensils, Sapphire Glow, VIP Table Reservation.
+ * 3. Search (`/search`) — 24K Gold Jewel Centerpiece with King AI, Search Cuisines & Dishes.
+ * 4. Cart (`/cart`) — ShoppingBag with live cart counter.
+ * 5. Orders (`/orders`) — Receipt / Bike, Live Radar Pulse & Active Status.
  */
 export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBottomNavProps) {
   const pathname = (useRouterState({ select: (s) => s?.location?.pathname ?? "" }) ?? "") as string;
@@ -130,35 +139,27 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
 
   const onTap = useCallback(() => hapticTap(), []);
 
-  const handleAiClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    hapticTap();
-    if (onOpenAi) {
-      onOpenAi();
-    } else {
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("open-customer-concierge"));
-        window.dispatchEvent(new CustomEvent("open-food-ai-concierge"));
-      }
-      void navigate({ to: "/search", search: { q: "AI Food Concierge" } as any });
-    }
-  };
-
   const isDeliveryActive =
     pathname === "/" ||
     pathname.startsWith("/delivery") ||
-    pathname.startsWith("/r/") ||
-    (pathname.startsWith("/search") && !pathname.includes("dining"));
+    pathname.startsWith("/r/");
 
   const isDiningActive = pathname.startsWith("/dining");
 
-  const isAiActive =
-    pathname.startsWith("/ai-craving") ||
-    (pathname.startsWith("/search") && pathname.includes("AI Food Concierge"));
+  const isSearchActive =
+    pathname.startsWith("/search") ||
+    pathname.startsWith("/ai-craving");
 
   const isCartActive = pathname.startsWith("/cart") || pathname.startsWith("/checkout");
 
   const isOrdersActive = pathname.startsWith("/orders") || pathname.startsWith("/tracking");
+
+  const handleSearchClick = (e: React.MouseEvent) => {
+    onTap();
+    if (onOpenAi && (pathname.startsWith("/search") || pathname.includes("AI"))) {
+      onOpenAi();
+    }
+  };
 
   return (
     <nav
@@ -169,18 +170,19 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
         className
       )}
     >
-      {/* ─── DYNAMIC PRISMATIC EMERALD & 24K GOLD AMBIENT GLOW ─── */}
+      {/* ─── DYNAMIC PRISMATIC AMBIENT GLOW ─── */}
       <div
         className="absolute -inset-1.5 rounded-[36px] opacity-75 blur-2xl pointer-events-none -z-10 transition-all duration-700"
         style={{
-          background:
-            isDiningActive
-              ? "radial-gradient(ellipse at center, rgba(37,99,235,0.65) 0%, rgba(14,165,233,0.3) 50%, transparent 80%)"
-              : isOrdersActive
-              ? "radial-gradient(ellipse at center, rgba(225,29,72,0.65) 0%, rgba(245,158,11,0.25) 50%, transparent 80%)"
-              : isCartActive
-              ? "radial-gradient(ellipse at center, rgba(245,158,11,0.7) 0%, rgba(234,88,12,0.3) 50%, transparent 80%)"
-              : "radial-gradient(ellipse at center, rgba(16,185,129,0.7) 0%, rgba(245,158,11,0.35) 50%, transparent 80%)",
+          background: isDiningActive
+            ? "radial-gradient(ellipse at center, rgba(37,99,235,0.65) 0%, rgba(14,165,233,0.3) 50%, transparent 80%)"
+            : isSearchActive
+            ? "radial-gradient(ellipse at center, rgba(245,158,11,0.65) 0%, rgba(217,119,6,0.3) 50%, transparent 80%)"
+            : isCartActive
+            ? "radial-gradient(ellipse at center, rgba(245,158,11,0.7) 0%, rgba(234,88,12,0.3) 50%, transparent 80%)"
+            : isOrdersActive
+            ? "radial-gradient(ellipse at center, rgba(225,29,72,0.65) 0%, rgba(245,158,11,0.25) 50%, transparent 80%)"
+            : "radial-gradient(ellipse at center, rgba(16,185,129,0.7) 0%, rgba(245,158,11,0.35) 50%, transparent 80%)",
         }}
       />
 
@@ -205,10 +207,10 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
         <div className="absolute top-0 inset-x-6 sm:inset-x-10 h-[2px] bg-gradient-to-r from-transparent via-amber-300 to-transparent pointer-events-none drop-shadow-[0_1px_4px_rgba(245,158,11,1)]" />
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* DEDICATED 3D FOOD SUPER-APP 5-TAB NAVIGATION DOCK */}
+        {/* PERMANENT 5-TAB DEDICATED FOOD NAVIGATION DOCK */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         <ul className="grid grid-cols-5 items-end justify-items-center relative w-full m-0 p-0 list-none">
-          {/* ─── TAB 1: DELIVERY (Utensils & Flame, Emerald Platter Glow) ─── */}
+          {/* ─── TAB 1: DELIVERY (Utensils & Flame, Emerald Glow) ─── */}
           <li className="w-full flex justify-center">
             <Link
               to="/"
@@ -218,7 +220,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                 "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-all duration-300 transform-gpu",
                 isDeliveryActive ? "scale-110 -translate-y-0.5" : "active:scale-95 hover:opacity-95"
               )}
-              title="Chef Delivery (0% Markup)"
+              title="Delivery (0% Markup)"
               aria-label="Delivery"
             >
               {isDeliveryActive && (
@@ -258,7 +260,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
             </Link>
           </li>
 
-          {/* ─── TAB 2: DINE-IN (Wine & Utensils, Sapphire Glow, FSSAI Menus) ─── */}
+          {/* ─── TAB 2: DINING OUT (Wine & Utensils, Sapphire Glow) ─── */}
           <li className="w-full flex justify-center">
             <Link
               to="/dining"
@@ -268,8 +270,8 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                 "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-all duration-300 transform-gpu",
                 isDiningActive ? "scale-110 -translate-y-0.5" : "active:scale-95 hover:opacity-95"
               )}
-              title="VIP Dine-In & Table Booking"
-              aria-label="Dine-In"
+              title="VIP Dining Out & Table Reservation"
+              aria-label="Dining Out"
             >
               {isDiningActive && (
                 <motion.div
@@ -300,7 +302,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                   isDiningActive ? "text-sky-300 drop-shadow-[0_1px_6px_rgba(37,99,235,0.5)]" : "text-stone-300"
                 )}
               >
-                Dine-In
+                Dining Out
               </span>
               <span className="text-[6.5px] font-black tracking-widest uppercase px-1.5 py-[0.5px] rounded-full mt-0.5 text-sky-950 bg-sky-300 shadow-2xs">
                 VIP TABLE
@@ -308,22 +310,23 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
             </Link>
           </li>
 
-          {/* ─── TAB 3 (CENTERPIECE): KING AI CONCIERGE (Raised 3D 24K Gold Crown) ─── */}
+          {/* ─── TAB 3 (CENTERPIECE): SEARCH (Search Cuisines & King AI) ─── */}
           <li className="w-full flex justify-center">
-            <motion.button
-              type="button"
-              onClick={handleAiClick}
-              whileHover={{ scale: 1.08, y: -2 }}
-              whileTap={{ scale: 0.92, y: 1 }}
-              transition={{ type: "spring", stiffness: 500, damping: 22 }}
-              className="group relative -mt-5 sm:-mt-6 flex flex-col items-center justify-center cursor-pointer select-none no-underline outline-none transform-gpu"
-              title="King AI Food & Craving Concierge"
-              aria-label="Open King AI Concierge"
+            <Link
+              to="/search"
+              preload="intent"
+              onClick={handleSearchClick}
+              className={cn(
+                "group relative -mt-5 sm:-mt-6 flex flex-col items-center justify-center cursor-pointer select-none no-underline outline-none transform-gpu",
+                isSearchActive ? "scale-105 -translate-y-0.5" : "active:scale-95 hover:opacity-95"
+              )}
+              title="Search Cuisines & King AI"
+              aria-label="Search"
             >
               <div
                 className={cn(
                   "relative p-[3px] rounded-[24px] transition-all duration-300 transform-gpu",
-                  isAiActive
+                  isSearchActive
                     ? "scale-105 shadow-[0_14px_36px_rgba(245,158,11,0.85),0_0_24px_rgba(251,191,36,0.5)] border border-amber-200"
                     : "shadow-[0_10px_30px_rgba(245,158,11,0.65),0_0_18px_rgba(251,191,36,0.35)] border border-amber-300/60"
                 )}
@@ -336,7 +339,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
 
                 <div className="relative flex size-[48px] sm:size-[52px] items-center justify-center rounded-[20px] bg-gradient-to-br from-stone-950 via-[#18130d] to-stone-950 text-amber-300 shadow-inner border border-amber-300/40 group-hover:border-amber-300 transition-colors">
                   <div className="relative flex items-center justify-center">
-                    <Crown className="size-6 text-amber-300 fill-amber-400/30 stroke-[2.4] drop-shadow-[0_2px_8px_rgba(245,158,11,0.9)]" />
+                    <Search className="size-6 text-amber-300 stroke-[2.4] drop-shadow-[0_2px_8px_rgba(245,158,11,0.9)]" />
                     <Sparkles
                       className="absolute -top-1 -right-1.5 size-3 text-yellow-200 animate-spin"
                       style={{ animationDuration: "6s" }}
@@ -345,12 +348,12 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                 </div>
               </div>
               <span className="mt-1 text-[9px] sm:text-[10px] font-black text-amber-300 tracking-tight flex items-center gap-0.5 drop-shadow-[0_1px_6px_rgba(245,158,11,0.6)]">
-                King AI
+                Search
               </span>
               <span className="text-[6.5px] font-black tracking-widest uppercase px-1.5 py-[0.5px] rounded-full mt-0.5 text-amber-950 bg-amber-300 shadow-xs">
-                CONCIERGE
+                KING AI
               </span>
-            </motion.button>
+            </Link>
           </li>
 
           {/* ─── TAB 4: CART & BAG (ShoppingBag with Live Badge Counter) ─── */}
@@ -412,7 +415,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
             </Link>
           </li>
 
-          {/* ─── TAB 5: ORDERS & LIVE TRACK (Receipt/Bike with Live Radar Pulse) ─── */}
+          {/* ─── TAB 5: ORDERS & LIVE TRACK (Receipt / Bike with Live Radar Pulse) ─── */}
           <li className="w-full flex justify-center">
             <Link
               to="/orders"

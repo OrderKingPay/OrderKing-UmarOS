@@ -55,8 +55,8 @@ import { SystemMasterSettingsModal } from "@/components/command/system-master-se
 export const Route = createFileRoute("/app/founder-command")({
   head: () => ({
     meta: [
-      { title: "Umar OS" },
-      { name: "description", content: "Umar OS — Sovereign Founder AI System" },
+      { title: "Order King" },
+      { name: "description", content: "Order King — Sovereign Founder AI System" },
     ],
   }),
   component: FounderCommandPage,
@@ -260,11 +260,11 @@ export function FounderCommandPage() {
               Legacy Route Quarantine
             </Badge>
             <span className="text-xs font-bold text-slate-900">
-              Canonical UMAR OS Founder Command Center Notice
+              Canonical Order King Founder Command Center Notice
             </span>
           </div>
           <p className="text-xs text-slate-700">
-            This `/app/founder-command` route inside `orderking-customers` is a quarantined legacy view with zero-initialized telemetry. Access the canonical UMAR OS Founder Command Center for verified cross-workspace operations.
+            This `/app/founder-command` route inside `orderking-customers` is a quarantined legacy view with zero-initialized telemetry. Access the canonical Order King Founder Command Center for verified cross-workspace operations.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -375,7 +375,7 @@ export function FounderCommandPage() {
             className="rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition flex items-center gap-1.5 shadow-xs"
           >
             <Crown className="size-3.5 text-amber-700" />
-            <span className="hidden sm:inline">Canonical UMAR OS</span>
+            <span className="hidden sm:inline">Canonical Order King</span>
           </a>
           <Link
             to="/"

@@ -1,7 +1,7 @@
 /**
  * UMAR OS - Supreme Fleet Operations & Autonomous Dispatch Engine
  * Authority: Supreme Rider Fleet Operations & Employee-less Automation Specialist
- * Model: Zomato / Swiggy Operational Parity (Indian Hyper-Local Topologies)
+ * Model: Tier-1 Hyper-Local Autonomous Fleet Dispatch Parity
  *
  * Core Pillars:
  * 1. Autonomous Dispatch Pre-Allocation:

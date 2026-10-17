@@ -3,7 +3,7 @@
  * 
  * Location: src/lib/orderking/merchants/zomato-merchant-engine.ts
  * 
- * Modeled after the real-world operational economics of Zomato and Swiggy in India:
+ * Modeled after real-world Tier-1 restaurant operational economics in India:
  * 1. 3-Tier Commission Structure:
  *    - High Volume / Anchor Brands (McDonald's, Domino's, Haldiram's, Burger King): 16% - 18% (1600 - 1800 bps)
  *    - Standard Standalone Restaurants (Dine-in, Casual dining, Local heroes): 22% - 25% (2200 - 2500 bps)
@@ -269,7 +269,7 @@ export function evaluatePackagingFeePolicy(
 
 export interface CoFundedPromotionInput {
   orderSubtotalPaise: number;
-  campaignCode: string; // e.g. "TRYNEW", "ZOMATO60", "WELCOME60"
+  campaignCode: string; // e.g. "TRYNEW", "KING60", "WELCOME60"
   discountPercentage: number; // e.g. 60 for 60%
   maxDiscountCapPaise: number; // e.g. 12000 for ₹120.00
   minOrderValuePaise?: number; // e.g. 19900 for ₹199.00
@@ -664,7 +664,7 @@ export function calculateRestaurantHealthScore(
   }
   if (actionablePrescriptions.length === 0) {
     actionablePrescriptions.push(
-      `Exemplary kitchen operations and food quality. Restaurant qualifies for Zomato Gold / Swiggy Gourmet featured banner.`
+      `Exemplary kitchen operations and food quality. Restaurant qualifies for Gourmet Club / Gold Featured banner.`
     );
   }
 
@@ -813,7 +813,7 @@ export interface ZomatoOrderSettlementResult {
 }
 
 /**
- * Calculates complete Indian restaurant order settlement adhering to Zomato & Swiggy economics:
+ * Calculates complete Indian restaurant order settlement adhering to Tier-1 industry economics:
  * 1. Enforces CCPA Packaging Cap (₹35 or 10%).
  * 2. Applies 60/40 Co-funded Promotions.
  * 3. Applies 3-Tier Commission (Anchor 16-18%, Standalone 22-25%, Cloud Kitchen 20-22%).
@@ -1281,7 +1281,7 @@ export class ZomatoMerchantEngine {
   }
 
   /**
-   * Computes comprehensive order settlement statement matching Zomato/Swiggy Indian economics.
+   * Computes comprehensive order settlement statement matching Tier-1 Indian economics.
    */
   public calculateSettlement(input: ZomatoOrderSettlementInput): ZomatoOrderSettlementResult {
     return calculateZomatoOrderSettlement(input, this.config);

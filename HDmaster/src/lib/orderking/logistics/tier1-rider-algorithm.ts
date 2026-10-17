@@ -999,7 +999,7 @@ export class ZomatoRiderAlgorithmEngine {
       deliveryFeePaise = 0;
     }
 
-    // 2. Pure Margin Platform Fee (Zomato/Swiggy model: ₹6 flat)
+    // 2. Pure Margin Platform Fee (Tier-1 industry model: ₹6 flat)
     const platformFeePaise = cc.platformFeePaise;
 
     // 3. Surge Fee to Customer

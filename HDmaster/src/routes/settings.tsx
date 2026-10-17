@@ -41,6 +41,7 @@ import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSetting
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
 import { UmarOsVisualCustomizationStudio } from "@/components/customization/UmarOsVisualCustomizationStudio";
+import { MasterCustomizationHub } from "@/components/customization/MasterCustomizationHub";
 import { LaunchPlaybookView } from "@/components/playbook/launch-playbook-view";
 import {
   loadSettings,
@@ -1212,6 +1213,17 @@ function SettingsPage() {
             ) : null}
           </div>
         </section>
+
+        {/* =====================================================================
+            UMAR OS MASTER CUSTOMIZATION & AUTONOMOUS ECOSYSTEM HUB
+           ===================================================================== */}
+        <MasterCustomizationHub
+          initialConfig={config}
+          onSaveSuccess={(msg) => {
+            setSavedBanner(msg);
+            void fetchAllSettings();
+          }}
+        />
 
         {/* =====================================================================
             CATEGORY 1: 🎨 Brand, Colors, Typography & UI Design

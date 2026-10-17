@@ -18,9 +18,9 @@ import {
   DEFAULT_RIDER_WALLET_CONFIG,
   formatPaiseToInr,
   formatPaiseToRupeesString,
-} from "./zomato-rider-wallet";
+} from "./tier1-rider-wallet";
 
-describe("Supreme Zomato Rider Wallet, Accounting & Onboarding Economics Engine", () => {
+describe("Supreme Tier-1 Rider Wallet, Accounting & Onboarding Economics Engine", () => {
   // ==========================================================================
   // 1. PURE MATHEMATICAL EQUATIONS & NETTING MECHANICS
   // ==========================================================================

@@ -206,7 +206,7 @@ describe("5-Day Hyperlocal Launch Playbook & Economics Engine", () => {
     });
   });
 
-  describe("Merchant Economics Comparison: OrderKing vs Zomato", () => {
+  describe("Merchant Economics Comparison: OrderKing vs Legacy Aggregators", () => {
     it("demonstrates over ₹28 savings per order and >₹8,400 monthly savings", () => {
       const comp = compareMerchantNetPayout(30000, 2200, 3000);
 
@@ -251,7 +251,7 @@ describe("5-Day Hyperlocal Launch Playbook & Economics Engine", () => {
       // Stage 3: Economics
       expect(stage3.timeRangeMinutes).toContain("07:00–12:00");
       expect(stage3.englishScript).toContain("₹300.00");
-      expect(stage3.hinglishScript).toContain("Zomato");
+      expect(stage3.hinglishScript).toContain("30% commission");
 
       // Stage 4: Close
       expect(stage4.timeRangeMinutes).toContain("12:00–15:00");
@@ -262,7 +262,7 @@ describe("5-Day Hyperlocal Launch Playbook & Economics Engine", () => {
     it("contains the 3 crucial field objection counters with operational commitments", () => {
       expect(OBJECTION_COUNTERS).toHaveLength(3);
 
-      const obj1 = OBJECTION_COUNTERS.find((o) => o.id === "obj-already-have-zomato");
+      const obj1 = OBJECTION_COUNTERS.find((o) => o.id === "obj-already-have-apps");
       const obj2 = OBJECTION_COUNTERS.find((o) => o.id === "obj-riders-wont-show-up");
       const obj3 = OBJECTION_COUNTERS.find((o) => o.id === "obj-too-complicated-fees");
 

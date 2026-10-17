@@ -30,9 +30,9 @@ export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", P
     regulatoryJurisdiction: "Reserve Bank of India Master Directions & IT Act 2000",
   },
   SYSTEM: {
-    appName: "Umar OS",
-    legalEntity: "Umar Sovereign Infrastructure Group",
-    supportEmail: "executive@umaros.internal",
+    appName: "Order King",
+    legalEntity: "Order King Sovereign Infrastructure Group",
+    supportEmail: "executive@orderking.internal",
     publicPhone: "+91 8000 000 000",
     publicUpiVpa: "orderking@okhdfcbank",
     regulatoryJurisdiction: "Autonomous Founder Protected Architecture",

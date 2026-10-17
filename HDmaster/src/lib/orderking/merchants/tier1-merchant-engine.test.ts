@@ -16,7 +16,7 @@ import {
   INDIAN_RESTAURANT_COMMISSION_TIERS,
   DEFAULT_ZOMATO_MERCHANT_CONFIG,
   type RestaurantCategoryTier,
-} from "./zomato-merchant-engine.ts";
+} from "./tier1-merchant-engine.ts";
 import { toPaise, fromPaise } from "../money.ts";
 
 describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", () => {
@@ -28,7 +28,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
   // 1. 3-TIER COMMISSION MATRIX TESTS
   // ==========================================================================
   describe("3-Tier Commission Structure", () => {
-    it("should define authentic 3-tier commission ranges matching Zomato/Swiggy industry standards", () => {
+    it("should define authentic 3-tier commission ranges matching Tier-1 industry standards", () => {
       // 1. High Volume / Anchor Brands: 16-18% (1600-1800 bps)
       const anchor = INDIAN_RESTAURANT_COMMISSION_TIERS.HIGH_VOLUME_ANCHOR;
       expect(anchor.minCommissionBps).toBe(1600);
@@ -338,7 +338,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
 
       expect(scoreResult.compositeScore).toBeGreaterThanOrEqual(90.0);
       expect(scoreResult.badge).toBe("PLATINUM_HYGIENE");
-      expect(scoreResult.actionablePrescriptions.some(p => p.includes("Zomato Gold / Swiggy Gourmet"))).toBe(true);
+      expect(scoreResult.actionablePrescriptions.some(p => p.includes("Gourmet Club / Gold Featured banner"))).toBe(true);
     });
 
     it("should heavily penalize kitchen preparation delays and SLA breaches", () => {
@@ -396,7 +396,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
   // 5. STATUTORY TAX & COMPREHENSIVE SETTLEMENT STATEMENT TESTS
   // ==========================================================================
   describe("Statutory CGST 9(5), 18% Commission GST, and Settlement Reconciliation", () => {
-    it("should calculate complete Zomato/Swiggy order economics for an Anchor Brand (Domino's Pizza)", () => {
+    it("should calculate complete Tier-1 industry order economics for an Anchor Brand (Domino's Pizza)", () => {
       // Order scenario:
       // Domino's Pizza (HIGH_VOLUME_ANCHOR)
       // Food subtotal: ₹800.00 (80,000 paise)
