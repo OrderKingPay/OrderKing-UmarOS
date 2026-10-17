@@ -20,7 +20,46 @@ import { useCallback } from "react";
 
 export type ActivePlatform = "delivery" | "kingpay" | "travel" | "tutor";
 
-export function resolvePlatformContext(pathname?: string | null): ActivePlatform {
+export interface BenchmarkTabItem {
+  id: string;
+  label: string;
+  to: string;
+  description: string;
+}
+
+export const BENCHMARK_FOOD_TABS: readonly BenchmarkTabItem[] = [
+  { id: "delivery", label: "Delivery", to: "/", description: "Food Delivery & Kitchens" },
+  { id: "dining", label: "Dining Out", to: "/dining", description: "Table Booking & Dining Out" },
+  { id: "search", label: "Search", to: "/search", description: "Search Cuisines & Dishes" },
+  { id: "cart", label: "Cart", to: "/cart", description: "Shopping Cart & Checkout" },
+  { id: "orders", label: "Orders", to: "/orders", description: "Order Tracking & History" },
+] as const;
+
+export const BENCHMARK_KINGPAY_TABS: readonly BenchmarkTabItem[] = [
+  { id: "terminal", label: "Terminal", to: "/king-pay", description: "Payment Terminal" },
+  { id: "split", label: "Split Bill", to: "/king-pay#split", description: "Bill Splitter" },
+  { id: "vault", label: "Vault", to: "/earn", description: "Savings & Rewards" },
+  { id: "ledger", label: "Ledger", to: "/king-pay?tab=passbook", description: "Passbook & Receipts" },
+  { id: "support", label: "Help", to: "/support", description: "Support & Grievances" },
+] as const;
+
+export const BENCHMARK_TRAVEL_TABS: readonly BenchmarkTabItem[] = [
+  { id: "compare", label: "Compare", to: "/travel", description: "Fare Comparison" },
+  { id: "flights", label: "Flights", to: "/travel#flights", description: "Flight Search" },
+  { id: "trains", label: "Trains", to: "/travel#trains", description: "IRCTC Trains" },
+  { id: "cabs", label: "Cabs", to: "/travel#cabs", description: "City & Outstation Cabs" },
+  { id: "trips", label: "My Trips", to: "/travel/trips", description: "Trip Itineraries" },
+] as const;
+
+export const BENCHMARK_TUTOR_TABS: readonly BenchmarkTabItem[] = [
+  { id: "ask_ai", label: "Ask AI", to: "/tutor", description: "NCERT & Exam Help" },
+  { id: "subjects", label: "Subjects", to: "/tutor#subjects", description: "Academic Subjects" },
+  { id: "careers", label: "Career Jobs", to: "/tutor#careers", description: "Job Opportunities" },
+  { id: "saved", label: "Saved", to: "/tutor#saved", description: "Saved Questions" },
+  { id: "applied", label: "Applied", to: "/tutor#my-jobs", description: "Applied Jobs" },
+] as const;
+
+export function resolvePlatformContext(pathname?: string | null, _options?: Record<string, any>): ActivePlatform {
   if (!pathname || typeof pathname !== "string") return "delivery";
   const p = pathname.toLowerCase();
   if (

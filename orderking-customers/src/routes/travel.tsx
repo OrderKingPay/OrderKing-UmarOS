@@ -47,13 +47,16 @@ import { formatPaise } from "@/lib/money";
 import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
 import { AppErrorComponent } from "@/lib/error-component";
 
+import { VIPConciergeModal } from "@/components/fintech/vip-concierge-modal";
+import { type VIPTravelCategory } from "@/lib/travel/sovereign-travel-engine";
+
 export const Route = createFileRoute("/travel")({
   component: TravelPage,
   pendingComponent: TravelSkeleton,
   errorComponent: AppErrorComponent,
 });
 
-export type TravelTab = "flights" | "trains" | "buses" | "hotels" | "cabs" | "fastag" | "trips";
+export type TravelTab = "vip_concierge" | "flights" | "trains" | "buses" | "hotels" | "cabs" | "fastag" | "trips";
 
 interface TravelCategoryConfig {
   id: TravelTab;
