@@ -11,16 +11,12 @@ import { Label } from "@/components/ui/label";
 import {
   Bike,
   CheckCircle2,
-  ChevronDown,
-  ChevronUp,
   Eye,
   EyeOff,
-  FileCheck2,
   Globe,
   KeyRound,
   MessageSquareCode,
   Phone,
-  Scale,
   ShieldCheck,
   Sparkles,
   Zap,
@@ -56,6 +52,7 @@ const PRIMARY_LANGUAGES: ReadonlyArray<{ code: LocaleCode; label: string; native
   { code: "en", label: "English", native: "English" },
   { code: "hi", label: "Hindi", native: "हिन्दी" },
   { code: "bn", label: "Bengali", native: "বাংলা" },
+  { code: "as", label: "Assamese", native: "অসমীয়া" },
   { code: "ta", label: "Tamil", native: "தமிழ்" },
   { code: "te", label: "Telugu", native: "తెలుగు" },
 ];
@@ -64,6 +61,7 @@ function Login() {
   const { locale, setLocale, t } = useI18n();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [authMethod, setAuthMethod] = useState<"otp" | "pin">("otp");
+  const [otpChannel, setOtpChannel] = useState<"whatsapp" | "sms">("sms");
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [pin, setPin] = useState("");
@@ -94,15 +92,20 @@ function Login() {
     void setLocaleFn({ data: { locale: newLocale } }).catch(() => undefined);
   }
 
-  function handleResendOtp() {
+  function handleResendOtp(channelOverride?: "whatsapp" | "sms") {
     if (resendCountdown > 0) return;
     const digits = mobileNumber.replace(/\D/g, "");
     if (digits.length < 10) {
       setError("Please enter a valid 10-digit mobile number before requesting an OTP.");
       return;
     }
+    const channel = channelOverride ?? otpChannel;
     setResendCountdown(30);
-    setOtpSentNotice(`6-digit OTP resent via SMS to +91 ${digits}.`);
+    setOtpSentNotice(
+      channel === "whatsapp"
+        ? `6-digit OTP sent via WhatsApp to +91 ${digits}.`
+        : `6-digit OTP sent via SMS to +91 ${digits}.`
+    );
     setError(null);
   }
 
@@ -122,7 +125,7 @@ function Login() {
           throw new Error("Please enter a valid 6-digit OTP.");
         }
       }
-      // In OTP mode, use entered OTP or default credential standard
+      // In OTP mode, use entered OTP or standard partner credential
       const credential = authMethod === "otp"
         ? (otpCode.trim() ? `OTP#${otpCode.trim()}!Pass2026` : pin || "PartnerPass@2026")
         : pin;
@@ -153,7 +156,7 @@ function Login() {
             // If sign-in with current credential failed, prompt switch
             setMode("in");
             throw new Error(
-              "Account already exists! We switched you to Sign In. Please enter your 6-digit OTP or Security PIN."
+              "Account already exists. Switched to Sign In. Please enter your 6-digit OTP or Security PIN."
             );
           }
           throw new Error(err.message);
@@ -232,7 +235,7 @@ function Login() {
             </div>
           </div>
 
-          {/* Language Quick Pills (English, Hindi, Bengali, Tamil, Telugu) */}
+          {/* Language Quick Pills (English, Hindi, Bengali, Assamese, Tamil, Telugu) */}
           <div className="flex items-center gap-1">
             <div className="flex items-center rounded-full bg-[#161D2B] p-0.5 border border-[#1E283D]">
               {PRIMARY_LANGUAGES.map((lang) => {
@@ -266,7 +269,7 @@ function Login() {
           </div>
         </div>
 
-        {/* Expandable Regional Languages Dropdown Tray */}
+        {/* Expandable Regional Languages Dropdown Tray - Only Standard Indian Languages */}
         {showAllLanguages && (
           <div className="border-t border-[#1E283D] bg-[#121723] px-4 py-3 text-xs animate-in slide-in-from-top-2 duration-150">
             <div className="mx-auto max-w-lg">
@@ -280,7 +283,7 @@ function Login() {
                   Close ✕
                 </button>
               </div>
-              <div className="grid grid-cols-3 gap-1.5 max-h-48 overflow-y-auto pr-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-48 overflow-y-auto pr-1">
                 {RIDER_LANGUAGES.map((l) => (
                   <button
                     key={l.code}
@@ -289,7 +292,7 @@ function Login() {
                       handleLanguageSwitch(l.code);
                       setShowAllLanguages(false);
                     }}
-                    className={`rounded-lg px-2 py-1.5 text-left text-xs transition truncate ${
+                    className={`rounded-lg px-2.5 py-1.5 text-left text-xs transition truncate ${
                       locale === l.code
                         ? "bg-[#E5A93C]/20 text-[#E5A93C] font-bold border border-[#E5A93C]/40"
                         : "bg-[#161D2B] text-slate-300 hover:bg-[#1E283D]"
@@ -305,32 +308,32 @@ function Login() {
         )}
       </header>
 
-      {/* Main Native Mobile Card */}
+      {/* Main Delivery Partner Card */}
       <div className="mx-auto w-full max-w-md px-4 py-6 sm:py-8 flex-1 flex flex-col justify-center">
         <div className="rounded-3xl border border-[#1E283D] bg-[#121723]/95 p-6 shadow-2xl backdrop-blur-md relative overflow-hidden">
           {/* Subtle Ambient Glow */}
           <div className="pointer-events-none absolute -top-24 -right-24 size-48 rounded-full bg-[#E5A93C]/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-24 size-48 rounded-full bg-[#2563EB]/10 blur-3xl" />
 
-          {/* Mobile Badge */}
+          {/* Delivery Partner Status Badge */}
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
               <ShieldCheck className="size-3.5 text-emerald-400" />
-              Verified Partner Portal
+              Delivery Partner Portal
             </span>
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#94A3B8]">
               <Sparkles className="size-3 text-[#E5A93C]" />
-              {cityZone.split("/")[0]?.trim() || "Fleet Active"}
+              {cityZone.split("/")[0]?.trim() || "Active Fleet"}
             </span>
           </div>
 
           <h1 className="mt-4 font-display text-2xl font-bold tracking-tight text-white">
-            {mode === "in" ? "Delivery Partner Sign In" : "Register as a Delivery Partner"}
+            {mode === "in" ? "Delivery Partner Sign In" : "Register"}
           </h1>
           <p className="mt-1 text-xs text-[#94A3B8]">
             {mode === "in"
-              ? "Enter your 10-digit mobile number to go on duty and start receiving dispatches."
-              : "Join the OrderKing delivery fleet in 30 seconds with instant onboarding."}
+              ? "Enter your 10-digit mobile number to verify and go on duty."
+              : "Join the OrderKing delivery fleet in 30 seconds."}
           </p>
 
           {/* Mode Switcher Tabs */}
@@ -347,7 +350,7 @@ function Login() {
                   : "text-[#94A3B8] hover:text-white"
               }`}
             >
-              Sign In (Existing)
+              Delivery Partner Sign In
             </button>
             <button
               type="button"
@@ -361,7 +364,7 @@ function Login() {
                   : "text-[#94A3B8] hover:text-white"
               }`}
             >
-              Register (New)
+              Register
             </button>
           </div>
 
@@ -409,23 +412,23 @@ function Login() {
                     >
                       <option value="BIKE">Motorcycle (Petrol — DL & RC Required)</option>
                       <option value="SCOOTER">Scooter (Petrol — DL & RC Required)</option>
-                      <option value="EV">Low-Speed EV (No DL / RC — Statutory Standard)</option>
-                      <option value="CYCLE">Bicycle (No DL / RC — Statutory Standard)</option>
+                      <option value="EV">Low-Speed EV (No DL / RC Required)</option>
+                      <option value="CYCLE">Bicycle (No DL / RC Required)</option>
                     </select>
                   </div>
                 </div>
 
-                {/* Statutory Fleet Classification & Document Checklist */}
+                {/* Fleet Classification & Document Checklist */}
                 {isExemptVehicle ? (
                   <div className="space-y-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 text-xs text-emerald-300">
                     <div className="flex items-start gap-2">
                       <Zap className="size-4 shrink-0 mt-0.5 text-emerald-400" />
                       <div>
                         <p className="font-bold text-emerald-400 text-xs">
-                          ⚡ Statutory Non-Mandatory DL (CMVR Rule 2(u) &amp; National Aggregator Standard)
+                          Bicycle &amp; Low-Speed EV Onboarding
                         </p>
                         <p className="text-[11px] text-emerald-200/90 leading-relaxed mt-0.5">
-                          Under Central Motor Vehicles Rules (CMVR Rule 2(u)) and national delivery aggregator standards (Dominant Legacy Aggregator benchmark), <strong>Driving License &amp; Vehicle RC are NOT MANDATORY</strong> for Bicycle and Low-Speed EV delivery partners. Driving License &amp; Vehicle RC are strictly required ONLY for petrol two-wheelers (Motorcycle / Scooter).
+                          Under Central Motor Vehicles Rules (CMVR Rule 2(u)) and national aggregator standards, <strong>Driving License &amp; Vehicle RC are NOT required</strong> for Bicycle and Low-Speed EV delivery partners.
                         </p>
                       </div>
                     </div>
@@ -445,7 +448,7 @@ function Login() {
                         </li>
                         <li className="flex items-center gap-1.5">
                           <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
-                          <span>Active Bank Account (IFSC) / UPI ID</span>
+                          <span>Active Bank Account / UPI ID</span>
                         </li>
                         <li className="flex items-center gap-1.5">
                           <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
@@ -460,10 +463,10 @@ function Login() {
                       <Bike className="size-4 shrink-0 mt-0.5 text-amber-400" />
                       <div>
                         <p className="font-bold text-amber-400 text-xs">
-                          🏍️ Petrol Two-Wheeler Statutory Requirement (Motor Vehicles Act, 1988)
+                          Motorcycle &amp; Scooter Requirement
                         </p>
                         <p className="text-[11px] text-amber-200/90 leading-relaxed mt-0.5">
-                          <strong>Driving License &amp; Vehicle RC are strictly required</strong> for all Motorcycle and Scooter delivery partners. You will also need Aadhaar (last 4 / DigiLocker), PAN, Active Bank/UPI, and a Selfie with OrderKing delivery bag.
+                          <strong>Driving License &amp; Vehicle RC are required</strong> for all Motorcycle and Scooter delivery partners, along with Aadhaar, PAN, Bank/UPI details, and a Selfie with OrderKing delivery bag.
                         </p>
                       </div>
                     </div>
@@ -569,14 +572,14 @@ function Login() {
                     ) : (
                       <button
                         type="button"
-                        onClick={handleResendOtp}
+                        onClick={() => handleResendOtp()}
                         className="font-bold text-[#E5A93C] hover:text-amber-300 hover:underline transition"
                       >
                         Resend OTP
                       </button>
                     )}
                     <span className="text-[10px] text-[#64748B]">
-                      6-digit SMS verification
+                      6-digit numeric verification
                     </span>
                   </div>
                   {otpSentNotice && (
@@ -592,7 +595,7 @@ function Login() {
                     type={showPin ? "text" : "password"}
                     required
                     minLength={6}
-                    placeholder="Enter Security PIN / Password"
+                    placeholder="Enter Security PIN"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     autoComplete={mode === "up" ? "new-password" : "current-password"}
@@ -601,7 +604,7 @@ function Login() {
                     type="button"
                     onClick={() => setShowPin((v) => !v)}
                     className="absolute inset-y-0 right-0 flex items-center px-3 text-[#94A3B8] hover:text-white"
-                    aria-label={showPin ? "Hide password" : "Show password"}
+                    aria-label={showPin ? "Hide PIN" : "Show PIN"}
                   >
                     {showPin ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
@@ -615,14 +618,14 @@ function Login() {
               </div>
             )}
 
-            {/* Clean Institutional Legal Notice */}
+            {/* Clean Standard Legal Text */}
             <p className="text-center text-[11px] leading-relaxed text-[#94A3B8]">
-              By continuing, you agree to Delivery Partner{" "}
+              By signing in, you agree to the{" "}
               <a
                 href="/onboarding"
                 className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
               >
-                Terms of Service
+                Delivery Partner Terms of Service
               </a>{" "}
               and{" "}
               <a
@@ -634,7 +637,7 @@ function Login() {
               .
             </p>
 
-            {/* High-Conversion 'Go on Duty' Action Button */}
+            {/* Clean Professional Login Button */}
             <Button
               size="lg"
               className="w-full rounded-2xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(229,169,60,0.35)] hover:from-amber-400 hover:to-amber-500 active:scale-[0.98] transition-all"
@@ -644,12 +647,12 @@ function Login() {
               {pending ? (
                 <span className="flex items-center gap-2">
                   <span className="size-4 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
-                  Connecting to Fleet Dispatch...
+                  Verifying...
                 </span>
               ) : mode === "up" ? (
-                "⚡ Register & Go on Duty →"
+                "Continue"
               ) : (
-                "⚡ Go on Duty →"
+                "Verify & Go on Duty"
               )}
             </Button>
           </form>
@@ -664,7 +667,7 @@ function Login() {
                 setError(null);
               }}
             >
-              {mode === "up" ? "Existing Partner? Sign In" : "New Partner? Register Now"}
+              {mode === "up" ? "Existing Partner? Sign In" : "New Partner? Register"}
             </button>
             <Link
               to="/onboarding"
@@ -675,58 +678,15 @@ function Login() {
           </div>
         </div>
 
-        {/* Statutory Independent Delivery Partner Agreement under Code on Social Security, 2020 */}
-        <div className="mt-6 rounded-2xl border border-emerald-500/30 bg-[#0E1522]/90 p-4 text-xs text-slate-300 shadow-lg space-y-3">
-          <div className="flex items-center justify-between gap-2 border-b border-[#1E283D] pb-2.5">
-            <div className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
-                <Scale className="size-3.5" />
-              </span>
-              <div>
-                <p className="font-bold text-white text-xs">
-                  Statutory Independent Delivery Partner Agreement
-                </p>
-                <p className="text-[10px] text-emerald-400 font-medium">
-                  Compliant with Code on Social Security, 2020 (Act 36 of 2020)
-                </p>
-              </div>
-            </div>
-            <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-              Statutory Protection
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px]">
-            <div className="rounded-xl bg-[#161D2B] border border-[#1E283D] p-2.5 space-y-0.5">
-              <span className="font-bold text-white block">Independent Contractor</span>
-              <p className="text-[#94A3B8] text-[10px] leading-relaxed">
-                Autonomous principal-to-principal status with complete schedule freedom and multi-platform flexibility.
-              </p>
-            </div>
-            <div className="rounded-xl bg-[#161D2B] border border-[#1E283D] p-2.5 space-y-0.5">
-              <span className="font-bold text-white block">1.5% Welfare Fund</span>
-              <p className="text-[#94A3B8] text-[10px] leading-relaxed">
-                Platform turnover contribution under Section 114 to Central Social Security Fund. ₹0 rider deduction.
-              </p>
-            </div>
-            <div className="rounded-xl bg-[#161D2B] border border-[#1E283D] p-2.5 space-y-0.5">
-              <span className="font-bold text-white block">₹10 Lakh Insurance</span>
-              <p className="text-[#94A3B8] text-[10px] leading-relaxed">
-                Group personal accidental cover up to ₹10,00,000 on active duty + ₹1,00,000 emergency hospitalization.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Micro Trust Indicators */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold text-[#64748B]">
+        {/* Fleet Micro Trust Indicators */}
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold text-[#64748B]">
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-emerald-400" />
-            Weekly Wednesday Settlements
+            Weekly Settlements
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-[#E5A93C]" />
-            Instant UPI Cash Deposits
+            Instant Cash Deposits
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-[#2563EB]" />
@@ -735,7 +695,7 @@ function Login() {
         </div>
       </div>
 
-      {/* Institutional Legal Footer */}
+      {/* Footer */}
       <footer className="border-t border-[#1E283D] bg-[#0E121B] px-4 py-3 text-center text-[11px] text-[#64748B]">
         <p>
           OrderKing Delivery Partner Network · {DEFAULT_BRANDING.legalCompanyName}

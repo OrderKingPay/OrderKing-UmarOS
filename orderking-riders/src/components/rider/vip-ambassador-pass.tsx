@@ -109,7 +109,7 @@ export function VipAmbassadorPass({
       onCommissionCredited?.();
       setTimeout(() => setFeedbackMessage(null), 6000);
     } catch {
-      setFeedbackMessage("Unable to credit simulated referral at this moment.");
+      setFeedbackMessage("Unable to process referral credit at this moment.");
     } finally {
       setSimulating(false);
     }
@@ -345,35 +345,6 @@ export function VipAmbassadorPass({
               💡 <strong>Ambassador Protocol:</strong> Hand this pass to customers when handing
               over orders at their doorstep. Tell them: <em>&quot;Scan this VIP Pass for ₹100 off your next direct order!&quot;</em>
             </p>
-
-            {/* Quick Ledger Commission Simulation Controls */}
-            <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/10">
-              <span className="text-[10px] uppercase font-bold text-slate-400">
-                Test Ledger Credit:
-              </span>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                disabled={simulating}
-                onClick={() => void handleSimulateCredit("FIRST_ORDER_BONUS")}
-                className="h-7 border-emerald-500/40 bg-emerald-950/40 text-[11px] text-emerald-300 hover:bg-emerald-900/40"
-              >
-                <Zap className="mr-1 size-3 text-emerald-400" />
-                Simulate 1st Order (+₹25)
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                disabled={simulating}
-                onClick={() => void handleSimulateCredit("LIFETIME_ROYALTY")}
-                className="h-7 border-[#E5A93C]/40 bg-[#E5A93C]/10 text-[11px] text-[#E5A93C] hover:bg-[#E5A93C]/20"
-              >
-                <TrendingUp className="mr-1 size-3 text-[#E5A93C]" />
-                Simulate 1% Repeat Royalty
-              </Button>
-            </div>
           </div>
         </div>
 

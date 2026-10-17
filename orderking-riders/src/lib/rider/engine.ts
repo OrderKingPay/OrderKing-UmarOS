@@ -7,7 +7,7 @@ import {
   MULTI_ORDER_BATCH_CONSTRAINTS,
 } from "./dispatch.ts";
 import { assertPlausiblePing } from "./gps.ts";
-import { assertNotSelfVerify, assertRiderKycSubmit } from "./kyc.ts";
+import { assertNotSelfVerify, assertRiderKycSubmit, evaluateAutomatedOnboarding } from "./kyc.ts";
 import { assertTransition, isActiveDelivery } from "./machine.ts";
 import {
   assertNonNegativePaise,
@@ -459,19 +459,30 @@ export class RiderEngine {
     if (!rider.payoutUpi?.trim()) {
       throw new RiderError("INCOMPLETE", "UPI payout details are required", 400);
     }
+    const evaluation = evaluateAutomatedOnboarding(rider);
+    const nextStatus: KycStatus = evaluation.approved ? "VERIFIED" : "REJECTED";
     const next: RiderProfile = {
       ...rider,
-      kycStatus: "SUBMITTED",
-      kycRejectReason: null,
+      kycStatus: nextStatus,
+      kycRejectReason: evaluation.approved ? null : evaluation.reasons.join("; "),
+      licenceNumber: evaluation.normalized.effectiveDl,
+      vehicleRegistration: evaluation.normalized.effectiveRc,
       updatedAt: this.now(),
     };
     await this.store.upsertRider(next);
-    await this.audit(userId, "KYC_SUBMITTED", "rider", rider.id);
+    await this.audit(
+      userId,
+      evaluation.approved ? "KYC_AUTONOMOUS_APPROVED" : "KYC_AUTONOMOUS_REJECTED",
+      "rider",
+      rider.id,
+    );
     await this.store.insertNotification({
       id: nid(),
       userId,
-      title: "Verification submitted",
-      body: "Your documents are under review. You are not fully approved yet.",
+      title: evaluation.approved ? "Statutory KYC Approved" : "Verification Rejected",
+      body: evaluation.approved
+        ? "Your Aadhaar, PAN, and CMVR compliance have been validated autonomously. You are ready to go ONLINE!"
+        : evaluation.reasons.join(". "),
       kind: "ACCOUNT",
       read: false,
       createdAt: this.now(),

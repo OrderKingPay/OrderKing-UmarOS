@@ -247,7 +247,7 @@ export function CustomerShell({
             >
               <Languages className="size-3.5 text-amber-700" />
               <span className="text-[11px] font-black uppercase text-amber-950">
-                {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : lang === "as" ? "অসমীয়া" : "EN"}
+                {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "EN"}
               </span>
             </button>
 

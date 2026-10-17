@@ -34,7 +34,7 @@ export default defineConfig({
       "src/lib/orderking/security/umar-os-security-hardening.test.ts",
       "src/lib/orderking/customization/sync-bus.test.ts",
       "src/routes/customization-studio.test.ts",
-      "src/lib/orderking/logistics/zomato-rider-algorithm.test.ts",
+      "src/lib/orderking/logistics/tier1-rider-algorithm.test.ts",
       "src/lib/orderking/fleet/**/*.test.ts",
       "src/lib/orderking/merchants/**/*.test.ts",
       "src/lib/orderking/playbook/**/*.test.ts",

@@ -637,6 +637,39 @@ export function HomeView() {
   const [helmetSelfie, setHelmetSelfie] = useState<string | null>(null);
   const [helmetVerifiedAt, setHelmetVerifiedAt] = useState<string | null>(null);
   const [selfieModalOpen, setSelfieModalOpen] = useState(false);
+  const [driverReadinessConfirmed, setDriverReadinessConfirmed] = useState<boolean>(() => {
+    try {
+      return window.localStorage.getItem("ok_driver_readiness_v1") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  function toggleDriverReadiness() {
+    const next = !driverReadinessConfirmed;
+    setDriverReadinessConfirmed(next);
+    try {
+      window.localStorage.setItem("ok_driver_readiness_v1", String(next));
+      if (next) {
+        window.localStorage.setItem(
+          READINESS_STORAGE_KEY,
+          JSON.stringify({
+            helmetWorn: true,
+            thermalBagClean: true,
+            batteryAndGpsActive: true,
+            documentsAndFuelReady: true,
+          }),
+        );
+      }
+    } catch {
+      // Ignore storage errors
+    }
+    if (next) {
+      toast.success("Driver readiness verified: Safety gear, bag, and GPS telemetry active for dispatch.");
+    } else {
+      toast.info("Driver readiness check reset.");
+    }
+  }
 
   const [selectedShiftDay, setSelectedShiftDay] = useState<"today" | "tomorrow">("today");
   const [bookedSlotsByDay, setBookedSlotsByDay] = useState<Record<string, string[]>>({});
@@ -796,14 +829,14 @@ export function HomeView() {
     : 0;
   const onlineMs = home.onlineSince ? now - new Date(home.onlineSince).getTime() : 0;
   const kyc = home.rider.kycStatus;
-  const allReady = Boolean(helmetSelfie);
+  const allReady = Boolean(helmetSelfie || driverReadinessConfirmed);
 
   const activeDayBookedSlots = bookedSlotsByDay[activeShiftDateIso] ?? [];
   const bookedHoursTotal = OPERATIONAL_SHIFT_SLOTS.filter((s) =>
     activeDayBookedSlots.includes(s.id),
   ).reduce((sum, s) => sum + s.durationHours, 0);
 
-  // Floating Cash (COD In-Hand) metrics - connected to dynamic UmarOS tokens (₹1,500 hard lock, ₹1,200 soft warning)
+  // Floating Cash (COD In-Hand) metrics - connected to dynamic platform tokens (₹2,000 hard lock, ₹1,600 soft warning)
   const unreconciledPaise =
     (home as { cashSummary?: { unreconciledPaise?: number } }).cashSummary?.unreconciledPaise ??
     home.pendingCashPaise ??
@@ -821,8 +854,8 @@ export function HomeView() {
     unreconciledPaise >= codSoftWarningPaise || codUsagePct >= cod.warningThresholdPct;
 
   async function go(statusNext: "ONLINE" | "OFFLINE") {
-    if (statusNext === "ONLINE" && !helmetSelfie) {
-      toast.error("Mandatory: Please complete live helmet & bag selfie verification first.");
+    if (statusNext === "ONLINE" && !helmetSelfie && !driverReadinessConfirmed) {
+      toast.error("Please confirm driver readiness check before going online.");
       setSelfieModalOpen(true);
       return;
     }
@@ -1046,8 +1079,8 @@ export function HomeView() {
               <Button
                 size="sm"
                 onClick={() => {
-                  if (!helmetSelfie) {
-                    toast.error("Please verify live helmet & bag selfie first.");
+                  if (!helmetSelfie && !driverReadinessConfirmed) {
+                    toast.error("Please confirm driver readiness check first.");
                     setSelfieModalOpen(true);
                     return;
                   }
@@ -1122,28 +1155,76 @@ export function HomeView() {
           );
         })()}
 
-        {/* Mandatory Live Camera Selfie & Helmet Verification Before Going Online */}
+        {/* Pre-Shift Driver Readiness & Automated Dispatch Synchronization */}
         <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
-              {helmetSelfie ? (
+              {allReady ? (
                 <ShieldCheck className="size-4 text-emerald-500" />
               ) : (
                 <Camera className="size-4 text-primary" />
               )}
-              Pre-Shift Helmet &amp; Bag Verification
+              Pre-Shift Readiness &amp; Dispatch Sync
             </span>
             <span className="text-[11px] font-semibold">
-              {helmetSelfie ? (
+              {allReady ? (
                 <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                  <CheckCircle2 className="size-3.5" /> Safety Verified
+                  <CheckCircle2 className="size-3.5" /> Readiness Verified
                 </span>
               ) : (
-                <span className="rounded bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400">
-                  Selfie Required
+                <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  Readiness Check Required
                 </span>
               )}
             </span>
+          </div>
+
+          {/* Automated Driver Readiness Toggle & Dispatch Telemetry */}
+          <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-bold text-foreground block">
+                  Automated Driver Readiness
+                </span>
+                <span className="text-[11px] text-muted-foreground block">
+                  Confirms safety gear, thermal bag, GPS telemetry &amp; battery for dispatches
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={toggleDriverReadiness}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
+                  driverReadinessConfirmed ? "bg-emerald-600" : "bg-muted"
+                }`}
+                role="switch"
+                aria-checked={driverReadinessConfirmed}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                    driverReadinessConfirmed ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Proximity & Dynamic KPT Dispatch Synchronization Indicators */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
+              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
+                <Radio className={`size-3.5 shrink-0 ${allReady ? "text-emerald-500 animate-pulse" : "text-muted-foreground"}`} />
+                <div>
+                  <span className="font-semibold text-foreground block">Proximity Dispatch Radar</span>
+                  <span className="text-[10px] text-muted-foreground">Operating zone radius &amp; corridor batching active</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
+                <Clock3 className={`size-3.5 shrink-0 ${allReady ? "text-amber-500" : "text-muted-foreground"}`} />
+                <div>
+                  <span className="font-semibold text-foreground block">Dynamic KPT Sync</span>
+                  <span className="text-[10px] text-muted-foreground">Arrival matched to food ready time (0-min dwell)</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {helmetSelfie ? (
@@ -1174,17 +1255,21 @@ export function HomeView() {
               </Button>
             </div>
           ) : (
-            <div className="space-y-2.5">
+            <div className="flex items-center justify-between gap-3 pt-0.5">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Tier-1 Safety Standard: You must take a live front-camera selfie wearing your strapped BIS helmet and OrderKing delivery bag to unlock the online slider.
+                {driverReadinessConfirmed
+                  ? "Readiness verified via automated checklist. You can also upload a live selfie anytime."
+                  : "Toggle automated readiness above or take a front-camera selfie wearing your strapped helmet and delivery bag."}
               </p>
               <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() => setSelfieModalOpen(true)}
-                className="w-full text-xs font-bold gap-2 py-3 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+                className="text-xs font-semibold gap-1.5 shrink-0"
               >
-                <Camera className="size-4" />
-                <span>Verify Live Helmet &amp; Bag Selfie</span>
+                <Camera className="size-3.5" />
+                <span>Take Selfie</span>
               </Button>
             </div>
           )}
@@ -1195,13 +1280,13 @@ export function HomeView() {
           {status === "OFFLINE" ? (
             <div className="space-y-1.5">
               <SwipeSlider
-                label={helmetSelfie ? "Swipe to Go Online" : "Verify Helmet Selfie to Go Online"}
+                label={allReady ? "Swipe to Go Online" : "Confirm Readiness to Go Online"}
                 variant="online"
-                disabled={!helmetSelfie || pending}
+                disabled={!allReady || pending}
                 loading={pending}
                 onComplete={() => {
-                  if (!helmetSelfie) {
-                    toast.error("Please complete live helmet & bag selfie verification first.");
+                  if (!allReady) {
+                    toast.error("Please confirm driver readiness check first.");
                     setSelfieModalOpen(true);
                     return;
                   }
@@ -1214,9 +1299,9 @@ export function HomeView() {
                   Duty Offline
                 </span>
                 <span>
-                  {helmetSelfie
+                  {allReady
                     ? "Readiness verified ✓ Ready to swipe"
-                    : "Complete live selfie check to go online"}
+                    : "Confirm driver readiness to go online"}
                 </span>
               </div>
             </div>

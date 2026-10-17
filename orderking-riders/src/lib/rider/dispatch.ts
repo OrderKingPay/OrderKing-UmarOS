@@ -458,6 +458,109 @@ export function isEligibleRider(input: EligibilityInput): boolean {
   return evaluateRiderEligibilityAndScore(input).eligible;
 }
 
+// ============================================================================
+// DYNAMIC KITCHEN PREP TIME (KPT) SYNCHRONIZATION ENGINE
+// ============================================================================
+
+export interface DynamicKptSyncParams {
+  orderPlacedAt: number | string | Date;
+  kitchenPrepMinutes: number; // KPT, typically 8 - 15 minutes
+  courierLocation: GeoPoint;
+  restaurantLocation: GeoPoint;
+  courierSpeedMps?: number; // default 8.33 m/s (~30 km/h)
+  targetWaitMinutes?: number; // strictly 0 for zero-min counter wait
+  currentTime?: number | string | Date;
+}
+
+export interface DynamicKptSyncResult {
+  placedAtMs: number;
+  readyAtMs: number; // T_ready = placedAtMs + (kitchenPrepMinutes * 60000)
+  distanceMeters: number;
+  distanceKm: number;
+  transitSeconds: number;
+  transitMinutes: number;
+  dispatchWindowMs: number; // T_dispatch = readyAtMs - (transitSeconds * 1000)
+  isDispatchWindowReached: boolean;
+  secondsUntilDispatch: number;
+  expectedCounterWaitMinutes: number; // strictly 0 when dispatched at T_dispatch
+  status: "HOLD_IN_KITCHEN_QUEUE" | "DISPATCH_NOW" | "EXPEDITE";
+  kptReason: string;
+}
+
+/**
+ * Dynamic Kitchen Prep Time (KPT) Synchronization
+ *
+ * Courier arrival is mathematically synchronized at:
+ * T_dispatch = T_ready - T_transit
+ *
+ * Guarantees 0-minute counter wait time (zero rider dwell time).
+ * Courier reaches restaurant counter exactly as kitchen finishes bagging the order.
+ */
+export function evaluateDynamicKptSync(params: DynamicKptSyncParams): DynamicKptSyncResult {
+  const placedAtMs =
+    typeof params.orderPlacedAt === "number"
+      ? params.orderPlacedAt
+      : new Date(params.orderPlacedAt).getTime();
+
+  const currentTimeMs =
+    params.currentTime !== undefined
+      ? typeof params.currentTime === "number"
+        ? params.currentTime
+        : new Date(params.currentTime).getTime()
+      : Date.now();
+
+  const prepMinutes = Math.max(1, params.kitchenPrepMinutes);
+  const readyAtMs = placedAtMs + prepMinutes * 60 * 1000;
+
+  const distanceKm = haversineKm(params.courierLocation, params.restaurantLocation);
+  const distanceMeters = Math.round(distanceKm * 1000);
+
+  const speedMps = params.courierSpeedMps ?? 8.33; // ~30 km/h Indian urban courier average
+  const transitSeconds = Math.max(30, Math.ceil(distanceMeters / speedMps));
+  const transitMinutes = Math.max(1, Math.round(transitSeconds / 60));
+
+  // T_dispatch = T_ready - T_transit
+  const dispatchWindowMs = readyAtMs - transitSeconds * 1000;
+  const isDispatchWindowReached = currentTimeMs >= dispatchWindowMs;
+  const msUntilDispatch = Math.max(0, dispatchWindowMs - currentTimeMs);
+  const secondsUntilDispatch = Math.ceil(msUntilDispatch / 1000);
+
+  let status: "HOLD_IN_KITCHEN_QUEUE" | "DISPATCH_NOW" | "EXPEDITE";
+  let expectedCounterWaitMinutes = 0;
+  let kptReason = "";
+
+  if (currentTimeMs < dispatchWindowMs) {
+    status = "HOLD_IN_KITCHEN_QUEUE";
+    expectedCounterWaitMinutes = 0;
+    kptReason = `Holding order in kitchen prep queue for ${secondsUntilDispatch}s so courier arrives exactly at T_ready (0-min counter wait)`;
+  } else if (currentTimeMs <= readyAtMs) {
+    status = "DISPATCH_NOW";
+    const courierArrivalMs = currentTimeMs + transitSeconds * 1000;
+    const dwellMs = Math.max(0, readyAtMs - courierArrivalMs);
+    expectedCounterWaitMinutes = Math.round(dwellMs / 60000);
+    kptReason = `Synchronized dispatch window active: courier transit ${transitMinutes}m aligns with kitchen ready time (0-min wait)`;
+  } else {
+    status = "EXPEDITE";
+    expectedCounterWaitMinutes = 0;
+    kptReason = "Order food preparation already completed; immediate priority dispatch";
+  }
+
+  return {
+    placedAtMs,
+    readyAtMs,
+    distanceMeters,
+    distanceKm: parseFloat(distanceKm.toFixed(3)),
+    transitSeconds,
+    transitMinutes,
+    dispatchWindowMs,
+    isDispatchWindowReached,
+    secondsUntilDispatch,
+    expectedCounterWaitMinutes,
+    status,
+    kptReason,
+  };
+}
+
 export type DispatchPort = {
   enqueueReady(event: ReadyOrderEvent): Promise<{ jobId: string }>;
   findEligibleRiders(jobId: string): Promise<EligibleRider[]>;

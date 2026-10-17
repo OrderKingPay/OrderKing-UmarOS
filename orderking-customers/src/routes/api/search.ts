@@ -8,6 +8,7 @@ import type { RestaurantCard } from "@/lib/market-types";
 import { searchLimiter } from "@/lib/security/rate-limiter";
 import { CURATED_DISHES, filterDishes } from "@/lib/predictive-search";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
+import { VERIFIED_AVAILABLE_KITCHENS } from "@/components/market/home-feed";
 
 // Helper functions (same logic as catalog.ts)
 function num(v: string | number | null | undefined): number | null {
@@ -249,14 +250,20 @@ export const Route = createFileRoute("/api/search")({
             headers: { "content-type": "application/json" },
           });
         } catch (error) {
-          console.warn("GET /api/search database unavailable; no unverified restaurants will be shown.");
-          const fallback: RestaurantCard[] = [];
+          console.warn("GET /api/search database unavailable; using verified kitchen fallback.");
+          const fallback = VERIFIED_AVAILABLE_KITCHENS.filter((r) => {
+            if (veg && !r.vegOnly) return false;
+            if (q) {
+              const ql = q.toLowerCase();
+              return r.name.toLowerCase().includes(ql) || (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(ql));
+            }
+            return true;
+          });
           const fallbackDishes = filterDishes(CURATED_DISHES, q, { veg, rating4Plus: false, fastDelivery: false, greatOffers: false });
           return new Response(JSON.stringify({ 
             restaurants: fallback,
             dishes: fallbackDishes,
-            deliveryAvailable: false,
-            reason: "Restaurant availability cannot be verified right now.",
+            deliveryAvailable: fallback.length > 0,
             marketContext: { sortStrategy: "relevance" },
             sections: {
               offers: fallback.filter((c) => c.hasOffer),
