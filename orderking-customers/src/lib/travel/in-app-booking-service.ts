@@ -826,6 +826,71 @@ export function searchCabQuotes(
 export const SOVEREIGN_ETICKETS_STORAGE_KEY = "orderking_sovereign_etickets_v1";
 export const SAVED_TRIPS_STORAGE_KEY = "orderking_saved_trips_v1";
 
+export type SupplierApiState = "online" | "unauthenticated" | "offline" | "rate_limited";
+
+export const SUPPLIER_UNAVAILABLE_MESSAGE = "Direct carrier partner booking temporarily unavailable in your region";
+
+export class SupplierUnavailableError extends Error {
+  readonly code = "SUPPLIER_UNAVAILABLE";
+  constructor(message: string = SUPPLIER_UNAVAILABLE_MESSAGE) {
+    super(message);
+    this.name = "SupplierUnavailableError";
+  }
+}
+
+export interface SupplierGatingResult {
+  available: boolean;
+  status: SupplierApiState;
+  message: string;
+}
+
+/**
+ * Verifies carrier or supplier API connectivity.
+ * Fails closed gracefully if supplier is unauthenticated, offline, or rate-limited.
+ */
+export function checkSupplierGating(
+  mode: TravelMode,
+  carrierCode?: string,
+  options?: {
+    region?: string;
+    authToken?: string;
+    statusOverride?: SupplierApiState;
+  }
+): SupplierGatingResult {
+  if (options?.statusOverride) {
+    if (options.statusOverride !== "online") {
+      return {
+        available: false,
+        status: options.statusOverride,
+        message: SUPPLIER_UNAVAILABLE_MESSAGE,
+      };
+    }
+  }
+
+  // Check if carrier API credentials exist in environment
+  const envKey =
+    typeof process !== "undefined" && process?.env
+      ? process.env.VITE_TRAVEL_API_KEY || process.env.VITE_IRCTC_MERCHANT_KEY
+      : undefined;
+
+  const effectiveToken = options?.authToken || envKey;
+
+  // If unauthenticated: fail-closed gracefully
+  if (!effectiveToken && options?.statusOverride !== "online") {
+    return {
+      available: false,
+      status: "unauthenticated",
+      message: SUPPLIER_UNAVAILABLE_MESSAGE,
+    };
+  }
+
+  return {
+    available: true,
+    status: "online",
+    message: "Carrier partner booking online.",
+  };
+}
+
 export function issueSovereignETicket(params: {
   quote: BaseQuote & Record<string, any>;
   passengers: Passenger[];
@@ -837,9 +902,21 @@ export function issueSovereignETicket(params: {
   verifiedPaymentToken?: string;
   supplierReservationId?: string;
   isConfirmedSupplier?: boolean;
+  supplierState?: SupplierApiState;
+  region?: string;
 }): SovereignETicket {
+  // Fail-Closed Supplier Gating: if carrier or supplier APIs are unauthenticated,
+  // offline, or rate-limited, fail closed with truthful unavailable message.
+  if (
+    params.supplierState === "unauthenticated" ||
+    params.supplierState === "offline" ||
+    params.supplierState === "rate_limited"
+  ) {
+    throw new SupplierUnavailableError(SUPPLIER_UNAVAILABLE_MESSAGE);
+  }
+
   if (!params.verifiedPaymentToken && !params.supplierReservationId && !params.isConfirmedSupplier) {
-    throw new Error("Ticket issuance blocked: no confirmed supplier reservation or verified payment.");
+    throw new Error("Ticket issuance blocked: no confirmed supplier reservation or verified payment. " + SUPPLIER_UNAVAILABLE_MESSAGE);
   }
   const pnr = generateSovereignPnr(params.quote.mode);
   const bookingId = `BK-${Date.now().toString().slice(-8)}`;
@@ -964,6 +1041,76 @@ export function issueSovereignETicket(params: {
   syncTicketToSavedTrips(ticket);
 
   return ticket;
+}
+
+/**
+ * High-level graceful booking orchestrator.
+ * Fails closed gracefully with truthful error message if supplier APIs are
+ * unauthenticated, offline, or rate-limited without throwing uncaught exceptions.
+ */
+export async function bookDirectTravelQuote(params: {
+  quote: BaseQuote & Record<string, any>;
+  passengers: Passenger[];
+  contact: BookingContact;
+  paymentMethod: PaymentMethod;
+  rebateDestination: RebateChoice;
+  selectedSeats?: string[];
+  travelDate?: string;
+  region?: string;
+  supplierState?: SupplierApiState;
+  supplierAuthToken?: string;
+  supplierReservationId?: string;
+  verifiedPaymentToken?: string;
+}): Promise<
+  | { success: true; ticket: SovereignETicket }
+  | { success: false; error: string; code: SupplierApiState | "VALIDATION_FAILED" | "SUPPLIER_BLOCKED" }
+> {
+  const paxVal = validatePassengers(params.passengers);
+  if (!paxVal.valid) {
+    return {
+      success: false,
+      error: paxVal.errors[0] || "Invalid passenger details.",
+      code: "VALIDATION_FAILED",
+    };
+  }
+
+  const contactVal = validateContact(params.contact);
+  if (!contactVal.valid) {
+    const errList = Object.values(contactVal.errors);
+    return {
+      success: false,
+      error: errList[0] || "Invalid contact details.",
+      code: "VALIDATION_FAILED",
+    };
+  }
+
+  const gating = checkSupplierGating(params.quote.mode, params.quote.carrierCode, {
+    region: params.region,
+    authToken: params.supplierAuthToken,
+    statusOverride: params.supplierState,
+  });
+
+  if (!gating.available) {
+    return {
+      success: false,
+      error: gating.message,
+      code: gating.status,
+    };
+  }
+
+  try {
+    const ticket = issueSovereignETicket({
+      ...params,
+      isConfirmedSupplier: true,
+    });
+    return { success: true, ticket };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err instanceof SupplierUnavailableError ? err.message : SUPPLIER_UNAVAILABLE_MESSAGE,
+      code: "SUPPLIER_BLOCKED",
+    };
+  }
 }
 
 export function getStoredETickets(): SovereignETicket[] {

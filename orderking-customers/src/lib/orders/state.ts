@@ -4,6 +4,7 @@ export const ORDER_STATUSES = [
   "CHECKOUT",
   "PLACED",
   "ACCEPTED",
+  "AUTO_ACCEPTED",
   "PREPARING",
   "READY",
   "RIDER_ASSIGNED",
@@ -46,12 +47,13 @@ export const TERMINAL_STATUSES: ReadonlySet<OrderStatus> = new Set([
 
 const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   CART: ["CHECKOUT", "CANCELLED"],
-  CHECKOUT: ["PLACED", "FAILED_PAYMENT", "CANCELLED"],
-  PLACED: ["ACCEPTED", "REJECTED", "CANCELLED", "CANCELLED_BY_CUSTOMER", "FAILED_PAYMENT"],
+  CHECKOUT: ["PLACED", "AUTO_ACCEPTED", "FAILED_PAYMENT", "CANCELLED"],
+  PLACED: ["ACCEPTED", "AUTO_ACCEPTED", "REJECTED", "CANCELLED", "CANCELLED_BY_CUSTOMER", "FAILED_PAYMENT"],
   ACCEPTED: ["PREPARING", "CANCELLED", "CANCELLED_BY_CUSTOMER"],
+  AUTO_ACCEPTED: ["PREPARING", "CANCELLED", "CANCELLED_BY_CUSTOMER"],
   PREPARING: ["READY", "CANCELLED"],
-  READY: ["RIDER_ASSIGNED", "CANCELLED"],
-  RIDER_ASSIGNED: ["PICKED_UP", "CANCELLED", "DELIVERY_FAILED"],
+  READY: ["RIDER_ASSIGNED", "ON_THE_WAY", "CANCELLED"],
+  RIDER_ASSIGNED: ["PICKED_UP", "ON_THE_WAY", "CANCELLED", "DELIVERY_FAILED"],
   PICKED_UP: ["ON_THE_WAY", "DELIVERY_FAILED"],
   ON_THE_WAY: ["DELIVERED", "DELIVERY_FAILED"],
   DELIVERED: ["REFUNDED", "PARTIAL_REFUND"],
@@ -75,7 +77,7 @@ export function assertTransition(from: OrderStatus, to: OrderStatus): void {
 }
 
 export function customerMayCancel(status: OrderStatus): boolean {
-  return status === "PLACED" || status === "ACCEPTED";
+  return status === "PLACED" || status === "ACCEPTED" || status === "AUTO_ACCEPTED";
 }
 
 export function isTerminal(status: OrderStatus): boolean {
@@ -83,6 +85,7 @@ export function isTerminal(status: OrderStatus): boolean {
 }
 
 export function trackIndex(status: OrderStatus): number {
+  if (status === "AUTO_ACCEPTED") return 1;
   const i = CUSTOMER_TRACK_STEPS.indexOf(status);
   return i;
 }
@@ -91,6 +94,7 @@ export function trackIndex(status: OrderStatus): number {
 export const SIMULATED_ADVANCE: Partial<Record<OrderStatus, OrderStatus>> = {
   PLACED: "ACCEPTED",
   ACCEPTED: "PREPARING",
+  AUTO_ACCEPTED: "PREPARING",
   PREPARING: "READY",
   READY: "RIDER_ASSIGNED",
   RIDER_ASSIGNED: "PICKED_UP",

@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   searchCabQuotes,
   type CabQuote,
@@ -34,11 +37,13 @@ interface Props {
 }
 
 export function CabBookingEngine({
-  walletBalance = 500000,
+  walletBalance = 0,
   onDeductWallet,
   initialPickup = "Terminal 3, IGI Airport (DEL)",
   initialDrop = "Connaught Place, New Delhi",
 }: Props) {
+  const { user } = useCurrentUserState();
+  const navigate = useNavigate();
   const [pickup, setPickup] = useState(initialPickup);
   const [drop, setDrop] = useState(initialDrop);
   const [category, setCategory] = useState<"City Taxi" | "Airport Transfer" | "Intercity One-Way" | "Hourly Rental">("Airport Transfer");
@@ -59,6 +64,11 @@ export function CabBookingEngine({
   };
 
   const handleOpenBooking = (quote: CabQuote) => {
+    if (!user) {
+      toast.error("Authentication required: Please sign in to book cabs.");
+      navigate({ to: "/login" });
+      return;
+    }
     setSelectedQuote(quote);
     setIsDrawerOpen(true);
   };
@@ -265,7 +275,11 @@ export function CabBookingEngine({
                     onClick={() => handleOpenBooking(q)}
                     className="h-10 px-5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 flex items-center gap-1.5"
                   >
-                    Dispatch Cab (₹0 Fee) <ArrowRight className="size-4" />
+                    {user ? (
+                      <>Dispatch Cab (₹0 Fee) <ArrowRight className="size-4" /></>
+                    ) : (
+                      <>Sign in to Dispatch <ArrowRight className="size-4" /></>
+                    )}
                   </Button>
                 </div>
               </div>

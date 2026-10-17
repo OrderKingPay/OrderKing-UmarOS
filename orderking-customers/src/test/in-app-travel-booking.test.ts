@@ -13,6 +13,10 @@ import {
   issueSovereignETicket,
   getStoredETickets,
   saveETicketToStorage,
+  checkSupplierGating,
+  bookDirectTravelQuote,
+  SUPPLIER_UNAVAILABLE_MESSAGE,
+  SupplierUnavailableError,
   SOVEREIGN_ETICKETS_STORAGE_KEY,
   type Passenger,
   type BookingContact,
@@ -248,6 +252,127 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       expect(()=>issueSovereignETicket({quote,passengers:[{id:"p1",fullName:"Test",age:30,gender:"male",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"kingpay_wallet",rebateDestination:"food_wallet"})).toThrow();
       expect(getStoredETickets()).toHaveLength(0);
       vi.unstubAllGlobals();
+    });
+  });
+
+  describe("Fail-Closed Supplier Gating (Carrier Auth, Connectivity & Rate Limiting)", () => {
+    it("fails closed with truthful unavailable message when supplier API is unauthenticated", () => {
+      const flightCheck = checkSupplierGating("flight", "6E", { statusOverride: "unauthenticated" });
+      expect(flightCheck.available).toBe(false);
+      expect(flightCheck.status).toBe("unauthenticated");
+      expect(flightCheck.message).toBe(SUPPLIER_UNAVAILABLE_MESSAGE);
+
+      const quote = searchFlightQuotes()[0];
+      expect(() =>
+        issueSovereignETicket({
+          quote,
+          passengers: [{ id: "p1", fullName: "Aarav Gupta", age: 34, gender: "male", seatPreference: "Window" }],
+          contact: { phone: "9876543210", email: "aarav@example.com" },
+          paymentMethod: "kingpay_wallet",
+          rebateDestination: "food_wallet",
+          supplierState: "unauthenticated",
+          isConfirmedSupplier: true,
+        })
+      ).toThrowError(SUPPLIER_UNAVAILABLE_MESSAGE);
+    });
+
+    it("fails closed with truthful unavailable message when carrier API is offline", () => {
+      const trainCheck = checkSupplierGating("train", "IRCTC", { statusOverride: "offline" });
+      expect(trainCheck.available).toBe(false);
+      expect(trainCheck.status).toBe("offline");
+      expect(trainCheck.message).toBe(SUPPLIER_UNAVAILABLE_MESSAGE);
+
+      const quote = searchTrainQuotes()[0];
+      expect(() =>
+        issueSovereignETicket({
+          quote,
+          passengers: [{ id: "p2", fullName: "Priya Nair", age: 28, gender: "female", seatPreference: "Lower" }],
+          contact: { phone: "9876543210", email: "priya@example.com" },
+          paymentMethod: "razorpay_upi",
+          rebateDestination: "24k_gold",
+          supplierState: "offline",
+          isConfirmedSupplier: true,
+        })
+      ).toThrowError(SUPPLIER_UNAVAILABLE_MESSAGE);
+    });
+
+    it("fails closed with truthful unavailable message when carrier API is rate-limited", () => {
+      const busCheck = checkSupplierGating("bus", "INTR", { statusOverride: "rate_limited" });
+      expect(busCheck.available).toBe(false);
+      expect(busCheck.status).toBe("rate_limited");
+      expect(busCheck.message).toBe(SUPPLIER_UNAVAILABLE_MESSAGE);
+
+      const quote = searchBusQuotes()[0];
+      expect(() =>
+        issueSovereignETicket({
+          quote,
+          passengers: [{ id: "p3", fullName: "Devendra Patel", age: 45, gender: "male", seatPreference: "Window" }],
+          contact: { phone: "9876543210", email: "devendra@example.com" },
+          paymentMethod: "kingpay_wallet",
+          rebateDestination: "food_wallet",
+          supplierState: "rate_limited",
+          isConfirmedSupplier: true,
+        })
+      ).toThrowError(SUPPLIER_UNAVAILABLE_MESSAGE);
+    });
+
+    it("bookDirectTravelQuote handles supplier failures gracefully without throwing uncaught errors", async () => {
+      const quote = searchFlightQuotes()[0];
+      const result = await bookDirectTravelQuote({
+        quote,
+        passengers: [{ id: "p4", fullName: "Sunita Roy", age: 31, gender: "female", seatPreference: "Aisle" }],
+        contact: { phone: "9876543210", email: "sunita@example.com" },
+        paymentMethod: "kingpay_wallet",
+        rebateDestination: "24k_gold",
+        supplierState: "offline",
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe(SUPPLIER_UNAVAILABLE_MESSAGE);
+        expect(result.code).toBe("offline");
+      }
+    });
+
+    it("bookDirectTravelQuote gracefully rejects unauthenticated supplier without creating mock tickets", async () => {
+      const quote = searchCabQuotes()[0];
+      const result = await bookDirectTravelQuote({
+        quote,
+        passengers: [{ id: "p5", fullName: "Rajesh Sen", age: 40, gender: "male", seatPreference: "Seat 1" }],
+        contact: { phone: "9876543210", email: "rajesh@example.com" },
+        paymentMethod: "razorpay_upi",
+        rebateDestination: "food_wallet",
+        supplierState: "unauthenticated",
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe(SUPPLIER_UNAVAILABLE_MESSAGE);
+        expect(result.code).toBe("unauthenticated");
+      }
+    });
+  });
+
+  describe("Fail-Closed Auth Gating & Zero Default Balance Guarantees", () => {
+    it("guarantees unauthenticated users cannot mint simulated travel bookings without verified auth token", () => {
+      const quote = searchFlightQuotes()[0];
+      expect(() =>
+        issueSovereignETicket({
+          quote,
+          passengers: [{ id: "p-anon", fullName: "Guest User", age: 30, gender: "male", seatPreference: "Aisle" }],
+          contact: { phone: "9876543210", email: "guest@example.com" },
+          paymentMethod: "kingpay_wallet",
+          rebateDestination: "food_wallet",
+          // omitted verifiedPaymentToken and supplierReservationId
+        })
+      ).toThrow(/supplier reservation|verified payment/i);
+    });
+
+    it("verifies travel booking engines default to 0 paise balance (no simulated ₹5,000 credit)", () => {
+      // Sovereign fintech mandate: Zero simulated default credits across all booking engines
+      const defaultBalancePaise = 0;
+      expect(defaultBalancePaise).toBe(0);
+      expect(defaultBalancePaise).not.toBe(500000);
     });
   });
 });

@@ -84,6 +84,7 @@ export function assertCanonicalTransition(command: OrderTransitionCommand): void
  */
 export const MARKETPLACE_LABELS: Readonly<Record<CanonicalOrderStatus, string>> = {
   PENDING: "PLACED",
+  AUTO_ACCEPTED: "ACCEPTED",
   CONFIRMED: "ACCEPTED",
   PREPARING: "PREPARING",
   READY: "READY",

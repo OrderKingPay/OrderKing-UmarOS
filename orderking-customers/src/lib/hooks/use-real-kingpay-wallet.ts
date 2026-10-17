@@ -9,7 +9,7 @@ export function useRealKingPayWallet() {
   const { user } = useCurrentUserState();
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["kingpay_balance", user?.id],
     queryFn: () => getKingpayBalance(),
     enabled: !!user,
@@ -39,6 +39,7 @@ export function useRealKingPayWallet() {
   }, [user, queryClient]);
 
   const walletBalance = data?.balance ?? 0;
+  const walletBalancePaise = Math.round(walletBalance * 100);
   const kingCoins = data?.coins ?? 0;
 
   const addMoney = useMutation({
@@ -70,5 +71,14 @@ export function useRealKingPayWallet() {
 
   const setKingCoins = () => { /* read only for now, mutations can be added */ };
 
-  return { walletBalance, setWalletBalance, kingCoins, setKingCoins };
+  return {
+    walletBalance,
+    walletBalancePaise,
+    setWalletBalance,
+    kingCoins,
+    setKingCoins,
+    addMoney,
+    deductMoney,
+    isLoading,
+  };
 }

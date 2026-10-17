@@ -12,10 +12,15 @@ import {
   Wallet,
   AtSign,
   Share2,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
+import {
+  buildNPCIUpiIntentUrl,
+  isValidVPA,
+} from "@/lib/payments/npci-upi-intent";
 
 interface Props {
   isOpen: boolean;
@@ -37,7 +42,7 @@ export function ScanQrModal({
   const [note, setNote] = useState<string>("Payment");
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState<{
-    utr: string;
+    txnId: string;
     amountPaise: number;
     payee: string;
     upiId: string;
@@ -62,10 +67,31 @@ export function ScanQrModal({
     }
   };
 
+  const cleanUpi = payeeUpi.trim();
+  const amtNum = parseFloat(amountRupees);
+  let validUpiIntentUri = "";
+  if (isValidVPA(cleanUpi) && amtNum > 0) {
+    try {
+      validUpiIntentUri = buildNPCIUpiIntentUrl({
+        vpa: cleanUpi,
+        payeeName: payeeName || cleanUpi,
+        amountInRupees: amtNum,
+        transactionRef: `OKPAY-${Date.now()}`,
+        transactionNote: note.trim() || "Payment via OrderKing KingPay",
+      });
+    } catch {
+      validUpiIntentUri = "";
+    }
+  }
+
   const handlePay = () => {
     const amt = parseFloat(amountRupees);
     if (!amt || amt <= 0) {
       toast.error("Please enter a valid amount");
+      return;
+    }
+    if (!isValidVPA(cleanUpi)) {
+      toast.error("Please enter a valid NPCI UPI ID (e.g. merchant@icici, user@okhdfcbank)");
       return;
     }
     const amountPaise = Math.round(amt * 100);
@@ -76,7 +102,7 @@ export function ScanQrModal({
       return;
     }
 
-    const recipient = payeeName || payeeUpi || "Merchant Partner";
+    const recipient = payeeName || cleanUpi;
     setIsProcessing(true);
 
     setTimeout(() => {
@@ -84,12 +110,13 @@ export function ScanQrModal({
         onDeductWallet(amountPaise, `UPI Pay: ${recipient}`);
       }
 
-      const utr = `UTR${Date.now().toString().slice(-8)}${Math.floor(1000 + Math.random() * 9000)}`;
+      // Legitimate internal KingPay transaction reference - zero fabricated bank UTR
+      const txnId = `KP-TXN-${Date.now()}`;
       setPaymentSuccess({
-        utr,
+        txnId,
         amountPaise,
         payee: recipient,
-        upiId: payeeUpi || `${recipient.toLowerCase().replace(/\s+/g, "")}@upi`,
+        upiId: cleanUpi,
       });
       setIsProcessing(false);
       toast.success(`Payment of ${formatPaise(amountPaise)} successful!`);
@@ -161,8 +188,12 @@ export function ScanQrModal({
 
             <div className="bg-slate-900/90 rounded-2xl p-4 border border-amber-400/30 text-left space-y-2 text-xs">
               <div className="flex justify-between text-slate-400">
-                <span>Bank Reference / UTR:</span>
-                <span className="font-mono text-white font-bold">{paymentSuccess.utr}</span>
+                <span>Transaction Reference:</span>
+                <span className="font-mono text-white font-bold">{paymentSuccess.txnId}</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Bank Settlement UTR:</span>
+                <span className="font-medium text-amber-300">Internal Ledger Clearance (Direct Vault)</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Payment Mode:</span>
@@ -288,10 +319,15 @@ export function ScanQrModal({
                     type="text"
                     value={payeeUpi}
                     onChange={(e) => setPayeeUpi(e.target.value)}
-                    placeholder="e.g. merchant@upi, 9876543210@paytm"
+                    placeholder="e.g. merchant@upi, store@okhdfcbank"
                     className="w-full rounded-xl border border-amber-400/50 bg-slate-950 px-3 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
                   />
-                  {payeeName && (
+                  {cleanUpi && !isValidVPA(cleanUpi) && (
+                    <p className="text-xs text-rose-400 mt-1 font-semibold">
+                      Please enter a valid NPCI UPI ID format (e.g. name@bank or store@paytm)
+                    </p>
+                  )}
+                  {payeeName && isValidVPA(cleanUpi) && (
                     <p className="text-xs text-amber-300 mt-1 font-semibold flex items-center gap-1">
                       <ShieldCheck className="size-3.5 text-emerald-400" />
                       <span>Verified: {payeeName}</span>
@@ -340,9 +376,19 @@ export function ScanQrModal({
                   </span>
                 </div>
 
+                {validUpiIntentUri && (
+                  <a
+                    href={validUpiIntentUri}
+                    className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-400/50 text-amber-300 font-bold text-xs flex items-center justify-center gap-2 transition no-underline shadow-sm"
+                  >
+                    <ExternalLink className="size-4" />
+                    <span>Launch UPI App Intent (upi://pay)</span>
+                  </a>
+                )}
+
                 <Button
                   type="button"
-                  disabled={isProcessing || !payeeUpi.trim() || !amountRupees}
+                  disabled={isProcessing || !isValidVPA(cleanUpi) || !amountRupees}
                   onClick={handlePay}
                   className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-black text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2"
                 >

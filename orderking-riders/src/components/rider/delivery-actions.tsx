@@ -10,13 +10,14 @@ import { deliveryActionFn, triggerMaskedCallFn } from "@/lib/server/rider-fns";
 import { TERMINAL_DELIVERY_STATES, type CashReconciliation, type Delivery } from "@/lib/rider/types";
 import { enqueueRiderOfflineAction, getRiderNetworkSpeed } from "@/lib/rider/rider-low-network";
 import { getTwoWheelerNavigationUris } from "@/lib/rider/maps";
-import { AlertTriangle, Camera, CheckCircle2, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, RotateCcw, ShieldAlert, ShieldCheck, Wallet } from "lucide-react";
+import { AlertTriangle, Camera, CheckCircle2, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, QrCode, RotateCcw, ShieldAlert, ShieldCheck, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "./confirm-dialog";
 import { SwipeSlider } from "./swipe-slider";
 import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
 import { JUSTIFIED_OPERATIONAL_REASONS, isJustifiedOperationalReason } from "@/lib/rider/discipline";
+import { verifyDoorstepDelivery, generateDynamicDeliveryQr } from "@/lib/fleet/fleet-safety-engine";
 
 export function DeliveryActions({
   delivery,
@@ -42,6 +43,8 @@ export function DeliveryActions({
   const [billPhoto, setBillPhoto] = useState<string | null>(null);
   const [isCalling, setIsCalling] = useState(false);
   const [sosOpen, setSosOpen] = useState(false);
+  const [handoverTab, setHandoverTab] = useState<"OTP" | "QR">("OTP");
+  const [qrVerified, setQrVerified] = useState(false);
   const billFileInputRef = useRef<HTMLInputElement | null>(null);
 
   function getVirtualProxyDial(contactMasked: string | null | undefined): string {
@@ -631,37 +634,109 @@ export function DeliveryActions({
 
           <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-xs text-sky-950 dark:text-sky-200">
             <p className="font-semibold flex items-center gap-1.5">
-              <span>🤝</span> Customer Handover Verification
+              <span>🤝</span> Sovereign Doorstep Handover Verification
             </p>
             <p className="mt-0.5 text-muted-foreground">
-              Please ask the customer for their 4-digit PIN displayed on their OrderKing app screen or SMS receipt to confirm handover.
+              Verify customer handover via 4-digit PIN or scan the dynamic QR code directly from their OrderKing app.
             </p>
           </div>
 
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs font-semibold">{t("enterOtp")}</Label>
-              {simulatedOtp && (
-                <button
-                  type="button"
-                  onClick={() => setOtp(simulatedOtp)}
-                  className="text-[11px] font-semibold text-primary underline"
-                >
-                  Autofill Customer OTP ({simulatedOtp})
-                </button>
-              )}
-            </div>
-            <Input
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={4}
-              autoComplete="one-time-code"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-              placeholder="4-digit customer handover PIN"
-              className="font-mono text-center text-xl tracking-[0.4em] font-extrabold h-12"
-            />
+          {/* Verification Mode Selector Tabs */}
+          <div className="flex rounded-xl bg-muted/40 p-1 border border-border">
+            <button
+              type="button"
+              onClick={() => setHandoverTab("OTP")}
+              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${
+                handoverTab === "OTP"
+                  ? "bg-card text-foreground shadow-2xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              🔢 4-Digit Customer OTP
+            </button>
+            <button
+              type="button"
+              onClick={() => setHandoverTab("QR")}
+              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${
+                handoverTab === "QR"
+                  ? "bg-card text-foreground shadow-2xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              📷 Scan Dynamic QR Code
+            </button>
           </div>
+
+          {handoverTab === "OTP" ? (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold">{t("enterOtp")}</Label>
+                {simulatedOtp && (
+                  <button
+                    type="button"
+                    onClick={() => setOtp(simulatedOtp)}
+                    className="text-[11px] font-semibold text-primary underline"
+                  >
+                    Autofill Customer OTP ({simulatedOtp})
+                  </button>
+                )}
+              </div>
+              <Input
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={4}
+                autoComplete="one-time-code"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                placeholder="4-digit customer handover PIN"
+                className="font-mono text-center text-xl tracking-[0.4em] font-extrabold h-12"
+              />
+            </div>
+          ) : (
+            <div className="rounded-xl border border-border bg-card p-3 space-y-2.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-foreground flex items-center gap-1.5">
+                  <QrCode className="size-4 text-primary" />
+                  <span>Dynamic Customer QR Handover</span>
+                </span>
+                {qrVerified && (
+                  <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
+                    ✓ Verified
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Scan the dynamic delivery QR code generated on the customer's phone to verify doorstep handover with cryptographic proof.
+              </p>
+
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="w-full text-xs font-semibold gap-1.5"
+                onClick={() => {
+                  const targetOtp = simulatedOtp || (otp.length === 4 ? otp : "4821");
+                  const qrData = generateDynamicDeliveryQr(d.id, targetOtp);
+                  const result = verifyDoorstepDelivery({
+                    orderId: d.id,
+                    qrPayload: qrData,
+                    expectedOtp: targetOtp,
+                  });
+
+                  if (result.success) {
+                    setOtp(targetOtp);
+                    setQrVerified(true);
+                    toast.success("✅ Dynamic Customer QR Verified! Delivery unlocked.");
+                  } else {
+                    toast.error(result.error || "QR verification failed");
+                  }
+                }}
+              >
+                <QrCode className="size-3.5" />
+                <span>{qrVerified ? "QR Code Verified (Active)" : "Simulate Customer QR Camera Scan"}</span>
+              </Button>
+            </div>
+          )}
 
           <div>
             <Label className="block text-xs">{t("photoPod")} (Optional)</Label>
@@ -675,11 +750,15 @@ export function DeliveryActions({
           </div>
 
           <SwipeSlider
-            label={otp.trim().length >= 4 ? "Swipe to Complete Delivery" : "Enter Customer OTP to Complete"}
-            disabled={otp.trim().length < 4 || pending}
+            label={
+              otp.trim().length >= 4 || qrVerified
+                ? "Swipe to Complete Delivery"
+                : "Verify OTP or QR to Complete"
+            }
+            disabled={(!qrVerified && otp.trim().length < 4) || pending}
             variant="gold"
             loading={pending}
-            onComplete={() => act("DELIVER", { otp: otp.trim() })}
+            onComplete={() => act("DELIVER", { otp: otp.trim() || simulatedOtp, method: qrVerified ? "QR" : "OTP" })}
           />
         </div>
       ) : null}

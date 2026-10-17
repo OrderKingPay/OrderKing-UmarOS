@@ -328,8 +328,157 @@ export function LocationDialog({
                 Matching Dining Areas ({filteredAreas.length})
               </span>
               {filteredAreas.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-amber-200 bg-white/60 p-5 text-center text-xs text-stone-600">
-                  No areas found for "{searchQuery}". Select from popular metro hubs below!
+                /* Zero Dead-Ends Location Fallback */
+                <div className="rounded-2xl border border-amber-300/80 bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white p-4 shadow-sm space-y-3.5 animate-in fade-in duration-200">
+                  <div className="flex items-start gap-2.5">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-900 border border-amber-300/60 font-bold">
+                      📍
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-amber-950 uppercase tracking-tight">
+                        Zero Dead-Ends Delivery Assistance
+                      </h4>
+                      <p className="text-[11px] text-stone-600 mt-0.5 leading-relaxed">
+                        Direct 25-minute hyper-local delivery is currently expanding to{" "}
+                        <span className="font-bold text-stone-900 font-mono">"{searchQuery}"</span>.
+                        Here are the <strong>3 nearest active culinary hubs</strong> delivering to your zone:
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 3 Nearest Active Culinary Hubs with KM distance */}
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-900/80 block">
+                      Recommended Active Culinary Hubs
+                    </span>
+                    {(() => {
+                      // Estimate reference coordinates
+                      const pincodeDigits = searchQuery.replace(/\D/g, "");
+                      let refLat = currentLocation?.lat ?? 28.6315;
+                      let refLng = currentLocation?.lng ?? 77.2167;
+
+                      if (pincodeDigits.length >= 2) {
+                        const prefix = pincodeDigits.slice(0, 2);
+                        if (prefix === "11") { refLat = 28.6139; refLng = 77.2090; }
+                        else if (prefix === "12" || prefix === "13") { refLat = 28.4595; refLng = 77.0266; }
+                        else if (prefix === "20") { refLat = 28.5355; refLng = 77.3910; }
+                        else if (prefix === "40") { refLat = 19.0760; refLng = 72.8777; }
+                        else if (prefix === "41") { refLat = 18.5204; refLng = 73.8567; }
+                        else if (prefix === "50") { refLat = 17.3850; refLng = 78.4867; }
+                        else if (prefix === "56") { refLat = 12.9716; refLng = 77.5946; }
+                        else if (prefix === "60") { refLat = 13.0827; refLng = 80.2707; }
+                        else if (prefix === "70") { refLat = 22.5726; refLng = 88.3639; }
+                        else if (prefix === "78") { refLat = 26.1445; refLng = 91.7362; }
+                      }
+
+                      // Flatten all areas with computed distances
+                      const allAreas = POPULAR_METRO_HUBS.flatMap((hub) =>
+                        hub.areas.map((a) => {
+                          const dist = distanceKm({ lat: refLat, lng: refLng }, { lat: a.lat, lng: a.lng });
+                          return {
+                            ...a,
+                            city: hub.city,
+                            cityId: hub.cityId,
+                            distanceKm: dist,
+                          };
+                        })
+                      );
+
+                      // Sort and pick top 3 nearest
+                      const nearestThree = allAreas.sort((a, b) => a.distanceKm - b.distanceKm).slice(0, 3);
+
+                      return nearestThree.map((hub) => (
+                        <button
+                          key={`${hub.cityId}-${hub.zoneId}`}
+                          type="button"
+                          onClick={() =>
+                            pickLocation({
+                              cityId: hub.cityId,
+                              cityName: hub.city,
+                              zoneId: hub.zoneId,
+                              zoneName: hub.name,
+                              label: `${hub.name}, ${hub.city}`,
+                              line1: `${hub.name}, ${hub.city} (${hub.distanceKm.toFixed(1)} km from ${searchQuery})`,
+                              lat: hub.lat,
+                              lng: hub.lng,
+                            })
+                          }
+                          className="flex w-full items-center justify-between rounded-xl border border-amber-300/80 bg-white/95 p-2.5 text-left hover:border-amber-500 hover:bg-amber-100/40 transition shadow-2xs active:scale-[0.99] cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <MapPin className="size-4 text-emerald-600 shrink-0" />
+                            <div>
+                              <p className="text-xs font-black text-gray-950 flex items-center gap-1.5">
+                                <span>{hub.name}</span>
+                                <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-1.5 py-0.2 rounded-full border border-amber-200">
+                                  {hub.distanceKm < 1 ? "<1 km" : `${hub.distanceKm.toFixed(1)} km`}
+                                </span>
+                              </p>
+                              <p className="text-[10px] text-stone-500">{hub.city} · {hub.tag}</p>
+                            </div>
+                          </div>
+                          <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 shrink-0">
+                            Select Hub →
+                          </span>
+                        </button>
+                      ));
+                    })()}
+                  </div>
+
+                  {/* Pre-Scheduled Orders & Packaged Pantry Delivery Options */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-amber-200/80">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const defaultHub = POPULAR_METRO_HUBS[0]!.areas[0]!;
+                        pickLocation({
+                          cityId: POPULAR_METRO_HUBS[0]!.cityId,
+                          cityName: POPULAR_METRO_HUBS[0]!.city,
+                          zoneId: defaultHub.zoneId,
+                          zoneName: defaultHub.name,
+                          label: `Pre-Scheduled: ${searchQuery}`,
+                          line1: `Pre-scheduled courier slot to ${searchQuery}`,
+                          lat: defaultHub.lat,
+                          lng: defaultHub.lng,
+                        });
+                        toast.success(`Pre-Scheduled delivery enabled for ${searchQuery}! Orders will be dispatched in next scheduled batch.`);
+                      }}
+                      className="flex flex-col items-start p-2.5 rounded-xl border border-amber-400/80 bg-amber-50/70 hover:bg-amber-100/80 text-left transition shadow-2xs cursor-pointer group"
+                    >
+                      <span className="text-[11px] font-black text-amber-950 flex items-center gap-1">
+                        <span>📅</span> Pre-Schedule Feast
+                      </span>
+                      <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
+                        Schedule future bulk orders & catering slots from nearest active hubs.
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const defaultHub = POPULAR_METRO_HUBS[0]!.areas[0]!;
+                        pickLocation({
+                          cityId: POPULAR_METRO_HUBS[0]!.cityId,
+                          cityName: POPULAR_METRO_HUBS[0]!.city,
+                          zoneId: defaultHub.zoneId,
+                          zoneName: defaultHub.name,
+                          label: `Packaged Pantry: ${searchQuery}`,
+                          line1: `Ambient Pantry Delivery to ${searchQuery}`,
+                          lat: defaultHub.lat,
+                          lng: defaultHub.lng,
+                        });
+                        toast.success(`Switched to Packaged Pantry Delivery for ${searchQuery}! Courier dispatch active.`);
+                      }}
+                      className="flex flex-col items-start p-2.5 rounded-xl border border-emerald-400/80 bg-emerald-50/70 hover:bg-emerald-100/80 text-left transition shadow-2xs cursor-pointer group"
+                    >
+                      <span className="text-[11px] font-black text-emerald-950 flex items-center gap-1">
+                        <span>📦</span> Packaged Pantry Delivery
+                      </span>
+                      <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
+                        Direct pan-India delivery of artisanal masalas, tea, coffee & snacks.
+                      </span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="max-h-56 overflow-y-auto space-y-2 pr-1">

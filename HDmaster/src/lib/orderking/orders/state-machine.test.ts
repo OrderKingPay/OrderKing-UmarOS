@@ -39,4 +39,27 @@ describe("order state machine", () => {
     assert.equal(canTransition("CANCELLED", "REFUND_PENDING"), true);
     assert.equal(canTransition("REFUND_PENDING", "REFUNDED"), true);
   });
+
+  it("verifies autonomous zero-human dispatch pipeline (AUTO_ACCEPTED -> PREPARING -> READY -> RIDER_ASSIGNED -> ON_THE_WAY -> DELIVERED)", () => {
+    const autonomousZeroHumanPath = [
+      ["AUTO_ACCEPTED", "PREPARING"],
+      ["PREPARING", "READY"],
+      ["READY", "RIDER_ASSIGNED"],
+      ["RIDER_ASSIGNED", "ON_THE_WAY"],
+      ["ON_THE_WAY", "DELIVERED"],
+    ] as const;
+
+    for (const [from, to] of autonomousZeroHumanPath) {
+      assert.equal(canTransition(from, to, "system"), true, `System should be permitted to transition ${from} -> ${to}`);
+      assert.equal(canTransition(from, to, "api"), true, `API should be permitted to transition ${from} -> ${to}`);
+      assert.doesNotThrow(() => assertTransition(from, to, "system"));
+    }
+
+    // System can also transition PENDING -> AUTO_ACCEPTED
+    assert.equal(canTransition("PENDING", "AUTO_ACCEPTED", "system"), true);
+
+    // Rejects customer jumping directly to delivered or bypassing ready
+    assert.equal(canTransition("AUTO_ACCEPTED", "DELIVERED", "system"), false);
+    assert.equal(canTransition("AUTO_ACCEPTED", "READY", "system"), false);
+  });
 });

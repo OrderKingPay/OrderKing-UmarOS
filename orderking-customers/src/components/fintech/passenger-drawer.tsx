@@ -18,6 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { useNavigate } from "@tanstack/react-router";
 import {
   type BaseQuote,
   type Passenger,
@@ -29,6 +31,8 @@ import {
   validatePassengers,
   validateContact,
   issueSovereignETicket,
+  checkSupplierGating,
+  SUPPLIER_UNAVAILABLE_MESSAGE,
 } from "@/lib/travel/in-app-booking-service";
 
 interface Props {
@@ -48,19 +52,21 @@ export function PassengerDrawer({
   onClose,
   quote,
   passengerCount,
-  walletBalancePaise = 500000, // Default ₹5,000.00 mock wallet if unprovided
+  walletBalancePaise = 0,
   onDeductWallet,
   onBookingSuccess,
   selectedSeats,
   travelDate,
 }: Props) {
+  const { user, isPending } = useCurrentUserState();
+  const navigate = useNavigate();
   const count = Math.max(1, passengerCount);
 
-  // Initialize passengers list
+  // Initialize passengers list - populated from verified session if available
   const [passengers, setPassengers] = useState<Passenger[]>(() =>
     Array.from({ length: count }, (_, idx) => ({
       id: `pax-${idx + 1}`,
-      fullName: idx === 0 ? "Hasan Raza" : "",
+      fullName: idx === 0 ? (user?.displayName || "") : "",
       age: idx === 0 ? 28 : 25,
       gender: "male" as const,
       seatPreference: quote.mode === "train" ? "Lower Berth" : "Window",
@@ -69,8 +75,8 @@ export function PassengerDrawer({
 
   // Contact details
   const [contact, setContact] = useState<BookingContact>({
-    phone: "9876543210",
-    email: "hasan@orderking.in",
+    phone: "",
+    email: user?.primaryEmail || "",
     gstin: "",
   });
 
@@ -100,6 +106,13 @@ export function PassengerDrawer({
 
   const handleConfirmAndPay = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 0. Strict Fail-Closed Auth Gate: Unauthenticated users MUST sign in and cannot book simulated trips
+    if (!user) {
+      toast.error("Authentication required: Please sign in to book your travel tickets.");
+      navigate({ to: "/login" });
+      return;
+    }
 
     // 1. Validate passengers
     const paxVal = validatePassengers(passengers);
@@ -133,6 +146,13 @@ export function PassengerDrawer({
     setIsSubmitting(true);
 
     try {
+      // 4. Fail-Closed Supplier Gating: verify carrier/supplier connectivity first
+      const supplierStatus = checkSupplierGating(quote.mode, quote.carrierCode);
+      if (!supplierStatus.available) {
+        toast.error(supplierStatus.message);
+        return;
+      }
+
       // Simulate sub-second atomic transaction
       await new Promise((resolve) => setTimeout(resolve, 600));
 
@@ -153,7 +173,7 @@ export function PassengerDrawer({
         rebateDestination: rebateChoice,
         selectedSeats,
         travelDate,
-        verifiedPaymentToken: `KP-PAY-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+        verifiedPaymentToken: `KP-PAY-${user.id}-${Date.now()}`,
         supplierReservationId: `SUP-CONF-${quote.carrierCode || "CRIS"}-${Date.now()}`,
         isConfirmedSupplier: true,
       });
@@ -164,12 +184,60 @@ export function PassengerDrawer({
 
       onBookingSuccess(ticket);
       onClose();
-    } catch {
-      toast.error("Failed to process in-app travel booking. Please try again.");
+    } catch (err: any) {
+      const errorMsg =
+        err?.message?.includes("temporarily unavailable") || err?.message?.includes("Direct carrier partner")
+          ? SUPPLIER_UNAVAILABLE_MESSAGE
+          : "Failed to process in-app travel booking. Please try again.";
+      toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Fail-closed gate: if unauthenticated, show sign-in prompt modal instead of booking form
+  if (!user && !isPending) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+        <div className="relative w-full max-w-md bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto p-6 sm:p-8 text-center space-y-4">
+          <div className="size-14 rounded-2xl bg-amber-500/20 text-amber-600 border border-amber-400/40 flex items-center justify-center mx-auto">
+            <ShieldCheck className="size-8" />
+          </div>
+          <div>
+            <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 block">
+              Identity Verification Required
+            </span>
+            <h3 className="text-xl font-black text-slate-900 mt-1">
+              Sign In to Book Trip
+            </h3>
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              To reserve verified carrier seats with ₹0 convenience fee and sovereign digital gold rebates, please sign in to your OrderKing account. Simulated guest bookings are blocked.
+            </p>
+          </div>
+          <div className="pt-2 flex flex-col gap-2.5">
+            <Button
+              type="button"
+              onClick={() => {
+                onClose();
+                navigate({ to: "/login" });
+              }}
+              className="w-full h-11 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-black text-xs shadow-md"
+            >
+              Sign In to OrderKing ➔
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="w-full h-10 rounded-xl border-slate-200 text-slate-600 hover:bg-slate-100 font-bold text-xs"
+            >
+              Dismiss
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">

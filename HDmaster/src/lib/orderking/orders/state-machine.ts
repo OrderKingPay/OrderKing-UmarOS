@@ -1,5 +1,6 @@
 export const ORDER_STATUSES = [
   "PENDING",
+  "AUTO_ACCEPTED",
   "CONFIRMED",
   "PREPARING",
   "READY",
@@ -30,7 +31,7 @@ export type TransitionActor =
   | "api";
 
 export const ACTIVE_FLOW: OrderStatus[] = [
-  "PENDING", "CONFIRMED", "PREPARING", "READY", "RIDER_ASSIGNED",
+  "PENDING", "AUTO_ACCEPTED", "CONFIRMED", "PREPARING", "READY", "RIDER_ASSIGNED",
   "PICKED_UP", "ON_THE_WAY", "ARRIVING",
 ];
 
@@ -40,13 +41,22 @@ export const TERMINAL: ReadonlySet<OrderStatus> = new Set([
 ]);
 
 const ACTOR_TRANSITIONS: Record<OrderStatus, Partial<Record<OrderStatus, TransitionActor[]>>> = {
-  PENDING: { CONFIRMED: ["restaurant", "admin"], CANCELLED: ["customer", "admin", "system"], PAYMENT_FAILED: ["system", "admin"] },
-  CONFIRMED: { PREPARING: ["restaurant", "admin"], CANCELLED: ["customer", "admin"], RESTAURANT_REJECTED: ["restaurant", "admin"] },
-  PREPARING: { READY: ["restaurant", "admin"], CANCELLED: ["customer", "admin"] },
+  PENDING: {
+    AUTO_ACCEPTED: ["system", "api", "admin"],
+    CONFIRMED: ["restaurant", "admin", "system", "api"],
+    CANCELLED: ["customer", "admin", "system"],
+    PAYMENT_FAILED: ["system", "admin"],
+  },
+  AUTO_ACCEPTED: {
+    PREPARING: ["system", "api", "restaurant", "admin"],
+    CANCELLED: ["customer", "admin", "system"],
+  },
+  CONFIRMED: { PREPARING: ["restaurant", "admin", "system", "api"], CANCELLED: ["customer", "admin"], RESTAURANT_REJECTED: ["restaurant", "admin"] },
+  PREPARING: { READY: ["restaurant", "admin", "system", "api"], CANCELLED: ["customer", "admin"] },
   READY: { RIDER_ASSIGNED: ["rider", "admin", "system", "api"], CANCELLED: ["admin"] },
-  RIDER_ASSIGNED: { PICKED_UP: ["rider", "admin", "system", "api"], RIDER_CANCELLED: ["rider", "admin", "system"], CANCELLED: ["admin"] },
+  RIDER_ASSIGNED: { PICKED_UP: ["rider", "admin", "system", "api"], ON_THE_WAY: ["rider", "admin", "system", "api"], RIDER_CANCELLED: ["rider", "admin", "system"], CANCELLED: ["admin"] },
   PICKED_UP: { ON_THE_WAY: ["rider", "admin", "system", "api"], DELIVERY_FAILED: ["rider", "admin", "system"] },
-  ON_THE_WAY: { ARRIVING: ["rider", "admin", "system", "api"], DELIVERY_FAILED: ["rider", "admin", "system"], CUSTOMER_UNAVAILABLE: ["rider", "admin", "system"] },
+  ON_THE_WAY: { ARRIVING: ["rider", "admin", "system", "api"], DELIVERED: ["rider", "admin", "system", "api"], DELIVERY_FAILED: ["rider", "admin", "system"], CUSTOMER_UNAVAILABLE: ["rider", "admin", "system"] },
   ARRIVING: { DELIVERED: ["rider", "admin", "system", "api"], CUSTOMER_UNAVAILABLE: ["rider", "admin", "system"], DELIVERY_FAILED: ["rider", "admin", "system"] },
   DELIVERED: { DISPUTED: ["customer", "admin", "system"], REFUND_PENDING: ["admin", "system"] },
   CANCELLED: { REFUND_PENDING: ["admin", "system"] },

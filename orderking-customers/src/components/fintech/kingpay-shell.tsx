@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DeviceAvatar } from "@/components/common/device-avatar";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { formatPaise } from "@/lib/money";
@@ -25,13 +26,15 @@ type Props = {
 
 export function KingPayShell({
   children,
-  walletBalance,
+  walletBalance: explicitWalletBalance,
   onAddMoneyClick,
   onOpenScannerClick,
   activeSection,
   onSelectSection,
   alertsCount = 0,
 }: Props) {
+  const { walletBalancePaise: liveWalletBalancePaise } = useRealKingPayWallet();
+  const walletBalance = explicitWalletBalance !== undefined ? explicitWalletBalance : liveWalletBalancePaise;
   const [serviceQuery, setServiceQuery] = useState("");
   const { user, isPending } = useCurrentUserState();
   const searchableFeatures: { label: string; keywords: string; section: KingPaySection }[] = [
@@ -149,7 +152,7 @@ export function KingPayShell({
                   KingPay Vault
                 </span>
                 <span className="font-mono font-black text-white text-xs">
-                  {formatPaise(walletBalance ?? 500000)}
+                  {formatPaise(walletBalance ?? 0)}
                 </span>
               </div>
               <PlusCircle className="size-3.5 text-amber-400 ml-0.5 group-hover:rotate-90 transition-transform" />

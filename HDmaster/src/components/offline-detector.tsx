@@ -16,27 +16,29 @@ export async function probeNetwork(timeoutMs: number = 3000): Promise<boolean> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    // Try /api/ping first (zero-cost static 200 pong)
-    let res = await fetch("/api/ping", {
-      method: "HEAD",
-      cache: "no-store",
-      signal: controller.signal,
-    }).catch(() => null);
-
-    // Fallback to /api/health or root origin probe if /api/ping is not yet deployed
-    if (!res || res.status === 404) {
-      res = await fetch("/api/health", {
+    try {
+      // Try /api/ping first (zero-cost static 200 pong)
+      let res = await fetch("/api/ping", {
         method: "HEAD",
         cache: "no-store",
         signal: controller.signal,
       }).catch(() => null);
-    }
 
-    clearTimeout(timeoutId);
+      // Fallback to /api/health or root origin probe if /api/ping is not yet deployed
+      if (!res || res.status === 404) {
+        res = await fetch("/api/health", {
+          method: "HEAD",
+          cache: "no-store",
+          signal: controller.signal,
+        }).catch(() => null);
+      }
 
-    // Any HTTP response code (200, 204, 304, 400, 404, 500) confirms active network connectivity to the server
-    if (res && res.status > 0) {
-      return true;
+      // Any HTTP response code (200, 204, 304, 400, 404, 500) confirms active network connectivity to the server
+      if (res && res.status > 0) {
+        return true;
+      }
+    } finally {
+      clearTimeout(timeoutId);
     }
   } catch {
     // Network error during probe
@@ -165,7 +167,9 @@ export function OfflineDetector() {
       }, 3000);
     } else {
       // Soft location reload if truly disconnected
-      window.location.reload();
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
     }
   };
 

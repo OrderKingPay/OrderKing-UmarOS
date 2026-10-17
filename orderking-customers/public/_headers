@@ -45,7 +45,11 @@
 
 # 3. Critical Dynamic Metadata & Offline Pages
 /sw.js
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
   X-Content-Type-Options: nosniff
 
 /manifest.json
@@ -67,6 +71,7 @@
 
 # 4. Global Security Headers (inherited by all requests)
 /*
+  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin

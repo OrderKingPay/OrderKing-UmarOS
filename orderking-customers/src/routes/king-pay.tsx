@@ -13,54 +13,51 @@ export const Route = createFileRoute("/king-pay")({
   errorComponent: AppErrorComponent,
 });
 
-const DEFAULT_WALLET_BALANCE_PAISE = 500000; // ₹5,000.00
-const WALLET_STORAGE_KEY = "orderking_wallet_balance_paise";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
+import {
+  recordAuthenticTopUp,
+  recordAuthenticPayment,
+} from "@/lib/kingpay/ledger-binding";
 
 function OrderKingPayPage() {
   const [activeSection, setActiveSection] = useState<KingPaySection>("pay");
-  const [walletBalancePaise, setWalletBalancePaise] = useState<number>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(WALLET_STORAGE_KEY);
-      if (saved) {
-        const parsed = parseInt(saved, 10);
-        if (!isNaN(parsed) && parsed >= 0) {
-          return parsed;
-        }
-      }
-    }
-    return DEFAULT_WALLET_BALANCE_PAISE;
-  });
+  const { user } = useCurrentUserState();
+  const userId = user?.id || "dev-user";
 
+  // Connect directly to the real Supabase ledger wallet hook - strictly authentic balance
+  const { walletBalancePaise, deductMoney } = useRealKingPayWallet();
   const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
   const [isScanQrOpen, setIsScanQrOpen] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(WALLET_STORAGE_KEY, walletBalancePaise.toString());
+  const handleAddMoneySuccess = async (addedPaise: number) => {
+    try {
+      await recordAuthenticTopUp({
+        userId,
+        amountPaise: addedPaise,
+        source: "UPI",
+      });
+    } catch (err) {
+      console.error("Failed to record top-up to ledger:", err);
     }
-  }, [walletBalancePaise]);
-
-  const handleAddMoneySuccess = (addedPaise: number) => {
-    setWalletBalancePaise((prev) => {
-      const next = prev + addedPaise;
-      if (typeof window !== "undefined") {
-        localStorage.setItem(WALLET_STORAGE_KEY, next.toString());
-      }
-      return next;
-    });
   };
 
-  const handleDeductWallet = (amountPaise: number, _description: string): boolean => {
+  const handleDeductWallet = (amountPaise: number, description: string): boolean => {
     if (walletBalancePaise < amountPaise) {
       return false;
     }
-    setWalletBalancePaise((prev) => {
-      const next = Math.max(0, prev - amountPaise);
-      if (typeof window !== "undefined") {
-        localStorage.setItem(WALLET_STORAGE_KEY, next.toString());
-      }
-      return next;
+
+    // Immediately post authentic double-entry deduction
+    recordAuthenticPayment({
+      userId,
+      recipientId: "MERCHANT_NODAL",
+      amountPaise,
+      memo: description,
+    }).catch((err) => {
+      console.error("Failed to record authentic payment to ledger:", err);
     });
+
+    deductMoney.mutate({ amount: amountPaise / 100, description });
     return true;
   };
 

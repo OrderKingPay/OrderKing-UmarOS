@@ -50,7 +50,26 @@ describe("order state machine", () => {
 
   it("track index follows customer ladder", () => {
     assert.equal(trackIndex("PLACED"), 0);
+    assert.equal(trackIndex("AUTO_ACCEPTED"), 1);
     assert.equal(trackIndex("DELIVERED"), CUSTOMER_TRACK_STEPS.length - 1);
     assert.equal(trackIndex("CANCELLED"), -1);
+  });
+
+  it("supports autonomous zero-human dispatch pipeline (AUTO_ACCEPTED -> PREPARING -> READY -> RIDER_ASSIGNED -> ON_THE_WAY -> DELIVERED)", () => {
+    const pipeline = [
+      ["CHECKOUT", "AUTO_ACCEPTED"],
+      ["AUTO_ACCEPTED", "PREPARING"],
+      ["PREPARING", "READY"],
+      ["READY", "RIDER_ASSIGNED"],
+      ["RIDER_ASSIGNED", "ON_THE_WAY"],
+      ["ON_THE_WAY", "DELIVERED"],
+    ] as const;
+
+    for (const [from, to] of pipeline) {
+      assert.equal(canTransition(from, to), true, `Pipeline step ${from} -> ${to} should be allowed`);
+    }
+
+    assert.equal(customerMayCancel("AUTO_ACCEPTED"), true);
+    assert.equal(SIMULATED_ADVANCE.AUTO_ACCEPTED, "PREPARING");
   });
 });

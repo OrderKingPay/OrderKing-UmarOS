@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   searchFlightQuotes,
   type FlightQuote,
@@ -34,11 +37,13 @@ interface Props {
 }
 
 export function FlightBookingEngine({
-  walletBalance = 500000,
+  walletBalance = 0,
   onDeductWallet,
   initialFrom = "New Delhi (DEL)",
   initialTo = "Mumbai (BOM)",
 }: Props) {
+  const { user } = useCurrentUserState();
+  const navigate = useNavigate();
   const [from, setFrom] = useState(initialFrom);
   const [to, setTo] = useState(initialTo);
   const [departureDate, setDepartureDate] = useState(() => new Date().toISOString().split("T")[0]);
@@ -66,6 +71,11 @@ export function FlightBookingEngine({
   };
 
   const handleOpenBooking = (quote: FlightQuote) => {
+    if (!user) {
+      toast.error("Authentication required: Please sign in to book flights.");
+      navigate({ to: "/login" });
+      return;
+    }
     setSelectedQuote(quote);
     setIsDrawerOpen(true);
   };
@@ -341,7 +351,11 @@ export function FlightBookingEngine({
                     onClick={() => handleOpenBooking(q)}
                     className="h-11 px-6 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 flex items-center gap-1.5"
                   >
-                    Book In-App (₹0 Fee) <ArrowRight className="size-4" />
+                    {user ? (
+                      <>Book In-App (₹0 Fee) <ArrowRight className="size-4" /></>
+                    ) : (
+                      <>Sign in to Book <ArrowRight className="size-4" /></>
+                    )}
                   </Button>
                 </div>
               </div>

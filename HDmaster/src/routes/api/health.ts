@@ -25,10 +25,15 @@ export const Route = createFileRoute('/api/health')({
                 await sql.query('SELECT 1');
                 return 'connected';
               })();
-              const timeoutPromise = new Promise<'timeout'>((resolve) =>
-                setTimeout(() => resolve('timeout'), 1500)
-              );
-              dbStatus = await Promise.race([sqlPromise, timeoutPromise]);
+              let timerId: ReturnType<typeof setTimeout> | undefined;
+              const timeoutPromise = new Promise<'timeout'>((resolve) => {
+                timerId = setTimeout(() => resolve('timeout'), 1500);
+              });
+              try {
+                dbStatus = await Promise.race([sqlPromise, timeoutPromise]);
+              } finally {
+                if (timerId) clearTimeout(timerId);
+              }
             } catch (dbErr) {
               dbStatus = `error: ${String(dbErr)}`;
             }

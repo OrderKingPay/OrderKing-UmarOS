@@ -524,6 +524,14 @@ export const CURATED_DISHES: SearchDishItem[] = [
   },
 ];
 
+import {
+  matchMultilingualDish,
+  isMultilingualDishMatch,
+  MULTILINGUAL_DISH_REGISTRY,
+} from "./search/multilingual-dish-matcher";
+
+export { matchMultilingualDish, isMultilingualDishMatch, MULTILINGUAL_DISH_REGISTRY };
+
 /**
  * Filter and prioritize predictive auto-suggestions based on user's partial query.
  */
@@ -538,10 +546,28 @@ export function getPredictiveSuggestions(
   const results: PredictiveSuggestion[] = [];
   const seen = new Set<string>();
 
+  // 0. Check Multilingual regional/phonetic match
+  const multi = matchMultilingualDish(query);
+  if (multi.matched && multi.canonicalName) {
+    const cleanKey = multi.canonicalName.toLowerCase();
+    if (!seen.has(cleanKey)) {
+      seen.add(cleanKey);
+      results.push({
+        id: `multi-${multi.dishGroupId}`,
+        text: `${multi.canonicalName} (${multi.matchedVariation})`,
+        rawText: multi.canonicalName,
+        type: "dish",
+        badge: "Multilingual 🌐",
+        subtitle: `Matches across Hindi / Bengali / Assamese`,
+      });
+    }
+  }
+
   // 1. Check trending searches
   for (const trending of TRENDING_SEARCHES) {
     const clean = cleanSearchQuery(trending);
-    if (clean.toLowerCase().includes(q) || trending.toLowerCase().includes(q)) {
+    const multiMatch = multi.matched && multi.canonicalName && clean.toLowerCase().includes(multi.canonicalName.toLowerCase());
+    if (clean.toLowerCase().includes(q) || trending.toLowerCase().includes(q) || multiMatch) {
       if (!seen.has(clean.toLowerCase())) {
         seen.add(clean.toLowerCase());
         results.push({
@@ -555,9 +581,11 @@ export function getPredictiveSuggestions(
     }
   }
 
-  // 2. Check dishes
+  // 2. Check dishes (with multilingual support)
   for (const dish of dishes) {
-    if (dish.name.toLowerCase().includes(q)) {
+    const directMatch = dish.name.toLowerCase().includes(q);
+    const multiMatch = isMultilingualDishMatch(dish, query);
+    if (directMatch || multiMatch) {
       const key = dish.name.toLowerCase();
       if (!seen.has(key)) {
         seen.add(key);
@@ -573,9 +601,11 @@ export function getPredictiveSuggestions(
     }
   }
 
-  // 3. Check restaurants
+  // 3. Check restaurants (with multilingual cuisine support)
   for (const r of restaurants) {
-    if (r.name.toLowerCase().includes(q)) {
+    const directMatch = r.name.toLowerCase().includes(q);
+    const multiMatch = isMultilingualDishMatch({ name: r.name, cuisine: r.cuisineSummary }, query);
+    if (directMatch || multiMatch) {
       const key = r.name.toLowerCase();
       if (!seen.has(key)) {
         seen.add(key);
@@ -593,7 +623,9 @@ export function getPredictiveSuggestions(
 
   // 4. Check top cuisines
   for (const c of TOP_CUISINES) {
-    if (c.name.toLowerCase().includes(q)) {
+    const directMatch = c.name.toLowerCase().includes(q);
+    const multiMatch = multi.matched && multi.canonicalName && c.name.toLowerCase().includes(multi.canonicalName.toLowerCase());
+    if (directMatch || multiMatch) {
       const key = c.name.toLowerCase();
       if (!seen.has(key)) {
         seen.add(key);
@@ -622,14 +654,15 @@ export function filterDishes(
   const q = query.trim().toLowerCase();
 
   return dishes.filter((dish) => {
-    // Text search matching dish name, description, cuisine, or restaurant
+    // Text search matching dish name, description, cuisine, or restaurant (plus multilingual variations)
     if (q) {
       const nameMatch = dish.name.toLowerCase().includes(q);
       const descMatch = Boolean(dish.description?.toLowerCase().includes(q));
       const restMatch = dish.restaurantName.toLowerCase().includes(q);
       const cuisineMatch = Boolean(dish.cuisine?.toLowerCase().includes(q));
+      const multiMatch = isMultilingualDishMatch(dish, query);
 
-      if (!nameMatch && !descMatch && !restMatch && !cuisineMatch) {
+      if (!nameMatch && !descMatch && !restMatch && !cuisineMatch && !multiMatch) {
         return false;
       }
     }
@@ -670,12 +703,13 @@ export function filterRestaurants(
   const q = query.trim().toLowerCase();
 
   return restaurants.filter((r) => {
-    // Text search matching restaurant name or cuisine summary
+    // Text search matching restaurant name or cuisine summary (plus multilingual variations)
     if (q) {
       const nameMatch = r.name.toLowerCase().includes(q);
       const cuisineMatch = Boolean(r.cuisineSummary?.toLowerCase().includes(q));
+      const multiMatch = isMultilingualDishMatch({ name: r.name, cuisine: r.cuisineSummary }, query);
 
-      if (!nameMatch && !cuisineMatch) {
+      if (!nameMatch && !cuisineMatch && !multiMatch) {
         return false;
       }
     }

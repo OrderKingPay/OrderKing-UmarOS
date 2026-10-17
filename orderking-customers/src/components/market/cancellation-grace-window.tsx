@@ -56,7 +56,7 @@ export function CancellationGraceWindow({
   );
 
   useEffect(() => {
-    if (countdown.secondsRemaining === 0 && onWindowExpire && status === "PLACED") {
+    if (countdown.secondsRemaining === 0 && onWindowExpire && (status === "PLACED" || status === "AUTO_ACCEPTED")) {
       onWindowExpire();
     }
   }, [countdown.secondsRemaining, onWindowExpire, status]);
@@ -100,7 +100,7 @@ export function CancellationGraceWindow({
   }
 
   // If 60s has expired
-  if (!countdown.isWithinGraceWindow || status !== "PLACED") {
+  if (!countdown.isWithinGraceWindow || (status !== "PLACED" && status !== "AUTO_ACCEPTED")) {
     return (
       <div
         className={`rounded-3xl border border-emerald-400/60 bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/40 p-4 shadow-sm animate-in fade-in transition-all ${className}`}

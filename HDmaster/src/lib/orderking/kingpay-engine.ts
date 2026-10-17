@@ -23,23 +23,35 @@ export function decodeScannedQR(qrString: string): DecodeResult {
   }
 }
 
-/**
- * Verifies the user has enough funds in their KingPay ecosystem wallet.
- * (Blueprint logic for database/wallet integration)
- */
-export async function chargeUserWallet(userId: string, amount: number): Promise<boolean> {
-  // TODO: Replace with actual DB calls (e.g., Prisma, Supabase)
-  console.log(`Checking balance for user ${userId} for amount ${amount}...`);
-  
-  // Mock logic: assume balance is sufficient for this blueprint
-  const mockUserBalance = 5000; 
+import { canonicalLedger } from "./finance/canonical-ledger.ts";
 
-  if (mockUserBalance >= amount) {
-    console.log(`Deducting ${amount} from user ${userId}'s wallet...`);
-    // TODO: Perform atomic transaction to deduct amount from user's wallet table
+/**
+ * Verifies the user has enough authentic funds in their KingPay ecosystem wallet
+ * and records double-entry deduction to the immutable ledger.
+ * ZERO SIMULATED MONEY - Strict Sovereign Invariant.
+ */
+export async function chargeUserWallet(userId: string, amount: number, memo?: string): Promise<boolean> {
+  const amountPaise = Math.round(amount * 100);
+  try {
+    const authenticBalancePaise = await canonicalLedger.getKingPayWalletBalancePaise(userId);
+    if (authenticBalancePaise < amountPaise) {
+      console.error(
+        `Insufficient authentic funds for user ${userId}: available ₹${(authenticBalancePaise / 100).toFixed(2)}, required ₹${amount.toFixed(2)}`
+      );
+      return false;
+    }
+
+    await canonicalLedger.recordKingPayPayment({
+      userId,
+      recipientId: "MERCHANT_NODAL",
+      amountPaise,
+      idempotencyKey: `charge-${userId}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      memo: memo || `KingPay wallet charge for ${userId}`,
+    });
+
     return true;
-  } else {
-    console.error(`Insufficient funds for user ${userId}.`);
+  } catch (error) {
+    console.error(`Error charging user wallet for ${userId}:`, error);
     return false;
   }
 }

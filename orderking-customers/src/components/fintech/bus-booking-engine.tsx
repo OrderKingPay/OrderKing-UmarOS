@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   searchBusQuotes,
   type BusQuote,
@@ -36,11 +39,13 @@ interface Props {
 }
 
 export function BusBookingEngine({
-  walletBalance = 500000,
+  walletBalance = 0,
   onDeductWallet,
   initialFrom = "Bengaluru (Kempegowda)",
   initialTo = "Goa (Panaji)",
 }: Props) {
+  const { user } = useCurrentUserState();
+  const navigate = useNavigate();
   const [from, setFrom] = useState(initialFrom);
   const [to, setTo] = useState(initialTo);
   const [journeyDate, setJourneyDate] = useState(() => new Date().toISOString().split("T")[0]);
@@ -82,6 +87,11 @@ export function BusBookingEngine({
   };
 
   const handleStartBooking = (quote: BusQuote) => {
+    if (!user) {
+      toast.error("Authentication required: Please sign in to book your bus tickets.");
+      navigate({ to: "/login" });
+      return;
+    }
     setDrawerQuote(quote);
     setIsDrawerOpen(true);
   };
@@ -308,7 +318,7 @@ export function BusBookingEngine({
                     }}
                     className="h-9 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs"
                   >
-                    Select Seats &amp; Book In-App ➔
+                    {user ? "Select Seats & Book In-App ➔" : "Sign in to Book ➔"}
                   </Button>
                 </div>
               </div>
@@ -436,7 +446,7 @@ export function BusBookingEngine({
                 onClick={() => handleStartBooking(currentQuote)}
                 className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md shadow-rose-600/25"
               >
-                Proceed to In-App Checkout ➔
+                {user ? "Proceed to In-App Checkout ➔" : "Sign in to Book In-App ➔"}
               </Button>
             </div>
           </div>
