@@ -10,7 +10,7 @@ import { AppErrorComponent } from "@/lib/error-component";
 import { DynamicSectionRenderer } from "@orderking/ui";
 import { homeSectionRegistry, HomeSectionFallback } from "@/components/sdui/home-sections";
 import { UltraLuxuryHero } from "@/components/market/ultra-luxury-hero";
-import { SmartZeroDeliveryFallbackCard } from "@/components/market/zero-delivery-fallback-card";
+
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -62,12 +62,7 @@ function Home() {
           <UltraLuxuryHero />
         </div>
 
-        {/* Smart Zero-Delivery Fallback when no delivery infrastructure in location */}
-        {!isDeliveryActive && (
-          <div className="px-3 pt-3 sm:px-4 sm:pt-4">
-            <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
-          </div>
-        )}
+
 
         {/* Server-Driven UI (SDUI) Dynamic Section Renderer */}
         <ErrorBoundary sectionName="SDUI Home Feed">

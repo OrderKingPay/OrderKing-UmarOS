@@ -6,11 +6,54 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { OfflineDetector } from "@/components/offline-detector";
 import { I18nProvider } from "@/lib/rider/i18n-context";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
-import { CustomizationProvider, DEFAULT_RIDER_CUSTOMIZATION_STATE } from "@orderking/ui";
+import {
+  CustomizationProvider,
+  DEFAULT_RIDER_CUSTOMIZATION_STATE,
+  useUmarOsLiveConfig,
+  toDynamicCustomizationState,
+  type DynamicCustomizationState,
+} from "@orderking/ui";
+import { useMemo } from "react";
 import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 
 const APP_NAME = DEFAULT_BRANDING.appName;
+
+function RiderLiveCustomizationProvider({ children }: { children: React.ReactNode }) {
+  const { config: liveConfig } = useUmarOsLiveConfig({
+    platform: "rider_app",
+    latestUrl: "/api/sync/customizations/latest",
+  });
+
+  const liveCustomizationState = useMemo<Partial<DynamicCustomizationState>>(() => {
+    const dynamic = toDynamicCustomizationState(liveConfig);
+    return {
+      ...DEFAULT_RIDER_CUSTOMIZATION_STATE,
+      ...dynamic,
+      payoutPolicy: {
+        ...DEFAULT_RIDER_CUSTOMIZATION_STATE.payoutPolicy,
+        ...dynamic.payoutPolicy,
+      },
+      designTokens: {
+        ...DEFAULT_RIDER_CUSTOMIZATION_STATE.designTokens,
+        ...dynamic.designTokens,
+        palette: {
+          ...DEFAULT_RIDER_CUSTOMIZATION_STATE.designTokens.palette,
+          ...dynamic.designTokens?.palette,
+        },
+      },
+    };
+  }, [liveConfig]);
+
+  return (
+    <CustomizationProvider
+      initialState={DEFAULT_RIDER_CUSTOMIZATION_STATE}
+      customization={liveCustomizationState}
+    >
+      {children}
+    </CustomizationProvider>
+  );
+}
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
   const { getSessionUser } = await import("@/lib/auth/verify.server");
@@ -49,12 +92,12 @@ export const Route = createRootRoute({
         <OfflineDetector />
         <AuthProvider>
           <I18nProvider>
-            <CustomizationProvider initialState={DEFAULT_RIDER_CUSTOMIZATION_STATE}>
+            <RiderLiveCustomizationProvider>
               <ErrorBoundary>
                 <Outlet />
               </ErrorBoundary>
               <Toaster position="top-center" richColors={false} />
-            </CustomizationProvider>
+            </RiderLiveCustomizationProvider>
           </I18nProvider>
         </AuthProvider>
         <Scripts />

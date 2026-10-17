@@ -159,7 +159,7 @@ function PartnerCustomizationBridge({ children }: { children: React.ReactNode })
   const vendor = useVendor();
 
   // Mount Live SSE Customization Sync to /api/sync/customizations
-  // UmarOS commission tiers and dining settings update live in real-time
+  // Order King central platform commission tiers and dining settings update live in real-time
   const sync = useCustomizationSync({
     url: "/api/sync/customizations",
     latestUrl: "/api/sync/customizations/latest",

@@ -1,5 +1,11 @@
 import { Suspense, useEffect, useMemo } from "react";
-import { CustomizationProvider, useCustomizationSync, type DynamicCustomizationState } from "@orderking/ui";
+import {
+  CustomizationProvider,
+  useCustomizationSync,
+  useUmarOsLiveConfig,
+  toDynamicCustomizationState,
+  type DynamicCustomizationState,
+} from "@orderking/ui";
 import { createServerFn } from "@tanstack/react-start";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -266,6 +272,14 @@ function Root() {
     autoConnect: true,
   });
 
+  const { config: realtimeConfig } = useUmarOsLiveConfig({
+    latestUrl: "/api/sync/customizations/latest",
+  });
+
+  const realtimeState = useMemo<Partial<DynamicCustomizationState>>(() => {
+    return toDynamicCustomizationState(realtimeConfig);
+  }, [realtimeConfig]);
+
   const staticCustomizationState = useMemo<Partial<DynamicCustomizationState>>(() => {
     if (!config?.brand) return {};
     const isDark = config.brand.themeMode === "dark";
@@ -298,38 +312,54 @@ function Root() {
 
   const customizationState = useMemo<Partial<DynamicCustomizationState>>(() => {
     const base = staticCustomizationState || {};
-    const live = liveSyncState || {};
+    const sse = liveSyncState || {};
+    const live = realtimeState || {};
 
     return {
       ...base,
+      ...sse,
       ...live,
       designTokens: {
         ...base.designTokens,
+        ...sse.designTokens,
         ...live.designTokens,
         palette: {
           ...base.designTokens?.palette,
+          ...sse.designTokens?.palette,
           ...live.designTokens?.palette,
         },
         radius: {
           ...base.designTokens?.radius,
+          ...sse.designTokens?.radius,
           ...live.designTokens?.radius,
         },
         shadows: {
           ...base.designTokens?.shadows,
+          ...sse.designTokens?.shadows,
           ...live.designTokens?.shadows,
         },
         elementOverrides: {
           ...base.designTokens?.elementOverrides,
+          ...sse.designTokens?.elementOverrides,
           ...live.designTokens?.elementOverrides,
         },
       },
       pageLayouts: {
         ...base.pageLayouts,
+        ...sse.pageLayouts,
         ...live.pageLayouts,
       },
-      layout: (live as any).layout || (base as any).layout,
+      customerPricing: {
+        ...(sse.customerPricing || {}),
+        ...(live.customerPricing || {}),
+      },
+      featureSwitches: {
+        ...(sse.featureSwitches || {}),
+        ...(live.featureSwitches || {}),
+      },
+      layout: (live as any).layout || (sse as any).layout || (base as any).layout,
     };
-  }, [staticCustomizationState, liveSyncState]);
+  }, [staticCustomizationState, liveSyncState, realtimeState]);
 
   useEffect(() => {
     // Install self-healing chunk error listeners for zero-white-screens

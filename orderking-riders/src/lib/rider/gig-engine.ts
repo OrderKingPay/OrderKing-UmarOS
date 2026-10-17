@@ -316,13 +316,13 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
   },
   {
     id: "weekend-sprint-3",
-    title: "Weekend Sovereign Champion",
+    title: "Weekend Champion Sprint",
     cadence: "WEEKEND_3_DAY",
     daysWindow: 3,
     requiredOrders: 60,
     bonusPaise: 180000, // ₹1,800
     label: "₹1,800",
-    badge: "Sprint Platinum",
+    badge: "Sprint Champion",
     description: "Complete 60 deliveries between Friday 06:00 and Sunday 23:59",
   },
   // Weekly 7-Day Marathons
@@ -334,7 +334,7 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
     requiredOrders: 50,
     bonusPaise: 120000, // ₹1,200
     label: "₹1,200",
-    badge: "Weekly Vanguard",
+    badge: "Weekly Silver",
     description: "Complete 50 deliveries in a single calendar week (Mon - Sun)",
   },
   {
@@ -345,18 +345,18 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
     requiredOrders: 80,
     bonusPaise: 240000, // ₹2,400
     label: "₹2,400",
-    badge: "Weekly Elite",
+    badge: "Weekly Gold",
     description: "Complete 80 deliveries in a single calendar week (Mon - Sun)",
   },
   {
     id: "weekly-marathon-3",
-    title: "Weekly Crown Master",
+    title: "Weekly Champion Courier",
     cadence: "WEEKLY_7_DAY",
     daysWindow: 7,
     requiredOrders: 110,
     bonusPaise: 380000, // ₹3,800
     label: "₹3,800",
-    badge: "Weekly Crown",
+    badge: "Weekly Diamond",
     description: "Complete 110 deliveries in a single calendar week (Mon - Sun)",
   },
 ];

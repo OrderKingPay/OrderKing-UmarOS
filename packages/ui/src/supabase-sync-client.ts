@@ -10,6 +10,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { createClient, SupabaseClient, RealtimeChannel } from "@supabase/supabase-js";
+import type { DynamicCustomizationState } from "./customization-provider";
 
 export interface UmarOsCustomizationConfig {
   version: number;
@@ -44,6 +45,45 @@ export interface UmarOsCustomizationConfig {
     codEnabled: boolean;
     kingPayOneClickEnabled: boolean;
   };
+  logistics?: {
+    riderBasePayRupees: number;
+    firstMileRatePerKm: number;
+    lastMileBand1RatePerKm: number;
+    lastMileBand2RatePerKm: number;
+    lastMileBand3RatePerKm: number;
+    lastMileBand4RatePerKm: number;
+    kitchenWaitRatePerMinRupees: number;
+    kitchenWaitGraceMinutes: number;
+    weatherBonusDrizzleRupees: number;
+    weatherBonusHeavyRainRupees: number;
+    weatherBonusWaterloggedRupees: number;
+    nightSurgeAllowanceRupees: number;
+  };
+  merchantEconomics?: {
+    commissionTierStarterPercent: number;
+    commissionTierStandardPercent: number;
+    commissionTierPremiumPercent: number;
+    commissionRatePercent: number;
+    packagingFeeCapRupees: number;
+    discountCoFundingMerchantPercent: number;
+  };
+  customerPricing?: {
+    baseDeliveryFeeRupees: number;
+    platformFeeRupees: number;
+    smallOrderFeeRupees: number;
+    smallOrderThresholdRupees: number;
+    freeDeliveryCartThresholdRupees: number;
+  };
+  fleetAndCash?: {
+    codFloatingCashLimitRupees: number;
+    dispatchPreAllocationLeadTimeMinutes: number;
+    kitchenDelayVoiceAlertThresholdMinutes: number;
+    codWarningPercent: number;
+  };
+  operatingMode?: "MANUAL_OVERRIDE" | "SELF_TUNING_ALGORITHM";
+  payoutPolicy?: Record<string, any>;
+  designTokens?: Record<string, any>;
+  [key: string]: any;
 }
 
 export const DEFAULT_UMAROS_CONFIG: UmarOsCustomizationConfig = {
@@ -179,16 +219,151 @@ export function mergeConfig(
     : patch.designTokens?.palette
     ? {
         primaryColor: patch.designTokens.palette.primary,
-        accentColor: patch.designTokens.palette.accent,
+        accentColor: patch.designTokens.palette.accent || patch.designTokens.palette.primary,
       }
     : {};
+
+  const economicsPatch = patch.economics
+    ? patch.economics
+    : patch.customerPricing || patch.merchantEconomics
+    ? {
+        ...(patch.customerPricing?.platformFeeRupees ? { platformFeePaise: Math.round(patch.customerPricing.platformFeeRupees * 100) } : {}),
+        ...(patch.customerPricing?.smallOrderThresholdRupees ? { smallCartThresholdPaise: Math.round(patch.customerPricing.smallOrderThresholdRupees * 100) } : {}),
+        ...(patch.customerPricing?.smallOrderFeeRupees ? { smallCartFeePaise: Math.round(patch.customerPricing.smallOrderFeeRupees * 100) } : {}),
+        ...(patch.merchantEconomics?.packagingFeeCapRupees ? { packagingFeeCapPaise: Math.round(patch.merchantEconomics.packagingFeeCapRupees * 100) } : {}),
+        ...(patch.merchantEconomics?.commissionRatePercent ? { defaultCommissionPercent: patch.merchantEconomics.commissionRatePercent } : {}),
+      }
+    : {};
+
+  const logistics = patch.logistics ? { ...(base.logistics || {}), ...patch.logistics } : base.logistics;
+  const merchantEconomics = patch.merchantEconomics ? { ...(base.merchantEconomics || {}), ...patch.merchantEconomics } : base.merchantEconomics;
+  const customerPricing = patch.customerPricing ? { ...(base.customerPricing || {}), ...patch.customerPricing } : base.customerPricing;
+  const fleetAndCash = patch.fleetAndCash ? { ...(base.fleetAndCash || {}), ...patch.fleetAndCash } : base.fleetAndCash;
+  const payoutPolicy = patch.payoutPolicy ? { ...(base.payoutPolicy || {}), ...patch.payoutPolicy } : base.payoutPolicy;
+  const designTokens = patch.designTokens ? { ...(base.designTokens || {}), ...patch.designTokens } : base.designTokens;
 
   return {
     version: typeof patch.version === "number" ? patch.version : base.version,
     updatedAt: patch.updatedAt || patch.timestamp || new Date().toISOString(),
     brand: { ...base.brand, ...brandPatch },
-    economics: { ...base.economics, ...(patch.economics || {}) },
-    features: { ...base.features, ...(patch.features || {}) },
+    economics: { ...base.economics, ...economicsPatch },
+    features: { ...base.features, ...(patch.features || patch.featureSwitches || {}) },
+    ...(logistics ? { logistics } : {}),
+    ...(merchantEconomics ? { merchantEconomics } : {}),
+    ...(customerPricing ? { customerPricing } : {}),
+    ...(fleetAndCash ? { fleetAndCash } : {}),
+    ...(payoutPolicy ? { payoutPolicy } : {}),
+    ...(designTokens ? { designTokens } : {}),
+    operatingMode: patch.operatingMode || base.operatingMode || "SELF_TUNING_ALGORITHM",
+  };
+}
+
+/**
+ * Transforms an UmarOsCustomizationConfig into a DynamicCustomizationState
+ * compatible with @orderking/ui CustomizationProvider.
+ */
+export function toDynamicCustomizationState(config: UmarOsCustomizationConfig): DynamicCustomizationState {
+  const isMonsoon = config.economics?.monsoonAlertActive ?? false;
+  const surgeMultiplier = config.economics?.surgeMultiplier ?? 1.0;
+
+  return {
+    version: config.version,
+    updatedAt: config.updatedAt,
+    designTokens: {
+      palette: {
+        primary: config.brand.primaryColor,
+        primaryForeground: "#FFFFFF",
+        primaryFg: "#FFFFFF",
+        accent: config.brand.accentColor,
+        background: config.designTokens?.palette?.background || "#FCFAF7",
+        bg: config.designTokens?.palette?.background || "#FCFAF7",
+        surface: config.designTokens?.palette?.surface || "#FCFAF7",
+        surfaceElevated: "#FFFFFF",
+        foreground: config.designTokens?.palette?.foreground || "#1C1C1C",
+        fg: config.designTokens?.palette?.foreground || "#1C1C1C",
+        muted: "#6B7280",
+        subtle: "#9CA3AF",
+        border: "#E5E7EB",
+        danger: "#EF4444",
+        success: "#24963F",
+        warn: "#F59E0B",
+        warning: "#F59E0B",
+        card: "#FFFFFF",
+        ...(config.designTokens?.palette || {}),
+      },
+      radius: {
+        xsPx: 4,
+        smPx: 8,
+        mdPx: 12,
+        lgPx: 16,
+        xlPx: 20,
+        full: false,
+        ...(config.designTokens?.radius || {}),
+      },
+      shadows: config.designTokens?.shadows,
+      elementOverrides: config.designTokens?.elementOverrides,
+    },
+    textOverrides: {},
+    payoutPolicy: {
+      baseFarePaise: config.logistics ? Math.round(config.logistics.riderBasePayRupees * 100) : 3000,
+      baseDistanceKm: 2,
+      distanceRatePerKmPaise: config.logistics ? Math.round(config.logistics.firstMileRatePerKm * 100) : 1000,
+      distanceSlabs: {
+        slab1MaxKm: 2,
+        slab2MaxKm: 5,
+        slab2RatePerKmPaise: config.logistics ? Math.round(config.logistics.lastMileBand2RatePerKm * 100) : 1400,
+        slab3MaxKm: 8,
+        slab3RatePerKmPaise: config.logistics ? Math.round(config.logistics.lastMileBand3RatePerKm * 100) : 1800,
+        slab4RatePerKmPaise: config.logistics ? Math.round(config.logistics.lastMileBand4RatePerKm * 100) : 2200,
+        ldoBonusPaise: 2500,
+        ldoThresholdKm: 8,
+      },
+      monsoonSurgePaise: isMonsoon ? 2500 : 0,
+      rainSurgeBonusPaise: config.logistics ? Math.round(config.logistics.weatherBonusHeavyRainRupees * 100) : 3000,
+      weatherAllowancePaise: config.logistics ? Math.round(config.logistics.weatherBonusDrizzleRupees * 100) : 1500,
+      surgeMultiplier: surgeMultiplier,
+      floatingCashLimitPaise: config.fleetAndCash ? Math.round(config.fleetAndCash.codFloatingCashLimitRupees * 100) : 150000,
+      floatingCashLimitInr: config.fleetAndCash?.codFloatingCashLimitRupees ?? 1500,
+      floatingCashHardLockPaise: config.fleetAndCash ? Math.round(config.fleetAndCash.codFloatingCashLimitRupees * 100) : 150000,
+      floatingCashHardLockInr: config.fleetAndCash?.codFloatingCashLimitRupees ?? 1500,
+      floatingCashSoftWarningPaise: config.fleetAndCash ? Math.round(config.fleetAndCash.codFloatingCashLimitRupees * (config.fleetAndCash.codWarningPercent / 100) * 100) : 120000,
+      floatingCashSoftWarningInr: config.fleetAndCash ? Math.round(config.fleetAndCash.codFloatingCashLimitRupees * (config.fleetAndCash.codWarningPercent / 100)) : 1200,
+      floatingCashWarningThresholdPct: config.fleetAndCash?.codWarningPercent ?? 80,
+      waitRatePerMinPaise: config.logistics ? Math.round(config.logistics.kitchenWaitRatePerMinRupees * 100) : 150,
+      waitGraceMinutes: config.logistics?.kitchenWaitGraceMinutes ?? 5,
+      waitCapPaise: 1800,
+      ...(config.payoutPolicy || {}),
+    },
+    operatingMode: config.operatingMode || "SELF_TUNING_ALGORITHM",
+    logistics: config.logistics,
+    customerPricing: config.customerPricing || {
+      baseDeliveryFeeRupees: 35,
+      platformFeeRupees: Math.round(config.economics.platformFeePaise / 100),
+      smallOrderFeeRupees: Math.round(config.economics.smallCartFeePaise / 100),
+      smallOrderThresholdRupees: Math.round(config.economics.smallCartThresholdPaise / 100),
+      freeDeliveryCartThresholdRupees: 299,
+    },
+    merchantEconomics: config.merchantEconomics || {
+      commissionTierStarterPercent: 18,
+      commissionTierStandardPercent: config.economics.defaultCommissionPercent || 22,
+      commissionTierPremiumPercent: 26,
+      commissionRatePercent: config.economics.defaultCommissionPercent || 22,
+      packagingFeeCapRupees: Math.round(config.economics.packagingFeeCapPaise / 100),
+      discountCoFundingMerchantPercent: 50,
+    },
+    fleetAndCash: config.fleetAndCash || {
+      codFloatingCashLimitRupees: 1500,
+      dispatchPreAllocationLeadTimeMinutes: 5,
+      kitchenDelayVoiceAlertThresholdMinutes: 10,
+      codWarningPercent: 80,
+    },
+    featureSwitches: {
+      vipGoldPassEnabled: config.features.vipGoldPassEnabled,
+      diningOutEnabled: config.features.diningOutEnabled,
+      groupOrderingEnabled: config.features.groupOrderingEnabled,
+      codEnabled: config.features.codEnabled,
+      kingPayOneClickEnabled: config.features.kingPayOneClickEnabled,
+    },
   };
 }
 
@@ -331,6 +506,9 @@ export function useUmarOsLiveConfig(
       if (typeof document !== "undefined") {
         document.documentElement.style.setProperty("--ok-primary", merged.brand.primaryColor);
         document.documentElement.style.setProperty("--ok-accent", merged.brand.accentColor);
+        document.documentElement.style.setProperty("--color-primary", merged.brand.primaryColor);
+        document.documentElement.style.setProperty("--primary", merged.brand.primaryColor);
+        document.documentElement.style.setProperty("--color-accent", merged.brand.accentColor);
       }
       return merged;
     });

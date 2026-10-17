@@ -70,7 +70,7 @@ export function FloatingCashCard({
   const tierConfig = getTrustTier(lifetimeDeliveries);
   const tierProgression = getTrustTierProgression(lifetimeDeliveries);
 
-  // Effective Limit based on dynamic trust tier or UmarOS discipline override
+  // Effective Limit based on dynamic trust tier or discipline override
   const effectiveLimitPaise = disciplineConfig?.floatingCashLimitInr
     ? disciplineConfig.floatingCashLimitInr * 100
     : Math.max(tierConfig.floatingCashLimitPaise, pocketBalance.limitPaise || cod.hardLockPaise);

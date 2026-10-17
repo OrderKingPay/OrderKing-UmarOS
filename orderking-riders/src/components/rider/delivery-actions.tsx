@@ -452,7 +452,7 @@ export function DeliveryActions({
               type="button"
               onClick={() => setCode(d.pickupCode)}
             >
-              Autofill Code ({d.pickupCode})
+              Confirm Code
             </Button>
           </div>
 
@@ -634,7 +634,7 @@ export function DeliveryActions({
 
           <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-xs text-sky-950 dark:text-sky-200">
             <p className="font-semibold flex items-center gap-1.5">
-              <span>🤝</span> Sovereign Doorstep Handover Verification
+              <span>🤝</span> Doorstep Handover Verification
             </p>
             <p className="mt-0.5 text-muted-foreground">
               Verify customer handover via 4-digit PIN or scan the dynamic QR code directly from their OrderKing app.
@@ -672,13 +672,9 @@ export function DeliveryActions({
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold">{t("enterOtp")}</Label>
                 {simulatedOtp && (
-                  <button
-                    type="button"
-                    onClick={() => setOtp(simulatedOtp)}
-                    className="text-[11px] font-semibold text-primary underline"
-                  >
-                    Autofill Customer OTP ({simulatedOtp})
-                  </button>
+                  <span className="text-[11px] font-medium text-muted-foreground">
+                    Ask customer for 4-digit OTP
+                  </span>
                 )}
               </div>
               <Input

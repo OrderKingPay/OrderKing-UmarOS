@@ -113,7 +113,7 @@ export const VERIFIED_AVAILABLE_KITCHENS: RestaurantCard[] = [
     slug: "saravanaa-bhavan-cp",
     name: "Saravanaa Bhavan",
     coverImage: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=720&auto=format&fit=crop&q=80",
-    cuisineSummary: "South Indian · Pure Veg · Thali · Filter Coffee",
+    cuisineSummary: "South Indian · Dosa & Idli · Pure Veg · Thali · Filter Coffee",
     vegOnly: true,
     prepMinutes: 18,
     dataLabel: "LIVE",

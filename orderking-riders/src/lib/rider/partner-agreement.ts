@@ -409,7 +409,7 @@ Pursuant to Section 10A of the Information Technology Act, 2000, this document i
 - **Partner Assent:** Confirmed by electronic checkbox assent & OTP identity verification
 - **Statutory Social Security Fund Allocation:** Registered at ${ORDERKING_PARTNER_AGREEMENT_METADATA.welfareFundRate}
 - **Group Accidental Insurance Status:** Active coverage at ${ORDERKING_PARTNER_AGREEMENT_METADATA.accidentalDeathCover} Accidental Death & ${ORDERKING_PARTNER_AGREEMENT_METADATA.hospitalizationCover} Hospitalization
-- **UmarOS Compliance Approval:** Enforced via autonomous legal engine review
+- **Statutory Fleet Compliance Approval:** Enforced via verified regulatory and fleet audit engine
 `;
 
   return md;

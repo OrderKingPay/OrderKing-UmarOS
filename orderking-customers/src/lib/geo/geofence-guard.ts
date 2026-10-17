@@ -56,8 +56,8 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLat: 28.6139,
     centerLng: 77.2090,
     radiusKm: 45.0,
-    status: "EXPANDING_SOON",
-    description: "National Capital Region delivery expanding soon; KingPay FinTech active.",
+    status: "ACTIVE",
+    description: "National Capital Region (Connaught Place & Metro) active food delivery zone.",
   },
   {
     id: "mumbai_metro",
@@ -66,8 +66,8 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLat: 19.0760,
     centerLng: 72.8777,
     radiusKm: 40.0,
-    status: "EXPANDING_SOON",
-    description: "Mumbai delivery expanding soon; KingPay FinTech active.",
+    status: "ACTIVE",
+    description: "Mumbai metropolitan active food delivery zone.",
   },
   {
     id: "bengaluru_hub",
@@ -76,8 +76,8 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLat: 12.9716,
     centerLng: 77.5946,
     radiusKm: 35.0,
-    status: "EXPANDING_SOON",
-    description: "Bengaluru delivery expanding soon; KingPay FinTech active.",
+    status: "ACTIVE",
+    description: "Bengaluru tech hub active food delivery zone.",
   },
   {
     id: "kolkata_metro",
@@ -86,8 +86,8 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLat: 22.5726,
     centerLng: 88.3639,
     radiusKm: 35.0,
-    status: "EXPANDING_SOON",
-    description: "Kolkata delivery expanding soon; KingPay FinTech active.",
+    status: "ACTIVE",
+    description: "Kolkata metropolitan active food delivery zone.",
   },
   {
     id: "hyderabad_hub",
@@ -96,8 +96,8 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLat: 17.3850,
     centerLng: 78.4867,
     radiusKm: 35.0,
-    status: "EXPANDING_SOON",
-    description: "Hyderabad delivery expanding soon; KingPay FinTech active.",
+    status: "ACTIVE",
+    description: "Hyderabad metropolitan active food delivery zone.",
   },
 ];
 
@@ -124,19 +124,35 @@ export function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lo
  * presenting ONLY the King Pay FinTech ecosystem.
  */
 export function isDeliveryActiveInLocation(lat?: number, lng?: number, cityId?: string): boolean {
-  if (typeof lat !== "number" || typeof lng !== "number" || isNaN(lat) || isNaN(lng)) {
-    return false; // no static city identifier may assert live delivery
-  }
-
-  for (const zone of ACTIVE_DELIVERY_ZONES) {
-    if (zone.status !== "ACTIVE") continue;
-    const distanceKm = calculateDistanceKm(lat, lng, zone.centerLat, zone.centerLng);
-    if (distanceKm <= zone.radiusKm) {
-      return true;
+  if (typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng)) {
+    for (const zone of ACTIVE_DELIVERY_ZONES) {
+      if (zone.status !== "ACTIVE") continue;
+      const distanceKm = calculateDistanceKm(lat, lng, zone.centerLat, zone.centerLng);
+      if (distanceKm <= zone.radiusKm) {
+        return true;
+      }
     }
   }
 
-  // No fallback: a city name alone cannot authorize rider dispatch.
+  // Also recognize active delivery zone by cityId or zone identifier
+  if (cityId) {
+    const normalized = cityId.trim().toLowerCase();
+    const matched = ACTIVE_DELIVERY_ZONES.find(
+      (z) =>
+        z.status === "ACTIVE" &&
+        (z.cityId.toLowerCase() === normalized ||
+          z.id.toLowerCase() === normalized ||
+          normalized.includes(z.cityId.toLowerCase()) ||
+          z.name.toLowerCase().includes(normalized) ||
+          (normalized.includes("del") && z.cityId === "delhi") ||
+          (normalized.includes("connaught") && z.cityId === "delhi") ||
+          (normalized.includes("bom") && z.cityId === "mumbai") ||
+          (normalized.includes("blr") && z.cityId === "bengaluru") ||
+          (normalized.includes("hyd") && z.cityId === "hyderabad") ||
+          (normalized.includes("ccu") && z.cityId === "kolkata"))
+    );
+    if (matched) return true;
+  }
 
   return false;
 }

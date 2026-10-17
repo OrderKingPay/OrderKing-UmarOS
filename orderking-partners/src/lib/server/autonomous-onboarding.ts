@@ -1,5 +1,5 @@
 /**
- * UMAR OS - Autonomous Merchant Onboarding & Menu Digitizer
+ * Order King - Autonomous Merchant Onboarding & Menu Digitizer
  * Domain: Zero-Human Partner Automation
  * 
  * Mandate:

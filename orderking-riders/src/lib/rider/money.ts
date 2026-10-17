@@ -81,7 +81,11 @@ export const STATUTORY_DISTANCE_RATE_PER_KM_PAISE = 1200;
 export const MIN_DISTANCE_RATE_PER_KM_PAISE = 700; // ₹7/km
 export const MAX_DISTANCE_RATE_PER_KM_PAISE = 1400; // ₹14/km
 
-export type CityTier = "TIER_1" | "TIER_2" | "TIER_3";
+/** Tier-1 Base Pay boundaries: ₹20 to ₹35 depending on zone/tier */
+export const MIN_TIER1_BASE_PAY_PAISE = 2000; // ₹20.00
+export const MAX_TIER1_BASE_PAY_PAISE = 3500; // ₹35.00
+
+export type CityTier = "TIER_1" | "TIER_2" | "TIER_3" | "TIER_LOCAL";
 
 export interface CityTierPayConfig {
   tier: CityTier;
@@ -90,7 +94,7 @@ export interface CityTierPayConfig {
   dropFeePaise: number;
   basePayPaise: number; // pickupFeePaise + dropFeePaise
   baseDistanceKm: number;
-  defaultRatePerKmPaise: number; // ₹10-₹14/km
+  defaultRatePerKmPaise: number; // ₹7-₹12/km
   minimumFareFloorPaise: number;
 }
 
@@ -102,6 +106,8 @@ export interface CityTierPayConfig {
  *   Base Pay: ₹30 (Pickup ₹18 + Drop ₹12) | Floor: ₹30 | Rate: ₹11/km beyond 2km
  * - Tier 3 (Emerging Towns & Rest of India)
  *   Base Pay: ₹25 (Pickup ₹15 + Drop ₹10) | Floor: ₹25 | Rate: ₹10/km beyond 2km
+ * - Tier Local / Rural Zones:
+ *   Base Pay: ₹20 (Pickup ₹12 + Drop ₹8) | Floor: ₹20 | Rate: ₹8.50/km beyond 2km
  */
 export const CITY_TIER_PAY_CONFIGS: Record<CityTier, CityTierPayConfig> = {
   TIER_1: {
@@ -133,6 +139,16 @@ export const CITY_TIER_PAY_CONFIGS: Record<CityTier, CityTierPayConfig> = {
     baseDistanceKm: 2,
     defaultRatePerKmPaise: 1000, // ₹10.00/km
     minimumFareFloorPaise: 2500, // ₹25.00
+  },
+  TIER_LOCAL: {
+    tier: "TIER_LOCAL",
+    name: "Tier Local / Suburban Zones (Base ₹20)",
+    pickupFeePaise: 1200, // ₹12.00
+    dropFeePaise: 800, // ₹8.00
+    basePayPaise: 2000, // ₹20.00
+    baseDistanceKm: 2,
+    defaultRatePerKmPaise: 850, // ₹8.50/km
+    minimumFareFloorPaise: 2000, // ₹20.00
   },
 };
 
@@ -339,6 +355,40 @@ export function calculateProgressiveDistancePay(
     distancePayPaise: totalDistancePayPaise,
     billableExtraKm,
   };
+}
+
+/**
+ * Statutory Tier-1 Progressive Distance Slabs covering 0-3km base distance:
+ * - Base 0 to 3.0 km: Covered in base pay (₹0 extra).
+ * - Slab 2 (3.0 to 6.0 km): ₹8.50/km (850 paise/km) [Statutory range: ₹7–₹12/km].
+ * - Slab 3 (6.0 to 8.0 km): ₹10.50/km (1,050 paise/km) [Statutory range: ₹7–₹12/km].
+ * - Slab 4 (> 8.0 km - Long Distance Order / LDO): ₹12.00/km (1,200 paise/km) + ₹20.00 (2,000 paise) flat return bonus.
+ */
+export const TIER1_PROGRESSIVE_DISTANCE_SLABS_3KM = {
+  SLAB_1_BASE: { minKm: 0.0, maxKm: 3.0, ratePerKmPaise: 0 },
+  SLAB_2_NEAR: { minKm: 3.0, maxKm: 6.0, ratePerKmPaise: 850 },
+  SLAB_3_MID: { minKm: 6.0, maxKm: 8.0, ratePerKmPaise: 1050 },
+  SLAB_4_FAR: { minKm: 8.0, maxKm: Infinity, ratePerKmPaise: 1200 },
+} as const;
+
+/**
+ * Calculates progressive distance pay with base 0–3km covered and ₹7–₹12/km after 3km.
+ */
+export function calculateTier1ProgressivePay3Km(
+  distanceKm: number,
+  customRatePerKmPaise?: number,
+): ProgressiveDistanceBreakdown {
+  const rate = customRatePerKmPaise ?? 850;
+  return calculateProgressiveDistancePay(distanceKm, {
+    slab1MaxKm: 3.0,
+    slab2MaxKm: 6.0,
+    slab3MaxKm: 8.0,
+    slab2RatePerKmPaise: rate,
+    slab3RatePerKmPaise: customRatePerKmPaise !== undefined ? customRatePerKmPaise : 1050,
+    slab4RatePerKmPaise: customRatePerKmPaise !== undefined ? customRatePerKmPaise : 1200,
+    ldoBonusPaise: LDO_RETURN_BONUS_PAISE,
+    ldoThresholdKm: LDO_THRESHOLD_KM,
+  });
 }
 
 /**
@@ -555,6 +605,43 @@ export function calculateWaitTimeMinutes(
   return Math.floor((endMs - startMs) / 60000);
 }
 
+/**
+ * Exact Tier-1 Kitchen Wait Pay:
+ * - Counter wait begins upon courier marking 'ARRIVED_AT_RESTAURANT'.
+ * - Starts automatically after 5 minutes grace period.
+ * - Paid at ₹1.00/minute (100 paise/minute).
+ * - Capped at 30 billable minutes (₹30.00 / 3,000 paise) to strictly eliminate runaway financial liability.
+ */
+export function calculateTier1KitchenWaitPay(
+  waitMinutes: number,
+  waitCapPaise: number = MAX_WAIT_PAY_PAISE,
+): {
+  totalWaitMinutes: number;
+  gracePeriodMinutes: number;
+  rawBillableWaitMinutes: number;
+  billableWaitMinutes: number;
+  maxBillableWaitMinutes: number;
+  isCapped: boolean;
+  ratePerMinPaise: number;
+  waitPayPaise: number;
+  waitCapPaise: number | null;
+} {
+  return calculateRestaurantWaitPay(
+    waitMinutes,
+    TIER1_WAIT_GRACE_MINUTES, // 5 minutes grace
+    RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE, // 100 paise/min (₹1.00/min)
+    MAX_BILLABLE_WAIT_MINUTES, // 30 mins
+    waitCapPaise,
+  );
+}
+
+export function calculateTier1KitchenWaitPayPaise(
+  waitMinutes: number,
+  waitCapPaise: number = MAX_WAIT_PAY_PAISE,
+): number {
+  return calculateTier1KitchenWaitPay(waitMinutes, waitCapPaise).waitPayPaise;
+}
+
 // ---------------------------------------------------------------------------
 // 4. RAIN SURGE & PEAK HOUR SURGE PAY: DYNAMIC MULTIPLIER (₹10 - ₹45 SURGE)
 // ---------------------------------------------------------------------------
@@ -696,23 +783,44 @@ export interface StackedOrderPayBreakdown {
   stackedPayPaise: number;
 }
 
+export interface StackedOrderPayOptions {
+  pickupDiscountPct?: number; // e.g. 40% discount (60% paid) or 35% discount (65% paid)
+  pickupFeePercentage?: number; // legacy alias e.g. 60%
+  dropFeePercentage?: number; // default 100%
+  customPickupFeePaise?: number;
+  customDropFeePaise?: number;
+}
+
 export function calculateStackedOrderPay(
   secondaryOrderCount: number,
   cityTier: CityTier = "TIER_1",
+  options?: StackedOrderPayOptions,
 ): StackedOrderPayBreakdown {
   const count = Math.max(0, Number.isFinite(secondaryOrderCount) ? Math.floor(secondaryOrderCount) : 0);
   const cfg = CITY_TIER_PAY_CONFIGS[cityTier] ?? CITY_TIER_PAY_CONFIGS.TIER_1;
 
-  const stackedPickupFeePaise = Math.round((cfg.pickupFeePaise * STACKED_PICKUP_FEE_PERCENTAGE) / 100);
-  const stackedDropFeePaise = Math.round((cfg.dropFeePaise * STACKED_DROP_FEE_PERCENTAGE) / 100);
+  const pickupFee = options?.customPickupFeePaise ?? cfg.pickupFeePaise;
+  const dropFee = options?.customDropFeePaise ?? cfg.dropFeePaise;
+
+  let pickupPct = STACKED_PICKUP_FEE_PERCENTAGE;
+  if (options?.pickupDiscountPct !== undefined) {
+    pickupPct = Math.max(0, 100 - options.pickupDiscountPct);
+  } else if (options?.pickupFeePercentage !== undefined) {
+    pickupPct = options.pickupFeePercentage;
+  }
+
+  const dropPct = options?.dropFeePercentage ?? STACKED_DROP_FEE_PERCENTAGE;
+
+  const stackedPickupFeePaise = Math.round((pickupFee * pickupPct) / 100);
+  const stackedDropFeePaise = Math.round((dropFee * dropPct) / 100);
   const payPerSecondaryOrderPaise = stackedPickupFeePaise + stackedDropFeePaise;
   const totalStackedOrderPayPaise = count * payPerSecondaryOrderPaise;
 
   return {
     secondaryOrderCount: count,
     cityTier: cfg.tier,
-    tierPickupFeePaise: cfg.pickupFeePaise,
-    tierDropFeePaise: cfg.dropFeePaise,
+    tierPickupFeePaise: pickupFee,
+    tierDropFeePaise: dropFee,
     stackedPickupFeePaise,
     stackedDropFeePaise,
     payPerSecondaryOrderPaise,
@@ -724,8 +832,9 @@ export function calculateStackedOrderPay(
 export function calculateStackedOrderPayPaise(
   secondaryOrderCount: number,
   cityTier: CityTier = "TIER_1",
+  options?: StackedOrderPayOptions,
 ): number {
-  return calculateStackedOrderPay(secondaryOrderCount, cityTier).totalStackedOrderPayPaise;
+  return calculateStackedOrderPay(secondaryOrderCount, cityTier, options).totalStackedOrderPayPaise;
 }
 
 // ---------------------------------------------------------------------------

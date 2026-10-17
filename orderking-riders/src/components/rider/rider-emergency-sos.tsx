@@ -311,7 +311,7 @@ export function RiderEmergencySafetySheet({
             recorder.start();
           })
           .catch(() => {
-            // Simulated fallback audio telemetry mode
+            // Fallback audio telemetry mode
           });
       }
     }

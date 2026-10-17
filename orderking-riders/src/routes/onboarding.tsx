@@ -178,17 +178,21 @@ function Page() {
   function handleDigiLockerConnect() {
     setDigilockerLinked(true);
     setAadhaarMode("DIGILOCKER");
-    const resolvedLast4 = aadhaarLast4.trim() || rider?.governmentIdLast4 || "4821";
-    setAadhaarLast4(resolvedLast4);
-    setDocs((prev) => ({
-      ...prev,
-      aadhaarMasked: {
-        name: `DigiLocker_UIDAI_eAadhaar_${resolvedLast4}.xml`,
-        sizeBytes: 15420,
-        previewUrl: null,
-      },
-    }));
-    toast.success("DigiLocker Connected: Masked Aadhaar XML verified directly via UIDAI gateway.");
+    const resolvedLast4 = aadhaarLast4.trim() || rider?.governmentIdLast4 || "";
+    if (resolvedLast4) {
+      setAadhaarLast4(resolvedLast4);
+      setDocs((prev) => ({
+        ...prev,
+        aadhaarMasked: {
+          name: `DigiLocker_UIDAI_eAadhaar_${resolvedLast4}.xml`,
+          sizeBytes: 15420,
+          previewUrl: null,
+        },
+      }));
+      toast.success("DigiLocker Connected: Masked Aadhaar XML verified via UIDAI gateway.");
+    } else {
+      toast.info("DigiLocker Gateway Linked. Enter the last 4 digits of your Aadhaar to complete verification.");
+    }
   }
   const [agreements, setAgreements] = useState<LegalAgreementsState>({
     serviceAgreement: false,
@@ -575,7 +579,7 @@ function Page() {
 
     if (!hasUpi && !hasBank) {
       setError(
-        "Please provide an Active Bank Account (with IFSC) or a verified UPI ID for employ-less automated weekly Wednesday payouts.",
+        "Please provide an Active Bank Account (with IFSC) or a verified UPI ID for automated weekly Wednesday deposits.",
       );
       return;
     }
@@ -820,15 +824,15 @@ function Page() {
               </div>
             </div>
 
-            {/* Employ-less Automated Wednesday Payout Card */}
+            {/* Weekly Wednesday Payout Card */}
             <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <span className="text-xs font-bold text-emerald-900">
-                    Employ-Less Automated Weekly Wednesday Payout Schedule
+                    Weekly Wednesday Payout Schedule
                   </span>
                   <p className="text-sm sm:text-base font-extrabold text-slate-900 mt-0.5">
-                    Automated Direct Deposit · Every Wednesday at 06:00 IST
+                    Direct Bank / UPI Deposit · Every Wednesday at 06:00 IST
                   </p>
                 </div>
                 <span className="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-bold text-white shrink-0">
@@ -836,7 +840,7 @@ function Page() {
                 </span>
               </div>
               <p className="text-xs text-emerald-950 leading-relaxed">
-                Settlements execute automatically without human middle-managers. Earnings include guaranteed floor fare (₹35 minimum), distance pay, wait-time compensation, and 100% customer tips pass-through directly credited to your verified bank account or UPI ID.
+                Weekly earnings are deposited directly every Wednesday at 06:00 IST to your verified bank account or UPI ID. Settlements include base pay, distance allowance, wait-time compensation, and 100% of customer tips.
               </p>
             </div>
 
@@ -1186,23 +1190,23 @@ function Page() {
                       [
                         {
                           id: "BIKE",
-                          title: "Motorcycle (BIKE)",
-                          sub: "Petrol 2-Wheeler · DL & RC Strictly Required (MVA 1988)",
+                          title: "Petrol Bike",
+                          sub: "Driving License & RC strictly required (MVA 1988)",
                         },
                         {
                           id: "SCOOTER",
-                          title: "Scooter (SCOOTER)",
-                          sub: "Petrol 2-Wheeler · DL & RC Strictly Required (MVA 1988)",
+                          title: "Petrol Scooter",
+                          sub: "Driving License & RC strictly required (MVA 1988)",
                         },
                         {
                           id: "EV",
-                          title: "Low-Speed EV",
-                          sub: "<250W, <25 km/h · Strictly Exempt (CMVR Rule 2(u))",
+                          title: "Electric Bike (<25 km/h)",
+                          sub: "Driving License & RC strictly non-mandatory under CMVR Rule 2(u)",
                         },
                         {
                           id: "CYCLE",
-                          title: "Bicycle (CYCLE)",
-                          sub: "Pedal Cycle · Strictly Exempt (CMVR Rule 2(u))",
+                          title: "Bicycle",
+                          sub: "Driving License & RC strictly non-mandatory under CMVR Rule 2(u)",
                         },
                       ] as const
                     ).map((v) => (
@@ -1237,16 +1241,16 @@ function Page() {
                   <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-950 dark:text-emerald-200 space-y-2">
                     <p className="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5 text-sm">
                       <ShieldCheck className="size-4.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                      Statutory Exemption Notice — CMVR Rule 2(u) ({vehicleCategory === "CYCLE"
-                        ? "Pedal Bicycle"
-                        : "Low-Speed EV <250W, <25 km/h"})
+                      Statutory Compliance Notice — CMVR Rule 2(u) ({vehicleCategory === "CYCLE"
+                        ? "Bicycle"
+                        : "Electric Bike (<25 km/h)"})
                     </p>
                     <p className="leading-relaxed">
-                      Under Rule 2(u) of the Central Motor Vehicles Rules (CMVR), 1989, <strong>Driving Licence (DL) &amp; Vehicle Registration Certificate (RC) are STRICTLY EXEMPT</strong> for {vehicleCategory === "CYCLE" ? "Bicycle" : "Low-Speed Electric Vehicle (<250W, <25 km/h)"} delivery partners. No DL or RC is required.
+                      Under Rule 2(u) of the Central Motor Vehicles Rules (CMVR), 1989, <strong>Driving License &amp; Vehicle Registration (RC) are strictly non-mandatory</strong> for {vehicleCategory === "CYCLE" ? "Bicycle" : "Electric Bike (<25 km/h)"} delivery partners.
                     </p>
                     <div className="rounded-lg bg-white/80 dark:bg-slate-900/80 border border-emerald-200 dark:border-emerald-800/60 p-2.5 text-[11px] space-y-1">
                       <span className="font-bold text-emerald-900 dark:text-emerald-300 block">
-                        Required Statutory Documents for {vehicleCategory === "CYCLE" ? "Bicycle" : "Low-Speed EV"} Onboarding:
+                        Required Documents for {vehicleCategory === "CYCLE" ? "Bicycle" : "Electric Bike (<25 km/h)"} Onboarding:
                       </span>
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-800 dark:text-slate-200">
                         <li className="flex items-center gap-1.5">
@@ -1263,12 +1267,12 @@ function Page() {
                         </li>
                         <li className="flex items-center gap-1.5">
                           <CheckCircle2 className="size-3 text-emerald-600 shrink-0" />
-                          <span>Partner Selfie with OrderKing delivery bag</span>
+                          <span>Partner Selfie with delivery bag</span>
                         </li>
                       </ul>
                     </div>
                     <p className="text-[11px] text-emerald-800 dark:text-emerald-300/80 italic">
-                      * Driving Licence &amp; Vehicle RC are strictly required ONLY for petrol two-wheelers (Motorcycle / Scooter) under the Motor Vehicles Act, 1988.
+                      * Driving License &amp; Vehicle RC are strictly required ONLY for petrol two-wheelers (Petrol Bike / Scooter) under the Motor Vehicles Act, 1988.
                     </p>
                   </div>
                 ) : (
@@ -1357,7 +1361,7 @@ function Page() {
                       <div className="mt-1 flex items-center justify-between rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs">
                         <div className="flex items-center gap-1.5 text-emerald-900 font-semibold">
                           <CheckCircle2 className="size-4 text-emerald-700" />
-                          <span>DigiLocker UIDAI: Verified (•••• {aadhaarLast4 || "4821"})</span>
+                          <span>DigiLocker UIDAI: Verified {aadhaarLast4 ? `(•••• ${aadhaarLast4})` : "(Linked)"}</span>
                         </div>
                         <button
                           type="button"
@@ -1610,26 +1614,26 @@ function Page() {
                     <div className="sm:col-span-2 rounded-xl border border-emerald-300 bg-emerald-50/80 p-3.5 space-y-1 text-xs">
                       <div className="flex items-center gap-2 text-emerald-900 font-bold">
                         <CheckCircle2 className="size-4 text-emerald-700 shrink-0" />
-                        <span>Automated Bank Routing Verified · Employ-less Weekly Wednesday Payout Ready</span>
+                        <span>Automated Bank Routing Verified · Weekly Wednesday Payout Ready</span>
                       </div>
                       <p className="text-emerald-800 text-[11px] pl-6">
-                        Bank: {ifscBankLabel || detectIfscBank(ifsc)} · Account: ••••{bankAccountNumber.slice(-4)} (Confirmed) · Direct NEFT/IMPS settlement runs every Wednesday at 06:00 IST without human middle-managers.
+                        Bank: {ifscBankLabel || detectIfscBank(ifsc)} · Account: ••••{bankAccountNumber.slice(-4)} (Confirmed) · Direct NEFT/IMPS settlement runs every Wednesday at 06:00 IST to your registered account.
                       </p>
                     </div>
                   )}
 
-                  {/* Employ-less Automated Wednesday Payout Information Banner */}
+                  {/* Automated Weekly Wednesday Payout Information Banner */}
                   <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-slate-900 text-white p-4 space-y-1.5 shadow-xs">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                        Employ-less Automated Weekly Wednesday Payouts
+                        Automated Weekly Wednesday Payouts
                       </span>
                       <span className="rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 border border-emerald-400/30">
-                        Zero Human Middle-Managers
+                        Direct Deposit
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      Earnings are disbursed automatically every Wednesday at 06:00 IST directly to your verified bank account or UPI ID. Includes guaranteed base fare floor (₹35 minimum), distance pay, wait-time compensation, and 100% of customer tips with zero manual approval delays.
+                      Earnings are disbursed automatically every Wednesday at 06:00 IST directly to your verified bank account or UPI ID. Includes base pay, distance allowance, wait-time compensation, and 100% of customer tips.
                     </p>
                   </div>
                 </div>

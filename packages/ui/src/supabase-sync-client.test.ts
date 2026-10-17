@@ -11,6 +11,7 @@ import {
   fetchUmarOsLiveConfigSnapshot,
   broadcastUmarOsConfigUpdate,
   setSharedSupabaseClient,
+  toDynamicCustomizationState,
   type UmarOsCustomizationConfig,
 } from "./supabase-sync-client.ts";
 
@@ -303,6 +304,107 @@ describe("UMAR OS Supabase Realtime & Polling Fallback Sync Client", () => {
       assert.strictEqual(result.persisted, true);
       assert.strictEqual(broadcastSent, true);
       assert.strictEqual(channelRemoved, true);
+    });
+  });
+
+  describe("Commission Dials & Platform Controls Ingestion", () => {
+    it("merges logistics, distance bands, kitchen wait, weather bonuses, and COD limits", () => {
+      const patch: Partial<UmarOsCustomizationConfig> = {
+        version: 15,
+        logistics: {
+          riderBasePayRupees: 35,
+          firstMileRatePerKm: 12,
+          lastMileBand1RatePerKm: 12,
+          lastMileBand2RatePerKm: 16,
+          lastMileBand3RatePerKm: 20,
+          lastMileBand4RatePerKm: 25,
+          kitchenWaitRatePerMinRupees: 2,
+          kitchenWaitGraceMinutes: 4,
+          weatherBonusDrizzleRupees: 20,
+          weatherBonusHeavyRainRupees: 40,
+          weatherBonusWaterloggedRupees: 60,
+          nightSurgeAllowanceRupees: 25,
+        },
+        merchantEconomics: {
+          commissionTierStarterPercent: 15,
+          commissionTierStandardPercent: 20,
+          commissionTierPremiumPercent: 25,
+          commissionRatePercent: 20,
+          packagingFeeCapRupees: 30,
+          discountCoFundingMerchantPercent: 50,
+        },
+        fleetAndCash: {
+          codFloatingCashLimitRupees: 2000,
+          dispatchPreAllocationLeadTimeMinutes: 4,
+          kitchenDelayVoiceAlertThresholdMinutes: 8,
+          codWarningPercent: 75,
+        },
+        operatingMode: "MANUAL_OVERRIDE",
+      };
+
+      const merged = mergeConfig(DEFAULT_UMAROS_CONFIG, patch);
+      assert.strictEqual(merged.version, 15);
+      assert.strictEqual(merged.operatingMode, "MANUAL_OVERRIDE");
+      assert.strictEqual(merged.logistics?.riderBasePayRupees, 35);
+      assert.strictEqual(merged.logistics?.lastMileBand2RatePerKm, 16);
+      assert.strictEqual(merged.merchantEconomics?.commissionRatePercent, 20);
+      assert.strictEqual(merged.merchantEconomics?.packagingFeeCapRupees, 30);
+      assert.strictEqual(merged.fleetAndCash?.codFloatingCashLimitRupees, 2000);
+      assert.strictEqual(merged.fleetAndCash?.codWarningPercent, 75);
+    });
+
+    it("toDynamicCustomizationState maps config into full state for Customer and Rider applications", () => {
+      const config: UmarOsCustomizationConfig = {
+        ...DEFAULT_UMAROS_CONFIG,
+        version: 22,
+        brand: {
+          ...DEFAULT_UMAROS_CONFIG.brand,
+          primaryColor: "#059669",
+          accentColor: "#D97706",
+        },
+        logistics: {
+          riderBasePayRupees: 32,
+          firstMileRatePerKm: 11,
+          lastMileBand1RatePerKm: 11,
+          lastMileBand2RatePerKm: 15,
+          lastMileBand3RatePerKm: 19,
+          lastMileBand4RatePerKm: 24,
+          kitchenWaitRatePerMinRupees: 1.5,
+          kitchenWaitGraceMinutes: 5,
+          weatherBonusDrizzleRupees: 18,
+          weatherBonusHeavyRainRupees: 35,
+          weatherBonusWaterloggedRupees: 55,
+          nightSurgeAllowanceRupees: 22,
+        },
+        fleetAndCash: {
+          codFloatingCashLimitRupees: 1800,
+          dispatchPreAllocationLeadTimeMinutes: 6,
+          kitchenDelayVoiceAlertThresholdMinutes: 9,
+          codWarningPercent: 80,
+        },
+        economics: {
+          ...DEFAULT_UMAROS_CONFIG.economics,
+          platformFeePaise: 800,
+          monsoonAlertActive: true,
+          surgeMultiplier: 1.3,
+        },
+      };
+
+      const dynamicState = toDynamicCustomizationState(config);
+
+      assert.strictEqual(dynamicState.version, 22);
+      assert.strictEqual(dynamicState.designTokens.palette.primary, "#059669");
+      assert.strictEqual(dynamicState.designTokens.palette.accent, "#D97706");
+      assert.strictEqual(dynamicState.payoutPolicy.baseFarePaise, 3200);
+      assert.strictEqual(dynamicState.payoutPolicy.distanceRatePerKmPaise, 1100);
+      assert.strictEqual(dynamicState.payoutPolicy.distanceSlabs?.slab2RatePerKmPaise, 1500);
+      assert.strictEqual(dynamicState.payoutPolicy.rainSurgeBonusPaise, 3500);
+      assert.strictEqual(dynamicState.payoutPolicy.weatherAllowancePaise, 1800);
+      assert.strictEqual(dynamicState.payoutPolicy.monsoonSurgePaise, 2500);
+      assert.strictEqual(dynamicState.payoutPolicy.floatingCashLimitInr, 1800);
+      assert.strictEqual(dynamicState.payoutPolicy.floatingCashHardLockInr, 1800);
+      assert.strictEqual(dynamicState.payoutPolicy.floatingCashSoftWarningInr, 1440); // 80% of 1800
+      assert.strictEqual(dynamicState.customerPricing?.platformFeeRupees, 8);
     });
   });
 });

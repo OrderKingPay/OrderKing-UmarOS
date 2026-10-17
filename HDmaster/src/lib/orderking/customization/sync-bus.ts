@@ -20,6 +20,7 @@ import {
   type CustomizationCommitEvent,
   type UniversalCustomizationState,
 } from "./universal-customization-engine";
+import { getSupabaseRealtimeClient, CHANNEL_NAME } from "@orderking/ui";
 
 // ============================================================================
 // 1. CONFIGURATION & TYPES
@@ -229,6 +230,21 @@ export class CustomizationSyncBus {
     for (const subscriber of Array.from(this.subscribers.values())) {
       this.writeToSubscriber(subscriber, sseEvent);
     }
+
+    // Broadcast across Supabase Realtime channel (<200ms) to Customer, Partner, and Rider apps
+    try {
+      const client = getSupabaseRealtimeClient();
+      if (client) {
+        const channel = client.channel(CHANNEL_NAME);
+        void channel.send({
+          type: "broadcast",
+          event: "CONFIG_UPDATED",
+          payload,
+        });
+      }
+    } catch {
+      // Non-blocking fallback
+    }
   }
 
   /**
@@ -299,10 +315,98 @@ export class CustomizationSyncBus {
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "X-Customization-Version": String(this.engine.getVersion()),
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "*",
       },
     });
+  }
+
+  /**
+   * Handles HTTP POST `/api/sync/customizations/latest` to persist updates from UmarOS
+   * and broadcast them live across connected clients.
+   */
+  public async handleLatestPostRequest(request: Request): Promise<Response> {
+    try {
+      const body = await request.json();
+      const actor = body.actor || { userId: "founder_supreme", role: "SUPREME_FOUNDER" };
+      const reason = body.reason || "Edge customization update via UmarOS";
+
+      this.engine.commit(
+        actor,
+        reason,
+        "BATCH_UPDATE",
+        "all",
+        "root",
+        (draft) => {
+          if (body.operatingMode) {
+            draft.operatingMode = body.operatingMode;
+          }
+          if (body.logistics) {
+            draft.logistics = { ...draft.logistics, ...body.logistics };
+          }
+          if (body.customerPricing) {
+            draft.customerPricing = { ...draft.customerPricing, ...body.customerPricing };
+          }
+          if (body.merchantEconomics) {
+            draft.merchantEconomics = { ...draft.merchantEconomics, ...body.merchantEconomics };
+          }
+          if (body.fleetAndCash) {
+            draft.fleetAndCash = { ...draft.fleetAndCash, ...body.fleetAndCash };
+          }
+          if (body.brand) {
+            if (body.brand.primaryColor) draft.designTokens.palette.primary = body.brand.primaryColor;
+            if (body.brand.accentColor) draft.designTokens.palette.accent = body.brand.accentColor;
+          }
+          if (body.designTokens?.palette) {
+            draft.designTokens.palette = { ...draft.designTokens.palette, ...body.designTokens.palette };
+          }
+          if (body.economics) {
+            if (body.economics.platformFeePaise) {
+              draft.customerPricing.platformFeeRupees = Math.round(body.economics.platformFeePaise / 100);
+            }
+            if (body.economics.defaultCommissionPercent) {
+              draft.merchantEconomics.commissionRatePercent = body.economics.defaultCommissionPercent;
+            }
+            if (body.economics.packagingFeeCapPaise) {
+              draft.merchantEconomics.packagingFeeCapRupees = Math.round(body.economics.packagingFeeCapPaise / 100);
+            }
+          }
+          if (body.features) {
+            draft.featureSwitches = { ...draft.featureSwitches, ...body.features };
+          }
+        }
+      );
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          version: this.engine.getVersion(),
+          timestamp: new Date().toISOString(),
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+          },
+        }
+      );
+    } catch (err: any) {
+      return new Response(
+        JSON.stringify({
+          error: err?.message || "Failed to persist customization config",
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+    }
   }
 
   /**
@@ -455,4 +559,8 @@ export function handleSseRequest(request: Request): Response {
 
 export function handleLatestRequest(request?: Request): Response {
   return getCustomizationSyncBus().handleLatestRequest(request);
+}
+
+export function handleLatestPostRequest(request: Request): Promise<Response> {
+  return getCustomizationSyncBus().handleLatestPostRequest(request);
 }

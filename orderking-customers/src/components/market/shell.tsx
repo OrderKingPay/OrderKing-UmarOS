@@ -247,7 +247,7 @@ export function CustomerShell({
             >
               <Languages className="size-3.5 text-amber-700" />
               <span className="text-[11px] font-black uppercase text-amber-950">
-                {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : lang === "as" ? "অসমীয়া" : "EN"}
+                {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "EN"}
               </span>
             </button>
 
@@ -414,7 +414,7 @@ export function CustomerShell({
       </main>
 
       {/* ULTRA-LUXURY 3D ECOSYSTEM PORTAL & FOOTER */}
-      <UltraLuxuryEcosystemFooter />
+      {path !== "/" ? <UltraLuxuryEcosystemFooter /> : null}
 
       {/* Floating View Cart & 1-Tap Checkout Bar */}
       {isDeliveryActive && count > 0 && path !== "/cart" && path !== "/checkout" ? (
@@ -429,7 +429,7 @@ export function CustomerShell({
                   {count === 1 ? t("cart.item") : t("cart.items")} added
                 </span>
                 <span className="text-[10px] text-stone-400 font-medium mt-0.5">
-                  0% hidden fees · Chef direct
+                  View final total in your cart
                 </span>
               </div>
             </div>

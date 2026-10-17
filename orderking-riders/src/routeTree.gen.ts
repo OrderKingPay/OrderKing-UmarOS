@@ -26,6 +26,7 @@ import { Route as TripsRouteImport } from './routes/trips'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as DeliveryIdRouteImport } from './routes/delivery.$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiSyncCustomizationsLatestRouteImport } from './routes/api/sync/customizations/latest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -112,6 +113,12 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSyncCustomizationsLatestRoute =
+  ApiSyncCustomizationsLatestRouteImport.update({
+    id: '/api/sync/customizations/latest',
+    path: '/api/sync/customizations/latest',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/delivery/$id'
     | '/api/auth/$'
+    | '/api/sync/customizations/latest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/delivery/$id'
     | '/api/auth/$'
+    | '/api/sync/customizations/latest'
   id:
     | '__root__'
     | '/'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/delivery/$id'
     | '/api/auth/$'
+    | '/api/sync/customizations/latest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,6 +262,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   DeliveryIdRoute: typeof DeliveryIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiSyncCustomizationsLatestRoute: typeof ApiSyncCustomizationsLatestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -372,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sync/customizations/latest': {
+      id: '/api/sync/customizations/latest'
+      path: '/api/sync/customizations/latest'
+      fullPath: '/api/sync/customizations/latest'
+      preLoaderRoute: typeof ApiSyncCustomizationsLatestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -393,6 +414,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   DeliveryIdRoute: DeliveryIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiSyncCustomizationsLatestRoute: ApiSyncCustomizationsLatestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

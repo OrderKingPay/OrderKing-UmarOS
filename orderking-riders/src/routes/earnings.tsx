@@ -258,7 +258,7 @@ function Page() {
             </div>
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
               <span className="font-semibold text-foreground block">Wait-Time Pay</span>
-              <span className="text-muted-foreground">₹1.00/min (&gt;6 mins wait at kitchen, cap ₹30)</span>
+              <span className="text-muted-foreground">₹1.00/min (&gt;5 mins wait at kitchen, cap ₹30)</span>
             </div>
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
               <span className="font-semibold text-foreground block">Surge &amp; Weather</span>

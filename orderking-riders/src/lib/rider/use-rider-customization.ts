@@ -224,12 +224,12 @@ export function useRiderCustomization(): RiderCustomizationTokens {
     designTokens.palette.warn ??
     "#E5A93C";
 
-  // 3. COD Cash-in-Hand Floating Limit Resolution (₹1,500 Hard Lock, ₹1,200 Soft Warning)
+  // 3. COD Cash-in-Hand Floating Limit Resolution (₹2,000 Hard Lock, ₹1,600 Soft Warning)
   const hardLockPaise =
-    policy.floatingCashHardLockPaise ?? policy.floatingCashLimitPaise ?? 150000;
+    policy.floatingCashHardLockPaise ?? policy.floatingCashLimitPaise ?? COD_FLOATING_CASH_LIMIT_PAISE;
   const hardLockInr =
     policy.floatingCashHardLockInr ?? policy.floatingCashLimitInr ?? Math.round(hardLockPaise / 100);
-  const softWarningPaise = policy.floatingCashSoftWarningPaise ?? 120000;
+  const softWarningPaise = policy.floatingCashSoftWarningPaise ?? Math.round(hardLockPaise * 0.8);
   const softWarningInr =
     policy.floatingCashSoftWarningInr ?? Math.round(softWarningPaise / 100);
   const warningThresholdPct =
