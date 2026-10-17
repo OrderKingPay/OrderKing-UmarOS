@@ -155,8 +155,8 @@ export function LocationPickerSection({ section }: { section: LayoutSection }) {
 
         <div className="shrink-0 flex items-center gap-1.5">
           <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-tight text-emerald-800 bg-emerald-100/80 border border-emerald-300/80 px-2 py-0.5 rounded-full shadow-2xs">
-            <span className="size-1.5 rounded-full bg-emerald-600 animate-pulse" />
-            Express 25m
+            <span className="size-1.5 rounded-full bg-amber-600" />
+            Check availability
           </span>
         </div>
       </div>
@@ -226,8 +226,8 @@ export function BannerCarouselSection({
     {
       id: "prestige_offer",
       title: "Prestige Culinary Excellence",
-      subtitle: "0% Menu Markups · Direct Chef Pricing",
-      tag: "👑 Verified Gastronomy",
+      subtitle: "Browse real menus and confirm each restaurant’s actual prices",
+      tag: "👑 Explore Cuisines",
       cta: "Explore Kitchens",
       link: "/search",
       gradient: "from-amber-500 via-yellow-400 to-amber-600",
@@ -236,9 +236,9 @@ export function BannerCarouselSection({
     },
     {
       id: "gold_crown_rewards",
-      title: "24K Gold Crown Rewards",
-      subtitle: "Earn instant cashback credits on every order",
-      tag: "✨ Instant Credits",
+      title: "Explore Crown Rewards",
+      subtitle: "View currently available offers and their full terms",
+      tag: "✨ Reward Information",
       cta: "View Rewards",
       link: "/earn",
       gradient: "from-yellow-400 via-amber-300 to-yellow-500",
@@ -248,9 +248,9 @@ export function BannerCarouselSection({
     {
       id: "travel_zero_fee",
       title: "Sovereign Travel Booking",
-      subtitle: "0% convenience fee on verified flights & trains",
-      tag: "✈️ 0% Fee Guarantee",
-      cta: "Book Travel",
+      subtitle: "Bookings require live availability from an authorized supplier",
+      tag: "✈️ Check Supplier Status",
+      cta: "Explore Travel",
       link: "/travel",
       gradient: "from-blue-500 via-indigo-500 to-cyan-500",
       bgClass: "from-blue-950 via-slate-900 to-indigo-950",
@@ -675,10 +675,10 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           <h2 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
             {selectedCategory
               ? "Explore this category"
-              : section.title || `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}`}
+              : section.title || `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`}
           </h2>
           <p className="text-xs text-gray-500 font-medium">
-            Verified kitchens &amp; chef-prepared delicacies
+            Restaurant menus and availability are verified before ordering
           </p>
         </div>
       </div>
@@ -735,8 +735,8 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
                     <h4 className="line-clamp-1 text-sm font-black text-gray-950">
                       {o.restaurantName}
                     </h4>
-                    <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800">
-                      Verified
+                    <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-extrabold text-amber-800">
+                      Past order
                     </span>
                   </div>
                   <p className="mt-1 line-clamp-1 text-xs text-gray-600 font-medium">

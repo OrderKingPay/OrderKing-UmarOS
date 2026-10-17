@@ -1,122 +1,74 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  Crown,
-  Sparkles,
-  Flame,
-  Star,
-  Clock,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  UtensilsCrossed,
-  Zap,
-} from "lucide-react";
-import { formatPaise } from "@/lib/money";
+import { useNavigate } from "@tanstack/react-router";
+import { ArrowRight, Compass, Crown, Globe2, Search, Sparkles } from "lucide-react";
 
+/**
+ * Editorial cuisine inspiration, NOT an inventory or purchasable product catalog.
+ * Prices, ratings, ETAs and dietary labels must only come from verified merchants.
+ */
 export interface HeroCulinaryDish {
   id: string;
   name: string;
   regionalName: string;
   tagline: string;
-  pricePaise: number;
-  ratingAvg: number;
-  ratingCount: number;
-  etaMinutes: number;
   imageUrl: string;
-  dietType: "veg" | "non-veg" | "jain";
   query: string;
 }
 
 export const HERO_CULINARY_DISHES: HeroCulinaryDish[] = [
   {
     id: "hero-biryani",
-    name: "Hyderabadi Dum Biryani",
+    name: "Dum Biryani",
     regionalName: "बिरयानी · বিরিয়ানি",
-    tagline: "Authentic clay handi dum basmati with saffron & tender marinated chicken",
-    pricePaise: 26000,
-    ratingAvg: 4.9,
-    ratingCount: 1420,
-    etaMinutes: 22,
+    tagline: "Discover fragrant rice, slow-cooked spices and regional traditions.",
     imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80",
-    dietType: "non-veg",
     query: "Biryani",
   },
   {
     id: "hero-butter-chicken",
-    name: "Old Delhi Butter Chicken",
+    name: "Butter Chicken",
     regionalName: "बटर चिकन · বাটার চিকেন",
-    tagline: "Slow-roasted tandoori chicken simmered in rich white butter makhani gravy",
-    pricePaise: 29000,
-    ratingAvg: 4.9,
-    ratingCount: 1140,
-    etaMinutes: 24,
+    tagline: "Explore classic North Indian dishes and rich tomato gravies.",
     imageUrl: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=600&auto=format&fit=crop&q=80",
-    dietType: "non-veg",
     query: "Butter Chicken",
   },
   {
-    id: "hero-jain-paneer",
-    name: "Sattvic Jain Shahi Paneer",
+    id: "hero-paneer",
+    name: "Paneer",
     regionalName: "पनीर · পনির",
-    tagline: "No onion, no garlic pure sattvic recipe with cashew malai & royal saffron",
-    pricePaise: 24000,
-    ratingAvg: 4.8,
-    ratingCount: 520,
-    etaMinutes: 18,
+    tagline: "Find paneer preparations and check ingredients with each kitchen.",
     imageUrl: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600&auto=format&fit=crop&q=80",
-    dietType: "jain",
     query: "Paneer",
   },
   {
     id: "hero-dosa",
-    name: "Crispy Mysore Masala Dosa",
+    name: "Masala Dosa",
     regionalName: "दोसा · দোসা",
-    tagline: "Golden ghee roast fermented crepe with spicy potato filling & fresh coconut chutney",
-    pricePaise: 14000,
-    ratingAvg: 4.8,
-    ratingCount: 1240,
-    etaMinutes: 18,
+    tagline: "Explore crispy South Indian favourites and fresh accompaniments.",
     imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80",
-    dietType: "veg",
     query: "Dosa",
   },
   {
     id: "hero-momos",
-    name: "Tibetan Steamed Momos",
+    name: "Momos",
     regionalName: "मोमोज · মোমো",
-    tagline: "Thin translucent hand-pinched wrappers with juicy filling & fiery Sichuan dip",
-    pricePaise: 18000,
-    ratingAvg: 4.7,
-    ratingCount: 680,
-    etaMinutes: 20,
+    tagline: "Browse steamed and fried dumpling styles from available kitchens.",
     imageUrl: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?w=600&auto=format&fit=crop&q=80",
-    dietType: "non-veg",
     query: "Momos",
   },
   {
     id: "hero-thali",
-    name: "Imperial Maharaja Thali",
+    name: "Indian Thali",
     regionalName: "थाली · থালি",
-    tagline: "Grand royal platter with dal bukhara, paneer tikka, butter naan & gulab jamun",
-    pricePaise: 32000,
-    ratingAvg: 4.9,
-    ratingCount: 920,
-    etaMinutes: 25,
+    tagline: "Explore regional combinations and hearty meals.",
     imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=600&auto=format&fit=crop&q=80",
-    dietType: "veg",
     query: "Thali",
   },
   {
     id: "hero-rolls",
-    name: "Kolkata Egg Chicken Roll",
+    name: "Kolkata Rolls",
     regionalName: "काठी रोल · কাঠি ৰোল",
-    tagline: "Crisp flaky laccha paratha with succulent spiced chicken & tangy onion relish",
-    pricePaise: 13000,
-    ratingAvg: 4.7,
-    ratingCount: 840,
-    etaMinutes: 15,
+    tagline: "Discover wrapped street-food favourites and local variations.",
     imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80",
-    dietType: "non-veg",
     query: "Rolls",
   },
 ];
@@ -126,169 +78,100 @@ export function UltraLuxuryHero() {
 
   return (
     <section
-      aria-label="OrderKing Prestige Gastronomy"
-      className="relative w-full overflow-hidden rounded-[32px] border-2 border-amber-400/70 bg-gradient-to-br from-slate-950 via-[#18130d] to-amber-950 p-4 sm:p-6 text-white shadow-[0_20px_50px_rgba(245,158,11,0.22)] select-none"
+      aria-labelledby="orderking-cuisine-hero-title"
+      className="relative isolate w-full overflow-hidden rounded-[30px] border border-amber-400/45 bg-gradient-to-br from-[#090D16] via-[#18141B] to-[#3A220C] px-4 py-5 text-white shadow-[0_18px_55px_rgba(58,35,15,0.24)] sm:px-7 sm:py-7"
     >
-      {/* ─── PRISMATIC SPECULAR AURAS ─── */}
-      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-amber-400 via-yellow-300 via-amber-400 to-transparent opacity-95 drop-shadow-[0_2px_10px_rgba(245,158,11,0.9)] pointer-events-none" />
-      <div className="pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-gradient-to-br from-amber-400/25 via-yellow-400/10 to-transparent blur-3xl" />
-      <div className="pointer-events-none absolute -left-16 -bottom-16 size-64 rounded-full bg-gradient-to-tr from-emerald-500/15 via-teal-500/10 to-transparent blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-amber-200 to-transparent" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-amber-400/15 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 -left-12 size-72 rounded-full bg-rose-500/10 blur-3xl" />
 
-      <div className="relative z-10 space-y-4">
-        {/* ROW 1: Royal Crown Seal & Pan-India Dispatch Pill */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/70 bg-gradient-to-r from-amber-950/90 via-yellow-900/70 to-amber-950/90 px-3.5 py-1 shadow-[0_2px_12px_rgba(245,158,11,0.3)] backdrop-blur-md">
-            <Crown className="size-3.5 text-amber-400 fill-amber-400 animate-pulse" />
-            <span className="text-[10.5px] font-black uppercase tracking-widest text-amber-200">
-              OrderKing Prestige Gastronomy
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300 shadow-2xs">
-              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              0% Menu Markups
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
-              <ShieldCheck className="size-3" />
-              Direct Chef Handover
-            </span>
-          </div>
+      <div className="relative z-10">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-1.5 text-[11px] font-bold tracking-widest text-amber-200">
+            <Crown aria-hidden="true" className="size-4" />
+            ORDERKING · CULINARY DISCOVERY
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200">
+            <Compass aria-hidden="true" className="size-3.5 text-amber-300" />
+            Explore by cuisine
+          </span>
         </div>
 
-        {/* ROW 2: Hero Headline & Value Props */}
-        <div className="space-y-1.5">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
-            Curated Culinary Excellence.{" "}
-            <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
-              Zero Predatory Fees.
+        <div className="max-w-3xl">
+          <h1 id="orderking-cuisine-hero-title" className="text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+            Discover what you love.
+            <span className="mt-1 block bg-gradient-to-r from-amber-200 via-[#FFF1CE] to-amber-400 bg-clip-text text-transparent">
+              Effortless food exploration.
             </span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
-            Direct pricing from master cloud kitchens. While competitors add 15-30% restaurant markups and hidden packaging fees, OrderKing delivers pristine gastronomy with 100% price transparency.
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-200">
+            Find cuisines that inspire you. Actual dishes, prices, preparation times and delivery
+            availability are confirmed from participating restaurant menus before checkout.
           </p>
+          <button
+            type="button"
+            onClick={() => void navigate({ to: "/search" })}
+            className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-[0_6px_24px_rgba(245,158,11,0.22)] transition-transform hover:brightness-110 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-100"
+          >
+            <Search aria-hidden="true" className="size-4" />
+            Search available menus
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </button>
         </div>
 
-        {/* ROW 3: MOUTH-WATERING CULINARY SHOWCASE WITH VEG / NON-VEG / JAIN BADGES */}
-        <div className="space-y-2 pt-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
-              <Flame className="size-3.5 text-amber-400" />
-              <span>Sovereign Chef Specialties · Instant 1-Tap Discovery</span>
-            </span>
-            <Link
-              to="/search"
-              className="text-[11px] font-black text-amber-300 hover:text-amber-100 flex items-center gap-0.5 no-underline"
+        <div className="mt-7 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-amber-200">
+            <Sparkles aria-hidden="true" className="size-4" />
+            Cuisine inspirations
+          </h2>
+          <span className="text-[11px] font-medium text-slate-300">
+            Illustrative imagery · Not live menu offers
+          </span>
+        </div>
+
+        <div aria-label="Browse cuisines" className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 [scrollbar-width:thin] [scrollbar-color:#BC9655_transparent]">
+          {HERO_CULINARY_DISHES.map((dish) => (
+            <button
+              key={dish.id}
+              type="button"
+              onClick={() => void navigate({ to: "/search", search: { q: dish.query } as any })}
+              className="group relative flex w-52 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/15 bg-white/[0.06] text-left shadow-lg transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-amber-300/70 hover:shadow-[0_12px_28px_rgba(0,0,0,0.24)] motion-reduce:transform-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 sm:w-60"
+              aria-label={`Explore ${dish.name} on available menus`}
             >
-              <span>Explore All Dishes</span>
-              <ArrowRight className="size-3" />
-            </Link>
-          </div>
-
-          {/* Horizontal scrolling showcase */}
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none pt-1">
-            {HERO_CULINARY_DISHES.map((dish) => (
-              <button
-                key={dish.id}
-                type="button"
-                onClick={() => void navigate({ to: "/search", search: { q: dish.query } as any })}
-                className="group flex flex-col justify-between w-56 sm:w-64 shrink-0 rounded-2xl border border-amber-400/40 bg-gradient-to-b from-slate-900/90 via-slate-900/70 to-amber-950/30 p-3 text-left transition-all duration-300 hover:scale-[1.02] hover:border-amber-300 hover:shadow-[0_8px_25px_rgba(245,158,11,0.3)] active:scale-98 cursor-pointer relative overflow-hidden"
-              >
-                {/* Image Section */}
-                <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-slate-800">
-                  <img
-                    src={dish.imageUrl}
-                    alt={dish.name}
-                    className="size-full object-cover transition-transform duration-500 group-hover:scale-108"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
-
-                  {/* Top Left: FSSAI Diet Badge */}
-                  <div className="absolute top-2 left-2 z-10">
-                    {dish.dietType === "jain" ? (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-950/90 backdrop-blur-md px-2 py-0.5 text-[9px] font-black text-amber-300 border border-amber-400/60 shadow-md">
-                        <span>🕉️</span>
-                        <span>Jain Sattvic</span>
-                      </span>
-                    ) : dish.dietType === "veg" ? (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-950/90 backdrop-blur-md px-1.5 py-0.5 text-[9px] font-black text-emerald-300 border border-emerald-400/60 shadow-md">
-                        <span className="size-2 rounded-[2px] border border-emerald-300 flex items-center justify-center bg-white">
-                          <span className="size-1 rounded-full bg-emerald-600" />
-                        </span>
-                        <span>Pure Veg</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-stone-950/90 backdrop-blur-md px-1.5 py-0.5 text-[9px] font-black text-rose-300 border border-rose-500/60 shadow-md">
-                        <span className="size-2 rounded-[2px] border border-rose-400 flex items-center justify-center bg-white">
-                          <span className="size-1 rounded-full bg-rose-600" />
-                        </span>
-                        <span>Non-Veg</span>
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Top Right: Rating */}
-                  <span className="absolute top-2 right-2 flex items-center gap-0.5 rounded-md bg-emerald-600/90 backdrop-blur-md px-1.5 py-0.5 text-[10px] font-black text-white shadow-md">
-                    <span>{dish.ratingAvg}</span>
-                    <Star className="size-2.5 fill-white text-white" />
-                  </span>
-
-                  {/* Bottom: ETA & Regional multilang tag */}
-                  <div className="absolute bottom-2 inset-x-2 flex items-center justify-between text-[10px] font-bold text-white">
-                    <span className="flex items-center gap-1 bg-black/60 px-2 py-0.5 rounded-md backdrop-blur-sm">
-                      <Clock className="size-2.5 text-amber-300" />
-                      {dish.etaMinutes}m
-                    </span>
-                    <span className="text-amber-200 truncate max-w-[55%] text-right drop-shadow-sm font-medium">
-                      {dish.regionalName}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Dish Info & Price */}
-                <div className="mt-2.5 flex-1 flex flex-col justify-between space-y-2">
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-black text-white group-hover:text-amber-300 transition-colors line-clamp-1 leading-snug">
-                      {dish.name}
-                    </h3>
-                    <p className="mt-0.5 text-[10.5px] text-slate-400 font-medium line-clamp-1">
-                      {dish.tagline}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-1 border-t border-white/10">
-                    <span className="font-mono text-xs font-black text-amber-300">
-                      {formatPaise(dish.pricePaise, { locale: "en-IN" })}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[10.5px] font-black text-amber-400 group-hover:translate-x-0.5 transition-transform">
-                      <span>Order</span>
-                      <ArrowRight className="size-3 stroke-[2.5]" />
-                    </span>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
+              <div className="relative aspect-[16/11] overflow-hidden bg-slate-800">
+                <img
+                  src={dish.imageUrl}
+                  alt={`Illustrative food photograph for ${dish.name}`}
+                  loading="lazy"
+                  decoding="async"
+                  className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.04] motion-reduce:transform-none"
+                />
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#090D16] via-transparent to-transparent" />
+                <span className="absolute bottom-2 left-2 rounded-md bg-black/65 px-2 py-1 text-[10px] font-semibold text-amber-100 backdrop-blur-sm">
+                  Inspiration only
+                </span>
+              </div>
+              <div className="flex min-h-32 flex-1 flex-col p-3">
+                <h3 className="text-sm font-bold text-white">{dish.name}</h3>
+                <p className="mt-0.5 text-[10px] text-amber-200">{dish.regionalName}</p>
+                <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-slate-300">{dish.tagline}</p>
+                <span className="mt-3 inline-flex items-center justify-between gap-2 border-t border-white/10 pt-2 text-xs font-bold text-amber-200">
+                  Explore real menus
+                  <ArrowRight aria-hidden="true" className="size-4" />
+                </span>
+              </div>
+            </button>
+          ))}
         </div>
 
-        {/* ROW 4: ZERO-TYPING MULTILINGUAL AUTOCORRECT STRIP */}
-        <div className="rounded-2xl border border-amber-400/30 bg-slate-900/60 p-2.5 flex flex-wrap items-center justify-between gap-2 backdrop-blur-md">
-          <div className="flex items-center gap-1.5">
-            <span className="flex size-6 items-center justify-center rounded-lg bg-amber-400/20 text-amber-300 text-xs shadow-2xs">
-              🌐
-            </span>
-            <span className="text-[11px] font-black text-amber-200">
-              Zero-Typing Smart Autocorrect Active
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-slate-300">
-            <span className="text-slate-400">Supported:</span>
-            <span className="bg-white/10 px-1.5 py-0.5 rounded border border-white/10">English</span>
-            <span className="bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-400/30">हिन्दी (Hindi)</span>
-            <span className="bg-emerald-400/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-400/30">বাংলা (Bengali)</span>
-            <span className="bg-sky-400/20 text-sky-300 px-1.5 py-0.5 rounded border border-sky-400/30">অসমীয়া (Assamese)</span>
-          </div>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/15 bg-white/[0.04] p-3">
+          <span className="flex items-center gap-2 text-xs font-semibold text-slate-100">
+            <Globe2 aria-hidden="true" className="size-4 text-amber-300" />
+            Discover regional favourites
+          </span>
+          <span className="text-xs text-slate-300">
+            English · हिन्दी · বাংলা · অসমীয়া
+          </span>
         </div>
       </div>
     </section>
