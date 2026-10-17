@@ -55,7 +55,7 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   {
     id: "food",
     name: "Food",
-    badge: "0% Markup",
+    badge: "",
     badgeColor: "bg-emerald-500/20 text-emerald-800 border-emerald-400/50",
     icon: UtensilsCrossed,
     iconGradient: "from-amber-400 via-emerald-500 to-teal-800",
@@ -64,8 +64,8 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   },
   {
     id: "kingpay",
-    name: "KingPay UPI",
-    badge: "256-Bit UPI",
+    name: "KingPay",
+    badge: "",
     badgeColor: "bg-amber-500/25 text-amber-900 border-amber-400/60",
     icon: Crown,
     iconGradient: "from-yellow-400 via-amber-500 to-amber-700",
@@ -74,8 +74,8 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   },
   {
     id: "travel",
-    name: "Sovereign Travel",
-    badge: "₹0 Fee",
+    name: "Travel",
+    badge: "",
     badgeColor: "bg-sky-500/20 text-sky-900 border-sky-400/50",
     icon: Plane,
     iconGradient: "from-sky-400 via-blue-500 to-indigo-800",
@@ -84,8 +84,8 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   },
   {
     id: "tutor",
-    name: "AI Super-Tutor",
-    badge: "NCERT • CBSE",
+    name: "Tutor",
+    badge: "",
     badgeColor: "bg-purple-500/20 text-purple-900 border-purple-400/50",
     icon: GraduationCap,
     iconGradient: "from-indigo-400 via-purple-500 to-purple-800",
@@ -94,8 +94,8 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   },
   {
     id: "dining",
-    name: "VIP Dining",
-    badge: "40% Off",
+    name: "Dining",
+    badge: "",
     badgeColor: "bg-rose-500/20 text-rose-900 border-rose-400/50",
     icon: Wine,
     iconGradient: "from-rose-400 via-pink-500 to-rose-800",
@@ -229,7 +229,7 @@ export function CustomerShell({
                   <ChevronDown className="size-3 text-gray-500 shrink-0 group-hover:translate-y-0.5 transition-transform" />
                 </div>
                 <span className="text-[10px] text-gray-500 truncate hidden xs:block leading-tight">
-                  {location?.cityName && location.cityName !== "Locating..." ? `${location.cityName}, India` : "New Delhi, India"}
+                  {location?.cityName && location.cityName !== "Locating..." ? `${location.cityName}, India` : "Select location"}
                 </span>
               </div>
             </button>
@@ -330,7 +330,7 @@ export function CustomerShell({
                 </div>
                 <span className="text-[11px] font-black">{tab.name}</span>
                 <span className={cn("text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded-full border leading-none shadow-2xs", tab.badgeColor)}>
-                  {tab.badge}
+                  {tab.badge || null}
                 </span>
               </Link>
             );

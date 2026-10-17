@@ -159,7 +159,7 @@ export function LocationPickerSection({ section }: { section: LayoutSection }) {
         <div className="shrink-0 flex items-center gap-1.5">
           <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-tight text-emerald-800 bg-emerald-100/80 border border-emerald-300/80 px-2 py-0.5 rounded-full shadow-2xs">
             <span className="size-1.5 rounded-full bg-emerald-600 animate-pulse" />
-            Express 25m
+            Check availability
           </span>
         </div>
       </div>
@@ -229,7 +229,7 @@ export function BannerCarouselSection({
     {
       id: "verified_kitchens_offer",
       title: "Verified Kitchen Excellence",
-      subtitle: "0% Menu Markups · Direct Chef Pricing",
+      subtitle: "Explore available menus with transparent prices",
       tag: "👑 Verified Kitchens",
       cta: "Explore Kitchens",
       link: "/search",
@@ -240,8 +240,8 @@ export function BannerCarouselSection({
     {
       id: "gold_crown_rewards",
       title: "24K Gold Crown Rewards",
-      subtitle: "Earn instant cashback credits on every order",
-      tag: "✨ Instant Credits",
+      subtitle: "View available rewards and eligibility",
+      tag: "Reward information",
       cta: "View Rewards",
       link: "/earn",
       gradient: "from-yellow-400 via-amber-300 to-yellow-500",
@@ -251,8 +251,8 @@ export function BannerCarouselSection({
     {
       id: "travel_zero_fee",
       title: "Sovereign Travel Booking",
-      subtitle: "0% convenience fee on verified flights & trains",
-      tag: "✈️ 0% Fee Guarantee",
+      subtitle: "Check supplier availability before booking",
+      tag: "Travel information",
       cta: "Book Travel",
       link: "/travel",
       gradient: "from-blue-500 via-indigo-500 to-cyan-500",
@@ -710,7 +710,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
             </span>
           </div>
           <p className="text-xs text-gray-500 font-medium mt-0.5">
-            Verified kitchens &bull; FSSAI certified &bull; Real-time 25 min delivery
+            Check available menus and delivery options
           </p>
         </div>
         <div className="hidden md:flex items-center gap-2 text-xs font-bold text-stone-700 bg-white border border-amber-200/80 px-3 py-1.5 rounded-xl shadow-2xs">

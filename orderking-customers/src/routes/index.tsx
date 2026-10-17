@@ -19,7 +19,7 @@ export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
       { property: 'og:title', content: 'OrderKing - Direct Kitchen Delivery & Transparent Pricing' },
-      { property: 'og:description', content: 'FSSAI verified partner kitchens, zero menu markups, and express 25-30m delivery.' },
+      { property: 'og:description', content: 'Explore cuisines and discover available local restaurant menus.' },
     ],
   }),
 });
@@ -27,7 +27,7 @@ export const Route = createFileRoute('/')({
 function Home() {
   const navigate = useNavigate();
   const location = useLocationStore((s) => s.location);
-  const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : true;
+  const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : false;
 
   useEffect(() => {
     void trackAnalytics({
@@ -52,7 +52,7 @@ function Home() {
               ⚡
             </span>
             <span className="tracking-tight">
-              Express 25–30m delivery · <span className="text-amber-800">FSSAI Certified Kitchens</span> · <span className="text-emerald-800">0% Menu Markups</span>
+              Explore menus · <span className="text-amber-800">See actual prices at checkout</span>
             </span>
           </div>
         </div>
