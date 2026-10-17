@@ -119,10 +119,10 @@ describe("merchant behavioral penalty system & operational circuit breaker", () 
       });
 
       assert.equal(s.penaltiesPaise, 25000);
-      // Commission 28% = 14000, GST on comm = 2520, TCS = 500, TDS = 500
-      // Normal deductions = 17520. With penalty: 17520 + 25000 = 42520
-      assert.equal(s.totalDeductionsPaise, 42520);
-      assert.equal(s.restaurantPayablePaise, 50000 - 42520); // 7480 paise
+      // Commission 28% = 14000, GST on comm = 2520, TCS = 250, TDS = 50
+      // Normal deductions = 16820. With penalty: 16820 + 25000 = 41820
+      assert.equal(s.totalDeductionsPaise, 41820);
+      assert.equal(s.restaurantPayablePaise, 50000 - 41820); // 8180 paise
     });
   });
 

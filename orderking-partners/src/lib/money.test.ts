@@ -62,21 +62,21 @@ describe("money & Indian statutory settlement", () => {
     assert.equal(s.commissionSgstPaise, 405);
     assert.equal(s.commissionCgstPaise + s.commissionSgstPaise, s.commissionGstPaise);
 
-    // Section 52 CGST Act 1% TCS on Net Taxable Supply (0.5% CGST + 0.5% SGST)
-    assert.equal(s.tcsSec52Paise, 450);
-    assert.equal(s.tcsCgstPaise, 225);
-    assert.equal(s.tcsSgstPaise, 225);
+    // Section 52 CGST Act 0.5% TCS on Net Taxable Supply (0.25% CGST + 0.25% SGST)
+    assert.equal(s.tcsSec52Paise, 225);
+    assert.equal(s.tcsCgstPaise, 112);
+    assert.equal(s.tcsSgstPaise, 113);
     assert.equal(s.tcsCgstPaise + s.tcsSgstPaise, s.tcsSec52Paise);
 
-    // Section 194-O Income Tax Act 1% TDS on Gross Sales (1% of 50000 = 500 paise)
-    assert.equal(s.tdsSec194OPaise, 500);
+    // Section 194-O Income Tax Act 0.1% TDS on Gross Sales (0.1% of 50000 = 50 paise)
+    assert.equal(s.tdsSec194OPaise, 50);
 
-    // Total debited deductions: 4500 + 810 + 450 + 500 = 6260 paise
-    assert.equal(s.totalDeductionsPaise, 6260);
+    // Total debited deductions: 4500 + 810 + 225 + 50 = 5585 paise
+    assert.equal(s.totalDeductionsPaise, 5585);
 
-    // Net Restaurant Payable (NRP): 45000 - 6260 = 38740 paise (₹387.40)
-    assert.equal(s.restaurantPayablePaise, 38740);
-    assert.equal(s.netRestaurantPayablePaise, 38740);
+    // Net Restaurant Payable (NRP): 45000 - 5585 = 39415 paise (₹394.15)
+    assert.equal(s.restaurantPayablePaise, 39415);
+    assert.equal(s.netRestaurantPayablePaise, 39415);
   });
 
   it("strictly tracks CGST Act Section 9(5) 5% GST as platform liability without debiting from restaurant payable", () => {
@@ -95,8 +95,8 @@ describe("money & Indian statutory settlement", () => {
     assert.equal(s.platformLiabilitySec9_5Paise, 2250);
 
     // Section 9(5) GST must NOT be included in restaurant debited deductions
-    assert.equal(s.totalDeductionsPaise, 6260);
-    assert.equal(s.restaurantPayablePaise, 38740);
+    assert.equal(s.totalDeductionsPaise, 5585);
+    assert.equal(s.restaurantPayablePaise, 39415);
   });
 
   it("computes Section 194-O TDS on gross sales including packaging charges", () => {
@@ -116,15 +116,15 @@ describe("money & Indian statutory settlement", () => {
     assert.equal(s.commissionPaise, 5000);
     // 18% GST on Commission = 900 (450 CGST + 450 SGST)
     assert.equal(s.commissionGstPaise, 900);
-    // 1% TCS on Net Taxable Supply (50000) = 500
-    assert.equal(s.tcsSec52Paise, 500);
-    // 1% TDS under Section 194-O on Gross Sales (52000) = 520 paise
-    assert.equal(s.tdsSec194OPaise, 520);
+    // 0.5% TCS on Net Taxable Supply (50000) = 250
+    assert.equal(s.tcsSec52Paise, 250);
+    // 0.1% TDS under Section 194-O on Gross Sales (52000) = 52 paise
+    assert.equal(s.tdsSec194OPaise, 52);
 
-    // Total deductions = 5000 + 900 + 500 + 520 = 6920
-    assert.equal(s.totalDeductionsPaise, 6920);
-    // Net Payable: 50000 - 6920 = 43080 paise
-    assert.equal(s.restaurantPayablePaise, 43080);
+    // Total deductions = 5000 + 900 + 250 + 52 = 6202
+    assert.equal(s.totalDeductionsPaise, 6202);
+    // Net Payable: 50000 - 6202 = 43798 paise
+    assert.equal(s.restaurantPayablePaise, 43798);
   });
 
   it("deducts amortized onboarding fee of ₹99.00 (9900 paise) recurring per batch/cycle", () => {
@@ -140,8 +140,8 @@ describe("money & Indian statutory settlement", () => {
 
     assert.equal(s1.amortizedOnboardingFeePaise, STATUTORY_TAX_RATES.AMORTIZED_ONBOARDING_FEE_PAISE);
     assert.equal(s1.amortizedOnboardingFeePaise, 9900);
-    assert.equal(s1.totalDeductionsPaise, 6260 + 9900);
-    assert.equal(s1.restaurantPayablePaise, 38740 - 9900); // 28840 paise
+    assert.equal(s1.totalDeductionsPaise, 5585 + 9900);
+    assert.equal(s1.restaurantPayablePaise, 39415 - 9900); // 29515 paise
 
     // Test with explicit amortizedOnboardingFeePaise
     const s2 = computeRestaurantPayable({
@@ -153,7 +153,7 @@ describe("money & Indian statutory settlement", () => {
       amortizedOnboardingFeePaise: 9900,
     });
     assert.equal(s2.amortizedOnboardingFeePaise, 9900);
-    assert.equal(s2.restaurantPayablePaise, 28840);
+    assert.equal(s2.restaurantPayablePaise, 29515);
   });
 
   it("adds platform-funded promotional subsidies as credit to restaurant payable", () => {
@@ -167,13 +167,13 @@ describe("money & Indian statutory settlement", () => {
 
     assert.equal(s.commissionPaise, 5000);
     assert.equal(s.commissionGstPaise, 900);
-    assert.equal(s.tcsSec52Paise, 500);
-    assert.equal(s.tdsSec194OPaise, 500);
-    assert.equal(s.totalDeductionsPaise, 6900);
+    assert.equal(s.tcsSec52Paise, 250);
+    assert.equal(s.tdsSec194OPaise, 50);
+    assert.equal(s.totalDeductionsPaise, 6200);
 
-    // Restaurant receives food value (50000) + platform promotion credit (10000) - deductions (6900) = 53100 paise
+    // Restaurant receives food value (50000) + platform promotion credit (10000) - deductions (6200) = 53800 paise
     assert.equal(s.platformFundedDiscountPaise, 10000);
-    assert.equal(s.restaurantPayablePaise, 53100);
+    assert.equal(s.restaurantPayablePaise, 53800);
   });
 
   it("handles other permitted deductions with mandatory reason code", () => {
@@ -189,7 +189,7 @@ describe("money & Indian statutory settlement", () => {
 
     assert.equal(s.otherDeductionsPaise, 1000);
     assert.equal(s.otherDeductionsCode, "PACKAGING_AUDIT_ADJUSTMENT");
-    assert.equal(s.restaurantPayablePaise, 38740 - 1000); // 37740 paise
+    assert.equal(s.restaurantPayablePaise, 39415 - 1000); // 38415 paise
 
     // Refuses other deductions without explicit reason code
     assert.throws(
@@ -217,7 +217,7 @@ describe("money & Indian statutory settlement", () => {
       refundAdjustmentPaise: -1500,
     });
     assert.equal(sNegative.refundAdjustmentPaise, -1500);
-    assert.equal(sNegative.restaurantPayablePaise, 38740 - 1500); // 37240 paise
+    assert.equal(sNegative.restaurantPayablePaise, 39415 - 1500); // 37915 paise
 
     // Positive refund adjustment (reversal credit)
     const sPositive = computeRestaurantPayable({
@@ -229,7 +229,7 @@ describe("money & Indian statutory settlement", () => {
       refundAdjustmentPaise: 2000,
     });
     assert.equal(sPositive.refundAdjustmentPaise, 2000);
-    assert.equal(sPositive.restaurantPayablePaise, 38740 + 2000); // 40740 paise
+    assert.equal(sPositive.restaurantPayablePaise, 39415 + 2000); // 41415 paise
   });
 
   it("guarantees zero floating-point rounding drift with odd paise amounts", () => {
@@ -318,18 +318,18 @@ describe("money & Indian statutory settlement", () => {
     assert.equal(batch.totals.totalNetTaxableSupplyPaise, 50000 + 40000); // 90000 paise
     assert.equal(batch.totals.totalCommissionPaise, 5000 + 4000); // 9000 paise
     assert.equal(batch.totals.totalCommissionGstPaise, 900 + 720); // 1620 paise (18%)
-    assert.equal(batch.totals.totalTcsSec52Paise, 500 + 400); // 900 paise (1%)
-    assert.equal(batch.totals.totalTdsSec194OPaise, 520 + 410); // 930 paise (1% on 93000 gross)
+    assert.equal(batch.totals.totalTcsSec52Paise, 250 + 200); // 450 paise (0.5%)
+    assert.equal(batch.totals.totalTdsSec194OPaise, 52 + 41); // 93 paise (0.1% on 93000 gross)
     assert.equal(batch.totals.totalSec9_5GstPaise, 2500 + 2000); // 4500 paise (5% platform liability)
 
     // Amortized onboarding fee: single ₹99.00 / 9900 paise for the batch
     assert.equal(batch.totals.amortizedOnboardingFeePaise, 9900);
 
-    // Order 1 payable: 50000 - (5000 + 900 + 500 + 520) = 43080
-    // Order 2 payable: 40000 + 5000 - (4000 + 720 + 400 + 410) = 45000 - 5530 = 39470
-    // Total order payable = 43080 + 39470 = 82550
-    // Net batch payable = 82550 - 9900 (onboarding fee) = 72650
-    assert.equal(batch.totals.netBatchPayablePaise, 72650);
+    // Order 1 payable: 50000 - (5000 + 900 + 250 + 52) = 43798
+    // Order 2 payable: 40000 + 5000 - (4000 + 720 + 200 + 41) = 45000 - 4961 = 40039
+    // Total order payable = 43798 + 40039 = 83837
+    // Net batch payable = 83837 - 9900 (onboarding fee) = 73937
+    assert.equal(batch.totals.netBatchPayablePaise, 73937);
   });
 
   it("defines standard DELIVERY_COMMISSION_TIERS accurately", () => {
@@ -371,22 +371,22 @@ describe("money & Indian statutory settlement", () => {
     assert.equal(s.sec9_5SgstPaise, 1250);
     assert.equal(s.platformLiabilitySec9_5Paise, 2500);
 
-    // Section 52 CGST Act 1% TCS on Net Taxable Supply: 1% of 50000 = 500 paise (₹5.00)
-    assert.equal(s.tcsSec52Paise, 500);
-    assert.equal(s.tcsCgstPaise, 250);
-    assert.equal(s.tcsSgstPaise, 250);
+    // Section 52 CGST Act 0.5% TCS on Net Taxable Supply: 0.5% of 50000 = 250 paise (₹2.50)
+    assert.equal(s.tcsSec52Paise, 250);
+    assert.equal(s.tcsCgstPaise, 125);
+    assert.equal(s.tcsSgstPaise, 125);
     assert.equal(s.tcsCgstPaise + s.tcsSgstPaise, s.tcsSec52Paise);
 
-    // Section 194-O Income Tax Act 1% TDS on Gross Sales: 1% of 50000 = 500 paise (₹5.00)
-    assert.equal(s.tdsSec194OPaise, 500);
+    // Section 194-O Income Tax Act 0.1% TDS on Gross Sales: 0.1% of 50000 = 50 paise (₹0.50)
+    assert.equal(s.tdsSec194OPaise, 50);
 
-    // Total debited deductions: 14000 + 2520 + 500 + 500 = 17520 paise (₹175.20)
+    // Total debited deductions: 14000 + 2520 + 250 + 50 = 16820 paise (₹168.20)
     // Notice Section 9(5) 2500 paise is NOT debited
-    assert.equal(s.totalDeductionsPaise, 17520);
+    assert.equal(s.totalDeductionsPaise, 16820);
 
-    // Net Restaurant Payable (NRP): 50000 - 17520 = 32480 paise (₹324.80)
-    assert.equal(s.restaurantPayablePaise, 32480);
-    assert.equal(s.netRestaurantPayablePaise, 32480);
+    // Net Restaurant Payable (NRP): 50000 - 16820 = 33180 paise (₹331.80)
+    assert.equal(s.restaurantPayablePaise, 33180);
+    assert.equal(s.netRestaurantPayablePaise, 33180);
   });
 
   it("smoothly calculates settlement across custom negotiated rates from 0% to 35%", () => {
@@ -400,8 +400,8 @@ describe("money & Indian statutory settlement", () => {
     });
     assert.equal(s0.commissionPaise, 0);
     assert.equal(s0.commissionGstPaise, 0);
-    assert.equal(s0.totalDeductionsPaise, 1000); // 500 TCS + 500 TDS
-    assert.equal(s0.restaurantPayablePaise, 49000); // ₹490.00 Net
+    assert.equal(s0.totalDeductionsPaise, 300); // 250 TCS + 50 TDS
+    assert.equal(s0.restaurantPayablePaise, 49700); // ₹497.00 Net
 
     // 2. 18% Enterprise Tier
     const s18 = computeRestaurantPayable({
@@ -413,8 +413,8 @@ describe("money & Indian statutory settlement", () => {
     });
     assert.equal(s18.commissionPaise, 9000); // 18% of 50000 = 9000
     assert.equal(s18.commissionGstPaise, 1620); // 18% GST on 9000 = 1620
-    assert.equal(s18.totalDeductionsPaise, 9000 + 1620 + 500 + 500); // 11620
-    assert.equal(s18.restaurantPayablePaise, 38380);
+    assert.equal(s18.totalDeductionsPaise, 9000 + 1620 + 250 + 50); // 10920
+    assert.equal(s18.restaurantPayablePaise, 39080);
 
     // 3. 22% Growth Brand Tier
     const s22 = computeRestaurantPayable({
@@ -426,8 +426,8 @@ describe("money & Indian statutory settlement", () => {
     });
     assert.equal(s22.commissionPaise, 11000); // 22% of 50000 = 11000
     assert.equal(s22.commissionGstPaise, 1980); // 18% GST on 11000 = 1980
-    assert.equal(s22.totalDeductionsPaise, 11000 + 1980 + 500 + 500); // 13980
-    assert.equal(s22.restaurantPayablePaise, 36020);
+    assert.equal(s22.totalDeductionsPaise, 11000 + 1980 + 250 + 50); // 13280
+    assert.equal(s22.restaurantPayablePaise, 36720);
 
     // 4. 25% Standard Delivery Tier
     const s25 = computeRestaurantPayable({
@@ -439,8 +439,8 @@ describe("money & Indian statutory settlement", () => {
     });
     assert.equal(s25.commissionPaise, 12500); // 25% of 50000 = 12500
     assert.equal(s25.commissionGstPaise, 2250); // 18% GST on 12500 = 2250
-    assert.equal(s25.totalDeductionsPaise, 12500 + 2250 + 500 + 500); // 15750
-    assert.equal(s25.restaurantPayablePaise, 34250);
+    assert.equal(s25.totalDeductionsPaise, 12500 + 2250 + 250 + 50); // 15050
+    assert.equal(s25.restaurantPayablePaise, 34950);
 
     // 5. 35% Negotiated Ceiling (3500 bps)
     const s35 = computeRestaurantPayable({
@@ -452,8 +452,8 @@ describe("money & Indian statutory settlement", () => {
     });
     assert.equal(s35.commissionPaise, 17500); // 35% of 50000 = 17500
     assert.equal(s35.commissionGstPaise, 3150); // 18% GST on 17500 = 3150
-    assert.equal(s35.totalDeductionsPaise, 17500 + 3150 + 500 + 500); // 21650
-    assert.equal(s35.restaurantPayablePaise, 28350);
+    assert.equal(s35.totalDeductionsPaise, 17500 + 3150 + 250 + 50); // 20950
+    assert.equal(s35.restaurantPayablePaise, 29050);
   });
 
   it("handles odd fractional paise amounts at 28% without floating point drift", () => {
@@ -574,13 +574,13 @@ describe("money & Indian statutory settlement", () => {
     assert.equal(sTableQr.commissionCgstPaise, 0);
     assert.equal(sTableQr.commissionSgstPaise, 0);
 
-    // Statutory TCS 1% (1000 paise) + TDS 1% (1000 paise) still comply with tax law
-    assert.equal(sTableQr.tcsSec52Paise, 1000);
-    assert.equal(sTableQr.tdsSec194OPaise, 1000);
-    assert.equal(sTableQr.totalDeductionsPaise, 2000);
+    // Statutory TCS 0.5% (500 paise) + TDS 0.1% (100 paise) still comply with tax law
+    assert.equal(sTableQr.tcsSec52Paise, 500);
+    assert.equal(sTableQr.tdsSec194OPaise, 100);
+    assert.equal(sTableQr.totalDeductionsPaise, 600);
 
-    // Net Restaurant Payable: 100000 - 2000 = 98000 paise (₹980.00)
-    assert.equal(sTableQr.restaurantPayablePaise, 98000);
+    // Net Restaurant Payable: 100000 - 600 = 99400 paise (₹994.00)
+    assert.equal(sTableQr.restaurantPayablePaise, 99400);
   });
 
   it("calculates 184 bps payment gateway fee pass-through (1.84% + 18% GST) with exact paise math", () => {
@@ -613,11 +613,11 @@ describe("money & Indian statutory settlement", () => {
     assert.equal(s.gatewayFeeGstPaise, 166);
     // Commission: 28% of 50000 = 14000
     // 18% GST on commission: 2520
-    // 1% TCS: 500
-    // 1% TDS: 500
-    // Total deductions = 14000 + 2520 + 920 + 166 + 500 + 500 = 18606 paise
-    assert.equal(s.totalDeductionsPaise, 18606);
-    assert.equal(s.restaurantPayablePaise, 50000 - 18606);
+    // 0.5% TCS: 250
+    // 0.1% TDS: 50
+    // Total deductions = 14000 + 2520 + 920 + 166 + 250 + 50 = 17906 paise
+    assert.equal(s.totalDeductionsPaise, 17906);
+    assert.equal(s.restaurantPayablePaise, 50000 - 17906);
   });
 });
 

@@ -441,6 +441,14 @@ export const placeOrder = createServerFn({ method: "POST" })
       const points = Math.floor(q.foodSubtotalPaise / 10000);
       await tx`insert into loyalty_accounts (user_id, points, lifetime_points, tier) values (${context.userId}, ${points}, ${points}, ${"starter"}) on conflict (user_id) do update set points = loyalty_accounts.points + ${points}, lifetime_points = loyalty_accounts.lifetime_points + ${points}, updated_at = now()`;
       await tx`insert into loyalty_transactions (id, user_id, order_id, delta, reason) values (${newId("loy")}, ${context.userId}, ${orderId}, ${points}, ${"order_placed"})`;
+      const earnedCoins = Math.max(10, Math.floor(q.foodSubtotalPaise / 100) * 10);
+      await tx`
+        INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins)
+        VALUES (${context.userId}, 0, ${earnedCoins})
+        ON CONFLICT (user_id) DO UPDATE SET
+          king_coins = COALESCE(kingpay_wallets.king_coins, 0) + ${earnedCoins},
+          updated_at = NOW()
+      `;
     });
 
     await writeEvent(orderId, null, "PLACED", context.userId, "customer", "Order placed");
@@ -499,17 +507,19 @@ export const listMyOrders = createServerFn({ method: "GET" })
         id: string;
         public_id: string;
         status: OrderStatus;
+        restaurant_id: string;
         total_paise: number;
         placed_at: string;
         data_label: string;
         restaurant_name: string;
         restaurant_slug: string;
         preview: string | null;
-      }>`select o.id, o.public_id, o.status, o.total_paise, o.placed_at::text as placed_at, o.data_label, r.name as restaurant_name, r.slug as restaurant_slug, (select string_agg(name_snapshot, ', ') from (select name_snapshot from order_items where order_id = o.id limit 3) s) as preview from orders o join restaurants r on r.id = o.restaurant_id where o.user_id = ${context.userId} order by o.placed_at desc limit 50`;
+      }>`select o.id, o.public_id, o.status, o.restaurant_id, o.total_paise, o.placed_at::text as placed_at, o.data_label, r.name as restaurant_name, r.slug as restaurant_slug, (select string_agg(name_snapshot, ', ') from (select name_snapshot from order_items where order_id = o.id limit 3) s) as preview from orders o join restaurants r on r.id = o.restaurant_id where o.user_id = ${context.userId} order by o.placed_at desc limit 50`;
       const orders: OrderSummary[] = rows.map((r) => ({
         id: r.id,
         publicId: r.public_id,
         status: r.status,
+        restaurantId: r.restaurant_id,
         restaurantName: r.restaurant_name,
         restaurantSlug: r.restaurant_slug,
         totalPaise: r.total_paise,
@@ -695,7 +705,13 @@ export const reorderItems = createServerFn({ method: "POST" })
   .handler(async ({ context, data }: any) => {
     const cfg = await loadConfig();
     let restaurantId: string;
-    let items: { item_id: string; variant_id: string | null; quantity: number; instructions: string | null }[] = [];
+    let items: {
+      item_id: string;
+      variant_id: string | null;
+      quantity: number;
+      instructions: string | null;
+      addons_snapshot?: any;
+    }[] = [];
 
     if (cfg.marketplace.launchMode === "live") {
       const { hdmasterConfig } = await import("./hdmaster-orders");
@@ -711,6 +727,7 @@ export const reorderItems = createServerFn({ method: "POST" })
         variant_id: null,
         quantity: i.quantity,
         instructions: null,
+        addons_snapshot: i.addons_snapshot || i.addons || null,
       }));
     } else {
       const order = await getOwnedOrder(context.userId, data.orderId);
@@ -722,7 +739,8 @@ export const reorderItems = createServerFn({ method: "POST" })
         variant_id: string | null;
         quantity: number;
         instructions: string | null;
-      }>`select item_id, variant_id, quantity, instructions from order_items where order_id = ${order.id}`;
+        addons_snapshot: any;
+      }>`select item_id, variant_id, quantity, instructions, addons_snapshot from order_items where order_id = ${order.id}`;
     }
 
     const sql = await getSql();
@@ -732,13 +750,28 @@ export const reorderItems = createServerFn({ method: "POST" })
     const restaurant = rst[0];
     if (!restaurant) throw new Error("Restaurant no longer available");
 
-    const lines: CartLineInput[] = items.map((it) => ({
-      itemId: it.item_id,
-      variantId: it.variant_id,
-      addonIds: [],
-      quantity: it.quantity,
-      instructions: it.instructions ?? "",
-    }));
+    const lines: CartLineInput[] = items.map((it) => {
+      let addonIds: string[] = [];
+      if (it.addons_snapshot) {
+        try {
+          const parsed = typeof it.addons_snapshot === "string" ? JSON.parse(it.addons_snapshot) : it.addons_snapshot;
+          if (Array.isArray(parsed)) {
+            addonIds = parsed
+              .map((a: any) => (typeof a === "string" ? a : a?.id || a?.addonId || a?.name))
+              .filter(Boolean);
+          }
+        } catch {
+          addonIds = [];
+        }
+      }
+      return {
+        itemId: it.item_id,
+        variantId: it.variant_id,
+        addonIds,
+        quantity: it.quantity,
+        instructions: it.instructions ?? "",
+      };
+    });
 
     return {
       restaurantId: restaurant.id,

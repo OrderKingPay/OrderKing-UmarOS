@@ -43,30 +43,30 @@ describe("SettlementReconciliationEngine - Statutory Tax & Dual Settlement Verif
       // + 18% GST on Commission (4788)
       // + Gateway Fee 1.8% on 105000 (1890)
       // + 18% GST on Gateway (340)
-      // + Section 52 TCS 1% on 95000 (950)
-      // + Section 194-O TDS 1% on 105000 (1050)
-      // Total Deductions = 26600 + 4788 + 1890 + 340 + 950 + 1050 = 35618 paise
+      // + Section 52 TCS 0.5% on 95000 (475)
+      // + Section 194-O TDS 0.1% on 105000 (105)
+      // Total Deductions = 26600 + 4788 + 1890 + 340 + 475 + 105 = 34198 paise
       assert.equal(result.platformCommissionPaise, 26600);
       assert.equal(result.gstOnCommissionPaise, 4788);
       assert.equal(result.cgstOnCommissionPaise + result.sgstOnCommissionPaise, 4788);
       assert.equal(result.gatewayFeePaise, 1890);
       assert.equal(result.gstOnGatewayFeePaise, 340);
-      assert.equal(result.tcsSection52Paise, 950);
-      assert.equal(result.tcsCgstPaise + result.tcsSgstPaise, 950);
-      assert.equal(result.tdsSection194OPaise, 1050);
-      assert.equal(result.totalStatutoryWithholdingsPaise, 950 + 1050); // TCS + TDS = 2000 paise
+      assert.equal(result.tcsSection52Paise, 475);
+      assert.equal(result.tcsCgstPaise + result.tcsSgstPaise, 475);
+      assert.equal(result.tdsSection194OPaise, 105);
+      assert.equal(result.totalStatutoryWithholdingsPaise, 475 + 105); // TCS + TDS = 580 paise
 
-      assert.equal(result.totalDeductionsPaise, 35618);
-      // Net Payable = Gross (105000) - Restaurant Discount (10000) - Deductions (35618) = 59382 paise (₹593.82)
-      assert.equal(result.netPayablePaise, 59382);
+      assert.equal(result.totalDeductionsPaise, 34198);
+      // Net Payable = Gross (105000) - Restaurant Discount (10000) - Deductions (34198) = 60802 paise (₹608.02)
+      assert.equal(result.netPayablePaise, 60802);
 
       // Verify that deducting Section 9(5) would result in a lower payout, proving it's NOT debited
-      assert.ok(result.netPayablePaise > (59382 - 4750));
+      assert.ok(result.netPayablePaise > (60802 - 4750));
     });
   });
 
   describe("2. Statutory Withholdings: Section 52 TCS and Section 194-O TDS", () => {
-    test("deducts 1% TCS on net taxable supply and 1% TDS on gross sales", () => {
+    test("deducts 0.5% TCS on net taxable supply and 0.1% TDS on gross sales", () => {
       const input: OrderReconciliationInput = {
         orderId: "ord_withholding_01",
         orderNumber: "OK-1002",
@@ -83,14 +83,14 @@ describe("SettlementReconciliationEngine - Statutory Tax & Dual Settlement Verif
 
       // Gross Sales = 210000 paise
       // Net Taxable Supply = 210000 - 20000 = 190000 paise
-      // TCS 1% on 190000 = 1900 paise (0.5% CGST = 950, 0.5% SGST = 950)
-      assert.equal(result.tcsSection52Paise, 1900);
-      assert.equal(result.tcsCgstPaise, 950);
-      assert.equal(result.tcsSgstPaise, 950);
+      // TCS 0.5% on 190000 = 950 paise (0.25% CGST = 475, 0.25% SGST = 475)
+      assert.equal(result.tcsSection52Paise, 950);
+      assert.equal(result.tcsCgstPaise, 475);
+      assert.equal(result.tcsSgstPaise, 475);
 
-      // TDS 1% on Gross Sales 210000 = 2100 paise
-      assert.equal(result.tdsSection194OPaise, 2100);
-      assert.equal(result.totalStatutoryWithholdingsPaise, 4000);
+      // TDS 0.1% on Gross Sales 210000 = 210 paise
+      assert.equal(result.tdsSection194OPaise, 210);
+      assert.equal(result.totalStatutoryWithholdingsPaise, 950 + 210);
     });
 
     test("deducts higher 5% TDS under Section 206AA if PAN is invalid or missing", () => {
@@ -174,11 +174,11 @@ describe("SettlementReconciliationEngine - Statutory Tax & Dual Settlement Verif
       assert.equal(result.cgstOnCommissionPaise, 0);
       assert.equal(result.sgstOnCommissionPaise, 0);
 
-      // Only Gateway Fee (1800 + 324 = 2124) + TCS (1000) + TDS (1000) debited
-      assert.equal(result.tcsSection52Paise, 1000);
-      assert.equal(result.tdsSection194OPaise, 1000);
-      assert.equal(result.totalDeductionsPaise, 2124 + 2000); // 4124 paise
-      assert.equal(result.netPayablePaise, 100000 - 4124);   // 95876 paise (₹958.76)
+      // Only Gateway Fee (1800 + 324 = 2124) + TCS 0.5% (500) + TDS 0.1% (100) debited
+      assert.equal(result.tcsSection52Paise, 500);
+      assert.equal(result.tdsSection194OPaise, 100);
+      assert.equal(result.totalDeductionsPaise, 2124 + 600); // 2724 paise
+      assert.equal(result.netPayablePaise, 100000 - 2724);   // 97276 paise (₹972.76)
     });
   });
 
@@ -216,15 +216,15 @@ describe("SettlementReconciliationEngine - Statutory Tax & Dual Settlement Verif
       const result = engine.reconcileOrder(input);
       assert.equal(result.cycleType, "EXPRESS_DAILY");
 
-      // Preliminary net earnings before liquidity fee = 100000 - (28000 + 5040 + 1800 + 324 + 1000 + 1000) = 62836 paise
-      // Express liquidity fee: 0.5% (50 bps) of 62836 = 314 paise
-      assert.equal(result.expressEarlyLiquidityFeePaise, 314);
-      // 18% GST on 314 paise: 314 * 18% = 57 paise
-      assert.equal(result.gstOnExpressLiquidityFeePaise, 57);
+      // Preliminary net earnings before liquidity fee = 100000 - (28000 + 5040 + 1800 + 324 + 500 + 100) = 64236 paise
+      // Express liquidity fee: 0.5% (50 bps) of 64236 = 321 paise
+      assert.equal(result.expressEarlyLiquidityFeePaise, 321);
+      // 18% GST on 321 paise: 321 * 18% = 58 paise
+      assert.equal(result.gstOnExpressLiquidityFeePaise, 58);
 
-      // Net payable is reduced by exactly 314 + 57 = 371 paise
-      const standardNet = 62836;
-      assert.equal(result.netPayablePaise, standardNet - 371);
+      // Net payable is reduced by exactly 321 + 58 = 379 paise
+      const standardNet = 64236;
+      assert.equal(result.netPayablePaise, standardNet - 379);
     });
   });
 

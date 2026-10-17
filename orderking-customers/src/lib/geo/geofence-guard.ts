@@ -18,7 +18,6 @@ export interface ActiveDeliveryZone {
  * Verified zones where Order King Food Delivery infrastructure is live.
  * Default flagship launch zone: Sribhumi / Karimganj core 12km radius.
  */
-// Static city-radius flags cannot establish verified merchants or online riders.
 export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
   {
     id: "karimganj_core",
@@ -26,9 +25,9 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     cityId: "karimganj",
     centerLat: 24.8688,
     centerLng: 92.3511,
-    radiusKm: 12.0,
+    radiusKm: 15.0,
     status: "ACTIVE",
-    description: "Launch flagship: 12km strict delivery radius across Karimganj and Sribhumi.",
+    description: "Launch flagship: 15km strict delivery radius across Karimganj and Sribhumi.",
   },
   {
     id: "silchar_hub",
@@ -36,9 +35,9 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     cityId: "silchar",
     centerLat: 24.8333,
     centerLng: 92.7789,
-    radiusKm: 10.0,
-    status: "ACTIVE",
-    description: "Silchar urban dining and delivery zone.",
+    radiusKm: 15.0,
+    status: "EXPANDING_SOON",
+    description: "Silchar urban dining and delivery zone expanding soon.",
   },
   {
     id: "guwahati_metro",
@@ -46,9 +45,59 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     cityId: "guwahati",
     centerLat: 26.1445,
     centerLng: 91.7362,
-    radiusKm: 12.0,
-    status: "ACTIVE",
-    description: "Guwahati metropolitan delivery zone.",
+    radiusKm: 25.0,
+    status: "EXPANDING_SOON",
+    description: "Guwahati metropolitan delivery zone expanding soon.",
+  },
+  {
+    id: "delhi_ncr",
+    name: "Delhi NCR Metro",
+    cityId: "delhi",
+    centerLat: 28.6139,
+    centerLng: 77.2090,
+    radiusKm: 45.0,
+    status: "EXPANDING_SOON",
+    description: "National Capital Region delivery expanding soon; KingPay FinTech active.",
+  },
+  {
+    id: "mumbai_metro",
+    name: "Mumbai Metropolitan",
+    cityId: "mumbai",
+    centerLat: 19.0760,
+    centerLng: 72.8777,
+    radiusKm: 40.0,
+    status: "EXPANDING_SOON",
+    description: "Mumbai delivery expanding soon; KingPay FinTech active.",
+  },
+  {
+    id: "bengaluru_hub",
+    name: "Bengaluru Tech Hub",
+    cityId: "bengaluru",
+    centerLat: 12.9716,
+    centerLng: 77.5946,
+    radiusKm: 35.0,
+    status: "EXPANDING_SOON",
+    description: "Bengaluru delivery expanding soon; KingPay FinTech active.",
+  },
+  {
+    id: "kolkata_metro",
+    name: "Kolkata Metro",
+    cityId: "kolkata",
+    centerLat: 22.5726,
+    centerLng: 88.3639,
+    radiusKm: 35.0,
+    status: "EXPANDING_SOON",
+    description: "Kolkata delivery expanding soon; KingPay FinTech active.",
+  },
+  {
+    id: "hyderabad_hub",
+    name: "Hyderabad Metro",
+    cityId: "hyderabad",
+    centerLat: 17.3850,
+    centerLng: 78.4867,
+    radiusKm: 35.0,
+    status: "EXPANDING_SOON",
+    description: "Hyderabad delivery expanding soon; KingPay FinTech active.",
   },
 ];
 

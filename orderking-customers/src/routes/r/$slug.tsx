@@ -32,6 +32,7 @@ import { extractEffectiveAddonGroups } from "@/lib/modifiers/nested-modifiers";
 import { GroupOrderingModal } from "@/components/market/group-ordering-modal";
 import { DiningOutReservationModal } from "@/components/market/dining-out-reservation";
 import { NutritionAllergenDrawer } from "@/components/market/nutrition-allergen-drawer";
+import { DishDetailModal, getAppetizingDishImage } from "@/components/market/dish-detail-modal";
 import { CustomerShell } from "@/components/market/shell";
 import { CartConflictModal } from "@/components/market/cart-conflict-modal";
 import { getHighlightedSegments } from "@/lib/menu/search-and-filter";
@@ -136,6 +137,7 @@ function RestaurantPage() {
   const [cookingInstructionsItem, setCookingInstructionsItem] = useState<string>("");
   const [showNutritionDrawer, setShowNutritionDrawer] = useState(false);
   const [nutritionItem, setNutritionItem] = useState<MenuItemView | null>(null);
+  const [selectedDishDetail, setSelectedDishDetail] = useState<MenuItemView | null>(null);
 
   const detail = useQuery({
     queryKey: ["restaurant", slug, location.lat, location.lng, lang],

@@ -156,6 +156,7 @@ export type OrderSummary = {
   id: string;
   publicId: string;
   status: OrderStatus;
+  restaurantId?: string;
   restaurantName: string;
   restaurantSlug: string;
   totalPaise: number;
