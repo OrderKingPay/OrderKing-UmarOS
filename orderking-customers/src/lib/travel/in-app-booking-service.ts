@@ -835,6 +835,7 @@ export function issueSovereignETicket(params: {
   selectedSeats?: string[];
   travelDate?: string;
 }): SovereignETicket {
+  throw new Error("Ticket issuance blocked: no confirmed supplier reservation or verified payment.");
   const pnr = generateSovereignPnr(params.quote.mode);
   const bookingId = `BK-${Date.now().toString().slice(-8)}`;
   const dateStr = params.travelDate || new Date().toISOString().split("T")[0];

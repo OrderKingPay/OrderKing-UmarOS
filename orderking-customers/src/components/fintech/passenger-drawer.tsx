@@ -100,6 +100,8 @@ export function PassengerDrawer({
 
   const handleConfirmAndPay = async (e: React.FormEvent) => {
     e.preventDefault();
+    toast.error("Direct booking is unavailable until an authorized supplier and verified payment are connected. Nothing was charged.");
+    return;
 
     // 1. Validate passengers
     const paxVal = validatePassengers(passengers);
@@ -138,7 +140,7 @@ export function PassengerDrawer({
 
       // If onDeductWallet is provided, invoke it
       if (paymentMethod === "kingpay_wallet" && onDeductWallet) {
-        onDeductWallet(
+        onDeductWallet?.(
           fareCalc.totalCheckoutPaise,
           `Direct ${quote.carrierName} ${quote.serviceNumber} Booking`
         );

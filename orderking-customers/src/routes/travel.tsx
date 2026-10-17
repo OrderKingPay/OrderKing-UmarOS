@@ -290,49 +290,6 @@ export interface SavedTripReference {
 
 const SAVED_TRIPS_STORAGE_KEY = "orderking_saved_trips_v1";
 
-function getDeterministicPnrData(pnr: string) {
-  const lastDigit = parseInt(pnr.slice(-1), 10) || 0;
-  const isChartPrepared = lastDigit % 2 === 0;
-  const liveDelay = (lastDigit * 3) % 15;
-  return {
-    pnr,
-    trainNumber: lastDigit > 5 ? "12952" : "12002",
-    trainName: lastDigit > 5 ? "MUMBAI TEJAS RAJDHANI" : "BHOPAL SHATABDI EXP",
-    originStationCode: "NDLS",
-    originStationName: "New Delhi",
-    destinationStationCode: lastDigit > 5 ? "MMCT" : "BPL",
-    destinationStationName: lastDigit > 5 ? "Mumbai Central" : "Bhopal Junction",
-    boardingDate: new Date().toISOString().split("T")[0],
-    quota: "GENERAL (GN)",
-    journeyClass: "AC 3 Tier (3A)",
-    chartStatus: isChartPrepared ? "CHART PREPARED" : "CHART NOT PREPARED",
-    expectedDeparturePlatform: `Platform ${(lastDigit % 5) + 1}`,
-    liveDelayMinutes: liveDelay,
-    passengers: [
-      {
-        passengerIndex: 1,
-        bookingStatus: "CNF",
-        currentStatus: isChartPrepared ? `CNF B2 ${21 + (lastDigit % 40)}` : "CNF",
-        coach: "B2",
-        berthNumber: 21 + (lastDigit % 40),
-        berthType: "LOWER",
-        confirmProbabilityPct: 100,
-      },
-      {
-        passengerIndex: 2,
-        bookingStatus: "CNF",
-        currentStatus: isChartPrepared ? `CNF B2 ${22 + (lastDigit % 40)}` : "CNF",
-        coach: "B2",
-        berthNumber: 22 + (lastDigit % 40),
-        berthType: "MIDDLE",
-        confirmProbabilityPct: 100,
-      },
-    ],
-    farePaidPaise: 215000,
-    lastUpdated: new Date().toISOString(),
-  };
-}
-
 export function TravelPage() {
   const [activeTab, setActiveTab] = useState<TravelTab>("flights");
   const [activeSubCategory, setActiveSubCategory] = useState<Record<TravelTab, string>>({
@@ -507,6 +464,8 @@ export function TravelPage() {
     }
 
     // Synthesize sovereign confirmed ticket view for in-app display
+    toast.info("A supplier-issued confirmed ticket is required. No reservation has been created.");
+    return;
     const syntheticTicket: SovereignETicket = issueSovereignETicket({
       quote: {
         id: `synth-${trip.id}`,
@@ -549,43 +508,19 @@ export function TravelPage() {
 
   const handleCheckPnr = async (e: React.FormEvent) => {
     e.preventDefault();
-    const clean = (pnr || "").replace(/\D/g, "");
-    if (clean.length !== 10) {
-      toast.error("Please enter a valid 10-digit IRCTC PNR number");
-      return;
-    }
-    setCheckingPnr(true);
-    setPnrLiveResult(null);
-    try {
-      const res = await fetch(`/api/travel/pnr-status?pnr=${clean}`);
-      if (res.ok) {
-        const json = await res.json().catch(() => null);
-        if (json?.data) {
-          setPnrLiveResult(json.data);
-          toast.success(`Retrieved Indian Railways CRIS live status for PNR ${clean}`);
-          return;
-        }
-      }
-      const fallback = getDeterministicPnrData(clean);
-      setPnrLiveResult(fallback);
-      toast.success(`Retrieved Indian Railways CRIS chart status for PNR ${clean}`);
-    } catch {
-      const fallback = getDeterministicPnrData(clean);
-      setPnrLiveResult(fallback);
-      toast.success(`Retrieved Indian Railways CRIS chart status for PNR ${clean}`);
-    } finally {
-      setCheckingPnr(false);
-    }
+    const clean=(pnr||"").replace(/\D/g,"");
+    if(clean.length!==10){toast.error("Please enter a valid 10-digit PNR.");return;}
+    setCheckingPnr(true);setPnrLiveResult(null);
+    try{const res=await fetch("/api/travel/pnr-status?pnr="+encodeURIComponent(clean),{cache:"no-store"});const result=await res.json().catch(()=>null);
+      if(res.ok&&result?.source==="verified_provider"&&result.data){setPnrLiveResult(result.data);toast.success("Verified PNR status retrieved.");}
+      else toast.error(result?.error||"Verified railway PNR status is unavailable.");
+    }catch{toast.error("Railway PNR verification is temporarily unavailable.");}
+    finally{setCheckingPnr(false);}
   };
 
   const handleFastagBankPortal = () => {
-    if (!vehicleNo || !vehicleNo.trim()) {
-      toast.error("Please enter your vehicle registration number");
-      return;
-    }
-    toast.success(
-      `FASTag top-up verified for vehicle ${vehicleNo.toUpperCase()} (₹${fastagAmount}). In-app NETC BBPS direct settlement active with 0% fee.`
-    );
+    if(!vehicleNo?.trim()){toast.error("Enter your vehicle registration number.");return;}
+    toast.info("FASTag payment has not been processed. A verified issuer payment integration is required.");
   };
 
   const currentCategory = TRAVEL_CATEGORIES.find((c) => c.id === activeTab) ?? TRAVEL_CATEGORIES[0];
@@ -1489,6 +1424,8 @@ export function TravelPage() {
                 <Button
                   type="button"
                   onClick={() => {
+                    toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
+                    return;
                     const synth = issueSovereignETicket({
                       quote: {
                         id: `fl-direct-${Date.now()}`,
@@ -1713,6 +1650,8 @@ export function TravelPage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   onClick={() => {
+                    toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
+                    return;
                     const synth = issueSovereignETicket({
                       quote: {
                         id: `tr-direct-${Date.now()}`,
@@ -2135,6 +2074,8 @@ export function TravelPage() {
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Button
                   onClick={() => {
+                    toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
+                    return;
                     const synth = issueSovereignETicket({
                       quote: {
                         id: `bs-direct-${Date.now()}`,
@@ -2482,7 +2423,9 @@ export function TravelPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => {
-                  const synth = issueSovereignETicket({
+                  toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
+                    return;
+                    const synth = issueSovereignETicket({
                     quote: {
                       id: `ht-direct-${Date.now()}`,
                       mode: "flight" as any,
@@ -2713,7 +2656,9 @@ export function TravelPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => {
-                  const synth = issueSovereignETicket({
+                  toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
+                    return;
+                    const synth = issueSovereignETicket({
                     quote: {
                       id: `cb-direct-${Date.now()}`,
                       mode: "cab",

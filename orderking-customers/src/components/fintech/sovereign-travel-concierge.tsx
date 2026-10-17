@@ -26,88 +26,6 @@ import {
   type RebateDestination,
 } from "@/lib/travel/sovereign-travel-engine";
 
-function getDeterministicPnrData(pnr: string) {
-  const lastDigit = parseInt(pnr.slice(-1), 10) || 0;
-  const isChartPrepared = lastDigit % 2 === 0;
-  const liveDelay = (lastDigit * 3) % 15;
-  return {
-    pnr,
-    trainNumber: lastDigit > 5 ? "12952" : "12002",
-    trainName: lastDigit > 5 ? "MUMBAI TEJAS RAJDHANI" : "BHOPAL SHATABDI EXP",
-    originStationCode: "NDLS",
-    originStationName: "New Delhi",
-    destinationStationCode: lastDigit > 5 ? "MMCT" : "BPL",
-    destinationStationName: lastDigit > 5 ? "Mumbai Central" : "Bhopal Junction",
-    boardingDate: new Date().toISOString().split("T")[0],
-    quota: "GENERAL (GN)",
-    journeyClass: "AC 3 Tier (3A)",
-    chartStatus: isChartPrepared ? "CHART PREPARED" : "CHART NOT PREPARED",
-    expectedDeparturePlatform: `Platform ${(lastDigit % 5) + 1}`,
-    liveDelayMinutes: liveDelay,
-    passengers: [
-      {
-        passengerIndex: 1,
-        bookingStatus: "CNF",
-        currentStatus: isChartPrepared ? `CNF B2 ${21 + (lastDigit % 40)}` : "CNF",
-        coach: "B2",
-        berthNumber: 21 + (lastDigit % 40),
-        berthType: "LOWER",
-        confirmProbabilityPct: 100,
-      },
-      {
-        passengerIndex: 2,
-        bookingStatus: "CNF",
-        currentStatus: isChartPrepared ? `CNF B2 ${22 + (lastDigit % 40)}` : "CNF",
-        coach: "B2",
-        berthNumber: 22 + (lastDigit % 40),
-        berthType: "MIDDLE",
-        confirmProbabilityPct: 100,
-      },
-    ],
-    farePaidPaise: 215000,
-    lastUpdated: new Date().toISOString(),
-  };
-}
-
-function getDeterministicFlightData(flightCode: string) {
-  const clean = flightCode.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  const carrierPrefix = clean.slice(0, 2);
-  const carrierMap: Record<string, string> = {
-    "6E": "IndiGo Airlines",
-    "AI": "Air India",
-    "QP": "Akasa Air",
-    "IX": "Air India Express",
-    "SG": "SpiceJet",
-    "UK": "Vistara (Air India)",
-  };
-  const carrierName = carrierMap[carrierPrefix] || "Commercial Carrier";
-  const now = new Date();
-  return {
-    flightNumber: clean,
-    carrierCode: carrierPrefix,
-    carrierName,
-    originIata: "DEL",
-    originCity: "New Delhi",
-    originAirport: "Indira Gandhi International Airport",
-    destinationIata: "BOM",
-    destinationCity: "Mumbai",
-    destinationAirport: "Chhatrapati Shivaji Maharaj International",
-    scheduledDeparture: new Date(now.getTime() + 45 * 60000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    estimatedDeparture: new Date(now.getTime() + 45 * 60000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    scheduledArrival: new Date(now.getTime() + 180 * 60000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    terminal: "Terminal 3 (T3)",
-    departureGate: `Gate ${((clean.charCodeAt(2) || 49) % 30) + 1}B`,
-    baggageBelt: `Belt 0${((clean.charCodeAt(clean.length - 1) || 52) % 6) + 1}`,
-    flightStatus: "ON TIME",
-    delayMinutes: 0,
-    aircraftType: "Airbus A321neo (Sharklets)",
-    tailNumber: "VT-ILR",
-    altitudeFeet: 36000,
-    groundSpeedKnots: 465,
-    lastUpdated: new Date().toISOString(),
-  };
-}
-
 export function SovereignTravelConcierge({
   onSaveTrip,
 }: {
@@ -139,64 +57,27 @@ export function SovereignTravelConcierge({
 
   const handleLookupPnr = async (e: React.FormEvent) => {
     e.preventDefault();
-    const clean = pnrInput.replace(/\D/g, "");
-    if (clean.length !== 10) {
-      setPnrError("Please enter a valid 10-digit Indian Railways PNR.");
-      return;
-    }
-    setIsQueryingPnr(true);
-    setPnrResult(null);
-    setPnrError(null);
-    try {
-      const res = await fetch(`/api/travel/pnr-status?pnr=${clean}`);
-      if (res.ok) {
-        const json = await res.json().catch(() => null);
-        if (json?.data) {
-          setPnrResult(json.data);
-          return;
-        }
-      }
-      // Resilient fallback to deterministic Indian Railways CRIS status
-      const fallback = getDeterministicPnrData(clean);
-      setPnrResult(fallback);
-    } catch {
-      // Offline or network error - provide deterministic fallback with zero crashes
-      const fallback = getDeterministicPnrData(clean);
-      setPnrResult(fallback);
-    } finally {
-      setIsQueryingPnr(false);
-    }
+    const value=pnrInput.replace(/\D/g,"");
+    if(value.length!==10){setPnrError("A PNR must be 10 digits.");return;}
+    setIsQueryingPnr(true);setPnrResult(null);setPnrError(null);
+    try{const r=await fetch("/api/travel/pnr-status?pnr="+encodeURIComponent(value),{cache:"no-store"});
+      const body=await r.json().catch(()=>null);
+      if(r.ok&&body?.source==="verified_provider"&&body?.data)setPnrResult(body.data);
+      else setPnrError(body?.error||"Verified PNR status unavailable. Use official railway enquiry.");
+    }catch{setPnrError("Verified PNR status unavailable. Use official railway enquiry.");}
+    finally{setIsQueryingPnr(false);}
   };
-
   const handleLookupFlight = async (e: React.FormEvent) => {
     e.preventDefault();
-    const clean = flightInput.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
-    if (clean.length < 3) {
-      setFlightError("Please enter airline code and flight number (e.g. 6E204, AI805).");
-      return;
-    }
-    setIsQueryingFlight(true);
-    setFlightResult(null);
-    setFlightError(null);
-    try {
-      const res = await fetch(`/api/travel/flight-tracker?flightNumber=${clean}`);
-      if (res.ok) {
-        const json = await res.json().catch(() => null);
-        if (json?.data) {
-          setFlightResult(json.data);
-          return;
-        }
-      }
-      // Resilient fallback to deterministic Aviation radar status
-      const fallback = getDeterministicFlightData(clean);
-      setFlightResult(fallback);
-    } catch {
-      // Offline or network error - provide deterministic fallback with zero crashes
-      const fallback = getDeterministicFlightData(clean);
-      setFlightResult(fallback);
-    } finally {
-      setIsQueryingFlight(false);
-    }
+    const value=flightInput.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+    if(value.length<3){setFlightError("Enter a valid flight number.");return;}
+    setIsQueryingFlight(true);setFlightResult(null);setFlightError(null);
+    try{const r=await fetch("/api/travel/flight-tracker?flightNumber="+encodeURIComponent(value),{cache:"no-store"});
+      const body=await r.json().catch(()=>null);
+      if(r.ok&&body?.source==="verified_provider"&&body?.data)setFlightResult(body.data);
+      else setFlightError(body?.error||"Verified flight status unavailable. Use your airline.");
+    }catch{setFlightError("Verified flight status unavailable. Use your airline.");}
+    finally{setIsQueryingFlight(false);}
   };
 
   const handleSavePnrToTrips = () => {
@@ -248,7 +129,7 @@ export function SovereignTravelConcierge({
   };
 
   const handleConfirmSovereignBooking = () => {
-    setBookingConfirmed(true);
+    toast.info("No live supplier is connected. No booking or payment was made.");
   };
 
   return (
@@ -258,7 +139,7 @@ export function SovereignTravelConcierge({
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-3 py-1 text-xs font-black text-emerald-300">
-              <Sparkles className="size-3.5" /> Mathematically Cheaper Guarantee
+              <Sparkles className="size-3.5" /> Illustrative Comparison Only
             </div>
             <h2 className="text-xl sm:text-2xl font-black tracking-tight">
               Sovereign Travel Engine vs OTA Markups
@@ -306,9 +187,9 @@ export function SovereignTravelConcierge({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-            <Radio className="size-4 text-emerald-600 animate-pulse" /> Live Direct Booking Options
+            <Radio className="size-4 text-emerald-600 animate-pulse" /> Example Fare Options — Not Bookable
           </h3>
-          <span className="text-xs font-bold text-slate-500">Live Carrier Rates</span>
+          <span className="text-xs font-bold text-slate-500">Sample Fares Only</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -334,7 +215,7 @@ export function SovereignTravelConcierge({
                     {quote.serviceNumber}
                   </span>
                   <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                    {quote.seatsAvailable} seats left
+                    Inventory not verified
                   </span>
                 </div>
 
@@ -486,10 +367,10 @@ export function SovereignTravelConcierge({
             >
               <div className="flex items-center gap-2">
                 <Coins className="size-4 text-amber-600" />
-                <span className="text-xs font-black text-slate-900">24K Digital Gold Bullion Vault</span>
+                <span className="text-xs font-black text-slate-900">Planned Gold Rebate (Inactive)</span>
               </div>
               <p className="text-xs text-slate-600 mt-1">
-                Credit <strong className="text-amber-700 font-mono">+{breakdown.goldMilligramsAccrued} mg</strong> of 99.99% pure 24K gold into your KingPay Wealth Treasury.
+                Illustrative only: no gold credit or custody account has been activated.
               </p>
             </button>
 
@@ -504,10 +385,10 @@ export function SovereignTravelConcierge({
             >
               <div className="flex items-center gap-2">
                 <UtensilsCrossed className="size-4 text-emerald-600" />
-                <span className="text-xs font-black text-slate-900">OrderKing Food &amp; Grocery Wallet</span>
+                <span className="text-xs font-black text-slate-900">Planned Food Rebate (Inactive)</span>
               </div>
               <p className="text-xs text-slate-600 mt-1">
-                Credit <strong className="text-emerald-700 font-mono">+{formatPaise(breakdown.foodWalletPaiseAccrued)}</strong> cash balance with zero expiry on daily meals.
+                Illustrative only: no money has been credited to a wallet.
               </p>
             </button>
           </div>
@@ -524,7 +405,7 @@ export function SovereignTravelConcierge({
             onClick={handleConfirmSovereignBooking}
             className="w-full sm:w-auto px-8 h-12 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-black text-sm shadow-xl"
           >
-            Lock Sovereign Booking ({formatPaise(breakdown.grossCheckoutPaise)}) <ArrowRight className="size-4 ml-2" />
+            Request Verified Quote (Unavailable) <ArrowRight className="size-4 ml-2" />
           </Button>
         </div>
       </div>

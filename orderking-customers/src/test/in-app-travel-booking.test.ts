@@ -217,64 +217,14 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       expect(rzpTxn).toMatch(/^RZP-PAY-\d{9}$/);
     });
 
-    it("issues a complete Sovereign Digital E-Ticket with seat assignment and refund policy", () => {
-      const flightQuote = searchFlightQuotes()[0];
-      const pax: Passenger[] = [
-        { id: "p1", fullName: "Rahul Verma", age: 30, gender: "male", seatPreference: "Window" },
-        { id: "p2", fullName: "Sneha Verma", age: 28, gender: "female", seatPreference: "Aisle" },
-      ];
-      const contact: BookingContact = {
-        phone: "9988776655",
-        email: "rahul@example.com",
-      };
-
-      const ticket = issueSovereignETicket({
-        quote: flightQuote,
-        passengers: pax,
-        contact,
-        paymentMethod: "kingpay_wallet",
-        rebateDestination: "24k_gold",
-      });
-
-      expect(ticket.pnr).toMatch(/^OK-FL-/);
-      expect(ticket.status).toBe("CONFIRMED");
-      expect(ticket.passengers).toHaveLength(2);
-      expect(ticket.passengers[0].allocatedSeat).toBeDefined();
-      expect(ticket.passengers[0].bookingStatus).toBe("CONFIRMED");
-      expect(ticket.fareBreakdown.orderKingDeskFeePaise).toBe(0);
-
-      // Verify cancellation policy with ₹0 OrderKing penalty
-      expect(ticket.cancellationPolicy.orderKingPenaltyPaise).toBe(0);
-      expect(ticket.cancellationPolicy.refundablePaise).toBe(ticket.fareBreakdown.totalCheckoutPaise);
-      expect(ticket.cancellationPolicy.terms).toContain("100% full refund");
-
-      // Verify QR Code parseability
-      const qrParsed = JSON.parse(ticket.qrCodeData);
-      expect(qrParsed.pnr).toBe(ticket.pnr);
-      expect(qrParsed.sovereignGuarantee).toBe("0% Convenience Fee");
+    it("refuses unverified travel ticket issuance", () => {
+      const quote=searchFlightQuotes()[0];
+      expect(()=>issueSovereignETicket({quote,passengers:[{id:"p1",fullName:"Test Passenger",age:30,gender:"male",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"kingpay_wallet",rebateDestination:"food_wallet"})).toThrow(/supplier reservation|verified payment/i);
     });
 
-    it("issues cab dispatch e-ticket with live chauffeur details, OTP, and vehicle plate", () => {
-      const cabQuote = searchCabQuotes()[0];
-      const pax: Passenger[] = [
-        { id: "p1", fullName: "Aditi Roy", age: 27, gender: "female", seatPreference: "Window" },
-      ];
-      const contact: BookingContact = { phone: "9876501234", email: "aditi@orderking.com" };
-
-      const cabTicket = issueSovereignETicket({
-        quote: cabQuote,
-        passengers: pax,
-        contact,
-        paymentMethod: "razorpay_upi",
-        rebateDestination: "food_wallet",
-      });
-
-      expect(cabTicket.pnr).toMatch(/^OK-CB-/);
-      expect(cabTicket.cabDriver).toBeDefined();
-      expect(cabTicket.cabDriver?.name).toBe(cabQuote.driverName);
-      expect(cabTicket.cabDriver?.vehiclePlate).toBe(cabQuote.vehiclePlate);
-      expect(cabTicket.cabDriver?.otp).toMatch(/^\d{4}$/);
-      expect(cabTicket.cabDriver?.etaMinutes).toBeGreaterThan(0);
+    it("does not mint a fake cab PNR or driver dispatch", () => {
+      const quote=searchCabQuotes()[0];
+      expect(()=>issueSovereignETicket({quote,passengers:[{id:"p1",fullName:"Test Passenger",age:30,gender:"female",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"razorpay_upi",rebateDestination:"food_wallet"})).toThrow(/supplier reservation|verified payment/i);
     });
   });
 
@@ -291,38 +241,12 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       expect(Array.isArray(tickets)).toBe(true);
     });
 
-    it("persists and reads e-tickets when localStorage is available", () => {
-      const mockStorage: Record<string, string> = {};
-      const fakeWindow = {
-        localStorage: {
-          getItem: (key: string) => mockStorage[key] || null,
-          setItem: (key: string, val: string) => {
-            mockStorage[key] = val;
-          },
-          clear: () => {
-            Object.keys(mockStorage).forEach((k) => delete mockStorage[k]);
-          },
-        },
-      };
-
-      vi.stubGlobal("window", fakeWindow);
-
-      const quote = searchFlightQuotes()[0];
-      const pax: Passenger[] = [{ id: "p1", fullName: "Devendra Patel", age: 40, gender: "male", seatPreference: "Aisle" }];
-      const contact: BookingContact = { phone: "9876543210", email: "dev@example.com" };
-
-      const ticket = issueSovereignETicket({
-        quote,
-        passengers: pax,
-        contact,
-        paymentMethod: "kingpay_wallet",
-        rebateDestination: "24k_gold",
-      });
-
-      const retrieved = getStoredETickets();
-      expect(retrieved.length).toBe(1);
-      expect(retrieved[0].pnr).toBe(ticket.pnr);
-
+    it("does not persist any fake ticket without supplier confirmation", () => {
+      const mockStorage:Record<string,string>={};
+      vi.stubGlobal("window",{localStorage:{getItem:(key:string)=>mockStorage[key]||null,setItem:(key:string,val:string)=>{mockStorage[key]=val;},clear:()=>{}}});
+      const quote=searchFlightQuotes()[0];
+      expect(()=>issueSovereignETicket({quote,passengers:[{id:"p1",fullName:"Test",age:30,gender:"male",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"kingpay_wallet",rebateDestination:"food_wallet"})).toThrow();
+      expect(getStoredETickets()).toHaveLength(0);
       vi.unstubAllGlobals();
     });
   });
