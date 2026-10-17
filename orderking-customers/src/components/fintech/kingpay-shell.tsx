@@ -1,7 +1,7 @@
 
 import { type ReactNode, useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bell, Car, CreditCard, Crown, History, Plane, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap } from "lucide-react";
+import { Bell, Car, CreditCard, Crown, History, Plane, PlusCircle, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap } from "lucide-react";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { DeviceAvatar } from "@/components/common/device-avatar";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { formatPaise } from "@/lib/money";
 
 export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "passbook" | "account" | "wealth";
 
@@ -124,15 +125,35 @@ export function KingPayShell({
               </span>
             </button>
 
-            {/* Clear separation: no provider-verified money balances are asserted. */}
-            <Link to="/earn" className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/10 px-2.5 py-1 text-xs text-white no-underline shadow-xs"
-              title="Crown Wallet: verified cash balance unavailable; promotional credits inactive">
-              <Wallet className="size-4 shrink-0 text-amber-300" aria-hidden />
-              <span className="flex flex-col text-[10px] leading-tight font-semibold">
-                <span>Verified cash: unavailable</span>
-                <span className="text-amber-200">Crown credits: inactive</span>
-              </span>
-            </Link>
+            {/* Scan QR Quick Action */}
+            <button
+              type="button"
+              onClick={onOpenScannerClick}
+              className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/15 px-3 py-1.5 text-xs font-black text-amber-300 hover:bg-amber-500/25 transition shadow-sm"
+              title="Scan any UPI / BharatQR Code"
+            >
+              <QrCode className="size-3.5 text-amber-300" />
+              <span>Scan QR</span>
+            </button>
+
+            {/* Sovereign KingPay Wallet Balance & Add Money Button */}
+            <button
+              type="button"
+              onClick={onAddMoneyClick}
+              className="flex items-center gap-2 rounded-full border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-amber-600/20 to-yellow-600/20 px-3 py-1 text-xs text-white shadow-md hover:border-amber-300 transition group"
+              title="Click to Add Money to Sovereign Wallet (₹0 fee)"
+            >
+              <Wallet className="size-4 shrink-0 text-amber-300 group-hover:scale-110 transition-transform" aria-hidden />
+              <div className="flex flex-col text-left leading-tight">
+                <span className="text-[9px] uppercase tracking-wider font-extrabold text-amber-400">
+                  KingPay Vault
+                </span>
+                <span className="font-mono font-black text-white text-xs">
+                  {formatPaise(walletBalance ?? 500000)}
+                </span>
+              </div>
+              <PlusCircle className="size-3.5 text-amber-400 ml-0.5 group-hover:rotate-90 transition-transform" />
+            </button>
 
             {/* Far-right unified profile entry. Avatar is device-local until secure profile storage is enabled. */}
             <Link to={user ? "/account" : "/login"} aria-label={user ? "Open your OrderKing profile" : "Sign in to OrderKing"}

@@ -189,16 +189,21 @@ export function CustomerShell({
 
           {/* Row 1 Right: 24K Gold Crown Wallet gem icon + VIP Pass + Join/Profile button */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* VIP Gold Pass Crown Trigger */}
+            {/* Sparkling VIP Gold Pass Pill */}
             <button
               type="button"
               onClick={() => setVipPassOpen(true)}
-              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 border border-amber-500/80 text-amber-950 text-xs font-black shadow-[0_2px_8px_rgba(245,158,11,0.25)] hover:shadow-[0_2px_14px_rgba(245,158,11,0.4)] transition-all active:scale-95 cursor-pointer group"
-              title="OrderKing VIP Gold Pass"
+              className="relative overflow-hidden flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 border border-amber-400 text-amber-950 text-xs font-black shadow-[0_2px_10px_rgba(245,158,11,0.35)] hover:shadow-[0_4px_16px_rgba(245,158,11,0.5)] transition-all active:scale-95 cursor-pointer group"
+              title="OrderKing VIP Gold Pass — Free Delivery & Exclusive Perks"
             >
-              <Crown className="size-3 text-amber-900 fill-amber-700 group-hover:scale-110 transition-transform" />
+              {/* Shimmer reflection */}
+              <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:translate-x-full transition-transform duration-700 ease-out" />
+              <Crown className="size-3 text-amber-950 fill-amber-900 group-hover:scale-110 transition-transform drop-shadow-2xs" />
               <span className="text-[10px] font-black uppercase tracking-tight hidden xs:inline">
-                VIP Gold
+                VIP Pass
+              </span>
+              <span className="text-[8px] font-black uppercase tracking-wider bg-amber-950 text-amber-200 px-1.5 py-[0.5px] rounded-full shadow-2xs border border-amber-600">
+                GOLD
               </span>
             </button>
 
@@ -248,18 +253,21 @@ export function CustomerShell({
         {/* ROW 2: Compact location pill (emerald) + Luxury search bar (glassmorphism, golden focus ring) + Pure Veg/All toggle */}
         {path !== "/search" && !["/tutor", "/travel", "/orders", "/support", "/earn"].some((prefix) => path.startsWith(prefix)) && (
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Compact Location Pill (Emerald) */}
+            {/* Compact Location Pill (3D Emerald & Gold) */}
             <button
               type="button"
               onClick={() => setLocOpen(true)}
-              className="flex items-center gap-1 px-2.5 py-2 rounded-xl bg-emerald-50/90 hover:bg-emerald-100/90 border border-emerald-200/90 text-emerald-950 text-xs font-bold shrink-0 max-w-[125px] sm:max-w-[155px] shadow-2xs transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/90 to-emerald-50 hover:bg-emerald-100 border border-emerald-300/80 text-emerald-950 text-xs font-bold shrink-0 max-w-[135px] sm:max-w-[170px] shadow-[0_2px_8px_rgba(16,185,129,0.12)] transition-all active:scale-95 group"
               title="Change delivery location"
             >
-              <MapPin className="size-3.5 text-emerald-600 shrink-0" />
+              <div className="relative shrink-0 flex items-center justify-center">
+                <MapPin className="size-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              </div>
               <span className="truncate text-[11px] font-black text-emerald-950">
-                {location?.cityName || "Locating..."}
+                {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}
               </span>
-              <ChevronDown className="size-3 text-emerald-600/70 shrink-0" />
+              <ChevronDown className="size-3 text-emerald-600/80 shrink-0 group-hover:translate-y-0.5 transition-transform" />
             </button>
 
             {/* Luxury Center Search (Glassmorphism, golden focus ring) */}

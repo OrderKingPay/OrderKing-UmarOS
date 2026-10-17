@@ -16,6 +16,9 @@ import { Button } from "@/components/ui/button";
 import { lazyWithRetry } from "@/lib/lazy-retry";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CustomerAppSkeleton } from "@/components/skeletons/customer-app-skeleton";
+import { toast } from "sonner";
+import { CancellationGraceWindow } from "@/components/market/cancellation-grace-window";
+import { cancelMyOrder } from "@/lib/server/orders";
 
 const LazyLiveTrackingMap = lazyWithRetry(
   () => import("@/components/tracking/live-tracking-map"),
@@ -42,6 +45,7 @@ type OrderTrackingDetails = {
   deliveryOtp: string | null;
   notes: string | null;
   placedAt: string;
+  paymentMethod?: string;
 };
 
 export const Route = createFileRoute("/tracking/$dispatchJobId")({
@@ -100,6 +104,20 @@ function TrackingRoute() {
   const [position, setPosition] = useState<TrackingPosition | null>(null);
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<OrderTrackingDetails | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const handleCancelOrder = async () => {
+    setIsCancelling(true);
+    try {
+      await cancelMyOrder({ data: { orderId: dispatchJobId } });
+      toast.success("Order cancelled within 60-second grace window. Full refund initiated.");
+      setOrder((prev) => (prev ? { ...prev, status: "CANCELLED_BY_CUSTOMER" } : null));
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to cancel order.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -109,7 +127,7 @@ function TrackingRoute() {
       try {
         const { data } = await supabase
           .from("orders")
-          .select("id, public_id, status, total_paise, delivery_otp, notes, placed_at, rider_lat, rider_lng, restaurant_lat, restaurant_lng")
+          .select("id, public_id, status, total_paise, delivery_otp, notes, placed_at, rider_lat, rider_lng, restaurant_lat, restaurant_lng, payment_method")
           .eq("id", dispatchJobId)
           .maybeSingle();
 
@@ -124,6 +142,7 @@ function TrackingRoute() {
             deliveryOtp: data.delivery_otp || null,
             notes: data.notes || null,
             placedAt: data.placed_at || new Date().toISOString(),
+            paymentMethod: data.payment_method || "UPI",
           });
 
           const riderLat = Number(data.rider_lat);
@@ -268,6 +287,22 @@ function TrackingRoute() {
               </div>
             ) : null}
           </div>
+
+          {/* Authentic 60-Second Order Cancellation Grace Window */}
+          {order && (order.status === "PLACED" || order.status.startsWith("CANCELLED")) ? (
+            <CancellationGraceWindow
+              className="mt-1"
+              placedAt={order.placedAt}
+              orderId={order.id}
+              orderPublicId={order.publicId}
+              status={order.status}
+              paymentMethod={order.paymentMethod || "UPI"}
+              totalPaise={order.totalPaise}
+              isCancelling={isCancelling}
+              onCancel={handleCancelOrder}
+              onWindowExpire={() => {}}
+            />
+          ) : null}
 
           {/* Doorstep Handover Verification PIN Card */}
           {order?.deliveryOtp ? (

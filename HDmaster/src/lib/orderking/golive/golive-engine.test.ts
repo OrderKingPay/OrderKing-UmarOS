@@ -90,11 +90,11 @@ const VALID_DUMMY_CONFIG: MasterGoLiveConfig = {
 };
 
 test("Go-Live Diagnostic Readiness Engine", async (t) => {
-  await t.test("evaluates default config as PILOT_READY or PRODUCTION_READY with zero critical blockers", () => {
+  await t.test("never marks dummy credentials production-ready without authenticated provider checks", () => {
     const report = evaluateGoLiveReadiness(VALID_DUMMY_CONFIG);
-    assert.equal(report.criticalBlockers.length, 0);
-    assert.ok(report.overallScore >= 60, `Expected score >= 60, got ${report.overallScore}`);
-    assert.ok(report.status === "PILOT_READY" || report.status === "PRODUCTION_READY");
+    assert.ok(report.criticalBlockers.length >= 2);
+    assert.ok(report.overallScore >= 60, `Expected format score >= 60, got ${report.overallScore}`);
+    assert.equal(report.status, "NOT_READY");
     assert.equal(report.pillars.infrastructure.maxScore, 25);
     assert.equal(report.pillars.paymentGateway.maxScore, 30);
     assert.equal(report.pillars.communicationAndMaps.maxScore, 20);
@@ -165,25 +165,25 @@ test("Capacity & Scaling Switchboard Enforcer", async (t) => {
 test("Test Ping Runners (Deterministic Handshakes)", async (t) => {
   await t.test("executes database connection test", async () => {
     const res = await testDbConnection(VALID_DUMMY_CONFIG.database);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.equal(res.latencyMs, 0);
   });
 
   await t.test("executes payment gateway connection test", async () => {
     const res = await testPgConnection(VALID_DUMMY_CONFIG.paymentGateway);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.equal(res.latencyMs, 0);
   });
 
   await t.test("executes SMS gateway connection test", async () => {
     const res = await testSmsConnection(VALID_DUMMY_CONFIG.smsGateway);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.equal(res.latencyMs, 0);
   });
 
   await t.test("executes maps connection test", async () => {
     const res = await testMapsConnection(VALID_DUMMY_CONFIG.maps);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.equal(res.latencyMs, 0);
   });
 });

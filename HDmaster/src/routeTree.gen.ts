@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiMarketDominanceCronRouteImport } from './routes/api/market-dominance-cron'
+import { Route as ApiPingRouteImport } from './routes/api/ping'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as ApiTestOpenaiRouteImport } from './routes/api/test-openai'
 import { Route as AppIndexRouteImport } from './routes/app/index'
@@ -81,6 +82,11 @@ const ApiHealthRoute = ApiHealthRouteImport.update({
 const ApiMarketDominanceCronRoute = ApiMarketDominanceCronRouteImport.update({
   id: '/api/market-dominance-cron',
   path: '/api/market-dominance-cron',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPingRoute = ApiPingRouteImport.update({
+  id: '/api/ping',
+  path: '/api/ping',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
+  '/api/ping': typeof ApiPingRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
   '/app/$module': typeof AppModuleRouteWithChildren
@@ -293,6 +300,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
+  '/api/ping': typeof ApiPingRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
   '/app/$module': typeof AppModuleRouteWithChildren
@@ -334,6 +342,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
+  '/api/ping': typeof ApiPingRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
   '/app/$module': typeof AppModuleRouteWithChildren
@@ -376,6 +385,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/health'
     | '/api/market-dominance-cron'
+    | '/api/ping'
     | '/api/telemetry'
     | '/api/test-openai'
     | '/app/$module'
@@ -415,6 +425,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/health'
     | '/api/market-dominance-cron'
+    | '/api/ping'
     | '/api/telemetry'
     | '/api/test-openai'
     | '/app/$module'
@@ -455,6 +466,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/health'
     | '/api/market-dominance-cron'
+    | '/api/ping'
     | '/api/telemetry'
     | '/api/test-openai'
     | '/app/$module'
@@ -496,6 +508,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   ApiHealthRoute: typeof ApiHealthRoute
   ApiMarketDominanceCronRoute: typeof ApiMarketDominanceCronRoute
+  ApiPingRoute: typeof ApiPingRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
   ApiTestOpenaiRoute: typeof ApiTestOpenaiRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
@@ -572,6 +585,13 @@ declare module '@tanstack/react-router' {
       path: '/api/market-dominance-cron'
       fullPath: '/api/market-dominance-cron'
       preLoaderRoute: typeof ApiMarketDominanceCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ping': {
+      id: '/api/ping'
+      path: '/api/ping'
+      fullPath: '/api/ping'
+      preLoaderRoute: typeof ApiPingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/telemetry': {
@@ -868,6 +888,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   ApiHealthRoute: ApiHealthRoute,
   ApiMarketDominanceCronRoute: ApiMarketDominanceCronRoute,
+  ApiPingRoute: ApiPingRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
   ApiTestOpenaiRoute: ApiTestOpenaiRoute,
   ApiAiChatRoute: ApiAiChatRoute,

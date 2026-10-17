@@ -332,6 +332,21 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
     warnings: legalWarnings,
   };
 
+  // Credential format and test-mode flags do not prove real provider connectivity.
+  // Keep the launch gate closed until verified server-side probes have set connected states.
+  if (config.database.status !== "CONNECTED") {
+    infraBlockers.push("Database connectivity is not verified by a real query.");
+    criticalBlockers.push("Database: verified connection required.");
+    infraPillar.status = "BLOCKED";
+    infraPillar.blockers = infraBlockers;
+  }
+  if (config.paymentGateway.status !== "CONNECTED") {
+    pgBlockers.push("Payment API and webhook connectivity have not been verified.");
+    criticalBlockers.push("Payments: verified gateway connection required.");
+    pgPillar.status = "BLOCKED";
+    pgPillar.blockers = pgBlockers;
+  }
+
   // Overall Score
   const totalScore = infraScore + pgScore + commScore + legalScore;
   let status: "PRODUCTION_READY" | "PILOT_READY" | "NOT_READY" = "NOT_READY";
@@ -391,56 +406,8 @@ export function enforceCapacityLimits(
   return { allowed: true };
 }
 
-// ==========================================
-// TEST PING RUNNERS (Deterministic Diagnostics)
-// ==========================================
-
-export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
-  const start = Date.now();
-  if (!validatePostgresUrl(config.connectionString)) {
-    return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
-  }
-  // executed handshake or connection pool ping
-  const latencyMs = Math.floor(Math.random() * 25) + 15;
-  return {
-    ok: true,
-    message: `Connected successfully to ${config.provider} (${config.sslMode} SSL, PgBouncer pool active).`,
-    latencyMs,
-  };
-}
-
-export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
-  if (!config.apiKey || !config.secretKey) {
-    return { ok: false, message: "Missing API Key or Secret Key.", latencyMs: 0 };
-  }
-  const latencyMs = Math.floor(Math.random() * 40) + 20;
-  return {
-    ok: true,
-    message: `Handshake successful with ${config.provider} in ${config.mode} mode. Webhooks verified.`,
-    latencyMs,
-  };
-}
-
-export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
-  if (!config.apiKey) {
-    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local execution.", latencyMs: 0 };
-  }
-  const latencyMs = Math.floor(Math.random() * 30) + 15;
-  return {
-    ok: true,
-    message: `SMS Gateway (${config.provider}) active. Sender ID: ${config.senderId}, DLT Entity: ${config.dltEntityId || "Pending"}.`,
-    latencyMs,
-  };
-}
-
-export async function testMapsConnection(config: MapsConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
-  if (!config.apiKey) {
-    return { ok: false, message: "Missing Maps API Key. Falling back to offline Haversine matrix.", latencyMs: 0 };
-  }
-  const latencyMs = Math.floor(Math.random() * 20) + 10;
-  return {
-    ok: true,
-    message: `Maps API (${config.provider}) active. Directions & Geocoding enabled. Winding factor: ${config.roadWindingFactor}x.`,
-    latencyMs,
-  };
-}
+// Truthful diagnostics: credential presence and well-formed URLs are NOT live connections.
+export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ok:boolean;message:string;latencyMs:number}>{return {ok:false,latencyMs:0,message:validatePostgresUrl(config.connectionString)?"Configured but not verified: no database query performed.":"Invalid database URL."};}
+export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ok:boolean;message:string;latencyMs:number}>{return {ok:false,latencyMs:0,message:config.apiKey&&config.secretKey?"Gateway credentials present but payment/webhook handshakes NOT verified.":"Missing payment credentials."};}
+export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ok:boolean;message:string;latencyMs:number}>{return {ok:false,latencyMs:0,message:config.apiKey?"SMS credentials present but provider/DLT delivery NOT verified.":"Missing SMS credentials."};}
+export async function testMapsConnection(config: MapsConfig): Promise<{ok:boolean;message:string;latencyMs:number}>{return {ok:false,latencyMs:0,message:config.apiKey?"Maps key present but routing/geocoding NOT verified.":"Missing Maps credentials."};}

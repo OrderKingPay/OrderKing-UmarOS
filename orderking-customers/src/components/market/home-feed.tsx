@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { CuratedCollections } from "@/components/market/curated-collections";
+import { RoyalDiscoveryShowcase } from "@/components/market/royal-discovery-showcase";
 import { useCustomization } from "@orderking/ui";
 import { useBrand, useT } from "@/components/providers";
 import { listCategories } from "@/lib/server/catalog";
@@ -502,10 +503,10 @@ export function HomeFeed({
                 ? "Explore this category"
                 : dietFilter === "veg"
                 ? "Pure vegetarian restaurants"
-                : `Restaurants in ${location?.cityName || "Your Area"}`}
+                : `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}`}
             </h2>
             <p className="text-xs text-gray-500 font-medium">
-              Explore menus and delivery options in {location?.cityName || "your neighborhood"}
+              Explore menus and delivery options in {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your neighborhood")}
             </p>
           </div>
         </div>
@@ -550,104 +551,7 @@ export function HomeFeed({
             </Button>
           </div>
         ) : filteredRestaurants.length === 0 ? (
-          <div className="rounded-3xl border border-amber-200/80 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-white p-6 sm:p-8 text-center space-y-5 shadow-[0_4px_24px_rgba(245,158,11,0.06)]">
-            <div className="relative mx-auto flex size-20 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 shadow-[0_6px_20px_rgba(245,158,11,0.3)]">
-              <div className="flex size-[72px] items-center justify-center rounded-[14px] bg-slate-950 text-amber-300">
-                <Utensils className="size-8 text-amber-300 animate-pulse" />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <h3 className="font-black text-lg sm:text-xl text-gray-950 tracking-tight">
-                {(list.data?.restaurants?.length ?? 0) === 0
-                  ? location?.cityName && location.cityName !== "Locating..."
-                    ? `Restaurants in ${location.cityName} are preparing for upcoming service`
-                    : "Select your delivery location to explore menus"
-                  : "No restaurants match your active filter"}
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-600 max-w-md mx-auto leading-relaxed">
-                {(list.data?.restaurants?.length ?? 0) === 0
-                  ? "Switch to a popular food zone below to browse verified restaurant menus and order immediately."
-                  : "Try resetting filters to explore all available dining destinations in your area."}
-              </p>
-            </div>
-
-            {/* Quick 1-Tap Active Culinary Hub City Chips */}
-            <div className="space-y-2.5 pt-2">
-              <span className="text-[11px] font-black uppercase tracking-wider text-amber-800/80 bg-amber-100/60 px-3 py-1 rounded-full border border-amber-200/60">
-                📍 Popular Culinary Hubs
-              </span>
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-                {[
-                  { city: "Kolkata", area: "Park Street", tag: "Biryani & Kathi Rolls", lat: 22.55, lng: 88.35, cityId: "kolkata", zoneId: "kol-park" },
-                  { city: "Bengaluru", area: "Koramangala", tag: "Craft Burgers & Cafes", lat: 12.93, lng: 77.62, cityId: "blr", zoneId: "blr-kor" },
-                  { city: "New Delhi", area: "Connaught Place", tag: "Mughlai & Chaat", lat: 28.63, lng: 77.22, cityId: "del", zoneId: "del-cp" },
-                  { city: "Mumbai", area: "Bandra West", tag: "Coastal & Street Food", lat: 19.06, lng: 72.83, cityId: "mum", zoneId: "mum-bandra" },
-                  { city: "Silchar", area: "Central Silchar", tag: "Bengali & Thalis", lat: 24.83, lng: 92.77, cityId: "silchar", zoneId: "sil-central" },
-                ].map((hub) => (
-                  <button
-                    key={hub.city}
-                    type="button"
-                    onClick={() => {
-                      useLocationStore.getState().setLocation({
-                        cityId: hub.cityId,
-                        cityName: hub.city,
-                        zoneId: hub.zoneId,
-                        zoneName: hub.area,
-                        label: `${hub.area}, ${hub.city}`,
-                        line1: hub.area,
-                        lat: hub.lat,
-                        lng: hub.lng,
-                      });
-                      toast.success(`Location set to ${hub.area}, ${hub.city}`);
-                    }}
-                    className="group flex flex-col items-start px-3.5 py-2 rounded-2xl border border-amber-200/80 bg-white hover:border-amber-500 hover:bg-amber-50/60 transition-all shadow-2xs hover:shadow-xs active:scale-95 text-left"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="size-3 text-[#E23744] shrink-0" />
-                      <span className="text-xs font-black text-gray-900 group-hover:text-[#E23744]">
-                        {hub.city}
-                      </span>
-                      <span className="text-[10px] text-gray-500 font-medium">({hub.area})</span>
-                    </div>
-                    <span className="text-[10px] text-amber-800 font-semibold mt-0.5">
-                      {hub.tag}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-2.5 pt-3 border-t border-amber-900/10">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="bg-white border-amber-300 font-black text-xs hover:bg-amber-50 text-gray-900 shadow-2xs"
-                onClick={() => {
-                  setFilterFast(false);
-                  setFilterRating(false);
-                  setFilterOffers(false);
-                  setFilterBudget(false);
-                  setSelectedCategory(null);
-                }}
-              >
-                Reset Filters
-              </Button>
-              <Link
-                to="/travel"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/80 px-3.5 py-2 text-xs font-black text-blue-950 no-underline hover:bg-blue-100 transition shadow-2xs"
-              >
-                ✈️ Travel 0% Fee
-              </Link>
-              <Link
-                to="/earn"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-amber-300 bg-gradient-to-r from-amber-100/80 to-yellow-100/80 px-3.5 py-2 text-xs font-black text-amber-950 no-underline hover:bg-amber-200 transition shadow-2xs"
-              >
-                👑 24K Gold Crown Rewards
-              </Link>
-            </div>
-          </div>
+          <RoyalDiscoveryShowcase />
         ) : (
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             {filteredRestaurants.map((restaurant) => (

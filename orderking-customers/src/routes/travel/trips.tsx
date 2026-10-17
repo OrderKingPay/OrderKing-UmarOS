@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { CalendarDays, Clock3, Crown, FileText, Plane, Search, ShieldCheck, TrainFront, CheckCircle2, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CalendarDays, Clock3, Crown, FileText, Plane, Search, ShieldCheck, TrainFront, CheckCircle2, AlertCircle, QrCode, ArrowRight, Bus, Car } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { getStoredETickets, type SovereignETicket } from "@/lib/travel/in-app-booking-service";
+import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
+import { formatPaise } from "@/lib/money";
 
 export function TripsPageSkeleton() {
   return (
@@ -42,6 +45,13 @@ const FILTERS: View[] = ["Upcoming", "In Transit", "Completed", "Cancelled / Ref
 function MyTripsPage() {
   const { user, isPending } = useCurrentUserState();
   const [view, setView] = useState<View>("Upcoming");
+  const [eTickets, setETickets] = useState<SovereignETicket[]>(() => getStoredETickets());
+  const [selectedTicket, setSelectedTicket] = useState<SovereignETicket | null>(null);
+
+  useEffect(() => {
+    setETickets(getStoredETickets());
+  }, []);
+
   const [pnr, setPnr] = useState("");
   const [pnrLoading, setPnrLoading] = useState(false);
   const [pnrData, setPnrData] = useState<any>(null);
@@ -115,7 +125,7 @@ function MyTripsPage() {
 
           <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" aria-label="Travel bookings">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-lg font-bold">Booking history</h2>
+              <h2 className="text-lg font-bold">Booking history ({eTickets.length})</h2>
               <CalendarDays className="size-5 text-emerald-700" />
             </div>
             <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
@@ -127,19 +137,75 @@ function MyTripsPage() {
                 </button>
               ))}
             </div>
-            <div className="mt-4 rounded-2xl bg-slate-50 p-6 text-center">
-              <FileText className="mx-auto size-10 text-slate-400" />
-              <h3 className="mt-3 font-semibold">No verified {view.toLowerCase()} bookings connected</h3>
-              <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
-                {isPending ? "Checking account..." : !user
-                  ? "Sign in to prepare your private trip centre."
-                  : "You have no active bookings in this view. Book flights, trains, stays, and buses directly with 0% fees."}
-              </p>
-              <Link to="/travel"
-                className="mt-4 inline-flex rounded-xl bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white no-underline">
-                Explore Sovereign Travel
-              </Link>
-            </div>
+
+            {eTickets.length > 0 ? (
+              <div className="mt-4 space-y-3">
+                {eTickets.map((t) => {
+                  const ModeIcon = t.mode === "flight" ? Plane : t.mode === "train" ? TrainFront : t.mode === "bus" ? Bus : Car;
+                  return (
+                    <div
+                      key={t.pnr}
+                      className="rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 to-white p-4.5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs hover:border-emerald-500 transition"
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <div className="size-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
+                          <ModeIcon className="size-5" />
+                        </div>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs font-black font-mono px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
+                              PNR: {t.pnr}
+                            </span>
+                            <span className="text-xs font-bold text-slate-900">{t.serviceTitle}</span>
+                            <span className="text-[10px] text-emerald-600 font-extrabold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                              ✓ {t.status}
+                            </span>
+                          </div>
+                          <p className="text-sm font-black text-slate-800 mt-1">
+                            {t.origin.city} ➔ {t.destination.city}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {t.origin.departureDate} at {t.origin.departureTime} · {t.passengers.length} Passenger{t.passengers.length > 1 ? "s" : ""} · {t.classOrTier}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 self-end md:self-center">
+                        <div className="text-right">
+                          <span className="text-base font-black font-mono text-slate-900 block">
+                            {formatPaise(t.fareBreakdown.totalCheckoutPaise)}
+                          </span>
+                          <span className="text-[10px] text-emerald-600 font-bold block">
+                            0% Fee Sovereign
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedTicket(t)}
+                          className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm"
+                        >
+                          <QrCode className="size-3.5" /> E-Ticket
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-4 rounded-2xl bg-slate-50 p-6 text-center">
+                <FileText className="mx-auto size-10 text-slate-400" />
+                <h3 className="mt-3 font-semibold">No verified {view.toLowerCase()} bookings connected</h3>
+                <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
+                  {isPending ? "Checking account..." : !user
+                    ? "Sign in to prepare your private trip centre."
+                    : "You have no active bookings in this view. Book flights, trains, stays, and buses directly with 0% fees."}
+                </p>
+                <Link to="/travel"
+                  className="mt-4 inline-flex rounded-xl bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white no-underline">
+                  Explore Sovereign Travel
+                </Link>
+              </div>
+            )}
           </section>
 
           <section className="grid gap-4 md:grid-cols-2" aria-label="Check travel references">
@@ -277,6 +343,13 @@ function MyTripsPage() {
           </div>
         </div>
       </div>
+
+      {selectedTicket && (
+        <SovereignETicketModal
+          ticket={selectedTicket}
+          onClose={() => setSelectedTicket(null)}
+        />
+      )}
     </CustomerShell>
   );
 }

@@ -15,9 +15,9 @@ export interface VipGoldPassHubProps {
 export function VipGoldPassHub({
   isOpen = false,
   onClose,
-  isMember = true,
-  renewalDate = "15 Nov 2026",
-  totalSavedPaise = 184500, // ₹1,845
+  isMember = false,
+  renewalDate = "Not verified",
+  totalSavedPaise = 0,
 }: VipGoldPassHubProps) {
   const [open, setOpen] = useState(isOpen);
 
@@ -50,9 +50,8 @@ export function VipGoldPassHub({
   ];
 
   const handleSubscribe = () => {
-    toast.success("OrderKing VIP Gold Pass renewed! Active on all restaurants and dining.");
-    setOpen(false);
-    onClose?.();
+    toast.info("Membership enrollment requires verified checkout and server-side entitlement activation; no payment or activation occurred.");
+    // Keep membership modal open; no entitlement was activated.
   };
 
   if (!open && !isOpen) return null;
@@ -103,7 +102,7 @@ export function VipGoldPassHub({
             </div>
           ) : (
             <p className="mt-3 text-xs text-amber-100">
-              Join millions saving an average of ₹4,200 annually on food deliveries and dine-out meals.
+              VIP benefits are subject to approved terms and activation; enrollment is not yet available.
             </p>
           )}
         </div>

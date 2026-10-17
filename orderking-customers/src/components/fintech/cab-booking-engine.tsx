@@ -13,6 +13,8 @@ import {
   Coins,
   TrendingDown,
   Navigation,
+  ArrowLeftRight,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
@@ -48,7 +50,13 @@ export function CabBookingEngine({
   const [confirmedTicket, setConfirmedTicket] = useState<SovereignETicket | null>(null);
 
   // Live cab quotes
-  const quotes = searchCabQuotes(pickup, drop, category);
+  const quotes = searchCabQuotes(pickup.trim() || "Terminal 3, IGI Airport (DEL)", drop.trim() || "Connaught Place, New Delhi", category);
+
+  const handleSwapLocations = () => {
+    const temp = pickup;
+    setPickup(drop);
+    setDrop(temp);
+  };
 
   const handleOpenBooking = (quote: CabQuote) => {
     setSelectedQuote(quote);
@@ -99,20 +107,30 @@ export function CabBookingEngine({
           ))}
         </div>
 
-        {/* Input Fields Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-amber-400 transition">
-            <label htmlFor="cab-search-pickup" className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 mb-1 uppercase tracking-wider">
-              <MapPin className="size-3 text-amber-400" /> Pickup Location
+        {/* Input Fields Grid with Location Swap */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
+          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-amber-400 transition relative">
+            <label htmlFor="cab-search-pickup" className="text-[10px] font-bold text-slate-300 flex items-center justify-between mb-1 uppercase tracking-wider">
+              <span className="flex items-center gap-1.5"><MapPin className="size-3 text-amber-400" /> Pickup Location</span>
             </label>
-            <input
-              id="cab-search-pickup"
-              type="text"
-              value={pickup}
-              onChange={(e) => setPickup(e.target.value)}
-              className="w-full bg-transparent text-sm font-black outline-none text-white placeholder:text-slate-400"
-              placeholder="e.g. Airport Terminal 3"
-            />
+            <div className="flex items-center gap-1.5">
+              <input
+                id="cab-search-pickup"
+                type="text"
+                value={pickup}
+                onChange={(e) => setPickup(e.target.value)}
+                className="w-full bg-transparent text-sm font-black outline-none text-white placeholder:text-slate-400"
+                placeholder="e.g. Airport Terminal 3"
+              />
+              <button
+                type="button"
+                onClick={handleSwapLocations}
+                title="Swap Pickup & Drop"
+                className="size-7 rounded-lg bg-white/10 hover:bg-amber-500/30 text-amber-300 border border-white/10 flex items-center justify-center shrink-0 transition"
+              >
+                <ArrowLeftRight className="size-3.5" />
+              </button>
+            </div>
           </div>
 
           <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-amber-400 transition">
@@ -170,6 +188,29 @@ export function CabBookingEngine({
             Verified Driver Assigned Instantly
           </span>
         </div>
+
+        {quotes.length === 0 && (
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center space-y-3">
+            <div className="size-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
+              <Car className="size-6" />
+            </div>
+            <h4 className="text-base font-bold text-slate-900">No cabs available for this category right now</h4>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Try switching your service category or resetting to Delhi Airport Transfer.
+            </p>
+            <Button
+              type="button"
+              onClick={() => {
+                setPickup("Terminal 3, IGI Airport (DEL)");
+                setDrop("Connaught Place, New Delhi");
+                setCategory("Airport Transfer");
+              }}
+              className="rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs"
+            >
+              <RotateCcw className="size-3.5 mr-1" /> Reset to Airport Transfer
+            </Button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {quotes.map((q) => {

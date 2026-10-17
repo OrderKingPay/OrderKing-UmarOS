@@ -33,14 +33,14 @@ export type SelectedLocation = {
 };
 
 const DEFAULT_LOCATION: SelectedLocation = {
-  cityId: "",
-  cityName: "Locating...",
-  zoneId: "",
-  zoneName: "",
-  label: "Tap to set location",
-  line1: "Please set your delivery address",
-  lat: 0,
-  lng: 0,
+  cityId: "del",
+  cityName: "New Delhi",
+  zoneId: "del-cp",
+  zoneName: "Connaught Place",
+  label: "Connaught Place, New Delhi",
+  line1: "Inner Circle, Connaught Place, New Delhi",
+  lat: 28.6315,
+  lng: 77.2167,
 };
 
 export const DEFAULT_SAVED_ADDRESSES: SavedAddress[] = [
@@ -134,7 +134,21 @@ export const useLocationStore = create<State>()(
         }
       },
     }),
-    { name: "marketplace-location" },
+    {
+      name: "marketplace-location",
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        if (
+          !state.location ||
+          !state.location.cityName ||
+          state.location.cityName === "Locating..." ||
+          state.location.lat === 0 ||
+          isNaN(state.location.lat)
+        ) {
+          state.location = DEFAULT_LOCATION;
+        }
+      },
+    },
   ),
 );
 

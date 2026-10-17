@@ -50,6 +50,7 @@ export interface InitiateCustomerCallParams {
   twilioConfig?: TwilioCredentials;
   bridgeApiUrl?: string;
   autoLaunchDialer?: boolean;
+  allowDirectFallback?: boolean; // explicit customer consent or authorized policy required
   fetchFn?: typeof fetch;
 }
 
@@ -200,6 +201,7 @@ export async function initiateCustomerCall(
     twilioConfig,
     bridgeApiUrl,
     autoLaunchDialer = true,
+    allowDirectFallback = false,
     fetchFn = typeof fetch !== "undefined" ? fetch : undefined,
   } = params;
 
@@ -210,9 +212,10 @@ export async function initiateCustomerCall(
   const messageText = customMessage ||
     `Namaste ${customerName}! I am your OrderKing delivery partner regarding order #${orderId}. I am arriving with your order. Please keep your delivery OTP ready.`;
 
-  const whatsAppUrl = generateWhatsAppDirectUrl(normalizedCustomer, messageText);
+  const whatsAppUrl = allowDirectFallback ? generateWhatsAppDirectUrl(normalizedCustomer, messageText) : "";
 
   // If rider explicitly requested direct calling, skip bridge
+  if(preferredProvider==="DIRECT"&&!allowDirectFallback){return {success:false,channel:"DIRECT_FALLBACK",telUri:"",whatsAppUrl:"",fallbackTriggered:false,error:"Direct contact is not authorized."};}
   if (preferredProvider === "DIRECT") {
     if (autoLaunchDialer && typeof window !== "undefined") {
       window.location.href = fallbackTelUri;
@@ -226,6 +229,13 @@ export async function initiateCustomerCall(
     };
   }
 
+  if(!bridgeApiUrl){
+    if(allowDirectFallback){
+      if(autoLaunchDialer&&typeof window!=="undefined") window.location.href=fallbackTelUri;
+      return {success:true,channel:"DIRECT_FALLBACK",telUri:fallbackTelUri,whatsAppUrl,fallbackTriggered:true,error:"Direct contact explicitly authorized; masked bridge not configured."};
+    }
+    return {success:false,channel:"DIRECT_FALLBACK",telUri:"",whatsAppUrl:"",fallbackTriggered:false,error:"Secure masked-calling backend is not configured."};
+  }
   let lastError: string | undefined;
 
   // 1. Try Exotel Bridge (if preferred or AUTO)
@@ -249,6 +259,7 @@ export async function initiateCustomerCall(
         if (resp.ok) {
           const data = (await resp.json()) as any;
           const proxyNumber = data.virtualProxyNumber || data.callerId || exotelConfig?.callerId;
+          if (!proxyNumber) throw new Error("Provider did not return a masked proxy number.");
           const proxyTel = proxyNumber ? `tel:${normalizeIndianPhone(proxyNumber)}` : fallbackTelUri;
           if (autoLaunchDialer && typeof window !== "undefined") {
             window.location.href = proxyTel;
@@ -334,6 +345,7 @@ export async function initiateCustomerCall(
         if (resp.ok) {
           const data = (await resp.json()) as any;
           const proxyNumber = data.virtualProxyNumber || twilioConfig?.fromNumber;
+          if (!proxyNumber) throw new Error("Provider did not return a masked proxy number.");
           const proxyTel = proxyNumber ? `tel:${normalizeIndianPhone(proxyNumber)}` : fallbackTelUri;
           if (autoLaunchDialer && typeof window !== "undefined") {
             window.location.href = proxyTel;
@@ -397,18 +409,8 @@ export async function initiateCustomerCall(
     }
   }
 
-  // 3. AUTOMATIC RESILIENT FALLBACK:
-  // Dual-mode bridge unavailable or failed -> Direct `tel:+91...` + 1-Tap WhatsApp link
-  if (autoLaunchDialer && typeof window !== "undefined") {
-    window.location.href = fallbackTelUri;
-  }
-
-  return {
-    success: true,
-    channel: "DIRECT_FALLBACK",
-    telUri: fallbackTelUri,
-    whatsAppUrl,
-    fallbackTriggered: true,
-    error: lastError || "Cloud telephony bridge unavailable. Automatic fallback activated.",
-  };
+  // Never disclose the customer phone number silently after a bridge error.
+  if(!allowDirectFallback)return {success:false,channel:"DIRECT_FALLBACK",telUri:"",whatsAppUrl:"",fallbackTriggered:false,error:lastError||"Masked calling unavailable; request support."};
+  if(autoLaunchDialer&&typeof window!=="undefined")window.location.href=fallbackTelUri;
+  return {success:true,channel:"DIRECT_FALLBACK",telUri:fallbackTelUri,whatsAppUrl,fallbackTriggered:true,error:lastError||"Explicit direct fallback selected."};
 }

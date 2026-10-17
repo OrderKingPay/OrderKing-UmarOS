@@ -19,6 +19,7 @@ export default defineConfig({
       "src/lib/orderking/ai/providers/providers.test.ts",
       "src/lib/orderking/campaigns/campaign-budget-ledger.test.ts",
       "src/lib/orderking/edge/offline-resilience.test.ts",
+      "src/components/offline-detector.test.ts",
       "src/lib/orderking/customization/universal-customization-engine.test.ts",
       "src/lib/orderking/ai/umar-ai-customization-compiler.test.ts",
       "src/lib/orderking/ai/umar-ai-omnibar.test.ts",

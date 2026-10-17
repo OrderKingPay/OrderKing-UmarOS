@@ -73,12 +73,21 @@ describe("real-world-bridge: Dual-Mode Telephony Bridge & Automatic Fallback", (
   const riderPhone = "9876500001";
   const customerPhone = "9876500002";
 
-  it("automatically falls back to direct tel:+91... and WhatsApp when no bridge credentials are provided", async () => {
+  it("does not disclose the customer phone when no secure bridge is configured", async () => {
+    const res = await initiateCustomerCall({ orderId, riderPhone, customerPhone, autoLaunchDialer: false });
+    expect(res.success).toBe(false);
+    expect(res.telUri).toBe("");
+    expect(res.whatsAppUrl).toBe("");
+    expect(res.error).toContain("Secure masked-calling backend");
+  });
+
+  it("allows direct tel/WhatsApp only with explicit authorization", async () => {
     const res = await initiateCustomerCall({
       orderId,
       riderPhone,
       customerPhone,
       autoLaunchDialer: false,
+      allowDirectFallback: true,
     });
 
     expect(res.success).toBe(true);
@@ -95,6 +104,7 @@ describe("real-world-bridge: Dual-Mode Telephony Bridge & Automatic Fallback", (
       riderPhone,
       customerPhone,
       preferredProvider: "DIRECT",
+      allowDirectFallback: true,
       autoLaunchDialer: false,
     });
 
@@ -108,7 +118,7 @@ describe("real-world-bridge: Dual-Mode Telephony Bridge & Automatic Fallback", (
       ok: true,
       status: 200,
       json: async () => ({
-        Call: { Sid: "exo_test_session_123" },
+        bridgeSessionId: "exo_test_session_123", virtualProxyNumber: "+918045671234",
       }),
     });
 
@@ -117,6 +127,8 @@ describe("real-world-bridge: Dual-Mode Telephony Bridge & Automatic Fallback", (
       riderPhone,
       customerPhone,
       preferredProvider: "EXOTEL",
+      bridgeApiUrl: "/api/rider/telephony/bridge",
+      allowDirectFallback: true,
       exotelConfig: {
         apiKey: "test_key",
         apiToken: "test_token",
@@ -140,7 +152,7 @@ describe("real-world-bridge: Dual-Mode Telephony Bridge & Automatic Fallback", (
       ok: true,
       status: 200,
       json: async () => ({
-        sid: "CA_twilio_test_456",
+        bridgeSessionId: "CA_twilio_test_456", virtualProxyNumber: "+918045679999",
       }),
     });
 
@@ -149,6 +161,7 @@ describe("real-world-bridge: Dual-Mode Telephony Bridge & Automatic Fallback", (
       riderPhone,
       customerPhone,
       preferredProvider: "TWILIO",
+      bridgeApiUrl: "/api/rider/telephony/bridge",
       twilioConfig: {
         accountSid: "AC123456789",
         authToken: "auth_test",
@@ -166,7 +179,7 @@ describe("real-world-bridge: Dual-Mode Telephony Bridge & Automatic Fallback", (
     expect(res.telUri).toBe("tel:+918045679999");
   });
 
-  it("gracefully falls back to direct tel if Exotel and Twilio network requests fail", async () => {
+  it("only falls back to direct calling with explicit authorization when bridge fails", async () => {
     const failingFetch = vi.fn().mockRejectedValue(new Error("Network timeout to cloud telephony"));
 
     const res = await initiateCustomerCall({
@@ -174,6 +187,8 @@ describe("real-world-bridge: Dual-Mode Telephony Bridge & Automatic Fallback", (
       riderPhone,
       customerPhone,
       preferredProvider: "EXOTEL",
+      bridgeApiUrl: "/api/rider/telephony/bridge",
+      allowDirectFallback: true,
       exotelConfig: {
         apiKey: "test_key",
         apiToken: "test_token",
