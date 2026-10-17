@@ -142,7 +142,7 @@ export function LaunchPlaybookView() {
     return compareMerchantNetPayout(
       Math.round(calcSubtotalRupees * 100),
       selectedTier.commissionBps,
-      3000 // Zomato 30%
+      3000 // Legacy Aggregator 30%
     );
   }, [calcSubtotalRupees, selectedTier]);
 
@@ -528,12 +528,12 @@ export function LaunchPlaybookView() {
                 </div>
               </div>
 
-              {/* Side-by-Side Merchant Savings Comparison vs Zomato */}
+              {/* Side-by-Side Merchant Savings Comparison vs Legacy Aggregators */}
               <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">
-                      Merchant Direct Bank Benefit: OrderKing vs Zomato (30%)
+                      Merchant Direct Bank Benefit: OrderKing vs Legacy Aggregators (30%)
                     </h4>
                     <p className="text-xs text-slate-500">
                       Transparent math proving why owners sign with OrderKing
@@ -548,7 +548,7 @@ export function LaunchPlaybookView() {
 
                 <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                   <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                    <div className="font-bold text-slate-900 text-sm">Zomato / Swiggy (30%)</div>
+                    <div className="font-bold text-slate-900 text-sm">Legacy Aggregators (30%)</div>
                     <div className="flex justify-between text-slate-600">
                       <span>Order Subtotal:</span>
                       <span>{formatPaiseToInr(merchantComparison.orderSubtotalPaise)}</span>
