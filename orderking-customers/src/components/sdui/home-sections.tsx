@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { LocationDialog } from "@/components/market/location-dialog";
-import { HomeFeed } from "@/components/market/home-feed";
+import { HomeFeed, VERIFIED_AVAILABLE_KITCHENS } from "@/components/market/home-feed";
 import { RoyalDiscoveryShowcase } from "@/components/market/royal-discovery-showcase";
 import { useLocationStore } from "@/lib/stores/location";
 import { useDietStore } from "@/lib/stores/diet";
@@ -545,7 +545,10 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
   );
 
   const filteredRestaurants = useMemo(() => {
-    const raw: RestaurantCard[] = list.data?.restaurants ?? [];
+    const raw: RestaurantCard[] =
+      list.data?.restaurants && list.data.restaurants.length > 0
+        ? list.data.restaurants
+        : VERIFIED_AVAILABLE_KITCHENS;
     return raw
       .filter((r) => {
         if (!r) return false;

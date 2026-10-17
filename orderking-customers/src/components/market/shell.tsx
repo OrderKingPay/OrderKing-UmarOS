@@ -5,7 +5,7 @@ import {
   MapPin,
   ChevronDown,
   Crown,
-  Gift,
+  Languages,
   Mic,
   UtensilsCrossed,
   Plane,
@@ -31,11 +31,6 @@ const LazyCustomerConciergeDrawer = resilientLazy(
   () => import("@/components/ai/customer-concierge-drawer").then((m) => ({ default: m.CustomerConciergeDrawer })),
   "AI Concierge"
 );
-const LazyExpiringViralShareModal = resilientLazy(
-  () => import("@/components/growth/expiring-viral-share-modal").then((m) => ({ default: m.ExpiringViralShareModal })),
-  "Gift Share Reward"
-);
-import { VipGoldPassHub } from "@/components/market/vip-gold-pass-hub";
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
 import { UltraLuxuryEcosystemFooter } from "@/components/market/ultra-luxury-ecosystem-footer";
 import { useDietStore } from "@/lib/stores/diet";
@@ -138,8 +133,6 @@ export function CustomerShell({
   const [locOpen, setLocOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
-  const [vipPassOpen, setVipPassOpen] = useState(false);
   const [oneTapDrawerOpen, setOneTapDrawerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchPlaceholderIndex, setSearchPlaceholderIndex] = useState(0);
@@ -202,107 +195,103 @@ export function CustomerShell({
             : "border-b border-amber-900/5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
         )}
       >
-        {/* ROW 1: Brand + AI Support (Left) | Gift Share (Center) | Crown Wallet + Join (Right) */}
-        <div className="flex items-center justify-between gap-1.5 sm:gap-2">
-          {/* Row 1 Left: OrderKing crown logo + 'Prestige' gold badge + 1-tap AI Support mic button with pulse ring */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* ROW 1: Authentic Indian Food Delivery Header: Logo + Delivery Address (Left) | Language + AI Support + Cart + Profile (Right) */}
+        <div className="flex items-center justify-between gap-1.5 sm:gap-3">
+          {/* Row 1 Left: OrderKing logo + Delivery Address Selector */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
             <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0">
               <div className="relative">
                 <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
-                <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-amber-400 ring-2 ring-white" />
+                <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm sm:text-base font-black tracking-tight text-gray-950 leading-none">
-                  OrderKing
-                </span>
-                <span className="inline-flex items-center gap-0.5 text-[8.5px] font-black uppercase tracking-widest text-amber-800 bg-gradient-to-r from-amber-100 via-amber-200/90 to-yellow-100 px-1.5 py-0.2 rounded-xs border border-amber-300/70 leading-none mt-0.5 shadow-2xs">
-                  <Crown className="size-2 text-amber-700" />
-                  Prestige
-                </span>
-              </div>
+              <span className="text-base sm:text-lg font-black tracking-tight text-gray-950 leading-none hidden xs:inline">
+                OrderKing
+              </span>
             </Link>
 
-            {/* 1-Tap AI Support Mic Button with Pulse Ring */}
+            {/* Delivery Address Selector (Location Pin with current address e.g. "Connaught Place, New Delhi", clicking opens address picker) */}
+            <button
+              type="button"
+              onClick={() => setLocOpen(true)}
+              className="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-amber-100/50 border border-transparent hover:border-amber-200/80 text-left transition-all max-w-[130px] xs:max-w-[170px] sm:max-w-[220px] group cursor-pointer"
+              title="Change delivery location"
+              aria-label="Select delivery address"
+            >
+              <div className="relative shrink-0 flex items-center justify-center">
+                <MapPin className="size-3.5 sm:size-4 text-amber-600 group-hover:scale-110 transition-transform" />
+                <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-0.5 leading-tight">
+                  <span className="text-xs font-black text-gray-900 truncate">
+                    {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "Connaught Place")}
+                  </span>
+                  <ChevronDown className="size-3 text-gray-500 shrink-0 group-hover:translate-y-0.5 transition-transform" />
+                </div>
+                <span className="text-[10px] text-gray-500 truncate hidden xs:block leading-tight">
+                  {location?.cityName && location.cityName !== "Locating..." ? `${location.cityName}, India` : "New Delhi, India"}
+                </span>
+              </div>
+            </button>
+          </div>
+
+          {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* 1-Tap Language selector (English, Hindi, Bengali, etc.) */}
+            <button
+              type="button"
+              onClick={() => setLangOpen(true)}
+              className="flex items-center gap-1 px-2 py-1 rounded-xl bg-white/80 hover:bg-amber-50 border border-amber-200/80 text-gray-800 text-xs font-bold shadow-2xs hover:border-amber-300 transition-all active:scale-95 shrink-0 cursor-pointer"
+              title="Change Language (English, हिन्दी, বাংলা, etc.)"
+              aria-label="Select language"
+            >
+              <Languages className="size-3.5 text-amber-700" />
+              <span className="text-[11px] font-black uppercase text-amber-950">
+                {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : lang === "as" ? "অসমীয়া" : "EN"}
+              </span>
+            </button>
+
+            {/* 1-Tap AI Support button */}
             <div className="relative shrink-0">
-              <span className="absolute -inset-0.5 rounded-full bg-amber-400/40 animate-ping pointer-events-none" />
+              <span className="absolute -inset-0.5 rounded-xl bg-amber-400/40 animate-ping pointer-events-none" />
               <button
                 type="button"
                 onClick={() => setConciergeOpen(true)}
-                className="relative flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full bg-gradient-to-r from-slate-950 via-slate-900 to-black text-amber-300 border border-amber-400/80 shadow-[0_2px_8px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:shadow-[0_2px_12px_rgba(245,158,11,0.35)] transition-all active:scale-95"
+                className="relative flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-xl bg-gradient-to-r from-slate-950 via-slate-900 to-black text-amber-300 border border-amber-400/80 shadow-[0_2px_8px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:shadow-[0_2px_12px_rgba(245,158,11,0.35)] transition-all active:scale-95 cursor-pointer"
                 title="1-Tap AI Support Concierge"
                 aria-label="Open 24x7 AI Support"
               >
                 <Mic className="size-3 text-amber-300 animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-tight text-amber-200">
+                <span className="text-[10px] sm:text-[10.5px] font-black uppercase tracking-tight text-amber-200 hidden xs:inline">
                   AI Support
                 </span>
               </button>
             </div>
-          </div>
 
-          {/* Row 1 Center: Gift share button with 7-DAY countdown timer badge, golden shimmer */}
-          <button
-            type="button"
-            onClick={() => setShareOpen(true)}
-            className="relative overflow-hidden flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 via-yellow-400/30 to-amber-500/15 border border-amber-400/70 text-amber-950 text-xs font-black shadow-[0_2px_8px_rgba(245,158,11,0.12)] hover:border-amber-500 hover:shadow-[0_2px_12px_rgba(245,158,11,0.25)] transition-all active:scale-95 shrink-0 group"
-            title="Share with friends & get ₹50 (7-Day Expiry)"
-          >
-            {/* Golden shimmer sweep */}
-            <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-amber-200/50 to-transparent group-hover:translate-x-full transition-transform duration-1000 ease-out" />
-            <Gift className="size-3.5 text-amber-800 shrink-0 group-hover:rotate-12 transition-transform duration-300" />
-            <span className="text-[10.5px] font-black text-amber-950 hidden xs:inline tracking-tight">
-              Gift ₹50
-            </span>
-            <span className="inline-flex items-center gap-0.5 text-[8.5px] font-black bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-full px-1.5 py-0.5 uppercase tracking-wider leading-none shadow-2xs">
-              7-DAY
-            </span>
-          </button>
-
-          {/* Row 1 Right: 24K Gold Crown Wallet gem icon + VIP Pass + Join/Profile button */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Sparkling VIP Gold Pass Pill */}
-            <button
-              type="button"
-              onClick={() => setVipPassOpen(true)}
-              className="relative overflow-hidden flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 border border-amber-400 text-amber-950 text-xs font-black shadow-[0_2px_10px_rgba(245,158,11,0.35)] hover:shadow-[0_4px_16px_rgba(245,158,11,0.5)] transition-all active:scale-95 cursor-pointer group"
-              title="OrderKing VIP Gold Pass — Free Delivery & Exclusive Perks"
-            >
-              {/* Shimmer reflection */}
-              <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:translate-x-full transition-transform duration-700 ease-out" />
-              <Crown className="size-3 text-amber-950 fill-amber-900 group-hover:scale-110 transition-transform drop-shadow-2xs" />
-              <span className="text-[10px] font-black uppercase tracking-tight hidden xs:inline">
-                VIP Pass
-              </span>
-              <span className="text-[8px] font-black uppercase tracking-wider bg-amber-950 text-amber-200 px-1.5 py-[0.5px] rounded-full shadow-2xs border border-amber-600">
-                GOLD
-              </span>
-            </button>
-
-            {/* 24K Gold Crown Wallet Gem */}
+            {/* Cart icon with badge counter (redirecting to /cart or opening drawer) */}
             <Link
-              to="/earn"
-              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-400/25 via-yellow-300/40 to-amber-500/25 border border-amber-400 text-amber-950 text-xs font-black shadow-[0_2px_8px_rgba(245,158,11,0.2)] hover:shadow-[0_2px_14px_rgba(245,158,11,0.35)] transition-all active:scale-95 no-underline group"
-              title="Crown Wallet & 24K Gold Credits"
+              to="/cart"
+              className="relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/80 hover:bg-amber-50 border border-amber-200/80 text-gray-800 shadow-2xs hover:border-amber-400 transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
+              title="Shopping Cart"
+              aria-label={`Cart with ${count} items`}
             >
-              <div className="flex size-4 items-center justify-center rounded-full bg-amber-400/40 group-hover:scale-110 transition-transform">
-                <Crown className="size-3 text-amber-800 shrink-0 drop-shadow-2xs" />
-              </div>
-              <span className="text-[10.5px] font-black text-amber-950 hidden sm:inline">
-                Crown Wallet
-              </span>
-              <span className="text-[8.5px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 rounded-full px-1.5 py-0.5 leading-none shadow-2xs border border-amber-300">
-                24K
-              </span>
+              <ShoppingBag className="size-4 text-gray-900" />
+              {count > 0 && (
+                <span className="absolute -top-1 -right-1 flex min-w-4 h-4 px-1 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[9px] font-black text-white shadow-2xs ring-1 ring-white">
+                  {count > 99 ? "99+" : count}
+                </span>
+              )}
             </Link>
 
-            {/* Profile & Sign-In */}
+            {/* User profile avatar / "Sign In" button */}
             {isPending ? (
-              <div className="h-7 w-7 animate-pulse rounded-full bg-amber-100" />
+              <div className="size-7 sm:size-8 animate-pulse rounded-full bg-amber-100 shrink-0" />
             ) : user ? (
               <Link
                 to="/account"
-                className="flex items-center gap-1 p-1 rounded-full border border-amber-200 bg-white/80 hover:bg-amber-50 transition no-underline text-gray-900 shadow-2xs"
+                className="flex items-center p-0.5 rounded-full border border-amber-200/90 bg-white/90 hover:bg-amber-50 transition no-underline text-gray-900 shadow-2xs shrink-0"
                 title="Your Profile & Account"
+                aria-label="Account and Profile"
               >
                 <DeviceAvatar userId={user.id} name={user.displayName} />
               </Link>
@@ -310,11 +299,10 @@ export function CustomerShell({
               <SignedOut>
                 <Link
                   to="/login"
-                  className="flex items-center gap-1 rounded-full border border-amber-400/80 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-2.5 py-1 text-amber-300 shadow-xs no-underline transition hover:border-amber-300 active:scale-95"
-                  aria-label="Sign in or join OrderKing"
+                  className="flex items-center gap-1 rounded-xl border border-amber-400/80 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-2 sm:px-2.5 py-1 text-amber-300 shadow-2xs no-underline transition hover:border-amber-300 active:scale-95 shrink-0"
+                  aria-label="Sign in"
                 >
-                  <Crown className="size-3 text-amber-300" aria-hidden />
-                  <span className="text-[10px] font-black uppercase tracking-wider">Join</span>
+                  <span className="text-[10.5px] font-black uppercase tracking-wider">Sign In</span>
                 </Link>
               </SignedOut>
             )}
@@ -349,34 +337,17 @@ export function CustomerShell({
           })}
         </div>
 
-        {/* ROW 2: Compact location pill (emerald) + Luxury search bar (glassmorphism, golden focus ring) + Pure Veg/All toggle */}
+        {/* ROW 2: Luxury search bar (glassmorphism, golden focus ring) + Pure Veg/All toggle */}
         {path !== "/search" && !["/tutor", "/travel", "/orders", "/support", "/earn"].some((prefix) => path.startsWith(prefix)) && (
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* Compact Location Pill (3D Emerald & Gold) */}
-              <button
-                type="button"
-                onClick={() => setLocOpen(true)}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/90 to-emerald-50 hover:bg-emerald-100 border border-emerald-300/80 text-emerald-950 text-xs font-bold shrink-0 max-w-[135px] sm:max-w-[170px] shadow-[0_2px_8px_rgba(16,185,129,0.12)] transition-all active:scale-95 group cursor-pointer"
-                title="Change delivery location"
-              >
-                <div className="relative shrink-0 flex items-center justify-center">
-                  <MapPin className="size-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
-                  <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                </div>
-                <span className="truncate text-[11px] font-black text-emerald-950">
-                  {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}
-                </span>
-                <ChevronDown className="size-3 text-emerald-600/80 shrink-0 group-hover:translate-y-0.5 transition-transform" />
-              </button>
-
               {/* Luxury Center Search (Glassmorphism, golden focus ring) */}
               <button
                 type="button"
                 onClick={() => (onSearch ? onSearch() : void navigate({ to: "/search" }))}
-                className="flex-1 flex h-9 items-center gap-2 rounded-xl border border-amber-300/60 bg-white/70 backdrop-blur-md hover:bg-white hover:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/60 focus:border-amber-400 px-3 text-left text-gray-400 transition-all shadow-[0_2px_8px_rgba(245,158,11,0.05)] min-w-0 group cursor-pointer"
+                className="flex-1 flex h-9 sm:h-10 items-center gap-2 rounded-xl sm:rounded-2xl border border-amber-300/60 bg-white/80 backdrop-blur-md hover:bg-white hover:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/60 focus:border-amber-400 px-3 sm:px-3.5 text-left text-gray-400 transition-all shadow-[0_2px_8px_rgba(245,158,11,0.05)] min-w-0 group cursor-pointer"
               >
-                <Search className="size-3.5 shrink-0 text-amber-600 group-hover:scale-110 transition-transform" aria-hidden />
+                <Search className="size-3.5 sm:size-4 shrink-0 text-amber-600 group-hover:scale-110 transition-transform" aria-hidden />
                 <div className="relative flex-1 h-4 overflow-hidden">
                   <span
                     key={searchPlaceholderIndex}
@@ -392,7 +363,7 @@ export function CustomerShell({
                 type="button"
                 onClick={toggleVeg}
                 className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-black transition-all shadow-2xs shrink-0 select-none active:scale-95 cursor-pointer",
+                  "flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border text-xs font-black transition-all shadow-2xs shrink-0 select-none active:scale-95 cursor-pointer",
                   dietFilter === "veg"
                     ? "bg-emerald-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
                     : "bg-white/80 hover:bg-white text-gray-700 border-amber-200/80 hover:border-emerald-300"
@@ -500,13 +471,6 @@ export function CustomerShell({
           </Suspense>
         </ModalErrorBoundary>
       ) : null}
-      {shareOpen ? (
-        <ModalErrorBoundary onClose={() => setShareOpen(false)} componentName="Gift Share Modal">
-          <Suspense fallback={null}>
-            <LazyExpiringViralShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
-          </Suspense>
-        </ModalErrorBoundary>
-      ) : null}
       {locOpen ? (
         <ModalErrorBoundary onClose={() => setLocOpen(false)} componentName="Location Picker">
           <Suspense fallback={null}>
@@ -527,9 +491,6 @@ export function CustomerShell({
             />
           </Suspense>
         </ModalErrorBoundary>
-      ) : null}
-      {vipPassOpen ? (
-        <VipGoldPassHub isOpen={vipPassOpen} onClose={() => setVipPassOpen(false)} />
       ) : null}
     </div>
   );

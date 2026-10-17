@@ -18,7 +18,7 @@ export default defineConfig({
       "src/test/service-worker-resilience.test.ts",
       "src/test/predictive-search.test.ts",
       "src/test/multilingual-dish-matcher.test.ts",
-      "src/test/zomato-customer-parity.test.ts",
+      "src/test/tier1-customer-parity.test.ts",
       "src/test/in-app-travel-booking.test.ts",
       "src/test/tier1-customer-secret-weapons.test.ts",
       "src/test/npci-upi-intent.test.ts",

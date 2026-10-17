@@ -163,9 +163,9 @@ export function UltraLuxuryHero() {
         {/* ROW 2: Hero Headline & Value Props */}
         <div className="space-y-1.5">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
-            Fresh Kitchen Specialties.{" "}
+            Order food online from verified kitchens near you.{" "}
             <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
-              Zero Hidden Markups.
+              25-30m Delivery · 0% Menu Markups
             </span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">

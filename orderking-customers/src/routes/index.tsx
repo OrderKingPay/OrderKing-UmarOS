@@ -51,9 +51,8 @@ function Home() {
               👑
             </span>
             <span className="tracking-tight">
-              Direct Kitchen Delivery · <span className="text-amber-800">0% Menu Markups</span> · FSSAI Verified Kitchens
+              Order food online from verified kitchens near you · <span className="text-amber-800">25-30m Delivery</span> · <span className="text-emerald-800">0% Menu Markups</span>
             </span>
-            <span className="hidden sm:inline text-amber-700">· 25-30m Express Dispatch</span>
           </div>
         </div>
 
