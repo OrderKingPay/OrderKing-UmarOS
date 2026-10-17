@@ -1,7 +1,7 @@
 // File: src/sw.ts — OrderKing Tier-2/Tier-3 Resilient Low-Network Service Worker
 // Architecture: Pre-cached UI Shell, Stale-While-Revalidate Catalogs, 6.5s Network-First Checkout, IndexedDB Outbox & Background Sync
 
-export const SW_VERSION = "orderking-v4.2.0";
+export const SW_VERSION = "orderking-v5.3.0-live-truth";
 export const CACHE_SHELL = `ok-shell-${SW_VERSION}`;
 export const CACHE_MENUS = `ok-menus-${SW_VERSION}`;
 export const CACHE_ASSETS = `ok-assets-${SW_VERSION}`;
@@ -130,6 +130,7 @@ export interface QueuedOfflineMutation {
 
 export type RouteStrategy =
   | "bypass"
+  | "network-first-navigation"
   | "cache-shell"
   | "stale-while-revalidate"
   | "network-first"
@@ -169,8 +170,13 @@ export function selectRouteStrategy(request: {
     return "bypass";
   }
 
-  // UI Shell: Navigation or pre-cached core assets
-  if (mode === "navigate" || PRECACHE_SHELL_URLS.includes(url.pathname)) {
+  // Navigation requests: Network-First to guarantee live truth & prevent cache traps
+  if (mode === "navigate") {
+    return "network-first-navigation";
+  }
+
+  // Pre-cached core assets
+  if (PRECACHE_SHELL_URLS.includes(url.pathname)) {
     return "cache-shell";
   }
 
@@ -216,6 +222,42 @@ export async function fetchWithTimeout(
     return await fetchFn(request, { signal: controller.signal });
   } finally {
     clearTimeout(timer);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 0. STRATEGY: NETWORK-FIRST NAVIGATION (2.5s Strict Timeout + Fallback)
+// ─────────────────────────────────────────────────────────────────────────────
+export async function handleNetworkFirstNavigation(
+  request: Request,
+  cacheProvider?: Cache,
+  fetchFn: typeof fetch = fetch
+): Promise<Response> {
+  const shellCache = cacheProvider || (await caches.open(CACHE_SHELL));
+
+  try {
+    const netResponse = await fetchWithTimeout(request, 2500, fetchFn);
+    if (netResponse.ok) {
+      await shellCache.put("/index.html", netResponse.clone());
+    }
+    return netResponse;
+  } catch {
+    const cachedShell =
+      (await shellCache.match(request)) ||
+      (await shellCache.match("/index.html")) ||
+      (await shellCache.match("/"));
+
+    if (cachedShell) {
+      return cachedShell;
+    }
+
+    return new Response(EMERGENCY_OFFLINE_HTML, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "X-OrderKing-Offline": "emergency-shell",
+      },
+    });
   }
 }
 
@@ -643,6 +685,9 @@ if (swScope) {
 
     switch (strategy) {
       case "bypass":
+        return;
+      case "network-first-navigation":
+        event.respondWith(handleNetworkFirstNavigation(request));
         return;
       case "cache-shell":
         event.respondWith(handleShellCacheOnly(request));

@@ -1,6 +1,6 @@
 "use strict";
 // OrderKing Tier-2/Tier-3 Low-Network Resilient Service Worker
-const SW_VERSION = "orderking-v4.2.0";
+const SW_VERSION = "orderking-v5.3.0-live-truth";
 const CACHE_SHELL = `ok-shell-${SW_VERSION}`;
 const CACHE_MENUS = `ok-menus-${SW_VERSION}`;
 const CACHE_ASSETS = `ok-assets-${SW_VERSION}`;
@@ -139,7 +139,11 @@ function selectRouteStrategy(request) {
     return "bypass";
   }
 
-  if (mode === "navigate" || PRECACHE_SHELL_URLS.includes(url.pathname)) {
+  if (mode === "navigate") {
+    return "network-first-navigation";
+  }
+
+  if (PRECACHE_SHELL_URLS.includes(url.pathname)) {
     return "cache-shell";
   }
 
@@ -207,6 +211,9 @@ self.addEventListener("fetch", (event) => {
   switch (strategy) {
     case "bypass":
       return;
+    case "network-first-navigation":
+      event.respondWith(handleNetworkFirstNavigation(request));
+      return;
     case "cache-shell":
       event.respondWith(handleShellCacheOnly(request));
       return;
@@ -224,6 +231,30 @@ self.addEventListener("fetch", (event) => {
       return;
   }
 });
+
+async function handleNetworkFirstNavigation(request) {
+  const shellCache = await caches.open(CACHE_SHELL);
+  try {
+    const netResponse = await fetchWithTimeout(request, 2500);
+    if (netResponse.ok) {
+      await shellCache.put("/index.html", netResponse.clone());
+    }
+    return netResponse;
+  } catch {
+    const cachedShell =
+      (await shellCache.match(request)) ||
+      (await shellCache.match("/index.html")) ||
+      (await shellCache.match("/"));
+    if (cachedShell) return cachedShell;
+    return new Response(EMERGENCY_OFFLINE_HTML, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "X-OrderKing-Offline": "emergency-shell"
+      }
+    });
+  }
+}
 
 async function handleShellCacheOnly(request) {
   const shellCache = await caches.open(CACHE_SHELL);

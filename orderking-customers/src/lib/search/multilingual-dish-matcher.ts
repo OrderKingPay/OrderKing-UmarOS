@@ -260,6 +260,30 @@ export const MULTILINGUAL_DISH_REGISTRY: DishVariationGroup[] = [
       "cottage cheese",
     ],
   },
+  {
+    id: "butter-chicken",
+    canonicalName: "Butter Chicken",
+    hindiName: "बटर चिकन",
+    bengaliName: "বাটার চিকেন",
+    assameseName: "বাটাৰ চিকেন",
+    cuisine: "North Indian",
+    tags: ["murgh makhani", "chicken makhani", "butter chicken", "tandoori chicken", "gravy", "curry"],
+    variations: [
+      "butter chicken",
+      "butterchicken",
+      "murgh makhani",
+      "chicken makhani",
+      "murg makhani",
+      "बटर चिकन",
+      "मुर्ग मखानी",
+      "मुरग मखनी",
+      "বাটার চিকেন",
+      "মুরগ মাখানি",
+      "বাটাৰ চিকেন",
+      "মুৰ্গ মাখানি",
+      "boneless butter chicken",
+    ],
+  },
 ];
 
 /**
