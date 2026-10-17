@@ -13,6 +13,8 @@ import {
   Coins,
   TrendingDown,
   CheckCircle2,
+  ArrowLeftRight,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
@@ -49,7 +51,19 @@ export function FlightBookingEngine({
   const [confirmedTicket, setConfirmedTicket] = useState<SovereignETicket | null>(null);
 
   // Live quotes
-  const quotes = searchFlightQuotes(from, to, departureDate, cabinClass);
+  const quotes = searchFlightQuotes(from.trim() || "New Delhi (DEL)", to.trim() || "Mumbai (BOM)", departureDate, cabinClass);
+
+  const handleSwapRoute = () => {
+    const temp = from;
+    setFrom(to);
+    setTo(temp);
+  };
+
+  const handleSetQuickDate = (daysAhead: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysAhead);
+    setDepartureDate(d.toISOString().split("T")[0]);
+  };
 
   const handleOpenBooking = (quote: FlightQuote) => {
     setSelectedQuote(quote);
@@ -82,20 +96,30 @@ export function FlightBookingEngine({
           </div>
         </div>
 
-        {/* Input Fields Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-sky-400 transition">
-            <label htmlFor="flight-search-from" className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 mb-1 uppercase tracking-wider">
-              <MapPin className="size-3 text-sky-400" /> From City / Code
+        {/* Input Fields Grid with Route Swap */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
+          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-sky-400 transition relative">
+            <label htmlFor="flight-search-from" className="text-[10px] font-bold text-slate-300 flex items-center justify-between mb-1 uppercase tracking-wider">
+              <span className="flex items-center gap-1.5"><MapPin className="size-3 text-sky-400" /> From City / Code</span>
             </label>
-            <input
-              id="flight-search-from"
-              type="text"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="w-full bg-transparent text-sm font-black outline-none text-white placeholder:text-slate-400"
-              placeholder="e.g. New Delhi (DEL)"
-            />
+            <div className="flex items-center gap-1.5">
+              <input
+                id="flight-search-from"
+                type="text"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+                className="w-full bg-transparent text-sm font-black outline-none text-white placeholder:text-slate-400"
+                placeholder="e.g. New Delhi (DEL)"
+              />
+              <button
+                type="button"
+                onClick={handleSwapRoute}
+                title="Swap Origin & Destination"
+                className="size-7 rounded-lg bg-white/10 hover:bg-sky-500/30 text-sky-300 border border-white/10 flex items-center justify-center shrink-0 transition"
+              >
+                <ArrowLeftRight className="size-3.5" />
+              </button>
+            </div>
           </div>
 
           <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-sky-400 transition">
@@ -159,6 +183,37 @@ export function FlightBookingEngine({
             </select>
           </div>
         </div>
+
+        {/* Quick Date Shortcuts */}
+        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-slate-400">Quick Dates:</span>
+            <button
+              type="button"
+              onClick={() => handleSetQuickDate(0)}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition"
+            >
+              Today
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetQuickDate(1)}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition"
+            >
+              Tomorrow
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetQuickDate(3)}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition"
+            >
+              In 3 Days
+            </button>
+          </div>
+          <span className="text-[11px] text-sky-300 font-bold hidden sm:inline">
+            Direct airline inventory with instant sovereign PNR issuance
+          </span>
+        </div>
       </div>
 
       {/* Live Carrier Quotes & Results List */}
@@ -174,6 +229,28 @@ export function FlightBookingEngine({
             Direct Boarding Pass &amp; E-Ticket Issued In-App
           </span>
         </div>
+
+        {quotes.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center space-y-3">
+            <div className="size-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center mx-auto">
+              <Plane className="size-6" />
+            </div>
+            <h4 className="text-base font-bold text-slate-900">No flights matched your specific inputs</h4>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Try adjusting your origin or destination city to major aviation hubs.
+            </p>
+            <Button
+              type="button"
+              onClick={() => {
+                setFrom("New Delhi (DEL)");
+                setTo("Mumbai (BOM)");
+              }}
+              className="rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs"
+            >
+              <RotateCcw className="size-3.5 mr-1" /> Reset to Delhi — Mumbai Express
+            </Button>
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-1 gap-3.5">
           {quotes.map((q) => {

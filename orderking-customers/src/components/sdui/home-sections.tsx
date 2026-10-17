@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { LocationDialog } from "@/components/market/location-dialog";
 import { HomeFeed } from "@/components/market/home-feed";
+import { RoyalDiscoveryShowcase } from "@/components/market/royal-discovery-showcase";
 import { useLocationStore } from "@/lib/stores/location";
 import { useDietStore } from "@/lib/stores/diet";
 import { useCartStore } from "@/lib/stores/cart";
@@ -277,16 +278,18 @@ export function BannerCarouselSection({
     >
       <div
         className={cn(
-          "relative overflow-hidden rounded-3xl p-4 sm:p-5 text-white shadow-md transition-all duration-500 bg-gradient-to-br",
+          "relative overflow-hidden rounded-[26px] sm:rounded-3xl p-4 sm:p-5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.18)] border border-amber-300/40 transition-all duration-500 bg-gradient-to-br",
           active.bgClass
         )}
       >
+        {/* Specular golden sheen refraction */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-amber-300/80 to-transparent" />
         {/* Glow ambient background decoration */}
-        <div className="pointer-events-none absolute -right-10 -bottom-10 size-40 rounded-full bg-amber-500/20 blur-2xl" />
+        <div className="pointer-events-none absolute -right-10 -bottom-10 size-44 rounded-full bg-gradient-to-br from-amber-400/25 to-yellow-500/10 blur-2xl" />
 
-        <div className="relative z-10 flex flex-col justify-between h-full space-y-3">
+        <div className="relative z-10 flex flex-col justify-between h-full space-y-3.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider backdrop-blur-md border border-white/20">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md border border-white/25 shadow-2xs">
               {active.tag}
             </span>
             <div className="flex gap-1.5">
@@ -298,7 +301,7 @@ export function BannerCarouselSection({
                   className={cn(
                     "size-2 rounded-full transition-all cursor-pointer",
                     currentIndex === idx
-                      ? "w-5 bg-amber-400"
+                      ? "w-6 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-[0_0_8px_rgba(245,158,11,1)]"
                       : "bg-white/40 hover:bg-white/60"
                   )}
                   aria-label={`Slide ${idx + 1}`}
@@ -308,21 +311,21 @@ export function BannerCarouselSection({
           </div>
 
           <div className="space-y-1">
-            <h3 className="text-base sm:text-lg font-black tracking-tight text-white">
+            <h3 className="text-base sm:text-lg font-black tracking-tight text-white leading-tight">
               {active.title}
             </h3>
-            <p className="text-xs text-stone-300 leading-snug">
+            <p className="text-xs text-stone-300 leading-snug font-medium">
               {active.subtitle}
             </p>
           </div>
 
-          <div className="pt-1">
+          <div className="pt-0.5">
             <Link
               to={active.link}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 px-3.5 py-1.5 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all no-underline"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 px-4 py-2 text-xs font-black text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition-all no-underline"
             >
               <span>{active.cta}</span>
-              <ArrowRight className="size-3 stroke-[2.5]" />
+              <ArrowRight className="size-3.5 stroke-[2.5]" />
             </Link>
           </div>
         </div>
@@ -575,16 +578,16 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
       className="w-full space-y-4 pt-1"
     >
       {/* Quick Filter Controls */}
-      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1.5 scrollbar-none text-xs">
         <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={() => setFilterFast(!filterFast)}
             className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterFast
-                ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border-amber-500"
-                : "bg-white hover:bg-amber-50/60 text-gray-700 border-gray-200"
+                ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border-amber-400 shadow-[0_4px_12px_rgba(245,158,11,0.35)]"
+                : "bg-white hover:bg-amber-50/70 text-stone-700 border-amber-200/80 hover:border-amber-400"
             )}
           >
             <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-amber-500")} />
@@ -595,10 +598,10 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
             type="button"
             onClick={() => setFilterRating(!filterRating)}
             className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterRating
-                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-600"
-                : "bg-white hover:bg-emerald-50/60 text-gray-700 border-gray-200"
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400 shadow-[0_4px_12px_rgba(5,150,105,0.35)]"
+                : "bg-white hover:bg-emerald-50/70 text-stone-700 border-amber-200/80 hover:border-emerald-400"
             )}
           >
             <Star className={cn("size-3.5", filterRating ? "fill-white text-white" : "text-emerald-600")} />
@@ -609,10 +612,10 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
             type="button"
             onClick={() => setFilterOffers(!filterOffers)}
             className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterOffers
-                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-600"
-                : "bg-white hover:bg-rose-50/60 text-gray-700 border-gray-200"
+                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-400 shadow-[0_4px_12px_rgba(225,29,72,0.35)]"
+                : "bg-white hover:bg-rose-50/70 text-stone-700 border-amber-200/80 hover:border-rose-400"
             )}
           >
             <Percent className={cn("size-3.5", filterOffers ? "text-white" : "text-rose-600")} />
@@ -623,10 +626,10 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
             type="button"
             onClick={() => setFilterBudget(!filterBudget)}
             className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterBudget
-                ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 text-white border-indigo-600"
-                : "bg-white hover:bg-purple-50/60 text-gray-700 border-gray-200"
+                ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 text-white border-indigo-400 shadow-[0_4px_12px_rgba(99,102,241,0.35)]"
+                : "bg-white hover:bg-purple-50/70 text-stone-700 border-amber-200/80 hover:border-purple-400"
             )}
           >
             <Coins className={cn("size-3.5", filterBudget ? "text-white" : "text-indigo-600")} />
@@ -634,7 +637,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           </button>
         </div>
 
-        <span className="text-[11px] font-black text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0 shadow-2xs">
+        <span className="text-[11px] font-black text-amber-950 bg-amber-100/80 border border-amber-300/70 px-3 py-1 rounded-full shrink-0 shadow-2xs">
           {filteredRestaurants.length} places
         </span>
       </div>
@@ -672,7 +675,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           <h2 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
             {selectedCategory
               ? "Explore this category"
-              : section.title || `Restaurants in ${location?.cityName || "Your Area"}`}
+              : section.title || `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}`}
           </h2>
           <p className="text-xs text-gray-500 font-medium">
             Verified kitchens &amp; chef-prepared delicacies
@@ -695,28 +698,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           ))}
         </div>
       ) : filteredRestaurants.length === 0 ? (
-        <div className="rounded-3xl border border-amber-200/80 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-white p-6 sm:p-8 text-center space-y-4">
-          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-            <Utensils className="size-8" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="font-black text-base sm:text-lg text-gray-950">
-              No restaurants matching active filter
-            </h3>
-            <p className="text-xs text-gray-600">
-              Try resetting filters to explore dining destinations in your area.
-            </p>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={resetFilters}
-            className="bg-white border-amber-300 font-bold text-xs"
-          >
-            Reset Filters
-          </Button>
-        </div>
+        <RoyalDiscoveryShowcase />
       ) : (
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           {filteredRestaurants.map((restaurant) => (

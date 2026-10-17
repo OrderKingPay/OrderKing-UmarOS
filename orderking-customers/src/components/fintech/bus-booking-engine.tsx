@@ -14,6 +14,8 @@ import {
   Coins,
   TrendingDown,
   Users,
+  ArrowLeftRight,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
@@ -53,8 +55,20 @@ export function BusBookingEngine({
   const [confirmedTicket, setConfirmedTicket] = useState<SovereignETicket | null>(null);
 
   // Live quotes
-  const quotes = searchBusQuotes(from, to, journeyDate);
+  const quotes = searchBusQuotes(from.trim() || "Bengaluru (Kempegowda)", to.trim() || "Goa (Panaji)", journeyDate);
   const currentQuote = quotes.find((q) => q.id === activeQuoteId) || quotes[0];
+
+  const handleSwapRoute = () => {
+    const temp = from;
+    setFrom(to);
+    setTo(temp);
+  };
+
+  const handleSetQuickDate = (daysAhead: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysAhead);
+    setJourneyDate(d.toISOString().split("T")[0]);
+  };
 
   const handleToggleSeat = (seat: BusSeatBerth) => {
     if (!seat.isAvailable) return;
@@ -72,7 +86,7 @@ export function BusBookingEngine({
     setIsDrawerOpen(true);
   };
 
-  const currentDeckSeats = currentQuote.seats.filter((s) => s.deck === selectedDeck);
+  const currentDeckSeats = currentQuote ? currentQuote.seats.filter((s) => s.deck === selectedDeck) : [];
 
   return (
     <div className="space-y-6 text-slate-900">
@@ -100,20 +114,30 @@ export function BusBookingEngine({
           </div>
         </div>
 
-        {/* Input Fields Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-rose-400 transition">
-            <label htmlFor="bus-search-from" className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 mb-1 uppercase tracking-wider">
-              <MapPin className="size-3 text-rose-400" /> Leaving From
+        {/* Input Fields Grid with Route Swap */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
+          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-rose-400 transition relative">
+            <label htmlFor="bus-search-from" className="text-[10px] font-bold text-slate-300 flex items-center justify-between mb-1 uppercase tracking-wider">
+              <span className="flex items-center gap-1.5"><MapPin className="size-3 text-rose-400" /> Leaving From</span>
             </label>
-            <input
-              id="bus-search-from"
-              type="text"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="w-full bg-transparent text-sm font-black outline-none text-white placeholder:text-slate-400"
-              placeholder="e.g. Bengaluru"
-            />
+            <div className="flex items-center gap-1.5">
+              <input
+                id="bus-search-from"
+                type="text"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+                className="w-full bg-transparent text-sm font-black outline-none text-white placeholder:text-slate-400"
+                placeholder="e.g. Bengaluru"
+              />
+              <button
+                type="button"
+                onClick={handleSwapRoute}
+                title="Swap From & To Locations"
+                className="size-7 rounded-lg bg-white/10 hover:bg-rose-500/30 text-rose-300 border border-white/10 flex items-center justify-center shrink-0 transition"
+              >
+                <ArrowLeftRight className="size-3.5" />
+              </button>
+            </div>
           </div>
 
           <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-rose-400 transition">
@@ -143,9 +167,63 @@ export function BusBookingEngine({
             />
           </div>
         </div>
+
+        {/* Quick Date Shortcuts */}
+        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-slate-400">Quick Dates:</span>
+            <button
+              type="button"
+              onClick={() => handleSetQuickDate(0)}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition"
+            >
+              Today
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetQuickDate(1)}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition"
+            >
+              Tomorrow
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetQuickDate(2)}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition"
+            >
+              Weekend
+            </button>
+          </div>
+          <span className="text-[11px] text-rose-300 font-bold hidden sm:inline">
+            Direct Volvo &amp; Scania Multi-Axle with interactive berth mapping
+          </span>
+        </div>
       </div>
 
+      {quotes.length === 0 && (
+        <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center space-y-3">
+          <div className="size-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center mx-auto">
+            <Bus className="size-6" />
+          </div>
+          <h4 className="text-base font-bold text-slate-900">No luxury sleeper buses found for this route</h4>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Please check city names or reset to the premier Bengaluru — Goa Volvo line.
+          </p>
+          <Button
+            type="button"
+            onClick={() => {
+              setFrom("Bengaluru (Kempegowda)");
+              setTo("Goa (Panaji)");
+            }}
+            className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs"
+          >
+            <RotateCcw className="size-3.5 mr-1" /> Reset to Bengaluru — Goa Volvo
+          </Button>
+        </div>
+      )}
+
       {/* Main Bus Section: Quotes + Interactive Seat Layout Selector */}
+      {quotes.length > 0 && currentQuote && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Quotes list */}
         <div className="lg:col-span-2 space-y-3.5">
@@ -364,6 +442,7 @@ export function BusBookingEngine({
           </div>
         </div>
       </div>
+      )}
 
       {/* Passenger Drawer */}
       {drawerQuote && (

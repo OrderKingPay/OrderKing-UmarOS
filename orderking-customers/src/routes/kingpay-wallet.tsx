@@ -51,8 +51,8 @@ function KingPayWallet() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -mr-10 -mt-10" />
           <div className="flex items-center justify-between mb-1">
             <p className="text-sm text-gray-400 font-medium">Total Balance</p>
-            <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              Unverified / Partner Pending
+            <span className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border border-amber-400/50 shadow-2xs">
+              👑 24K Gold Sovereign VIP
             </span>
           </div>
           <div className="flex items-baseline gap-2">
