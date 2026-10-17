@@ -202,21 +202,21 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
       const { BENCHMARK_FOOD_TABS } = await import("@/components/navigation/floating-bottom-nav");
 
       expect(BENCHMARK_FOOD_TABS).toHaveLength(5);
-      expect(BENCHMARK_FOOD_TABS.map((t) => t.id)).toEqual([
+      expect(BENCHMARK_FOOD_TABS.map((t: any) => t.id)).toEqual([
         "delivery",
         "dining",
         "search",
         "cart",
         "orders",
       ]);
-      expect(BENCHMARK_FOOD_TABS.map((t) => t.to)).toEqual([
+      expect(BENCHMARK_FOOD_TABS.map((t: any) => t.to)).toEqual([
         "/",
         "/dining",
         "/search",
         "/cart",
         "/orders",
       ]);
-      expect(BENCHMARK_FOOD_TABS.map((t) => t.label)).toEqual([
+      expect(BENCHMARK_FOOD_TABS.map((t: any) => t.label)).toEqual([
         "Delivery",
         "Dining Out",
         "Search",
@@ -239,11 +239,11 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
       expect(resolvePlatformContext(null)).toBe("delivery");
       expect(resolvePlatformContext("")).toBe("delivery");
 
-      const deliveryTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "delivery");
-      const diningTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "dining");
-      const searchTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "search");
-      const cartTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "cart");
-      const ordersTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "orders");
+      const deliveryTab = BENCHMARK_FOOD_TABS.find((t: any) => t.id === "delivery");
+      const diningTab = BENCHMARK_FOOD_TABS.find((t: any) => t.id === "dining");
+      const searchTab = BENCHMARK_FOOD_TABS.find((t: any) => t.id === "search");
+      const cartTab = BENCHMARK_FOOD_TABS.find((t: any) => t.id === "cart");
+      const ordersTab = BENCHMARK_FOOD_TABS.find((t: any) => t.id === "orders");
 
       expect(deliveryTab).toBeDefined();
       expect(deliveryTab?.label).toBe("Delivery");
@@ -306,7 +306,7 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
 
       // KingPay
       expect(BENCHMARK_KINGPAY_TABS).toHaveLength(5);
-      expect(BENCHMARK_KINGPAY_TABS.map((t) => t.id)).toEqual([
+      expect(BENCHMARK_KINGPAY_TABS.map((t: any) => t.id)).toEqual([
         "terminal",
         "split",
         "vault",
@@ -316,7 +316,7 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
 
       // Travel
       expect(BENCHMARK_TRAVEL_TABS).toHaveLength(5);
-      expect(BENCHMARK_TRAVEL_TABS.map((t) => t.id)).toEqual([
+      expect(BENCHMARK_TRAVEL_TABS.map((t: any) => t.id)).toEqual([
         "compare",
         "flights",
         "trains",
@@ -326,7 +326,7 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
 
       // Tutor
       expect(BENCHMARK_TUTOR_TABS).toHaveLength(5);
-      expect(BENCHMARK_TUTOR_TABS.map((t) => t.id)).toEqual([
+      expect(BENCHMARK_TUTOR_TABS.map((t: any) => t.id)).toEqual([
         "ask-ai",
         "subjects",
         "jobs",

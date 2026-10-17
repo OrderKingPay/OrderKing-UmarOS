@@ -170,7 +170,7 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "education") return <AdminErrorBoundary inline sectionName="Education Dashboard"><Suspense fallback={<WorldSkeleton world="education" />}><EducationDashboard /></Suspense></AdminErrorBoundary>;
   if (module === "jio-airtel") return <AdminErrorBoundary inline sectionName="Jio Airtel Connector"><Suspense fallback={<WorldSkeleton world="growth" />}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense></AdminErrorBoundary>;
   if (module === "meta-dm") return <AdminErrorBoundary inline sectionName="Meta Omnichannel"><Suspense fallback={<WorldSkeleton world="omnichannel" />}><PluginConnectors forcedTab="metaOmnichannel" /></Suspense></AdminErrorBoundary>;
-  if (module === "wifi-interception") return <AdminErrorBoundary inline sectionName="WiFi Captive Portal"><Suspense fallback={<WorldSkeleton world="captive" />}><PluginConnectors forcedTab="wifiCaptivePortal" /></Suspense></AdminErrorBoundary>;
+  if (module === "wifi-portal" || module === "captive-portal") return <AdminErrorBoundary inline sectionName="WiFi Captive Portal"><Suspense fallback={<WorldSkeleton world="captive" />}><PluginConnectors forcedTab="wifiCaptivePortal" /></Suspense></AdminErrorBoundary>;
   if (module === "oem-lockscreen") return <AdminErrorBoundary inline sectionName="OEM LockScreen"><Suspense fallback={<WorldSkeleton world="oem" />}><PluginConnectors forcedTab="oemLockScreen" /></Suspense></AdminErrorBoundary>;
   if (module === "jobs") return <AdminErrorBoundary inline sectionName="Work Marketplace"><Suspense fallback={<WorldSkeleton world="jobs" />}><WorkMarketplaceControlCenter jobs={[]} workers={[]} /></Suspense></AdminErrorBoundary>;
   return <DashboardPage />;

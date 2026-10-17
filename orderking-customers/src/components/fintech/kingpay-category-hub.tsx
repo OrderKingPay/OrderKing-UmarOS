@@ -35,9 +35,11 @@ import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
 import { toast } from "sonner";
 import type { KingPaySection } from "./kingpay-shell";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { FoodUpiCheckoutCard } from "./food-upi-checkout-card";
 
-type ActiveTab = "qr_generator" | "split_bill" | "loan_emi" | "gst_calc" | "yield_est" | "gold_tracker" | "passbook" | "food_checkout";
+type ActiveTab = "food_checkout" | "qr_generator" | "split_bill" | "loan_emi" | "gst_calc" | "yield_est" | "gold_tracker" | "passbook";
 
 // ==========================================
 // 1. 1-TAP UPI QR GENERATOR

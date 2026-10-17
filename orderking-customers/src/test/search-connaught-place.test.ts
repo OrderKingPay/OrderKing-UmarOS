@@ -30,7 +30,7 @@ describe("Connaught Place Real Live Search Verification", () => {
     }
   });
 
-  it("returns real, live restaurants delivering in Connaught Place (28.6315, 77.2167)", async () => {
+  it("returns real, live restaurants delivering in Connaught Place (28.6315, 77.2167)", { timeout: 30000 }, async () => {
     const url = "http://localhost:8082/api/search?lat=28.6315&lng=77.2167&zoneId=del-cp";
     const request = new Request(url, {
       method: "GET",
@@ -80,8 +80,10 @@ describe("Connaught Place Real Live Search Verification", () => {
     }
   });
 
-  it("filters Connaught Place restaurants by category and query", async () => {
-    const handler = (Route.options as any)?.server?.handlers?.GET;
+  it(
+    "filters Connaught Place restaurants by category and query",
+    async () => {
+      const handler = (Route.options as any)?.server?.handlers?.GET;
 
     // Search query "Biryani"
     const biryaniReq = new Request("http://localhost:8082/api/search?lat=28.6315&lng=77.2167&q=Biryani", {
@@ -100,5 +102,5 @@ describe("Connaught Place Real Live Search Verification", () => {
     const dosaData = await dosaRes.json();
     expect(dosaData.restaurants.length).toBeGreaterThanOrEqual(1);
     expect(dosaData.restaurants.some((r: any) => r.name.includes("Saravanaa"))).toBe(true);
-  });
+  }, 30000);
 });

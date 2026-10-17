@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as BenefitsRouteImport } from './routes/benefits'
+import { Route as CashRouteImport } from './routes/cash'
 import { Route as EarningsRouteImport } from './routes/earnings'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LoginRouteImport } from './routes/login'
@@ -37,6 +38,11 @@ const AssistantRoute = AssistantRouteImport.update({
 const BenefitsRoute = BenefitsRouteImport.update({
   id: '/benefits',
   path: '/benefits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CashRoute = CashRouteImport.update({
+  id: '/cash',
+  path: '/cash',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EarningsRoute = EarningsRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/benefits': typeof BenefitsRoute
+  '/cash': typeof CashRoute
   '/earnings': typeof EarningsRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/benefits': typeof BenefitsRoute
+  '/cash': typeof CashRoute
   '/earnings': typeof EarningsRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/benefits': typeof BenefitsRoute
+  '/cash': typeof CashRoute
   '/earnings': typeof EarningsRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/benefits'
+    | '/cash'
     | '/earnings'
     | '/history'
     | '/login'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/benefits'
+    | '/cash'
     | '/earnings'
     | '/history'
     | '/login'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/benefits'
+    | '/cash'
     | '/earnings'
     | '/history'
     | '/login'
@@ -199,6 +211,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssistantRoute: typeof AssistantRoute
   BenefitsRoute: typeof BenefitsRoute
+  CashRoute: typeof CashRoute
   EarningsRoute: typeof EarningsRoute
   HistoryRoute: typeof HistoryRoute
   LoginRoute: typeof LoginRoute
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/benefits'
       fullPath: '/benefits'
       preLoaderRoute: typeof BenefitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cash': {
+      id: '/cash'
+      path: '/cash'
+      fullPath: '/cash'
+      preLoaderRoute: typeof CashRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/earnings': {
@@ -319,6 +339,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssistantRoute: AssistantRoute,
   BenefitsRoute: BenefitsRoute,
+  CashRoute: CashRoute,
   EarningsRoute: EarningsRoute,
   HistoryRoute: HistoryRoute,
   LoginRoute: LoginRoute,

@@ -1519,7 +1519,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
 
         return {
           ok: true as const,
-          message: `OrderKing Sovereign Global Ad Syndicate Hub operational. 4 Revenue Streams Active: [1. Promoted Restaurants @ ₹${pPlacementFee}/day] [2. Rider App Financial Ads @ ₹${rSponsorFee}/mo] [3. JioAds Telecom Arbitrage: Wholesale ₹${gWholesale} → Retail ₹${gRetail}/CPM (${gMargin}% margin)] [4. Glance/InMobi OEM Arbitrage: Wholesale ₹${oWholesale} → Retail ₹${oRetail}/CPM (${oMargin}% margin)]. Syndicate clearing rail online.`,
+          message: `OrderKing Sovereign Global Ad Syndicate Hub operational. 4 Revenue Streams Active: [1. Promoted Restaurants @ ₹${pPlacementFee}/day] [2. Rider App Financial Ads @ ₹${rSponsorFee}/mo] [3. JioAds Media Network: Wholesale ₹${gWholesale} → Retail ₹${gRetail}/CPM (${gMargin}% margin)] [4. Glance/InMobi OEM Media: Wholesale ₹${oWholesale} → Retail ₹${oRetail}/CPM (${oMargin}% margin)]. Syndicate clearing rail online.`,
         };
       }
 

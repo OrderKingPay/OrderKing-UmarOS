@@ -1807,6 +1807,75 @@ export class RiderEngine {
     if (actorUserId === otherUserId) return this.earnings(actorUserId, todayRange());
     throw new RiderError("FORBIDDEN", "You cannot access another rider's earnings", 403);
   }
+
+  async requestInstantPayout(userId: string, idempotencyKey: string) {
+    return this.idem(userId, idempotencyKey, "payout.instant", async () => {
+      const rider = await this.requireRider(userId);
+      if (!rider.payoutUpi?.trim()) {
+        throw new RiderError("MISSING_UPI", "Please add a verified UPI VPA in your profile to receive instant payouts.", 400);
+      }
+
+      const earnings = await this.store.listEarnings(userId);
+      const netPayable = earnings.reduce((acc, l) => acc + l.amountPaise, 0);
+
+      if (netPayable <= 0) {
+        throw new RiderError("ZERO_BALANCE", "No payable balance available for instant withdrawal.", 400);
+      }
+
+      const cfg = await this.cfg();
+      const payoutRef = `UPI-WD-${Date.now().toString(36).toUpperCase()}`;
+
+      // Append instant payout deduction in ledger
+      await this.store.appendEarning(
+        {
+          id: nid(),
+          riderId: rider.id,
+          deliveryId: null,
+          orderCode: null,
+          kind: "ADJUSTMENT",
+          amountPaise: -netPayable,
+          note: `Instant UPI Withdrawal to ${rider.payoutUpi} (Ref: ${payoutRef})`,
+          at: this.now(),
+          dataMode: cfg.dataMode,
+        },
+        userId,
+      );
+
+      // Record completed settlement in ledger
+      await this.store.insertSettlement(
+        {
+          id: nid(),
+          riderId: rider.id,
+          periodStart: new Date().toISOString().slice(0, 10),
+          periodEnd: new Date().toISOString().slice(0, 10),
+          amountPaise: netPayable,
+          status: "PAID",
+          confirmedPaidAt: this.now(),
+          dataMode: cfg.dataMode,
+        },
+        userId,
+      );
+
+      await this.store.insertNotification({
+        id: nid(),
+        userId,
+        title: "⚡ Instant UPI Withdrawal Dispatched",
+        body: `₹${(netPayable / 100).toFixed(2)} transferred to ${rider.payoutUpi} via NPCI Instant IMPS/UPI (Ref: ${payoutRef}).`,
+        kind: "PAYOUT",
+        read: false,
+        createdAt: this.now(),
+      });
+
+      await this.audit(userId, "INSTANT_UPI_PAYOUT", "rider", rider.id, `${netPayable}:${rider.payoutUpi}:${payoutRef}`);
+
+      return {
+        success: true,
+        amountPaise: netPayable,
+        payoutUpi: rider.payoutUpi,
+        reference: payoutRef,
+      };
+    });
+  }
 }
 
 function sumKind(lines: EarningLine[], kind: EarningLine["kind"]): number {

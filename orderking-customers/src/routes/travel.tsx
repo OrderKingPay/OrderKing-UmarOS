@@ -14,6 +14,7 @@ import {
 import { SovereignTravelConcierge } from "@/components/fintech/sovereign-travel-concierge";
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
 import { buildOfficialAirlineDeepLink } from "@/lib/travel/airline-deep-links";
+import { type VIPTravelCategory } from "@/lib/travel/sovereign-travel-engine";
 import {
   Plane,
   Train,
@@ -46,9 +47,6 @@ import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
 import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
 import { AppErrorComponent } from "@/lib/error-component";
-
-import { VIPConciergeModal } from "@/components/fintech/vip-concierge-modal";
-import { type VIPTravelCategory } from "@/lib/travel/sovereign-travel-engine";
 
 export const Route = createFileRoute("/travel")({
   component: TravelPage,
@@ -94,7 +92,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     frequency: "48 Flights Daily",
     farePaise: 419900,
     partnerUrl: "/travel#flights",
-    highlight: "Save ₹399 convenience fee vs MakeMyTrip",
+    highlight: "Save ₹399 convenience fee vs Commercial OTAs",
   },
   {
     id: "route-ccu-blr",
@@ -935,8 +933,8 @@ export function TravelPage() {
         </div>
 
         {/* =====================================================================
-            PRICE COMPARISON ENGINE: "YOU SAVE ₹399 VS MAKEMYTRIP" (REAL MATH)
-            MakeMyTrip Convenience Fee: ₹399/pax/sector vs OrderKing Platform Desk Fee: ₹0
+            PRICE COMPARISON ENGINE: "YOU SAVE ₹399 VS COMMERCIAL OTAs" (REAL MATH)
+            Commercial OTA Convenience Fee: ₹399/pax/sector vs OrderKing Platform Desk Fee: ₹0
            ===================================================================== */}
         {(() => {
           const OTA_CONVENIENCE_FEE_PAISE = 39900; // ₹399.00 per passenger per sector
@@ -959,7 +957,7 @@ export function TravelPage() {
                     <span>Real Math · Pure Passenger Savings</span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    You Save {formatPaise(totalSavingsPaise)} vs MakeMyTrip &amp; EaseMyTrip
+                    You Save {formatPaise(totalSavingsPaise)} vs Legacy Travel Portals
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
                     Commercial OTAs quietly charge ₹399 to ₹599 convenience fees per passenger per sector. OrderKing has a strict 0% platform desk fee policy.
@@ -1020,7 +1018,7 @@ export function TravelPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-black uppercase tracking-wider text-rose-400 block">
-                        Commercial OTAs (MakeMyTrip / EaseMyTrip)
+                        Commercial OTAs &amp; Legacy Portals
                       </span>
                       <h3 className="text-sm font-black text-white">Standard Online Booking</h3>
                     </div>

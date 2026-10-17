@@ -14,10 +14,11 @@ import {
   getOperationalTier,
 } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { createTicketFn, getEarningsFn, getSettlementsFn, getHomeFn } from "@/lib/server/rider-fns";
+import { createTicketFn, getEarningsFn, getSettlementsFn, getHomeFn, requestInstantPayoutFn } from "@/lib/server/rider-fns";
 import type { EarningLine } from "@/lib/rider/types";
-import { Download, FileQuestion, Printer } from "lucide-react";
+import { Download, FileQuestion, Printer, Zap } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   STANDARD_DAILY_MILESTONES,
   calculateDailyMilestoneProgress,
@@ -51,11 +52,44 @@ function Page() {
   const [disputeMessage, setDisputeMessage] = useState("");
   const [disputeBusy, setDisputeBusy] = useState(false);
   const [disputeRef, setDisputeRef] = useState<string | null>(null);
+  const [instantPayoutBusy, setInstantPayoutBusy] = useState(false);
 
-  const handleInstantCashoutRequest = () => {
-    setInstantPayoutNotice(
-      "Instant IMPS payout gateway is not active for this cycle. Your net payable balance will settle in the scheduled weekly batch.",
-    );
+  const handleInstantCashoutRequest = async () => {
+    if (!rider?.payoutUpi?.trim()) {
+      setInstantPayoutNotice(
+        "Please register your UPI ID (VPA) in your Profile / KYC to receive instant 1-tap payouts directly to your bank account."
+      );
+      toast.error("UPI ID not configured. Please add your UPI ID in Profile.");
+      return;
+    }
+    const payablePaise = data?.totals?.netPayable ?? 0;
+    if (payablePaise <= 0) {
+      toast.error("No positive payable balance available to withdraw right now.");
+      return;
+    }
+
+    setInstantPayoutBusy(true);
+    setInstantPayoutNotice(null);
+    try {
+      const res = await requestInstantPayoutFn({
+        data: { idempotencyKey: newIdempotencyKey() },
+      });
+      toast.success(
+        `✓ Dispatched ₹${(res.amountPaise / 100).toFixed(2)} to ${res.payoutUpi}! Ref: ${res.reference}`
+      );
+      setInstantPayoutNotice(
+        `✓ Dispatched ₹${(res.amountPaise / 100).toFixed(2)} instantly to ${res.payoutUpi} via NPCI IMPS/UPI (Ref: ${res.reference}).`
+      );
+      await loadEarnings();
+      const s = await getSettlementsFn();
+      setSettlements(s);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Instant cashout failed";
+      toast.error(msg);
+      setInstantPayoutNotice(`Payout issue: ${msg}`);
+    } finally {
+      setInstantPayoutBusy(false);
+    }
   };
 
   const loadEarnings = useCallback(
@@ -417,11 +451,12 @@ function Page() {
             </div>
             <Button
               size="sm"
-              variant="outline"
               onClick={handleInstantCashoutRequest}
-              className="shrink-0"
+              disabled={instantPayoutBusy}
+              className="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-1.5 shadow-sm"
             >
-              Request Instant IMPS Cashout
+              <Zap className="size-3.5" />
+              {instantPayoutBusy ? "Dispatched..." : "1-Tap Instant UPI Cashout"}
             </Button>
           </div>
 

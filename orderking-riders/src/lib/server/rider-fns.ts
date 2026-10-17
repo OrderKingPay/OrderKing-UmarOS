@@ -658,4 +658,17 @@ export const depositFloatingCashFn = createServerFn({ method: "POST" })
     }
   });
 
+export const requestInstantPayoutFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { idempotencyKey: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const e = await engine();
+      return await e.requestInstantPayout(context.userId, data.idempotencyKey);
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+
 

@@ -264,8 +264,8 @@ function resolveWorldFromPath(pathname: string): BottomNavWorld {
     pathname.startsWith("/app/marketing") ||
     pathname.startsWith("/app/meta-dm") ||
     pathname.startsWith("/app/jio-airtel") ||
-    pathname.startsWith("/app/telecom-arbitrage") ||
-    pathname.startsWith("/app/wifi-interception") ||
+    pathname.startsWith("/app/wifi-portal") ||
+    pathname.startsWith("/app/captive-portal") ||
     pathname.startsWith("/app/oem-lockscreen")
   ) {
     return UMAR_OS_10_WORLDS[6]!;

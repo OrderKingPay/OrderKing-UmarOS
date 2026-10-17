@@ -42,7 +42,7 @@ export const Route = createFileRoute("/wallet")({ component: WalletPage });
 
 type HomeData = Awaited<ReturnType<typeof getHomeFn>>;
 
-function WalletPage() {
+export function WalletPage() {
   const { cod } = useRiderCustomization();
   const [home, setHome] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);

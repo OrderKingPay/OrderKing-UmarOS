@@ -341,6 +341,25 @@ export class PgStore implements RiderStore {
         r.dataMode,
       ],
     );
+
+    // Sync online = 1 flag and zone_id for Customer Search API compatibility
+    const isOnline = (r.status === "ONLINE" || r.status === "BUSY") ? 1 : 0;
+    const isOnlineBool = r.status === "ONLINE" || r.status === "BUSY";
+    const primaryZone = Array.isArray(r.preferredZones) && r.preferredZones.length > 0 ? r.preferredZones[0] : null;
+
+    try {
+      await this.sql.query(
+        `update riders
+         set online = $1,
+             is_online = $2,
+             is_active = $2,
+             zone_id = coalesce($3, zone_id)
+         where id = $4`,
+        [isOnline, isOnlineBool, primaryZone, r.id],
+      );
+    } catch {
+      // Column auto-handled by migration 0020
+    }
   }
 
   async insertDocument(doc: RiderDocument, userId: string) {

@@ -30,6 +30,8 @@ import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
+import { SmartZeroDeliveryFallbackCard } from "@/components/market/zero-delivery-fallback-card";
+import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 // Curated high-resolution categories with distinct gradient colors (Biryani, Pizza, Rolls, Thali, Burgers, Desserts)
 const CURATED_FOOD_CATEGORIES = [
@@ -408,10 +410,21 @@ export function HomeFeed({
     )
   );
 
+  const isDeliveryActive = location
+    ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId)
+    : true;
+
+  const isZeroDeliveryInRadius =
+    !isDeliveryActive ||
+    (list.data && list.data.restaurants.length === 0) ||
+    (list.data && list.data.deliveryAvailable === false);
+
   // Filtered and sorted restaurants based on active controls
   const filteredRestaurants = useMemo(() => {
     const raw: RestaurantCard[] =
-      list.data?.restaurants && list.data.restaurants.length > 0
+      !isDeliveryActive || (list.data && (!list.data.deliveryAvailable || list.data.restaurants.length === 0))
+        ? []
+        : list.data?.restaurants && list.data.restaurants.length > 0
         ? list.data.restaurants
         : VERIFIED_AVAILABLE_KITCHENS;
 
@@ -718,26 +731,30 @@ export function HomeFeed({
             </Button>
           </div>
         ) : filteredRestaurants.length === 0 ? (
-          <div className="rounded-2xl border border-amber-200/80 bg-white p-8 text-center space-y-3 shadow-sm">
-            <Utensils className="size-10 text-amber-500 mx-auto" />
-            <h3 className="font-extrabold text-gray-900 text-base">No restaurants match your active filter</h3>
-            <p className="text-xs text-gray-500 max-w-sm mx-auto">Try clearing your filters or selecting another category to view kitchens delivering in 25-30 mins.</p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSelectedCategory(null);
-                setFilterFast(false);
-                setFilterRating(false);
-                setFilterOffers(false);
-                setFilterBudget(false);
-              }}
-              className="mt-2 bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 font-bold"
-            >
-              Reset Filters
-            </Button>
-          </div>
+          isZeroDeliveryInRadius ? (
+            <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
+          ) : (
+            <div className="rounded-2xl border border-amber-200/80 bg-white p-8 text-center space-y-3 shadow-sm">
+              <Utensils className="size-10 text-amber-500 mx-auto" />
+              <h3 className="font-extrabold text-gray-900 text-base">No restaurants match your active filter</h3>
+              <p className="text-xs text-gray-500 max-w-sm mx-auto">Try clearing your filters or selecting another category to view kitchens delivering in 25-30 mins.</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSelectedCategory(null);
+                  setFilterFast(false);
+                  setFilterRating(false);
+                  setFilterOffers(false);
+                  setFilterBudget(false);
+                }}
+                className="mt-2 bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 font-bold"
+              >
+                Reset Filters
+              </Button>
+            </div>
+          )
         ) : (
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             {filteredRestaurants.map((restaurant) => (

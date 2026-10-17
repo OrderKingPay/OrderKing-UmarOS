@@ -40,6 +40,8 @@ import { listMyOrders, reorderItems } from "@/lib/server/orders";
 import { formatPaise } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { RestaurantCard } from "@/lib/market-types";
+import { SmartZeroDeliveryFallbackCard } from "@/components/market/zero-delivery-fallback-card";
+import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 // ============================================================================
 // CURATED CATEGORY DEFINITIONS
@@ -545,9 +547,18 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
     ].includes(o.status)
   );
 
+  const isDeliveryActive = location
+    ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId)
+    : true;
+
+  const isZeroDeliveryInRadius =
+    !isDeliveryActive || (list.data && list.data.restaurants.length === 0);
+
   const filteredRestaurants = useMemo(() => {
     const raw: RestaurantCard[] =
-      list.data?.restaurants && list.data.restaurants.length > 0
+      !isDeliveryActive || (list.data && list.data.restaurants.length === 0)
+        ? []
+        : list.data?.restaurants && list.data.restaurants.length > 0
         ? list.data.restaurants
         : VERIFIED_AVAILABLE_KITCHENS;
     return raw
@@ -712,25 +723,29 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           ))}
         </div>
       ) : filteredRestaurants.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-amber-200/80 bg-white/95 text-center space-y-3 shadow-xs">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-800 shadow-inner">
-            <Utensils className="size-7 text-amber-700" />
+        isZeroDeliveryInRadius ? (
+          <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
+        ) : (
+          <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-amber-200/80 bg-white/95 text-center space-y-3 shadow-xs">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-800 shadow-inner">
+              <Utensils className="size-7 text-amber-700" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-base font-extrabold text-gray-950">No kitchens match active filters</h3>
+              <p className="text-xs text-gray-500 max-w-sm font-medium">
+                We have verified kitchens delivering to your area, but your current filter selection returned no exact matches.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 px-4 py-2 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-amber-300"
+            >
+              <RotateCcw className="size-3.5" />
+              <span>Reset All Filters</span>
+            </button>
           </div>
-          <div className="space-y-1">
-            <h3 className="text-base font-extrabold text-gray-950">No kitchens match active filters</h3>
-            <p className="text-xs text-gray-500 max-w-sm font-medium">
-              We have verified kitchens delivering to your area, but your current filter selection returned no exact matches.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 px-4 py-2 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-amber-300"
-          >
-            <RotateCcw className="size-3.5" />
-            <span>Reset All Filters</span>
-          </button>
-        </div>
+        )
       ) : (
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           {filteredRestaurants.map((restaurant) => (
