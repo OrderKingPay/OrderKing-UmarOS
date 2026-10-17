@@ -22,7 +22,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
       // });
       // const data = await res.json();
       
-      return new Response(JSON.stringify({ success: true, message: "Travel API scaffolding ready. Waiting for keys." }), {
+      return new Response(JSON.stringify({ success: false, code: "FLIGHT_SUPPLIER_NOT_CONNECTED", error: "No live flight quotes or ticket confirmation are available from an authorized supplier." }), { status: 503,
         headers: { "Content-Type": "application/json" }
       });
     }
@@ -33,7 +33,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
       if (!irctcKey) {
         return new Response(JSON.stringify({ error: "Missing VITE_IRCTC_MERCHANT_KEY for lowest priced trains." }), { status: 500 });
       }
-      return new Response(JSON.stringify({ success: true, message: "IRCTC API scaffolding ready." }));
+      return new Response(JSON.stringify({ success: false, code: "RAILWAY_SUPPLIER_NOT_CONNECTED", error: "Authorized railway booking is not connected; no ticket or PNR has been issued." }), { status: 503, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
     }
 
     return new Response(JSON.stringify({ error: "Invalid travel type" }), { status: 400 });

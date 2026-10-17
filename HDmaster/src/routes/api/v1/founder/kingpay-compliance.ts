@@ -68,19 +68,17 @@ export const APIRoute = createAPIFileRoute('/api/v1/founder/kingpay-compliance')
       }
 
       const { feature, action } = await request.json() as { feature: KingPayFeature, action: 'activate' | 'deactivate' };
-      const actorIdentity = authResult.user.email ?? authResult.user.id;
-      
       if (action === 'activate') {
-        const success = complianceMaster.activateFeature(
-          feature,
-          actorIdentity,
-          true, // kycKybVerified
-          true, // pspAuthorized
-          `AUTH-${authResult.user.id}-${Date.now()}`
-        );
+        // Never treat authentication or locally generated references as evidence
+        // of KYC/KYB clearance, PSP authorization, or provider onboarding.
+        // Activation requires a separately verified, server-side provider record.
         return new Response(
-          JSON.stringify({ success, state: { [feature]: complianceMaster.isFeatureEnabled(feature) } }),
-          { headers: { "Content-Type": "application/json" } }
+          JSON.stringify({
+            success: false,
+            code: "PROVIDER_APPROVAL_NOT_VERIFIED",
+            error: "KingPay activation requires verified KYC/KYB and payment-provider authorization. No feature was activated.",
+          }),
+          { status: 503, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } }
         );
       } else {
         complianceMaster.deactivateFeature(feature);
