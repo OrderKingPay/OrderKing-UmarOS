@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 import { flushRiderOfflineQueue, registerDefaultRiderExecutor } from "@/lib/rider/rider-low-network";
-import { deliveryActionFn } from "@/lib/server/rider-fns";
+import { deliveryActionFn, setStatusFn } from "@/lib/server/rider-fns";
 
 export function OfflineDetector() {
-  const [online, setOnline] = useState(true);
+  const [, setOnline] = useState(true);
   useEffect(() => {
     const riderExecutor = async (action: any) => {
-      if (action.action === "DUTY_TOGGLE") return;
+      if (action.action === "DUTY_TOGGLE") {
+        await setStatusFn({
+          data: {
+            status: action.payload?.status ?? "ONLINE",
+            confirmed: true,
+          },
+        });
+        return;
+      }
       await deliveryActionFn({
         data: {
           deliveryId: action.deliveryId,
@@ -42,4 +50,3 @@ export function OfflineDetector() {
   }, []);
   return null;
 }
-

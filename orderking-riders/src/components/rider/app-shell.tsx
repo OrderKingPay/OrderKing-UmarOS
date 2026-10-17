@@ -102,9 +102,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const nav = [
     { to: "/", icon: House, label: t("duty") || "Duty & Orders" },
-    { to: "/trips", icon: Navigation, label: t("trips") || "Trips" },
+    { to: "/history", icon: Navigation, label: t("trips") || "Trips" },
     { to: "/earnings", icon: Banknote, label: t("earnings") || "Earnings & COD" },
-    { to: "/payouts", icon: Building2, label: t("payouts") || "Weekly Payouts" },
+    { to: "/settlements", icon: Building2, label: t("payouts") || "Weekly Payouts" },
     { to: "/profile", icon: UserCheck, label: t("profile") || "Profile & Fleet KYC" },
   ] as const;
 
@@ -112,25 +112,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-bg text-fg">
-      {!online ? (
-        <div className="bg-offline px-4 py-2 text-xs sm:text-sm text-primary-foreground">
-          <div className="mx-auto flex max-w-5xl items-center justify-between gap-2">
-            <span className="flex items-center gap-2 font-medium">
-              <WifiOff className="size-4 shrink-0" />
-              <span>
-                {t("connectionLost")} — {t("connectionLostBody")}
-              </span>
-            </span>
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="shrink-0 rounded-md bg-white/15 px-2.5 py-1 text-xs font-bold hover:bg-white/25 transition"
-            >
-              Reconnect
-            </button>
-          </div>
-        </div>
-      ) : null}
+
 
       {!geoOk ? (
         <div className="bg-busy px-4 py-2 text-xs sm:text-sm text-primary-foreground">

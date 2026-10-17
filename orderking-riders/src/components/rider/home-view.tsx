@@ -18,6 +18,7 @@ import {
   createTicketFn,
   getHomeFn,
   getPerformanceFn,
+  postLocationFn,
   respondOfferFn,
   setStatusFn,
 } from "@/lib/server/rider-fns";
@@ -34,6 +35,7 @@ import {
   ExternalLink,
   Gift,
   MapPin,
+  Radio,
   RotateCcw,
   ShieldAlert,
   ShieldCheck,
@@ -44,6 +46,7 @@ import {
   VolumeX,
   Wallet,
   X,
+  Zap,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -835,6 +838,42 @@ export function HomeView() {
     }
   }
 
+  const [gpsPinging, setGpsPinging] = useState(false);
+
+  const triggerManualGpsPing = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      toast.error("Geolocation is not supported on this device.");
+      return;
+    }
+    setGpsPinging(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          await postLocationFn({
+            data: {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+              accuracyM: pos.coords.accuracy ?? null,
+              deliveryId: home?.active?.id ?? null,
+            },
+          });
+          toast.success(
+            `✓ GPS Ping synchronized (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`
+          );
+        } catch {
+          toast.error("GPS telemetry sync failed");
+        } finally {
+          setGpsPinging(false);
+        }
+      },
+      (err) => {
+        setGpsPinging(false);
+        toast.error(`GPS Error: ${err.message}`);
+      },
+      { enableHighAccuracy: true, timeout: 6000 }
+    );
+  };
+
   async function respond(decision: "ACCEPT" | "DECLINE", offer: DispatchOffer) {
     setPending(true);
     try {
@@ -1001,7 +1040,61 @@ export function HomeView() {
                 : ""}
             </p>
           </div>
-          <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+            <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
+            {status === "OFFLINE" ? (
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (!helmetSelfie) {
+                    toast.error("Please verify live helmet & bag selfie first.");
+                    setSelfieModalOpen(true);
+                    return;
+                  }
+                  return go("ONLINE");
+                }}
+                disabled={pending}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs gap-1.5 shadow-sm active:scale-95 transition"
+              >
+                <Zap className="size-3.5 fill-current" />
+                1-Tap Go Online
+              </Button>
+            ) : status === "ONLINE" ? (
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={triggerManualGpsPing}
+                  disabled={gpsPinging}
+                  className="text-xs font-semibold gap-1.5 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 active:scale-95 transition"
+                  title="Send real-time GPS telemetry ping to database"
+                >
+                  <Radio className="size-3.5 animate-pulse text-emerald-500" />
+                  {gpsPinging ? "Pinging..." : "GPS Ping"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setConfirm("offline")}
+                  disabled={pending || Boolean(home.active)}
+                  className="text-xs font-bold gap-1 active:scale-95 transition"
+                >
+                  Go Offline
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={triggerManualGpsPing}
+                disabled={gpsPinging}
+                className="text-xs font-semibold gap-1.5 border-amber-500/30 text-amber-600 hover:bg-amber-500/10 active:scale-95 transition"
+              >
+                <Radio className="size-3.5 animate-pulse text-amber-500" />
+                {gpsPinging ? "Pinging..." : "GPS Ping"}
+              </Button>
+            )}
+          </div>
         </div>
 
         {kyc !== "VERIFIED" ? (
@@ -1684,19 +1777,29 @@ function OfferCard({
         )}
       </div>
 
-      {/* Pickup & Drop Route Distance Metric Cards */}
-      <div className="grid grid-cols-3 gap-2 text-center text-xs">
+      {/* Exact Dispatch Metrics: Pickup Distance, Delivery Distance, Estimated Prep, Guaranteed Payout */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
         <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">To Restaurant</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Pickup Dist</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{offer.approxDistanceKm.toFixed(1)} km</p>
+          <p className="text-[9px] text-muted-foreground">To Restaurant</p>
         </div>
         <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Total Route</p>
-          <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{offer.estimatedTotalRouteKm.toFixed(1)} km</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Delivery Dist</p>
+          <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{(offer.estimatedTravelKm || Math.max(0, offer.estimatedTotalRouteKm - offer.approxDistanceKm)).toFixed(1)} km</p>
+          <p className="text-[9px] text-muted-foreground">Customer Drop</p>
         </div>
         <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Packages</p>
-          <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{offer.packageCount} Pack</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Est. Prep</p>
+          <p className="mt-0.5 font-mono text-sm font-extrabold text-amber-400">
+            {offer.restaurant.preparationStatus === "READY" ? "Ready Now" : "~8-10m"}
+          </p>
+          <p className="text-[9px] text-muted-foreground">Kitchen SLA</p>
+        </div>
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+          <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Guaranteed</p>
+          <p className="mt-0.5 font-mono text-sm font-extrabold text-emerald-500 dark:text-emerald-300">{formatPaise(offer.expectedPayoutPaise)}</p>
+          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">0% Commission</p>
         </div>
       </div>
 
