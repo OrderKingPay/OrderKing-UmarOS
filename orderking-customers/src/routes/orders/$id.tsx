@@ -23,6 +23,8 @@ import { CUSTOMER_TRACK_STEPS } from "@/lib/orders/state";
 import { formatPaise } from "@/lib/money";
 import { useOrderSSE } from "@/lib/hooks/use-order-sse";
 import { useCartStore } from "@/lib/stores/cart";
+import { CartConflictModal } from "@/components/market/cart-conflict-modal";
+import { CancellationGraceWindow } from "@/components/market/cancellation-grace-window";
 import { OrdersPageSkeleton } from "@/components/skeletons/route-skeletons";
 import { AppErrorComponent } from "@/lib/error-component";
 
@@ -36,6 +38,11 @@ function OrderDetailPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const cart = useCartStore();
+  const [reorderConflict, setReorderConflict] = useState<{
+    restaurantId: string;
+    restaurantName: string;
+    lines: any[];
+  } | null>(null);
   const { t, lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const { user, isPending } = useCurrentUserState();
@@ -120,7 +127,7 @@ function OrderDetailPage() {
     enabled: Boolean(user),
     refetchInterval: (query) => {
       const status = query.state.data?.order?.status;
-      if (status && ["DELIVERED", "CANCELLED", "REJECTED"].includes(status)) {
+      if (status && ["DELIVERED", "CANCELLED", "CANCELLED_BY_CUSTOMER", "REJECTED"].includes(status)) {
         return false;
       }
       return 5000;
@@ -170,7 +177,18 @@ function OrderDetailPage() {
   if (!order) return <CustomerShell><p className="p-6">{t("common.empty")}</p></CustomerShell>;
 
   const idx = CUSTOMER_TRACK_STEPS.indexOf(order.status as (typeof CUSTOMER_TRACK_STEPS)[number]);
-  const labels: Record<string, string> = { PLACED: t("orders.placed"), ACCEPTED: t("orders.accepted"), PREPARING: t("orders.preparing"), READY: t("orders.ready"), RIDER_ASSIGNED: t("orders.riderAssigned"), PICKED_UP: t("orders.pickedUp"), ON_THE_WAY: t("orders.onTheWay"), DELIVERED: t("orders.delivered") };
+  const labels: Record<string, string> = {
+    PLACED: t("orders.placed"),
+    ACCEPTED: t("orders.accepted"),
+    PREPARING: t("orders.preparing"),
+    READY: t("orders.ready"),
+    RIDER_ASSIGNED: t("orders.riderAssigned"),
+    PICKED_UP: t("orders.pickedUp"),
+    ON_THE_WAY: t("orders.onTheWay"),
+    DELIVERED: t("orders.delivered"),
+    CANCELLED: t("orders.cancelled"),
+    CANCELLED_BY_CUSTOMER: "Cancelled (100% Refunded)",
+  };
 
   return (
     <CustomerShell>
@@ -253,38 +271,24 @@ function OrderDetailPage() {
             })}
           </div>
         </div>
-        
-        {/* Instant Cancellation Grace Alert for New Orders */}
-        {order.status === "PLACED" ? (
-          <div className="mt-4 flex items-center justify-between rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs shadow-xs">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xl">⚡</span>
-              <div>
-                <p className="font-extrabold text-amber-950">Order Placed &amp; Sent to Kitchen</p>
-                <p className="text-stone-600 mt-0.5">Instant free cancellation available before kitchen accepts</p>
-              </div>
-            </div>
-            {order.canCancel ? (
-              <Button
-                variant="danger"
-                size="sm"
-                className="rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white font-bold shadow-md shadow-rose-500/20"
-                disabled={cancel.isPending}
-                onClick={() => cancel.mutate()}
-              >
-                {cancel.isPending ? "Cancelling..." : "Cancel Order"}
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
+        {/* Authentic 60-Second Order Cancellation Grace Window */}
+        <CancellationGraceWindow
+          className="mt-4"
+          placedAt={order.summary.placedAt}
+          orderId={order.summary.id || id}
+          orderPublicId={order.summary.publicId}
+          status={order.status}
+          paymentMethod={order.paymentMethod}
+          totalPaise={order.summary.totalPaise}
+          locale={locale}
+          isCancelling={cancel.isPending}
+          onCancel={() => cancel.mutate()}
+          onWindowExpire={() => {
+            void detail.refetch();
+          }}
+        />
 
-        {order.status === "CANCELLED" ? (
-          <p className="mt-4 text-center text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-3">
-            ⚠️ {t("orders.cancelled")}
-          </p>
-        ) : null}
-
-        {order.deliveryOtp && !["DELIVERED", "CANCELLED"].includes(order.status) ? (
+        {order.deliveryOtp && !["DELIVERED", "CANCELLED", "CANCELLED_BY_CUSTOMER"].includes(order.status) ? (
           <div className="mt-4 rounded-2xl border-2 border-amber-400/90 bg-gradient-to-r from-amber-500/15 via-yellow-400/20 to-amber-500/10 p-4 shadow-[0_8px_25px_rgba(245,158,11,0.18)] flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs text-xl">
@@ -901,7 +905,7 @@ function OrderDetailPage() {
           <QuoteLines lines={order.lines} locale={locale} />
         </div>
 
-        {order.restaurantSimulated && !["DELIVERED", "CANCELLED", "REJECTED"].includes(order.status) ? (
+        {order.restaurantSimulated && !["DELIVERED", "CANCELLED", "CANCELLED_BY_CUSTOMER", "REJECTED"].includes(order.status) ? (
           <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
             <p className="text-xs text-amber-950 font-medium">{t("orders.simulateHint")}</p>
             <Button
@@ -926,20 +930,26 @@ function OrderDetailPage() {
             </Button>
           ) : null}
           <Button
-            className="flex-1 min-w-[140px] rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-lg shadow-orange-500/25 px-5 py-2.5 hover:from-amber-600 hover:to-orange-600 transition-all active:scale-95"
+            className="flex-1 min-w-[140px] rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-400 text-zinc-950 font-black shadow-lg shadow-amber-500/25 px-5 py-2.5 hover:from-amber-400 hover:to-yellow-300 transition-all active:scale-95 flex items-center justify-center gap-1.5"
             onClick={async () => {
               try {
                 const res = await reorderItems({ data: { orderId: order.summary.id } });
-                cart.replaceCart(res.restaurantId, res.restaurantName, res.lines);
-                toast.success("Past order items added to cart!");
-                void navigate({ to: "/cart" });
+                const currentRestaurantId = cart.restaurantId;
+                const hasItems = cart.items.length > 0;
+                if (hasItems && currentRestaurantId && currentRestaurantId !== res.restaurantId) {
+                  setReorderConflict(res);
+                } else {
+                  cart.replaceCart(res.restaurantId, res.restaurantName, res.lines);
+                  toast.success("Items from past order added to cart!");
+                  void navigate({ to: "/checkout" });
+                }
               } catch (err) {
                 toast.error(err instanceof Error ? err.message : "Could not reorder");
               }
             }}
           >
-            <span>{t("orders.reorder")}</span>
-            <span>🍽️</span>
+            <span>🔁</span>
+            <span>Reorder</span>
           </Button>
           <Button
             variant="outline"
@@ -949,6 +959,21 @@ function OrderDetailPage() {
             <Link to="/support">💬 {t("orders.help")}</Link>
           </Button>
         </div>
+
+        <CartConflictModal
+          isOpen={Boolean(reorderConflict)}
+          currentRestaurantName={cart.restaurantName}
+          newRestaurantName={reorderConflict?.restaurantName || "this restaurant"}
+          onCancel={() => setReorderConflict(null)}
+          onConfirm={() => {
+            if (reorderConflict) {
+              cart.replaceCart(reorderConflict.restaurantId, reorderConflict.restaurantName, reorderConflict.lines);
+              setReorderConflict(null);
+              toast.success("Items from past order added to cart!");
+              void navigate({ to: "/checkout" });
+            }
+          }}
+        />
       </div>
     </CustomerShell>
   );

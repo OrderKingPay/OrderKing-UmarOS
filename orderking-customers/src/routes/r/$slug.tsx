@@ -27,10 +27,14 @@ import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { CustomizeDialog } from "@/components/market/customize-dialog";
 import { CookingInstructionsModal } from "@/components/market/cooking-instructions-modal";
+import { AudioVoiceNote } from "@/components/market/audio-voice-note";
+import { extractEffectiveAddonGroups } from "@/lib/modifiers/nested-modifiers";
 import { GroupOrderingModal } from "@/components/market/group-ordering-modal";
 import { DiningOutReservationModal } from "@/components/market/dining-out-reservation";
 import { NutritionAllergenDrawer } from "@/components/market/nutrition-allergen-drawer";
 import { CustomerShell } from "@/components/market/shell";
+import { CartConflictModal } from "@/components/market/cart-conflict-modal";
+import { getHighlightedSegments } from "@/lib/menu/search-and-filter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -81,6 +85,26 @@ export const Route = createFileRoute("/r/$slug")({
   component: RestaurantPage,
 });
 
+function HighlightMatch({ text, query }: { text: string; query: string }) {
+  const segments = useMemo(() => getHighlightedSegments(text, query), [text, query]);
+  return (
+    <>
+      {segments.map((seg, i) =>
+        seg.isMatch ? (
+          <mark
+            key={i}
+            className="bg-amber-300 dark:bg-amber-400/40 text-amber-950 dark:text-amber-100 rounded-xs px-0.5 font-black not-italic"
+          >
+            {seg.text}
+          </mark>
+        ) : (
+          seg.text
+        )
+      )}
+    </>
+  );
+}
+
 function RestaurantPage() {
   const { slug } = Route.useParams();
   const { t, lang } = useT();
@@ -92,6 +116,7 @@ function RestaurantPage() {
 
   const cartItems = useCartStore((s) => s.items);
   const cartRestaurantId = useCartStore((s) => s.restaurantId);
+  const cartRestaurantName = useCartStore((s) => s.restaurantName);
   const addItem = useCartStore((s) => s.addItem);
   const updateQty = useCartStore((s) => s.updateQty);
   const remove = useCartStore((s) => s.remove);
@@ -162,7 +187,7 @@ function RestaurantPage() {
     void trackAnalytics({ data: { name: "add_to_cart", payload: { item: item.id } } });
   };
 
-  // Safe estimation of cart subtotal in paise
+  // Accurate estimation of cart subtotal in paise including multi-level modifier extras
   const cartSubtotalPaise = useMemo(() => {
     if (!restaurant || cartRestaurantId !== restaurant.card.id) return 0;
     let sum = 0;
@@ -177,6 +202,18 @@ function RestaurantPage() {
         if (ci.variantId) {
           const v = baseItem.variants.find((v) => v.id === ci.variantId);
           if (v) unitPaise = v.pricePaise;
+        }
+        if (ci.addonIds && ci.addonIds.length > 0) {
+          const allGroups = extractEffectiveAddonGroups(baseItem, ci.variantId, ci.addonIds);
+          const addonMap = new Map<string, number>();
+          for (const g of allGroups) {
+            for (const a of g.addons) {
+              addonMap.set(a.id, a.pricePaise);
+            }
+          }
+          for (const aid of ci.addonIds) {
+            unitPaise += addonMap.get(aid) || 0;
+          }
         }
         sum += unitPaise * ci.quantity;
       }
@@ -517,6 +554,13 @@ function RestaurantPage() {
                 className="mt-3"
               />
 
+              {/* 1-Tap 15-Second Kitchen Audio Voice Note */}
+              <AudioVoiceNote
+                target="kitchen"
+                samplePlaceholder="Please make it extra spicy and don't add chopped onions"
+                className="mt-3.5"
+              />
+
               {/* Search Bar & Diet Filters */}
               <div className="mt-5 space-y-3">
                 <div className="relative">
@@ -524,7 +568,7 @@ function RestaurantPage() {
                   <input
                     value={menuQ}
                     onChange={(e) => setMenuQ(e.target.value)}
-                    placeholder={t("restaurant.searchMenu") || "Search menu items, starters, thalis..."}
+                    placeholder={`Search within ${restaurant.card.name} menu...`}
                     className="h-12 w-full rounded-2xl border border-amber-400/30 bg-surface pl-10 pr-10 text-sm font-medium focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400/30 shadow-xs"
                   />
                   {menuQ && (
@@ -586,15 +630,21 @@ function RestaurantPage() {
 
           {/* 3. MENU CATEGORIES WITH COLORED TABS (STICKY) */}
           <nav className="sticky top-0 z-30 mt-6 border-y border-amber-500/20 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md px-4 py-3 shadow-sm">
-            <div className="max-w-4xl mx-auto flex gap-2 overflow-x-auto no-scrollbar">
+            <div className="max-w-4xl mx-auto flex gap-2 overflow-x-auto no-scrollbar scroll-smooth">
               {restaurant.categories.map((c: any) => {
                 const isActive = activeCategory === c.id;
                 return (
-                  <a
+                  <button
                     key={c.id}
-                    href={`#cat-${c.id}`}
-                    onClick={() => setActiveCategory(c.id)}
-                    className={`shrink-0 rounded-2xl px-4 py-2 text-xs font-extrabold transition-all no-underline flex items-center gap-1.5 ${
+                    type="button"
+                    onClick={() => {
+                      setActiveCategory(c.id);
+                      const el = document.getElementById(`cat-${c.id}`);
+                      if (el) {
+                        el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }}
+                    className={`shrink-0 rounded-2xl px-4 py-2 text-xs font-extrabold transition-all no-underline flex items-center gap-1.5 cursor-pointer ${
                       isActive
                         ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-md scale-105"
                         : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-amber-100/60 dark:hover:bg-zinc-700"
@@ -608,7 +658,7 @@ function RestaurantPage() {
                     >
                       {c.items?.length ?? 0}
                     </span>
-                  </a>
+                  </button>
                 );
               })}
             </div>
@@ -672,7 +722,7 @@ function RestaurantPage() {
                               )}
 
                               <p className="font-display font-bold text-base sm:text-lg text-zinc-900 dark:text-zinc-50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                                {it.name}
+                                <HighlightMatch text={it.name} query={menuQ} />
                               </p>
 
                               {it.bestseller && (
@@ -690,7 +740,7 @@ function RestaurantPage() {
                             {/* Description */}
                             {it.description && (
                               <p className="mt-1 line-clamp-2 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                                {it.description}
+                                <HighlightMatch text={it.description} query={menuQ} />
                               </p>
                             )}
 
@@ -836,29 +886,19 @@ function RestaurantPage() {
           />
 
           {/* Cart Conflict Modal */}
-          {replaceWith && restaurant && (
-            <div className="fixed inset-0 z-50 grid place-items-end bg-black/60 backdrop-blur-xs p-4 md:place-items-center">
-              <div className="w-full max-w-md rounded-3xl bg-surface p-6 shadow-2xl border border-amber-500/30">
-                <h2 className="font-display text-xl font-bold">{t("cart.replaceTitle")}</h2>
-                <p className="mt-2 text-sm text-muted">{t("cart.replaceBody", { name: replaceWith.name })}</p>
-                <div className="mt-5 flex gap-3">
-                  <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setReplaceWith(null)}>
-                    {t("cart.keep")}
-                  </Button>
-                  <Button
-                    className="flex-1 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-bold"
-                    onClick={() => {
-                      replaceAndAdd(restaurant.card.id, restaurant.card.name, replaceWith.line);
-                      setReplaceWith(null);
-                      toast.success(t("common.added") || "Added to cart!");
-                    }}
-                  >
-                    {t("cart.replace")}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
+          <CartConflictModal
+            isOpen={Boolean(replaceWith && restaurant)}
+            currentRestaurantName={cartRestaurantName}
+            newRestaurantName={restaurant?.card.name || replaceWith?.name || "this restaurant"}
+            onCancel={() => setReplaceWith(null)}
+            onConfirm={() => {
+              if (replaceWith && restaurant) {
+                replaceAndAdd(restaurant.card.id, restaurant.card.name, replaceWith.line);
+                setReplaceWith(null);
+                toast.success(t("common.added") || "Added to cart!");
+              }
+            }}
+          />
 
           {/* 5. STICKY BOTTOM CART BAR WITH ITEM COUNT AND TOTAL */}
           {totalCartCount > 0 && (

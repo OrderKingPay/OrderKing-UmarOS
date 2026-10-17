@@ -11,6 +11,7 @@ import { REJECT_REASONS, type OrderState } from "@/lib/orders/state-machine";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
 import { delayOrderPrep } from "@/lib/server/api-orders";
 import { enqueueMutation } from "@/lib/offline/durable-queue";
+import { StructuredRejectionModal } from "@/components/orders/structured-rejection-modal";
 import { toast } from "sonner";
 import { Clock } from "lucide-react";
 
@@ -230,9 +231,13 @@ export function OrderCard({
     }
   }
 
-  async function act(action: "accept" | "reject" | "preparing" | "ready") {
+  async function act(
+    action: "accept" | "reject" | "preparing" | "ready",
+    customReason?: (typeof REJECT_REASONS)[number]
+  ) {
     setBusy(true);
     setError(null);
+    const chosenReason = customReason ?? reason;
     const idempotencyKey = actionKey(order.id, action);
     try {
       if (typeof navigator !== "undefined" && !navigator.onLine) {
@@ -240,7 +245,7 @@ export function OrderCard({
           restaurantId: restaurantId!,
           orderId: order.id,
           action,
-          reason: action === "reject" ? reason : undefined,
+          reason: action === "reject" ? chosenReason : undefined,
           idempotencyKey,
         });
 
@@ -272,7 +277,7 @@ export function OrderCard({
           restaurantId,
           orderId: order.id,
           action,
-          reason: action === "reject" ? reason : undefined,
+          reason: action === "reject" ? chosenReason : undefined,
           idempotencyKey,
         },
       });
@@ -572,34 +577,19 @@ export function OrderCard({
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 
-      {rejectOpen ? (
-        <div className="space-y-2 rounded-[16px] bg-surface-2 p-3">
-          <p className="text-sm font-medium">{t("orders.rejectTitle")}</p>
-          <p className="text-xs text-muted">{t("orders.rejectHint")}</p>
-          <div className="grid gap-2">
-            {REJECT_REASONS.map((r) => (
-              <label key={r} className="flex min-h-11 items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  name={`reject-${order.id}`}
-                  checked={reason === r}
-                  onChange={() => setReason(r)}
-                />
-                {t(`rejectReasons.${r}`)}
-              </label>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="danger" disabled={busy} onClick={() => void act("reject")}>
-              {t("orders.reject")}
-            </Button>
-            <Button variant="secondary" onClick={() => setRejectOpen(false)}>
-              {t("common.cancel")}
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-wrap gap-2">
+      {/* Authentic Zomato Structured Order Rejection Dialog */}
+      <StructuredRejectionModal
+        isOpen={rejectOpen}
+        onClose={() => setRejectOpen(false)}
+        order={order}
+        restaurantId={restaurantId}
+        onConfirmReject={async (selectedReason) => {
+          setReason(selectedReason);
+          await act("reject", selectedReason);
+        }}
+      />
+
+      <div className="flex flex-wrap gap-2">
           {order.state === "PLACED" ? (
             <>
               <Button size={large ? "lg" : "md"} disabled={busy} onClick={() => void act("accept")}>
@@ -670,7 +660,6 @@ export function OrderCard({
             </Button>
           ) : null}
         </div>
-      )}
 
       {/* 80mm Thermal KOT + Itemized GST §9(5) Receipt Modal */}
       {kotModalOpen ? (

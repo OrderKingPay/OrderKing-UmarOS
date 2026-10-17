@@ -6,6 +6,7 @@ import { isOpenNow, type HourWindow } from "@/lib/hours";
 import { getMarketContext } from "@/lib/server/dynamic-sort";
 import type { RestaurantCard } from "@/lib/market-types";
 import { searchLimiter } from "@/lib/security/rate-limiter";
+import { CURATED_DISHES, filterDishes } from "@/lib/predictive-search";
 
 // Helper functions (same logic as catalog.ts)
 function num(v: string | number | null | undefined): number | null {
@@ -194,8 +195,11 @@ export const Route = createFileRoute("/api/search")({
             return a.etaMinutes - b.etaMinutes || a.distanceKm - b.distanceKm;
           });
 
+          const dishes = filterDishes(CURATED_DISHES, q, { veg, rating4Plus: false, fastDelivery: false, greatOffers: false });
+
           return new Response(JSON.stringify({ 
             restaurants: cards,
+            dishes,
             deliveryAvailable: cards.length > 0,
             marketContext,
             sections: {
@@ -213,8 +217,10 @@ export const Route = createFileRoute("/api/search")({
         } catch (error) {
           console.warn("GET /api/search database unavailable; no unverified restaurants will be shown.");
           const fallback: RestaurantCard[] = [];
+          const fallbackDishes = filterDishes(CURATED_DISHES, q, { veg, rating4Plus: false, fastDelivery: false, greatOffers: false });
           return new Response(JSON.stringify({ 
             restaurants: fallback,
+            dishes: fallbackDishes,
             deliveryAvailable: false,
             reason: "Restaurant availability cannot be verified right now.",
             marketContext: { sortStrategy: "relevance" },

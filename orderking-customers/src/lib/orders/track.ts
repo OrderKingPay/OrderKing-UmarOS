@@ -14,6 +14,7 @@ export type TrackProgress = {
 const FAILURE: ReadonlySet<OrderStatus> = new Set([
   "REJECTED",
   "CANCELLED",
+  "CANCELLED_BY_CUSTOMER",
   "FAILED_PAYMENT",
   "DELIVERY_FAILED",
 ]);

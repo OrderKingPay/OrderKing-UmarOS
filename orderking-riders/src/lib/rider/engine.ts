@@ -34,6 +34,7 @@ import {
   calculatePocketBalance,
   getCoolingOffInfo,
   calculateCancellationPenalty,
+  isJustifiedOperationalReason,
 } from "./discipline.ts";
 import { DEFAULT_DISCIPLINE_CONFIG } from "./config.ts";
 import type { RiderStore } from "./store.ts";
@@ -76,6 +77,14 @@ const CANCEL_REASONS = [
   "restaurant issue",
   "customer issue",
   "other",
+  "bike breakdown / tyre puncture",
+  "bike breakdown / tyre puncture 🛵",
+  "personal emergency / unwell",
+  "personal emergency / unwell 🏥",
+  "restaurant distance excessive (>5 km)",
+  "restaurant distance excessive (>5 km) 📍",
+  "heavy rain / waterlogging on route",
+  "heavy rain / waterlogging on route 🌧️",
 ] as const;
 
 const FAIL_REASONS = [
@@ -1121,7 +1130,10 @@ export class RiderEngine {
   ) {
     if (!confirmed) throw new RiderError("CONFIRM_REQUIRED", "Confirm cancellation", 400);
     const normalized = reason.trim().toLowerCase();
-    if (!CANCEL_REASONS.includes(normalized as (typeof CANCEL_REASONS)[number])) {
+    const isValid =
+      CANCEL_REASONS.includes(normalized as (typeof CANCEL_REASONS)[number]) ||
+      isJustifiedOperationalReason(reason);
+    if (!isValid) {
       throw new RiderError("REASON_REQUIRED", "Choose a valid cancellation reason", 400);
     }
     const d = await this.requireOwnedDelivery(userId, deliveryId);
@@ -1134,6 +1146,7 @@ export class RiderEngine {
       d.expectedPayoutPaise,
       disciplineCfg,
       hasVerifiedProof,
+      reason,
     );
 
     return this.idem(userId, key, "cancel", async () => {
@@ -1141,8 +1154,30 @@ export class RiderEngine {
         row.cancelReason = normalized;
       });
 
-      // Apply disciplinary deduction if enabled and penalty applies
-      if (disciplineCfg.enabled && penalty.penaltyPaise > 0) {
+      // Handle justified operational reassignment: zero penalty & dispatch signal
+      if (isJustifiedOperationalReason(reason) && penalty.penaltyPaise === 0) {
+        await this.store.insertSignal(
+          {
+            id: nid(),
+            riderId: d.riderId,
+            deliveryId: d.id,
+            kind: "OPERATIONAL_REASSIGNMENT",
+            detail: `Trip #${d.orderCode} reassigned to nearest available partner. Reason: ${reason} (Zero Penalty Applied)`,
+            stage: "SIGNAL",
+            createdAt: this.now(),
+          },
+          userId,
+        );
+        await this.store.insertNotification({
+          id: nid(),
+          userId,
+          title: "🛵 Trip Reassigned Gracefully",
+          body: `Order #${d.orderCode} was reassigned to the nearest fleet partner (${reason}). No penalty was deducted. Take care!`,
+          kind: "OPS",
+          read: false,
+          createdAt: this.now(),
+        });
+      } else if (disciplineCfg.enabled && penalty.penaltyPaise > 0) {
         await this.store.appendEarning(
           {
             id: nid(),

@@ -15,7 +15,8 @@ import { isFeatureEnabled } from "@/lib/platform-config";
 import { supabaseCloud } from "@/lib/db-cloud";
 import { isAutoPrintEnabled } from "@/lib/hardware/thermal-printer";
 import { kotHardware } from "@/lib/printer/persistent-kot-printer";
-import { BellOff, FileSpreadsheet, Search, Volume2, VolumeX } from "lucide-react";
+import { BellOff, FileSpreadsheet, Flame, Search, Volume2, VolumeX } from "lucide-react";
+import { useKitchenRushStore, calculateOrderRushEta } from "@/lib/orders/kitchen-rush";
 
 export const Route = createFileRoute("/orders")({ component: OrdersPage });
 
@@ -57,6 +58,10 @@ function OrdersPage() {
   const [scope, setScope] = useState<"live" | "history" | "all">("live");
   const [searchQuery, setSearchQuery] = useState("");
   const [stateFilter, setStateFilter] = useState<StateFilter>("ALL");
+
+  const rush = useKitchenRushStore();
+  const rushActive = rush.isActive;
+  const rushBuffer = rush.bufferMinutes;
 
   const q = useQuery({
     queryKey: ["orders", vendor.restaurantId, scope],
@@ -210,6 +215,110 @@ function OrdersPage() {
       stale={q.isError}
       restaurantName={vendor.selected?.restaurantName}
     >
+      {/* Kitchen Rush / Overload Buffer Mode - Prominent Amber/Red Status Banner */}
+      {rushActive ? (
+        <div className="rounded-2xl border-2 border-rose-500 bg-rose-950/40 p-4 shadow-xl text-rose-100 space-y-3 animate-in fade-in">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="relative flex size-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                <span className="relative inline-flex rounded-full size-3 bg-rose-500" />
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <Flame className="size-5 text-rose-400 animate-bounce" />
+                  <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-wide text-white font-mono">
+                    KITCHEN RUSH OVERLOAD BUFFER ACTIVE (+{rushBuffer} MINS)
+                  </h2>
+                </div>
+                <p className="text-xs text-rose-200/90 mt-0.5">
+                  Prep SLA dynamically buffered by +{rushBuffer}m across all active incoming orders · Rider pickup arrival window pushed back to prevent premature courier idle wait.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center rounded-xl bg-slate-900/90 border border-slate-700 p-1 font-mono text-xs">
+                <button
+                  type="button"
+                  onClick={() => rush.activate(10)}
+                  className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                    rushBuffer === 10
+                      ? "bg-amber-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  +10 Mins
+                </button>
+                <button
+                  type="button"
+                  onClick={() => rush.activate(15)}
+                  className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                    rushBuffer === 15
+                      ? "bg-rose-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  +15 Mins
+                </button>
+              </div>
+
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => rush.deactivate()}
+                className="text-xs font-bold border-rose-500/60 bg-rose-900/50 hover:bg-rose-900 text-white cursor-pointer"
+              >
+                Turn Off Rush Mode
+              </Button>
+            </div>
+          </div>
+
+          {/* Active Heavy Rush Customer Badge & Rider Delay Window Notice */}
+          <div className="rounded-xl border border-rose-500/30 bg-black/40 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-amber-300 uppercase font-mono tracking-wider text-[11px]">
+                Waiting Customers Badge:
+              </span>
+              <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 text-amber-200 font-semibold">
+                Kitchen is experiencing heavy rush · +{rushBuffer}m prep buffer
+              </span>
+            </div>
+            <span className="text-[11px] font-mono text-rose-300 bg-rose-950/60 border border-rose-800/60 px-2.5 py-0.5 rounded">
+              🛵 Dynamic Rider Arrival Window: +{rushBuffer}m Dispatch Delay Applied
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <Flame className="size-4 text-amber-400" />
+            <div>
+              <span className="font-bold text-slate-200">Kitchen Rush / Overload Buffer Mode:</span>
+              <span className="text-slate-400 ml-1.5">
+                Experiencing high ticket surge? Add a prep buffer and dynamically push back rider arrival windows.
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 font-mono">
+            <button
+              type="button"
+              onClick={() => rush.activate(10)}
+              className="px-3 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 border border-amber-500/60 text-amber-300 font-bold text-xs transition cursor-pointer"
+            >
+              +10m Rush
+            </button>
+            <button
+              type="button"
+              onClick={() => rush.activate(15)}
+              className="px-3 py-1 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-500/60 text-rose-300 font-bold text-xs transition cursor-pointer"
+            >
+              +15m Rush (Surge)
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Scope & Export Controls */}
       <Card className="border-slate-800 bg-slate-900/80 p-4 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -318,20 +427,57 @@ function OrdersPage() {
         {filteredOrders.length === 0 ? (
           <Card className="text-sm text-muted">{t("orders.empty")}</Card>
         ) : (
-          filteredOrders.map((o: any) => (
-            <OrderCard
-              key={o.id}
-              order={o as unknown as OrderView}
-              restaurantId={vendor.restaurantId}
-              dataLabel={q.data?.dataLabel}
-              onChanged={() => {
-                void qc.invalidateQueries({ queryKey: ["orders"] });
-                void qc.invalidateQueries({ queryKey: ["dashboard"] });
-              }}
-            />
-          ))
+          filteredOrders.map((o: any) => {
+            const isLiveActive = ["PLACED", "PENDING", "ACCEPTED", "CONFIRMED", "PREPARING"].includes(
+              String(o.state),
+            );
+            const rushAdj = rushActive && isLiveActive ? calculateOrderRushEta(o, rushBuffer) : null;
+
+            return (
+              <div key={o.id} className="space-y-1.5">
+                {rushAdj && (
+                  <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs text-rose-200 font-sans shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="size-2 rounded-full bg-rose-400 animate-ping" />
+                      <span className="font-bold text-white">Kitchen is experiencing heavy rush</span>
+                      <span className="text-[11px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/40">
+                        +{rushBuffer}m prep buffer
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-[11px] font-mono text-slate-300">
+                      <span>
+                        Effective Prep: <strong className="text-white">{rushAdj.bufferedPrepMinutes}m</strong>
+                      </span>
+                      <span>
+                        Rider Pickup Window:{" "}
+                        <strong className="text-amber-300">
+                          {new Date(rushAdj.adjustedRiderArrivalAt).toLocaleTimeString([], {
+                            hour: "numeric",
+                            minute: "2-digit",
+                          })}
+                        </strong>{" "}
+                        (delayed +{rushBuffer}m)
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <OrderCard
+                  order={o as unknown as OrderView}
+                  restaurantId={vendor.restaurantId}
+                  dataLabel={q.data?.dataLabel}
+                  prepThrottleBuffer={rushActive && isLiveActive ? rushBuffer : 0}
+                  onChanged={() => {
+                    void qc.invalidateQueries({ queryKey: ["orders"] });
+                    void qc.invalidateQueries({ queryKey: ["dashboard"] });
+                  }}
+                />
+              </div>
+            );
+          })
         )}
       </div>
     </VendorShell>
   );
 }
+
+export { StructuredRejectionModal } from "@/components/orders/structured-rejection-modal";

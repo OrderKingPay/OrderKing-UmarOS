@@ -7,6 +7,7 @@ import { buildQuote } from "./quote";
 export type RazorpayOrderRequest = QuoteRequest & {
   amountPaise: number;
   tipPaise?: number;
+  donationPaise?: number;
   currency?: string;
   receipt: string;
 };
@@ -31,6 +32,10 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
     if (!Number.isSafeInteger(tip) || tip < 0 || tip > 100_000) {
       throw new Error("Invalid tip amount.");
     }
+    const donation = data.donationPaise ?? 0;
+    if (!Number.isSafeInteger(donation) || donation < 0 || donation > 10_000) {
+      throw new Error("Invalid donation amount.");
+    }
     if (typeof data.receipt !== "string" || !data.receipt.trim() || data.receipt.length > 40) {
       throw new Error("A valid payment receipt is required.");
     }
@@ -41,7 +46,7 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
     if (!built.result.isDeliverable || built.result.quote.blockers.length) {
       throw new Error("Delivery is unavailable for this cart.");
     }
-    const amountPaise = built.result.quote.totalPaise + tip;
+    const amountPaise = built.result.quote.totalPaise + tip + donation;
     if (!Number.isSafeInteger(amountPaise) || amountPaise <= 0 || data.amountPaise !== amountPaise) {
       throw new Error("Checkout amount changed. Refresh your cart before paying.");
     }

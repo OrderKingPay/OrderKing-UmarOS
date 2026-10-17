@@ -1,9 +1,14 @@
 import { useState } from "react";
-import { Check, X, Clock, Flame, Loader2, Sparkles, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, X, Clock, Loader2, RotateCcw, Sparkles } from "lucide-react";
 import { setAvailability } from "@/lib/server/api-menu";
-import { getNextDay06AM } from "@/lib/ai/order-king-spark";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  calculateStockoutExpiry,
+  formatStockoutRemaining,
+  isStockoutExpired,
+  type TimedStockoutOption,
+} from "@/lib/menu/timed-stockout";
+import { TimedStockoutPickerModal } from "./timed-stockout-picker-modal";
 
 export interface OneTapStockToggleProps {
   itemId: string;
@@ -28,17 +33,23 @@ export function OneTapStockToggle({
 }: OneTapStockToggleProps) {
   const qc = useQueryClient();
   const [loading, setLoading] = useState(false);
-  const [showDurations, setShowDurations] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [optimisticStatus, setOptimisticStatus] = useState<string | null>(null);
+  const [optimisticNextAt, setOptimisticNextAt] = useState<string | null | undefined>(undefined);
 
   const currentStatus = optimisticStatus ?? availability;
+  const currentNextAt = optimisticNextAt !== undefined ? optimisticNextAt : nextAvailableAt;
   const isAvailable = currentStatus === "available";
 
-  const handleInstantToggle = async () => {
+  // Check if timed stockout has expired
+  const isExpired = !isAvailable && isStockoutExpired(currentNextAt);
+
+  // Turn ON immediately (1-tap instant restore)
+  const handleRestoreInStock = async () => {
     if (disabled || loading || !restaurantId) return;
 
-    const nextStatus = isAvailable ? "sold_out" : "available";
-    setOptimisticStatus(nextStatus);
+    setOptimisticStatus("available");
+    setOptimisticNextAt(null);
     setLoading(true);
 
     try {
@@ -46,178 +57,171 @@ export function OneTapStockToggle({
         data: {
           restaurantId,
           itemIds: [itemId],
-          status: nextStatus,
+          status: "available",
           nextAvailableAt: null,
         },
       });
-      onToggled?.(nextStatus);
+      onToggled?.("available");
       void qc.invalidateQueries({ queryKey: ["menu"] });
       void qc.invalidateQueries({ queryKey: ["dashboard"] });
     } catch (e) {
-      // Revert optimistic status on error
       setOptimisticStatus(null);
+      setOptimisticNextAt(undefined);
     } finally {
       setLoading(false);
     }
   };
 
-  const handle86Today = async () => {
+  // Turn OFF via Timed Availability Picker Modal
+  const handleConfirmStockout = async (option: TimedStockoutOption) => {
     if (disabled || loading || !restaurantId) return;
 
-    const nextAvailableDate = getNextDay06AM().toISOString();
-    setOptimisticStatus("temporarily_unavailable");
+    const { status, nextAvailableAt: targetNextAt } = calculateStockoutExpiry(option);
+    setOptimisticStatus(status);
+    setOptimisticNextAt(targetNextAt);
     setLoading(true);
-    setShowDurations(false);
+    setModalOpen(false);
 
     try {
       await setAvailability({
         data: {
           restaurantId,
           itemIds: [itemId],
-          status: "temporarily_unavailable",
-          nextAvailableAt: nextAvailableDate,
+          status,
+          nextAvailableAt: targetNextAt,
         },
       });
-      onToggled?.("temporarily_unavailable");
+      onToggled?.(status as any);
       void qc.invalidateQueries({ queryKey: ["menu"] });
       void qc.invalidateQueries({ queryKey: ["dashboard"] });
     } catch (e) {
       setOptimisticStatus(null);
+      setOptimisticNextAt(undefined);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTimedOut = async (hours: number) => {
-    if (disabled || loading || !restaurantId) return;
-
-    const nextAvailableDate = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
-    setOptimisticStatus("temporarily_unavailable");
-    setLoading(true);
-    setShowDurations(false);
-
-    try {
-      await setAvailability({
-        data: {
-          restaurantId,
-          itemIds: [itemId],
-          status: "temporarily_unavailable",
-          nextAvailableAt: nextAvailableDate,
-        },
-      });
-      onToggled?.("temporarily_unavailable");
-      void qc.invalidateQueries({ queryKey: ["menu"] });
-      void qc.invalidateQueries({ queryKey: ["dashboard"] });
-    } catch (e) {
-      setOptimisticStatus(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const isResetAt6AM =
-    nextAvailableAt &&
-    new Date(nextAvailableAt).getHours() === 6 &&
-    new Date(nextAvailableAt).getMinutes() === 0;
-
-  const formattedOffTime =
-    currentStatus === "temporarily_unavailable" && nextAvailableAt
-      ? isResetAt6AM
-        ? "86 until 06:00 AM"
-        : `Until ${new Date(nextAvailableAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-      : null;
+  const formattedRemaining =
+    !isAvailable && currentNextAt ? formatStockoutRemaining(currentNextAt) : null;
 
   return (
-    <div className="inline-flex items-center gap-1.5 font-mono">
-      {/* 1-Tap Tactile Master Toggle Button */}
-      <button
-        type="button"
-        disabled={disabled || loading}
-        onClick={handleInstantToggle}
-        title={isAvailable ? `1-Tap to mark ${itemName} OUT OF STOCK (86)` : `1-Tap to restore ${itemName} IN STOCK`}
-        className={`relative inline-flex items-center gap-2 rounded-lg font-bold transition-all duration-150 select-none ${
-          size === "lg" 
-            ? "px-4 py-2.5 text-sm" 
-            : size === "sm" 
-            ? "px-2.5 py-1 text-[11px]" 
-            : "px-3 py-1.5 text-xs"
-        } ${
-          isAvailable
-            ? "bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 shadow-sm shadow-emerald-950/40 hover:scale-102 active:scale-98"
-            : "bg-rose-950/90 hover:bg-rose-900 border border-rose-500/60 text-rose-300 shadow-sm shadow-rose-950/40 hover:scale-102 active:scale-98 animate-pulse"
-        } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-      >
-        {loading ? (
-          <Loader2 className="size-3.5 animate-spin text-current" />
-        ) : isAvailable ? (
-          <span className="flex items-center gap-1.5">
-            <span className="relative flex size-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full size-2 bg-emerald-500"></span>
-            </span>
-            <span>IN STOCK</span>
-          </span>
-        ) : (
-          <span className="flex items-center gap-1.5">
-            <X className="size-3.5 text-rose-400 stroke-[3]" />
-            <span>{isResetAt6AM ? "86 (06:00 AM)" : "OUT OF STOCK"}</span>
-          </span>
-        )}
-
-        {/* 1-Tap indicator pill */}
-        <span className={`text-[9px] uppercase px-1 py-0.2 rounded font-mono ${
-          isAvailable ? "bg-emerald-900/60 text-emerald-400" : "bg-rose-900/60 text-rose-400"
-        }`}>
-          {isAvailable ? "1-Tap" : "86"}
-        </span>
-      </button>
-
-      {/* Timed Unavailable options toggle */}
-      {isAvailable ? (
-        <div className="relative">
+    <>
+      <div className="inline-flex items-center gap-1.5 font-mono">
+        {/* Master Stock Toggle Button */}
+        {isAvailable ? (
           <button
             type="button"
             disabled={disabled || loading}
-            onClick={() => setShowDurations(!showDurations)}
-            title="Set 86 duration with 06:00 AM automated reset"
-            className="p-1.5 rounded-md bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition"
+            onClick={() => setModalOpen(true)}
+            title={`Click to turn off ${itemName} with timed duration`}
+            className={`relative inline-flex items-center gap-2 rounded-lg font-bold transition-all duration-150 select-none ${
+              size === "lg"
+                ? "px-4 py-2.5 text-sm"
+                : size === "sm"
+                ? "px-2.5 py-1 text-[11px]"
+                : "px-3 py-1.5 text-xs"
+            } bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 shadow-sm shadow-emerald-950/40 hover:scale-102 active:scale-98 ${
+              disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            }`}
+          >
+            {loading ? (
+              <Loader2 className="size-3.5 animate-spin text-current" />
+            ) : (
+              <span className="flex items-center gap-1.5">
+                <span className="relative flex size-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full size-2 bg-emerald-500" />
+                </span>
+                <span>IN STOCK</span>
+              </span>
+            )}
+
+            <span className="text-[9px] uppercase px-1 py-0.2 rounded font-mono bg-emerald-900/60 text-emerald-400">
+              1-Tap
+            </span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled={disabled || loading}
+            onClick={handleRestoreInStock}
+            title={`1-Tap to restore ${itemName} back to IN STOCK`}
+            className={`relative inline-flex items-center gap-2 rounded-lg font-bold transition-all duration-150 select-none ${
+              size === "lg"
+                ? "px-4 py-2.5 text-sm"
+                : size === "sm"
+                ? "px-2.5 py-1 text-[11px]"
+                : "px-3 py-1.5 text-xs"
+            } bg-rose-950/90 hover:bg-emerald-950/90 border border-rose-500/60 hover:border-emerald-500/60 text-rose-300 hover:text-emerald-300 shadow-sm shadow-rose-950/40 hover:scale-102 active:scale-98 ${
+              isExpired ? "animate-bounce" : ""
+            } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+          >
+            {loading ? (
+              <Loader2 className="size-3.5 animate-spin text-current" />
+            ) : isExpired ? (
+              <span className="flex items-center gap-1.5 text-amber-300">
+                <RotateCcw className="size-3.5 animate-spin" />
+                <span>RESTORE</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5">
+                <X className="size-3.5 text-rose-400 stroke-[3]" />
+                <span>OUT OF STOCK</span>
+              </span>
+            )}
+
+            <span className="text-[9px] uppercase px-1 py-0.2 rounded font-mono bg-rose-900/60 text-rose-300">
+              86
+            </span>
+          </button>
+        )}
+
+        {/* Timed duration badge & edit picker button */}
+        {isAvailable ? (
+          <button
+            type="button"
+            disabled={disabled || loading}
+            onClick={() => setModalOpen(true)}
+            title="Set timed out-of-stock duration (Zomato Partner Parity)"
+            className="p-1.5 rounded-md bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition cursor-pointer"
           >
             <Clock className="size-3.5" />
           </button>
+        ) : (
+          <div className="flex items-center gap-1">
+            <span
+              className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
+                isExpired
+                  ? "bg-amber-950/80 border-amber-500/80 text-amber-300 animate-pulse"
+                  : "bg-rose-950/60 border-rose-800/60 text-rose-300"
+              }`}
+              title={formattedRemaining ?? "Turned off indefinitely"}
+            >
+              {isExpired ? "Auto-restoring..." : formattedRemaining ?? "Indefinite"}
+            </span>
+            <button
+              type="button"
+              disabled={disabled || loading}
+              onClick={() => setModalOpen(true)}
+              title="Change stockout duration"
+              className="p-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition cursor-pointer"
+            >
+              <Clock className="size-3" />
+            </button>
+          </div>
+        )}
+      </div>
 
-          {showDurations && (
-            <div className="absolute right-0 top-8 z-30 flex flex-col bg-slate-900 border border-slate-700 p-1.5 rounded-lg shadow-xl text-xs text-white min-w-36 space-y-1 font-mono">
-              <span className="text-[10px] text-slate-400 px-2 py-0.5 uppercase tracking-wider">Turn Off / 86:</span>
-              <button
-                type="button"
-                onClick={handle86Today}
-                className="w-full text-left px-2 py-1.5 hover:bg-slate-800 rounded text-amber-300 font-bold text-xs flex items-center justify-between"
-              >
-                <span>86 (06:00 AM Reset)</span>
-                <span className="text-[9px] bg-amber-500/20 px-1 py-0.5 rounded">Auto</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTimedOut(2)}
-                className="w-full text-left px-2 py-1 hover:bg-slate-800 rounded text-slate-200 text-xs"
-              >
-                Off 2 Hours
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTimedOut(4)}
-                className="w-full text-left px-2 py-1 hover:bg-slate-800 rounded text-slate-200 text-xs"
-              >
-                Off 4 Hours
-              </button>
-            </div>
-          )}
-        </div>
-      ) : formattedOffTime ? (
-        <span className="text-[10px] text-amber-400 font-mono bg-amber-950/60 border border-amber-800/60 px-1.5 py-0.5 rounded">
-          {formattedOffTime}
-        </span>
-      ) : null}
-    </div>
+      {/* Zomato Timed Availability Modal */}
+      <TimedStockoutPickerModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        itemName={itemName}
+        itemId={itemId}
+        onConfirm={handleConfirmStockout}
+        loading={loading}
+      />
+    </>
   );
 }

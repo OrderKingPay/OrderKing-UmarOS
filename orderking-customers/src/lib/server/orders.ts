@@ -108,6 +108,7 @@ export const placeOrder = createServerFn({ method: "POST" })
     lng: number;
     coupon?: string | null;
     tipPaise?: number;
+    donationPaise?: number;
     lines: CartLineInput[];
     address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string };
     paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE";
@@ -148,6 +149,12 @@ export const placeOrder = createServerFn({ method: "POST" })
       throw new Error("Tip amount must be a non-negative integer in paise (maximum ₹1,000.00).");
     }
     const tip = rawTip;
+
+    const rawDonation = data.donationPaise ?? 0;
+    if (!Number.isInteger(rawDonation) || rawDonation < 0 || rawDonation > 10_000) {
+      throw new Error("Donation amount must be a non-negative integer in paise.");
+    }
+    const donation = rawDonation;
 
     // Fail closed: neither a browser toggle nor a local pilot can authorize public checkout.
     const liveSql = await getSql();
@@ -263,7 +270,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       throw new Error("Server quote total paise integrity check failed.");
     }
 
-    const finalTotalPaise = q.totalPaise + tip;
+    const finalTotalPaise = q.totalPaise + tip + donation;
     const method = data.paymentMethod;
 
     // Enforce payment method rules & cryptographic verification
@@ -389,6 +396,9 @@ export const placeOrder = createServerFn({ method: "POST" })
       }
       if (tip > 0) {
         await tx`insert into order_price_lines (id, order_id, code, name, amount_paise, source, funded_by, reason, sort_order) values (${newId("opl")}, ${orderId}, ${"RIDER_TIP"}, ${"Delivery partner tip"}, ${tip}, ${"delivery"}, ${"CUSTOMER"}, ${"100% goes directly to the delivery partner."}, ${q.lines.length})`;
+      }
+      if (donation > 0) {
+        await tx`insert into order_price_lines (id, order_id, code, name, amount_paise, source, funded_by, reason, sort_order) values (${newId("opl")}, ${orderId}, ${"DONATION_FEEDING_INDIA"}, ${"Feeding India Donation"}, ${donation}, ${"platform"}, ${"CUSTOMER"}, ${"Micro-donation to Feeding India to feed daily wage earners and children in need."}, ${q.lines.length + (tip > 0 ? 1 : 0)})`;
       }
 
       const paymentProvider =
@@ -615,7 +625,9 @@ export const cancelMyOrder = createServerFn({ method: "POST" })
     const order = await getOwnedOrder(context.userId, data.orderId);
     if (!order) throw new Error("Order not found");
     if (!customerMayCancel(order.status)) throw new Error("This order can no longer be cancelled.");
-    if (!canTransition(order.status, "CANCELLED")) throw new Error("Illegal cancellation");
+    if (!canTransition(order.status, "CANCELLED_BY_CUSTOMER") && !canTransition(order.status, "CANCELLED")) {
+      throw new Error("Illegal cancellation");
+    }
     const cfg = await loadConfig();
     if (cfg.marketplace.launchMode === "live") {
       return cancelOrderViaHDmaster({
@@ -627,9 +639,33 @@ export const cancelMyOrder = createServerFn({ method: "POST" })
       });
     }
     const sql = await getSql();
-    await sql`update orders set status = ${"CANCELLED"}, updated_at = now() where id = ${order.id} and user_id = ${context.userId}`;
-    await writeEvent(order.id, order.status, "CANCELLED", context.userId, "customer", "Cancelled by customer");
-    return { ok: true, orderId: order.id, status: "CANCELLED", authoritative: "customer-app" as const };
+    const nextStatus = "CANCELLED_BY_CUSTOMER";
+    const totalRefundPaise = order.total_paise;
+
+    await sql`update orders set status = ${nextStatus}, payment_status = ${"refunded"}, updated_at = now() where id = ${order.id} and user_id = ${context.userId}`;
+    await writeEvent(order.id, order.status, nextStatus, context.userId, "customer", data.reason || "Cancelled by customer within 60s grace window (100% instant refund)");
+
+    // 100% Instant Refund to KingPay wallet or UPI without human intervention or restaurant dispute
+    if (order.payment_method !== "COD" && totalRefundPaise > 0) {
+      await sql`
+        INSERT INTO kingpay_wallets (user_id, balance_paise, updated_at)
+        VALUES (${context.userId}, ${totalRefundPaise}, NOW())
+        ON CONFLICT (user_id)
+        DO UPDATE SET balance_paise = kingpay_wallets.balance_paise + ${totalRefundPaise}, updated_at = NOW()
+      `;
+      await sql`
+        INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+        VALUES (${newId("kpt")}, ${context.userId}, ${totalRefundPaise}, 'CREDIT', ${`100% Instant Refund for Cancelled Order #${order.public_id}`})
+      `;
+      await sql`UPDATE payments SET status = 'refunded' WHERE order_id = ${order.id}`;
+    }
+
+    await sql`
+      INSERT INTO notifications (id, user_id, title, body, kind, entity_id)
+      VALUES (${newId("ntf")}, ${context.userId}, ${"100% Instant Refund Issued"}, ${`Order #${order.public_id} was cancelled. 100% refund of ₹${(totalRefundPaise / 100).toFixed(2)} processed to KingPay Wallet/UPI without dispute.`}, ${"ORDER_CANCELLED"}, ${order.id})
+    `;
+
+    return { ok: true, orderId: order.id, status: nextStatus, refundPaise: totalRefundPaise, authoritative: "customer-app" as const };
   });
 
 export const advanceSimulatedOrder = createServerFn({ method: "POST" })

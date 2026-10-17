@@ -18,6 +18,7 @@ import {
 import { formatINR } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
+import { DailyPerformanceLedgerCard } from "@/components/dashboard/daily-performance-ledger-card";
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -419,6 +420,19 @@ function DashboardPage() {
             </div>
           </Card>
         ) : null}
+
+        {/* Real-World Zomato Owner Daily Business Summary & Settlement Ledger */}
+        <DailyPerformanceLedgerCard
+          customSummary={
+            d?.today
+              ? {
+                  deliveredOrdersCount: (d.today as any).delivered ?? d.today.accepted ?? d.today.orders ?? 0,
+                  grossGmvPaise: d.today.salesPaise ?? 0,
+                  netEstimatedPayoutPaise: d.today.settlementPaise ?? 0,
+                }
+              : undefined
+          }
+        />
 
         {/* Real Today's Performance KPI Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">

@@ -52,8 +52,16 @@ import { newId } from "@/lib/ids";
 import { createRazorpayOrder } from "@/lib/server/razorpay-order";
 import { WhatsAppShare } from "@/components/market/whatsapp-share";
 import { WhatsAppViralBountiesWidget as ReferralGamifiedLoop } from "@/components/market/whatsapp-viral-bounties-widget";
+import { AudioVoiceNote } from "@/components/market/audio-voice-note";
+import { useVoiceNoteStore } from "@/lib/stores/voice-notes";
 import { CheckoutPageSkeleton } from "@/components/skeletons/route-skeletons";
 import { AppErrorComponent } from "@/lib/error-component";
+import {
+  TIP_PRESETS,
+  FEEDING_INDIA_DONATION_PAISE,
+  parseCustomTip,
+  calculateCheckoutTotal,
+} from "@/lib/orders/tips-and-donations";
 
 export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
@@ -107,6 +115,9 @@ function CheckoutPage() {
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setRecipientPhone] = useState("");
   const [tipPaise, setTipPaise] = useState<number>(0);
+  const [customTipRupees, setCustomTipRupees] = useState<string>("");
+  const [isCustomTipOpen, setIsCustomTipOpen] = useState(false);
+  const [donateFeedingIndia, setDonateFeedingIndia] = useState(false);
   const [noCutlery, setNoCutlery] = useState(true);
   const [busy, setBusy] = useState(false);
   const [locationPickerOpen, setLocationPickerOpen] = useState(false);
@@ -120,14 +131,6 @@ function CheckoutPage() {
     "Avoid calling",
     "Leave with security / guard",
     "Pet at home",
-  ];
-
-  const TIP_OPTIONS = [
-    { label: "None", value: 0 },
-    { label: "₹10", value: 1000, emoji: "😊" },
-    { label: "₹20", value: 2000, emoji: "👍" },
-    { label: "₹30", value: 3000, emoji: "🌟" },
-    { label: "₹50", value: 5000, emoji: "🚀" },
   ];
 
   const toggleInstruction = (chip: string) => {
@@ -178,9 +181,14 @@ function CheckoutPage() {
   const restaurantOpen = checkoutCtx.data?.restaurantOpen ?? true;
   const codMaxPaise = checkoutCtx.data?.codMaxPaise ?? COD_MAX_PAISE;
 
-  // Server-authoritative integer-paise payable calculation (quote total + validated integer tip)
+  // Server-authoritative integer-paise payable calculation (quote total + validated tip + Feeding India donation)
   const safeTipPaise = Number.isInteger(tipPaise) && tipPaise >= 0 ? tipPaise : 0;
-  const totalPayable = (quote.data?.quote.totalPaise ?? 0) + safeTipPaise;
+  const donationPaise = donateFeedingIndia ? FEEDING_INDIA_DONATION_PAISE : 0;
+  const { totalPayablePaise: totalPayable } = calculateCheckoutTotal(
+    quote.data?.quote.totalPaise ?? 0,
+    safeTipPaise,
+    donateFeedingIndia
+  );
 
   const isCodEligible = totalPayable > 0 && totalPayable <= codMaxPaise;
   const isKingPaySufficient = walletBalancePaise >= totalPayable && totalPayable > 0;
@@ -221,6 +229,10 @@ function CheckoutPage() {
       const cfg = await loadConfig();
 
       let orderNotes = notes;
+      const deliveryVoiceNoteText = useVoiceNoteStore.getState().getFormattedNoteText("delivery");
+      if (deliveryVoiceNoteText) {
+        orderNotes = `${orderNotes} ${deliveryVoiceNoteText}`.trim();
+      }
       if (noCutlery) {
         orderNotes = `[🌱 No Cutlery Needed] ${orderNotes}`.trim();
       }
@@ -242,6 +254,7 @@ function CheckoutPage() {
                   lng: location.lng,
                   coupon,
                   tipPaise: safeTipPaise,
+                  donationPaise,
                   lines: items,
                   address: { line1: location.line1, area: location.zoneName, label: location.label },
                   paymentMethod: finalPaymentMethod as "COD" | "UPI_SANDBOX" | "KING_PAY",
@@ -257,6 +270,7 @@ function CheckoutPage() {
                   lng: location.lng,
                   coupon,
                   tipPaise: safeTipPaise,
+                  donationPaise,
                   lines: items,
                   address: { line1: location.line1, area: location.zoneName, label: location.label },
                   paymentMethod: finalPaymentMethod,
@@ -280,6 +294,7 @@ function CheckoutPage() {
             lines: items,
             coupon,
             tipPaise: safeTipPaise,
+            donationPaise,
             amountPaise: totalPayable,
             currency: "INR",
             receipt: idempotencyKey,
@@ -653,46 +668,173 @@ function CheckoutPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                 />
+
+                {/* 1-Tap 15-Second Delivery Partner Audio Note */}
+                <AudioVoiceNote
+                  target="delivery"
+                  samplePlaceholder="Ghar ke gate par black bell hai, bell mat bajana baby so raha hai"
+                  className="mt-3"
+                />
               </section>
 
-              {/* Delivery Partner Tip */}
-              <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3">
+              {/* Feeding India Micro-Donation Opt-in (₹2) */}
+              <section className="rounded-3xl border border-rose-400/30 bg-gradient-to-r from-rose-500/10 via-white to-amber-500/5 dark:from-rose-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
+                <label className="flex cursor-pointer items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 font-bold text-lg">
+                      🍲
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="block font-display text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                          Donate ₹2 to Feeding India — feed a daily wage earner or child in need
+                        </span>
+                        <BillTooltip
+                          title="Feeding India Initiative"
+                          text="100% of your ₹2 micro-donation goes directly to Feeding India hunger relief programs supporting daily wage earners and underprivileged children. OrderKing retains 0%."
+                        />
+                      </div>
+                      <span className="block text-xs text-zinc-500">
+                        Transparent micro-donation · 100% meal funding · 0% platform deduction
+                      </span>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="size-5 rounded-lg border-rose-400 text-rose-600 focus:ring-rose-500 shrink-0 cursor-pointer"
+                    checked={donateFeedingIndia}
+                    onChange={(e) => setDonateFeedingIndia(e.target.checked)}
+                  />
+                </label>
+              </section>
+
+              {/* Delivery Partner Tip Selector */}
+              <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="font-display text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5">
                       <Heart className="size-4 text-rose-500 fill-rose-500" />
                       <span>Tip your delivery partner</span>
                     </h2>
-                    <p className="text-xs text-zinc-500">100% of your generous tip goes straight to the rider</p>
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      100% of your tip goes directly to your delivery partner. OrderKing charges 0% commission or fee on tips.
+                    </p>
                   </div>
                   <span className="text-2xl">🛵</span>
                 </div>
 
-                <div className="grid grid-cols-5 gap-2">
-                  {TIP_OPTIONS.map((opt) => {
-                    const selected = safeTipPaise === opt.value;
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {TIP_PRESETS.map((preset) => {
+                    const selected = safeTipPaise === preset.valuePaise;
                     return (
                       <button
-                        key={opt.value}
+                        key={preset.valuePaise}
                         type="button"
-                        onClick={() => setTipPaise(opt.value)}
-                        className={`flex flex-col items-center justify-center rounded-2xl py-2.5 transition active:scale-95 cursor-pointer ${
+                        onClick={() => {
+                          if (selected) {
+                            setTipPaise(0);
+                            setIsCustomTipOpen(false);
+                            setCustomTipRupees("");
+                          } else {
+                            setTipPaise(preset.valuePaise);
+                            setIsCustomTipOpen(false);
+                            setCustomTipRupees("");
+                          }
+                        }}
+                        className={`flex flex-col items-center justify-center rounded-2xl py-2.5 px-2 transition active:scale-95 cursor-pointer relative ${
                           selected
                             ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black shadow-md border-transparent"
-                            : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100"
+                            : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                         }`}
                       >
-                        {opt.emoji && <span className="text-xs">{opt.emoji}</span>}
-                        <span className="text-xs font-bold">{opt.label}</span>
+                        <span className="text-base font-black">{preset.label}</span>
+                        <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400">
+                          {preset.tag}
+                        </span>
                       </button>
                     );
                   })}
+
+                  {/* Custom Tip Amount Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCustomTipOpen(!isCustomTipOpen);
+                    }}
+                    className={`flex flex-col items-center justify-center rounded-2xl py-2.5 px-2 transition active:scale-95 cursor-pointer ${
+                      isCustomTipOpen || (safeTipPaise > 0 && !TIP_PRESETS.some((p) => p.valuePaise === safeTipPaise))
+                        ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black shadow-md border-transparent"
+                        : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <span className="text-base font-black">
+                      {safeTipPaise > 0 && !TIP_PRESETS.some((p) => p.valuePaise === safeTipPaise)
+                        ? `₹${Math.round(safeTipPaise / 100)}`
+                        : "Custom"}
+                    </span>
+                    <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400">
+                      Enter Amount ✍️
+                    </span>
+                  </button>
                 </div>
 
+                {/* Custom Tip Input Drawer / Field */}
+                {isCustomTipOpen && (
+                  <div className="flex items-center gap-2 pt-1 animate-in fade-in duration-200">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-zinc-400">
+                        ₹
+                      </span>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="1000"
+                        placeholder="Enter custom tip amount (e.g. 40)"
+                        value={customTipRupees}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomTipRupees(val);
+                          const parsed = parseCustomTip(val);
+                          setTipPaise(parsed);
+                        }}
+                        className="pl-7 rounded-xl border-amber-400/40 text-sm font-bold"
+                      />
+                    </div>
+                    {safeTipPaise > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setTipPaise(0);
+                          setCustomTipRupees("");
+                          setIsCustomTipOpen(false);
+                        }}
+                        className="rounded-xl text-xs font-bold text-zinc-500 hover:text-rose-600"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                )}
+
                 {safeTipPaise > 0 && (
-                  <p className="text-center text-xs font-bold text-amber-700 dark:text-amber-300">
-                    🎉 Added {formatPaise(safeTipPaise, { locale })} tip for your delivery partner! Thank you!
-                  </p>
+                  <div className="flex items-center justify-between rounded-xl bg-amber-500/15 border border-amber-500/30 px-3 py-1.5 text-xs">
+                    <span className="font-bold text-amber-900 dark:text-amber-200">
+                      🎉 Added {formatPaise(safeTipPaise, { locale })} tip for your delivery partner! Thank you!
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTipPaise(0);
+                        setCustomTipRupees("");
+                        setIsCustomTipOpen(false);
+                      }}
+                      className="font-black text-[11px] text-amber-900 dark:text-amber-200 hover:underline cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 )}
               </section>
 
@@ -1093,6 +1235,20 @@ function CheckoutPage() {
                           </span>
                         </div>
                         <span className="text-amber-600 font-extrabold tabular-nums">+{formatPaise(safeTipPaise, { locale })}</span>
+                      </div>
+                    )}
+
+                    {/* Feeding India Micro-Donation */}
+                    {donateFeedingIndia && (
+                      <div className="flex items-center justify-between text-sm font-bold border-t border-zinc-200 dark:border-zinc-800 pt-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">🍲</span>
+                          <span className="text-zinc-800 dark:text-zinc-200">Feeding India Donation</span>
+                          <span className="text-[10px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full">
+                            Feed a person in need
+                          </span>
+                        </div>
+                        <span className="text-rose-600 font-extrabold tabular-nums">+{formatPaise(donationPaise, { locale })}</span>
                       </div>
                     )}
 

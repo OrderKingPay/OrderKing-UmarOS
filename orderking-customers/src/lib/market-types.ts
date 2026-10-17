@@ -48,6 +48,8 @@ export type AddonView = {
   name: string;
   pricePaise: number;
   available: boolean;
+  description?: string;
+  nestedGroups?: AddonGroupView[];
 };
 
 export type AddonGroupView = {
@@ -56,7 +58,9 @@ export type AddonGroupView = {
   required: boolean;
   minSelect: number;
   maxSelect: number;
+  parentOptionId?: string;
   addons: AddonView[];
+  nestedGroups?: AddonGroupView[];
 };
 
 export type VariantView = {
@@ -65,6 +69,8 @@ export type VariantView = {
   pricePaise: number;
   isDefault: boolean;
   available: boolean;
+  description?: string;
+  nestedGroups?: AddonGroupView[];
 };
 
 export type MenuItemView = {

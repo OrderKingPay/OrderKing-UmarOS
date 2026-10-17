@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,10 @@ import {
 import { OneTapStockToggle } from "@/components/one-tap-stock-toggle";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
 import { orderKingSpark } from "@/lib/ai/order-king-spark";
+import { toast } from "sonner";
+import { supabaseCloud } from "@/lib/db-cloud";
+import { LocalStockoutScheduler, formatStockoutRemaining } from "@/lib/menu/timed-stockout";
+import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import {
   CULINARY_STUDIO_LIGHTING_PRESETS,
   CulinaryStudioLightingStyle,
@@ -328,9 +332,78 @@ function MenuPage() {
 
   const [menuFilter, setMenuFilter] = useState<MenuFilterType>("ALL");
   const [searchFilter, setSearchFilter] = useState("");
-  const [kitchenRushMode, setKitchenRushMode] = useState(false);
+  const kitchenRush = useKitchenRushStore();
+  const kitchenRushMode = kitchenRush.isActive;
+  const setKitchenRushMode = (on: boolean) => (on ? kitchenRush.activate(15) : kitchenRush.deactivate());
 
   const allItems = useMemo(() => menu.data?.items ?? [], [menu.data]);
+  const timedOutOfStockItems = useMemo(
+    () => allItems.filter((i) => i.availability === "temporarily_unavailable" && i.nextAvailableAt),
+    [allItems]
+  );
+
+  // Local Time Scheduler & Supabase Timer for Timed Out-of-Stock Reactivation
+  const schedulerRef = useRef<LocalStockoutScheduler | null>(null);
+
+  useEffect(() => {
+    if (!vendor.restaurantId) return;
+
+    schedulerRef.current = new LocalStockoutScheduler(async (expiredIds) => {
+      try {
+        await setAvailability({
+          data: {
+            restaurantId: vendor.restaurantId,
+            itemIds: expiredIds,
+            status: "available",
+            nextAvailableAt: null,
+          },
+        });
+        toast.success(
+          `⏰ Auto-Restored: ${expiredIds.length} timed out-of-stock dish(es) back IN STOCK!`,
+        );
+        void qc.invalidateQueries({ queryKey: ["menu"] });
+        void qc.invalidateQueries({ queryKey: ["dashboard"] });
+      } catch (err) {
+        console.error("[TimedStockoutScheduler] Error auto-restoring dishes:", err);
+      }
+    });
+
+    return () => {
+      schedulerRef.current?.dispose();
+      schedulerRef.current = null;
+    };
+  }, [vendor.restaurantId, qc]);
+
+  useEffect(() => {
+    if (!schedulerRef.current || !allItems.length) return;
+    schedulerRef.current.sync(allItems);
+  }, [allItems]);
+
+  // Supabase Realtime subscription for live item_availability changes
+  useEffect(() => {
+    if (!vendor.restaurantId) return;
+
+    const channel = supabaseCloud
+      .channel(`partner-menu-availability-${vendor.restaurantId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "item_availability",
+          filter: `restaurant_id=eq.${vendor.restaurantId}`,
+        },
+        () => {
+          void qc.invalidateQueries({ queryKey: ["menu"] });
+          void qc.invalidateQueries({ queryKey: ["dashboard"] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabaseCloud.removeChannel(channel);
+    };
+  }, [vendor.restaurantId, qc]);
   const categories = useMemo(() => menu.data?.categories ?? [], [menu.data]);
   const inStockCount = useMemo(
     () => allItems.filter((i) => i.availability === "available").length,
@@ -1075,6 +1148,36 @@ function MenuPage() {
           </button>
         </div>
       </div>
+
+      {/* Timed Out-of-Stock Status & Automated Reset Engine Banner */}
+      {timedOutOfStockItems.length > 0 && (
+        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-300 font-mono">
+          <div className="flex items-center gap-2">
+            <Clock className="size-4 shrink-0 text-amber-400" />
+            <div>
+              <span className="font-bold">
+                {timedOutOfStockItems.length} Timed Out-of-Stock Dish(es) Active
+              </span>
+              <span className="text-[11px] opacity-85 ml-2 font-sans hidden sm:inline">
+                (Zomato Auto-Reset Engine: automatically reactivates dishes when scheduled timer expires)
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {timedOutOfStockItems.slice(0, 3).map((it) => (
+              <span
+                key={it.id}
+                className="px-2 py-0.5 rounded bg-amber-950/80 border border-amber-700/60 text-[11px]"
+              >
+                {it.name}: {formatStockoutRemaining(it.nextAvailableAt)}
+              </span>
+            ))}
+            {timedOutOfStockItems.length > 3 && (
+              <span className="text-[11px] opacity-75">+{timedOutOfStockItems.length - 3} more</span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Self-Service Category Builder & 1-Tap Standard Templates */}
       {canEdit ? (

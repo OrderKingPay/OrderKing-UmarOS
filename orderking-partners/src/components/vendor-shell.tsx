@@ -16,6 +16,7 @@ import {
   Star,
   Tag,
   CalendarDays,
+  Flame,
 } from "lucide-react";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -23,6 +24,7 @@ import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useClientState } from "@/lib/client-state";
 import { can, type Permission } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
+import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import { DataBanner } from "./data-banner";
 import { OfflineBanner } from "./offline-banner";
 import { OrderKingMark } from "./mark";
@@ -32,6 +34,7 @@ import { useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
 import { PartnerFloatingBottomNav } from "./navigation/partner-bottom-nav";
+import { OutletStatusPill } from "./outlet/outlet-status-pill";
 import { useMerchantBranding } from "@orderking/ui";
 import type { AppLanguage } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
@@ -193,6 +196,13 @@ export function VendorShell({
                 <Sparkles className="size-4 text-amber-500" />
                 <span>King AI</span>
               </button>
+              {/* Merchant Outlet Emergency Pause / Operational Status Pill */}
+              <OutletStatusPill
+                restaurantId={vendor.restaurantId}
+                restaurantName={restaurantName ?? vendor.selected?.restaurantName}
+              />
+              {/* Merchant Header Kitchen Rush Mode Toggle */}
+              <MerchantHeaderRushToggle />
               {(!role || can(role, "notifications.view")) && (
                 <Link
                   to="/notifications"
@@ -253,3 +263,99 @@ function NavLink({
     </Link>
   );
 }
+
+function MerchantHeaderRushToggle() {
+  const rush = useKitchenRushStore();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`inline-flex h-11 items-center gap-1.5 rounded-[12px] px-3 text-xs font-bold transition shadow-sm cursor-pointer select-none ${
+          rush.isActive
+            ? "border border-rose-500 bg-rose-500/20 text-rose-300 ring-2 ring-rose-500/40 animate-pulse"
+            : "border border-slate-800/60 bg-slate-900/60 text-slate-300 hover:border-amber-500/50 hover:text-amber-300"
+        }`}
+        title={
+          rush.isActive
+            ? `Kitchen Rush Mode Active (+${rush.bufferMinutes}m Prep Buffer)`
+            : "Activate Kitchen Rush Mode (+10m / +15m)"
+        }
+        aria-label="Toggle Kitchen Rush Mode"
+      >
+        <Flame
+          className={`size-4 ${rush.isActive ? "text-rose-400 animate-bounce" : "text-amber-400"}`}
+        />
+        <span className="hidden sm:inline">
+          {rush.isActive ? `Rush (+${rush.bufferMinutes}m)` : "Rush Mode"}
+        </span>
+        <span className="sm:hidden font-mono">
+          {rush.isActive ? `+${rush.bufferMinutes}m` : "Rush"}
+        </span>
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-12 z-50 w-56 rounded-xl border border-slate-700 bg-slate-900 p-2 shadow-2xl text-slate-100 font-sans space-y-1.5 animate-in fade-in duration-100">
+          <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+            <span>Kitchen Rush Buffer</span>
+            <span className={rush.isActive ? "text-rose-400 font-mono font-bold" : "text-slate-500"}>
+              {rush.isActive ? `+${rush.bufferMinutes}M ACTIVE` : "OFF"}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              rush.activate(10);
+              setOpen(false);
+            }}
+            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+              rush.isActive && rush.bufferMinutes === 10
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold"
+                : "hover:bg-slate-800 text-slate-300"
+            }`}
+          >
+            <span>+10 Mins Prep Buffer</span>
+            {rush.isActive && rush.bufferMinutes === 10 && (
+              <span className="text-[10px] text-amber-400 font-mono">● Active</span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              rush.activate(15);
+              setOpen(false);
+            }}
+            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+              rush.isActive && rush.bufferMinutes === 15
+                ? "bg-rose-500/20 text-rose-300 border border-rose-500/50 font-bold"
+                : "hover:bg-slate-800 text-slate-300"
+            }`}
+          >
+            <span>+15 Mins Prep Buffer</span>
+            {rush.isActive && rush.bufferMinutes === 15 && (
+              <span className="text-[10px] text-rose-400 font-mono">● Active</span>
+            )}
+          </button>
+
+          {rush.isActive && (
+            <button
+              type="button"
+              onClick={() => {
+                rush.deactivate();
+                setOpen(false);
+              }}
+              className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 transition mt-1 cursor-pointer"
+            >
+              Turn Off Rush Mode
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+

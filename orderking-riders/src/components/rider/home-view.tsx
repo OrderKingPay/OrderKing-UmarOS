@@ -54,11 +54,12 @@ import { CoolingOffBanner } from "./cooling-off-banner";
 import { FloatingCashCard } from "./floating-cash-card";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
-import { calculateDailyMilestoneProgress } from "@/lib/rider/gig-engine";
+import { calculateDailyMilestoneProgress, calculateZomatoMilestoneBonus } from "@/lib/rider/gig-engine";
 import { VipAmbassadorPass } from "./vip-ambassador-pass";
 import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
+import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 
@@ -149,8 +150,7 @@ function DailyMilestoneCard({
   completed: number;
   performance: RiderPerformance | null;
 }) {
-  const { payout } = useRiderCustomization();
-  const milestoneProgress = calculateDailyMilestoneProgress(completed);
+  const milestone = calculateZomatoMilestoneBonus(completed);
   const acceptancePct =
     performance && performance.offered > 0
       ? Math.round((performance.accepted / performance.offered) * 100)
@@ -161,76 +161,107 @@ function DailyMilestoneCard({
       : 100;
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-primary/15 text-primary">
-            <Target className="size-4" />
+    <section className="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-b from-[#131926] via-[#10141F] to-[#0E121B] p-4 shadow-xl space-y-3.5 relative overflow-hidden text-foreground">
+      {/* Background Ambient Glow */}
+      <div className="absolute -top-12 -right-12 size-36 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
+
+      {/* Zomato Gamified Headline Banner */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-[#E5A93C] border border-[#E5A93C]/30 shadow-inner">
+            <Target className="size-5" />
           </span>
           <div>
-            <h3 className="font-display text-sm font-bold text-foreground">
-              Daily Order Milestone &amp; Quality Scorecard
+            <h3 className="font-display text-sm font-extrabold text-white tracking-wide">
+              {milestone.headline}
             </h3>
             <p className="text-[11px] text-muted-foreground">
-              {payout.labels.milestoneSubtext}
+              {milestone.subtext}
             </p>
           </div>
         </div>
-        <Badge tone="online">
-          {completed} / {milestoneProgress.nextMilestone ? milestoneProgress.nextMilestone.orders : 16} Orders
+        <Badge tone="online" className="font-mono text-xs font-bold border-amber-500/40 bg-amber-500/15 text-[#E5A93C] shrink-0">
+          {completed}/{milestone.targetOrders} Completed
         </Badge>
       </div>
 
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">
-            {milestoneProgress.remainingToNext > 0
-              ? `${milestoneProgress.remainingToNext} more completed order${milestoneProgress.remainingToNext === 1 ? "" : "s"} for ${milestoneProgress.nextMilestone?.label} milestone incentive`
-              : "All daily order milestone targets completed"}
+      {/* Visual Progress Bar: e.g. 6/10 orders completed */}
+      <div className="space-y-1.5 bg-black/40 p-3 rounded-xl border border-white/5">
+        <div className="flex items-center justify-between text-xs font-semibold">
+          <span className="text-foreground flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-[#E5A93C] animate-pulse" />
+            <span>{completed}/{milestone.targetOrders} orders completed</span>
           </span>
-          <span className="font-mono font-semibold text-foreground">{milestoneProgress.progressPct}%</span>
+          <span className="font-mono font-extrabold text-[#E5A93C]">{milestone.progressPct}%</span>
         </div>
-        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+        <div className="h-3 w-full bg-muted/40 rounded-full overflow-hidden p-0.5 border border-white/5">
           <div
-            className="h-full bg-primary transition-all duration-500 ease-out"
-            style={{ width: `${milestoneProgress.progressPct}%` }}
+            className="h-full rounded-full bg-gradient-to-r from-amber-500 via-[#E5A93C] to-emerald-400 transition-all duration-700 ease-out shadow-[0_0_12px_rgba(229,169,60,0.5)]"
+            style={{ width: `${milestone.progressPct}%` }}
           />
+        </div>
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-0.5">
+          <span>{milestone.remainingOrders > 0 ? `${milestone.remainingOrders} more orders to reach target` : "All Targets Unlocked!"}</span>
+          <span className="text-emerald-400 font-bold">
+            Real-Time Bonus: +₹{milestone.bonusRupees}
+          </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-1.5 pt-1 text-center">
-        {milestoneProgress.milestones.map((m) => (
+      {/* Zomato Milestone Slabs: 5 orders = +₹50, 10 orders = +₹150, 15 orders = +₹275 */}
+      <div className="grid grid-cols-3 gap-2 text-center">
+        {milestone.slabs.map((slab) => (
           <div
-            key={m.orders}
-            className={`rounded px-1.5 py-1.5 text-[10px] border transition ${
-              m.isUnlocked
-                ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold"
-                : m.isCurrentTarget
-                  ? "border-primary bg-primary/10 text-primary font-bold"
-                  : "border-border/60 bg-muted/40 text-muted-foreground"
+            key={slab.orders}
+            className={`rounded-xl p-2.5 border transition-all duration-200 relative ${
+              slab.isUnlocked
+                ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-400 font-bold shadow-xs"
+                : slab.isCurrentTarget
+                  ? "border-[#E5A93C] bg-amber-500/10 text-white shadow-[0_0_15px_rgba(229,169,60,0.2)]"
+                  : "border-border/60 bg-muted/20 text-muted-foreground opacity-75"
             }`}
           >
-            <div>
-              {m.isUnlocked ? "✓ " : ""}
-              {m.orders} Orders
+            {slab.isUnlocked && (
+              <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-black text-[9px] font-black">
+                ✓
+              </span>
+            )}
+            <div className="text-[11px] font-bold">
+              {slab.orders} Orders
             </div>
-            <div className="text-[11px] font-extrabold tabular-nums">{m.label}</div>
+            <div className="text-sm font-extrabold font-mono text-[#E5A93C] mt-0.5">
+              {slab.label}
+            </div>
+            <div className="text-[9.5px] mt-0.5 uppercase tracking-wider font-semibold">
+              {slab.isUnlocked ? "Unlocked ✓" : slab.isCurrentTarget ? "Active Target" : "Next Slab"}
+            </div>
           </div>
         ))}
+      </div>
+
+      {/* Real-Time Bonus Addition to Daily Earnings */}
+      <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 px-3 py-2 text-xs">
+        <div className="flex items-center gap-1.5 font-semibold text-emerald-400">
+          <Gift className="size-4 shrink-0 text-emerald-400" />
+          <span>Real-time Milestone Bonus Added:</span>
+        </div>
+        <span className="font-mono font-extrabold text-emerald-300 text-sm">
+          +₹{milestone.bonusRupees}.00
+        </span>
       </div>
 
       {performance ? (
         <div className="grid grid-cols-3 gap-2 pt-1 text-center text-xs">
           <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Acceptance</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Acceptance</p>
             <p className="font-mono font-bold text-foreground text-sm mt-0.5">{acceptancePct}%</p>
           </div>
           <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Completion</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Completion</p>
             <p className="font-mono font-bold text-foreground text-sm mt-0.5">{completionPct}%</p>
           </div>
           <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg / Order</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Avg / Order</p>
             <p className="font-mono font-bold text-foreground text-sm mt-0.5">
               {performance.earningsPerOrderPaise > 0
                 ? formatPaise(performance.earningsPerOrderPaise)
@@ -610,6 +641,7 @@ export function HomeView() {
   const [codTicketRef, setCodTicketRef] = useState<string | null>(null);
   const [codSubmitting, setCodSubmitting] = useState(false);
   const [externalDepositOpen, setExternalDepositOpen] = useState(false);
+  const [sosOpen, setSosOpen] = useState(false);
 
   const todayIso = getIsoDateOffset(0);
   const tomorrowIso = getIsoDateOffset(1);
@@ -890,8 +922,15 @@ export function HomeView() {
             </div>
           </div>
 
-          {/* Right: Floating Cash / Pocket Balance Meter with Deposit UPI Button */}
+          {/* Right: Floating Cash / Pocket Balance Meter with Deposit UPI Button & Red SOS Panic Button */}
           <div className="flex items-center gap-2 shrink-0">
+            <EmergencySosButton
+              onClick={() => setSosOpen(true)}
+              size="sm"
+              label="SOS"
+              subLabel="112"
+            />
+
             <div className="text-right">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
                 Pocket Balance
@@ -971,14 +1010,24 @@ export function HomeView() {
           </p>
         ) : null}
 
-        <dl className="grid grid-cols-3 gap-2 text-center">
-          <Stat label={t("todayEarnings")} value={formatPaise(home.todayEarningsPaise)} />
-          <Stat label={t("completed")} value={String(home.completedToday)} />
-          <Stat
-            label={t("onlineFor")}
-            value={status === "OFFLINE" ? "—" : formatDuration(onlineMs)}
-          />
-        </dl>
+        {(() => {
+          const zomatoBonus = calculateZomatoMilestoneBonus(home.completedToday);
+          const totalEarningsPaise = (home.todayEarningsPaise || 0) + zomatoBonus.bonusPaise;
+          return (
+            <dl className="grid grid-cols-3 gap-2 text-center">
+              <Stat
+                label={t("todayEarnings")}
+                value={formatPaise(totalEarningsPaise)}
+                subtext={zomatoBonus.bonusPaise > 0 ? `+₹${zomatoBonus.bonusRupees} Milestone` : undefined}
+              />
+              <Stat label={t("completed")} value={String(home.completedToday)} />
+              <Stat
+                label={t("onlineFor")}
+                value={status === "OFFLINE" ? "—" : formatDuration(onlineMs)}
+              />
+            </dl>
+          );
+        })()}
 
         {/* Mandatory Live Camera Selfie & Helmet Verification Before Going Online */}
         <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
@@ -1443,15 +1492,26 @@ export function HomeView() {
         onClose={() => setSelfieModalOpen(false)}
         onVerified={handleHelmetVerified}
       />
+
+      {/* Supreme Zomato Fleet Emergency Safety Sheet */}
+      <RiderEmergencySafetySheet
+        isOpen={sosOpen}
+        onClose={() => setSosOpen(false)}
+        deliveryId={home?.active?.id ?? null}
+        riderName={home?.rider?.fullName ?? user?.displayName ?? "OrderKing Partner"}
+        riderPhone={home?.rider?.phone ?? "Fleet Registered"}
+        defaultGps={riderPos}
+      />
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, subtext }: { label: string; value: string; subtext?: string }) {
   return (
     <div className="rounded-lg bg-muted px-2 py-3">
       <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
-      <dd className="mt-1 font-display text-lg tabular-nums">{value}</dd>
+      <dd className="mt-1 font-display text-lg tabular-nums font-bold text-foreground">{value}</dd>
+      {subtext ? <p className="text-[10px] text-emerald-500 font-extrabold mt-0.5">{subtext}</p> : null}
     </div>
   );
 }

@@ -155,6 +155,120 @@ export const STANDARD_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: numb
 ];
 
 /**
+ * Authentic Zomato Daily Milestone Slabs:
+ * - 5 orders: +₹50 (5,000 paise)
+ * - 10 orders: +₹150 (15,000 paise)
+ * - 15 orders: +₹275 (27,500 paise)
+ */
+export type ZomatoDailyMilestoneSlab = {
+  orders: number;
+  bonusPaise: number;
+  bonusRupees: number;
+  label: string;
+};
+
+export const ZOMATO_DAILY_MILESTONE_SLABS: ReadonlyArray<ZomatoDailyMilestoneSlab> = [
+  { orders: 5, bonusPaise: 5000, bonusRupees: 50, label: "+₹50" },
+  { orders: 10, bonusPaise: 15000, bonusRupees: 150, label: "+₹150" },
+  { orders: 15, bonusPaise: 27500, bonusRupees: 275, label: "+₹275" },
+];
+
+export type ZomatoDailyMilestoneProgress = {
+  completedOrders: number;
+  bonusPaise: number;
+  bonusRupees: number;
+  targetOrders: number;
+  targetBonusRupees: number;
+  targetBonusPaise: number;
+  remainingOrders: number;
+  progressPct: number;
+  headline: string;
+  subtext: string;
+  slabs: Array<ZomatoDailyMilestoneSlab & { isUnlocked: boolean; isCurrentTarget: boolean }>;
+  nextSlab: ZomatoDailyMilestoneSlab | null;
+};
+
+export function calculateZomatoMilestoneBonus(
+  completedOrders: number,
+  slabs: ReadonlyArray<ZomatoDailyMilestoneSlab> = ZOMATO_DAILY_MILESTONE_SLABS,
+): ZomatoDailyMilestoneProgress {
+  const safeCompleted = Math.max(0, Math.floor(Number(completedOrders) || 0));
+
+  // Determine unlocked bonus from completed orders
+  let bonusPaise = 0;
+  let bonusRupees = 0;
+  for (const slab of slabs) {
+    if (safeCompleted >= slab.orders) {
+      bonusPaise = slab.bonusPaise;
+      bonusRupees = slab.bonusRupees;
+    }
+  }
+
+  // Find next slab that has not yet been unlocked
+  const nextSlab = slabs.find((s) => safeCompleted < s.orders) || null;
+
+  // The primary anchor target is 10 orders to earn ₹150 Milestone Bonus 🎯
+  // If safeCompleted < 10, the daily target is 10 orders (₹150).
+  // Once 10 is reached, the target advances to 15 orders (₹275).
+  // Once 15 is reached, all slabs are unlocked (100%).
+  let targetOrders = 10;
+  let targetBonusRupees = 150;
+  let targetBonusPaise = 15000;
+
+  if (safeCompleted >= 10 && safeCompleted < 15) {
+    targetOrders = 15;
+    targetBonusRupees = 275;
+    targetBonusPaise = 27500;
+  } else if (safeCompleted >= 15) {
+    targetOrders = 15;
+    targetBonusRupees = 275;
+    targetBonusPaise = 27500;
+  }
+
+  const remainingOrders = Math.max(0, targetOrders - safeCompleted);
+  const progressPct = Math.min(100, Math.max(0, Math.round((safeCompleted / targetOrders) * 100)));
+
+  let headline = `Today's Target: Complete ${targetOrders} orders to earn ₹${targetBonusRupees} Milestone Bonus 🎯`;
+  if (safeCompleted < 10) {
+    headline = "Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus 🎯";
+  } else if (safeCompleted >= 15) {
+    headline = "All Daily Milestone Targets Completed! 🏆";
+  }
+
+  let subtext = "";
+  if (safeCompleted < 5) {
+    subtext = `Hit 5 orders for first +₹50 milestone unlock · ${10 - safeCompleted} more to reach ₹150 star target`;
+  } else if (safeCompleted < 10) {
+    subtext = `Unlocked +₹50 bonus · ${10 - safeCompleted} more order${10 - safeCompleted === 1 ? "" : "s"} for ₹150 milestone`;
+  } else if (safeCompleted < 15) {
+    subtext = `Unlocked +₹150 bonus · ${15 - safeCompleted} more order${15 - safeCompleted === 1 ? "" : "s"} for +₹275 max bonus`;
+  } else {
+    subtext = `Maximum daily milestone bonus of ₹${bonusRupees} achieved today!`;
+  }
+
+  const slabsWithStatus = slabs.map((s) => ({
+    ...s,
+    isUnlocked: safeCompleted >= s.orders,
+    isCurrentTarget: nextSlab ? s.orders === nextSlab.orders : s.orders === 15,
+  }));
+
+  return {
+    completedOrders: safeCompleted,
+    bonusPaise,
+    bonusRupees,
+    targetOrders,
+    targetBonusRupees,
+    targetBonusPaise,
+    remainingOrders,
+    progressPct,
+    headline,
+    subtext,
+    slabs: slabsWithStatus,
+    nextSlab,
+  };
+}
+
+/**
  * Extended Tier-1 Daily Milestone Ladder (includes 20-order super champion target)
  */
 export const TIER1_FULL_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: number; label: string }> = [

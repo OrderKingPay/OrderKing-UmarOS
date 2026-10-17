@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { ChefHat, Flame, Sparkles, X, Check, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { AudioVoiceNote } from "@/components/market/audio-voice-note";
+import { useVoiceNoteStore } from "@/lib/stores/voice-notes";
 
 export interface CookingInstructionsModalProps {
   isOpen?: boolean;
@@ -45,7 +47,8 @@ export function CookingInstructionsModal({
 
   const handleSave = () => {
     const spiceNote = `Spice Level: ${spiceLevel}`;
-    const allNotes = [spiceNote, ...selectedChips, customText.trim()].filter(Boolean).join(". ");
+    const kitchenVoiceText = useVoiceNoteStore.getState().getFormattedNoteText("kitchen");
+    const allNotes = [spiceNote, ...selectedChips, customText.trim(), kitchenVoiceText].filter(Boolean).join(". ");
     onSave?.(allNotes);
     toast.success("Cooking instructions passed to chef station!");
     setOpen(false);
@@ -143,6 +146,9 @@ export function CookingInstructionsModal({
             className="w-full min-h-16 rounded-xl border border-border bg-surface-2 p-2.5 text-xs focus:border-primary focus:outline-hidden"
           />
         </div>
+
+        {/* 1-Tap 15-Second Kitchen Chef Voice Note */}
+        <AudioVoiceNote target="kitchen" samplePlaceholder="Make it extra spicy and please don't add onions" />
 
         {/* Restaurant Kitchen Disclaimer */}
         <p className="text-[10px] text-muted leading-tight">

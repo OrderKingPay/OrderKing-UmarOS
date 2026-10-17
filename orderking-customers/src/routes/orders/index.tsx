@@ -1,15 +1,18 @@
 
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
 import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { listMyOrders } from "@/lib/server/orders";
+import { listMyOrders, reorderItems } from "@/lib/server/orders";
 import { formatPaise } from "@/lib/money";
 import type { OrderStatus } from "@/lib/orders/state";
+import { useCartStore } from "@/lib/stores/cart";
+import { CartConflictModal } from "@/components/market/cart-conflict-modal";
 import { OrdersPageSkeleton } from "@/components/skeletons/route-skeletons";
 import { AppErrorComponent } from "@/lib/error-component";
 
@@ -31,6 +34,7 @@ function statusKey(status: OrderStatus): string {
     DELIVERED: "orders.delivered",
     REJECTED: "orders.rejected",
     CANCELLED: "orders.cancelled",
+    CANCELLED_BY_CUSTOMER: "orders.cancelled",
     REFUNDED: "orders.refunded",
     FAILED_PAYMENT: "orders.failed",
     DELIVERY_FAILED: "orders.deliveryFailed",
@@ -43,6 +47,31 @@ function OrdersPage() {
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const { user, isPending } = useCurrentUserState();
   const [orderQuery, setOrderQuery] = useState("");
+  const navigate = useNavigate();
+  const cart = useCartStore();
+  const [reorderConflict, setReorderConflict] = useState<{
+    restaurantId: string;
+    restaurantName: string;
+    lines: any[];
+  } | null>(null);
+
+  const handleReorder = async (orderId: string) => {
+    try {
+      const res = await reorderItems({ data: { orderId } });
+      const currentRestaurantId = cart.restaurantId;
+      const hasItems = cart.items.length > 0;
+      if (hasItems && currentRestaurantId && currentRestaurantId !== res.restaurantId) {
+        setReorderConflict(res);
+      } else {
+        cart.replaceCart(res.restaurantId, res.restaurantName, res.lines);
+        toast.success("Items from past order added to cart!");
+        void navigate({ to: "/checkout" });
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not reorder");
+    }
+  };
+
   const orders = useQuery({
     queryKey: ["orders"],
     queryFn: () => listMyOrders(),
@@ -70,7 +99,7 @@ function OrdersPage() {
           .includes(normalizedQuery)
       )
     : list;
-  const active = matchingOrders.filter((o) => !["DELIVERED", "CANCELLED", "REJECTED", "REFUNDED", "FAILED_PAYMENT"].includes(o.status));
+  const active = matchingOrders.filter((o) => !["DELIVERED", "CANCELLED", "CANCELLED_BY_CUSTOMER", "REJECTED", "REFUNDED", "FAILED_PAYMENT"].includes(o.status));
   const past = matchingOrders.filter((o) => !active.includes(o));
 
   return (
@@ -283,9 +312,25 @@ function OrdersPage() {
                           </div>
 
                           <div className="mt-3 flex items-center justify-between border-t border-amber-900/5 pt-2">
-                            <span className="font-black tabular-nums text-stone-900 text-sm">
-                              {formatPaise(o.totalPaise, { locale })}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-black tabular-nums text-stone-900 text-sm">
+                                {formatPaise(o.totalPaise, { locale })}
+                              </span>
+                              {isDelivered && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    void handleReorder(o.id);
+                                  }}
+                                  className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-xs px-2.5 py-1 shadow-xs transition active:scale-95 cursor-pointer"
+                                >
+                                  <span>🔁</span>
+                                  <span>Reorder</span>
+                                </button>
+                              )}
+                            </div>
                             <span className="text-xs font-bold text-amber-800 group-hover:underline">
                               View Receipt ➔
                             </span>
@@ -299,6 +344,21 @@ function OrdersPage() {
             ) : null}
           </>
         )}
+
+        <CartConflictModal
+          isOpen={Boolean(reorderConflict)}
+          currentRestaurantName={cart.restaurantName}
+          newRestaurantName={reorderConflict?.restaurantName || "this restaurant"}
+          onCancel={() => setReorderConflict(null)}
+          onConfirm={() => {
+            if (reorderConflict) {
+              cart.replaceCart(reorderConflict.restaurantId, reorderConflict.restaurantName, reorderConflict.lines);
+              setReorderConflict(null);
+              toast.success("Items from past order added to cart!");
+              void navigate({ to: "/checkout" });
+            }
+          }}
+        />
       </div>
     </CustomerShell>
   );

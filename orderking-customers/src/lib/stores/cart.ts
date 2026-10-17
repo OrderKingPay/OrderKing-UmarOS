@@ -156,4 +156,12 @@ export const useCartStore = create<State>()(
   ),
 );
 
-export { cartKey, cartCount, toCartItem };
+export function detectCartConflict(
+  currentRestaurantId: string | null,
+  itemCount: number,
+  targetRestaurantId: string
+): boolean {
+  return Boolean(currentRestaurantId && currentRestaurantId !== targetRestaurantId && itemCount > 0);
+}
+
+export { cartKey, cartCount, toCartItem, canAddToCart };

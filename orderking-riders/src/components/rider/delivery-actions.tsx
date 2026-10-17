@@ -10,11 +10,13 @@ import { deliveryActionFn, triggerMaskedCallFn } from "@/lib/server/rider-fns";
 import { TERMINAL_DELIVERY_STATES, type CashReconciliation, type Delivery } from "@/lib/rider/types";
 import { enqueueRiderOfflineAction, getRiderNetworkSpeed } from "@/lib/rider/rider-low-network";
 import { getTwoWheelerNavigationUris } from "@/lib/rider/maps";
-import { AlertTriangle, Camera, CheckCircle2, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, RotateCcw, ShieldAlert, Wallet } from "lucide-react";
+import { AlertTriangle, Camera, CheckCircle2, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, RotateCcw, ShieldAlert, ShieldCheck, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "./confirm-dialog";
 import { SwipeSlider } from "./swipe-slider";
+import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
+import { JUSTIFIED_OPERATIONAL_REASONS, isJustifiedOperationalReason } from "@/lib/rider/discipline";
 
 export function DeliveryActions({
   delivery,
@@ -34,11 +36,12 @@ export function DeliveryActions({
   const [error, setError] = useState<string | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [hasVerifiedProof, setHasVerifiedProof] = useState(false);
-  const [reason, setReason] = useState("vehicle problem");
+  const [reason, setReason] = useState<string>(JUSTIFIED_OPERATIONAL_REASONS[0]);
   const [sopOpen, setSopOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [billPhoto, setBillPhoto] = useState<string | null>(null);
   const [isCalling, setIsCalling] = useState(false);
+  const [sosOpen, setSosOpen] = useState(false);
   const billFileInputRef = useRef<HTMLInputElement | null>(null);
 
   function getVirtualProxyDial(contactMasked: string | null | undefined): string {
@@ -237,13 +240,21 @@ export function DeliveryActions({
             {d.restaurant.name} · {d.packageCount} {t("packages")}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            {t("expectedPayout")}
-          </p>
-          <p className="font-mono text-base font-bold text-emerald-600 dark:text-emerald-400">
-            {formatPaise(d.expectedPayoutPaise)}
-          </p>
+        <div className="flex items-center gap-2">
+          <EmergencySosButton
+            onClick={() => setSosOpen(true)}
+            size="sm"
+            label="SOS"
+            subLabel="Shield"
+          />
+          <div className="text-right">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+              {t("expectedPayout")}
+            </p>
+            <p className="font-mono text-base font-bold text-emerald-600 dark:text-emerald-400">
+              {formatPaise(d.expectedPayoutPaise)}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -316,14 +327,16 @@ export function DeliveryActions({
           <span className="text-[10px] text-muted-foreground">Direct</span>
         </a>
 
-        <a
-          href="tel:112"
-          className="flex flex-col items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 p-2 text-center text-xs font-bold text-destructive transition hover:bg-destructive/10"
+        <button
+          type="button"
+          onClick={() => setSosOpen(true)}
+          className="flex flex-col items-center justify-center rounded-lg border border-red-500/50 bg-red-600/10 p-2 text-center text-xs font-bold text-red-500 transition hover:bg-red-600/20 active:scale-95"
+          title="Open OrderKing SOS Safety Emergency Panic Shield"
         >
-          <span className="text-base">🚨</span>
+          <span className="text-base animate-pulse">🚨</span>
           <span>SOS</span>
-          <span className="text-[10px]">112</span>
-        </a>
+          <span className="text-[10px] text-red-400">112 Shield</span>
+        </button>
       </div>
 
       {/* Turn-by-Turn GPS Navigation Button */}
@@ -799,44 +812,116 @@ export function DeliveryActions({
                 </label>
               </div>
             ) : (
-              <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 space-y-1.5 text-xs">
-                <div className="flex items-center gap-2 text-amber-950 dark:text-amber-200 font-bold">
-                  <AlertTriangle className="size-4 shrink-0 text-amber-600" />
-                  <span>Pre-Pickup Cancellation Discipline Deduction</span>
+              <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 space-y-1.5 text-xs">
+                <div className="flex items-center gap-2 text-emerald-950 dark:text-emerald-300 font-bold">
+                  <ShieldCheck className="size-4 shrink-0 text-emerald-500" />
+                  <span>Justified Operational Reassignment (Zero Penalty)</span>
                 </div>
-                <p className="text-amber-900/90 dark:text-amber-300 leading-relaxed">
-                  Cancelling an accepted order before pickup impacts merchant preparation and customer ETA. A standard fleet discipline penalty of <strong>₹25.00–₹50.00</strong> will be deducted from your daily earnings ledger.
+                <p className="text-emerald-900/90 dark:text-emerald-200/90 leading-relaxed">
+                  OrderKing respects delivery partner contingencies. Choosing a justified operational reason reassigns this trip immediately to the nearest available fleet partner without harsh penalty or score reduction.
                 </p>
               </div>
             )}
 
-            <div className="space-y-1.5">
-              <Label className="text-xs">{t("cancelReason")}</Label>
-              <select
-                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-              >
-                <option value="vehicle problem">{t("vehicleProblem")}</option>
-                <option value="safety issue">{t("safetyIssue")}</option>
-                <option value="wrong assignment">{t("wrongAssignment")}</option>
-                <option value="restaurant issue">{t("restaurantIssue")}</option>
-                <option value="customer issue">{t("customerIssue")}</option>
-                <option value="other">{t("other")}</option>
-              </select>
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-foreground">
+                {isPostPickup ? t("cancelReason") : "Select Operational Reason for Trip Reassignment:"}
+              </Label>
+
+              {!isPostPickup ? (
+                <div className="space-y-1.5">
+                  <div className="grid grid-cols-1 gap-1.5">
+                    {JUSTIFIED_OPERATIONAL_REASONS.map((justifiedReason) => {
+                      const isSelected = reason === justifiedReason;
+                      return (
+                        <button
+                          key={justifiedReason}
+                          type="button"
+                          onClick={() => setReason(justifiedReason)}
+                          className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-semibold text-left transition ${
+                            isSelected
+                              ? "border-emerald-500 bg-emerald-500/15 text-emerald-300 shadow-sm font-bold"
+                              : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                          }`}
+                        >
+                          <span>{justifiedReason}</span>
+                          {isSelected && (
+                            <span className="flex size-4 items-center justify-center rounded-full bg-emerald-500 text-black text-[10px] font-black shrink-0">
+                              ✓
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {isJustifiedOperationalReason(reason) && (
+                    <div className="flex items-center gap-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 p-2 text-[11px] text-emerald-300 font-medium">
+                      <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
+                      <span>Zero penalty guaranteed · Instant reassignment to nearest partner</span>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              {/* Standard Dropdown */}
+              <div className="space-y-1">
+                {!isPostPickup && (
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold pt-1">
+                    Or select standard reason:
+                  </p>
+                )}
+                <select
+                  className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                >
+                  {isPostPickup ? (
+                    <>
+                      <option value="vehicle problem">{t("vehicleProblem")}</option>
+                      <option value="safety issue">{t("safetyIssue")}</option>
+                      <option value="wrong assignment">{t("wrongAssignment")}</option>
+                      <option value="restaurant issue">{t("restaurantIssue")}</option>
+                      <option value="customer issue">{t("customerIssue")}</option>
+                      <option value="other">{t("other")}</option>
+                    </>
+                  ) : (
+                    <>
+                      {JUSTIFIED_OPERATIONAL_REASONS.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                      <option value="vehicle problem">{t("vehicleProblem")}</option>
+                      <option value="safety issue">{t("safetyIssue")}</option>
+                      <option value="wrong assignment">{t("wrongAssignment")}</option>
+                      <option value="restaurant issue">{t("restaurantIssue")}</option>
+                      <option value="customer issue">{t("customerIssue")}</option>
+                      <option value="other">{t("other")}</option>
+                    </>
+                  )}
+                </select>
+              </div>
             </div>
 
             <div className="flex flex-col gap-2 pt-2 border-t border-border">
               <Button
-                variant="destructive"
+                variant={!isPostPickup && isJustifiedOperationalReason(reason) ? "default" : "destructive"}
                 size="lg"
                 disabled={pending}
                 onClick={() => {
                   setCancelOpen(false);
                   void act("CANCEL", { reason, confirmed: true, hasVerifiedProof });
                 }}
+                className={!isPostPickup && isJustifiedOperationalReason(reason) ? "bg-emerald-600 hover:bg-emerald-500 text-white font-bold" : ""}
               >
-                {isPostPickup && !hasVerifiedProof ? "Confirm Cancellation (Full Penalty)" : "Confirm Cancellation"}
+                {isPostPickup
+                  ? !hasVerifiedProof
+                    ? "Confirm Cancellation (Full Penalty)"
+                    : "Confirm Cancellation (Audit Pending)"
+                  : isJustifiedOperationalReason(reason)
+                    ? "Reassign Trip (Zero Penalty)"
+                    : "Confirm Cancellation"}
               </Button>
               <Button
                 variant="outline"
@@ -849,6 +934,13 @@ export function DeliveryActions({
           </div>
         </div>
       ) : null}
+
+      {/* Supreme Zomato Fleet Emergency Safety Sheet */}
+      <RiderEmergencySafetySheet
+        isOpen={sosOpen}
+        onClose={() => setSosOpen(false)}
+        deliveryId={d.id}
+      />
     </Card>
   );
 }
