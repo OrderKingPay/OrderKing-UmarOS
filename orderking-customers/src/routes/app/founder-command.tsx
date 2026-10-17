@@ -174,7 +174,7 @@ export function FounderCommandPage() {
       action: "SETTLEMENT_LEDGER_STATUS",
       timestamp: "Startup",
       status: "PENDING",
-      detail: "Zero partner bank settlements recorded in local customer workspace; connect canonical UMAR OS ledger",
+      detail: "Zero partner bank settlements recorded in local customer workspace; connect canonical Order King ledger",
     },
     {
       id: "HD-899",
@@ -252,7 +252,7 @@ export function FounderCommandPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 p-3 sm:p-5 space-y-4 font-sans">
-      {/* Canonical UMAR OS Founder Command Center Redirection Notice */}
+      {/* Canonical Order King Founder Command Center Redirection Notice */}
       <div className="rounded-2xl border border-amber-300 bg-amber-50/90 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
@@ -491,7 +491,7 @@ export function FounderCommandPage() {
         </div>
       </div>
 
-      {/* MAIN VIEW: Enterprise UMAR OS CHAT (DEFAULT) OR SPECIALIZED HUB */}
+      {/* MAIN VIEW: Enterprise Order King CHAT (DEFAULT) OR SPECIALIZED HUB */}
       {deckTab === "Enterprise_ai" && (
         <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}

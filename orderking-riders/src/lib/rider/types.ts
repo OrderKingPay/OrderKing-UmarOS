@@ -108,13 +108,13 @@ export type LocaleCode =
   | "en"
   | "hi"
   | "bn"
-  | "gu"
-  | "kn"
-  | "ml"
-  | "mr"
-  | "pa"
+  | "as"
   | "ta"
-  | "te";
+  | "te"
+  | "ml"
+  | "kn"
+  | "mr"
+  | "gu";
 
 export type FeatureFlags = {
   rider_ai: boolean;

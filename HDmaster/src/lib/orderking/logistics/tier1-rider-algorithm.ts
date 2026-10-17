@@ -1,6 +1,6 @@
 /**
  * UMAR OS - Supreme Indian Food Delivery Logistics & Rider Algorithm Engine
- * Authority: Supreme Marketplace & Logistics Architect (Zomato/Swiggy Operational Parity)
+ * Authority: Supreme Marketplace & Logistics Architect (Tier-1 Industry Operational Parity)
  *
  * Mandate:
  * 1. 100% Authentic, Realistic, Natural Human-Style Formula for Rider Pay & Customer Fees.
@@ -49,7 +49,7 @@ export type TemporalSlot = z.infer<typeof TemporalSlotSchema>;
 // 2. CONFIGURATION SCHEMA (UNIVERSALLY CUSTOMIZABLE FROM UMAROS)
 // ============================================================================
 
-export const ZomatoPricingConfigSchema = z.object({
+export const Tier1PricingConfigSchema = z.object({
   mode: z.enum(["MANUAL_OVERRIDE", "SELF_TUNING_ALGORITHM"]).default("SELF_TUNING_ALGORITHM"),
 
   // Rider Payout Parameters (in Integer Paise: ₹1.00 = 100 Paise)
@@ -187,9 +187,9 @@ export const ZomatoPricingConfigSchema = z.object({
   }).default({} as any),
 });
 
-export type ZomatoPricingConfig = z.infer<typeof ZomatoPricingConfigSchema>;
+export type Tier1PricingConfig = z.infer<typeof Tier1PricingConfigSchema>;
 
-export const DEFAULT_ZOMATO_CONFIG: ZomatoPricingConfig = {
+export const DEFAULT_TIER1_CONFIG: Tier1PricingConfig = {
   mode: "SELF_TUNING_ALGORITHM",
   rider: {
     basePayPaise: 2000,
@@ -490,43 +490,43 @@ export function resolveCityTier(
 }
 
 // ============================================================================
-// 5. EXACT ZOMATO-GRADE RIDER ALGORITHM ENGINE
+// 5. EXACT TIER-1 RIDER ALGORITHM ENGINE
 // ============================================================================
 
-export class ZomatoRiderAlgorithmEngine {
-  private config: ZomatoPricingConfig;
+export class Tier1RiderAlgorithmEngine {
+  private config: Tier1PricingConfig;
 
-  constructor(customConfig?: Partial<ZomatoPricingConfig>) {
+  constructor(customConfig?: Partial<Tier1PricingConfig>) {
     this.config = {
-      ...DEFAULT_ZOMATO_CONFIG,
+      ...DEFAULT_TIER1_CONFIG,
       ...customConfig,
-      rider: { ...DEFAULT_ZOMATO_CONFIG.rider, ...customConfig?.rider },
+      rider: { ...DEFAULT_TIER1_CONFIG.rider, ...customConfig?.rider },
       geoTiering: {
-        ...DEFAULT_ZOMATO_CONFIG.geoTiering,
+        ...DEFAULT_TIER1_CONFIG.geoTiering,
         ...customConfig?.geoTiering,
         tiers: {
-          ...DEFAULT_ZOMATO_CONFIG.geoTiering.tiers,
+          ...DEFAULT_TIER1_CONFIG.geoTiering.tiers,
           ...customConfig?.geoTiering?.tiers,
         },
       },
-      surge: { ...DEFAULT_ZOMATO_CONFIG.surge, ...customConfig?.surge },
+      surge: { ...DEFAULT_TIER1_CONFIG.surge, ...customConfig?.surge },
       temporal: {
-        ...DEFAULT_ZOMATO_CONFIG.temporal,
+        ...DEFAULT_TIER1_CONFIG.temporal,
         ...customConfig?.temporal,
-        lunchPeak: { ...DEFAULT_ZOMATO_CONFIG.temporal.lunchPeak, ...customConfig?.temporal?.lunchPeak },
-        dinnerPeak: { ...DEFAULT_ZOMATO_CONFIG.temporal.dinnerPeak, ...customConfig?.temporal?.dinnerPeak },
-        lateNight: { ...DEFAULT_ZOMATO_CONFIG.temporal.lateNight, ...customConfig?.temporal?.lateNight },
+        lunchPeak: { ...DEFAULT_TIER1_CONFIG.temporal.lunchPeak, ...customConfig?.temporal?.lunchPeak },
+        dinnerPeak: { ...DEFAULT_TIER1_CONFIG.temporal.dinnerPeak, ...customConfig?.temporal?.dinnerPeak },
+        lateNight: { ...DEFAULT_TIER1_CONFIG.temporal.lateNight, ...customConfig?.temporal?.lateNight },
       },
-      customer: { ...DEFAULT_ZOMATO_CONFIG.customer, ...customConfig?.customer },
-      merchant: { ...DEFAULT_ZOMATO_CONFIG.merchant, ...customConfig?.merchant },
+      customer: { ...DEFAULT_TIER1_CONFIG.customer, ...customConfig?.customer },
+      merchant: { ...DEFAULT_TIER1_CONFIG.merchant, ...customConfig?.merchant },
     };
   }
 
-  public getConfig(): ZomatoPricingConfig {
+  public getConfig(): Tier1PricingConfig {
     return this.config;
   }
 
-  public updateConfig(newConfig: Partial<ZomatoPricingConfig>): void {
+  public updateConfig(newConfig: Partial<Tier1PricingConfig>): void {
     this.config = {
       ...this.config,
       ...newConfig,

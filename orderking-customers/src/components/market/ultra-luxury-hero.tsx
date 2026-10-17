@@ -36,7 +36,7 @@ export const HERO_CULINARY_DISHES: HeroCulinaryDish[] = [
     pricePaise: 26000,
     ratingAvg: 4.9,
     ratingCount: 1420,
-    etaMinutes: 22,
+    etaMinutes: 28,
     imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80",
     dietType: "non-veg",
     query: "Biryani",
@@ -49,7 +49,7 @@ export const HERO_CULINARY_DISHES: HeroCulinaryDish[] = [
     pricePaise: 29000,
     ratingAvg: 4.9,
     ratingCount: 1140,
-    etaMinutes: 24,
+    etaMinutes: 28,
     imageUrl: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=600&auto=format&fit=crop&q=80",
     dietType: "non-veg",
     query: "Butter Chicken",
@@ -62,7 +62,7 @@ export const HERO_CULINARY_DISHES: HeroCulinaryDish[] = [
     pricePaise: 24000,
     ratingAvg: 4.8,
     ratingCount: 520,
-    etaMinutes: 18,
+    etaMinutes: 25,
     imageUrl: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=600&auto=format&fit=crop&q=80",
     dietType: "jain",
     query: "Paneer",
@@ -75,7 +75,7 @@ export const HERO_CULINARY_DISHES: HeroCulinaryDish[] = [
     pricePaise: 14000,
     ratingAvg: 4.8,
     ratingCount: 1240,
-    etaMinutes: 18,
+    etaMinutes: 25,
     imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80",
     dietType: "veg",
     query: "Dosa",
@@ -88,7 +88,7 @@ export const HERO_CULINARY_DISHES: HeroCulinaryDish[] = [
     pricePaise: 18000,
     ratingAvg: 4.7,
     ratingCount: 680,
-    etaMinutes: 20,
+    etaMinutes: 25,
     imageUrl: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?w=600&auto=format&fit=crop&q=80",
     dietType: "non-veg",
     query: "Momos",
@@ -101,7 +101,7 @@ export const HERO_CULINARY_DISHES: HeroCulinaryDish[] = [
     pricePaise: 32000,
     ratingAvg: 4.9,
     ratingCount: 920,
-    etaMinutes: 25,
+    etaMinutes: 30,
     imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=600&auto=format&fit=crop&q=80",
     dietType: "veg",
     query: "Thali",
@@ -114,7 +114,7 @@ export const HERO_CULINARY_DISHES: HeroCulinaryDish[] = [
     pricePaise: 13000,
     ratingAvg: 4.7,
     ratingCount: 840,
-    etaMinutes: 15,
+    etaMinutes: 25,
     imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80",
     dietType: "non-veg",
     query: "Rolls",
@@ -160,16 +160,13 @@ export function UltraLuxuryHero() {
           </div>
         </div>
 
-        {/* ROW 2: Hero Headline & Value Props */}
-        <div className="space-y-1.5">
+        {/* ROW 2: Clean, Direct Food Delivery Headline */}
+        <div className="space-y-1">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
-            Order food online from verified kitchens near you ·{" "}
-            <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
-              25-30m Express Delivery · 0% Menu Markups
-            </span>
+            Order food from top kitchens near you
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
-            Direct pricing from FSSAI-certified partner kitchens. No inflated aggregator commissions or hidden packaging fees—hot, authentic meals delivered in 25-30 minutes with complete price transparency.
+            Fresh, piping-hot meals from verified partner kitchens delivered in 25–30 minutes with 0% markup.
           </p>
         </div>
 

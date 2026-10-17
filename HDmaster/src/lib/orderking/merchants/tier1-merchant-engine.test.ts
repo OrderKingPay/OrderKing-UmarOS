@@ -1,27 +1,27 @@
 /**
  * 👑 UMAR OS / ORDERKING - AUTHENTIC INDIAN RESTAURANT OPERATIONS & GROWTH ENGINE TEST SUITE
  * 
- * Location: src/lib/orderking/merchants/zomato-merchant-engine.test.ts
+ * Location: src/lib/orderking/merchants/tier1-merchant-engine.test.ts
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
 import {
-  ZomatoMerchantEngine,
-  zomatoMerchantEngine,
+  Tier1MerchantEngine,
+  tier1MerchantEngine,
   evaluatePackagingFeePolicy,
   calculateCoFundedPromotion,
   calculateRestaurantHealthScore,
-  calculateZomatoOrderSettlement,
+  calculateTier1OrderSettlement,
   analyzeMenuItemEconomics,
   INDIAN_RESTAURANT_COMMISSION_TIERS,
-  DEFAULT_ZOMATO_MERCHANT_CONFIG,
+  DEFAULT_TIER1_MERCHANT_CONFIG,
   type RestaurantCategoryTier,
 } from "./tier1-merchant-engine.ts";
 import { toPaise, fromPaise } from "../money.ts";
 
-describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", () => {
+describe("Tier1MerchantEngine - Indian Restaurant Operations & Growth Suite", () => {
   beforeEach(() => {
-    zomatoMerchantEngine.resetConfig();
+    tier1MerchantEngine.resetConfig();
   });
 
   // ==========================================================================
@@ -58,7 +58,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
       // 300+ orders -> -200 bps (22%)
       // 500+ orders -> -300 bps (21%)
 
-      const res0 = zomatoMerchantEngine.calculateSettlement({
+      const res0 = tier1MerchantEngine.calculateSettlement({
         orderId: "ORD-VOL-0",
         restaurantId: "REST-STANDALONE-1",
         restaurantName: "Pind Balluchi",
@@ -69,7 +69,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
       });
       expect(res0.merchantSettlement.effectiveCommissionBps).toBe(2400); // 24%
 
-      const res100 = zomatoMerchantEngine.calculateSettlement({
+      const res100 = tier1MerchantEngine.calculateSettlement({
         orderId: "ORD-VOL-100",
         restaurantId: "REST-STANDALONE-1",
         restaurantName: "Pind Balluchi",
@@ -81,7 +81,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
       expect(res100.merchantSettlement.effectiveCommissionBps).toBe(2300); // 23%
       expect(res100.merchantSettlement.volumeRebateBps).toBe(100);
 
-      const res500 = zomatoMerchantEngine.calculateSettlement({
+      const res500 = tier1MerchantEngine.calculateSettlement({
         orderId: "ORD-VOL-500",
         restaurantId: "REST-STANDALONE-1",
         restaurantName: "Pind Balluchi",
@@ -96,7 +96,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
 
     it("should enforce statutory floor (8%) and ceiling (35%) on custom commission overrides", () => {
       // Extremely low custom commission should be clamped to floor (800 bps)
-      const resLow = zomatoMerchantEngine.calculateSettlement({
+      const resLow = tier1MerchantEngine.calculateSettlement({
         orderId: "ORD-FLOOR",
         restaurantId: "REST-LOW",
         restaurantName: "Sweet Shop",
@@ -108,7 +108,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
       expect(resLow.merchantSettlement.effectiveCommissionBps).toBe(800); // clamped to 8%
 
       // Predatory high custom commission should be clamped to ceiling (3500 bps)
-      const resHigh = zomatoMerchantEngine.calculateSettlement({
+      const resHigh = tier1MerchantEngine.calculateSettlement({
         orderId: "ORD-CEILING",
         restaurantId: "REST-HIGH",
         restaurantName: "Luxury Dining",
@@ -408,7 +408,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
       // Customer Platform fee: ₹5.00 (500 paise)
       // Delivery fee: ₹30.00 (3,000 paise)
 
-      const result = zomatoMerchantEngine.calculateSettlement({
+      const result = tier1MerchantEngine.calculateSettlement({
         orderId: "ORD-DOMINOS-001",
         restaurantId: "REST-DOMINOS",
         restaurantName: "Domino's Pizza Sector 18",
@@ -487,7 +487,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
 
     it("should calculate settlement for a Cloud Kitchen / Delivery-Only partner (Rebel Foods)", () => {
       // Cloud kitchen tier (21% base commission)
-      const result = zomatoMerchantEngine.calculateSettlement({
+      const result = tier1MerchantEngine.calculateSettlement({
         orderId: "ORD-CLOUD-001",
         restaurantId: "REST-FAASOS",
         restaurantName: "Faasos Cloud Kitchen",
@@ -503,7 +503,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
     });
 
     it("should accurately reflect interstate IGST when isInterstate flag is true", () => {
-      const result = zomatoMerchantEngine.calculateSettlement({
+      const result = tier1MerchantEngine.calculateSettlement({
         orderId: "ORD-INTERSTATE-001",
         restaurantId: "REST-SWEETS",
         restaurantName: "Bhikharam Chandmal",
@@ -612,7 +612,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
   // ==========================================================================
   describe("Universal Customization & Self-Tuning via UmarOS", () => {
     it("should allow runtime updates to commission rates, caps, and tax parameters", () => {
-      const engine = new ZomatoMerchantEngine();
+      const engine = new Tier1MerchantEngine();
 
       // Custom configuration override
       engine.updateConfig({
@@ -620,9 +620,9 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
         defaultDiscountMerchantSharePercent: 70, // 70/30 split
         defaultDiscountPlatformSharePercent: 30,
         tiers: {
-          ...DEFAULT_ZOMATO_MERCHANT_CONFIG.tiers,
+          ...DEFAULT_TIER1_MERCHANT_CONFIG.tiers,
           STANDARD_STANDALONE: {
-            ...DEFAULT_ZOMATO_MERCHANT_CONFIG.tiers.STANDARD_STANDALONE,
+            ...DEFAULT_TIER1_MERCHANT_CONFIG.tiers.STANDARD_STANDALONE,
             defaultCommissionBps: 2300, // 23%
           },
         },
@@ -643,7 +643,7 @@ describe("ZomatoMerchantEngine - Indian Restaurant Operations & Growth Suite", (
     });
 
     it("should self-tune recommendations for high-volume and emerging merchants", () => {
-      const engine = new ZomatoMerchantEngine();
+      const engine = new Tier1MerchantEngine();
 
       // High volume merchant telemetry
       const highVolumeTune = engine.selfTune({

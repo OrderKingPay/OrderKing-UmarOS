@@ -33,6 +33,14 @@ import {
   Rocket,
   Store,
   ChevronRight,
+  Printer,
+  Volume2,
+  Navigation,
+  Compass,
+  MapPin,
+  TrendingUp,
+  Plane,
+  UtensilsCrossed,
 } from "lucide-react";
 import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
@@ -58,6 +66,38 @@ import {
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
+
+export interface UmarOsMasterControlsState {
+  dine_in_commission_pct: number;
+  enterprise_commission_pct: number;
+  standard_commission_pct: number;
+  full_service_commission_pct: number;
+  delivery_radius_km: number;
+  geofence_strict_enforcement: boolean;
+  rush_hour_surge_multiplier: number;
+  rain_surge_enabled: boolean;
+  peak_surge_enabled: boolean;
+  soundbox_gateway_enabled: boolean;
+  thermal_printer_gateway_enabled: boolean;
+  zero_delivery_fallback_enabled: boolean;
+  affiliate_travel_enabled: boolean;
+}
+
+export const DEFAULT_UMAR_OS_CONTROLS: UmarOsMasterControlsState = {
+  dine_in_commission_pct: 0,
+  enterprise_commission_pct: 18,
+  standard_commission_pct: 25,
+  full_service_commission_pct: 28,
+  delivery_radius_km: 8,
+  geofence_strict_enforcement: true,
+  rush_hour_surge_multiplier: 1.4,
+  rain_surge_enabled: true,
+  peak_surge_enabled: true,
+  soundbox_gateway_enabled: true,
+  thermal_printer_gateway_enabled: true,
+  zero_delivery_fallback_enabled: true,
+  affiliate_travel_enabled: true,
+};
 
 export interface IndianLanguageSpec {
   code: string;
@@ -266,6 +306,11 @@ function SettingsPage() {
     DEFAULT_RIDER_DISCIPLINE_SETTINGS,
   );
 
+  // Sub-Category 2-Core State: UmarOS Master Sovereign Controls
+  const [masterControlsState, setMasterControlsState] = useState<UmarOsMasterControlsState>(
+    DEFAULT_UMAR_OS_CONTROLS,
+  );
+
   // Category 3 State: All 23 Official Indian Languages & AI Routing
   const [localeState, setLocaleState] = useState<{
     defaultLocale: string;
@@ -369,6 +414,22 @@ function SettingsPage() {
         ...data.rider_discipline,
       });
     }
+
+    setMasterControlsState({
+      dine_in_commission_pct: Number(data.dine_in_commission_pct ?? 0),
+      enterprise_commission_pct: Number(data.enterprise_commission_pct ?? 18),
+      standard_commission_pct: Number(data.standard_commission_pct ?? data.restaurant_commission_pct ?? 25),
+      full_service_commission_pct: Number(data.full_service_commission_pct ?? 28),
+      delivery_radius_km: Math.min(15, Math.max(1, Number(data.delivery_radius_km ?? data.max_delivery_radius_km ?? 8))),
+      geofence_strict_enforcement: Boolean(data.geofence_strict_enforcement ?? true),
+      rush_hour_surge_multiplier: Math.min(2.5, Math.max(1.0, Number(data.rush_hour_surge_multiplier ?? data.surge_multiplier_cap ?? 1.4))),
+      rain_surge_enabled: Boolean(data.rain_surge_enabled ?? true),
+      peak_surge_enabled: Boolean(data.peak_surge_enabled ?? true),
+      soundbox_gateway_enabled: Boolean(data.soundbox_gateway_enabled ?? true),
+      thermal_printer_gateway_enabled: Boolean(data.thermal_printer_gateway_enabled ?? true),
+      zero_delivery_fallback_enabled: Boolean(data.zero_delivery_fallback_enabled ?? true),
+      affiliate_travel_enabled: Boolean(data.affiliate_travel_enabled ?? true),
+    });
   }
 
   async function fetchAllSettings() {
@@ -717,6 +778,7 @@ function SettingsPage() {
       exportedAt: new Date().toISOString(),
       platform: "OrderKing UMAR OS Master Settings",
       brand: brandState,
+      master_controls: masterControlsState,
       marketplace_and_algorithm: econState,
       localization: localeState,
       notification_rules: notifState,
@@ -854,6 +916,18 @@ function SettingsPage() {
       "recruitment",
       "cash envelope",
       "floor guarantee",
+      "soundbox",
+      "thermal printer",
+      "zero-delivery",
+      "zero delivery",
+      "fallback",
+      "geo-fencing",
+      "geofence",
+      "enterprise",
+      "dine-in",
+      "full service",
+      "affiliate travel",
+      "hardware",
     ].some((k) => k.includes(queryLower) || queryLower.includes(k));
 
   const isCat3Visible =
@@ -1516,6 +1590,579 @@ function SettingsPage() {
 
           {expandedCats.cat2 && (
             <div className="p-6 space-y-6">
+              {/* Sub-Category 2-Core: UmarOS Master Sovereign Controls & Central Switchboard */}
+              <div className="rounded-2xl border-2 border-emerald-600/30 bg-gradient-to-br from-emerald-950/5 via-slate-50 to-emerald-50/20 p-5 space-y-6 shadow-sm">
+                <div className="border-b border-emerald-100 pb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold uppercase tracking-wider mb-1">
+                      <Sparkles className="w-3 h-3 text-emerald-600" />
+                      UmarOS Autonomous Operational Architecture
+                    </div>
+                    <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                      <Settings2 className="h-5 w-5 text-emerald-600" />
+                      Sub-Category 2-Core · Sovereign Commercial Dials &amp; Master Control Center
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Unified controls for commission &amp; payout tiers, 1–15 km dispatch boundaries, rush-hour surge pricing, IoT soundbox voice announcements, thermal KOT printing, and smart zero-delivery fallbacks.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold px-2.5 py-1">
+                      Zero-Competitor Clean
+                    </span>
+                    <span className="rounded-full bg-slate-100 text-slate-700 text-[10px] font-mono font-bold px-2.5 py-1">
+                      Employee-less Autonomy
+                    </span>
+                  </div>
+                </div>
+
+                {/* 1. Sovereign 4-Tier Commission & Payout Architecture */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-mono uppercase tracking-wider text-slate-700 font-bold flex items-center gap-1.5">
+                      <Percent className="w-3.5 h-3.5 text-emerald-600" />
+                      1. Platform Commission &amp; Payout Tiers
+                    </label>
+                    <span className="text-[11px] font-mono text-slate-500">
+                      Tier-1 Parity · 4 Clear Economic Tiers
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {/* Tier 1: 0% Dine-In */}
+                    <div className="rounded-xl border border-emerald-200 bg-white p-3.5 shadow-sm space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-700 font-mono">
+                          <UtensilsCrossed className="w-3 h-3" />
+                          0% Dine-In &amp; QR
+                        </span>
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                          T+0 Instant
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-snug">
+                        Table reservations, QR Pay at Table, and pre-orders. Zero platform commission markup.
+                      </p>
+                      <div className="pt-1">
+                        <div className="flex justify-between text-xs font-bold text-slate-800 font-mono mb-1">
+                          <span>Commission</span>
+                          <span className="text-emerald-600">{masterControlsState.dine_in_commission_pct}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={0}
+                          max={5}
+                          step={1}
+                          value={masterControlsState.dine_in_commission_pct}
+                          onChange={(e) =>
+                            setMasterControlsState((p) => ({
+                              ...p,
+                              dine_in_commission_pct: Number(e.target.value),
+                            }))
+                          }
+                          className="w-full accent-emerald-600 h-1.5"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Tier 2: 18% Enterprise Anchor */}
+                    <div className="rounded-xl border border-blue-200 bg-white p-3.5 shadow-sm space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-blue-700 font-mono">
+                          <Store className="w-3 h-3" />
+                          18% Enterprise Anchor
+                        </span>
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
+                          T+1 Escrow
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-snug">
+                        High-volume multi-unit chains and national anchor brands with key account SLAs.
+                      </p>
+                      <div className="pt-1">
+                        <div className="flex justify-between text-xs font-bold text-slate-800 font-mono mb-1">
+                          <span>Commission</span>
+                          <span className="text-blue-600">{masterControlsState.enterprise_commission_pct}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={12}
+                          max={22}
+                          step={1}
+                          value={masterControlsState.enterprise_commission_pct}
+                          onChange={(e) =>
+                            setMasterControlsState((p) => ({
+                              ...p,
+                              enterprise_commission_pct: Number(e.target.value),
+                            }))
+                          }
+                          className="w-full accent-blue-600 h-1.5"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Tier 3: 25% Standard Standalone */}
+                    <div className="rounded-xl border border-amber-200 bg-white p-3.5 shadow-sm space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-amber-700 font-mono">
+                          <Percent className="w-3 h-3" />
+                          25% Standard Partner
+                        </span>
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                          Wed Payout
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-snug">
+                        Standalone dining outlets and local hero restaurants with standard marketing &amp; fleet.
+                      </p>
+                      <div className="pt-1">
+                        <div className="flex justify-between text-xs font-bold text-slate-800 font-mono mb-1">
+                          <span>Commission</span>
+                          <span className="text-amber-600">{masterControlsState.standard_commission_pct}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={20}
+                          max={28}
+                          step={1}
+                          value={masterControlsState.standard_commission_pct}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setMasterControlsState((p) => ({ ...p, standard_commission_pct: val }));
+                            setEconState((p) => ({ ...p, restaurant_commission_pct: val }));
+                          }}
+                          className="w-full accent-amber-600 h-1.5"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Tier 4: 28% Full Service */}
+                    <div className="rounded-xl border border-purple-200 bg-white p-3.5 shadow-sm space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-purple-700 font-mono">
+                          <Zap className="w-3 h-3" />
+                          28% Full Service
+                        </span>
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800">
+                          T+1 Daily
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-snug">
+                        Dedicated fleet priority, autonomous dispatch pre-allocation, and voice IVR alerts.
+                      </p>
+                      <div className="pt-1">
+                        <div className="flex justify-between text-xs font-bold text-slate-800 font-mono mb-1">
+                          <span>Commission</span>
+                          <span className="text-purple-600">{masterControlsState.full_service_commission_pct}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={25}
+                          max={35}
+                          step={1}
+                          value={masterControlsState.full_service_commission_pct}
+                          onChange={(e) =>
+                            setMasterControlsState((p) => ({
+                              ...p,
+                              full_service_commission_pct: Number(e.target.value),
+                            }))
+                          }
+                          className="w-full accent-purple-600 h-1.5"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Delivery Radius & Geo-Fencing Controls (1 km to 15 km) */}
+                <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                      <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                        <Navigation className="w-3.5 h-3.5 text-emerald-600" />
+                        2. Delivery Radius &amp; Geo-Fencing Dispatch Controls (1 km – 15 km)
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        Calibrate maximum dispatch radial boundary with real-time zone SLA classification.
+                      </p>
+                    </div>
+                    <span className="text-xs font-extrabold font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                      Active: {masterControlsState.delivery_radius_km} KM Radius
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <input
+                      type="range"
+                      min={1}
+                      max={15}
+                      step={1}
+                      value={masterControlsState.delivery_radius_km}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setMasterControlsState((p) => ({ ...p, delivery_radius_km: val }));
+                        setEconState((p) => ({ ...p, max_delivery_radius_km: val }));
+                      }}
+                      className="w-full accent-emerald-600 h-2"
+                    />
+                    <div className="flex justify-between text-[11px] font-mono text-slate-400">
+                      <span>1 KM (Ultra-Dense)</span>
+                      <span>5 KM (Urban Standard)</span>
+                      <span>10 KM (Highway Relay)</span>
+                      <span>15 KM (Maximum Boundary)</span>
+                    </div>
+                  </div>
+
+                  {/* Visual Zone Indicator Card */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                    <div
+                      className={`p-3 rounded-xl border text-xs font-mono transition ${
+                        masterControlsState.delivery_radius_km <= 3
+                          ? "border-emerald-500 bg-emerald-50/70 text-emerald-900 font-bold"
+                          : "border-slate-200 bg-slate-50/60 text-slate-600"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold uppercase">
+                        <MapPin className="w-3 h-3 text-emerald-600" />
+                        1–3 KM · Hyperlocal Core
+                      </div>
+                      <p className="text-[10px] leading-snug">
+                        Sub-20m SLA · Zero thermal decay · Lowest rider effort &amp; highest batching efficiency.
+                      </p>
+                    </div>
+
+                    <div
+                      className={`p-3 rounded-xl border text-xs font-mono transition ${
+                        masterControlsState.delivery_radius_km > 3 && masterControlsState.delivery_radius_km <= 7
+                          ? "border-emerald-500 bg-emerald-50/70 text-emerald-900 font-bold"
+                          : "border-slate-200 bg-slate-50/60 text-slate-600"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold uppercase">
+                        <Compass className="w-3 h-3 text-emerald-600" />
+                        4–7 KM · Urban Corridor
+                      </div>
+                      <p className="text-[10px] leading-snug">
+                        25–35m SLA · Standard two-wheeler transit corridor with optimal order frequency.
+                      </p>
+                    </div>
+
+                    <div
+                      className={`p-3 rounded-xl border text-xs font-mono transition ${
+                        masterControlsState.delivery_radius_km > 7
+                          ? "border-emerald-500 bg-emerald-50/70 text-emerald-900 font-bold"
+                          : "border-slate-200 bg-slate-50/60 text-slate-600"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold uppercase">
+                        <Navigation className="w-3 h-3 text-emerald-600" />
+                        8–15 KM · Extended Perimeter
+                      </div>
+                      <p className="text-[10px] leading-snug">
+                        35–50m SLA · Long-distance highway relay buffer with long-trip rider return allowances.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Strict Geofence Toggle */}
+                  <ToggleRow
+                    title="Strict Geo-Fencing Boundary Clamping"
+                    description="When enabled, prevents riders and customers from placing or dispatching delivery orders outside established municipal polygon boundaries."
+                    isOn={masterControlsState.geofence_strict_enforcement}
+                    onToggle={() =>
+                      setMasterControlsState((p) => ({
+                        ...p,
+                        geofence_strict_enforcement: !p.geofence_strict_enforcement,
+                      }))
+                    }
+                  />
+                </div>
+
+                {/* 3. Rush-Hour Surge Pricing Multipliers (1.0x to 2.5x) */}
+                <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                      <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                        <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+                        3. Rush-Hour &amp; Weather Surge Pricing Engine (1.0x – 2.5x)
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        Autonomous demand-supply equilibrium curve with 100% fair pass-through to delivery partners.
+                      </p>
+                    </div>
+                    <span className="text-xs font-extrabold font-mono text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                      Cap: {masterControlsState.rush_hour_surge_multiplier.toFixed(1)}x Surge
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <input
+                      type="range"
+                      min={1.0}
+                      max={2.5}
+                      step={0.1}
+                      value={masterControlsState.rush_hour_surge_multiplier}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setMasterControlsState((p) => ({ ...p, rush_hour_surge_multiplier: val }));
+                        setEconState((p) => ({ ...p, surge_multiplier_cap: val }));
+                      }}
+                      className="w-full accent-amber-600 h-2"
+                    />
+                    <div className="flex justify-between text-[11px] font-mono text-slate-400">
+                      <span>1.0x (No Surge / Base Fare)</span>
+                      <span>1.5x (Moderate Lunch/Dinner)</span>
+                      <span>2.0x (Heavy Rain / Festival)</span>
+                      <span>2.5x (Statutory Maximum Cap)</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <ToggleRow
+                      title="Inclement Weather / Rain Surge Active"
+                      description="Adds ₹30.00 weather bonus per order during drizzle/downpour with 100% pass-through directly to the rider."
+                      isOn={masterControlsState.rain_surge_enabled}
+                      onToggle={() =>
+                        setMasterControlsState((p) => ({
+                          ...p,
+                          rain_surge_enabled: !p.rain_surge_enabled,
+                        }))
+                      }
+                    />
+                    <ToggleRow
+                      title="Peak Hour Lunch &amp; Dinner Surge Multipliers"
+                      description="Applies traffic friction matrix compensation during lunch (12:00–15:30) and dinner (19:30–23:30) congestion."
+                      isOn={masterControlsState.peak_surge_enabled}
+                      onToggle={() =>
+                        setMasterControlsState((p) => ({
+                          ...p,
+                          peak_surge_enabled: !p.peak_surge_enabled,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* 4. Hardware Gateways (Notification Soundbox & Thermal Printer) */}
+                <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-4">
+                  <div className="border-b border-slate-100 pb-3">
+                    <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                      <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+                      4. Hardware Gateways (IoT Soundbox &amp; ESC/POS Thermal Printer)
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      Direct integration with wireless merchant voice boxes and kitchen order ticket printers.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Soundbox Card */}
+                    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Volume2 className="w-4 h-4 text-emerald-600" />
+                          <span className="text-xs font-bold text-slate-900 font-mono">
+                            Wireless Voice Soundbox
+                          </span>
+                        </div>
+                        <span
+                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            masterControlsState.soundbox_gateway_enabled
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-slate-200 text-slate-600"
+                          }`}
+                        >
+                          {masterControlsState.soundbox_gateway_enabled ? "4G / Wi-Fi Active" : "Disabled"}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-snug">
+                        High-decibel voice announcements in 10 Indian food delivery benchmark languages upon order receipt and KingPay UPI payments.
+                      </p>
+                      <ToggleRow
+                        title="Enable Soundbox Voice Announcements"
+                        description="Auto-broadcast payment and new order alerts on kitchen soundbox terminals."
+                        isOn={masterControlsState.soundbox_gateway_enabled}
+                        onToggle={() =>
+                          setMasterControlsState((p) => ({
+                            ...p,
+                            soundbox_gateway_enabled: !p.soundbox_gateway_enabled,
+                          }))
+                        }
+                      />
+                    </div>
+
+                    {/* Thermal Printer Card */}
+                    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Printer className="w-4 h-4 text-emerald-600" />
+                          <span className="text-xs font-bold text-slate-900 font-mono">
+                            ESC/POS Thermal KOT Printer
+                          </span>
+                        </div>
+                        <span
+                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            masterControlsState.thermal_printer_gateway_enabled
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-slate-200 text-slate-600"
+                          }`}
+                        >
+                          {masterControlsState.thermal_printer_gateway_enabled ? "Auto-Print Active" : "Disabled"}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-snug">
+                        Auto-fires Kitchen Order Tickets (KOT) over Bluetooth and LAN (58mm / 80mm ESC/POS) directly to kitchen staff without cashier intervention.
+                      </p>
+                      <ToggleRow
+                        title="Enable ESC/POS Thermal Auto-Print"
+                        description="Direct 58mm/80mm receipt generation upon order confirmation."
+                        isOn={masterControlsState.thermal_printer_gateway_enabled}
+                        onToggle={() =>
+                          setMasterControlsState((p) => ({
+                            ...p,
+                            thermal_printer_gateway_enabled: !p.thermal_printer_gateway_enabled,
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. Smart Zero-Delivery Fallback Switch */}
+                <div className="rounded-xl border border-emerald-200 bg-white p-4 space-y-4">
+                  <div className="border-b border-emerald-100 pb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        5. Smart Zero-Delivery Fallback &amp; Non-Delivery Sovereign Utilities
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        When food delivery is unavailable in a user's pin/zone, seamlessly present high-margin non-delivery utilities so the user extracts value and the founder captures revenue.
+                      </p>
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${
+                        masterControlsState.zero_delivery_fallback_enabled
+                          ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                          : "bg-slate-200 text-slate-600"
+                      }`}
+                    >
+                      {masterControlsState.zero_delivery_fallback_enabled ? "Fallback Active" : "Off"}
+                    </span>
+                  </div>
+
+                  <ToggleRow
+                    title="Activate Smart Zero-Delivery Fallback Switch"
+                    description="Automatically routes users in unserved delivery clusters to 0% Dine-In table booking, KingPay UPI restaurant bill split, catering budget calculator, and fleet gig onboarding."
+                    isOn={masterControlsState.zero_delivery_fallback_enabled}
+                    onToggle={() =>
+                      setMasterControlsState((p) => ({
+                        ...p,
+                        zero_delivery_fallback_enabled: !p.zero_delivery_fallback_enabled,
+                      }))
+                    }
+                  />
+
+                  {/* Fallback Utilities Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+                    <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 text-xs font-mono space-y-1">
+                      <div className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                        <UtensilsCrossed className="w-3 h-3 text-emerald-600" />
+                        0% Dine-In Reservations
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-snug">
+                        Guaranteed table booking &amp; direct menu pre-order without delivery delay.
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 text-xs font-mono space-y-1">
+                      <div className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                        <Wallet className="w-3 h-3 text-emerald-600" />
+                        KingPay UPI Bill Split
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-snug">
+                        Instant restaurant bill split via dynamic UPI QR with zero licensing friction.
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 text-xs font-mono space-y-1">
+                      <div className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                        <Store className="w-3 h-3 text-emerald-600" />
+                        Culinary &amp; Fleet Gigs
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-snug">
+                        Real-time onboarding for delivery riders, home chefs, and menu auditors.
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 text-xs font-mono space-y-1">
+                      <div className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                        <Plane className="w-3 h-3 text-emerald-600" />
+                        Smart Affiliate Travel
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-snug">
+                        Official deep-links to IRCTC Indian Railways and airlines without mock generators.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. Smart Affiliate Travel & Experiences Gateway */}
+                <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-4">
+                  <div className="border-b border-slate-100 pb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                        <Plane className="w-3.5 h-3.5 text-emerald-600" />
+                        6. Smart Affiliate Travel &amp; Experiences Gateway
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        Official airline and train portal deep-links generating risk-free high-margin affiliate commissions without ticketing licenses.
+                      </p>
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${
+                        masterControlsState.affiliate_travel_enabled
+                          ? "bg-blue-100 text-blue-800 border border-blue-300"
+                          : "bg-slate-200 text-slate-600"
+                      }`}
+                    >
+                      {masterControlsState.affiliate_travel_enabled ? "Active" : "Disabled"}
+                    </span>
+                  </div>
+
+                  <ToggleRow
+                    title="Enable Sovereign Affiliate Travel Deep-Links"
+                    description="Routes customers searching for travel snacks or meals to official IRCTC / airline booking portals with founder referral tagging."
+                    isOn={masterControlsState.affiliate_travel_enabled}
+                    onToggle={() =>
+                      setMasterControlsState((p) => ({
+                        ...p,
+                        affiliate_travel_enabled: !p.affiliate_travel_enabled,
+                      }))
+                    }
+                  />
+                </div>
+
+                {/* Save Master Dials Button */}
+                <div className="flex justify-end pt-2 border-t border-emerald-100">
+                  <SaveButton
+                    onClick={() =>
+                      handleSave(
+                        {
+                          ...masterControlsState,
+                          restaurant_commission_pct: masterControlsState.standard_commission_pct,
+                          max_delivery_radius_km: masterControlsState.delivery_radius_km,
+                          surge_multiplier_cap: masterControlsState.rush_hour_surge_multiplier,
+                        },
+                        "Saved UmarOS Master Sovereign Controls & Commercial Dials",
+                      )
+                    }
+                    saving={saving}
+                    label="Save Sovereign Master Controls"
+                  />
+                </div>
+              </div>
+
               {/* Sub-Category 2A: Commissions, Delivery Tariffs & Thresholds */}
               <div className="rounded-xl border border-slate-200 p-4 space-y-4">
                 <div className="border-b border-slate-100 pb-3">

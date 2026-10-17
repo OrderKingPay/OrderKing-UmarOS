@@ -15,13 +15,13 @@ export const RIDER_LANGUAGES: ReadonlyArray<RiderLanguageEntry> = [
   { code: "en", nativeLabel: "English", englishName: "English" },
   { code: "hi", nativeLabel: "हिन्दी", englishName: "Hindi" },
   { code: "bn", nativeLabel: "বাংলা", englishName: "Bengali" },
-  { code: "gu", nativeLabel: "ગુજરાતી", englishName: "Gujarati" },
-  { code: "kn", nativeLabel: "ಕನ್ನಡ", englishName: "Kannada" },
-  { code: "ml", nativeLabel: "മലയാളം", englishName: "Malayalam" },
-  { code: "mr", nativeLabel: "मराठी", englishName: "Marathi" },
-  { code: "pa", nativeLabel: "ਪੰਜਾਬੀ", englishName: "Punjabi" },
+  { code: "as", nativeLabel: "অসমীয়া", englishName: "Assamese" },
   { code: "ta", nativeLabel: "தமிழ்", englishName: "Tamil" },
   { code: "te", nativeLabel: "తెలుగు", englishName: "Telugu" },
+  { code: "ml", nativeLabel: "മലയാളം", englishName: "Malayalam" },
+  { code: "kn", nativeLabel: "ಕನ್ನಡ", englishName: "Kannada" },
+  { code: "mr", nativeLabel: "मराठी", englishName: "Marathi" },
+  { code: "gu", nativeLabel: "ગુજરાતી", englishName: "Gujarati" },
 ];
 
 export function LanguageSelector({

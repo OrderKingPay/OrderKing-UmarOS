@@ -80,10 +80,8 @@ describe("Connaught Place Real Live Search Verification", () => {
     }
   });
 
-  it(
-    "filters Connaught Place restaurants by category and query",
-    async () => {
-      const handler = (Route.options as any)?.server?.handlers?.GET;
+  it("filters Connaught Place restaurants by category and query", { timeout: 30000 }, async () => {
+    const handler = (Route.options as any)?.server?.handlers?.GET;
 
     // Search query "Biryani"
     const biryaniReq = new Request("http://localhost:8082/api/search?lat=28.6315&lng=77.2167&q=Biryani", {
@@ -102,5 +100,5 @@ describe("Connaught Place Real Live Search Verification", () => {
     const dosaData = await dosaRes.json();
     expect(dosaData.restaurants.length).toBeGreaterThanOrEqual(1);
     expect(dosaData.restaurants.some((r: any) => r.name.includes("Saravanaa"))).toBe(true);
-  }, 30000);
+  });
 });

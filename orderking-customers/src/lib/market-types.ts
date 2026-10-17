@@ -41,6 +41,7 @@ export type RestaurantCard = {
   zoneName: string;
   ratingAvg: number | null;
   ratingCount: number;
+  fssaiLicenseNumber?: string;
 };
 
 export type AddonView = {

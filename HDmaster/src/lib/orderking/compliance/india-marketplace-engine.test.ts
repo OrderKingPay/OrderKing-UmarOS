@@ -10,7 +10,7 @@ import {
   validatePackagingChargePolicy,
   calculateMerchantOrderSettlement,
   indiaMarketplaceEngine,
-  SWIGGY_ZOMATO_COMMISSION_TIERS,
+  TIER1_MARKETPLACE_COMMISSION_TIERS,
   INDIAN_STATE_CODES,
 } from "./india-marketplace-engine.ts";
 import { toPaise, fromPaise } from "../money.ts";
@@ -472,10 +472,10 @@ describe("🇮🇳 India-Specific Marketplace, Tax & Regulatory Compliance Engin
   // 5. 3-TIER COMMISSION & PACKAGING CHARGE POLICIES
   // ==========================================================================
   describe("5. 3-Tier Commission Matrix & Packaging Charge Policies", () => {
-    it("applies Swiggy/Zomato standard 3-tier commission rates", () => {
-      expect(SWIGGY_ZOMATO_COMMISSION_TIERS.TIER_1_STARTER.baseRateBps).toBe(1800); // 18%
-      expect(SWIGGY_ZOMATO_COMMISSION_TIERS.TIER_2_STANDARD.baseRateBps).toBe(2200); // 22%
-      expect(SWIGGY_ZOMATO_COMMISSION_TIERS.TIER_3_PREMIUM.baseRateBps).toBe(2500); // 25%
+    it("applies Tier-1 marketplace standard 3-tier commission rates", () => {
+      expect(TIER1_MARKETPLACE_COMMISSION_TIERS.TIER_1_STARTER.baseRateBps).toBe(1800); // 18%
+      expect(TIER1_MARKETPLACE_COMMISSION_TIERS.TIER_2_STANDARD.baseRateBps).toBe(2200); // 22%
+      expect(TIER1_MARKETPLACE_COMMISSION_TIERS.TIER_3_PREMIUM.baseRateBps).toBe(2500); // 25%
     });
 
     it("applies weekly order volume rebates with statutory 8% floor protection", () => {

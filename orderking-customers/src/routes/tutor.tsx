@@ -914,7 +914,7 @@ function IntelligencePage() {
   const [difficulty, setDifficulty] = useState("Intermediate");
   const [tone, setTone] = useState("Direct Easy Exam Answers");
   const [goal, setGoal] = useState("Concept Mastery");
-  const [showConfig, setShowConfig] = useState(false);
+  const [showConfig, setShowConfig] = useState(true);
   const [mode, setMode] = useState<"tutor" | "jobs">("tutor");
 
   // Academic Tutor Category & Sub-Category state

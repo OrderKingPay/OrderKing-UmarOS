@@ -14,7 +14,7 @@ import {
   processWeeklySettlement,
   canRiderAcceptOrder,
   verifyLedgerIntegrity,
-  ZomatoRiderWalletEngine,
+  Tier1RiderWalletEngine,
   DEFAULT_RIDER_WALLET_CONFIG,
   formatPaiseToInr,
   formatPaiseToRupeesString,
@@ -592,7 +592,7 @@ describe("Supreme Tier-1 Rider Wallet, Accounting & Onboarding Economics Engine"
   // ==========================================================================
   describe("Double-Entry Ledger Integrity Audit", () => {
     it("verifies that sum of debits and credits strictly matches wallet balances with 0 paise drift", () => {
-      const engine = new ZomatoRiderWalletEngine();
+      const engine = new Tier1RiderWalletEngine();
       engine.registerRider("rider_audit_01", {
         kitMode: "ZERO_UPFRONT",
         totalKitFeePaise: 120000,
@@ -636,9 +636,9 @@ describe("Supreme Tier-1 Rider Wallet, Accounting & Onboarding Economics Engine"
   // ==========================================================================
   // 9. END-TO-END LIFECYCLE SIMULATION (ORCHESTRATOR CLASS)
   // ==========================================================================
-  describe("ZomatoRiderWalletEngine Complete Lifecycle Simulation", () => {
+  describe("Tier1RiderWalletEngine Complete Lifecycle Simulation", () => {
     it("simulates full lifecycle: ZERO_UPFRONT onboarding -> Prepaid First -> COD Unlock -> Netting -> Kit Repayment -> Payout", () => {
-      const engine = new ZomatoRiderWalletEngine({
+      const engine = new Tier1RiderWalletEngine({
         onboarding: {
           kitMode: "ZERO_UPFRONT",
           totalKitFeePaise: 100000, // ₹1,000 kit

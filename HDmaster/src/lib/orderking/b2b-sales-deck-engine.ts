@@ -371,7 +371,7 @@ Direct WhatsApp / Desk: +91 (Available on Request)`
     subject: `Reclaiming 20%+ EBITDA for ${franchiseBrand} (From an ex-Burger King Multi-Unit Operator)`,
     body: `Hi ${recipientName},
 
-I spent 12 years running multi-unit Burger King franchise operations. I know firsthand the pain of watching 30% of your top-line delivery sales vanish to DoorDash and UberEats, while your brand takes the blame for cold food and delivery delays.
+I spent 12 years running multi-unit Burger King franchise operations. I know firsthand the pain of watching 30% of your top-line delivery sales vanish to legacy aggregators (30% commission), while your brand takes the blame for cold food and delivery delays.
 
 We engineered OrderKing (UmarOS) specifically for multi-unit QSR franchisees to cut the aggregator cord and own their customer relationships directly:
 

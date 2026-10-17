@@ -75,7 +75,7 @@ export function B2BSaaSSalesDeckGenerator() {
     unitsCount: 15,
     dailyOrdersPerUnit: 90,
     avgTicketValue: 450, // ₹450 INR, $30 USD, or 70 SAR
-    aggregatorFeePct: 28, // 28% Dominant Legacy Aggregators or 30% DoorDash
+    aggregatorFeePct: 28, // 28% to 30% Dominant Legacy Aggregators
     orderkingCostPct: 5, // 5%-8% direct processing/platform cost
     currency: "INR",
     implementationCost: 49999,
@@ -751,9 +751,9 @@ export function B2BSaaSSalesDeckGenerator() {
                     </h2>
                     <p className="text-slate-300 text-sm mt-1">
                       {market === "US"
-                        ? "DoorDash and UberEats take 30% of every ticket, conceal customer records, and blame your crew for delivery delays."
+                        ? "Legacy aggregators take 30% of every ticket, conceal customer records, and blame your crew for delivery delays."
                         : market === "SAUDI"
-                        ? "Jahez, HungerStation, and Talabat charge up to 30%, hoard customer loyalty, and pass all refund deductions onto the restaurant."
+                        ? "Dominant aggregators charge up to 30%, hoard customer loyalty, and pass all refund deductions onto the restaurant."
                         : "Third-party delivery apps operate as a digital toll booth extracting top-line revenue while offloading operational risk."}
                     </p>
                   </div>
@@ -934,7 +934,7 @@ export function B2BSaaSSalesDeckGenerator() {
                         {market === "US" ? "30.0%" : "28.0%"} GMV
                       </div>
                       <span className="text-[11px] text-slate-500">
-                        {market === "US" ? "DoorDash / UberEats" : "Jahez / HungerStation"}
+                        {market === "US" ? "Legacy 30% Aggregators" : "Regional Aggregators (30%)"}
                       </span>
                     </div>
 
@@ -1096,7 +1096,7 @@ export function B2BSaaSSalesDeckGenerator() {
                       {market === "INDIA"
                         ? "Direct UPI QR & Intent checkout, GST INV-1 invoicing, CGST Sec 9(5) & Income Tax Sec 194-O compliance, and Petpooja/Posist sync."
                         : market === "US"
-                        ? "Seamless bridge with Toast, NCR Aloha, Brink POS, and DoorDash Drive relay courier fulfillment."
+                        ? "Seamless bridge with Toast, NCR Aloha, Brink POS, and white-label 3PL relay courier fulfillment."
                         : market === "SAUDI"
                         ? "توافق كامل مع متطلبات هيئة الزكاة والضريبة والجمارك (ZATCA الفوترة الإلكترونية المرحلة 2) وبوابات مدى وApple Pay."
                         : "Full compatibility with leading enterprise restaurant tech stacks worldwide."}
@@ -1140,9 +1140,9 @@ export function B2BSaaSSalesDeckGenerator() {
                           </p>
                         </div>
                         <div className="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-2">
-                          <h4 className="font-bold text-blue-400 text-sm">DoorDash Drive Backup</h4>
+                          <h4 className="font-bold text-blue-400 text-sm">White-Label 3PL Relay Backup</h4>
                           <p className="text-xs text-slate-300 leading-relaxed">
-                            Use your own internal drivers for flagship routes; automatically spill peak overflow to DoorDash Drive at a flat $7 fee instead of 30% commission!
+                            Use your own internal drivers for flagship routes; automatically spill peak overflow to white-label 3PL relays at a flat $7 fee instead of 30% commission!
                           </p>
                         </div>
                       </>
@@ -1304,7 +1304,7 @@ export function B2BSaaSSalesDeckGenerator() {
                 1. Founder Authority & Operational Doctrine
               </h3>
               <p className="text-sm text-slate-300 print:text-gray-800 leading-relaxed">
-                OrderKing is architected by an enterprise operator with <strong>12 years of hands-on Burger King multi-unit franchise management</strong>. It is designed to solve the single largest threat to restaurant franchise profitability in the post-pandemic era: the 28%–32% aggregator commission tax imposed by Dominant Legacy Aggregators, DoorDash, UberEats, Jahez, and HungerStation.
+                OrderKing is architected by an enterprise operator with <strong>12 years of hands-on Burger King multi-unit franchise management</strong>. It is designed to solve the single largest threat to restaurant franchise profitability in the post-pandemic era: the 28%–32% aggregator commission tax imposed by dominant legacy aggregators.
               </p>
               <p className="text-sm text-slate-300 print:text-gray-800 leading-relaxed">
                 Unlike generic POS plugins, OrderKing is an end-to-end sovereign dispatch, ordering, and anti-fraud operating system engineered specifically for multi-unit store portfolios.

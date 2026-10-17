@@ -111,8 +111,8 @@ function DeliveryDirectoryPage() {
             Find Food Delivery Near You in India
           </h1>
           <p className="mt-3 max-w-2xl text-sm text-muted sm:text-base">
-            OrderKing brings genuine kitchen pricing to your doorstep. Zero 30% aggregator commission markup,
-            sub-25 minute express delivery, and pure 24K Digital Gold rewards on every single meal.
+            OrderKing brings genuine kitchen pricing to your doorstep. Zero aggregator commission markups,
+            25–30 minute express delivery, and transparent direct billing on every single meal.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-4 text-xs font-medium text-foreground">
@@ -123,7 +123,7 @@ function DeliveryDirectoryPage() {
               <Sparkles className="size-4 text-amber-500" /> ₹0 Hidden Packaging Surcharges
             </span>
             <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
-              <Utensils className="size-4 text-primary" /> 24K Gold Coin Cashbacks
+              <Utensils className="size-4 text-primary" /> 100% Direct Kitchen Pricing
             </span>
           </div>
         </div>

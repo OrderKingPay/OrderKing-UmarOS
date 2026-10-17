@@ -115,7 +115,7 @@ describe("B2B SaaS Sales Deck Engine & 15-Stage CRM Revenue System", () => {
     assert.match(email.subject, /Burger King/);
     assert.match(email.subject, /Apex QSR Holdings/);
     assert.match(email.body, /12 years/);
-    assert.match(email.body, /DoorDash/);
+    assert.match(email.body, /legacy aggregators/);
     assert.match(email.body, /Sub-8 minute/);
     assert.match(email.body, /Toast\/NCR Aloha/);
   });

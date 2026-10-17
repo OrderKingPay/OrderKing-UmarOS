@@ -20,7 +20,7 @@
  *    - Floating cash limit reconciliation (e.g. ₹1,500 standard threshold).
  *    - Soft limit warnings (80%) and hard limit order blocking (100%).
  *    - Actionable settlement reminders with UPI, Hub Cash Drop, CDM, and auto-unblock logic.
- * 5. Zomato/Swiggy-Style 3-Tier Commission & Packaging Charge Policies:
+ * 5. Tier-1 Marketplace 3-Tier Commission & Packaging Charge Policies:
  *    - 3-tier commission matrix (15%-25%) with volume rebates and 8% statutory floor.
  *    - Consumer Protection (CCPA) packaging charge compliance guardrails (10% / ₹50 cap).
  *    - Complete merchant settlement statement with 18% GST on commission, 1% TCS (Sec 52), and 1% TDS (Sec 194-O).
@@ -903,7 +903,7 @@ export interface CommissionTierSpec {
   description: string;
 }
 
-export const SWIGGY_ZOMATO_COMMISSION_TIERS: Record<CommissionTierLevel, CommissionTierSpec> = {
+export const TIER1_MARKETPLACE_COMMISSION_TIERS: Record<CommissionTierLevel, CommissionTierSpec> = {
   TIER_1_STARTER: {
     level: "TIER_1_STARTER",
     name: "Tier 1: Starter / Cloud Kitchen / Regional Chain",
@@ -1030,7 +1030,7 @@ export interface MerchantSettlementResult {
 }
 
 /**
- * Calculates complete merchant order settlement statement matching Swiggy/Zomato Indian economics:
+ * Calculates complete merchant order settlement statement matching Tier-1 Indian marketplace economics:
  * Net Payout = Net Taxable Food + Packaging - Commission - GST on Commission - 1% TCS - 1% TDS.
  */
 export function calculateMerchantOrderSettlement(input: MerchantSettlementInput): MerchantSettlementResult {
@@ -1042,7 +1042,7 @@ export function calculateMerchantOrderSettlement(input: MerchantSettlementInput)
 
   // Commission determination
   const tierLevel = input.commissionTierLevel ?? "TIER_2_STANDARD";
-  const tierSpec = SWIGGY_ZOMATO_COMMISSION_TIERS[tierLevel] ?? SWIGGY_ZOMATO_COMMISSION_TIERS.TIER_2_STANDARD;
+  const tierSpec = TIER1_MARKETPLACE_COMMISSION_TIERS[tierLevel] ?? TIER1_MARKETPLACE_COMMISSION_TIERS.TIER_2_STANDARD;
   const baseRate = input.customCommissionBps ?? tierSpec.baseRateBps;
 
   // Volume rebates (orders per week: 100+ -> -100 bps, 300+ -> -200 bps, 500+ -> -300 bps)

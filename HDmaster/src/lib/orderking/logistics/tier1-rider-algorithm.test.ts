@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  ZomatoRiderAlgorithmEngine,
-  DEFAULT_ZOMATO_CONFIG,
+  Tier1RiderAlgorithmEngine,
+  DEFAULT_TIER1_CONFIG,
   resolveCityTier,
 } from "./tier1-rider-algorithm";
 
 describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () => {
   it("initializes with authentic Indian food delivery pricing configuration", () => {
-    const engine = new ZomatoRiderAlgorithmEngine();
+    const engine = new Tier1RiderAlgorithmEngine();
     const config = engine.getConfig();
 
     expect(config.rider.basePayPaise).toBe(2000); // ₹20.00 base pay
@@ -24,12 +24,12 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
   //    (₹28.50, ₹34, ₹42, ₹46.50, ₹63.50, ₹74, ₹78, ₹84.50, ₹135.00)
   // ==========================================================================
   describe("Mathematical Calculation of Real-World Indian Food Delivery Payouts", () => {
-    const engine = new ZomatoRiderAlgorithmEngine();
+    const engine = new Tier1RiderAlgorithmEngine();
 
     it("calculates exact ₹28.50 for a short trip (1.2 km with 6 min kitchen wait)", () => {
-      const calibratedEngine = new ZomatoRiderAlgorithmEngine({
+      const calibratedEngine = new Tier1RiderAlgorithmEngine({
         rider: {
-          ...DEFAULT_ZOMATO_CONFIG.rider,
+          ...DEFAULT_TIER1_CONFIG.rider,
           basePayPaise: 1850,
         },
       });
@@ -199,7 +199,7 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
   // 2. GEOLOCATION & AUTHENTIC CITY TIERING
   // ==========================================================================
   describe("Geolocation & City Tiering (Tier-1 Metros vs Tier-2/3)", () => {
-    const engine = new ZomatoRiderAlgorithmEngine();
+    const engine = new Tier1RiderAlgorithmEngine();
 
     it("resolves city names into correct authentic Indian market tiers", () => {
       expect(resolveCityTier("Delhi NCR")).toBe("TIER_1");
@@ -274,7 +274,7 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
   // 3. DYNAMIC H3 / GEOHASH ZONE DENSITY & CONTINUOUS SURGE (1.0x to 2.4x)
   // ==========================================================================
   describe("Dynamic H3/Geohash Zone Density & Continuous Surge Curve", () => {
-    const engine = new ZomatoRiderAlgorithmEngine();
+    const engine = new Tier1RiderAlgorithmEngine();
 
     it("computes exact continuous surge multipliers bounded strictly from 1.0x to 2.4x", () => {
       // Equilibrium (R <= 1.0)
@@ -332,7 +332,7 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
   // 4. TEMPORAL FRICTION MATRIX & TRAFFIC SPEED DECAY
   // ==========================================================================
   describe("Temporal Friction Matrix & Traffic Speed Decay", () => {
-    const engine = new ZomatoRiderAlgorithmEngine();
+    const engine = new Tier1RiderAlgorithmEngine();
 
     it("accurately detects Lunch Peak (12:00-15:30) and applies 25% speed decay", () => {
       const friction = engine.calculateTemporalFriction("2026-10-16T13:15:00+05:30");
@@ -389,7 +389,7 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
   // 5. WEATHER & ENVIRONMENTAL BONUSES
   // ==========================================================================
   describe("Weather & Environmental Allowances", () => {
-    const engine = new ZomatoRiderAlgorithmEngine();
+    const engine = new Tier1RiderAlgorithmEngine();
 
     it("awards correct allowances for Drizzle (₹15), Heavy Rain (₹30), and Waterlogged (₹45)", () => {
       const drizzle = engine.calculateRiderPay({
@@ -422,10 +422,10 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
   });
 
   // ==========================================================================
-  // 6. CUSTOMER DELIVERY & PLATFORM FEES (ZOMATO MODEL)
+  // 6. CUSTOMER DELIVERY & PLATFORM FEES (TIER-1 BENCHMARK MODEL)
   // ==========================================================================
   describe("Customer Delivery & Platform Fee Breakdown", () => {
-    const engine = new ZomatoRiderAlgorithmEngine();
+    const engine = new Tier1RiderAlgorithmEngine();
 
     it("calculates authentic customer fees with ₹6.00 platform fee", () => {
       const fees = engine.calculateCustomerFees({
@@ -456,12 +456,12 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
   // ==========================================================================
   describe("Universal Customization from UmarOS", () => {
     it("allows the founder to increase or decrease any parameter manually in real-time", () => {
-      const engine = new ZomatoRiderAlgorithmEngine();
+      const engine = new Tier1RiderAlgorithmEngine();
 
       // Founder increases base pay from ₹20 to ₹25, and rain bonus to ₹40
       engine.updateConfig({
         rider: {
-          ...DEFAULT_ZOMATO_CONFIG.rider,
+          ...DEFAULT_TIER1_CONFIG.rider,
           basePayPaise: 2500,
           heavyRainBonusPaise: 4000,
         },
@@ -484,19 +484,19 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
     });
 
     it("allows customizing city tier definitions and dynamic surge ceilings in real-time", () => {
-      const engine = new ZomatoRiderAlgorithmEngine();
+      const engine = new Tier1RiderAlgorithmEngine();
 
       engine.updateConfig({
         surge: {
-          ...DEFAULT_ZOMATO_CONFIG.surge,
+          ...DEFAULT_TIER1_CONFIG.surge,
           maxSurgeMultiplier: 3.0, // Increase surge cap to 3.0x
         },
         geoTiering: {
-          ...DEFAULT_ZOMATO_CONFIG.geoTiering,
+          ...DEFAULT_TIER1_CONFIG.geoTiering,
           tiers: {
-            ...DEFAULT_ZOMATO_CONFIG.geoTiering.tiers,
+            ...DEFAULT_TIER1_CONFIG.geoTiering.tiers,
             TIER_1: {
-              ...DEFAULT_ZOMATO_CONFIG.geoTiering.tiers.TIER_1,
+              ...DEFAULT_TIER1_CONFIG.geoTiering.tiers.TIER_1,
               basePayPaise: 3000, // ₹30.00 base pay in Tier 1
             },
           },
@@ -522,7 +522,7 @@ describe("Tier-1 Grade Logistics & Rider Algorithm Engine (OrderKing Core)", () 
   // 8. EMPLOYEE-LESS AUTONOMOUS OPERATIONS
   // ==========================================================================
   describe("Employee-less Autonomous Operations", () => {
-    const engine = new ZomatoRiderAlgorithmEngine();
+    const engine = new Tier1RiderAlgorithmEngine();
 
     it("autonomously pre-allocates dispatch so rider arrives exactly as food is packed", () => {
       const plan = engine.calculatePreAllocationDispatchTime(15, 4);

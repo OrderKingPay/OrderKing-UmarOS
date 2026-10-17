@@ -605,7 +605,7 @@ The video is ready for playback below with full audio-visual motion capabilities
 
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 5, label: "Scanning Market Radar", status: "COMPLETED", detail: "Scanned 14 local food brands in Karimganj & Silchar" },
-      { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, Loss: 28% to Swiggy)` },
+      { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, Loss: 28% to legacy aggregators)` },
       { stepNumber: 3, totalSteps: 5, label: "Compiling Turnkey Pitch", status: "COMPLETED", detail: "Generated 0% Commission & Price Parity ROI calculation" },
       { stepNumber: 4, totalSteps: 5, label: "Minting Advance Invoice", status: "COMPLETED", detail: `50% Advance Lock: ₹${invoice.advanceRequiredInr.toLocaleString("en-IN")} via King Pay UPI` },
       { stepNumber: 5, totalSteps: 5, label: "Deploying Edge Preview", status: "COMPLETED", detail: "Client sandbox ready at https://royal-darbar.orderking.in" },
@@ -819,7 +819,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     q.includes("upwork") ||
     q.includes("whatsapp") ||
     q.includes("aggregator") ||
-    q.includes("swiggy") ||
+    q.includes("third-party") ||
     q.includes("shopify") ||
     q.includes("connector") ||
     q.includes("sync app") ||
@@ -828,7 +828,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     let matchedPlatform = (await getUniversalPlatforms())[0]; // GitHub default
     if (q.includes("upwork") || q.includes("contract") || q.includes("bid")) matchedPlatform = (await getUniversalPlatforms())[1];
     else if (q.includes("whatsapp") || q.includes("message") || q.includes("chat")) matchedPlatform = (await getUniversalPlatforms())[2];
-    else if (q.includes("aggregator") || q.includes("swiggy") || q.includes("menu")) matchedPlatform = (await getUniversalPlatforms())[3];
+    else if (q.includes("aggregator") || q.includes("third-party") || q.includes("menu")) matchedPlatform = (await getUniversalPlatforms())[3];
     else if (q.includes("shopify") || q.includes("store") || q.includes("ecommerce")) matchedPlatform = (await getUniversalPlatforms())[4];
     else if (q.includes("pay") || q.includes("upi") || q.includes("bank")) matchedPlatform = (await getUniversalPlatforms())[5];
     else if (q.includes("google") || q.includes("meet") || q.includes("drive") || q.includes("sheet")) matchedPlatform = (await getUniversalPlatforms())[6];

@@ -49,10 +49,10 @@ function Home() {
         <div className="border-b border-amber-900/10 bg-gradient-to-r from-amber-500/10 via-yellow-400/15 to-amber-500/10 px-3 py-1.5 text-center backdrop-blur-xs">
           <div className="flex items-center justify-center gap-2 text-[11px] font-extrabold text-amber-950">
             <span className="flex size-4 items-center justify-center rounded-full bg-amber-400/80 text-[10px] shadow-2xs">
-              👑
+              ⚡
             </span>
             <span className="tracking-tight">
-              Order food online from verified kitchens near you · <span className="text-amber-800">25-30m Express Delivery</span> · <span className="text-emerald-800">0% Menu Markups</span>
+              Express 25–30m delivery · <span className="text-amber-800">FSSAI Certified Kitchens</span> · <span className="text-emerald-800">0% Menu Markups</span>
             </span>
           </div>
         </div>

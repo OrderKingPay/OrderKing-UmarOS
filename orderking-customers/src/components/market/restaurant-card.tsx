@@ -69,7 +69,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
 
         {/* ─── Top-Left Badges Stack ─── */}
         <div className="absolute left-2.5 top-2.5 flex flex-col gap-1.5 z-10">
-          {/* Featured Ad - Obsidian & 24K Gold Luxury */}
+          {/* Featured Partner Kitchen */}
           {restaurant.promoted && (
             <span
               className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider shadow-lg border border-amber-400/50"
@@ -226,12 +226,20 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
 
         {/* Location + Free Delivery Emerald Badge */}
         <div className="flex items-center justify-between pt-1.5 border-t border-gray-100 text-xs">
-          <div className="flex items-center gap-1.5 text-gray-500 truncate">
+          <div className="flex items-center gap-1.5 text-gray-500 truncate max-w-[65%]">
             <span className="truncate">{restaurant.zoneName || "Local Delivery Area"}</span>
             {restaurant.vegOnly && (
               <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded px-1.5 py-[1px] shrink-0">
                 <span className="size-1.5 rounded-full bg-emerald-600" />
                 Pure Veg
+              </span>
+            )}
+            {restaurant.fssaiLicenseNumber && (
+              <span
+                className="inline-flex items-center text-[9.5px] font-bold text-stone-600 bg-stone-100 border border-stone-200/90 rounded px-1.5 py-[1px] shrink-0"
+                title={`FSSAI License: ${restaurant.fssaiLicenseNumber}`}
+              >
+                FSSAI #{restaurant.fssaiLicenseNumber.slice(0, 5)}...
               </span>
             )}
           </div>

@@ -183,7 +183,7 @@ export const Route = createFileRoute("/api/search")({
             const dist = distanceKm(origin, { lat: row.lat, lng: row.lng });
             const open = row.open_override == null ? isOpenNow(hours.get(row.outlet_id) ?? [], cfg.business.timezone) : row.open_override;
             
-            // Set default delivery estimate (e.g. 25-30m) so users can browse dishes and menus without seeing '0 places'
+            // Set realistic delivery estimate (25-30m+) so users can browse dishes and menus with accurate ETAs
             const prep = row.prep_minutes || 15;
             const travel = travelMinutes(dist, cfg.marketplace.riderSpeedKmh);
             const etaMinutes = Math.max(25, Math.min(60, prep + (travel > 0 ? travel : 10)));
@@ -208,6 +208,7 @@ export const Route = createFileRoute("/api/search")({
               zoneName: row.zone_name,
               ratingAvg: num(row.rating_avg),
               ratingCount: row.rating_count,
+              fssaiLicenseNumber: row.fssai_license_number || undefined,
             };
             if (openNow && !card.open) continue;
             cards.push(card);

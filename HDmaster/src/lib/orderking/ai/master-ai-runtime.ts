@@ -1776,7 +1776,7 @@ export async function executeTool(
           rbiLspCompliance: "RBI_DIGITAL_LENDING_GUIDELINES_ZERO_CREDIT_RISK",
           participantMutualBenefitIndex: "100_PERCENT_PARTICIPANTS_FINANCIALLY_BETTER_OFF",
         },
-        verdict: "The 12-stream profit engine generates 10x–High_Performance higher sustainable founder free cash flow than competitors by completely eliminating corporate bloatware and activating high-margin fintech, ad, and affiliate flywheels, while guaranteeing that restaurants, riders, and customers earn or save significantly more than on Tier-1 Legacy Market Leader or Swiggy.",
+        verdict: "The 12-stream profit engine generates 10x–High_Performance higher sustainable founder free cash flow than competitors by completely eliminating corporate bloatware and activating high-margin fintech, ad, and affiliate flywheels, while guaranteeing that restaurants, riders, and customers earn or save significantly more than on legacy 30% aggregators.",
       };
     }
 
@@ -1988,9 +1988,9 @@ export async function executeTool(
         timestamp: new Date().toISOString(),
         radarMetrics: {
           competitorDeliverySpeed: {
-            tier1AvgMinutes: 28.4,
-            swiggyAvgMinutes: 29.1,
-            zeptoCafeAvgMinutes: 22.0,
+            legacyAggregator1AvgMinutes: 28.4,
+            legacyAggregator2AvgMinutes: 29.1,
+            quickCommerceAvgMinutes: 22.0,
             orderKingAvgMinutes: 18.8,
             speedAdvantageMinutes: 9.6,
           },

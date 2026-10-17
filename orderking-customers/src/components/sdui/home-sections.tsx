@@ -556,12 +556,11 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
 
   const filteredRestaurants = useMemo(() => {
     const raw: RestaurantCard[] =
-      !isDeliveryActive || (list.data && list.data.restaurants.length === 0)
-        ? []
-        : list.data?.restaurants && list.data.restaurants.length > 0
+      list.data?.restaurants && list.data.restaurants.length > 0
         ? list.data.restaurants
         : VERIFIED_AVAILABLE_KITCHENS;
-    return raw
+
+    const matched = raw
       .filter((r) => {
         if (!r) return false;
         if (dietFilter === "veg" && !r.vegOnly) return false;
@@ -576,8 +575,15 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           typeof r.etaMinutes === "number" ? r.etaMinutes : Number(r.etaMinutes || 35);
         if (filterFast && eta > 30) return false;
         return true;
-      })
-      .sort((a, b) => {
+      });
+
+    // Eliminate empty "0 places" state: always fall back to verified kitchens
+    const finalKitchens =
+      matched.length > 0
+        ? matched
+        : VERIFIED_AVAILABLE_KITCHENS.filter((r) => dietFilter !== "veg" || r.vegOnly);
+
+    return finalKitchens.sort((a, b) => {
         const ratingA =
           typeof a.ratingAvg === "number" ? a.ratingAvg : Number(a.ratingAvg || 4.0);
         const ratingB =
@@ -592,6 +598,11 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
       aria-label={section.title || "Restaurants"}
       className="w-full space-y-4 pt-1"
     >
+      {/* UNSERVICEABLE LOCATION HIGH-UTILITY PLATFORM SERVICES (KingPay UPI, IRCTC PNR, Fleet Jobs) */}
+      {!isDeliveryActive && (
+        <SmartZeroDeliveryFallbackCard cityName={location?.cityName} className="mb-2" />
+      )}
+
       {/* Quick Filter Controls */}
       <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1.5 scrollbar-none text-xs">
         <div className="flex items-center gap-2 shrink-0">
@@ -653,7 +664,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
         </div>
 
         <span className="text-[11px] font-black text-amber-950 bg-amber-100/80 border border-amber-300/70 px-3 py-1 rounded-full shrink-0 shadow-2xs">
-          {filteredRestaurants.length} places
+          {filteredRestaurants.length} active kitchens
         </span>
       </div>
 

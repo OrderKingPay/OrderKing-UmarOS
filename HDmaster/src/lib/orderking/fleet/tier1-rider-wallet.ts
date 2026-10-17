@@ -77,15 +77,15 @@ export const RiderCodLimitsConfigSchema = z.object({
 
 export type RiderCodLimitsConfig = z.infer<typeof RiderCodLimitsConfigSchema>;
 
-export const ZomatoRiderWalletConfigSchema = z.object({
+export const Tier1RiderWalletConfigSchema = z.object({
   onboarding: OnboardingKitConfigSchema.default({} as any),
   earlyPayout: EarlyPayoutConfigSchema.default({} as any),
   codLimits: RiderCodLimitsConfigSchema.default({} as any),
 });
 
-export type ZomatoRiderWalletConfig = z.infer<typeof ZomatoRiderWalletConfigSchema>;
+export type Tier1RiderWalletConfig = z.infer<typeof Tier1RiderWalletConfigSchema>;
 
-export const DEFAULT_RIDER_WALLET_CONFIG: ZomatoRiderWalletConfig = {
+export const DEFAULT_RIDER_WALLET_CONFIG: Tier1RiderWalletConfig = {
   onboarding: {
     kitMode: "ZERO_UPFRONT",
     totalKitFeePaise: 120000, // ₹1,200
@@ -1338,27 +1338,27 @@ export function verifyLedgerIntegrity(
 }
 
 // ============================================================================
-// 5. MASTER ZOMATO RIDER WALLET ENGINE (ORCHESTRATOR CLASS)
+// 5. MASTER TIER-1 RIDER WALLET ENGINE (ORCHESTRATOR CLASS)
 // ============================================================================
 
-export class ZomatoRiderWalletEngine {
-  private config: ZomatoRiderWalletConfig;
+export class Tier1RiderWalletEngine {
+  private config: Tier1RiderWalletConfig;
   private wallets: Map<string, RiderWalletState> = new Map();
   private ledger: LedgerEntry[] = [];
 
-  constructor(config: Partial<ZomatoRiderWalletConfig> = {}) {
-    this.config = ZomatoRiderWalletConfigSchema.parse({
+  constructor(config: Partial<Tier1RiderWalletConfig> = {}) {
+    this.config = Tier1RiderWalletConfigSchema.parse({
       ...DEFAULT_RIDER_WALLET_CONFIG,
       ...config,
     });
   }
 
-  public getConfig(): ZomatoRiderWalletConfig {
+  public getConfig(): Tier1RiderWalletConfig {
     return JSON.parse(JSON.stringify(this.config));
   }
 
-  public updateConfig(newConfig: Partial<ZomatoRiderWalletConfig>): void {
-    this.config = ZomatoRiderWalletConfigSchema.parse({
+  public updateConfig(newConfig: Partial<Tier1RiderWalletConfig>): void {
+    this.config = Tier1RiderWalletConfigSchema.parse({
       ...this.config,
       ...newConfig,
     });

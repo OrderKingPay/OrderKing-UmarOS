@@ -1,7 +1,7 @@
 /**
  * 👑 UMAR OS / ORDERKING - AUTHENTIC INDIAN RESTAURANT OPERATIONS, ECONOMICS & GROWTH STRATEGY ENGINE
  * 
- * Location: src/lib/orderking/merchants/zomato-merchant-engine.ts
+ * Location: src/lib/orderking/merchants/tier1-merchant-engine.ts
  * 
  * Modeled after real-world Tier-1 restaurant operational economics in India:
  * 1. 3-Tier Commission Structure:
@@ -108,7 +108,7 @@ export const DEFAULT_VOLUME_REBATES: VolumeRebateTier[] = [
 // 2. UNIVERSAL ENGINE CONFIGURATION & DEFAULTS
 // ============================================================================
 
-export interface ZomatoMerchantEngineConfig {
+export interface Tier1MerchantEngineConfig {
   // Commission settings
   tiers: Record<RestaurantCategoryTier, CommissionTierDefinition>;
   statutoryCommissionFloorBps: number; // e.g. 800 (8.00%)
@@ -145,7 +145,7 @@ export interface ZomatoMerchantEngineConfig {
   };
 }
 
-export const DEFAULT_ZOMATO_MERCHANT_CONFIG: ZomatoMerchantEngineConfig = {
+export const DEFAULT_TIER1_MERCHANT_CONFIG: Tier1MerchantEngineConfig = {
   tiers: { ...INDIAN_RESTAURANT_COMMISSION_TIERS },
   statutoryCommissionFloorBps: 800,  // 8.00%
   statutoryCommissionCeilingBps: 3500, // 35.00%
@@ -212,7 +212,7 @@ export interface PackagingFeeResult {
  */
 export function evaluatePackagingFeePolicy(
   input: PackagingFeeInput,
-  config: ZomatoMerchantEngineConfig = DEFAULT_ZOMATO_MERCHANT_CONFIG
+  config: Tier1MerchantEngineConfig = DEFAULT_TIER1_MERCHANT_CONFIG
 ): PackagingFeeResult {
   const foodPrice = Math.max(0, input.foodItemPricePaise);
   const requested = Math.max(0, input.requestedPackagingFeePaise);
@@ -312,7 +312,7 @@ export interface CoFundedPromotionResult {
  */
 export function calculateCoFundedPromotion(
   input: CoFundedPromotionInput,
-  config: ZomatoMerchantEngineConfig = DEFAULT_ZOMATO_MERCHANT_CONFIG
+  config: Tier1MerchantEngineConfig = DEFAULT_TIER1_MERCHANT_CONFIG
 ): CoFundedPromotionResult {
   const {
     orderSubtotalPaise,
@@ -485,7 +485,7 @@ export interface RestaurantHealthScoreInput {
   ratings: CustomerRatingRecord[];
   kitchenOps: KitchenOpsMetrics;
   hygiene: HygieneAuditMetrics;
-  customConfig?: Partial<ZomatoMerchantEngineConfig>;
+  customConfig?: Partial<Tier1MerchantEngineConfig>;
 }
 
 export type RestaurantHealthBadge =
@@ -533,7 +533,7 @@ export interface RestaurantHealthScoreResult {
  */
 export function calculateRestaurantHealthScore(
   input: RestaurantHealthScoreInput,
-  baseConfig: ZomatoMerchantEngineConfig = DEFAULT_ZOMATO_MERCHANT_CONFIG
+  baseConfig: Tier1MerchantEngineConfig = DEFAULT_TIER1_MERCHANT_CONFIG
 ): RestaurantHealthScoreResult {
   const config = { ...baseConfig, ...input.customConfig };
   const { ratings, kitchenOps, hygiene, restaurantId } = input;
@@ -695,7 +695,7 @@ export function calculateRestaurantHealthScore(
 // 6. END-TO-END INDIAN RESTAURANT ORDER SETTLEMENT & ECONOMICS ENGINE
 // ============================================================================
 
-export interface ZomatoOrderSettlementInput {
+export interface Tier1OrderSettlementInput {
   orderId: string;
   restaurantId: string;
   restaurantName: string;
@@ -732,7 +732,7 @@ export interface ZomatoOrderSettlementInput {
   riderPayoutPaise?: number; // actual or estimated rider fee
 }
 
-export interface ZomatoOrderSettlementResult {
+export interface Tier1OrderSettlementResult {
   orderId: string;
   restaurantId: string;
   restaurantName: string;
@@ -820,10 +820,10 @@ export interface ZomatoOrderSettlementResult {
  * 4. Deducts 18% GST on Commission, 1% TCS (Sec 52), and 1% TDS (Sec 194-O).
  * 5. Models 5% CGST Section 9(5) Food Tax (Non-ITC) collected and remitted by OrderKing.
  */
-export function calculateZomatoOrderSettlement(
-  input: ZomatoOrderSettlementInput,
-  config: ZomatoMerchantEngineConfig = DEFAULT_ZOMATO_MERCHANT_CONFIG
-): ZomatoOrderSettlementResult {
+export function calculateTier1OrderSettlement(
+  input: Tier1OrderSettlementInput,
+  config: Tier1MerchantEngineConfig = DEFAULT_TIER1_MERCHANT_CONFIG
+): Tier1OrderSettlementResult {
   const {
     orderId,
     restaurantId,
@@ -1106,7 +1106,7 @@ export interface MenuItemEngineeringResult {
 export function analyzeMenuItemEconomics(
   item: MenuItemEngineeringInput,
   benchmarks: { medianOrders: number; medianProfitPaise: number },
-  config: ZomatoMerchantEngineConfig = DEFAULT_ZOMATO_MERCHANT_CONFIG
+  config: Tier1MerchantEngineConfig = DEFAULT_TIER1_MERCHANT_CONFIG
 ): MenuItemEngineeringResult {
   const tierDef = config.tiers[item.restaurantCategoryTier] ?? config.tiers.STANDARD_STANDALONE;
   const commissionBps = tierDef.defaultCommissionBps;
@@ -1180,7 +1180,7 @@ export function analyzeMenuItemEconomics(
 }
 
 // ============================================================================
-// 8. UNIFIED ZOMATO MERCHANT ENGINE (WITH SELF-TUNING CAPABILITIES)
+// 8. UNIFIED TIER-1 MERCHANT ENGINE (WITH SELF-TUNING CAPABILITIES)
 // ============================================================================
 
 export interface MerchantHistoricalOpsMetrics {
@@ -1209,19 +1209,19 @@ export interface SelfTuningRecommendation {
 /**
  * Supreme Indian Restaurant Operations, Economics & Growth Strategy Engine.
  */
-export class ZomatoMerchantEngine {
-  private config: ZomatoMerchantEngineConfig;
+export class Tier1MerchantEngine {
+  private config: Tier1MerchantEngineConfig;
 
-  constructor(initialConfig?: Partial<ZomatoMerchantEngineConfig>) {
+  constructor(initialConfig?: Partial<Tier1MerchantEngineConfig>) {
     this.config = {
-      ...DEFAULT_ZOMATO_MERCHANT_CONFIG,
+      ...DEFAULT_TIER1_MERCHANT_CONFIG,
       ...initialConfig,
       tiers: {
-        ...DEFAULT_ZOMATO_MERCHANT_CONFIG.tiers,
+        ...DEFAULT_TIER1_MERCHANT_CONFIG.tiers,
         ...(initialConfig?.tiers ?? {}),
       },
       weights: {
-        ...DEFAULT_ZOMATO_MERCHANT_CONFIG.weights,
+        ...DEFAULT_TIER1_MERCHANT_CONFIG.weights,
         ...(initialConfig?.weights ?? {}),
       },
     };
@@ -1230,14 +1230,14 @@ export class ZomatoMerchantEngine {
   /**
    * Retrieves active engine configuration.
    */
-  public getConfig(): ZomatoMerchantEngineConfig {
+  public getConfig(): Tier1MerchantEngineConfig {
     return { ...this.config };
   }
 
   /**
    * Updates configuration dynamically via UmarOS manual controls or self-tuning.
    */
-  public updateConfig(partial: Partial<ZomatoMerchantEngineConfig>): void {
+  public updateConfig(partial: Partial<Tier1MerchantEngineConfig>): void {
     this.config = {
       ...this.config,
       ...partial,
@@ -1256,7 +1256,7 @@ export class ZomatoMerchantEngine {
    * Resets engine configuration back to factory default.
    */
   public resetConfig(): void {
-    this.config = { ...DEFAULT_ZOMATO_MERCHANT_CONFIG };
+    this.config = { ...DEFAULT_TIER1_MERCHANT_CONFIG };
   }
 
   /**
@@ -1283,8 +1283,8 @@ export class ZomatoMerchantEngine {
   /**
    * Computes comprehensive order settlement statement matching Tier-1 Indian economics.
    */
-  public calculateSettlement(input: ZomatoOrderSettlementInput): ZomatoOrderSettlementResult {
-    return calculateZomatoOrderSettlement(input, this.config);
+  public calculateSettlement(input: Tier1OrderSettlementInput): Tier1OrderSettlementResult {
+    return calculateTier1OrderSettlement(input, this.config);
   }
 
   /**
@@ -1354,4 +1354,4 @@ export class ZomatoMerchantEngine {
   }
 }
 
-export const zomatoMerchantEngine = new ZomatoMerchantEngine();
+export const tier1MerchantEngine = new Tier1MerchantEngine();

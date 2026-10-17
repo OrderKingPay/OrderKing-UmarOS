@@ -85,7 +85,7 @@ export const DEFAULT_CONFIG: PlatformConfig = {
   otpSuspiciousThreshold: 3,
   podMaxBytes: 180_000,
   payoutFrequency: "weekly",
-  supportedLocales: ["en", "hi", "bn", "gu", "kn", "ml", "mr", "pa", "ta", "te"],
+  supportedLocales: ["en", "hi", "bn", "as", "ta", "te", "ml", "kn", "mr", "gu"],
   defaultLocale: "en",
   pickupVerification: "ORDER_CODE",
   podMethods: ["OTP", "PHOTO"],

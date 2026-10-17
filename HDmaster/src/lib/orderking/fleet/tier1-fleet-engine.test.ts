@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  ZomatoFleetEngine,
+  Tier1FleetEngine,
   DEFAULT_FLEET_CONFIG,
   calculateHaversineDistanceMeters,
 } from "./tier1-fleet-engine";
@@ -11,7 +11,7 @@ describe("Supreme Rider Fleet Operations & Autonomous Dispatch Engine (OrderKing
   // ==========================================================================
   describe("UmarOS Universal Customization & Dials", () => {
     it("initializes with authentic Tier-1 operational defaults", () => {
-      const engine = new ZomatoFleetEngine();
+      const engine = new Tier1FleetEngine();
       const config = engine.getConfig();
 
       // COD Limits
@@ -37,7 +37,7 @@ describe("Supreme Rider Fleet Operations & Autonomous Dispatch Engine (OrderKing
     });
 
     it("allows dynamic real-time tuning of all thresholds from UmarOS without restart", () => {
-      const engine = new ZomatoFleetEngine();
+      const engine = new Tier1FleetEngine();
 
       // UmarOS founder tunes COD limit to ₹2,000, 2nd base discount to 40%, and delay credit to ₹75
       engine.updateConfig({
@@ -73,7 +73,7 @@ describe("Supreme Rider Fleet Operations & Autonomous Dispatch Engine (OrderKing
   // 2. AUTONOMOUS DISPATCH PRE-ALLOCATION (0 IDLE MINUTES TARGET)
   // ==========================================================================
   describe("Autonomous Dispatch Pre-Allocation & KPT Synchronization", () => {
-    const engine = new ZomatoFleetEngine();
+    const engine = new Tier1FleetEngine();
 
     it("computes exact notification timing to achieve 0 idle minutes for approaching rider", () => {
       const baseTime = new Date("2026-10-16T12:00:00.000Z");
@@ -120,7 +120,7 @@ describe("Supreme Rider Fleet Operations & Autonomous Dispatch Engine (OrderKing
   // 3. MULTI-ORDER BATCHING LOGIC
   // ==========================================================================
   describe("Multi-Order Batching Logic & Rider Incentive Preservation", () => {
-    const engine = new ZomatoFleetEngine();
+    const engine = new Tier1FleetEngine();
 
     // Standard restaurant & drop coordinates in urban corridor
     const restaurantA = { latitude: 12.9352, longitude: 77.6245 }; // Koramangala Hub
@@ -263,7 +263,7 @@ describe("Supreme Rider Fleet Operations & Autonomous Dispatch Engine (OrderKing
   // 4. COD FLOATING CASH SAFETY LOCK
   // ==========================================================================
   describe("COD Floating Cash Safety Lock & Settlement Rail", () => {
-    const engine = new ZomatoFleetEngine();
+    const engine = new Tier1FleetEngine();
 
     it("allows COD orders normally when cash-in-hand is low (< ₹1,200)", () => {
       const evalStatus = engine.evaluateCodSafetyLock({
@@ -343,7 +343,7 @@ describe("Supreme Rider Fleet Operations & Autonomous Dispatch Engine (OrderKing
   // 5. AUTONOMOUS EXCEPTION HANDLING (EMPLOYEE-LESS)
   // ==========================================================================
   describe("Autonomous Employee-less Exception Handling", () => {
-    const engine = new ZomatoFleetEngine();
+    const engine = new Tier1FleetEngine();
 
     it("triggers automated outbound AI voice IVR call to restaurant kitchen manager when prep exceeds promise time by >7 mins", () => {
       const exception = engine.evaluateAutonomousExceptions({
@@ -427,7 +427,7 @@ describe("Supreme Rider Fleet Operations & Autonomous Dispatch Engine (OrderKing
   // 6. RIDER TIER GAMIFICATION & WEEKLY MILESTONES
   // ==========================================================================
   describe("Rider Tier Gamification & Weekly Milestone Bonuses", () => {
-    const engine = new ZomatoFleetEngine();
+    const engine = new Tier1FleetEngine();
 
     it("qualifies rider for Gold Tier when Acceptance Rate >90%, Completion Rate >95%, and On-Time >92%", () => {
       const evaluation = engine.evaluateRiderTier({

@@ -6,7 +6,8 @@ import {
   Zap,
   UtensilsCrossed,
   CreditCard,
-  Store,
+  Plane,
+  GraduationCap,
   Wine,
   ArrowRight,
   CheckCircle2,
@@ -46,7 +47,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             World’s Simplest. <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">10x More Luxurious.</span>
           </h2>
           <p className="max-w-md text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
-            Uncompromising culinary perfection, real-time NPCI payments, 24K gold rewards, and VIP dining table reservations — architected for absolute zero-friction living.
+            Uncompromising culinary perfection, real-time NPCI payments, zero-fee sovereign travel, and master AI intelligence — architected for absolute zero-friction living.
           </p>
         </div>
 
@@ -106,56 +107,56 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             </div>
           </Link>
 
-          {/* 3. DINING OUT & TABLES */}
+          {/* 3. SOVEREIGN TRAVEL (3D Supersonic Aircraft & Sapphire Jewel) */}
           <Link
-            to="/dining"
-            className="group relative overflow-hidden rounded-2xl border border-orange-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-orange-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-orange-300 hover:shadow-[0_12px_32px_rgba(249,115,22,0.35)] no-underline shadow-lg"
+            to="/travel"
+            className="group relative overflow-hidden rounded-2xl border border-sky-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-sky-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-sky-300 hover:shadow-[0_12px_32px_rgba(14,165,233,0.35)] no-underline shadow-lg"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 via-amber-600 to-red-900 text-white shadow-[0_6px_16px_rgba(249,115,22,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
-                <Store className="size-5" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-900 text-white shadow-[0_6px_16px_rgba(14,165,233,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
+                <Plane className="size-5" />
               </div>
-              <span className="rounded-full bg-gradient-to-r from-orange-500/25 via-amber-400/30 to-orange-500/25 border border-orange-400/70 px-2.5 py-0.5 text-[10px] font-black text-orange-200 uppercase tracking-wider shadow-2xs">
-                👑 Table Booking
+              <span className="rounded-full bg-gradient-to-r from-sky-500/25 via-sky-400/30 to-blue-500/25 border border-sky-400/70 px-2.5 py-0.5 text-[10px] font-black text-sky-200 uppercase tracking-wider shadow-2xs">
+                👑 ₹0 Fee vs MMT
               </span>
             </div>
             <div className="mt-3">
-              <h3 className="text-sm font-black text-white group-hover:text-orange-300 transition-colors">
-                Dining Out &amp; Cafes
+              <h3 className="text-sm font-black text-white group-hover:text-sky-300 transition-colors">
+                Sovereign Travel
               </h3>
               <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
-                Verified dine-in restaurants, live table reservations, transparent menus, and direct-to-chef seating.
+                Direct flights, Vande Bharat trains, interstate luxury buses & airport cabs with digital boarding passes.
               </p>
             </div>
-            <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-orange-400 group-hover:translate-x-1 transition-transform">
-              <span>Explore dining</span>
+            <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-sky-400 group-hover:translate-x-1 transition-transform">
+              <span>Book flights & trains</span>
               <ArrowRight className="size-3" />
             </div>
           </Link>
 
-          {/* 4. GOLD REWARDS & VAULT */}
+          {/* 4. AI MASTER TUTOR (3D Quantum Neural Core & Amethyst Jewel) */}
           <Link
-            to="/earn"
-            className="group relative overflow-hidden rounded-2xl border border-yellow-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-yellow-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-yellow-300 hover:shadow-[0_12px_32px_rgba(234,179,8,0.35)] no-underline shadow-lg"
+            to="/tutor"
+            className="group relative overflow-hidden rounded-2xl border border-purple-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-purple-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-purple-300 hover:shadow-[0_12px_32px_rgba(168,85,247,0.35)] no-underline shadow-lg"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-300 via-amber-500 to-yellow-700 text-slate-950 shadow-[0_6px_16px_rgba(234,179,8,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
-                <Coins className="size-5" />
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 via-purple-600 to-slate-900 text-white shadow-[0_6px_16px_rgba(99,102,241,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
+                <GraduationCap className="size-5" />
               </div>
-              <span className="rounded-full bg-gradient-to-r from-yellow-500/25 via-amber-400/30 to-yellow-500/25 border border-yellow-400/70 px-2.5 py-0.5 text-[10px] font-black text-amber-200 uppercase tracking-wider shadow-2xs">
-                👑 24K Gold
+              <span className="rounded-full bg-gradient-to-r from-purple-500/25 via-purple-400/30 to-indigo-500/25 border border-purple-400/70 px-2.5 py-0.5 text-[10px] font-black text-purple-200 uppercase tracking-wider shadow-2xs">
+                👑 CBSE • NCERT
               </span>
             </div>
             <div className="mt-3">
-              <h3 className="text-sm font-black text-white group-hover:text-yellow-300 transition-colors">
-                KingPay Vault &amp; Gold
+              <h3 className="text-sm font-black text-white group-hover:text-purple-300 transition-colors">
+                AI Master Tutor & Earn
               </h3>
               <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
-                Earn 24K digital gold cashback on every transaction, food order, and fine-dining table settlement.
+                Step-by-step academic solutions, native voice guidance, marking tips & verified micro-task payouts.
               </p>
             </div>
-            <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-yellow-400 group-hover:translate-x-1 transition-transform">
-              <span>View gold rewards</span>
+            <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-purple-400 group-hover:translate-x-1 transition-transform">
+              <span>Ask AI Tutor</span>
               <ArrowRight className="size-3" />
             </div>
           </Link>
@@ -238,10 +239,10 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             <div className="rounded-2xl border border-sky-500/20 bg-sky-950/20 p-3">
               <div className="text-[11px] font-bold text-sky-400 flex items-center gap-1">
                 <CheckCircle2 className="size-3.5" />
-                <span>Zero Table Booking Fees</span>
+                <span>Zero Travel Convenience Fees</span>
               </div>
               <p className="mt-1 text-[11px] text-slate-300">
-                Dining clubs charge hefty recurring subscriptions. OrderKing gives free VIP table reservations with up to 40% bill savings.
+                MakeMyTrip charges ₹399–₹600 convenience fees. OrderKing charges exactly ₹0 on confirmed flights.
               </p>
             </div>
 
@@ -266,6 +267,14 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
           <div className="flex items-center gap-1.5">
             <Lock className="size-4 text-amber-400" />
             <span>NPCI 256-Bit Encrypted UPI</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Plane className="size-4 text-sky-400" />
+            <span>IATA / DGCA Aviation Gateway</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <GraduationCap className="size-4 text-indigo-400" />
+            <span>NCERT / CBSE Aligned AI</span>
           </div>
         </div>
 

@@ -44,7 +44,7 @@ export const WeeklyMilestoneBonusSchema = z.object({
   title: z.string(),
 });
 
-export const ZomatoFleetConfigSchema = z.object({
+export const Tier1FleetConfigSchema = z.object({
   mode: z.enum(["MANUAL_OVERRIDE", "AUTONOMOUS_UMAROS"]).default("AUTONOMOUS_UMAROS"),
 
   // 1. Dispatch Pre-Allocation & KPT Synchronization
@@ -135,9 +135,9 @@ export const ZomatoFleetConfigSchema = z.object({
   ]),
 });
 
-export type ZomatoFleetConfig = z.infer<typeof ZomatoFleetConfigSchema>;
+export type Tier1FleetConfig = z.infer<typeof Tier1FleetConfigSchema>;
 
-export const DEFAULT_FLEET_CONFIG: ZomatoFleetConfig = {
+export const DEFAULT_FLEET_CONFIG: Tier1FleetConfig = {
   mode: "AUTONOMOUS_UMAROS",
   dispatch: {
     urbanTrafficSpeedKmph: 20.0,
@@ -417,13 +417,13 @@ export interface RiderTierEvaluation {
 }
 
 // ============================================================================
-// 4. SUPREME ZOMATO FLEET ENGINE IMPLEMENTATION
+// 4. SUPREME TIER-1 FLEET ENGINE IMPLEMENTATION
 // ============================================================================
 
-export class ZomatoFleetEngine {
-  private config: ZomatoFleetConfig;
+export class Tier1FleetEngine {
+  private config: Tier1FleetConfig;
 
-  constructor(customConfig?: Partial<ZomatoFleetConfig>) {
+  constructor(customConfig?: Partial<Tier1FleetConfig>) {
     this.config = {
       ...DEFAULT_FLEET_CONFIG,
       ...customConfig,
@@ -441,11 +441,11 @@ export class ZomatoFleetEngine {
   // CONFIGURATION & UMAROS DIALS
   // ==========================================================================
 
-  public getConfig(): ZomatoFleetConfig {
+  public getConfig(): Tier1FleetConfig {
     return this.config;
   }
 
-  public updateConfig(newConfig: Partial<ZomatoFleetConfig>): void {
+  public updateConfig(newConfig: Partial<Tier1FleetConfig>): void {
     this.config = {
       ...this.config,
       ...newConfig,
@@ -1020,7 +1020,7 @@ export class ZomatoFleetEngine {
   public exportForUmarOS() {
     return {
       metadata: {
-        engine: "ZomatoFleetEngine",
+        engine: "Tier1FleetEngine",
         version: "2.0.0",
         governance: "UMAR_OS_AUTONOMOUS",
       },
