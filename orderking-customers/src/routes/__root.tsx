@@ -37,17 +37,8 @@ const fetchConfig = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const Route = createRootRoute({
-  beforeLoad: async () => {
-    let sessionUser = null;
-    let config = null;
-    try {
-      const [su, c] = await Promise.all([fetchSessionUser(), fetchConfig()]);
-      sessionUser = su;
-      config = c;
-    } catch (err) {
-      console.error("beforeLoad Promise.all error:", err);
-    }
-    return { sessionUser, config };
+  beforeLoad: () => {
+    return { sessionUser: null, config: DEFAULT_CONFIG };
   },
   pendingComponent: CustomerAppSkeleton,
   errorComponent: ({ error }) => {

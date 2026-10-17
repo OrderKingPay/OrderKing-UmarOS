@@ -47,7 +47,7 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
   const shareUrl = `${originUrl}/?src=invite${referralCode ? `&ref=${encodeURIComponent(referralCode)}` : ""}`;
 
   // Attractive, natural gift message for WhatsApp
-  const giftMessage = `Explore OrderKing food, travel, and learning services when available in your area: ${shareUrl}`;
+  const giftMessage = `🍲 Craving hot food? Order on OrderKing — 0% menu markup, delivered fresh in ~20 mins! Use my link for 50% OFF (up to ₹100) on your first order: ${shareUrl}`;
 
   const handleWhatsAppShare = () => {
     const waUrl = `https://wa.me/?text=${encodeURIComponent(giftMessage)}`;

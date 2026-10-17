@@ -18,7 +18,7 @@ export function WhatsAppShare({
   restaurantSlug,
   cuisine,
   orderTotalPaise,
-  referralCode = "KING500",
+  referralCode = "ORDERKING",
   className = "",
 }: WhatsAppShareProps) {
   const [copied, setCopied] = useState(false);
@@ -29,7 +29,7 @@ export function WhatsAppShare({
     if (variant === "restaurant") {
       const restName = restaurantName || "OrderKing Partner Kitchen";
       const restUrl = restaurantSlug ? `${origin}/r/${restaurantSlug}?ref=${referralCode}` : `${origin}?ref=${referralCode}`;
-      const message = `🔥 Check out *${restName}*${cuisine ? ` (${cuisine})` : ""} on OrderKing!\n\nOrder with my VIP invite link to get flat ₹500 bonus cash on your first order: ${restUrl}\n\nFast delivery, genuine food, zero surge! 🚀`;
+      const message = `🔥 Check out *${restName}*${cuisine ? ` (${cuisine})` : ""} on OrderKing!\n\nOrder with my link to get 50% OFF (up to ₹100) on your first order: ${restUrl}\n\nFast delivery in ~20 mins, 0% menu markup! 🚀`;
       return {
         title: `Order from ${restName} on OrderKing`,
         text: message,
@@ -38,11 +38,11 @@ export function WhatsAppShare({
     }
 
     if (variant === "checkout") {
-      const totalRupees = orderTotalPaise ? (orderTotalPaise / 100).toFixed(0) : "500";
+      const totalRupees = orderTotalPaise ? (orderTotalPaise / 100).toFixed(0) : "250";
       const checkoutUrl = `${origin}/earn?ref=${referralCode}`;
-      const message = `👑 I just placed a delicious food order worth ₹${totalRupees} on OrderKing!\n\nUse my invite link to get an instant ₹500 welcome credit for your next meal: ${checkoutUrl}\n\nClaim your ₹500 food cash before the daily pool runs out! 🍔🍕`;
+      const message = `👑 I just placed a delicious food order worth ₹${totalRupees} on OrderKing!\n\nUse my invite link to get 50% OFF (up to ₹100) on your first meal: ${checkoutUrl}\n\nDelivered fresh and hot in 20 mins! 🍔🍕`;
       return {
-        title: "OrderKing ₹500 Welcome Bonus",
+        title: "OrderKing 50% OFF Welcome Offer",
         text: message,
         url: checkoutUrl,
       };
@@ -50,9 +50,9 @@ export function WhatsAppShare({
 
     // Default compact
     const defaultUrl = `${origin}?ref=${referralCode}`;
-    const defaultMsg = `👑 Get ₹500 free food cash on OrderKing! Use my link to claim your bonus now: ${defaultUrl}`;
+    const defaultMsg = `👑 Order fresh food on OrderKing! Get 50% OFF (up to ₹100) on your first order: ${defaultUrl}`;
     return {
-      title: "OrderKing VIP Invite",
+      title: "OrderKing Invite",
       text: defaultMsg,
       url: defaultUrl,
     };
