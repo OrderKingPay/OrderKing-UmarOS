@@ -24,6 +24,7 @@ export type SearchDishItem = {
   description?: string;
   imageUrl: string | null;
   veg: boolean;
+  isJain?: boolean;
   pricePaise: number;
   restaurantId: string;
   restaurantName: string;
@@ -521,6 +522,45 @@ export const CURATED_DISHES: SearchDishItem[] = [
     hasOffer: true,
     offerLabel: "₹60 OFF ON ₹299",
     cuisine: "Burgers",
+  },
+  {
+    id: "dish-butter-chicken-delhi",
+    name: "Classic Old Delhi Butter Chicken",
+    description: "Tender tandoori chicken simmered in rich velvety tomato cashew makhani gravy with dollops of white butter.",
+    imageUrl: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=500&auto=format&fit=crop&q=80",
+    veg: false,
+    pricePaise: 29000, // ₹290
+    restaurantId: "rest-punjab-grill",
+    restaurantName: "Punjab Grill & Dhaba",
+    restaurantSlug: "punjab-grill-dhaba",
+    ratingAvg: 4.9,
+    ratingCount: 1140,
+    bestseller: true,
+    etaMinutes: 24,
+    deliveryFeePaise: 0,
+    hasOffer: true,
+    offerLabel: "20% OFF",
+    cuisine: "North Indian",
+  },
+  {
+    id: "dish-jain-shahi-paneer",
+    name: "Sattvic Jain Shahi Paneer",
+    description: "Pure sattvic recipe without onion or garlic, simmered in fresh malai, cashew milk and royal Kashmiri saffron.",
+    imageUrl: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80",
+    veg: true,
+    isJain: true,
+    pricePaise: 24000, // ₹240
+    restaurantId: "rest-mtr-south",
+    restaurantName: "MTR 1920 South Kitchen",
+    restaurantSlug: "mtr-1920-south-kitchen",
+    ratingAvg: 4.8,
+    ratingCount: 520,
+    bestseller: false,
+    etaMinutes: 18,
+    deliveryFeePaise: 0,
+    hasOffer: false,
+    offerLabel: null,
+    cuisine: "North Indian",
   },
 ];
 

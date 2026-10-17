@@ -53,25 +53,25 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
 
         {/* ─── 5-SEGMENT 3D INTERACTIVE SOVEREIGN CARDS ─── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
-          {/* 1. FOOD GASTRONOMY (3D Gold Cloche) */}
+          {/* 1. FOOD GASTRONOMY (3D Gold Cloche & Emerald Jewel) */}
           <Link
             to="/"
-            className="group relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-amber-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-amber-400 hover:shadow-[0_12px_32px_rgba(245,158,11,0.25)] no-underline"
+            className="group relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-amber-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-amber-300 hover:shadow-[0_12px_32px_rgba(245,158,11,0.35)] no-underline shadow-lg"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-emerald-600 to-teal-900 text-white shadow-[0_6px_16px_rgba(16,185,129,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)]">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-emerald-600 to-teal-900 text-white shadow-[0_6px_16px_rgba(16,185,129,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
                 <UtensilsCrossed className="size-5" />
               </div>
-              <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 px-2 py-0.5 text-[10px] font-black text-emerald-300 uppercase tracking-wider">
-                0% Markup
+              <span className="rounded-full bg-gradient-to-r from-emerald-500/25 via-emerald-400/35 to-teal-500/25 border border-emerald-400/70 px-2.5 py-0.5 text-[10px] font-black text-emerald-300 uppercase tracking-wider shadow-2xs">
+                👑 0% Markup
               </span>
             </div>
             <div className="mt-3">
               <h3 className="text-sm font-black text-white group-hover:text-amber-300 transition-colors">
                 Royal Gastronomy
               </h3>
-              <p className="mt-1 text-xs text-slate-400 font-medium leading-snug">
-                Curated dining & 100% direct chef handover with real-time temperature tracking.
+              <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
+                Curated dining & 100% direct chef handover with real-time temperature tracking at 82°C.
               </p>
             </div>
             <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
@@ -83,22 +83,22 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
           {/* 2. KINGPAY FINTECH (3D Minted Gold Coin) */}
           <Link
             to="/king-pay"
-            className="group relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-yellow-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-amber-300 hover:shadow-[0_12px_32px_rgba(245,158,11,0.35)] no-underline"
+            className="group relative overflow-hidden rounded-2xl border border-amber-400/60 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-yellow-950/50 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-amber-300 hover:shadow-[0_12px_36px_rgba(245,158,11,0.45)] no-underline shadow-lg"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-300 via-amber-500 to-amber-700 text-slate-950 shadow-[0_6px_16px_rgba(245,158,11,0.6),inset_0_2px_3px_rgba(255,255,255,0.95)]">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-300 via-amber-500 to-amber-700 text-slate-950 shadow-[0_6px_16px_rgba(245,158,11,0.6),inset_0_2px_3px_rgba(255,255,255,0.95)] group-hover:scale-105 transition-transform">
                 <Crown className="size-5" />
               </div>
-              <span className="rounded-full bg-amber-500/20 border border-amber-400/40 px-2 py-0.5 text-[10px] font-black text-amber-300 uppercase tracking-wider">
-                NPCI UPI 256-Bit
+              <span className="rounded-full bg-gradient-to-r from-amber-500/30 via-yellow-400/30 to-amber-500/30 border border-amber-400/80 px-2.5 py-0.5 text-[10px] font-black text-amber-200 uppercase tracking-wider shadow-2xs">
+                👑 256-Bit UPI
               </span>
             </div>
             <div className="mt-3">
               <h3 className="text-sm font-black text-white group-hover:text-amber-300 transition-colors">
                 KingPay Sovereign Wallet
               </h3>
-              <p className="mt-1 text-xs text-slate-400 font-medium leading-snug">
-                1-tap QR scan, instant bank settlement, authentic double-entry ledger & rewards.
+              <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
+                1-tap QR scan, instant bank settlement, authentic double-entry ledger & 24K gold rewards.
               </p>
             </div>
             <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
@@ -107,24 +107,24 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             </div>
           </Link>
 
-          {/* 3. SOVEREIGN TRAVEL (3D Supersonic Aircraft) */}
+          {/* 3. SOVEREIGN TRAVEL (3D Supersonic Aircraft & Sapphire Jewel) */}
           <Link
             to="/travel"
-            className="group relative overflow-hidden rounded-2xl border border-sky-500/30 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-sky-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-sky-400 hover:shadow-[0_12px_32px_rgba(14,165,233,0.25)] no-underline"
+            className="group relative overflow-hidden rounded-2xl border border-sky-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-sky-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-sky-300 hover:shadow-[0_12px_32px_rgba(14,165,233,0.35)] no-underline shadow-lg"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-900 text-white shadow-[0_6px_16px_rgba(14,165,233,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)]">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-900 text-white shadow-[0_6px_16px_rgba(14,165,233,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
                 <Plane className="size-5" />
               </div>
-              <span className="rounded-full bg-sky-500/20 border border-sky-400/40 px-2 py-0.5 text-[10px] font-black text-sky-300 uppercase tracking-wider">
-                ₹0 Fee vs MMT
+              <span className="rounded-full bg-gradient-to-r from-sky-500/25 via-sky-400/30 to-blue-500/25 border border-sky-400/70 px-2.5 py-0.5 text-[10px] font-black text-sky-200 uppercase tracking-wider shadow-2xs">
+                👑 ₹0 Fee vs MMT
               </span>
             </div>
             <div className="mt-3">
               <h3 className="text-sm font-black text-white group-hover:text-sky-300 transition-colors">
                 Sovereign Travel
               </h3>
-              <p className="mt-1 text-xs text-slate-400 font-medium leading-snug">
+              <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
                 Direct flights, Vande Bharat trains, interstate luxury buses & airport cabs with digital boarding passes.
               </p>
             </div>
@@ -134,51 +134,51 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             </div>
           </Link>
 
-          {/* 4. AI MASTER TUTOR (3D Quantum Neural Core) */}
+          {/* 4. AI MASTER TUTOR (3D Quantum Neural Core & Amethyst Jewel) */}
           <Link
             to="/tutor"
-            className="group relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-indigo-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-indigo-400 hover:shadow-[0_12px_32px_rgba(99,102,241,0.25)] no-underline"
+            className="group relative overflow-hidden rounded-2xl border border-purple-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-purple-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-purple-300 hover:shadow-[0_12px_32px_rgba(168,85,247,0.35)] no-underline shadow-lg"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 via-purple-600 to-slate-900 text-white shadow-[0_6px_16px_rgba(99,102,241,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)]">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 via-purple-600 to-slate-900 text-white shadow-[0_6px_16px_rgba(99,102,241,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
                 <GraduationCap className="size-5" />
               </div>
-              <span className="rounded-full bg-indigo-500/20 border border-indigo-400/40 px-2 py-0.5 text-[10px] font-black text-indigo-300 uppercase tracking-wider">
-                CBSE • NCERT
+              <span className="rounded-full bg-gradient-to-r from-purple-500/25 via-purple-400/30 to-indigo-500/25 border border-purple-400/70 px-2.5 py-0.5 text-[10px] font-black text-purple-200 uppercase tracking-wider shadow-2xs">
+                👑 CBSE • NCERT
               </span>
             </div>
             <div className="mt-3">
-              <h3 className="text-sm font-black text-white group-hover:text-indigo-300 transition-colors">
+              <h3 className="text-sm font-black text-white group-hover:text-purple-300 transition-colors">
                 AI Master Tutor & Earn
               </h3>
-              <p className="mt-1 text-xs text-slate-400 font-medium leading-snug">
+              <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
                 Step-by-step academic solutions, native voice guidance, marking tips & verified micro-task payouts.
               </p>
             </div>
-            <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-indigo-400 group-hover:translate-x-1 transition-transform">
+            <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-purple-400 group-hover:translate-x-1 transition-transform">
               <span>Ask AI Tutor</span>
               <ArrowRight className="size-3" />
             </div>
           </Link>
 
-          {/* 5. ROYAL DINING & EXPERIENCES (3D Crystal Goblet) */}
+          {/* 5. ROYAL DINING & EXPERIENCES (3D Crystal Goblet & Ruby Jewel) */}
           <Link
             to="/dining"
-            className="group relative overflow-hidden rounded-2xl border border-rose-500/30 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-rose-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-rose-400 hover:shadow-[0_12px_32px_rgba(244,63,94,0.25)] no-underline"
+            className="group relative overflow-hidden rounded-2xl border border-rose-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-rose-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-rose-300 hover:shadow-[0_12px_32px_rgba(244,63,94,0.35)] no-underline shadow-lg"
           >
             <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-rose-400 via-pink-600 to-slate-900 text-white shadow-[0_6px_16px_rgba(244,63,94,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)]">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-rose-400 via-pink-600 to-slate-900 text-white shadow-[0_6px_16px_rgba(244,63,94,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
                 <Wine className="size-5" />
               </div>
-              <span className="rounded-full bg-rose-500/20 border border-rose-400/40 px-2 py-0.5 text-[10px] font-black text-rose-300 uppercase tracking-wider">
-                Up to 40% Off
+              <span className="rounded-full bg-gradient-to-r from-rose-500/25 via-rose-400/30 to-pink-500/25 border border-rose-400/70 px-2.5 py-0.5 text-[10px] font-black text-rose-200 uppercase tracking-wider shadow-2xs">
+                👑 Up to 40% Off
               </span>
             </div>
             <div className="mt-3">
               <h3 className="text-sm font-black text-white group-hover:text-rose-300 transition-colors">
                 VIP Dining Reserve
               </h3>
-              <p className="mt-1 text-xs text-slate-400 font-medium leading-snug">
+              <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
                 Priority table reservations at Michelin-grade & 5-star fine dining destinations with bill discounts.
               </p>
             </div>

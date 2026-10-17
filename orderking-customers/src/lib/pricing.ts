@@ -370,7 +370,9 @@ export function computeQuote(input: QuoteInput): Quote {
   const platformDiscountPaise = split.platform;
   const foodAfterDiscounts = foodSubtotalPaise - restaurantDiscountPaise - platformDiscountPaise;
 
-  const packagingPaise = Math.max(0, input.packagingPaise);
+  // CCPA Dark Pattern Protection (2023): Packaging fee capped at min(₹35, 10% of net food value)
+  const ccpaPackagingCapPaise = Math.min(3500, Math.floor(foodAfterDiscounts * 0.1));
+  const packagingPaise = Math.min(Math.max(0, input.packagingPaise), ccpaPackagingCapPaise);
 
   // Delivery & Surges
   const isCartEmpty = input.lines.length === 0;

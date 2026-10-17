@@ -147,13 +147,13 @@ export const STATUTORY_TAX_RATES = {
   SEC9_5_CGST_BPS: 250,
   SEC9_5_SGST_BPS: 250,
 
-  /** 1% TCS under Section 52 of CGST Act 2017 on net taxable supply */
-  TCS_SEC52_BPS: 100,
-  TCS_CGST_BPS: 50,
-  TCS_SGST_BPS: 50,
+  /** 0.5% TCS under Section 52 of CGST Act 2017 on net taxable supply (CBIC Notification No. 15/2024-CT w.e.f. 10-Jul-2024) */
+  TCS_SEC52_BPS: 50,
+  TCS_CGST_BPS: 25,
+  TCS_SGST_BPS: 25,
 
-  /** 1% TDS under Section 194-O of Income Tax Act 1961 on gross sales */
-  TDS_SEC194_O_BPS: 100,
+  /** 0.1% TDS under Section 194-O of Income Tax Act 1961 on gross sales (Finance Act 2024 w.e.f. 01-Oct-2024) */
+  TDS_SEC194_O_BPS: 10,
 
   /** Express Daily Cycle (T+1) nominal early-liquidity fee: 0.5% (50 bps) */
   EXPRESS_DAILY_EARLY_LIQUIDITY_FEE_BPS: 50,

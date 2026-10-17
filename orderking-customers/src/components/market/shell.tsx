@@ -7,11 +7,17 @@ import {
   Crown,
   Gift,
   Mic,
+  UtensilsCrossed,
+  Plane,
+  GraduationCap,
+  Wine,
+  Sparkles,
 } from "lucide-react";
 import { useState, useEffect, Suspense } from "react";
 import { OrderKingMark } from "@/components/brand/wordmark";
 import { resilientLazy, ModalErrorBoundary } from "@/components/common/resilient-lazy";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { OneTapCheckoutDrawer } from "@/components/market/one-tap-checkout-drawer";
 
 const LazyLocationDialog = resilientLazy(
   () => import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog })),
@@ -50,6 +56,69 @@ const SEARCH_PLACEHOLDERS = [
   "Burgers & rolls...",
 ];
 
+export const SOVEREIGN_ECOSYSTEM_TABS = [
+  {
+    id: "food",
+    name: "Food",
+    badge: "0% Markup",
+    badgeColor: "bg-emerald-500/20 text-emerald-800 border-emerald-400/50",
+    icon: UtensilsCrossed,
+    iconGradient: "from-amber-400 via-emerald-500 to-teal-800",
+    to: "/",
+    match: (p: string) => p === "/" || p.startsWith("/r/") || p.startsWith("/cart") || p.startsWith("/search"),
+  },
+  {
+    id: "kingpay",
+    name: "KingPay UPI",
+    badge: "256-Bit UPI",
+    badgeColor: "bg-amber-500/25 text-amber-900 border-amber-400/60",
+    icon: Crown,
+    iconGradient: "from-yellow-400 via-amber-500 to-amber-700",
+    to: "/king-pay",
+    match: (p: string) => p.startsWith("/king-pay"),
+  },
+  {
+    id: "travel",
+    name: "Sovereign Travel",
+    badge: "₹0 Fee",
+    badgeColor: "bg-sky-500/20 text-sky-900 border-sky-400/50",
+    icon: Plane,
+    iconGradient: "from-sky-400 via-blue-500 to-indigo-800",
+    to: "/travel",
+    match: (p: string) => p.startsWith("/travel"),
+  },
+  {
+    id: "tutor",
+    name: "AI Super-Tutor",
+    badge: "NCERT • CBSE",
+    badgeColor: "bg-purple-500/20 text-purple-900 border-purple-400/50",
+    icon: GraduationCap,
+    iconGradient: "from-indigo-400 via-purple-500 to-purple-800",
+    to: "/tutor",
+    match: (p: string) => p.startsWith("/tutor"),
+  },
+  {
+    id: "dining",
+    name: "VIP Dining",
+    badge: "40% Off",
+    badgeColor: "bg-rose-500/20 text-rose-900 border-rose-400/50",
+    icon: Wine,
+    iconGradient: "from-rose-400 via-pink-500 to-rose-800",
+    to: "/dining",
+    match: (p: string) => p.startsWith("/dining"),
+  },
+];
+
+export const POPULAR_INDIAN_DISH_CHIPS = [
+  { name: "Biryani", query: "Biryani", emoji: "🍚", hindi: "बिरयानी", bengali: "বিরিয়ানি" },
+  { name: "Momos", query: "Momos", emoji: "🥟", hindi: "मोमोज", bengali: "মোমো" },
+  { name: "Butter Chicken", query: "Butter Chicken", emoji: "🍗", hindi: "बटर चिकन", bengali: "বাটার চিকেন" },
+  { name: "Dosa", query: "Dosa", emoji: "🥞", hindi: "दोसा", bengali: "দোসা" },
+  { name: "Paneer", query: "Paneer", emoji: "🧀", hindi: "पनीर", bengali: "পনির" },
+  { name: "Thali", query: "Thali", emoji: "🍽️", hindi: "थाली", bengali: "থালি" },
+  { name: "Rolls", query: "Rolls", emoji: "🌯", hindi: "काठी रोल", bengali: "কাঠি রোল" },
+];
+
 export function CustomerShell({
   children,
   onSearch,
@@ -71,6 +140,7 @@ export function CustomerShell({
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [vipPassOpen, setVipPassOpen] = useState(false);
+  const [oneTapDrawerOpen, setOneTapDrawerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchPlaceholderIndex, setSearchPlaceholderIndex] = useState(0);
   const { dietFilter, toggleVeg } = useDietStore();
@@ -251,65 +321,116 @@ export function CustomerShell({
           </div>
         </div>
 
+        {/* ROW 1.5: Sovereign Ecosystem Horizontal Tabs (Food, KingPay, Travel, AI Tutor, VIP Dining) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none select-none">
+          {SOVEREIGN_ECOSYSTEM_TABS.map((tab) => {
+            const isActive = tab.match(path);
+            const Icon = tab.icon;
+            return (
+              <Link
+                key={tab.id}
+                to={tab.to}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-black transition-all shrink-0 no-underline active:scale-95 border",
+                  isActive
+                    ? "bg-gradient-to-r from-slate-950 via-slate-900 to-amber-950 text-amber-200 border-amber-400/80 shadow-[0_2px_10px_rgba(245,158,11,0.25)] ring-1 ring-amber-400/50"
+                    : "bg-white/80 hover:bg-white text-gray-700 border-amber-200/70 hover:border-amber-400/60 shadow-2xs"
+                )}
+              >
+                <div className={cn("flex size-4.5 items-center justify-center rounded-lg bg-gradient-to-br text-white shadow-2xs", tab.iconGradient)}>
+                  <Icon className="size-3" />
+                </div>
+                <span className="text-[11px] font-black">{tab.name}</span>
+                <span className={cn("text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded-full border leading-none shadow-2xs", tab.badgeColor)}>
+                  {tab.badge}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+
         {/* ROW 2: Compact location pill (emerald) + Luxury search bar (glassmorphism, golden focus ring) + Pure Veg/All toggle */}
         {path !== "/search" && !["/tutor", "/travel", "/orders", "/support", "/earn"].some((prefix) => path.startsWith(prefix)) && (
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Compact Location Pill (3D Emerald & Gold) */}
-            <button
-              type="button"
-              onClick={() => setLocOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/90 to-emerald-50 hover:bg-emerald-100 border border-emerald-300/80 text-emerald-950 text-xs font-bold shrink-0 max-w-[135px] sm:max-w-[170px] shadow-[0_2px_8px_rgba(16,185,129,0.12)] transition-all active:scale-95 group"
-              title="Change delivery location"
-            >
-              <div className="relative shrink-0 flex items-center justify-center">
-                <MapPin className="size-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
-                <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-              <span className="truncate text-[11px] font-black text-emerald-950">
-                {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}
-              </span>
-              <ChevronDown className="size-3 text-emerald-600/80 shrink-0 group-hover:translate-y-0.5 transition-transform" />
-            </button>
-
-            {/* Luxury Center Search (Glassmorphism, golden focus ring) */}
-            <button
-              type="button"
-              onClick={() => (onSearch ? onSearch() : void navigate({ to: "/search" }))}
-              className="flex-1 flex h-9 items-center gap-2 rounded-xl border border-amber-300/60 bg-white/70 backdrop-blur-md hover:bg-white hover:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/60 focus:border-amber-400 px-3 text-left text-gray-400 transition-all shadow-[0_2px_8px_rgba(245,158,11,0.05)] min-w-0 group"
-            >
-              <Search className="size-3.5 shrink-0 text-amber-600 group-hover:scale-110 transition-transform" aria-hidden />
-              <div className="relative flex-1 h-4 overflow-hidden">
-                <span
-                  key={searchPlaceholderIndex}
-                  className="absolute inset-0 text-xs text-gray-500 font-medium truncate transition-all duration-300"
-                >
-                  {currentPlaceholder}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Compact Location Pill (3D Emerald & Gold) */}
+              <button
+                type="button"
+                onClick={() => setLocOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/90 to-emerald-50 hover:bg-emerald-100 border border-emerald-300/80 text-emerald-950 text-xs font-bold shrink-0 max-w-[135px] sm:max-w-[170px] shadow-[0_2px_8px_rgba(16,185,129,0.12)] transition-all active:scale-95 group cursor-pointer"
+                title="Change delivery location"
+              >
+                <div className="relative shrink-0 flex items-center justify-center">
+                  <MapPin className="size-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                  <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                <span className="truncate text-[11px] font-black text-emerald-950">
+                  {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}
                 </span>
-              </div>
-            </button>
+                <ChevronDown className="size-3 text-emerald-600/80 shrink-0 group-hover:translate-y-0.5 transition-transform" />
+              </button>
 
-            {/* Pure Veg / All Switch */}
-            <button
-              type="button"
-              onClick={toggleVeg}
-              className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-black transition-all shadow-2xs shrink-0 select-none active:scale-95",
-                dietFilter === "veg"
-                  ? "bg-emerald-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
-                  : "bg-white/80 hover:bg-white text-gray-700 border-amber-200/80 hover:border-emerald-300"
-              )}
-              title={dietFilter === "veg" ? "Pure Veg Only is ACTIVE" : "Show All Restaurants"}
-            >
-              <span className={cn(
-                "size-3 rounded-xs border flex items-center justify-center p-0.5 transition-colors",
-                dietFilter === "veg" ? "border-white bg-white" : "border-emerald-600 bg-white"
-              )}>
-                <span className="size-1.5 rounded-full bg-emerald-600" />
+              {/* Luxury Center Search (Glassmorphism, golden focus ring) */}
+              <button
+                type="button"
+                onClick={() => (onSearch ? onSearch() : void navigate({ to: "/search" }))}
+                className="flex-1 flex h-9 items-center gap-2 rounded-xl border border-amber-300/60 bg-white/70 backdrop-blur-md hover:bg-white hover:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/60 focus:border-amber-400 px-3 text-left text-gray-400 transition-all shadow-[0_2px_8px_rgba(245,158,11,0.05)] min-w-0 group cursor-pointer"
+              >
+                <Search className="size-3.5 shrink-0 text-amber-600 group-hover:scale-110 transition-transform" aria-hidden />
+                <div className="relative flex-1 h-4 overflow-hidden">
+                  <span
+                    key={searchPlaceholderIndex}
+                    className="absolute inset-0 text-xs text-gray-500 font-medium truncate transition-all duration-300"
+                  >
+                    {currentPlaceholder}
+                  </span>
+                </div>
+              </button>
+
+              {/* Pure Veg / All Switch */}
+              <button
+                type="button"
+                onClick={toggleVeg}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-black transition-all shadow-2xs shrink-0 select-none active:scale-95 cursor-pointer",
+                  dietFilter === "veg"
+                    ? "bg-emerald-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
+                    : "bg-white/80 hover:bg-white text-gray-700 border-amber-200/80 hover:border-emerald-300"
+                )}
+                title={dietFilter === "veg" ? "Pure Veg Only is ACTIVE" : "Show All Restaurants"}
+              >
+                <span className={cn(
+                  "size-3 rounded-xs border flex items-center justify-center p-0.5 transition-colors",
+                  dietFilter === "veg" ? "border-white bg-white" : "border-emerald-600 bg-white"
+                )}>
+                  <span className="size-1.5 rounded-full bg-emerald-600" />
+                </span>
+                <span className="text-[11px] font-black tracking-tight">
+                  {dietFilter === "veg" ? "Pure Veg" : "All"}
+                </span>
+              </button>
+            </div>
+
+            {/* ROW 3: Zero-Typing Smart Autocorrect Quick Dish Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pt-0.5 pb-0.5 scrollbar-none select-none">
+              <span className="text-[9.5px] font-black uppercase tracking-wider text-amber-900/70 shrink-0 flex items-center gap-0.5 pr-0.5">
+                <Sparkles className="size-2.5 text-amber-600" />
+                <span>Instant:</span>
               </span>
-              <span className="text-[11px] font-black tracking-tight">
-                {dietFilter === "veg" ? "Pure Veg" : "All"}
-              </span>
-            </button>
+              {POPULAR_INDIAN_DISH_CHIPS.map((chip) => (
+                <button
+                  key={chip.name}
+                  type="button"
+                  onClick={() => void navigate({ to: "/search", search: { q: chip.query } as any })}
+                  className="inline-flex items-center gap-1 rounded-full bg-white/90 hover:bg-amber-50/90 border border-amber-200/80 hover:border-amber-400 px-2 py-0.5 text-[10.5px] font-bold text-gray-800 shadow-2xs shrink-0 transition-all active:scale-95 cursor-pointer group"
+                  title={`Zero-Typing Search: ${chip.name} (${chip.hindi} / ${chip.bengali})`}
+                >
+                  <span className="text-[11px] group-hover:scale-110 transition-transform">{chip.emoji}</span>
+                  <span className="font-black text-gray-950">{chip.name}</span>
+                  <span className="text-[9px] text-amber-800/80 font-medium hidden sm:inline">· {chip.hindi}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </header>
@@ -324,31 +445,53 @@ export function CustomerShell({
       {/* ULTRA-LUXURY 3D ECOSYSTEM PORTAL & FOOTER */}
       <UltraLuxuryEcosystemFooter />
 
-      {/* Floating View Cart Bar positioned safely above the floating luxury dock */}
+      {/* Floating View Cart & 1-Tap Checkout Bar */}
       {isDeliveryActive && count > 0 && path !== "/cart" && path !== "/checkout" ? (
         <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex justify-center px-4">
-          <Link
-            to="/cart"
-            className="pointer-events-auto flex min-h-12 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-r from-[#E23744] to-[#C92F3B] px-4 py-3 text-white no-underline shadow-[0_12px_30px_rgba(226,55,68,0.35)] transition-all active:scale-98 font-bold border border-white/20"
-          >
+          <div className="pointer-events-auto flex min-h-12 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-r from-slate-950 via-[#18130d] to-slate-950 px-3.5 py-2.5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.45)] transition-all font-bold border border-amber-400/60 backdrop-blur-md">
             <div className="flex items-center gap-2">
-              <span className="flex size-6 items-center justify-center rounded-full bg-white/20 text-xs font-extrabold">
+              <span className="flex size-7 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 text-slate-950 text-xs font-black shadow-md">
                 {count}
               </span>
-              <span className="text-xs font-semibold uppercase tracking-wider text-white/95">
-                {count === 1 ? t("cart.item") : t("cart.items")} added
-              </span>
+              <div className="flex flex-col">
+                <span className="text-xs font-black uppercase tracking-wider text-amber-200 leading-none">
+                  {count === 1 ? t("cart.item") : t("cart.items")} added
+                </span>
+                <span className="text-[10px] text-stone-400 font-medium mt-0.5">
+                  0% hidden fees · Chef direct
+                </span>
+              </div>
             </div>
-            <span className="inline-flex items-center gap-2 text-sm font-bold">
-              <ShoppingBag className="size-4" aria-hidden />
-              {t("cart.view")}
-            </span>
-          </Link>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setOneTapDrawerOpen(true)}
+                className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 px-3 py-1.5 text-xs font-black text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition-all border border-amber-200 cursor-pointer"
+              >
+                <Crown className="size-3.5 fill-slate-950" />
+                <span>1-Tap Pay</span>
+              </button>
+
+              <Link
+                to="/cart"
+                className="flex items-center gap-1 rounded-xl bg-white/15 hover:bg-white/25 px-2.5 py-1.5 text-xs font-bold text-white border border-white/20 transition-all no-underline"
+              >
+                <ShoppingBag className="size-3.5" aria-hidden />
+                <span>{t("cart.view")}</span>
+              </Link>
+            </div>
+          </div>
         </div>
       ) : null}
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
       <CustomerFloatingBottomNav />
+
+      {/* 1-TAP CHECKOUT DRAWER */}
+      {oneTapDrawerOpen && (
+        <OneTapCheckoutDrawer open={oneTapDrawerOpen} onClose={() => setOneTapDrawerOpen(false)} />
+      )}
 
       {conciergeOpen ? (
         <ModalErrorBoundary onClose={() => setConciergeOpen(false)} componentName="AI Support Concierge">

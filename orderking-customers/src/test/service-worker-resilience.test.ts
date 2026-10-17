@@ -11,6 +11,7 @@ import {
   PRECACHE_SHELL_URLS,
   EMERGENCY_OFFLINE_HTML,
   selectRouteStrategy,
+  handleNetworkFirstNavigation,
   handleShellCacheOnly,
   handleStaleWhileRevalidate,
   handleNetworkFirstCheckoutAndOps,
@@ -213,26 +214,28 @@ describe("OrderKing Low-Network Service Worker & PWA Resilience Suite", () => {
       ).toBe("bypass");
     });
 
-    it("should route SPA navigation and pre-cached UI shell assets to cache-shell", () => {
+    it("should route SPA navigation requests to network-first-navigation", () => {
       expect(
         selectRouteStrategy({
           url: "https://orderking.in/orders/ord_7718",
           mode: "navigate",
         })
-      ).toBe("cache-shell");
+      ).toBe("network-first-navigation");
       expect(
         selectRouteStrategy({
           url: "https://orderking.in/checkout",
           mode: "navigate",
         })
-      ).toBe("cache-shell");
+      ).toBe("network-first-navigation");
       expect(
         selectRouteStrategy({
           url: "https://orderking.in/r/karimganj-biryani",
           mode: "navigate",
         })
-      ).toBe("cache-shell");
+      ).toBe("network-first-navigation");
+    });
 
+    it("should route pre-cached UI shell assets to cache-shell when not navigating", () => {
       for (const precacheUrl of PRECACHE_SHELL_URLS) {
         expect(
           selectRouteStrategy({ url: `https://orderking.in${precacheUrl}` })
@@ -340,10 +343,90 @@ describe("OrderKing Low-Network Service Worker & PWA Resilience Suite", () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  // 2. CACHE-SHELL & ZERO WHITE SCREEN GUARANTEE
+  // 2. NETWORK-FIRST NAVIGATION & ZERO WHITE SCREEN GUARANTEE
   // ───────────────────────────────────────────────────────────────────────────
-  describe("2. UI Shell Caching & Zero White Screen Fallback", () => {
-    it("should serve exact pre-cached shell assets from cache immediately", async () => {
+  describe("2. Network-First Navigation & UI Shell Caching", () => {
+    it("should fetch fresh network HTML and update /index.html in shell cache on fast network", async () => {
+      const cache = new MockCache();
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response("<!DOCTYPE html><html>Live Truth Shell</html>", {
+          status: 200,
+          headers: { "Content-Type": "text/html" },
+        })
+      );
+
+      const navReq = new Request("https://orderking.in/orders/ord_9999");
+      const res = await handleNetworkFirstNavigation(navReq, cache, mockFetch as unknown as typeof fetch);
+
+      expect(res.status).toBe(200);
+      expect(await res.text()).toBe("<!DOCTYPE html><html>Live Truth Shell</html>");
+      expect(mockFetch).toHaveBeenCalledOnce();
+
+      // Verify shellCache updated with /index.html
+      const cached = await cache.match("/index.html");
+      expect(cached).toBeDefined();
+      expect(await cached!.text()).toBe("<!DOCTYPE html><html>Live Truth Shell</html>");
+    });
+
+    it("should fall back to cached shell when network request times out (>2500ms)", async () => {
+      const cache = new MockCache();
+      await cache.put(
+        "/index.html",
+        new Response("<!DOCTYPE html><html>Cached Shell Fallback</html>", {
+          status: 200,
+          headers: { "Content-Type": "text/html" },
+        })
+      );
+
+      const mockTimeoutFetch = vi.fn().mockRejectedValue(
+        new DOMException("The operation was aborted", "AbortError")
+      );
+
+      const navReq = new Request("https://orderking.in/checkout");
+      const res = await handleNetworkFirstNavigation(navReq, cache, mockTimeoutFetch as unknown as typeof fetch);
+
+      expect(res.status).toBe(200);
+      expect(await res.text()).toBe("<!DOCTYPE html><html>Cached Shell Fallback</html>");
+    });
+
+    it("should fall back to cached shell when network throws an error", async () => {
+      const cache = new MockCache();
+      await cache.put(
+        "https://orderking.in/r/karimganj-biryani",
+        new Response("<!DOCTYPE html><html>Exact URL Cached</html>", {
+          status: 200,
+          headers: { "Content-Type": "text/html" },
+        })
+      );
+
+      const mockErrorFetch = vi.fn().mockRejectedValue(new TypeError("Failed to fetch"));
+
+      const navReq = new Request("https://orderking.in/r/karimganj-biryani");
+      const res = await handleNetworkFirstNavigation(navReq, cache, mockErrorFetch as unknown as typeof fetch);
+
+      expect(res.status).toBe(200);
+      expect(await res.text()).toBe("<!DOCTYPE html><html>Exact URL Cached</html>");
+    });
+
+    it("should serve EMERGENCY_OFFLINE_HTML guaranteeing zero white screen when network and cache both fail", async () => {
+      const cache = new MockCache();
+      const mockFailingFetch = vi.fn().mockRejectedValue(new Error("Cell tower unreachable"));
+
+      const req = new Request("https://orderking.in/checkout");
+      const res = await handleNetworkFirstNavigation(req, cache, mockFailingFetch as unknown as typeof fetch);
+
+      expect(res.status).toBe(200);
+      expect(res.headers.get("Content-Type")).toContain("text/html");
+      expect(res.headers.get("X-OrderKing-Offline")).toBe("emergency-shell");
+
+      const html = await res.text();
+      expect(html).toContain("Low Network Signal Detected");
+      expect(html).toContain("Active cart & selections preserved");
+      expect(html).toContain("Retry Connection");
+      expect(html).toBe(EMERGENCY_OFFLINE_HTML);
+    });
+
+    it("should serve exact pre-cached shell assets from cache immediately via handleShellCacheOnly", async () => {
       const cache = new MockCache();
       const shellResponse = new Response("<html>Shell Index</html>", {
         status: 200,
@@ -359,59 +442,17 @@ describe("OrderKing Low-Network Service Worker & PWA Resilience Suite", () => {
       expect(html).toBe("<html>Shell Index</html>");
     });
 
-    it("should serve /index.html when navigating to dynamic TanStack sub-routes", async () => {
-      const cache = new MockCache();
-      const shellResponse = new Response("<html>SPA Shell Root</html>", {
-        status: 200,
-        headers: { "Content-Type": "text/html" },
-      });
-      await cache.put("/index.html", shellResponse);
-
-      const navReq = new Request("https://orderking.in/orders/ord_12345");
-      const res = await handleShellCacheOnly(navReq, cache);
-
-      expect(res.status).toBe(200);
-      const html = await res.text();
-      expect(html).toBe("<html>SPA Shell Root</html>");
-    });
-
-    it("should fetch and store /index.html on cold boot cache miss if network is alive", async () => {
-      const cache = new MockCache();
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("<html>Fresh Online Shell</html>", {
-          status: 200,
-          headers: { "Content-Type": "text/html" },
-        })
-      );
-
-      const req = new Request("https://orderking.in/orders/ord_cold");
-      const res = await handleShellCacheOnly(req, cache, mockFetch as unknown as typeof fetch);
-
-      expect(res.status).toBe(200);
-      expect(await res.text()).toBe("<html>Fresh Online Shell</html>");
-      expect(mockFetch).toHaveBeenCalledOnce();
-
-      // Ensure /index.html was populated in the cache
-      const cached = await cache.match("/index.html");
-      expect(cached).toBeDefined();
-    });
-
-    it("should serve EMERGENCY_OFFLINE_HTML guaranteeing zero white screen when cache and network both fail", async () => {
+    it("should serve EMERGENCY_OFFLINE_HTML via handleShellCacheOnly when cache and network both fail", async () => {
       const cache = new MockCache();
       const mockFailingFetch = vi.fn().mockRejectedValue(new Error("Cell tower unreachable"));
 
-      const req = new Request("https://orderking.in/checkout");
+      const req = new Request("https://orderking.in/logo.jpg");
       const res = await handleShellCacheOnly(req, cache, mockFailingFetch as unknown as typeof fetch);
 
       expect(res.status).toBe(200);
       expect(res.headers.get("Content-Type")).toContain("text/html");
       expect(res.headers.get("X-OrderKing-Offline")).toBe("emergency-shell");
-
-      const html = await res.text();
-      expect(html).toContain("Low Network Signal Detected");
-      expect(html).toContain("Active cart & selections preserved");
-      expect(html).toContain("Retry Connection");
-      expect(html).toBe(EMERGENCY_OFFLINE_HTML);
+      expect(await res.text()).toBe(EMERGENCY_OFFLINE_HTML);
     });
   });
 
@@ -800,10 +841,10 @@ describe("OrderKing Low-Network Service Worker & PWA Resilience Suite", () => {
     });
 
     it("should uphold all resilience constants according to architectural specifications", () => {
-      expect(SW_VERSION).toBe("orderking-v4.2.0");
-      expect(CACHE_SHELL).toBe("ok-shell-orderking-v4.2.0");
-      expect(CACHE_MENUS).toBe("ok-menus-orderking-v4.2.0");
-      expect(CACHE_ASSETS).toBe("ok-assets-orderking-v4.2.0");
+      expect(SW_VERSION).toBe("orderking-v5.3.0-live-truth");
+      expect(CACHE_SHELL).toBe("ok-shell-orderking-v5.3.0-live-truth");
+      expect(CACHE_MENUS).toBe("ok-menus-orderking-v5.3.0-live-truth");
+      expect(CACHE_ASSETS).toBe("ok-assets-orderking-v5.3.0-live-truth");
       expect(IDB_NAME).toBe("orderking-offline-outbox");
       expect(IDB_STORE).toBe("queued_mutations");
       expect(SYNC_TAG).toBe("sync-orderking-mutations");

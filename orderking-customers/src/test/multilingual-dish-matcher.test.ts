@@ -245,6 +245,36 @@ describe("Multilingual Indian Dish Autocorrect & Predictive Matcher", () => {
   });
 
   // ─────────────────────────────────────────────────────────────
+  // 7.5. BUTTER CHICKEN VARIATIONS (English, Hindi, Bengali, Assamese)
+  // ─────────────────────────────────────────────────────────────
+  describe("7.5. Butter Chicken Variations (English, Hindi, Bengali, Assamese)", () => {
+    const butterChickenQueries = [
+      "butter chicken",
+      "murgh makhani",
+      "chicken makhani",
+      "बटर चिकन",
+      "মুর্গ মাখানি",
+      "বাটার চিকেন",
+      "বাটাৰ চিকেন",
+    ];
+
+    butterChickenQueries.forEach((query) => {
+      it(`matches '${query}' to Butter Chicken canonical group`, () => {
+        const match = matchMultilingualDish(query);
+        expect(match.matched).toBe(true);
+        expect(match.canonicalName).toBe("Butter Chicken");
+        expect(match.dishGroupId).toBe("butter-chicken");
+      });
+
+      it(`filters curated dishes to Butter Chicken when searching '${query}'`, () => {
+        const dishes = filterDishes(CURATED_DISHES, query, defaultFilters);
+        expect(dishes.length).toBeGreaterThanOrEqual(1);
+        expect(dishes.some((d) => d.name.toLowerCase().includes("butter chicken"))).toBe(true);
+      });
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────
   // 8. 150MS DEBOUNCED PREDICTIVE SUGGESTIONS INTEGRATION
   // ─────────────────────────────────────────────────────────────
   describe("8. Predictive Suggestions & 150ms Debounced Wiring", () => {

@@ -90,8 +90,8 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
             </span>
           )}
 
-          {/* Pure Veg - FSSAI Compliant Green Square & Circle */}
-          {restaurant.vegOnly && (
+          {/* Pure Veg / Non-Veg - FSSAI Compliant Badges */}
+          {restaurant.vegOnly ? (
             <span
               className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-extrabold tracking-tight shadow-md border border-emerald-400/60"
               style={{
@@ -106,6 +106,22 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
                 <span className="size-1.5 rounded-full bg-emerald-600" />
               </span>
               Pure Veg
+            </span>
+          ) : (
+            <span
+              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-extrabold tracking-tight shadow-md border border-amber-900/60"
+              style={{
+                background: "linear-gradient(135deg, rgba(30,15,10,0.95), rgba(50,25,15,0.92))",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                color: "#fecdd3",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(251,113,133,0.35)",
+              }}
+            >
+              <span className="size-3 rounded-[3px] border-[1.5px] border-rose-400 flex items-center justify-center bg-white/95">
+                <span className="size-1.5 rounded-full bg-rose-600" />
+              </span>
+              Non-Veg
             </span>
           )}
         </div>

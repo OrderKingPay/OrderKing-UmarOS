@@ -32,6 +32,9 @@ add_envs.cjs
 **/add_envs.cjs
 *.pem
 *.key
+cf_setup.ps1
+push_all_env.ps1
+*.secret.ps1
 
 # Temporary artifacts & inspection dumps
 api_matches.txt

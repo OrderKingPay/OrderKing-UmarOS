@@ -284,7 +284,7 @@ function PredictiveSearchPage() {
                   setIsFocused(true);
                 }}
                 onFocus={() => setIsFocused(true)}
-                placeholder="Search for 'Biryani', 'Pizza', 'Rolls' or restaurants..."
+                placeholder="Search 'Biryani', 'Momos', 'Butter Chicken', 'Dosa'..."
                 aria-label="Search food and restaurants"
                 className="border-none bg-transparent shadow-none text-stone-900 placeholder:text-stone-400 focus-visible:ring-0 h-10 text-sm sm:text-base font-bold px-3 w-full"
                 autoFocus
@@ -320,6 +320,43 @@ function PredictiveSearchPage() {
                 <Mic className="size-4 text-amber-800 group-hover:scale-110 transition-transform" />
               </button>
             </form>
+
+            {/* ZERO-TYPING MULTILINGUAL QUICK CHIPS BAR */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pt-2 pb-0.5 scrollbar-none select-none">
+              <span className="text-[9.5px] font-black uppercase tracking-wider text-amber-900/70 shrink-0 flex items-center gap-0.5 pr-0.5">
+                <Sparkles className="size-2.5 text-amber-600" />
+                <span>Zero-Typing:</span>
+              </span>
+              {[
+                { name: "Biryani", query: "Biryani", emoji: "🍚", regional: "बिरयानी / বিরিয়ানি" },
+                { name: "Momos", query: "Momos", emoji: "🥟", regional: "मोमोज / মোমো" },
+                { name: "Butter Chicken", query: "Butter Chicken", emoji: "🍗", regional: "बटर चिकन / বাটার চিকেন" },
+                { name: "Dosa", query: "Dosa", emoji: "🥞", regional: "दोसा / দোসা" },
+                { name: "Paneer", query: "Paneer", emoji: "🧀", regional: "पनीर / পনির" },
+                { name: "Thali", query: "Thali", emoji: "🍽️", regional: "थाली / থালি" },
+                { name: "Rolls", query: "Rolls", emoji: "🌯", regional: "কাঠি রোল / ৰোল" },
+              ].map((chip) => (
+                <button
+                  key={chip.name}
+                  type="button"
+                  onClick={() => {
+                    setDraft(chip.query);
+                    executeSearch(chip.query);
+                  }}
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-black shadow-2xs shrink-0 transition-all active:scale-95 cursor-pointer border",
+                    draft.toLowerCase() === chip.query.toLowerCase()
+                      ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-400 shadow-[0_2px_8px_rgba(245,158,11,0.35)]"
+                      : "bg-white hover:bg-amber-50/90 text-gray-800 border-amber-200/80 hover:border-amber-400"
+                  )}
+                  title={`Zero-Typing Quick Search: ${chip.name} (${chip.regional})`}
+                >
+                  <span className="text-xs">{chip.emoji}</span>
+                  <span>{chip.name}</span>
+                  <span className="text-[9.5px] opacity-75 hidden sm:inline">· {chip.regional}</span>
+                </button>
+              ))}
+            </div>
 
             {/* PREDICTIVE AUTO-SUGGEST DROPDOWN WITH SUBSTRING HIGHLIGHTING */}
             {isFocused && draft.trim().length > 0 && suggestions.length > 0 && (
@@ -571,9 +608,17 @@ function PredictiveSearchPage() {
                       <div className="flex gap-3.5">
                         {/* Dish Details */}
                         <div className="flex-1 min-w-0 space-y-1">
-                          {/* Veg/Non-Veg FSSAI Badge */}
+                          {/* Veg/Non-Veg/Jain FSSAI Badge */}
                           <div className="flex items-center gap-1.5">
-                            {dish.veg ? (
+                            {dish.isJain ? (
+                              <span
+                                className="inline-flex items-center gap-0.5 rounded-[4px] border border-amber-400/80 bg-amber-50 px-1.5 py-0.5 text-[9px] font-black text-amber-900 shadow-2xs"
+                                title="Sattvic Jain (No onion, no garlic)"
+                              >
+                                <span>🕉️</span>
+                                <span>Jain</span>
+                              </span>
+                            ) : dish.veg ? (
                               <span
                                 className="inline-flex size-3.5 items-center justify-center rounded-[3px] border-[1.5px] border-emerald-600 bg-white p-[1px]"
                                 title="Pure Veg"

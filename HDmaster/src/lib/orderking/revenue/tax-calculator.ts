@@ -30,14 +30,14 @@ export const STATUTORY_TAX_RATES = {
   SEC_9_5_SGST_BPS: 250,
   SEC_9_5_IGST_BPS: 500,
 
-  /** Section 52 CGST Act: 1% TCS on net taxable supply */
-  SEC_52_TCS_BPS: 100,
-  SEC_52_TCS_CGST_BPS: 50,
-  SEC_52_TCS_SGST_BPS: 50,
-  SEC_52_TCS_IGST_BPS: 100,
+  /** Section 52 CGST Act: 0.5% TCS on net taxable supply (CBIC Notification No. 15/2024-CT w.e.f. 10-Jul-2024) */
+  SEC_52_TCS_BPS: 50,
+  SEC_52_TCS_CGST_BPS: 25,
+  SEC_52_TCS_SGST_BPS: 25,
+  SEC_52_TCS_IGST_BPS: 50,
 
-  /** Section 194-O Income Tax Act: 1% TDS on gross sales with PAN */
-  SEC_194O_TDS_PAN_BPS: 100,
+  /** Section 194-O Income Tax Act: 0.1% TDS on gross sales with PAN (Finance Act 2024 w.e.f. 01-Oct-2024) */
+  SEC_194O_TDS_PAN_BPS: 10,
   /** Section 206AA Income Tax Act: Higher 5% TDS if PAN is missing / invalid */
   SEC_194O_TDS_NO_PAN_BPS: 500,
 

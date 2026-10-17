@@ -9,6 +9,7 @@ import { CustomerAppSkeleton } from "@/components/skeletons/customer-app-skeleto
 import { AppErrorComponent } from "@/lib/error-component";
 import { DynamicSectionRenderer } from "@orderking/ui";
 import { homeSectionRegistry, HomeSectionFallback } from "@/components/sdui/home-sections";
+import { UltraLuxuryHero } from "@/components/market/ultra-luxury-hero";
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -54,6 +55,11 @@ function Home() {
             </span>
             <span className="hidden sm:inline text-amber-700">· 100% Direct Chef Delivery</span>
           </div>
+        </div>
+
+        {/* 10x Ultra-Luxury 3D Ambient Jewel Hero Section */}
+        <div className="px-3 pt-3 sm:px-4 sm:pt-4">
+          <UltraLuxuryHero />
         </div>
 
         {/* Server-Driven UI (SDUI) Dynamic Section Renderer */}
