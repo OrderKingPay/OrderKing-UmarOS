@@ -22,15 +22,22 @@ import {
   FileText,
   ArrowDownLeft,
   ArrowUpRight,
+  Coins,
+  Smartphone,
+  Zap,
+  Fuel,
+  CreditCard,
+  ChevronDown,
+  ChevronUp,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
 import { toast } from "sonner";
 import type { KingPaySection } from "./kingpay-shell";
-import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
-import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { FoodUpiCheckoutCard } from "./food-upi-checkout-card";
 
-type ActiveTab = "qr_generator" | "split_bill" | "loan_emi" | "gst_calc" | "yield_est" | "passbook";
+type ActiveTab = "qr_generator" | "split_bill" | "loan_emi" | "gst_calc" | "yield_est" | "gold_tracker" | "passbook" | "food_checkout";
 
 // ==========================================
 // 1. 1-TAP UPI QR GENERATOR
@@ -101,9 +108,33 @@ function UpiQrGeneratorTool() {
               type="text"
               value={vpa}
               onChange={(e) => setVpa(e.target.value)}
-              placeholder="e.g. yourname@okhdfcbank"
+              placeholder="e.g. orderking@icici or yourname@okhdfcbank"
               className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono text-sm focus:border-amber-400 outline-none"
             />
+            <div className="flex gap-2 mt-1.5">
+              <button
+                type="button"
+                onClick={() => setVpa("orderking@icici")}
+                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg border transition ${
+                  vpa === "orderking@icici"
+                    ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                    : "bg-slate-900 border-slate-700 text-slate-400 hover:text-white"
+                }`}
+              >
+                orderking@icici
+              </button>
+              <button
+                type="button"
+                onClick={() => setVpa("orderking@yesbank")}
+                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg border transition ${
+                  vpa === "orderking@yesbank"
+                    ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                    : "bg-slate-900 border-slate-700 text-slate-400 hover:text-white"
+                }`}
+              >
+                orderking@yesbank
+              </button>
+            </div>
           </div>
 
           <div>
@@ -609,8 +640,8 @@ function LoanEmiCalculatorTool() {
 // 4. GST CALCULATOR (STATUTORY TAX COMPLIANCE)
 // ==========================================
 function GstCalculatorTool() {
-  const [amountInr, setAmountInr] = useState<number>(5000);
-  const [ratePercent, setRatePercent] = useState<number>(18);
+  const [amountInr, setAmountInr] = useState<number>(1200);
+  const [ratePercent, setRatePercent] = useState<number>(5);
   const [mode, setMode] = useState<"exclusive" | "inclusive">("exclusive");
 
   const inputPaise = Math.max(100, Math.round((Number.isFinite(amountInr) ? amountInr : 5000) * 100));
@@ -715,11 +746,11 @@ function GstCalculatorTool() {
               ))}
             </div>
             <p className="text-[11px] text-slate-400 mt-1.5">
-              {ratePercent === 5 && "Food items, essential rail fares & transport"}
-              {ratePercent === 12 && "Packaged foods, business class rail, apparel"}
-              {ratePercent === 18 && "Standard services, SaaS, hotels & restaurants"}
-              {ratePercent === 28 && "Luxury automotive, tobacco & aerated drinks"}
-              {ratePercent === 0 && "Exempt essential grains and fresh produce"}
+              {ratePercent === 5 && "Hospitality, standalone restaurants & dining bills (2.5% CGST + 2.5% SGST)"}
+              {ratePercent === 12 && "Packaged foods, business class rail, apparel (6% CGST + 6% SGST)"}
+              {ratePercent === 18 && "Standard services, SaaS, star hotel banquets (9% CGST + 9% SGST)"}
+              {ratePercent === 28 && "Luxury automotive, tobacco & aerated drinks (14% CGST + 14% SGST)"}
+              {ratePercent === 0 && "Exempt essential grains, fresh milk and raw produce (0% GST)"}
             </p>
           </div>
         </div>
@@ -988,9 +1019,9 @@ function PassbookLedgerTool() {
 
   const handleDownloadStatement = () => {
     try {
-      const header = "OrderKing KingPay 24K Sovereign Passbook Statement\n";
+      const header = "OrderKing KingPay Official Passbook Statement\n";
       const userLine = `Account ID: ${user?.id || "dev-user"} | Generated: ${new Date().toISOString()}\n`;
-      const balanceLine = `Available Sovereign Balance: ₹${(walletBalancePaise / 100).toFixed(2)}\n\n`;
+      const balanceLine = `Available Prepaid Balance: ₹${(walletBalancePaise / 100).toFixed(2)}\n\n`;
       const colHeader = "Timestamp,Transaction ID / UTR,Direction,Amount (INR),Account,Memo\n";
       const rows = entries.map((e) => 
         `"${e.timestamp || ""}","${e.transaction_id || e.entry_id || ""}","${e.direction || ""}","${((e.amount_paise || 0) / 100).toFixed(2)}","${e.account || ""}","${(e.memo || "").replace(/"/g, '""')}"`
@@ -1016,7 +1047,7 @@ function PassbookLedgerTool() {
           <div className="flex items-center gap-2 mb-1">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/50 px-2.5 py-0.5 text-[11px] font-black text-amber-300">
               <Receipt className="size-3.5" />
-              <span>Sovereign Passbook &amp; UTR Desk</span>
+              <span>Official Passbook &amp; UTR Desk</span>
             </span>
             <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2 py-0.5 text-[9px] font-black">
               RBI DOUBLE-ENTRY
@@ -1046,13 +1077,13 @@ function PassbookLedgerTool() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-5">
         <div className="rounded-2xl border border-amber-400/30 bg-black/40 p-4">
           <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
-            Vault Balance
+            Prepaid Wallet Balance
           </span>
           <span className="text-2xl font-black font-mono text-white block mt-0.5">
             {formatPaise(walletBalancePaise)}
           </span>
           <span className="text-[10px] text-emerald-400 font-bold block mt-1">
-            ● 100% Verified Liquid Reserves
+            ● RBI PA/PPI Compliant Balance
           </span>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
@@ -1156,6 +1187,7 @@ function PassbookLedgerTool() {
   );
 }
 
+
 // ==========================================
 // MAIN KINGPAY CATEGORY HUB
 // ==========================================
@@ -1190,6 +1222,13 @@ export function KingPayCategoryHub({
 
   const TABS = [
     {
+      id: "food_checkout" as const,
+      label: "Razorpay UPI Checkout",
+      sub: "Food Orders & Discs",
+      icon: CreditCard,
+      section: "pay" as KingPaySection,
+    },
+    {
       id: "passbook" as const,
       label: "Passbook & Statement",
       sub: "UTR Records & Ledger",
@@ -1220,7 +1259,7 @@ export function KingPayCategoryHub({
     {
       id: "gst_calc" as const,
       label: "GST Statutory Calculator",
-      sub: "Bifurcated CGST/SGST",
+      sub: "5% Hospitality & Tax",
       icon: Percent,
       section: "wealth" as KingPaySection,
     },
@@ -1235,7 +1274,7 @@ export function KingPayCategoryHub({
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 px-4 py-6 font-sans">
-      {/* 24K PURE GOLD SOVEREIGN SUITE HERO */}
+      {/* RBI COMPLIANT FINTECH SUITE HERO */}
       <header className="relative overflow-hidden rounded-3xl border border-amber-400/50 bg-gradient-to-r from-amber-950/80 via-slate-950 to-[#2A1D07] p-6 sm:p-7 shadow-[0_0_35px_rgba(245,158,11,0.25)] text-white">
         <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-400/10 via-transparent to-transparent pointer-events-none" />
@@ -1245,17 +1284,17 @@ export function KingPayCategoryHub({
             <div className="flex flex-wrap items-center gap-2 mb-2.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/50 px-3 py-1 text-xs font-black text-amber-300 shadow-sm">
                 <Crown className="size-3.5" />
-                <span>24K Sovereign FinTech Utility Hub</span>
+                <span>RBI PA/PPI Compliant Payment &amp; Utility Hub</span>
               </span>
               <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold">
                 100% Live &amp; Functional Tools
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              OrderKing <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200">KingPay 24K</span>
+              OrderKing <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200">KingPay</span>
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Live NPCI UPI QR Generator, fair friend bill-split engine, instant reducing-balance loan EMI, statutory GST, and quarterly compound yield estimators with zero unverified partner blockers.
+              Live Razorpay UPI food checkout, NPCI UPI QR Generator, fair friend bill-split engine, instant reducing-balance loan EMI, statutory 5% hospitality GST calculator, and quarterly compound yield estimators with zero platform surcharge.
             </p>
           </div>
 
@@ -1274,7 +1313,7 @@ export function KingPayCategoryHub({
       </header>
 
       {/* Live Tool Selection Deck */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1286,7 +1325,7 @@ export function KingPayCategoryHub({
                 setActiveTab(tab.id);
                 onSelectSection(tab.section);
               }}
-              className={`p-3.5 rounded-2xl border text-left transition-all ${
+              className={`p-3 rounded-2xl border text-left transition-all ${
                 isActive
                   ? "border-amber-400/90 bg-gradient-to-br from-amber-950/60 to-slate-900 shadow-md ring-2 ring-amber-400/30 text-white"
                   : "border-slate-800 bg-slate-900/70 hover:border-slate-700 text-slate-300"
@@ -1294,18 +1333,18 @@ export function KingPayCategoryHub({
             >
               <div className="flex items-center justify-between mb-1.5">
                 <span
-                  className={`size-8 rounded-xl flex items-center justify-center border ${
+                  className={`size-7 rounded-xl flex items-center justify-center border ${
                     isActive
                       ? "bg-amber-400/20 border-amber-400 text-amber-300"
                       : "bg-slate-800 border-slate-700 text-slate-400"
                   }`}
                 >
-                  <Icon className="size-4" />
+                  <Icon className="size-3.5" />
                 </span>
                 <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
-              <p className="text-xs font-black truncate">{tab.label}</p>
-              <p className="text-[10px] text-slate-400 truncate mt-0.5">{tab.sub}</p>
+              <p className="text-[11px] font-black truncate">{tab.label}</p>
+              <p className="text-[9px] text-slate-400 truncate mt-0.5">{tab.sub}</p>
             </button>
           );
         })}
@@ -1313,6 +1352,7 @@ export function KingPayCategoryHub({
 
       {/* Active Live Tool Panel */}
       <div className="transition-all duration-300">
+        {activeTab === "food_checkout" && <FoodUpiCheckoutCard theme="dark" />}
         {activeTab === "passbook" && <PassbookLedgerTool />}
         {activeTab === "qr_generator" && <UpiQrGeneratorTool />}
         {activeTab === "split_bill" && <SplitBillCalculatorTool />}
@@ -1327,7 +1367,7 @@ export function KingPayCategoryHub({
         className="block rounded-2xl border border-amber-400/50 bg-gradient-to-r from-amber-950/80 via-slate-950 to-amber-900/80 p-4 text-center text-sm font-black text-amber-200 no-underline shadow-[0_0_25px_rgba(245,158,11,0.2)] hover:border-amber-300 hover:text-amber-100 transition group"
       >
         <Crown className="mr-2 inline size-4 text-amber-400 group-hover:scale-110 transition-transform" />
-        Open 24K Sovereign FinTech Concierge for Tailored Wealth &amp; Settlement Guidance ➔
+        Open King Assist for Payment &amp; Settlement Guidance ➔
       </Link>
     </div>
   );

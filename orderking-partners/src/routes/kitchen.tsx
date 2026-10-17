@@ -173,7 +173,11 @@ function matchesColumn(orderState: string, colState: (typeof COLS)[number]["stat
   return orderState === colState;
 }
 
-function KitchenPage() {
+export function KitchenPage({
+  defaultTab = "BOARD",
+}: {
+  defaultTab?: "BOARD" | "KDS" | "HARDWARE";
+} = {}) {
   const t = useT();
   const vendor = useVendor();
   const qc = useQueryClient();
@@ -182,7 +186,7 @@ function KitchenPage() {
   const setSoundOn = useClientState((s) => s.setSoundOn);
 
   // Active view tab: Live Kanban vs KDS Cook Station vs POS Gateway
-  const [activeTab, setActiveTab] = useState<"BOARD" | "KDS" | "HARDWARE">("BOARD");
+  const [activeTab, setActiveTab] = useState<"BOARD" | "KDS" | "HARDWARE">(defaultTab);
   const [testVoiceLang, setTestVoiceLang] = useState<AppLanguage>(lang);
 
   // Kitchen Throttling (+15m / +30m rush prep buffer) state

@@ -21,12 +21,16 @@ import {
   buildNPCIUpiIntentUrl,
   isValidVPA,
 } from "@/lib/payments/npci-upi-intent";
+import jsQR from "jsqr";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   walletBalancePaise: number;
   onDeductWallet?: (amountPaise: number, description: string) => boolean;
+  orderAmountPaise?: number;
+  merchantVpa?: "orderking@icici" | "orderking@yesbank" | string;
+  merchantName?: string;
 }
 
 export function ScanQrModal({
@@ -34,11 +38,17 @@ export function ScanQrModal({
   onClose,
   walletBalancePaise,
   onDeductWallet,
+  orderAmountPaise,
+  merchantVpa = "orderking@icici",
+  merchantName = "OrderKing Payments",
 }: Props) {
-  const [mode, setMode] = useState<"camera" | "manual">("camera");
+  const [activeTab, setActiveTab] = useState<"scan" | "merchant_qr">("scan");
+  const [selectedMerchantVpa, setSelectedMerchantVpa] = useState<string>(merchantVpa);
+  const [mode, setMode] = useState<"camera" | "manual">("manual");
   const [payeeUpi, setPayeeUpi] = useState("");
   const [payeeName, setPayeeName] = useState("");
-  const [amountRupees, setAmountRupees] = useState<string>("250");
+  const initialAmount = orderAmountPaise ? (orderAmountPaise / 100).toFixed(2) : "250";
+  const [amountRupees, setAmountRupees] = useState<string>(initialAmount);
   const [note, setNote] = useState<string>("Payment");
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState<{
@@ -52,19 +62,56 @@ export function ScanQrModal({
 
   if (!isOpen) return null;
 
-  const handleSimulateScan = (name: string, upi: string) => {
-    setPayeeName(name);
-    setPayeeUpi(upi);
-    setMode("manual");
-    toast.success(`Scanned QR code for ${name}!`);
-  };
-
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Simulate reading QR code from gallery
-      handleSimulateScan("Green Valley Organic Store", "greenvalley@okaxis");
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        const imageData = ctx.getImageData(0, 0, img.width, img.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code && code.data) {
+          const raw = code.data.trim();
+          if (raw.startsWith("upi://pay")) {
+            try {
+              const parsed = new URL(raw);
+              const pa = parsed.searchParams.get("pa") || "";
+              const pn = parsed.searchParams.get("pn") || "";
+              const am = parsed.searchParams.get("am") || "";
+              if (pa) {
+                setPayeeUpi(pa);
+                if (pn) setPayeeName(decodeURIComponent(pn));
+                if (am) setAmountRupees(am);
+                setMode("manual");
+                toast.success(`Detected UPI QR: ${pn || pa}`);
+                return;
+              }
+            } catch {
+              // fallback to raw checking
+            }
+          }
+          if (isValidVPA(raw)) {
+            setPayeeUpi(raw);
+            setMode("manual");
+            toast.success(`Detected UPI ID: ${raw}`);
+            return;
+          }
+          toast.error("QR Code does not contain a valid NPCI UPI intent.");
+        } else {
+          toast.error("No valid QR code detected in the uploaded image.");
+        }
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   };
 
   const cleanUpi = payeeUpi.trim();
@@ -128,9 +175,22 @@ export function ScanQrModal({
     setPayeeUpi("");
     setPayeeName("");
     setAmountRupees("250");
-    setMode("camera");
+    setMode("manual");
     onClose();
   };
+
+  const dynamicOrderRupees = parseFloat(amountRupees) || (orderAmountPaise ? orderAmountPaise / 100 : 250);
+  const merchantDynamicTxnRef = `OKORD${Date.now().toString(36).toUpperCase()}`;
+  const merchantUpiIntentUri = buildNPCIUpiIntentUrl({
+    vpa: selectedMerchantVpa,
+    payeeName: merchantName,
+    amountInRupees: dynamicOrderRupees,
+    transactionRef: merchantDynamicTxnRef,
+    transactionNote: `OrderKing Order Settlement ${merchantDynamicTxnRef}`,
+  });
+  const merchantQrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(
+    merchantUpiIntentUri
+  )}&bgcolor=FFFFFF&color=090D16`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
@@ -164,7 +224,106 @@ export function ScanQrModal({
           </button>
         </div>
 
-        {paymentSuccess ? (
+        {/* Top-Level Mode: Scan / Pay vs Merchant Receive QR */}
+        <div className="px-5 pt-4 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab("scan")}
+            className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border ${
+              activeTab === "scan"
+                ? "bg-amber-400/20 text-amber-300 border-amber-400/50 shadow-sm"
+                : "bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white"
+            }`}
+          >
+            <Camera className="size-3.5" />
+            <span>Scan to Pay (Outward)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("merchant_qr")}
+            className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border ${
+              activeTab === "merchant_qr"
+                ? "bg-amber-400/20 text-amber-300 border-amber-400/50 shadow-sm"
+                : "bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white"
+            }`}
+          >
+            <QrCode className="size-3.5" />
+            <span>Merchant BharatQR (Inward)</span>
+          </button>
+        </div>
+
+        {activeTab === "merchant_qr" ? (
+          /* Merchant BharatQR Generator View */
+          <div className="p-5 sm:p-6 space-y-4">
+            <div className="rounded-2xl border border-amber-400/40 bg-black/60 p-5 text-center flex flex-col items-center">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  NPCI VPA COMPLIANT
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                  0% Surcharge
+                </span>
+              </div>
+
+              {/* VPA Selector Switch */}
+              <div className="flex gap-2 mb-4 w-full max-w-xs">
+                {(["orderking@icici", "orderking@yesbank"] as const).map((vpaOpt) => (
+                  <button
+                    key={vpaOpt}
+                    type="button"
+                    onClick={() => setSelectedMerchantVpa(vpaOpt)}
+                    className={`flex-1 py-1.5 px-2 rounded-lg text-[11px] font-mono font-bold transition border ${
+                      selectedMerchantVpa === vpaOpt
+                        ? "bg-amber-400/25 border-amber-400 text-amber-300"
+                        : "bg-slate-900 border-slate-700 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    {vpaOpt}
+                  </button>
+                ))}
+              </div>
+
+              {/* QR Image */}
+              <div className="bg-white p-3.5 rounded-2xl shadow-2xl ring-4 ring-amber-400/20 mb-3">
+                <img
+                  src={merchantQrImageUrl}
+                  alt="Scan to Pay OrderKing UPI"
+                  width={200}
+                  height={200}
+                  className="rounded-xl w-44 h-44 object-contain"
+                />
+              </div>
+
+              <p className="text-2xl font-black font-mono text-white mt-1">
+                ₹{dynamicOrderRupees.toFixed(2)}
+              </p>
+              <p className="text-xs font-bold text-amber-300">{merchantName}</p>
+              <p className="text-[11px] font-mono text-slate-400">{selectedMerchantVpa}</p>
+
+              <div className="mt-4 flex gap-2 w-full max-w-xs">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (typeof navigator !== "undefined" && navigator.clipboard) {
+                      void navigator.clipboard.writeText(merchantUpiIntentUri);
+                      toast.success("Merchant UPI Intent URI copied!");
+                    }
+                  }}
+                  className="flex-1 h-9 rounded-xl border-amber-400/40 text-amber-300 bg-slate-950 text-xs font-bold"
+                >
+                  Copy Intent
+                </Button>
+                <a
+                  href={merchantUpiIntentUri}
+                  className="flex-1 h-9 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 text-black text-xs font-black inline-flex items-center justify-center no-underline shadow-sm"
+                >
+                  Open UPI App
+                </a>
+              </div>
+            </div>
+          </div>
+        ) : paymentSuccess ? (
           /* Payment Success Confirmation View */
           <div className="p-6 text-center space-y-5 animate-in zoom-in-95 duration-200">
             <div className="flex size-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border-2 border-emerald-400/50 mx-auto shadow-lg shadow-emerald-500/20">
@@ -264,30 +423,14 @@ export function ScanQrModal({
                     Works with PhonePe, Paytm, GPay, BHIM &amp; All Bank QRs
                   </p>
 
-                  {/* Quick Test Demo Trigger Pills */}
-                  <div className="mt-3 flex flex-wrap gap-1.5 justify-center">
-                    <button
-                      type="button"
-                      onClick={() => handleSimulateScan("Starbucks Reserve", "starbucks@okhdfcbank")}
-                      className="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full hover:bg-amber-400/30"
-                    >
-                      ☕ Starbucks
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSimulateScan("Swiggy Instamart", "swiggy@icici")}
-                      className="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full hover:bg-amber-400/30"
-                    >
-                      🛒 Instamart
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSimulateScan("Rohit Verma", "rohit@upi")}
-                      className="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full hover:bg-amber-400/30"
-                    >
-                      👤 Contact
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMode("manual")}
+                    className="mt-3 text-xs bg-amber-400/20 text-amber-300 border border-amber-400/30 px-3 py-1.5 rounded-full hover:bg-amber-400/30 font-semibold flex items-center gap-1.5 transition"
+                  >
+                    <AtSign className="size-3" />
+                    <span>Enter UPI ID / VPA Manually</span>
+                  </button>
                 </div>
 
                 {/* Upload QR File Input */}

@@ -3,19 +3,19 @@ import {
   ChefHat,
   ClipboardList,
   Home,
-  MoreHorizontal,
-  Sparkles,
+  UtensilsCrossed,
+  Wallet,
 } from "lucide-react";
 import { useT } from "@/components/use-t";
 import { cn } from "@/lib/utils";
 
 interface PartnerBottomNavProps {
-  onOpenSpark: () => void;
+  onOpenSpark?: () => void;
   pendingOrdersCount?: number;
 }
 
 export function PartnerFloatingBottomNav({
-  onOpenSpark,
+  onOpenSpark: _onOpenSpark,
   pendingOrdersCount = 0,
 }: PartnerBottomNavProps) {
   const t = useT();
@@ -24,7 +24,8 @@ export function PartnerFloatingBottomNav({
   const isHome = pathname.startsWith("/dashboard");
   const isOrders = pathname.startsWith("/orders");
   const isKitchen = pathname.startsWith("/kitchen");
-  const isMore = pathname === "/more" || ["/settlements", "/menu", "/analytics", "/settings", "/reviews", "/dining"].some((p) => pathname.startsWith(p));
+  const isMenu = pathname.startsWith("/menu");
+  const isSettlements = pathname.startsWith("/settlements");
 
   return (
     <nav
@@ -41,8 +42,8 @@ export function PartnerFloatingBottomNav({
           <li className="w-full flex justify-center">
             <Link
               to="/dashboard"
-              title={t("nav.home") || "Home"}
-              aria-label={t("nav.home") || "Home"}
+              title={t("nav.home") || "Dashboard"}
+              aria-label={t("nav.home") || "Dashboard"}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isHome ? "text-amber-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"
@@ -56,16 +57,16 @@ export function PartnerFloatingBottomNav({
               >
                 <Home className="size-5" />
               </div>
-              <span className="mt-1 text-[10.5px] tracking-tight leading-none">{t("nav.home") || "Home"}</span>
+              <span className="mt-1 text-[10px] sm:text-[10.5px] tracking-tight leading-none">{t("nav.home") || "Dashboard"}</span>
               {isHome && <span className="size-1 rounded-full bg-amber-400 mt-1 shadow-[0_0_6px_rgba(245,158,11,1)]" />}
             </Link>
           </li>
 
-          {/* 2. ORDERS (LIVE KOT) - RUBY ALERT BADGE */}
+          {/* 2. ORDERS (LIVE KOT) - REALTIME AUDIO & PENDING BADGE */}
           <li className="w-full flex justify-center">
             <Link
               to="/orders"
-              title={pendingOrdersCount > 0 ? `${pendingOrdersCount} orders waiting` : (t("nav.orders") || "Orders")}
+              title={pendingOrdersCount > 0 ? `${pendingOrdersCount} orders waiting for kitchen action` : (t("nav.orders") || "Orders")}
               aria-label={t("nav.orders") || "Live Orders"}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
@@ -80,44 +81,24 @@ export function PartnerFloatingBottomNav({
               >
                 <ClipboardList className="size-5" />
                 {pendingOrdersCount > 0 ? (
-                  <span className="absolute -top-1 -right-1 flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-600 px-1 text-[8px] font-black text-white shadow-xs">
-                    {pendingOrdersCount}
+                  <span className="absolute -top-1 -right-1 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-rose-600 px-1 text-[8.5px] font-black text-white shadow-md shadow-rose-600/50 animate-pulse">
+                    {pendingOrdersCount > 99 ? "99+" : pendingOrdersCount}
                   </span>
                 ) : (
-                  <span className="absolute top-1 right-1 size-1.5 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.9)]" />
+                  <span className="absolute top-1 right-1 size-1.5 rounded-full bg-rose-500/80 shadow-[0_0_6px_rgba(244,63,94,0.6)]" />
                 )}
               </div>
-              <span className="mt-1 text-[10.5px] tracking-tight leading-none">{t("nav.orders") || "Orders"}</span>
+              <span className="mt-1 text-[10px] sm:text-[10.5px] tracking-tight leading-none">{t("nav.orders") || "Orders"}</span>
               {isOrders && <span className="size-1 rounded-full bg-rose-500 mt-1 shadow-[0_0_6px_rgba(244,63,94,1)]" />}
             </Link>
           </li>
 
-          {/* 3. KING AI CENTERPIECE (RESTAURANT CO-PILOT) - GOLD GLOW */}
-          <li className="w-full flex justify-center">
-            <button
-              type="button"
-              onClick={onOpenSpark}
-              className="group relative -mt-5 sm:-mt-6 flex flex-col items-center justify-center transition-all duration-300 active:scale-92 cursor-pointer"
-              title="King AI — Restaurant Culinary & Growth Co-Pilot"
-              aria-label="Open King AI Assistant"
-            >
-              <div className="relative p-[2.5px] rounded-[22px] bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-[0_8px_25px_rgba(245,158,11,0.45)] group-hover:scale-105 transition-all duration-300">
-                <div className="flex size-12 items-center justify-center rounded-[19.5px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
-                  <Sparkles className="size-6 text-amber-300 filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]" />
-                </div>
-              </div>
-              <span className="mt-1 text-[10.5px] font-black tracking-tight text-amber-300 leading-none">
-                King AI
-              </span>
-            </button>
-          </li>
-
-          {/* 4. KITCHEN DISPLAY STATION (KDS) - EMERALD ACCENT */}
+          {/* 3. KITCHEN DISPLAY SYSTEM (KDS) - EMERALD ACCENT */}
           <li className="w-full flex justify-center">
             <Link
               to="/kitchen"
-              title="Kitchen Display Station (KDS)"
-              aria-label={t("nav.kitchen") || "Kitchen"}
+              title="Kitchen Display Station (KDS) Cook Board"
+              aria-label={t("nav.kitchen") || "Kitchen KDS"}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isKitchen ? "text-emerald-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"
@@ -131,32 +112,56 @@ export function PartnerFloatingBottomNav({
               >
                 <ChefHat className="size-5" />
               </div>
-              <span className="mt-1 text-[10.5px] tracking-tight leading-none">{t("nav.kitchen") || "Kitchen"}</span>
+              <span className="mt-1 text-[10px] sm:text-[10.5px] tracking-tight leading-none">{t("nav.kitchen") || "Kitchen"}</span>
               {isKitchen && <span className="size-1 rounded-full bg-emerald-400 mt-1 shadow-[0_0_6px_rgba(16,185,129,1)]" />}
             </Link>
           </li>
 
-          {/* 5. MORE RESTAURANT FEATURES */}
+          {/* 4. MENU & STOCK MANAGER - 1-TAP IN-STOCK / 86 TOGGLE */}
           <li className="w-full flex justify-center">
             <Link
-              to="/more"
-              title="More Restaurant Features"
-              aria-label={t("nav.more") || "More Features"}
+              to="/menu"
+              title="Menu & Stock Manager (1-Tap 86 In-Stock/Out-of-Stock)"
+              aria-label={t("nav.menu") || "Menu & Stock"}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
-                isMore ? "text-indigo-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"
+                isMenu ? "text-sky-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"
               )}
             >
               <div
                 className={cn(
                   "relative flex size-9 items-center justify-center rounded-2xl transition-all duration-300",
-                  isMore ? "bg-indigo-500/15 ring-1 ring-indigo-400/40 text-indigo-400 scale-105" : "group-hover:bg-slate-800"
+                  isMenu ? "bg-sky-500/15 ring-1 ring-sky-400/40 text-sky-400 scale-105" : "group-hover:bg-slate-800"
                 )}
               >
-                <MoreHorizontal className="size-5" />
+                <UtensilsCrossed className="size-5" />
               </div>
-              <span className="mt-1 text-[10.5px] tracking-tight leading-none">{t("nav.more") || "More"}</span>
-              {isMore && <span className="size-1 rounded-full bg-indigo-400 mt-1 shadow-[0_0_6px_rgba(99,102,241,1)]" />}
+              <span className="mt-1 text-[10px] sm:text-[10.5px] tracking-tight leading-none">{t("nav.menu") || "Menu"}</span>
+              {isMenu && <span className="size-1 rounded-full bg-sky-400 mt-1 shadow-[0_0_6px_rgba(56,189,248,1)]" />}
+            </Link>
+          </li>
+
+          {/* 5. PAYOUTS & SETTLEMENTS - REALTIME UPI DAILY SETTLEMENTS & GST 9(5) */}
+          <li className="w-full flex justify-center">
+            <Link
+              to="/settlements"
+              title="Payouts & Realtime UPI Daily Settlements"
+              aria-label={t("nav.settlements") || "Payouts & Settlements"}
+              className={cn(
+                "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
+                isSettlements ? "text-teal-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"
+              )}
+            >
+              <div
+                className={cn(
+                  "relative flex size-9 items-center justify-center rounded-2xl transition-all duration-300",
+                  isSettlements ? "bg-teal-500/15 ring-1 ring-teal-400/40 text-teal-400 scale-105" : "group-hover:bg-slate-800"
+                )}
+              >
+                <Wallet className="size-5" />
+              </div>
+              <span className="mt-1 text-[10px] sm:text-[10.5px] tracking-tight leading-none">{t("nav.settlements") || "Payouts"}</span>
+              {isSettlements && <span className="size-1 rounded-full bg-teal-400 mt-1 shadow-[0_0_6px_rgba(45,212,191,1)]" />}
             </Link>
           </li>
         </ul>

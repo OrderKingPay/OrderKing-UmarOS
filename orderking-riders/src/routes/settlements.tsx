@@ -121,7 +121,7 @@ function SettlementsDesk() {
         });
         setRider(updated);
       }
-      toast.success(`Settlement batch ${settlement.id.slice(0, 8)} acknowledged in UMAR OS Ledger.`);
+      toast.success(`Settlement batch ${settlement.id.slice(0, 8)} acknowledged in Order King Partner Ledger.`);
     } catch (e) {
       toast.error(errorMessage(e, t("actionNotConfirmed")));
     } finally {
@@ -222,7 +222,7 @@ function SettlementsDesk() {
         },
       });
       setDisputeNote("");
-      toast.success("Settlement reconciliation ticket logged in UMAR OS Support Desk.");
+      toast.success("Settlement reconciliation ticket logged in Order King Support Desk.");
     } catch (e) {
       toast.error(errorMessage(e, t("actionNotConfirmed")));
     } finally {
@@ -233,7 +233,7 @@ function SettlementsDesk() {
   return (
     <AppShell>
       <div className="space-y-6 font-sans">
-        {/* 1. HEADER & HUMAN-STYLE UMAR OS TREASURY EXPLANATION */}
+        {/* 1. HEADER & ORDER KING TREASURY EXPLANATION */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-xs space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
@@ -248,7 +248,7 @@ function SettlementsDesk() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
                     <ShieldCheck className="size-3.5 text-emerald-700" />
-                    UMAR OS Autonomous Treasury &amp; Tax Desk
+                    Order King Autonomous Treasury &amp; Tax Desk
                   </span>
                   <span className="text-[11px] font-semibold text-slate-500">
                     Zero-Commission Partner Ledger
@@ -394,7 +394,7 @@ function SettlementsDesk() {
         <Card className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <CardTitle>UMAR OS Ledger Reconciliation Breakdown</CardTitle>
+              <CardTitle>Order King Ledger Reconciliation Breakdown</CardTitle>
               <CardMeta>
                 Real-time computation of delivery payouts, incentives, tips, and COD cash in hand
               </CardMeta>
@@ -590,7 +590,7 @@ function SettlementsDesk() {
           <Card className="space-y-3">
             <CardTitle>Self-Service Settlement Reconciliation Desk</CardTitle>
             <CardMeta>
-              Missing a wait-time payout, tip, or COD reconciliation? Log an auditable ledger ticket directly to UMAR OS Treasury.
+              Missing a wait-time payout, tip, or COD reconciliation? Log an auditable ledger ticket directly to Order King Treasury.
             </CardMeta>
             <form onSubmit={handleRaiseReconciliationTicket} className="space-y-2.5 pt-1">
               <Input

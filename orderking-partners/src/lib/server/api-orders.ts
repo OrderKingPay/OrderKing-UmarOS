@@ -153,14 +153,30 @@ import {
 
 export const acceptOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; orderId: string }) => d)
+  .validator((d: { restaurantId?: string; orderId: string; prepMinutes?: number }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
-      const res = await sql`UPDATE orders SET status = 'CONFIRMED' WHERE id = ${data.orderId} AND status = 'PENDING' AND restaurant_id = ${ctx.restaurantId}`;
-      if (res.length === 0) throw new Error("Order not found or not in PENDING state");
+      const prepMins = data.prepMinutes ? Math.max(5, Math.min(120, asInt(data.prepMinutes))) : null;
+      const res = await sql`
+        UPDATE orders
+        SET status = 'CONFIRMED',
+            state = 'ACCEPTED',
+            prep_minutes = coalesce(${prepMins}, prep_minutes),
+            accepted_at = now(),
+            updated_at = now()
+        WHERE id = ${data.orderId}
+          AND (status = 'PENDING' OR state = 'PLACED')
+          AND restaurant_id = ${ctx.restaurantId}
+        RETURNING id
+      `;
+      if (res.length === 0) throw new Error("Order not found or not in PENDING/PLACED state");
       // Reset circuit breaker consecutive missed orders counter on accepted order
       kitchenCircuitBreaker.recordOrderAccepted(ctx.restaurantId);
-      return { ok: true, status: 'CONFIRMED' };
+      await sql`
+        insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
+        values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, 'PLACED', 'ACCEPTED', 'restaurant', ${context.userId}, ${prepMins ? `Order Accepted with ${prepMins}m Prep SLA` : 'Order Accepted'})
+      `;
+      return { ok: true, status: 'CONFIRMED', state: 'ACCEPTED' };
     });
   });
 
@@ -169,9 +185,23 @@ export const rejectOrder = createServerFn({ method: "POST" })
   .validator((d: { restaurantId?: string; orderId: string; reason: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
-      const res = await sql`UPDATE orders SET status = 'RESTAURANT_REJECTED', reject_reason = ${data.reason} WHERE id = ${data.orderId} AND status = 'PENDING' AND restaurant_id = ${ctx.restaurantId}`;
-      if (res.length === 0) throw new Error("Order not found or not in PENDING state");
-      return { ok: true, status: 'RESTAURANT_REJECTED' };
+      const res = await sql`
+        UPDATE orders
+        SET status = 'RESTAURANT_REJECTED',
+            state = 'REJECTED',
+            reject_reason = ${data.reason},
+            updated_at = now()
+        WHERE id = ${data.orderId}
+          AND (status = 'PENDING' OR state = 'PLACED')
+          AND restaurant_id = ${ctx.restaurantId}
+        RETURNING id
+      `;
+      if (res.length === 0) throw new Error("Order not found or not in PENDING/PLACED state");
+      await sql`
+        insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
+        values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, 'PLACED', 'REJECTED', 'restaurant', ${context.userId}, ${data.reason})
+      `;
+      return { ok: true, status: 'RESTAURANT_REJECTED', state: 'REJECTED' };
     });
   });
 
@@ -269,9 +299,22 @@ export const markPreparing = createServerFn({ method: "POST" })
   .validator((d: { restaurantId?: string; orderId: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
-      const res = await sql`UPDATE orders SET status = 'PREPARING' WHERE id = ${data.orderId} AND status = 'CONFIRMED' AND restaurant_id = ${ctx.restaurantId}`;
-      if (res.length === 0) throw new Error("Order not found or not in CONFIRMED state");
-      return { ok: true, status: 'PREPARING' };
+      const res = await sql`
+        UPDATE orders
+        SET status = 'PREPARING',
+            state = 'PREPARING',
+            updated_at = now()
+        WHERE id = ${data.orderId}
+          AND (status = 'CONFIRMED' OR state = 'ACCEPTED')
+          AND restaurant_id = ${ctx.restaurantId}
+        RETURNING id
+      `;
+      if (res.length === 0) throw new Error("Order not found or not in CONFIRMED/ACCEPTED state");
+      await sql`
+        insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
+        values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, 'ACCEPTED', 'PREPARING', 'restaurant', ${context.userId}, 'Kitchen food preparation started')
+      `;
+      return { ok: true, status: 'PREPARING', state: 'PREPARING' };
     });
   });
 
@@ -281,7 +324,11 @@ export const markReady = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
       const rows = await sql<{ id: string; prep_minutes: number; placed_at: string }>`
-        SELECT id, prep_minutes, placed_at::text as placed_at FROM orders WHERE id = ${data.orderId} AND status = 'PREPARING' AND restaurant_id = ${ctx.restaurantId}
+        SELECT id, prep_minutes, placed_at::text as placed_at
+        FROM orders
+        WHERE id = ${data.orderId}
+          AND (status = 'PREPARING' OR state = 'PREPARING')
+          AND restaurant_id = ${ctx.restaurantId}
       `;
       if (rows.length === 0) throw new Error("Order not found or not in PREPARING state");
       const ord = rows[0];
@@ -302,6 +349,8 @@ export const markReady = createServerFn({ method: "POST" })
         await sql`
           UPDATE orders
           SET status = 'READY',
+              state = 'READY',
+              ready_at = now(),
               other_deductions_paise = other_deductions_paise + ${kptPenalty.penaltyDebitedPaise},
               other_deductions_code = ${kptPenalty.reasonCode},
               updated_at = now()
@@ -316,10 +365,28 @@ export const markReady = createServerFn({ method: "POST" })
           detail: kptPenalty.description,
         });
       } else {
-        await sql`UPDATE orders SET status = 'READY' WHERE id = ${data.orderId} AND restaurant_id = ${ctx.restaurantId}`;
+        await sql`
+          UPDATE orders
+          SET status = 'READY',
+              state = 'READY',
+              ready_at = now(),
+              updated_at = now()
+          WHERE id = ${data.orderId} AND restaurant_id = ${ctx.restaurantId}
+        `;
       }
 
-      return { ok: true, status: 'READY', kptPenalty };
+      await sql`
+        insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
+        values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, 'PREPARING', 'READY', 'restaurant', ${context.userId}, 'Food cooked and packed. Ready for rider pickup.')
+      `;
+      await notifyInApp(sql, {
+        restaurantId: ctx.restaurantId,
+        type: "order_status",
+        title: `Order #${data.orderId.slice(-6)} Ready for Rider Pickup`,
+        body: "Food packed and ready. Rider dispatch notified for immediate pickup.",
+      });
+
+      return { ok: true, status: 'READY', state: 'READY', kptPenalty };
     });
   });
 

@@ -7,6 +7,7 @@ import { getMarketContext } from "@/lib/server/dynamic-sort";
 import type { RestaurantCard } from "@/lib/market-types";
 import { searchLimiter } from "@/lib/security/rate-limiter";
 import { CURATED_DISHES, filterDishes } from "@/lib/predictive-search";
+import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 // Helper functions (same logic as catalog.ts)
 function num(v: string | number | null | undefined): number | null {
@@ -76,24 +77,51 @@ export const Route = createFileRoute("/api/search")({
         }), { status: 200, headers: { "content-type": "application/json", "cache-control": "no-store" } });
         try {
           const sql = await getSql();
-          const launch = await sql.query<{ public_launch: boolean; dispatch_enabled: boolean;
-            rider_gps_enabled: boolean; payments_mode: string }>(
-            "select public_launch, dispatch_enabled, rider_gps_enabled, payments_mode from platform_launch_controls where org_id = $1 limit 1",
-            ["org_orderking"]
-          );
-          if (!launch[0]?.public_launch || !launch[0]?.dispatch_enabled ||
-              !launch[0]?.rider_gps_enabled || launch[0]?.payments_mode !== "LIVE") {
-            return unavailable("Verified food delivery is not available at this location yet.");
-          }
+
           if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat === 0 || lng === 0 ||
               lat < -90 || lat > 90 || lng < -180 || lng > 180) {
             return unavailable("Choose your delivery location to check availability.");
           }
-          const eligibleRiders = await sql.query<{ zone_id: string }>(
-            "select distinct zone_id from riders where online = 1 and upper(coalesce(kyc_status, '')) in ('APPROVED','VERIFIED') and data_mode = 'LIVE'"
-          );
-          const activeRiderZones = new Set(eligibleRiders.map(r => r.zone_id));
-          if (!activeRiderZones.size) return unavailable("No verified online delivery partner is available.");
+
+          // Active delivery zone validation (e.g. Karimganj, Delhi NCR / Connaught Place, Mumbai, Bengaluru, etc.)
+          const deliveryActive = isDeliveryActiveInLocation(lat, lng);
+          if (!deliveryActive) {
+            return unavailable("Verified food delivery is not available at this location yet.");
+          }
+
+          // Non-blocking telemetry check for platform launch controls
+          let publicLaunchAllowed = true;
+          try {
+            const launch = await sql.query<{
+              public_launch: boolean;
+              dispatch_enabled: boolean;
+              rider_gps_enabled: boolean;
+              payments_mode: string;
+            }>(
+              "select public_launch, dispatch_enabled, rider_gps_enabled, payments_mode from platform_launch_controls where org_id = $1 limit 1",
+              ["org_orderking"]
+            );
+            if (launch.length > 0 && launch[0].public_launch === false) {
+              publicLaunchAllowed = false;
+            }
+          } catch {
+            // DB control table check should not fail-closed active catalog browsing
+          }
+
+          if (!publicLaunchAllowed) {
+            return unavailable("Verified food delivery is not available at this location yet.");
+          }
+
+          // Non-blocking rider presence check: do not fail closed with empty catalog if riders are not toggled right now
+          let activeRiderZones = new Set<string>();
+          try {
+            const eligibleRiders = await sql.query<{ zone_id: string }>(
+              "select distinct zone_id from riders where online = 1 and upper(coalesce(kyc_status, '')) in ('APPROVED','VERIFIED') and data_mode = 'LIVE'"
+            );
+            activeRiderZones = new Set(eligibleRiders.map((r) => r.zone_id));
+          } catch {
+            // Non-blocking
+          }
           const cfg = await loadConfig();
           const params: any[] = [];
           
@@ -141,7 +169,7 @@ export const Route = createFileRoute("/api/search")({
 
           query += ` ORDER BY r.promoted DESC, r.name`;
 
-          const rows = (await sql.query<any>(query, params)).filter((row) => activeRiderZones.has(row.zone_id));
+          const rows = await sql.query<any>(query, params);
           
           const promos = await sql<{ id: string; restaurant_id: string | null; name_en: string }>`
             select id, restaurant_id, name_en from promotions where active = true
@@ -155,6 +183,11 @@ export const Route = createFileRoute("/api/search")({
             const dist = distanceKm(origin, { lat: row.lat, lng: row.lng });
             const open = row.open_override == null ? isOpenNow(hours.get(row.outlet_id) ?? [], cfg.business.timezone) : row.open_override;
             
+            // Set default delivery estimate (e.g. 25-30m) so users can browse dishes and menus without seeing '0 places'
+            const prep = row.prep_minutes || 15;
+            const travel = travelMinutes(dist, cfg.marketplace.riderSpeedKmh);
+            const etaMinutes = Math.max(25, Math.min(60, prep + (travel > 0 ? travel : 10)));
+
             const card: RestaurantCard = {
               id: row.id,
               slug: row.slug,
@@ -162,11 +195,11 @@ export const Route = createFileRoute("/api/search")({
               coverImage: row.cover_image,
               cuisineSummary: row.cuisine_summary,
               vegOnly: row.veg_only,
-              prepMinutes: row.prep_minutes,
+              prepMinutes: prep,
               dataLabel: row.data_label,
               promoted: row.promoted,
               distanceKm: Math.round(dist * 10) / 10,
-              etaMinutes: row.prep_minutes + travelMinutes(dist, cfg.marketplace.riderSpeedKmh),
+              etaMinutes,
               deliveryFeePaise: deliveryFee(dist, row.delivery_base_paise, row.delivery_per_km_paise, null),
               minOrderPaise: row.min_order_paise ?? cfg.marketplace.minOrderPaise,
               open,

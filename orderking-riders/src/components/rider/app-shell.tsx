@@ -7,21 +7,25 @@ import { LanguageSelector } from "@/components/rider/language-selector";
 import { bootstrapRiderFn } from "@/lib/server/rider-fns";
 import type { RiderProfile } from "@/lib/rider/types";
 import { RiderFloatingBottomNav } from "@/components/navigation/rider-bottom-nav";
-import { FloatingEmergencySOS } from "@/components/rider/floating-emergency-sos";
+import { RiderEmergencySafetySheet } from "@/components/rider/rider-emergency-sos";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
   Banknote,
   Bike,
   Bot,
+  Building2,
   CircleHelp,
   FileCheck2,
   History,
   House,
   MapPin,
+  Navigation,
   RefreshCw,
   Shield,
+  ShieldAlert,
   ShieldCheck,
+  UserCheck,
   WifiOff,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -36,6 +40,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [geoOk, setGeoOk] = useState(true);
   const [retryingGeo, setRetryingGeo] = useState(false);
   const [riderProfile, setRiderProfile] = useState<RiderProfile | null>(null);
+  const [sosModalOpen, setSosModalOpen] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
@@ -96,11 +101,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (!user) return <RedirectToSignIn />;
 
   const nav = [
-    { to: "/", icon: House, label: t("home") },
-    { to: "/earnings", icon: Banknote, label: t("earnings") },
-    { to: "/history", icon: History, label: t("history") },
-    { to: "/safety", icon: Shield, label: t("safety") },
-    { to: "/profile", icon: Bike, label: t("profile") },
+    { to: "/", icon: House, label: t("duty") || "Duty & Orders" },
+    { to: "/trips", icon: Navigation, label: t("trips") || "Trips" },
+    { to: "/earnings", icon: Banknote, label: t("earnings") || "Earnings & COD" },
+    { to: "/payouts", icon: Building2, label: t("payouts") || "Weekly Payouts" },
+    { to: "/profile", icon: UserCheck, label: t("profile") || "Profile & Fleet KYC" },
   ] as const;
 
   const kycStatus = riderProfile?.kycStatus;
@@ -216,6 +221,25 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Badge>
             )}
 
+            <button
+              type="button"
+              onClick={() => setSosModalOpen(true)}
+              aria-label="OrderKing Emergency SOS 112 Safety Shield"
+              title="Emergency SOS 112 - Direct Police, Medical & Fleet Safety Command"
+              className="group relative flex items-center gap-1.5 rounded-full border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 px-2.5 sm:px-3 py-1.5 text-white shadow-md shadow-red-600/35 transition-all duration-200 hover:from-red-500 hover:to-rose-600 active:scale-95 shrink-0"
+            >
+              <span className="absolute -inset-0.5 rounded-full bg-red-500/30 opacity-70 blur-xs animate-ping group-hover:opacity-100 pointer-events-none" />
+              <ShieldAlert className="size-4 animate-pulse stroke-[2.5] text-white shrink-0 drop-shadow-xs" />
+              <div className="flex flex-col text-left leading-none">
+                <span className="text-[11px] font-black tracking-wider uppercase text-white drop-shadow-xs">
+                  SOS 112
+                </span>
+                <span className="text-[8px] font-bold text-rose-200 tracking-tight hidden xs:inline">
+                  Safety Shield
+                </span>
+              </div>
+            </button>
+
             <Link
               to="/assistant"
               className="grid size-9 place-items-center rounded-lg border border-border bg-card hover:bg-muted transition"
@@ -304,8 +328,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
       </div>
 
-      {/* FLOATING EMERGENCY SOS BEACON WITH 112 DIRECT DIALING & LIVE DISPATCH TELEMETRY */}
-      <FloatingEmergencySOS />
+      {/* 1-TAP EMERGENCY SOS SAFETY SHEET MODAL */}
+      <RiderEmergencySafetySheet
+        isOpen={sosModalOpen}
+        onClose={() => setSosModalOpen(false)}
+        riderName={riderProfile?.fullName}
+        riderPhone={riderProfile?.phone}
+      />
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
       <RiderFloatingBottomNav isDutyOnline={online && geoOk} />

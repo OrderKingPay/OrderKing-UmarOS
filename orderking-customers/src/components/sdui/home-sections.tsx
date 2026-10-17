@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   CloudRain,
+  Clock,
 } from "lucide-react";
 import type { LayoutSection } from "@orderking/ui";
 import { useCustomization } from "@orderking/ui";
@@ -224,10 +225,10 @@ export function BannerCarouselSection({
 
   const banners = [
     {
-      id: "prestige_offer",
-      title: "Prestige Culinary Excellence",
+      id: "verified_kitchens_offer",
+      title: "Verified Kitchen Excellence",
       subtitle: "0% Menu Markups · Direct Chef Pricing",
-      tag: "👑 Verified Gastronomy",
+      tag: "👑 Verified Kitchens",
       cta: "Explore Kitchens",
       link: "/search",
       gradient: "from-amber-500 via-yellow-400 to-amber-600",
@@ -672,17 +673,27 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
         </div>
       )}
 
-      {/* Title */}
+      {/* Title & Trust Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
-            {selectedCategory
-              ? "Explore this category"
-              : section.title || `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}`}
-          </h2>
-          <p className="text-xs text-gray-500 font-medium">
-            Verified kitchens &amp; chef-prepared delicacies
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
+              {selectedCategory
+                ? `Top Kitchens for ${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}`
+                : "Restaurants Delivering to You"}
+            </h2>
+            <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-300/80 px-2.5 py-0.5 text-[10.5px] font-black text-emerald-800 shadow-2xs">
+              <Sparkles className="size-3 text-emerald-600 fill-emerald-500" />
+              0% Hidden Markups
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 font-medium mt-0.5">
+            Verified kitchens &bull; FSSAI certified &bull; Real-time 25 min delivery
           </p>
+        </div>
+        <div className="hidden md:flex items-center gap-2 text-xs font-bold text-stone-700 bg-white border border-amber-200/80 px-3 py-1.5 rounded-xl shadow-2xs">
+          <Clock className="size-3.5 text-amber-600" />
+          <span>Avg ETA: 25 min</span>
         </div>
       </div>
 
@@ -701,7 +712,25 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           ))}
         </div>
       ) : filteredRestaurants.length === 0 ? (
-        <RoyalDiscoveryShowcase />
+        <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-amber-200/80 bg-white/95 text-center space-y-3 shadow-xs">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-800 shadow-inner">
+            <Utensils className="size-7 text-amber-700" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-base font-extrabold text-gray-950">No kitchens match active filters</h3>
+            <p className="text-xs text-gray-500 max-w-sm font-medium">
+              We have verified kitchens delivering to your area, but your current filter selection returned no exact matches.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 px-4 py-2 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-amber-300"
+          >
+            <RotateCcw className="size-3.5" />
+            <span>Reset All Filters</span>
+          </button>
+        </div>
       ) : (
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           {filteredRestaurants.map((restaurant) => (

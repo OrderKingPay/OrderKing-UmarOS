@@ -15,6 +15,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as DiningRouteImport } from './routes/dining'
 import { Route as EarnRouteImport } from './routes/earn'
+import { Route as JoinFleetRouteImport } from './routes/join-fleet'
 import { Route as KingPayRouteImport } from './routes/king-pay'
 import { Route as KingpayBbpsRouteImport } from './routes/kingpay-bbps'
 import { Route as KingpayWalletRouteImport } from './routes/kingpay-wallet'
@@ -90,6 +91,11 @@ const DiningRoute = DiningRouteImport.update({
 const EarnRoute = EarnRouteImport.update({
   id: '/earn',
   path: '/earn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinFleetRoute = JoinFleetRouteImport.update({
+  id: '/join-fleet',
+  path: '/join-fleet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KingPayRoute = KingPayRouteImport.update({
@@ -331,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
+  '/join-fleet': typeof JoinFleetRoute
   '/king-pay': typeof KingPayRouteWithChildren
   '/kingpay-bbps': typeof KingpayBbpsRoute
   '/kingpay-wallet': typeof KingpayWalletRoute
@@ -385,6 +392,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
+  '/join-fleet': typeof JoinFleetRoute
   '/king-pay': typeof KingPayRouteWithChildren
   '/kingpay-bbps': typeof KingpayBbpsRoute
   '/kingpay-wallet': typeof KingpayWalletRoute
@@ -440,6 +448,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
+  '/join-fleet': typeof JoinFleetRoute
   '/king-pay': typeof KingPayRouteWithChildren
   '/kingpay-bbps': typeof KingpayBbpsRoute
   '/kingpay-wallet': typeof KingpayWalletRoute
@@ -496,6 +505,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/dining'
     | '/earn'
+    | '/join-fleet'
     | '/king-pay'
     | '/kingpay-bbps'
     | '/kingpay-wallet'
@@ -550,6 +560,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/dining'
     | '/earn'
+    | '/join-fleet'
     | '/king-pay'
     | '/kingpay-bbps'
     | '/kingpay-wallet'
@@ -604,6 +615,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/dining'
     | '/earn'
+    | '/join-fleet'
     | '/king-pay'
     | '/kingpay-bbps'
     | '/kingpay-wallet'
@@ -659,6 +671,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   DiningRoute: typeof DiningRoute
   EarnRoute: typeof EarnRoute
+  JoinFleetRoute: typeof JoinFleetRoute
   KingPayRoute: typeof KingPayRouteWithChildren
   KingpayBbpsRoute: typeof KingpayBbpsRoute
   KingpayWalletRoute: typeof KingpayWalletRoute
@@ -746,6 +759,13 @@ declare module '@tanstack/react-router' {
       path: '/earn'
       fullPath: '/earn'
       preLoaderRoute: typeof EarnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join-fleet': {
+      id: '/join-fleet'
+      path: '/join-fleet'
+      fullPath: '/join-fleet'
+      preLoaderRoute: typeof JoinFleetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/king-pay': {
@@ -1115,6 +1135,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   DiningRoute: DiningRoute,
   EarnRoute: EarnRoute,
+  JoinFleetRoute: JoinFleetRoute,
   KingPayRoute: KingPayRouteWithChildren,
   KingpayBbpsRoute: KingpayBbpsRoute,
   KingpayWalletRoute: KingpayWalletRoute,

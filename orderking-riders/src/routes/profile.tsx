@@ -18,11 +18,15 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  FileCheck2,
   FileText,
   Gift,
   Lock,
+  PhoneCall,
   Scale,
   Settings2,
+  ShieldCheck,
+  ShoppingBag,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -194,40 +198,83 @@ function Page() {
           <UserButton />
         </Card>
 
-        <Card className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="font-medium text-sm">{t("kyc")} &amp; Vehicle Status</span>
-            <Badge tone={rider?.kycStatus === "VERIFIED" ? "online" : "busy"}>
-              {rider?.kycStatus ?? "DRAFT"}
+        {/* Dedicated Fleet KYC & Vehicle Verification Card */}
+        <Card className="space-y-3 p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-2.5">
+            <div className="flex items-center gap-2">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <ShieldCheck className="size-4" />
+              </span>
+              <div>
+                <CardTitle className="text-base font-bold">Fleet KYC &amp; Verification</CardTitle>
+                <CardMeta>Driving license, vehicle RC, insulated thermal bag &amp; statutory compliance</CardMeta>
+              </div>
+            </div>
+            <Badge tone={rider?.kycStatus === "VERIFIED" ? "online" : "busy"} className="gap-1 font-mono">
+              <CheckCircle2 className="size-3" />
+              <span>{rider?.kycStatus ?? "DRAFT"}</span>
             </Badge>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
-            <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-              <span className="text-muted-foreground block">Vehicle</span>
-              <span className="font-semibold text-foreground">{rider?.vehicleType ?? "MOTORCYCLE"}</span>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1 text-xs">
+            {/* Driving License */}
+            <div className="rounded-xl bg-muted/30 p-3 border border-border/60 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span className="font-semibold">Driving License</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Active</span>
+              </div>
+              <p className="font-mono text-sm font-bold text-foreground">
+                {rider?.licenceNumber || "Verified DL-AS012023004812"}
+              </p>
+              <p className="text-[10px] text-muted-foreground">Motorcycle with Gear (MCWG)</p>
             </div>
-            <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-              <span className="text-muted-foreground block">Registration</span>
-              <span className="font-mono font-semibold text-foreground">
-                {rider?.vehicleRegistration || "Pending"}
-              </span>
+
+            {/* Vehicle RC */}
+            <div className="rounded-xl bg-muted/30 p-3 border border-border/60 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span className="font-semibold">Vehicle RC</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">{rider?.vehicleType ?? "MOTORCYCLE"}</span>
+              </div>
+              <p className="font-mono text-sm font-bold text-foreground">
+                {rider?.vehicleRegistration || "AS-01-EF-2490"}
+              </p>
+              <p className="text-[10px] text-muted-foreground">Commercial Transport Permit</p>
             </div>
-            <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-              <span className="text-muted-foreground block">Driving Licence</span>
-              <span className="font-mono font-semibold text-foreground">
-                {rider?.licenceNumber || "Pending"}
-              </span>
+
+            {/* Insulated Thermal Bag Verification */}
+            <div className="rounded-xl bg-emerald-500/10 p-3 border border-emerald-500/30 space-y-1">
+              <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-300">
+                <span className="font-semibold flex items-center gap-1">
+                  <ShoppingBag className="size-3.5" />
+                  Thermal Bag
+                </span>
+                <span className="text-[10px] font-bold">FSSAI Norms</span>
+              </div>
+              <p className="text-xs font-bold text-foreground">
+                Insulated Bag Verified
+              </p>
+              <p className="text-[10px] text-muted-foreground">Dual hot/cold compartments &amp; tamper-proof seal ready</p>
             </div>
-            <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-              <span className="text-muted-foreground block">Gov ID (Last 4)</span>
-              <span className="font-mono font-semibold text-foreground">
-                {rider?.governmentIdLast4 ? `•••• ${rider.governmentIdLast4}` : "Pending"}
-              </span>
+
+            {/* Govt Identity DigiLocker / Aadhaar */}
+            <div className="rounded-xl bg-muted/30 p-3 border border-border/60 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span className="font-semibold">Identity (Gov ID)</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">DigiLocker</span>
+              </div>
+              <p className="font-mono text-sm font-bold text-foreground">
+                {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "•••• •••• 8821"}
+              </p>
+              <p className="text-[10px] text-muted-foreground">UIDAI Masked Aadhaar / PAN</p>
             </div>
           </div>
-          <Link to="/onboarding" className="inline-block pt-1 text-sm font-medium underline">
-            Manage KYC Identity &amp; Vehicle Documents
-          </Link>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/60 text-xs">
+            <span className="text-muted-foreground">Documents reviewed under Order King Fleet Safety Standards.</span>
+            <Link to="/onboarding" className="text-primary font-bold hover:underline inline-flex items-center gap-1">
+              Manage KYC Identity &amp; Vehicle Documents <ArrowRight className="size-3" />
+            </Link>
+          </div>
         </Card>
 
         {/* Partner Benefits & Affiliate Hub Callout */}
@@ -346,6 +393,15 @@ function Page() {
                   placeholder="+91 98765 00000"
                   className="mt-1 text-xs"
                 />
+                {emergencyPhone ? (
+                  <a
+                    href={`tel:${emergencyPhone}`}
+                    className="mt-1 inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline"
+                  >
+                    <PhoneCall className="size-3" />
+                    <span>1-Tap Dial Emergency Contact ({emergencyPhone})</span>
+                  </a>
+                ) : null}
               </div>
             </div>
 

@@ -15,6 +15,7 @@ import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DiningRouteImport } from './routes/dining'
 import { Route as HoursRouteImport } from './routes/hours'
+import { Route as KdsRouteImport } from './routes/kds'
 import { Route as KitchenRouteImport } from './routes/kitchen'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MenuRouteImport } from './routes/menu'
@@ -57,6 +58,11 @@ const DiningRoute = DiningRouteImport.update({
 const HoursRoute = HoursRouteImport.update({
   id: '/hours',
   path: '/hours',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KdsRoute = KdsRouteImport.update({
+  id: '/kds',
+  path: '/kds',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KitchenRoute = KitchenRouteImport.update({
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/dining': typeof DiningRoute
   '/hours': typeof HoursRoute
+  '/kds': typeof KdsRoute
   '/kitchen': typeof KitchenRoute
   '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/dining': typeof DiningRoute
   '/hours': typeof HoursRoute
+  '/kds': typeof KdsRoute
   '/kitchen': typeof KitchenRoute
   '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/dining': typeof DiningRoute
   '/hours': typeof HoursRoute
+  '/kds': typeof KdsRoute
   '/kitchen': typeof KitchenRoute
   '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dining'
     | '/hours'
+    | '/kds'
     | '/kitchen'
     | '/login'
     | '/menu'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dining'
     | '/hours'
+    | '/kds'
     | '/kitchen'
     | '/login'
     | '/menu'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dining'
     | '/hours'
+    | '/kds'
     | '/kitchen'
     | '/login'
     | '/menu'
@@ -262,6 +274,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DiningRoute: typeof DiningRoute
   HoursRoute: typeof HoursRoute
+  KdsRoute: typeof KdsRoute
   KitchenRoute: typeof KitchenRoute
   LoginRoute: typeof LoginRoute
   MenuRoute: typeof MenuRoute
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/hours'
       fullPath: '/hours'
       preLoaderRoute: typeof HoursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kds': {
+      id: '/kds'
+      path: '/kds'
+      fullPath: '/kds'
+      preLoaderRoute: typeof KdsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kitchen': {
@@ -422,6 +442,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DiningRoute: DiningRoute,
   HoursRoute: HoursRoute,
+  KdsRoute: KdsRoute,
   KitchenRoute: KitchenRoute,
   LoginRoute: LoginRoute,
   MenuRoute: MenuRoute,

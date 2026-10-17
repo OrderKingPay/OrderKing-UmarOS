@@ -104,10 +104,12 @@ export function OrderCard({
   const [reason, setReason] = useState<(typeof REJECT_REASONS)[number]>("item_unavailable");
   const [error, setError] = useState<string | null>(null);
   const [localPrepMinutes, setLocalPrepMinutes] = useState(order.prepMinutes);
+  const [selectedPrepMinutes, setSelectedPrepMinutes] = useState<number>(order.prepMinutes || 25);
   const [delaying, setDelaying] = useState(false);
 
   useEffect(() => {
     setLocalPrepMinutes(order.prepMinutes);
+    if (order.prepMinutes) setSelectedPrepMinutes(order.prepMinutes);
   }, [order.prepMinutes]);
 
   async function handleAddPrepDelay(extraMinutes: number) {
@@ -233,12 +235,14 @@ export function OrderCard({
 
   async function act(
     action: "accept" | "reject" | "preparing" | "ready",
-    customReason?: (typeof REJECT_REASONS)[number]
+    customReason?: (typeof REJECT_REASONS)[number],
+    prepMinutes?: number
   ) {
     setBusy(true);
     setError(null);
     const chosenReason = customReason ?? reason;
     const idempotencyKey = actionKey(order.id, action);
+    const effectivePrep = prepMinutes ?? selectedPrepMinutes ?? localPrepMinutes;
     try {
       if (typeof navigator !== "undefined" && !navigator.onLine) {
         await enqueueMutation({
@@ -261,7 +265,13 @@ export function OrderCard({
           return {
             ...prev,
             orders: prev.orders.map((o) =>
-              o.id === order.id ? { ...o, state: nextState[action] || o.state } : o
+              o.id === order.id
+                ? {
+                    ...o,
+                    state: nextState[action] || o.state,
+                    prepMinutes: action === "accept" ? effectivePrep : o.prepMinutes,
+                  }
+                : o
             ),
           };
         });
@@ -278,9 +288,40 @@ export function OrderCard({
           orderId: order.id,
           action,
           reason: action === "reject" ? chosenReason : undefined,
+          prepMinutes: action === "accept" ? effectivePrep : undefined,
           idempotencyKey,
         },
       });
+
+      // Optimistic cache update across orders and kitchen
+      qc.setQueriesData({ queryKey: ["orders"] }, (old: any) => {
+        if (!old || typeof old !== "object" || !("orders" in old)) return old;
+        const nextState: Record<string, string> = {
+          accept: "ACCEPTED",
+          reject: "REJECTED",
+          preparing: "PREPARING",
+          ready: "READY",
+        };
+        return {
+          ...old,
+          orders: old.orders.map((o: any) =>
+            o.id === order.id
+              ? {
+                  ...o,
+                  state: nextState[action] || o.state,
+                  prepMinutes: action === "accept" ? effectivePrep : o.prepMinutes,
+                }
+              : o
+          ),
+        };
+      });
+
+      if (action === "accept") {
+        toast.success(`✅ Order #${order.orderNumber} Accepted! KOT timer started (${effectivePrep}m SLA).`);
+      } else if (action === "ready") {
+        toast.success(`🔔 Order #${order.orderNumber} Ready! Delivery rider dispatch notified for pickup.`);
+      }
+
       clearActionKey(order.id, action);
       setRejectOpen(false);
       onChanged?.();
@@ -591,19 +632,50 @@ export function OrderCard({
 
       <div className="flex flex-wrap gap-2">
           {order.state === "PLACED" ? (
-            <>
-              <Button size={large ? "lg" : "md"} disabled={busy} onClick={() => void act("accept")}>
-                {t("orders.accept")}
-              </Button>
-              <Button
-                size={large ? "lg" : "md"}
-                variant="secondary"
-                disabled={busy}
-                onClick={() => setRejectOpen(true)}
-              >
-                {t("orders.reject")}
-              </Button>
-            </>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
+              {/* Prep Time SLA Selector Chips (15m, 25m, 35m) */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mr-1">
+                  <Clock className="size-3.5 text-amber-400" /> Kitchen Prep:
+                </span>
+                {[15, 25, 35].map((mins) => (
+                  <button
+                    key={mins}
+                    type="button"
+                    onClick={() => setSelectedPrepMinutes(mins)}
+                    className={cn(
+                      "px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer select-none",
+                      selectedPrepMinutes === mins
+                        ? "bg-amber-400 text-slate-950 shadow-md font-black scale-105"
+                        : "bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white"
+                    )}
+                  >
+                    {mins}m
+                  </button>
+                ))}
+              </div>
+
+              {/* 1-Tap Accept and Structured Reject */}
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  size={large ? "lg" : "md"}
+                  disabled={busy}
+                  onClick={() => void act("accept", undefined, selectedPrepMinutes)}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold shadow-md active:scale-95 cursor-pointer"
+                >
+                  ✓ Accept ({selectedPrepMinutes}m KOT)
+                </Button>
+                <Button
+                  size={large ? "lg" : "md"}
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => setRejectOpen(true)}
+                  className="border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 font-bold cursor-pointer"
+                >
+                  ✕ {t("orders.reject")}
+                </Button>
+              </div>
+            </div>
           ) : null}
           {order.state === "ACCEPTED" ? (
             <Button size={large ? "lg" : "md"} disabled={busy} onClick={() => void act("preparing")}>
@@ -617,8 +689,9 @@ export function OrderCard({
                 variant="leaf"
                 disabled={busy || delaying}
                 onClick={() => void act("ready")}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold active:scale-95 shadow-md cursor-pointer"
               >
-                {t("orders.ready")}
+                🔔 {t("orders.ready")} &amp; Dispatch Rider
               </Button>
               <div className="flex items-center gap-1.5">
                 <Button

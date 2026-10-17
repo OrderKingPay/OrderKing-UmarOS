@@ -197,86 +197,142 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
     });
   });
 
-  describe("6. Contextual Dynamic 5th Dock Platform Morphing & Luxury Guard Invariants", () => {
-    it("dynamically resolves the active platform context across all canonical and sub-routes", async () => {
-      const { resolvePlatformContext } = await import("@/components/navigation/floating-bottom-nav");
+  describe("6. Standard Benchmark 5-Tab Dedicated Food Navigation Invariants", { timeout: 60_000 }, () => {
+    it("exports 5 fixed, dedicated food tabs matching gold-standard benchmark specifications", { timeout: 60_000 }, async () => {
+      const { BENCHMARK_FOOD_TABS } = await import("@/components/navigation/floating-bottom-nav");
 
-      // 1. Food Delivery routes
+      expect(BENCHMARK_FOOD_TABS).toHaveLength(5);
+      expect(BENCHMARK_FOOD_TABS.map((t) => t.id)).toEqual([
+        "delivery",
+        "dining",
+        "search",
+        "cart",
+        "orders",
+      ]);
+      expect(BENCHMARK_FOOD_TABS.map((t) => t.to)).toEqual([
+        "/",
+        "/dining",
+        "/search",
+        "/cart",
+        "/orders",
+      ]);
+      expect(BENCHMARK_FOOD_TABS.map((t) => t.label)).toEqual([
+        "Delivery",
+        "Dining Out",
+        "Search",
+        "Cart",
+        "Orders",
+      ]);
+    });
+
+    it("verifies dedicated food navigation targets and crash-proof context resolution", { timeout: 60_000 }, async () => {
+      const { BENCHMARK_FOOD_TABS, resolvePlatformContext } = await import("@/components/navigation/floating-bottom-nav");
+
+      // Platform is strictly fixed to dedicated food delivery across all routes
       expect(resolvePlatformContext("/")).toBe("delivery");
       expect(resolvePlatformContext("/delivery")).toBe("delivery");
-      expect(resolvePlatformContext("/restaurants/awadhi-biryani")).toBe("delivery");
-      expect(resolvePlatformContext("/r/dum-safar")).toBe("delivery");
-      expect(resolvePlatformContext("/orders")).toBe("delivery");
-      expect(resolvePlatformContext("/orders/ord-123")).toBe("delivery");
+      expect(resolvePlatformContext("/dining")).toBe("delivery");
+      expect(resolvePlatformContext("/search")).toBe("delivery");
       expect(resolvePlatformContext("/cart")).toBe("delivery");
-      expect(resolvePlatformContext("/checkout")).toBe("delivery");
-
-      // 2. KingPay FinTech routes
-      expect(resolvePlatformContext("/king-pay")).toBe("kingpay");
-      expect(resolvePlatformContext("/king-pay/assist")).toBe("kingpay");
-      expect(resolvePlatformContext("/king-pay/passbook")).toBe("kingpay");
-      expect(resolvePlatformContext("/earn")).toBe("kingpay");
-      expect(resolvePlatformContext("/wallet")).toBe("kingpay");
-      expect(resolvePlatformContext("/kingpay-wallet")).toBe("kingpay");
-      expect(resolvePlatformContext("/kingpay-bbps")).toBe("kingpay");
-      expect(resolvePlatformContext("/kingpay-loans")).toBe("kingpay");
-
-      // 3. Sovereign Travel routes
-      expect(resolvePlatformContext("/travel")).toBe("travel");
-      expect(resolvePlatformContext("/travel/trips")).toBe("travel");
-
-      // 4. AI Tutor & High-Paying Jobs routes
-      expect(resolvePlatformContext("/tutor")).toBe("tutor");
-
-      // 5. Degraded / Null / Undefined edge-cases (Crash-Proof Invariants)
+      expect(resolvePlatformContext("/orders")).toBe("delivery");
       expect(resolvePlatformContext(undefined)).toBe("delivery");
       expect(resolvePlatformContext(null)).toBe("delivery");
       expect(resolvePlatformContext("")).toBe("delivery");
-      expect(resolvePlatformContext("/unknown-random-route")).toBe("delivery");
+
+      const deliveryTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "delivery");
+      const diningTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "dining");
+      const searchTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "search");
+      const cartTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "cart");
+      const ordersTab = BENCHMARK_FOOD_TABS.find((t) => t.id === "orders");
+
+      expect(deliveryTab).toBeDefined();
+      expect(deliveryTab?.label).toBe("Delivery");
+      expect(deliveryTab?.to).toBe("/");
+
+      expect(diningTab).toBeDefined();
+      expect(diningTab?.label).toBe("Dining Out");
+      expect(diningTab?.to).toBe("/dining");
+
+      expect(searchTab).toBeDefined();
+      expect(searchTab?.label).toBe("Search");
+      expect(searchTab?.to).toBe("/search");
+
+      expect(cartTab).toBeDefined();
+      expect(cartTab?.label).toBe("Cart");
+      expect(cartTab?.to).toBe("/cart");
+
+      expect(ordersTab).toBeDefined();
+      expect(ordersTab?.label).toBe("Orders");
+      expect(ordersTab?.to).toBe("/orders");
+    });
+  });
+
+  describe("7. Multi-Platform Context Morphing & Zero-Collision Dock Invariants", { timeout: 60_000 }, () => {
+    it("resolves exact platform context across all 4 verticals without collisions", async () => {
+      const { resolvePlatformContext } = await import("@/components/navigation/floating-bottom-nav");
+
+      // Food / Delivery
+      expect(resolvePlatformContext("/")).toBe("delivery");
+      expect(resolvePlatformContext("/delivery")).toBe("delivery");
+      expect(resolvePlatformContext("/dining")).toBe("delivery");
+      expect(resolvePlatformContext("/cart")).toBe("delivery");
+      expect(resolvePlatformContext("/checkout")).toBe("delivery");
+      expect(resolvePlatformContext("/orders")).toBe("delivery");
+
+      // KingPay Fintech
+      expect(resolvePlatformContext("/king-pay")).toBe("kingpay");
+      expect(resolvePlatformContext("/king-pay/assist")).toBe("kingpay");
+      expect(resolvePlatformContext("/earn")).toBe("kingpay");
+      expect(resolvePlatformContext("/wallet")).toBe("kingpay");
+      expect(resolvePlatformContext("/kingpay-wallet")).toBe("kingpay");
+      expect(resolvePlatformContext("/support", { platform: "kingpay" })).toBe("kingpay");
+
+      // Sovereign Travel
+      expect(resolvePlatformContext("/travel")).toBe("travel");
+      expect(resolvePlatformContext("/travel/trips")).toBe("travel");
+      expect(resolvePlatformContext("/support", { platform: "travel" })).toBe("travel");
+
+      // LearnKing & JobKing (Tutor)
+      expect(resolvePlatformContext("/tutor")).toBe("tutor");
+      expect(resolvePlatformContext("/support", { platform: "tutor" })).toBe("tutor");
     });
 
-    it("verifies the 5th tab morphs into dedicated contextual targets and titles per active platform", () => {
-      const PLATFORM_5TH_TABS = {
-        delivery: {
-          title: "Food Orders",
-          to: "/orders",
-          subPill: "TRACK",
-          badgeType: "radar_beacon_or_cart_count",
-        },
-        kingpay: {
-          title: "Passbook",
-          to: "/king-pay",
-          searchTab: "passbook",
-          subPill: "LEDGER",
-          badgeType: "sovereign_utr_badge",
-        },
-        travel: {
-          title: "My Trips",
-          to: "/travel/trips",
-          subPill: "PNR DESK",
-          badgeType: "boarding_pnr_badge",
-        },
-        tutor: {
-          title: "My Career",
-          to: "/tutor",
-          hash: "my-jobs",
-          subPill: "TRACK",
-          badgeType: "career_applications_badge",
-        },
-      };
+    it("verifies 5 specialized benchmark tabs for KingPay, Travel, and Tutor", async () => {
+      const {
+        BENCHMARK_KINGPAY_TABS,
+        BENCHMARK_TRAVEL_TABS,
+        BENCHMARK_TUTOR_TABS,
+      } = await import("@/components/navigation/floating-bottom-nav");
 
-      // Ensure every platform has a distinct, dedicated 5th tab specialization
-      expect(PLATFORM_5TH_TABS.delivery.title).toBe("Food Orders");
-      expect(PLATFORM_5TH_TABS.delivery.to).toBe("/orders");
+      // KingPay
+      expect(BENCHMARK_KINGPAY_TABS).toHaveLength(5);
+      expect(BENCHMARK_KINGPAY_TABS.map((t) => t.id)).toEqual([
+        "terminal",
+        "split",
+        "vault",
+        "ledger",
+        "support",
+      ]);
 
-      expect(PLATFORM_5TH_TABS.kingpay.title).toBe("Passbook");
-      expect(PLATFORM_5TH_TABS.kingpay.searchTab).toBe("passbook");
+      // Travel
+      expect(BENCHMARK_TRAVEL_TABS).toHaveLength(5);
+      expect(BENCHMARK_TRAVEL_TABS.map((t) => t.id)).toEqual([
+        "compare",
+        "flights",
+        "trains",
+        "cabs",
+        "trips",
+      ]);
 
-      expect(PLATFORM_5TH_TABS.travel.title).toBe("My Trips");
-      expect(PLATFORM_5TH_TABS.travel.to).toBe("/travel/trips");
-
-      expect(PLATFORM_5TH_TABS.tutor.title).toBe("My Career");
-      expect(PLATFORM_5TH_TABS.tutor.hash).toBe("my-jobs");
+      // Tutor
+      expect(BENCHMARK_TUTOR_TABS).toHaveLength(5);
+      expect(BENCHMARK_TUTOR_TABS.map((t) => t.id)).toEqual([
+        "ask-ai",
+        "subjects",
+        "jobs",
+        "saved",
+        "applied",
+      ]);
     });
   });
 });

@@ -23,6 +23,7 @@ export default defineConfig({
       "src/test/tier1-customer-secret-weapons.test.ts",
       "src/test/npci-upi-intent.test.ts",
       "src/test/fintech-reality-suite.test.ts",
+      "src/test/search-connaught-place.test.ts",
     ],
     environment: "node",
   },

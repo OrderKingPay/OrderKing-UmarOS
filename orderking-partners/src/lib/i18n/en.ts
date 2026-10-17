@@ -37,6 +37,7 @@ export const en = {
     home: "Home",
     orders: "Orders",
     kitchen: "Kitchen",
+    kds: "KDS",
     dining: "Dining & Tables",
     menu: "Menu",
     more: "More",

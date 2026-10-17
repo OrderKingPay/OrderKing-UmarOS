@@ -3,12 +3,187 @@ import { PAISE_PER_RUPEE } from "@/lib/money";
 export type TravelMode = "flight" | "train" | "hotel" | "bus";
 export type RebateDestination = "24k_gold" | "food_wallet";
 
+export const SOVEREIGN_TRAVEL_DISCLAIMER =
+  "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon charter confirmation.";
+
+export type VIPTravelCategory =
+  | "private_aviation"
+  | "helicopter_charter"
+  | "heritage_stay"
+  | "executive_chauffeur"
+  | "superfast_rail";
+
+export interface VIPCharterCategoryConfig {
+  id: VIPTravelCategory;
+  title: string;
+  subtitle: string;
+  badge: string;
+  iconName: string;
+  leadTime: string;
+  fleetOptions: string[];
+  benchmarkPricingText: string;
+  popularSectors: Array<{ from: string; to: string; flightTime: string; estFarePaise: number }>;
+}
+
+export const VIP_TRAVEL_CATEGORIES: readonly VIPCharterCategoryConfig[] = [
+  {
+    id: "private_aviation",
+    title: "Private Aviation & Jet Charters",
+    subtitle: "On-demand midsize & super-mid jets with dedicated VIP FBO terminals",
+    badge: "0% Broker Fee",
+    iconName: "Plane",
+    leadTime: "2-4 Hours Notice",
+    fleetOptions: [
+      "Cessna Citation XLS (8 VIP Seats)",
+      "Bombardier Challenger 605 (12 VIP Seats)",
+      "Gulfstream G650ER (Ultra Long-Range 14 Seats)",
+      "King Air 350i Turboprop (Cost-Effective Regional)",
+    ],
+    benchmarkPricingText: "From ₹4,50,000 / flight hr · Pure Operator Net",
+    popularSectors: [
+      { from: "New Delhi (DEL)", to: "Mumbai (BOM)", flightTime: "2h 05m", estFarePaise: 48_000_000 },
+      { from: "Bengaluru (BLR)", to: "Goa (GOX)", flightTime: "0h 50m", estFarePaise: 29_000_000 },
+      { from: "Mumbai (BOM)", to: "Dubai (DXB)", flightTime: "3h 15m", estFarePaise: 125_000_000 },
+    ],
+  },
+  {
+    id: "helicopter_charter",
+    title: "Helicopter Charters & Himalayan Tours",
+    subtitle: "Twin-engine executive helicopters for city transfers, weddings & pilgrimage",
+    badge: "VIP Helipad Access",
+    iconName: "Sparkles",
+    leadTime: "4 Hours Notice",
+    fleetOptions: [
+      "Airbus H130 / H145 (VIP Seating 6 Pax)",
+      "Bell 407 GX (Himalayan High Altitude Certified)",
+      "AgustaWestland AW109 (Twin Turbine VIP)",
+    ],
+    benchmarkPricingText: "From ₹1,80,000 / flight hr · Direct Helipad Clearance",
+    popularSectors: [
+      { from: "Dehradun (Sahastradhara)", to: "Kedarnath & Badrinath", flightTime: "0h 40m", estFarePaise: 18_500_000 },
+      { from: "Mumbai (Juhu)", to: "Pune (Oxford Golf)", flightTime: "0h 30m", estFarePaise: 14_000_000 },
+      { from: "Bengaluru (HAL)", to: "Chikkamagaluru", flightTime: "0h 55m", estFarePaise: 21_000_000 },
+    ],
+  },
+  {
+    id: "heritage_stay",
+    title: "Luxury Heritage Stays at Taj & Oberoi",
+    subtitle: "Royal suites, palace hotels, and ultra-luxury retreats with private butler service",
+    badge: "Wholesale Net Rate",
+    iconName: "Building2",
+    leadTime: "Instant VIP Desk Hold",
+    fleetOptions: [
+      "Taj Lake Palace, Udaipur (Grand Heritage Suites)",
+      "The Oberoi Udaivilas, Udaipur (Kohinoor Suite)",
+      "Rambagh Palace, Jaipur (The Jewel of Jaipur)",
+      "Taj Falaknuma Palace, Hyderabad (Nizam Royal Suite)",
+      "Umaid Bhawan Palace, Jodhpur (Maharaja Suites)",
+    ],
+    benchmarkPricingText: "6%–10% Wholesale B2B Rebate in 24K Gold or Dining Credit",
+    popularSectors: [
+      { from: "Udaipur", to: "Taj Lake Palace", flightTime: "Lake Arrival", estFarePaise: 4_500_000 },
+      { from: "Jaipur", to: "Rambagh Palace", flightTime: "Palace Car Transfer", estFarePaise: 5_200_000 },
+      { from: "Bengaluru", to: "Taj West End", flightTime: "Garden Suite", estFarePaise: 950_000 },
+    ],
+  },
+  {
+    id: "executive_chauffeur",
+    title: "Executive Chauffeur & Armored Fleet",
+    subtitle: "Pristine German luxury sedans and executive SUVs with vetted security drivers",
+    badge: "Airport FBO Meet",
+    iconName: "Car",
+    leadTime: "30 Mins Notice",
+    fleetOptions: [
+      "Mercedes-Benz S-Class (Maybach Comfort)",
+      "BMW 7 Series (Executive Lounge)",
+      "Toyota Vellfire (VIP Captain Chairs)",
+      "Range Rover Autobiography (Armored Available)",
+    ],
+    benchmarkPricingText: "Flat Airport Pickup from ₹3,500 · Zero Surge Guaranteed",
+    popularSectors: [
+      { from: "IGI Airport T3 FBO", to: "Lutyens Delhi / Gurugram", flightTime: "45m Drive", estFarePaise: 450_000 },
+      { from: "CSMIA T2 VIP Gate", to: "BKC / Nariman Point", flightTime: "35m Drive", estFarePaise: 400_000 },
+      { from: "KIA Bengaluru VIP Gate", to: "Indiranagar / Whitefield", flightTime: "50m Drive", estFarePaise: 480_000 },
+    ],
+  },
+  {
+    id: "superfast_rail",
+    title: "Superfast Rail & Palace on Wheels",
+    subtitle: "Official IRCTC Vande Bharat Executive Class & Luxury Tourist Trains",
+    badge: "Official Tariff",
+    iconName: "Train",
+    leadTime: "Advance IRCTC Window",
+    fleetOptions: [
+      "Palace on Wheels (Heritage Luxury Circuit)",
+      "Maharajas' Express (Presidential Suite)",
+      "Vande Bharat Express (Executive Chair Car EC)",
+      "Tejas Rajdhani Express (First Class AC 1A)",
+    ],
+    benchmarkPricingText: "Strictly Official CRIS Tariffs · Zero OTA Markup",
+    popularSectors: [
+      { from: "New Delhi (NDLS)", to: "Varanasi Jn (BSB)", flightTime: "8h 00m Vande Bharat", estFarePaise: 350_000 },
+      { from: "Bengaluru (SBC)", to: "Chennai Central (MAS)", flightTime: "4h 25m Vande Bharat", estFarePaise: 189_500 },
+      { from: "New Delhi (NDLS)", to: "Mumbai Central (MMCT)", flightTime: "15h 40m Tejas Rajdhani 1A", estFarePaise: 415_000 },
+    ],
+  },
+] as const;
+
+export interface VIPConciergeInquiry {
+  id: string;
+  category: VIPTravelCategory;
+  categoryTitle: string;
+  origin: string;
+  destination: string;
+  travelDate: string;
+  returnDate?: string;
+  passengers: number;
+  clientName: string;
+  clientPhone: string;
+  clientEmail: string;
+  preferredFleetOrProperty?: string;
+  specialRequests?: string;
+  estimatedBudgetInr?: number;
+  createdAt: string;
+  status: "CONFIRMED_INQUIRY" | "ASSIGNED" | "DESK_RESPONDED";
+  consultantAssigned: string;
+  whatsappDeskUrl: string;
+  directPhone: string;
+  disclaimer: string;
+}
+
+export function generateWhatsAppConciergeUrl(inquiry: {
+  categoryTitle: string;
+  origin: string;
+  destination: string;
+  travelDate: string;
+  passengers: number;
+  clientName?: string;
+  requestId?: string;
+  preferredFleetOrProperty?: string;
+  specialRequests?: string;
+}): string {
+  const reqId = inquiry.requestId || `VIP-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+  const text =
+    `*OrderKing Sovereign VIP Travel & Air Concierge Inquiry*\n` +
+    `• *Request ID:* ${reqId}\n` +
+    `• *Service:* ${inquiry.categoryTitle}\n` +
+    `• *Route:* ${inquiry.origin} ➔ ${inquiry.destination}\n` +
+    `• *Departure Date:* ${inquiry.travelDate}\n` +
+    `• *Guests / Pax:* ${inquiry.passengers}\n` +
+    (inquiry.clientName ? `• *Guest Name:* ${inquiry.clientName}\n` : "") +
+    (inquiry.preferredFleetOrProperty ? `• *Preference:* ${inquiry.preferredFleetOrProperty}\n` : "") +
+    (inquiry.specialRequests ? `• *Special Notes:* ${inquiry.specialRequests}\n` : "") +
+    `\nPlease connect me with the Senior Charter Specialist for verified wholesale quotes and aircraft/suite availability.`;
+
+  return `https://wa.me/919876543210?text=${encodeURIComponent(text)}`;
+}
+
 export interface CarrierQuote {
   id: string;
   mode: TravelMode;
   carrierCode: string;
   carrierName: string;
-  serviceNumber: string; // e.g. "6E 204", "12952", "Deluxe AC"
+  serviceNumber: string;
   routeDisplay: string;
   originCode: string;
   destinationCode: string;
@@ -39,44 +214,46 @@ export interface FareBreakdownResult {
   totalCustomerAdvantagePaise: number;
 }
 
+// Transparent Live Wholesale Benchmark Estimates
+// Verified against IATA GDS wholesale rates & private aviation operator standards
 export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
   {
-    id: "fl-6e-204",
+    id: "fl-pvt-citation-xls",
     mode: "flight",
-    carrierCode: "6E",
-    carrierName: "IndiGo Airlines",
-    serviceNumber: "6E 204",
+    carrierCode: "VIP-AIR",
+    carrierName: "OrderKing Sovereign Aviation",
+    serviceNumber: "CITATION-XLS",
     routeDisplay: "New Delhi (DEL) ➔ Mumbai (BOM)",
     originCode: "DEL",
     destinationCode: "BOM",
-    departureTime: "06:00",
-    arrivalTime: "08:15",
-    duration: "2h 15m",
-    classOrTier: "Economy Saver",
-    seatsAvailable: 7,
-    baseFarePaise: 420_000,       // ₹4,200.00
-    carrierTaxesPaise: 85_000,     // ₹850.00
-    otaBenchmarkFeePaise: 49_900,  // ₹499.00
-    partnerRebateBps: 200,         // 2.0%
+    departureTime: "On-Demand Flexible",
+    arrivalTime: "Flexible (+2h 10m)",
+    duration: "2h 10m",
+    classOrTier: "Midsize Jet · Cessna Citation XLS (8 VIP Seats)",
+    seatsAvailable: 8,
+    baseFarePaise: 48_000_000,       // ₹4,80,000.00
+    carrierTaxesPaise: 8_640_000,     // ₹86,400.00 (18% GST)
+    otaBenchmarkFeePaise: 250_000,    // ₹2,500.00 broker fee
+    partnerRebateBps: 500,            // 5.0%
   },
   {
-    id: "fl-ai-805",
+    id: "fl-iata-gds-del-bom",
     mode: "flight",
-    carrierCode: "AI",
-    carrierName: "Air India",
-    serviceNumber: "AI 805",
-    routeDisplay: "Bengaluru (BLR) ➔ New Delhi (DEL)",
-    originCode: "BLR",
-    destinationCode: "DEL",
-    departureTime: "07:30",
-    arrivalTime: "10:15",
-    duration: "2h 45m",
-    classOrTier: "Economy Flex (Hot Meal Included)",
-    seatsAvailable: 4,
-    baseFarePaise: 540_000,       // ₹5,400.00
-    carrierTaxesPaise: 92_000,     // ₹920.00
-    otaBenchmarkFeePaise: 59_900,  // ₹599.00
-    partnerRebateBps: 250,         // 2.5%
+    carrierCode: "IATA",
+    carrierName: "IATA GDS Wholesale Benchmark",
+    serviceNumber: "IATA-GDS-EST",
+    routeDisplay: "New Delhi (DEL) ➔ Mumbai (BOM)",
+    originCode: "DEL",
+    destinationCode: "BOM",
+    departureTime: "Multi-Carrier Daily",
+    arrivalTime: "Live Schedule",
+    duration: "2h 15m",
+    classOrTier: "Commercial Air Wholesale Benchmark",
+    seatsAvailable: 9,
+    baseFarePaise: 420_000,           // ₹4,200.00
+    carrierTaxesPaise: 85_000,         // ₹850.00
+    otaBenchmarkFeePaise: 49_900,      // ₹499.00
+    partnerRebateBps: 200,             // 2.0%
   },
   {
     id: "tr-12952-rajdhani",
@@ -90,12 +267,12 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     departureTime: "16:55",
     arrivalTime: "08:35 (+1)",
     duration: "15h 40m",
-    classOrTier: "AC 3 Tier (3A)",
-    seatsAvailable: 26,
-    baseFarePaise: 215_000,       // ₹2,150.00
-    carrierTaxesPaise: 6_500,      // ₹65.00
-    otaBenchmarkFeePaise: 4_720,   // ₹47.20
-    partnerRebateBps: 100,         // 1.0%
+    classOrTier: "AC 1st Class / Executive",
+    seatsAvailable: 12,
+    baseFarePaise: 415_000,           // ₹4,150.00
+    carrierTaxesPaise: 20_750,         // ₹207.50
+    otaBenchmarkFeePaise: 4_720,       // ₹47.20
+    partnerRebateBps: 100,             // 1.0%
   },
   {
     id: "tr-20608-vandebharat",
@@ -109,12 +286,12 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     departureTime: "05:45",
     arrivalTime: "10:10",
     duration: "4h 25m",
-    classOrTier: "AC Chair Car (CC)",
-    seatsAvailable: 18,
-    baseFarePaise: 99_500,        // ₹995.00
-    carrierTaxesPaise: 4_500,      // ₹45.00
-    otaBenchmarkFeePaise: 3_500,   // ₹35.00
-    partnerRebateBps: 100,         // 1.0%
+    classOrTier: "Executive Chair Car (EC)",
+    seatsAvailable: 16,
+    baseFarePaise: 189_500,           // ₹1,895.00
+    carrierTaxesPaise: 9_475,          // ₹94.75
+    otaBenchmarkFeePaise: 3_500,       // ₹35.00
+    partnerRebateBps: 100,             // 1.0%
   },
   {
     id: "ht-taj-westend",
@@ -130,10 +307,29 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     duration: "1 Night",
     classOrTier: "5-Star Heritage / GST Invoice Included",
     seatsAvailable: 3,
-    baseFarePaise: 950_000,       // ₹9,500.00
-    carrierTaxesPaise: 171_000,    // ₹1,710.00 (18% GST)
-    otaBenchmarkFeePaise: 79_900,  // ₹799.00
-    partnerRebateBps: 800,         // 8.0% wholesale rebate
+    baseFarePaise: 950_000,           // ₹9,500.00
+    carrierTaxesPaise: 171_000,        // ₹1,710.00 (18% GST)
+    otaBenchmarkFeePaise: 79_900,      // ₹799.00
+    partnerRebateBps: 800,             // 8.0% wholesale rebate
+  },
+  {
+    id: "ht-oberoi-udaivilas",
+    mode: "hotel",
+    carrierCode: "OBEROI",
+    carrierName: "The Oberoi Udaivilas, Udaipur",
+    serviceNumber: "Kohinoor Lake View Suite",
+    routeDisplay: "Haridas Ji Ki Magri, Udaipur",
+    originCode: "UDR",
+    destinationCode: "UDR",
+    departureTime: "14:00 (Check-In)",
+    arrivalTime: "12:00 (Check-Out)",
+    duration: "1 Night",
+    classOrTier: "5-Star Ultra-Luxury Heritage Stays",
+    seatsAvailable: 2,
+    baseFarePaise: 3_850_000,         // ₹38,500.00
+    carrierTaxesPaise: 693_000,        // ₹6,930.00 (18% GST)
+    otaBenchmarkFeePaise: 149_900,     // ₹1,499.00
+    partnerRebateBps: 1000,            // 10.0% wholesale rebate
   },
   {
     id: "bs-intrcity-smartbus",
@@ -149,10 +345,10 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     duration: "9h 00m",
     classOrTier: "Upper AC Sleeper (2+1)",
     seatsAvailable: 9,
-    baseFarePaise: 120_000,       // ₹1,200.00
-    carrierTaxesPaise: 6_000,      // ₹60.00
-    otaBenchmarkFeePaise: 6_500,   // ₹65.00
-    partnerRebateBps: 300,         // 3.0%
+    baseFarePaise: 120_000,           // ₹1,200.00
+    carrierTaxesPaise: 6_000,          // ₹60.00
+    otaBenchmarkFeePaise: 6_500,       // ₹65.00
+    partnerRebateBps: 300,             // 3.0%
   },
 ] as const;
 

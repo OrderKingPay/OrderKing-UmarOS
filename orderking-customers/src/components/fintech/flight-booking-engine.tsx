@@ -1,33 +1,32 @@
 import { useState } from "react";
 import {
   Plane,
-  ArrowRight,
   ShieldCheck,
   Sparkles,
   MapPin,
   Calendar,
   Users,
   Briefcase,
-  Clock,
   Luggage,
   Coins,
-  TrendingDown,
   CheckCircle2,
   ArrowLeftRight,
   RotateCcw,
+  ExternalLink,
+  ArrowUpRight,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
-import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   searchFlightQuotes,
   type FlightQuote,
-  type SovereignETicket,
 } from "@/lib/travel/in-app-booking-service";
-import { PassengerDrawer } from "./passenger-drawer";
-import { SovereignETicketModal } from "./sovereign-eticket-modal";
+import {
+  buildOfficialAirlineDeepLink,
+  extractAirportCode,
+} from "@/lib/travel/airline-deep-links";
 
 interface Props {
   walletBalance?: number;
@@ -36,27 +35,32 @@ interface Props {
   initialTo?: string;
 }
 
+const OFFICIAL_CARRIERS = [
+  { code: "6E", name: "IndiGo", portal: "goindigo.in" },
+  { code: "AI", name: "Air India", portal: "airindia.com" },
+  { code: "QP", name: "Akasa Air", portal: "akasaair.com" },
+  { code: "SG", name: "SpiceJet", portal: "spicejet.com" },
+];
+
 export function FlightBookingEngine({
   walletBalance = 0,
   onDeductWallet,
   initialFrom = "New Delhi (DEL)",
   initialTo = "Mumbai (BOM)",
 }: Props) {
-  const { user } = useCurrentUserState();
-  const navigate = useNavigate();
   const [from, setFrom] = useState(initialFrom);
   const [to, setTo] = useState(initialTo);
   const [departureDate, setDepartureDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [passengersCount, setPassengersCount] = useState(1);
   const [cabinClass, setCabinClass] = useState<"Economy" | "Premium Economy" | "Business">("Economy");
 
-  // Selected quote for drawer
-  const [selectedQuote, setSelectedQuote] = useState<FlightQuote | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [confirmedTicket, setConfirmedTicket] = useState<SovereignETicket | null>(null);
-
   // Live quotes
-  const quotes = searchFlightQuotes(from.trim() || "New Delhi (DEL)", to.trim() || "Mumbai (BOM)", departureDate, cabinClass);
+  const quotes = searchFlightQuotes(
+    from.trim() || "New Delhi (DEL)",
+    to.trim() || "Mumbai (BOM)",
+    departureDate,
+    cabinClass
+  );
 
   const handleSwapRoute = () => {
     const temp = from;
@@ -70,15 +74,8 @@ export function FlightBookingEngine({
     setDepartureDate(d.toISOString().split("T")[0]);
   };
 
-  const handleOpenBooking = (quote: FlightQuote) => {
-    if (!user) {
-      toast.error("Authentication required: Please sign in to book flights.");
-      navigate({ to: "/login" });
-      return;
-    }
-    setSelectedQuote(quote);
-    setIsDrawerOpen(true);
-  };
+  const originCode = extractAirportCode(from, "DEL");
+  const destinationCode = extractAirportCode(to, "BOM");
 
   return (
     <div className="space-y-6 text-slate-900">
@@ -91,11 +88,11 @@ export function FlightBookingEngine({
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Sovereign Domestic Flight Search
+                Direct Airline Fare Comparison · Zero Convenience Fee Markup
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-300">
                 <Sparkles className="size-3 text-sky-400" />
-                100% In-App Direct Booking · Zero External Redirects
+                Compare &amp; Book Directly with Official Carriers
               </div>
             </div>
           </div>
@@ -184,7 +181,7 @@ export function FlightBookingEngine({
             <select
               id="flight-search-class"
               value={cabinClass}
-              onChange={(e) => setCabinClass(e.target.value as any)}
+              onChange={(e) => setCabinClass(e.target.value as "Economy" | "Premium Economy" | "Business")}
               className="w-full bg-transparent text-sm font-black outline-none text-white cursor-pointer"
             >
               <option value="Economy" className="bg-slate-900 text-white">Economy</option>
@@ -194,8 +191,8 @@ export function FlightBookingEngine({
           </div>
         </div>
 
-        {/* Quick Date Shortcuts */}
-        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+        {/* Quick Date Shortcuts & Direct Portals Row */}
+        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-300">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold text-slate-400">Quick Dates:</span>
             <button
@@ -220,9 +217,36 @@ export function FlightBookingEngine({
               In 3 Days
             </button>
           </div>
-          <span className="text-[11px] text-sky-300 font-bold hidden sm:inline">
-            Direct airline inventory with instant sovereign PNR issuance
-          </span>
+
+          {/* Quick Carrier Portal Deep Links */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] text-slate-400 font-bold hidden md:inline flex items-center gap-1">
+              <Globe className="size-3 text-sky-400" /> Direct Portals:
+            </span>
+            {OFFICIAL_CARRIERS.map((carrier) => {
+              const link = buildOfficialAirlineDeepLink({
+                carrierCode: carrier.code,
+                from,
+                to,
+                departureDate,
+                passengers: passengersCount,
+                cabinClass,
+              });
+              return (
+                <a
+                  key={carrier.code}
+                  href={link.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-200 border border-sky-400/30 text-[11px] font-bold flex items-center gap-1 transition"
+                  title={`Book on ${carrier.name} Official Portal`}
+                >
+                  <span>{carrier.name}</span>
+                  <ExternalLink className="size-2.5 opacity-70" />
+                </a>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -236,7 +260,7 @@ export function FlightBookingEngine({
             </span>
           </h3>
           <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-            Direct Boarding Pass &amp; E-Ticket Issued In-App
+            Direct Official Airline Deep-Links &amp; Live Tariff Benchmarks
           </span>
         </div>
 
@@ -266,7 +290,15 @@ export function FlightBookingEngine({
           {quotes.map((q) => {
             const totalPaiseSingle = q.baseFarePaise + q.carrierTaxesPaise;
             const totalPaiseAll = totalPaiseSingle * passengersCount;
-            const totalOtaPaise = totalPaiseAll + q.otaBenchmarkFeePaise * passengersCount;
+
+            const deepLink = buildOfficialAirlineDeepLink({
+              carrierCode: q.carrierCode,
+              from,
+              to,
+              departureDate,
+              passengers: passengersCount,
+              cabinClass,
+            });
 
             return (
               <div
@@ -297,7 +329,7 @@ export function FlightBookingEngine({
                   <div className="flex items-center gap-4 sm:gap-6 text-sm">
                     <div>
                       <span className="text-xl font-black font-mono text-slate-900 block">{q.departureTime}</span>
-                      <span className="text-xs text-slate-500 font-bold">{q.fromCode || q.fromCity}</span>
+                      <span className="text-xs text-slate-500 font-bold">{q.fromCode || originCode}</span>
                       <span className="text-[10px] text-slate-400 block">{q.terminal}</span>
                     </div>
 
@@ -311,7 +343,7 @@ export function FlightBookingEngine({
 
                     <div>
                       <span className="text-xl font-black font-mono text-slate-900 block">{q.arrivalTime}</span>
-                      <span className="text-xs text-slate-500 font-bold">{q.toCode || q.toCity}</span>
+                      <span className="text-xs text-slate-500 font-bold">{q.toCode || destinationCode}</span>
                       <span className="text-[10px] text-slate-400 block">Arrival Terminal</span>
                     </div>
                   </div>
@@ -330,7 +362,7 @@ export function FlightBookingEngine({
                   </div>
                 </div>
 
-                {/* Fare & CTA */}
+                {/* Fare & Direct Official CTA */}
                 <div className="md:border-l md:border-slate-100 md:pl-6 flex flex-row md:flex-col items-end justify-between md:justify-center gap-3 shrink-0">
                   <div className="text-right">
                     <div className="flex items-baseline gap-1.5 justify-end">
@@ -346,47 +378,37 @@ export function FlightBookingEngine({
                     </div>
                   </div>
 
-                  <Button
-                    type="button"
-                    onClick={() => handleOpenBooking(q)}
-                    className="h-11 px-6 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 flex items-center gap-1.5"
-                  >
-                    {user ? (
-                      <>Book In-App (₹0 Fee) <ArrowRight className="size-4" /></>
-                    ) : (
-                      <>Sign in to Book <ArrowRight className="size-4" /></>
-                    )}
-                  </Button>
+                  <div className="flex flex-col sm:flex-row md:flex-col gap-2 items-end sm:items-center md:items-end w-full md:w-auto">
+                    <a
+                      href={deepLink.bookingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => {
+                        toast.success(
+                          `Redirecting to official ${deepLink.carrierName} portal (${deepLink.portalName}) for ${deepLink.fromCode} ➔ ${deepLink.toCode}...`
+                        );
+                      }}
+                      className="inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto text-center"
+                    >
+                      <span>Book on Official {deepLink.carrierName.replace(" Airlines", "")}</span>
+                      <ExternalLink className="size-3.5 shrink-0" />
+                    </a>
+                    <a
+                      href={deepLink.portalBaseUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-sky-700 transition-colors"
+                    >
+                      <span>Compare on {deepLink.portalName}</span>
+                      <ArrowUpRight className="size-3" />
+                    </a>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-
-      {/* Passenger Drawer */}
-      {selectedQuote && (
-        <PassengerDrawer
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-          quote={selectedQuote}
-          passengerCount={passengersCount}
-          walletBalancePaise={walletBalance}
-          onDeductWallet={onDeductWallet}
-          travelDate={departureDate}
-          onBookingSuccess={(ticket) => {
-            setConfirmedTicket(ticket);
-          }}
-        />
-      )}
-
-      {/* Sovereign Digital E-Ticket Modal */}
-      {confirmedTicket && (
-        <SovereignETicketModal
-          ticket={confirmedTicket}
-          onClose={() => setConfirmedTicket(null)}
-        />
-      )}
     </div>
   );
 }

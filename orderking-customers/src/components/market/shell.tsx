@@ -8,16 +8,25 @@ import {
   Languages,
   Mic,
   UtensilsCrossed,
-  Plane,
-  GraduationCap,
+  Store,
   Wine,
   Sparkles,
+  Wallet,
+  Coins,
+  LayoutGrid,
+  Plane,
+  GraduationCap,
+  X,
+  ArrowRight,
+  Briefcase,
 } from "lucide-react";
 import { useState, useEffect, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { OrderKingMark } from "@/components/brand/wordmark";
 import { resilientLazy, ModalErrorBoundary } from "@/components/common/resilient-lazy";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OneTapCheckoutDrawer } from "@/components/market/one-tap-checkout-drawer";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 
 const LazyLocationDialog = resilientLazy(
   () => import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog })),
@@ -54,13 +63,23 @@ const SEARCH_PLACEHOLDERS = [
 export const SOVEREIGN_ECOSYSTEM_TABS = [
   {
     id: "food",
-    name: "Food",
+    name: "Food Delivery",
     badge: "0% Markup",
     badgeColor: "bg-emerald-500/20 text-emerald-800 border-emerald-400/50",
     icon: UtensilsCrossed,
     iconGradient: "from-amber-400 via-emerald-500 to-teal-800",
     to: "/",
-    match: (p: string) => p === "/" || p.startsWith("/r/") || p.startsWith("/cart") || p.startsWith("/search"),
+    match: (p: string) => p === "/" || p.startsWith("/delivery") || p.startsWith("/r/") || p.startsWith("/cart") || (p.startsWith("/search") && !p.includes("dining")),
+  },
+  {
+    id: "dining",
+    name: "VIP Dining",
+    badge: "Book Table",
+    badgeColor: "bg-rose-500/20 text-rose-900 border-rose-400/50",
+    icon: Wine,
+    iconGradient: "from-rose-400 via-pink-500 to-rose-800",
+    to: "/dining",
+    match: (p: string) => p.startsWith("/dining"),
   },
   {
     id: "kingpay",
@@ -70,7 +89,7 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
     icon: Crown,
     iconGradient: "from-yellow-400 via-amber-500 to-amber-700",
     to: "/king-pay",
-    match: (p: string) => p.startsWith("/king-pay"),
+    match: (p: string) => p.startsWith("/king-pay") || p.startsWith("/earn"),
   },
   {
     id: "travel",
@@ -84,23 +103,13 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   },
   {
     id: "tutor",
-    name: "AI Super-Tutor",
-    badge: "NCERT • CBSE",
+    name: "LearnKing & JobKing",
+    badge: "NCERT • Jobs",
     badgeColor: "bg-purple-500/20 text-purple-900 border-purple-400/50",
     icon: GraduationCap,
     iconGradient: "from-indigo-400 via-purple-500 to-purple-800",
     to: "/tutor",
     match: (p: string) => p.startsWith("/tutor"),
-  },
-  {
-    id: "dining",
-    name: "VIP Dining",
-    badge: "40% Off",
-    badgeColor: "bg-rose-500/20 text-rose-900 border-rose-400/50",
-    icon: Wine,
-    iconGradient: "from-rose-400 via-pink-500 to-rose-800",
-    to: "/dining",
-    match: (p: string) => p.startsWith("/dining"),
   },
 ];
 
@@ -129,10 +138,12 @@ export function CustomerShell({
   const count = cartCount(items);
   const path = useRouterState({ select: (s) => s.location?.pathname }) || "";
   const { user, isPending } = useCurrentUserState();
+  const { walletBalance, kingCoins } = useRealKingPayWallet();
   const navigate = useNavigate();
   const [locOpen, setLocOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [ecosystemDrawerOpen, setEcosystemDrawerOpen] = useState(false);
   const [oneTapDrawerOpen, setOneTapDrawerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchPlaceholderIndex, setSearchPlaceholderIndex] = useState(0);
@@ -195,25 +206,22 @@ export function CustomerShell({
             : "border-b border-amber-900/5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
         )}
       >
-        {/* ROW 1: Authentic Indian Food Delivery Header: Logo + Delivery Address (Left) | Language + AI Support + Cart + Profile (Right) */}
+        {/* ROW 1: Authentic Tier-1 Delivery Aggregator Header: Logo + Delivery Address (Left) | Language + AI Support + Cart + Profile (Right) */}
         <div className="flex items-center justify-between gap-1.5 sm:gap-3">
-          {/* Row 1 Left: OrderKing logo + Delivery Address Selector */}
+          {/* Row 1 Left: OrderKing logo (clean branding, no gold/prestige fantasy labels) + Delivery Address Selector */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-            <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0">
-              <div className="relative">
-                <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
-                <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
-              </div>
-              <span className="text-base sm:text-lg font-black tracking-tight text-gray-950 leading-none hidden xs:inline">
+            <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0" aria-label="OrderKing Home">
+              <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
+              <span className="text-base sm:text-lg font-black tracking-tight text-gray-950 leading-none">
                 OrderKing
               </span>
             </Link>
 
-            {/* Delivery Address Selector (Location Pin with current address e.g. "Connaught Place, New Delhi", clicking opens address picker) */}
+            {/* Delivery Address Selector: Location Pin with current address e.g. "Connaught Place, New Delhi", clicking opens address picker / changes location */}
             <button
               type="button"
               onClick={() => setLocOpen(true)}
-              className="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-amber-100/50 border border-transparent hover:border-amber-200/80 text-left transition-all max-w-[130px] xs:max-w-[170px] sm:max-w-[220px] group cursor-pointer"
+              className="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-amber-100/50 border border-transparent hover:border-amber-200/80 text-left transition-all max-w-[140px] xs:max-w-[190px] sm:max-w-[240px] group cursor-pointer"
               title="Change delivery location"
               aria-label="Select delivery address"
             >
@@ -228,50 +236,48 @@ export function CustomerShell({
                   </span>
                   <ChevronDown className="size-3 text-gray-500 shrink-0 group-hover:translate-y-0.5 transition-transform" />
                 </div>
-                <span className="text-[10px] text-gray-500 truncate hidden xs:block leading-tight">
+                <span className="text-[10px] text-gray-500 truncate leading-tight">
                   {location?.cityName && location.cityName !== "Locating..." ? `${location.cityName}, India` : "New Delhi, India"}
                 </span>
               </div>
             </button>
           </div>
 
-          {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
+          {/* Row 1 Right: Standard Tier-1 Aggregator Controls: Language + AI Support + Cart + Profile / Sign In */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* 1-Tap Language selector (English, Hindi, Bengali, etc.) */}
+            {/* Language Selector dropdown / pill (English, Hindi, Bengali, Assamese, etc. - standard Indian languages) */}
             <button
               type="button"
               onClick={() => setLangOpen(true)}
-              className="flex items-center gap-1 px-2 py-1 rounded-xl bg-white/80 hover:bg-amber-50 border border-amber-200/80 text-gray-800 text-xs font-bold shadow-2xs hover:border-amber-300 transition-all active:scale-95 shrink-0 cursor-pointer"
-              title="Change Language (English, हिन्दी, বাংলা, etc.)"
+              className="flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/90 hover:bg-amber-50/80 border border-amber-200/80 text-gray-800 text-xs font-bold shadow-2xs hover:border-amber-300 transition-all active:scale-95 shrink-0 cursor-pointer"
+              title="Change Language (English, हिन्दी, বাংলা, অসমীয়া)"
               aria-label="Select language"
             >
               <Languages className="size-3.5 text-amber-700" />
               <span className="text-[11px] font-black uppercase text-amber-950">
-                {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : lang === "as" ? "অসমীয়া" : "EN"}
+                {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "EN"}
+              </span>
+              <ChevronDown className="size-2.5 text-gray-500" />
+            </button>
+
+            {/* AI Support button */}
+            <button
+              type="button"
+              onClick={() => setConciergeOpen(true)}
+              className="relative flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-slate-950 via-slate-900 to-black text-amber-300 border border-amber-400/80 shadow-[0_2px_8px_rgba(245,158,11,0.2)] hover:border-amber-300 hover:shadow-[0_2px_12px_rgba(245,158,11,0.3)] transition-all active:scale-95 shrink-0 cursor-pointer"
+              title="AI Support Concierge"
+              aria-label="Open AI Support"
+            >
+              <Mic className="size-3 text-amber-300" />
+              <span className="text-[10px] sm:text-[10.5px] font-black uppercase tracking-tight text-amber-200 hidden xs:inline">
+                AI Support
               </span>
             </button>
 
-            {/* 1-Tap AI Support button */}
-            <div className="relative shrink-0">
-              <span className="absolute -inset-0.5 rounded-xl bg-amber-400/40 animate-ping pointer-events-none" />
-              <button
-                type="button"
-                onClick={() => setConciergeOpen(true)}
-                className="relative flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-xl bg-gradient-to-r from-slate-950 via-slate-900 to-black text-amber-300 border border-amber-400/80 shadow-[0_2px_8px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:shadow-[0_2px_12px_rgba(245,158,11,0.35)] transition-all active:scale-95 cursor-pointer"
-                title="1-Tap AI Support Concierge"
-                aria-label="Open 24x7 AI Support"
-              >
-                <Mic className="size-3 text-amber-300 animate-pulse" />
-                <span className="text-[10px] sm:text-[10.5px] font-black uppercase tracking-tight text-amber-200 hidden xs:inline">
-                  AI Support
-                </span>
-              </button>
-            </div>
-
-            {/* Cart icon with badge counter (redirecting to /cart or opening drawer) */}
+            {/* Cart icon with dynamic count badge */}
             <Link
               to="/cart"
-              className="relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/80 hover:bg-amber-50 border border-amber-200/80 text-gray-800 shadow-2xs hover:border-amber-400 transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
+              className="relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 hover:bg-amber-50/80 border border-amber-200/80 text-gray-800 shadow-2xs hover:border-amber-400 transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
               title="Shopping Cart"
               aria-label={`Cart with ${count} items`}
             >
@@ -299,7 +305,7 @@ export function CustomerShell({
               <SignedOut>
                 <Link
                   to="/login"
-                  className="flex items-center gap-1 rounded-xl border border-amber-400/80 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-2 sm:px-2.5 py-1 text-amber-300 shadow-2xs no-underline transition hover:border-amber-300 active:scale-95 shrink-0"
+                  className="flex items-center gap-1 rounded-xl border border-amber-400/80 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-2 sm:px-2.5 py-1 sm:py-1.5 text-amber-300 shadow-2xs no-underline transition hover:border-amber-300 active:scale-95 shrink-0"
                   aria-label="Sign in"
                 >
                   <span className="text-[10.5px] font-black uppercase tracking-wider">Sign In</span>
@@ -309,7 +315,7 @@ export function CustomerShell({
           </div>
         </div>
 
-        {/* ROW 1.5: Sovereign Ecosystem Horizontal Tabs (Food, KingPay, Travel, AI Tutor, VIP Dining) */}
+        {/* ROW 1.5: Sovereign Ecosystem Horizontal Tabs (Food, Dining, KingPay, Travel, LearnKing & JobKing) */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none select-none">
           {SOVEREIGN_ECOSYSTEM_TABS.map((tab) => {
             const isActive = tab.match(path);
@@ -335,6 +341,17 @@ export function CustomerShell({
               </Link>
             );
           })}
+
+          {/* Quick Ecosystem Apps Drawer Trigger in Tab Bar */}
+          <button
+            type="button"
+            onClick={() => setEcosystemDrawerOpen(true)}
+            className="flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-black text-amber-900 hover:text-amber-950 bg-amber-100/70 hover:bg-amber-100 border border-amber-300/60 shadow-2xs transition shrink-0 cursor-pointer active:scale-95"
+            title="Explore all Sovereign ecosystem services"
+          >
+            <Sparkles className="size-3 text-amber-600" />
+            <span className="text-[10px] font-black uppercase">All Apps ▾</span>
+          </button>
         </div>
 
         {/* ROW 2: Luxury search bar (glassmorphism, golden focus ring) + Pure Veg/All toggle */}
@@ -457,7 +474,194 @@ export function CustomerShell({
       ) : null}
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
-      <CustomerFloatingBottomNav />
+      <CustomerFloatingBottomNav onOpenAi={() => setConciergeOpen(true)} />
+
+      {/* ─── ULTRA-LUXURY ECOSYSTEM APP SWITCHER DRAWER ─── */}
+      <AnimatePresence>
+        {ecosystemDrawerOpen && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setEcosystemDrawerOpen(false)}
+              className="fixed inset-0 bg-black/70 backdrop-blur-md"
+            />
+
+            {/* Drawer Modal */}
+            <motion.div
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 28, stiffness: 350 }}
+              className="relative w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] bg-gradient-to-b from-[#18130d] via-stone-950 to-black text-white p-5 sm:p-6 border border-amber-400/50 shadow-[0_24px_80px_rgba(0,0,0,0.9)] max-h-[85vh] overflow-y-auto z-10"
+            >
+              {/* Top Handle on Mobile */}
+              <div className="mx-auto w-12 h-1.5 rounded-full bg-amber-400/40 mb-4 sm:hidden" />
+
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-amber-500/20">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-600 text-stone-950 shadow-md">
+                    <Crown className="size-5 fill-stone-950 stroke-[2.2]" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-black text-amber-200 tracking-tight leading-none">
+                      OrderKing Sovereign Ecosystem
+                    </h3>
+                    <p className="text-xs text-amber-400/70 font-semibold mt-1">
+                      One Super-App for Food, Travel, Jobs & FinTech
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEcosystemDrawerOpen(false)}
+                  className="flex size-8 items-center justify-center rounded-full bg-stone-900 border border-amber-400/30 text-amber-300 hover:bg-stone-800 transition active:scale-95 cursor-pointer"
+                  aria-label="Close Ecosystem Switcher"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              {/* Business Units List */}
+              <div className="mt-4 space-y-2.5">
+                {/* 1. Sovereign Travel */}
+                <Link
+                  to="/travel"
+                  onClick={() => setEcosystemDrawerOpen(false)}
+                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-sky-950/60 via-stone-900/80 to-slate-950/80 border border-sky-500/40 hover:border-sky-400 hover:bg-sky-950/80 transition-all no-underline group shadow-sm active:scale-98"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 via-sky-600 to-blue-900 text-white shadow-md group-hover:scale-105 transition-transform">
+                      <Plane className="size-5 stroke-[2.2]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-black text-sky-200">Sovereign Travel</span>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/40">
+                          ₹0 Convenience Fee
+                        </span>
+                      </div>
+                      <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
+                        Flights, IRCTC Trains, Airport & Outstation Cabs
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="size-4 text-sky-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                </Link>
+
+                {/* 2. LearnKing & JobKing */}
+                <Link
+                  to="/tutor"
+                  onClick={() => setEcosystemDrawerOpen(false)}
+                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-purple-950/60 via-stone-900/80 to-slate-950/80 border border-purple-500/40 hover:border-purple-400 hover:bg-purple-950/80 transition-all no-underline group shadow-sm active:scale-98"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-purple-400 via-indigo-600 to-purple-900 text-white shadow-md group-hover:scale-105 transition-transform">
+                      <GraduationCap className="size-5 stroke-[2.2]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-black text-purple-200">LearnKing & JobKing</span>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/40">
+                          NCERT • CBSE • Jobs
+                        </span>
+                      </div>
+                      <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
+                        Instant AI Doubt Solver & Verified High-Paying Jobs
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="size-4 text-purple-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                </Link>
+
+                {/* 3. KingPay 24K Gold FinTech */}
+                <Link
+                  to="/king-pay"
+                  onClick={() => setEcosystemDrawerOpen(false)}
+                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/60 via-stone-900/80 to-slate-950/80 border border-amber-500/40 hover:border-amber-400 hover:bg-amber-950/80 transition-all no-underline group shadow-sm active:scale-98"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-amber-700 text-stone-950 shadow-md group-hover:scale-105 transition-transform">
+                      <Crown className="size-5 fill-stone-950 stroke-[2.2]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-black text-amber-200">KingPay 24K FinTech</span>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                          ₹{walletBalance.toLocaleString("en-IN")} · {kingCoins} Coins
+                        </span>
+                      </div>
+                      <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
+                        256-Bit Bank Grade UPI, Split Bills & Vault
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="size-4 text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                </Link>
+
+                {/* 4. OrderKing Food Delivery */}
+                <Link
+                  to="/"
+                  onClick={() => setEcosystemDrawerOpen(false)}
+                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-stone-900/80 to-slate-950/80 border border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/80 transition-all no-underline group shadow-sm active:scale-98"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-emerald-500 to-teal-800 text-white shadow-md group-hover:scale-105 transition-transform">
+                      <UtensilsCrossed className="size-5 stroke-[2.2]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-black text-emerald-200">OrderKing Food Delivery</span>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+                          0% Restaurant Markup
+                        </span>
+                      </div>
+                      <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
+                        Authentic Dum Biryani, Pure Veg, & Rapid Delivery
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="size-4 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                </Link>
+
+                {/* 5. VIP Fine Dining */}
+                <Link
+                  to="/dining"
+                  onClick={() => setEcosystemDrawerOpen(false)}
+                  className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-rose-950/60 via-stone-900/80 to-slate-950/80 border border-rose-500/40 hover:border-rose-400 hover:bg-rose-950/80 transition-all no-underline group shadow-sm active:scale-98"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-rose-400 via-pink-500 to-rose-800 text-white shadow-md group-hover:scale-105 transition-transform">
+                      <Wine className="size-5 stroke-[2.2]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-black text-rose-200">VIP Fine Dining</span>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40">
+                          Up to 40% Off
+                        </span>
+                      </div>
+                      <p className="text-xs text-stone-400 mt-0.5 font-medium leading-snug">
+                        Reserved Tables & Exclusive FSSAI Dine-In Menus
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="size-4 text-rose-400 group-hover:translate-x-1 transition-transform shrink-0" />
+                </Link>
+              </div>
+
+              {/* Royal Sovereign Trust Footnote */}
+              <div className="mt-4 pt-3 border-t border-amber-500/20 flex items-center justify-center gap-1.5 text-[10.5px] font-bold text-amber-300/80">
+                <Sparkles className="size-3 text-amber-400" />
+                <span>100% Sovereign Super-App · Unified 24K Gold Royal Standard</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* 1-TAP CHECKOUT DRAWER */}
       {oneTapDrawerOpen && (

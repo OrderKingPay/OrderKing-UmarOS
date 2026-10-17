@@ -51,7 +51,7 @@ function Home() {
               👑
             </span>
             <span className="tracking-tight">
-              Order food online from verified kitchens near you · <span className="text-amber-800">25-30m Delivery</span> · <span className="text-emerald-800">0% Menu Markups</span>
+              Order food online from verified kitchens near you · <span className="text-amber-800">25-30m Express Delivery</span> · <span className="text-emerald-800">0% Menu Markups</span>
             </span>
           </div>
         </div>

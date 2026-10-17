@@ -39,6 +39,7 @@ export const bn: MessageTree = {
     home: "হোম",
     orders: "অর্ডার",
     kitchen: "কিচেন",
+    kds: "কেডিএস (KDS)",
     dining: "ডাইনিং ও টেবিল",
     menu: "মেনু",
     more: "আরও",

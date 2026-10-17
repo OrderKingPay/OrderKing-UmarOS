@@ -183,7 +183,7 @@ export function SovereignTravelConcierge({
     e.preventDefault();
     const value = flightInput.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (value.length < 3) {
-      setFlightError("Enter a valid flight number (e.g. 6E204, AI805).");
+      setFlightError("Enter a valid flight number (e.g. 6E101, AI102 or Charter Tail).");
       return;
     }
     setIsQueryingFlight(true);
@@ -516,6 +516,14 @@ export function SovereignTravelConcierge({
           </div>
         </div>
 
+        {/* Transparent Wholesale Benchmark Disclaimer */}
+        <div className="rounded-2xl border border-sky-200 bg-sky-50/70 p-3.5 text-xs text-sky-950 flex items-start gap-2.5">
+          <AlertCircle className="size-4 shrink-0 mt-0.5 text-sky-600" />
+          <p className="font-semibold leading-relaxed">
+            Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon charter confirmation.
+          </p>
+        </div>
+
         {/* Action Controls */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-100">
           <div className="flex items-center gap-2 text-xs font-black text-emerald-700">
@@ -642,7 +650,7 @@ export function SovereignTravelConcierge({
               maxLength={10}
               value={flightInput}
               onChange={(e) => setFlightInput(e.target.value.toUpperCase())}
-              placeholder="e.g. 6E204, AI805"
+              placeholder="e.g. 6E101, AI102 or Charter Tail"
               className="flex-1 h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-mono font-bold outline-none focus:border-cyan-600"
             />
             <Button

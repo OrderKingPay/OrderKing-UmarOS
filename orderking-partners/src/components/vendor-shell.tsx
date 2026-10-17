@@ -30,8 +30,10 @@ import { OfflineBanner } from "./offline-banner";
 import { OrderKingMark } from "./mark";
 import { useT } from "./use-t";
 import { useVendor } from "./use-vendor";
-import { useState, type ReactNode } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { listOrders } from "@/lib/server/api-orders";
+import { supabaseCloud } from "@/lib/db-cloud";
 import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
 import { PartnerFloatingBottomNav } from "./navigation/partner-bottom-nav";
 import { OutletStatusPill } from "./outlet/outlet-status-pill";
@@ -84,9 +86,41 @@ export function VendorShell({
   const role = vendor.role;
   const primary = PRIMARY_NAV.filter((item) => !role || can(role, item.perm));
   const more = MORE_NAV.filter((item) => !role || can(role, item.perm));
-  const mobilePrimary = primary.slice(0, 4);
-
   const [sparkOpen, setSparkOpen] = useState(false);
+
+  const liveOrdersQ = useQuery({
+    queryKey: ["orders", vendor.restaurantId, "live"],
+    queryFn: () => listOrders({ data: { restaurantId: vendor.restaurantId, scope: "live" } }),
+    enabled: Boolean(vendor.restaurantId),
+    refetchInterval: 8000,
+  });
+  const pendingOrdersCount = (liveOrdersQ.data?.orders ?? []).filter(
+    (o: any) => ["PLACED", "PENDING"].includes(String(o.state))
+  ).length;
+
+  useEffect(() => {
+    if (!vendor.restaurantId) return;
+    const channel = supabaseCloud
+      .channel(`vendor-shell-orders-${vendor.restaurantId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+          filter: `restaurant_id=eq.${vendor.restaurantId}`,
+        },
+        () => {
+          void qc.invalidateQueries({ queryKey: ["orders"] });
+          void qc.invalidateQueries({ queryKey: ["dashboard"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabaseCloud.removeChannel(channel);
+    };
+  }, [vendor.restaurantId, qc]);
 
   if (isPending) {
     return (
@@ -188,13 +222,13 @@ export function VendorShell({
               </div>
               <button
                 type="button"
-                className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-amber-500/40 bg-amber-500/10 px-3 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition shadow-sm cursor-pointer"
+                className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-yellow-500/15 px-3 text-xs font-extrabold text-amber-300 hover:text-amber-200 hover:border-amber-400/60 hover:bg-amber-500/25 transition shadow-sm shadow-amber-500/10 cursor-pointer active:scale-95 shrink-0"
                 onClick={() => setSparkOpen(true)}
                 title="King AI — Restaurant Culinary & Growth Co-Pilot"
                 aria-label="Open King AI Assistant"
               >
-                <Sparkles className="size-4 text-amber-500" />
-                <span>King AI</span>
+                <Sparkles className="size-4 text-amber-400 animate-pulse" />
+                <span className="tracking-tight">King AI</span>
               </button>
               {/* Merchant Outlet Emergency Pause / Operational Status Pill */}
               <OutletStatusPill
@@ -206,7 +240,7 @@ export function VendorShell({
               {(!role || can(role, "notifications.view")) && (
                 <Link
                   to="/notifications"
-                  className="grid size-11 place-items-center rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl transition-colors hover:bg-slate-800/60"
+                  className="grid size-11 place-items-center rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl transition-colors hover:bg-slate-800/60 shrink-0"
                   aria-label={t("nav.notifications")}
                   title={t("nav.notifications") || "Alerts & Notifications"}
                 >
@@ -231,7 +265,10 @@ export function VendorShell({
       </div>
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
-      <PartnerFloatingBottomNav onOpenSpark={() => setSparkOpen(true)} />
+      <PartnerFloatingBottomNav
+        onOpenSpark={() => setSparkOpen(true)}
+        pendingOrdersCount={pendingOrdersCount}
+      />
 
       {/* Order King Spark Restaurant AI Modal */}
       <OrderKingSparkModal isOpen={sparkOpen} onClose={() => setSparkOpen(false)} />

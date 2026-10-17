@@ -111,29 +111,10 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
-    id: "kingpay",
-    i18n: "groups.kingpay",
-    items: [
-      { id: "travel", path: "/app/travel", i18n: "nav.travel", permission: "view_finance", icon: "map" },
-    ],
-  },
-  {
-    id: "advertising",
-    i18n: "Advertising",
-    items: [
-      { id: "telecom-arbitrage", path: "/app/telecom-arbitrage", i18n: "Telecom Arbitrage", permission: "manage_cms", icon: "radio" },
-      { id: "jio-airtel", path: "/app/jio-airtel", i18n: "Jio/Airtel Ad Network", permission: "manage_cms", icon: "radio" },
-      { id: "meta-dm", path: "/app/meta-dm", i18n: "Meta DM Blasts", permission: "manage_cms", icon: "megaphone" },
-      { id: "wifi-interception", path: "/app/wifi-interception", i18n: "Wi-Fi Interception", permission: "manage_cms", icon: "shield" },
-      { id: "oem-lockscreen", path: "/app/oem-lockscreen", i18n: "OEM Lock Screen", permission: "manage_cms", icon: "panels" }
-    ],
-  },
-  {
     id: 'banking', 
     i18n: 'Banking Infrastructure', 
     items: [
       { id: 'fintech-connectors', path: '/app/fintech-connectors', i18n: 'API Gateways', permission: 'manage_platform_settings', icon: 'wallet' },
-      { id: 'baas-hijack-hub', path: '/app/baas-hijack-hub', i18n: 'BaaS White-Label Hub', permission: 'manage_platform_settings', icon: 'shield' },
       { id: 'rbi-compliance-hub', path: '/app/rbi-compliance-hub', i18n: 'RBI Compliance Hub', permission: 'manage_platform_settings', icon: 'shield' },
       { id: 'pos-terminals', path: '/app/pos-terminals', i18n: 'POS Terminals', permission: 'manage_platform_settings', icon: 'calculator' }
     ]
@@ -719,26 +700,26 @@ export const UMAR_OS_BOTTOM_HUBS: BottomNavHub[] = [
   },
   {
     id: "umar_ai_teams",
-    label: "UMAR AI & Teams",
+    label: "King AI & Teams",
     emoji: "🤖",
     badge: "16 Depts",
     tagline:
-      "Sovereign UMAR AI Command, 16 Specialist Departments, Role-Based Access Governance & Plugin Connectors",
+      "Sovereign King AI Command, 16 Specialist Departments, Role-Based Access Governance & Plugin Connectors",
     categories: [
       {
         id: "umar_ai_command",
-        label: "UMAR AI Command",
+        label: "King AI Command",
         summary: "Sovereign AI copilot, deterministic operations triage, and token budget governance.",
         badge: "AI Core",
         options: [
           {
             id: "ai-console",
             subCategory: "Sovereign Copilot",
-            label: "UMAR AI Operations & Analytics Console",
+            label: "King AI Operations & Analytics Console",
             description: "Query live order bottlenecks, settlement anomalies, and partner health via AI.",
             to: "/app/ai",
             query: { mode: "command" },
-            badge: "UMAR AI",
+            badge: "King AI",
           },
           {
             id: "ai-governance",

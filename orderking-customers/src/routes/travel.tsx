@@ -13,6 +13,7 @@ import {
 } from "@/lib/travel/in-app-booking-service";
 import { SovereignTravelConcierge } from "@/components/fintech/sovereign-travel-concierge";
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
+import { buildOfficialAirlineDeepLink } from "@/lib/travel/airline-deep-links";
 import {
   Plane,
   Train,
@@ -194,6 +195,19 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
 
 export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
+    id: "vip_concierge",
+    label: "VIP Concierge & Charters",
+    badge: "Sovereign VIP",
+    keywords: "private jet aviation helicopter charter taj oberoi heritage stay executive chauffeur vip concierge luxury",
+    subCategories: [
+      "Private Aviation & Jet Charters",
+      "Helicopter Charters & Himalayan Tours",
+      "Luxury Heritage Stays at Taj & Oberoi",
+      "Executive Chauffeur Fleet",
+      "Superfast Rail & Palace on Wheels",
+    ],
+  },
+  {
     id: "flights",
     label: "Flights",
     badge: "0% Fee",
@@ -267,7 +281,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
     id: "trips",
     label: "My Trips & Bookings",
     badge: "Organizer",
-    keywords: "my trips bookings itinerary pnr reference saved flight train hotel bus",
+    keywords: "my trips bookings itinerary pnr reference saved flight train hotel bus vip concierge",
     subCategories: [
       "Saved Trip Itineraries",
       "PNR & Booking Reference Organizer",
@@ -278,7 +292,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
 
 export interface SavedTripReference {
   id: string;
-  bookingType: "Flight" | "Train" | "Bus" | "Hotel" | "Cab";
+  bookingType: "Flight" | "Train" | "Bus" | "Hotel" | "Cab" | "VIP Concierge";
   providerName: string;
   bookingRef: string;
   travelDate: string;
@@ -291,8 +305,9 @@ export interface SavedTripReference {
 const SAVED_TRIPS_STORAGE_KEY = "orderking_saved_trips_v1";
 
 export function TravelPage() {
-  const [activeTab, setActiveTab] = useState<TravelTab>("flights");
+  const [activeTab, setActiveTab] = useState<TravelTab>("vip_concierge");
   const [activeSubCategory, setActiveSubCategory] = useState<Record<TravelTab, string>>({
+    vip_concierge: "Private Aviation & Jet Charters",
     flights: "Domestic Flights",
     trains: "Search Trains Between Stations",
     buses: "Intercity AC Sleepers",
@@ -304,13 +319,20 @@ export function TravelPage() {
   const [serviceQuery, setServiceQuery] = useState("");
   const sectionHash = useRouterState({ select: (s) => s?.location?.hash ?? "" }) ?? "";
 
+  // VIP Concierge Modal State
+  const [isConciergeModalOpen, setIsConciergeModalOpen] = useState(false);
+  const [conciergeModalCategory, setConciergeModalCategory] = useState<VIPTravelCategory>("private_aviation");
+  const [conciergeModalOrigin, setConciergeModalOrigin] = useState("New Delhi (DEL)");
+  const [conciergeModalDestination, setConciergeModalDestination] = useState("Mumbai (BOM)");
+
   // Price comparison real math interactive state
   const [comparisonPassengers, setComparisonPassengers] = useState<number>(1);
   const [comparisonIsRoundTrip, setComparisonIsRoundTrip] = useState<boolean>(false);
 
   useEffect(() => {
     const cleanHash = (sectionHash ?? "").replace(/^#/, "").toLowerCase();
-    if (cleanHash === "hotels") setActiveTab("hotels");
+    if (cleanHash === "concierge" || cleanHash === "vip") setActiveTab("vip_concierge");
+    else if (cleanHash === "hotels") setActiveTab("hotels");
     else if (cleanHash === "trips") setActiveTab("trips");
     else if (cleanHash === "flights") setActiveTab("flights");
     else if (cleanHash === "trains") setActiveTab("trains");
@@ -1424,52 +1446,22 @@ export function TravelPage() {
                 <Button
                   type="button"
                   onClick={() => {
-                    toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
-                    return;
-                    const synth = issueSovereignETicket({
-                      quote: {
-                        id: `fl-direct-${Date.now()}`,
-                        mode: "flight",
-                        carrierCode: airlineCheckInCode.slice(0, 2),
-                        carrierName: airlineCheckInCode.split("(")[1]?.replace(")", "") || "IndiGo Airlines",
-                        serviceNumber: `${airlineCheckInCode.slice(0, 2)} 504`,
-                        title: `${airlineCheckInCode} Direct Express`,
-                        fromCity: flightFrom,
-                        fromCode: flightFrom.includes("(") ? flightFrom.split("(")[1]?.replace(")", "") : "DEL",
-                        toCity: flightTo,
-                        toCode: flightTo.includes("(") ? flightTo.split("(")[1]?.replace(")", "") : "BOM",
-                        departureTime: "06:00",
-                        arrivalTime: "08:15",
-                        duration: "2h 15m",
-                        baseFarePaise: flightTotalBase,
-                        carrierTaxesPaise: flightTaxes,
-                        orderKingDeskFeePaise: 0,
-                        otaBenchmarkFeePaise: 39900,
-                        partnerRebateBps: 200,
-                        seatsAvailable: 9,
-                        terminal: "Terminal 3 (T3)",
-                      },
-                      passengers: Array.from({ length: flightPassengers }, (_, i) => ({
-                        id: `pax-${i + 1}`,
-                        fullName: i === 0 ? "Hasan Raza" : `Traveler ${i + 1}`,
-                        age: 28,
-                        gender: "male",
-                        seatPreference: "Window",
-                      })),
-                      contact: {
-                        phone: "9876543210",
-                        email: "hasan@orderking.in",
-                      },
-                      paymentMethod: "kingpay_wallet",
-                      rebateDestination: "24k_gold",
-                      travelDate: flightDate,
+                    const deepLink = buildOfficialAirlineDeepLink({
+                      carrierCode: airlineCheckInCode.slice(0, 2),
+                      from: flightFrom,
+                      to: flightTo,
+                      departureDate: flightDate,
+                      passengers: flightPassengers,
+                      cabinClass: flightClass,
                     });
-                    setActiveTicketModal(synth);
-                    toast.success(`Issued Sovereign E-Ticket for ${flightFrom} ➔ ${flightTo} with ₹0 fee!`);
+                    toast.success(
+                      `Redirecting to official ${deepLink.carrierName} portal (${deepLink.portalName}) for ${deepLink.fromCode} ➔ ${deepLink.toCode}...`
+                    );
+                    window.open(deepLink.bookingUrl, "_blank", "noopener,noreferrer");
                   }}
                   className="flex-1 h-12 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-sm shadow-md shadow-sky-600/20"
                 >
-                  Book Direct Flight In-App (₹0 Convenience Fee) ➔
+                  Compare &amp; Book on Official Airline ({airlineCheckInCode.split("(")[0]?.trim() || "IndiGo"}) ➔
                 </Button>
                 <Button
                   type="button"

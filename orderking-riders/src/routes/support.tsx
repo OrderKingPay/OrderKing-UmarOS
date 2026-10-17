@@ -227,7 +227,7 @@ function Page() {
         ],
         resolutionAdvice: activeOrder
           ? eligibleForFreeReturn
-            ? "✅ 3 call attempts and 10+ minutes doorstep wait verified! You qualify for 100% Base + Distance payout with zero cancellation penalty. Log this UMAR OS audit and tap 'Customer Unavailable' on the delivery screen."
+            ? "✅ 3 call attempts and 10+ minutes doorstep wait verified! You qualify for 100% Base + Distance payout with zero cancellation penalty. Log this Order King audit and tap 'Customer Unavailable' on the delivery screen."
             : `⚠️ Policy requires ${Math.max(0, 3 - attempts)} more call attempt(s) and ${Math.max(0, 10 - customerWaitMins)} more wait minute(s) at the drop pin to unlock automatic zero-penalty return.`
           : "ℹ️ No active customer drop in progress. Log an audit ticket below if you are disputing a past unreachable-customer trip.",
         auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=CUSTOMER_UNREACHABLE | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | DROP=${activeOrder?.customer.area ?? "NA"} | CALLS=${attempts}/3 | WAIT_MINS=${customerWaitMins}]`,
@@ -243,7 +243,7 @@ function Page() {
         ],
         resolutionAdvice:
           unreconciledPaise > 0
-            ? `💵 Your ledger shows ${formatPaise(unreconciledPaise)} in pending COD cash. Attach your UPI deposit UTR or describe the customer short-cash amount below so UMAR OS reconciles your float limit automatically.`
+            ? `💵 Your ledger shows ${formatPaise(unreconciledPaise)} in pending COD cash. Attach your UPI deposit UTR or describe the customer short-cash amount below so Order King reconciles your float limit automatically.`
             : "✅ Your COD float balance is ₹0 (100% reconciled). Use the form below if you need to report a customer cash dispute on an active order.",
         auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=COD_CASH_MISMATCH | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | UNRECONCILED_INR=${(unreconciledPaise / 100).toFixed(2)} | ACTIVE_COD_INR=${((activeOrder?.codAmountPaise ?? 0) / 100).toFixed(2)}]`,
       };
@@ -262,7 +262,7 @@ function Page() {
           `Latest Settlement: ${latestSettlement ? `${formatPaise(latestSettlement.amountPaise)} [${latestSettlement.status}]` : "Scheduled Wednesday 2:00 PM IST"} · Dest: ${payoutDest}`,
         ],
         resolutionAdvice:
-          "📊 Statutory floor guarantees ₹35 base (up to 2 km) + ₹8/km beyond 2 km + ₹1/min kitchen wait (>10m) + 100% customer tips. Submit below to trigger an automated UMAR OS route-distance & payout ledger audit.",
+          "📊 Statutory floor guarantees ₹35 base (up to 2 km) + ₹8/km beyond 2 km + ₹1/min kitchen wait (>10m) + 100% customer tips. Submit below to trigger an automated Order King route-distance & payout ledger audit.",
         auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=PAYOUT_AUDIT | RIDER=${riderId.slice(0, 8)} | TRIPS_TODAY=${home?.completedToday ?? 0} | NET_INR=${((earnings?.totals.net ?? 0) / 100).toFixed(2)} | SETTLEMENT=${latestSettlement?.status ?? "NONE"} | DEST=${payoutDest}]`,
       };
     }
@@ -275,7 +275,7 @@ function Page() {
         `Preferred Zone: ${home?.rider.preferredZones || "Default City Zone"}`,
       ],
       resolutionAdvice:
-        "📍 If a building gate or mall entrance is offset from the restaurant/customer map pin, log this telemetry snapshot so UMAR OS authorizes geofence arrival and protects your on-time score.",
+        "📍 If a building gate or mall entrance is offset from the restaurant/customer map pin, log this telemetry snapshot so Order King authorizes geofence arrival and protects your on-time score.",
       auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=APP_GPS_ISSUE | RIDER=${riderId.slice(0, 8)} | STATUS=${home?.rider.status ?? "NA"} | ORDER=${orderCode} | STAGE=${activeOrder?.state ?? "IDLE"}]`,
     };
   }
@@ -298,7 +298,7 @@ function Page() {
         },
       });
       setSuccessBanner(
-        `✅ UMAR OS Auto-Audit Ticket #${created.id.slice(0, 8)} logged under ${activeWorkflow.topic.replaceAll("_", " ")} with live account telemetry attached.`,
+        `✅ Order King Auto-Audit Ticket #${created.id.slice(0, 8)} logged under ${activeWorkflow.topic.replaceAll("_", " ")} with live account telemetry attached.`,
       );
       await load();
     } catch (err) {

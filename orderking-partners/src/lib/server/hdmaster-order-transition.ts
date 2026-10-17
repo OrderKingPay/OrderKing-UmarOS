@@ -61,6 +61,7 @@ export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
     orderId: string;
     action: Action;
     reason?: string;
+    prepMinutes?: number;
     idempotencyKey: string;
   }) => d)
   .handler(async ({ context, data }) => {
@@ -83,6 +84,7 @@ export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
       if (!order || !isOrderState(order.state)) throw new Error("Order not found or has an invalid state");
       if (data.action === "reject" && (!data.reason || !isRejectReason(data.reason))) throw new Error("A valid reject reason is required");
 
+      const prepMins = data.prepMinutes ? Math.max(5, Math.min(120, Math.round(data.prepMinutes))) : null;
       const from = localToCanonicalState(order.state);
       const to = canonicalTo(data.action);
       const response = await fetch(`${coreUrl()}/v1/admin/orders/${encodeURIComponent(order.id)}/transition`, {
@@ -99,6 +101,7 @@ export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
           from,
           to,
           reason: data.reason,
+          prepMinutes: prepMins ?? undefined,
           correlationId: `partner:${ctx.restaurantId}:${order.id}:${data.action}`,
         }),
       });
@@ -112,14 +115,15 @@ export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
         update orders set state = ${next},
           reject_reason = ${data.action === "reject" ? data.reason ?? null : null},
           accepted_at = case when ${next} = 'ACCEPTED' then now() else accepted_at end,
-          ready_at = case when ${next} = 'READY' then now() else ready_at end
+          ready_at = case when ${next} = 'READY' then now() else ready_at end,
+          prep_minutes = case when ${prepMins != null} then ${prepMins} else prep_minutes end
         where id = ${order.id} and restaurant_id = ${ctx.restaurantId} and state = ${order.state}
       `;
       if (updated.length !== 1) throw new Error("Local Partner projection changed concurrently; refresh and retry");
 
       await sql`
         insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
-        values (${newId("evt")}, ${order.id}, ${ctx.restaurantId}, ${order.state}, ${next}, 'restaurant', ${context.userId}, ${data.reason ?? null})
+        values (${newId("evt")}, ${order.id}, ${ctx.restaurantId}, ${order.state}, ${next}, 'restaurant', ${context.userId}, ${data.action === "accept" && prepMins ? `Order Accepted with ${prepMins}m Kitchen Prep SLA` : data.reason ?? null})
       `;
       await writeAudit(sql, {
         restaurantId: ctx.restaurantId,
@@ -127,9 +131,14 @@ export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
         action: `order_${data.action}_via_hdmaster`,
         entityType: "order",
         entityId: order.id,
-        detail: `${order.state}→${next}; canonical ${from}→${payload.data.state}`,
+        detail: `${order.state}→${next}${prepMins ? ` (Prep: ${prepMins}m)` : ""}; canonical ${from}→${payload.data.state}`,
       });
-      await notifyInApp(sql, { restaurantId: ctx.restaurantId, type: "order_status", title: next, body: `${order.state} → ${next}` });
+      await notifyInApp(sql, {
+        restaurantId: ctx.restaurantId,
+        type: "order_status",
+        title: next === "ACCEPTED" ? `Order #${order.id.slice(-6)} Accepted (${prepMins ?? 20}m)` : next === "READY" ? `Order #${order.id.slice(-6)} Ready for Rider Dispatch` : next,
+        body: next === "READY" ? `Food packed. Rider dispatch notified for pickup.` : `${order.state} → ${next}`,
+      });
 
       const result = {
         ok: true as const,

@@ -155,7 +155,7 @@ export function UltraLuxuryHero() {
             </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
               <Clock className="size-3" />
-              25-30m Delivery
+              25-30m Express Delivery
             </span>
           </div>
         </div>
@@ -163,9 +163,9 @@ export function UltraLuxuryHero() {
         {/* ROW 2: Hero Headline & Value Props */}
         <div className="space-y-1.5">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
-            Order food online from verified kitchens near you.{" "}
+            Order food online from verified kitchens near you ·{" "}
             <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
-              25-30m Delivery · 0% Menu Markups
+              25-30m Express Delivery · 0% Menu Markups
             </span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
