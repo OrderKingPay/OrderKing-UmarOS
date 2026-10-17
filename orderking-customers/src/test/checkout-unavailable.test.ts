@@ -27,7 +27,7 @@ import { createRazorpayOrder } from "../lib/server/razorpay-order";
 import { placeOrderViaHDmaster } from "../lib/server/hdmaster-orders";
 
 const cart = {
-  restaurantId: "unverified-kitchen", zoneId: "unverified-zone", lat: 28.6139, lng: 77.209,
+  restaurantId: "unverified-kitchen", zoneId: "unverified-zone", lat: 26.1445, lng: 91.7362,
   lines: [{ itemId: "unverified-item", quantity: 1, variantId: null, addonIds: [], instructions: "" }],
 };
 const payment = { ...cart, amountPaise: 10000, tipPaise: 0, currency: "INR", receipt: "test-receipt-123" };

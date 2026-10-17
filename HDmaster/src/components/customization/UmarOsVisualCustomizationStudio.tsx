@@ -22,6 +22,7 @@ import {
   type StagedPreviewDiff,
   type ExecutionReceipt,
 } from "@/lib/orderking/ai/umar-ai-customization-compiler";
+import { broadcastUmarOsConfigUpdate } from "@orderking/ui";
 import { INDIA_COMPLIANCE_RATES } from "@/lib/orderking/compliance/india-marketplace-engine";
 import {
   Palette,
@@ -403,6 +404,28 @@ export function UmarOsVisualCustomizationStudio({
     engine.updatePaletteColor("foreground", preset.foreground, actor, `Preset: ${preset.name}`);
     engine.updatePaletteColor("accent", preset.accent, actor, `Preset: ${preset.name}`);
     notifyChange();
+
+    void broadcastUmarOsConfigUpdate({
+      version: engine.getVersion(),
+      brand: {
+        appName: "OrderKing",
+        primaryColor: preset.primary,
+        accentColor: preset.accent,
+        logoUrl: "/logo.jpg",
+        supportPhone: "+918000000000",
+        supportWhatsApp: "+918000000000",
+      },
+      designTokens: {
+        palette: {
+          primary: preset.primary,
+          primaryForeground: preset.primaryForeground,
+          background: preset.background,
+          surface: preset.surface,
+          foreground: preset.foreground,
+          accent: preset.accent,
+        },
+      },
+    });
   };
 
   // --------------------------------------------------------------------------
@@ -735,8 +758,72 @@ export function UmarOsVisualCustomizationStudio({
       }
     );
     notifyChange();
-    setCommitFeedback(`Committed & pushed live to fleet & child apps via SSE (v${engine.getVersion()})`);
+    setCommitFeedback(`Committed & pushed live to fleet via Supabase Realtime & SSE (v${engine.getVersion()})`);
     setTimeout(() => setCommitFeedback(null), 5000);
+
+    // Broadcast across Supabase Realtime pipe (<200ms) to Customer and Rider apps
+    void broadcastUmarOsConfigUpdate({
+      version: engine.getVersion(),
+      operatingMode,
+      brand: {
+        appName: "OrderKing",
+        primaryColor: palette.primary,
+        accentColor: palette.accent || palette.primary,
+        logoUrl: "/logo.jpg",
+        supportPhone: "+918000000000",
+        supportWhatsApp: "+918000000000",
+      },
+      economics: {
+        platformFeePaise: Math.round(platformFeeRupees * 100),
+        smallCartThresholdPaise: Math.round(smallOrderThresholdRupees * 100),
+        smallCartFeePaise: Math.round(smallOrderFeeRupees * 100),
+        packagingFeeCapPaise: Math.round(packagingFeeCapRupees * 100),
+        packagingFeeMaxPercent: 10,
+        cgstSection9_5Percent: 5,
+        platformGstPercent: 18,
+        tcsPercent: 1,
+        tdsPercent: 0.1,
+        defaultCommissionPercent: commissionRatePercent,
+        surgeMultiplier: activeWeatherCondition !== "clear" ? 1.5 : 1.0,
+        monsoonAlertActive: activeWeatherCondition !== "clear",
+        monsoonBannerText: activeWeatherCondition !== "clear" ? "Weather alert active: delivery partners driving safely." : "",
+      },
+      logistics: {
+        riderBasePayRupees,
+        firstMileRatePerKm,
+        lastMileBand1RatePerKm,
+        lastMileBand2RatePerKm,
+        lastMileBand3RatePerKm,
+        lastMileBand4RatePerKm,
+        kitchenWaitRatePerMinRupees,
+        kitchenWaitGraceMinutes,
+        weatherBonusDrizzleRupees,
+        weatherBonusHeavyRainRupees,
+        weatherBonusWaterloggedRupees,
+        nightSurgeAllowanceRupees,
+      },
+      customerPricing: {
+        baseDeliveryFeeRupees,
+        platformFeeRupees,
+        smallOrderFeeRupees,
+        smallOrderThresholdRupees,
+        freeDeliveryCartThresholdRupees,
+      },
+      merchantEconomics: {
+        commissionTierStarterPercent,
+        commissionTierStandardPercent,
+        commissionTierPremiumPercent,
+        commissionRatePercent,
+        packagingFeeCapRupees,
+        discountCoFundingMerchantPercent,
+      },
+      fleetAndCash: {
+        codFloatingCashLimitRupees: codLimitRupees,
+        dispatchPreAllocationLeadTimeMinutes,
+        kitchenDelayVoiceAlertThresholdMinutes,
+        codWarningPercent,
+      },
+    });
   };
 
   // Comprehensive order simulation calculator

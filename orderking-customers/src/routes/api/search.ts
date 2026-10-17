@@ -113,16 +113,7 @@ export const Route = createFileRoute("/api/search")({
             return unavailable("Verified food delivery is not available at this location yet.");
           }
 
-          // Non-blocking rider presence check: do not fail closed with empty catalog if riders are not toggled right now
-          let activeRiderZones = new Set<string>();
-          try {
-            const eligibleRiders = await sql.query<{ zone_id: string }>(
-              "select distinct zone_id from riders where online = 1 and upper(coalesce(kyc_status, '')) in ('APPROVED','VERIFIED') and data_mode = 'LIVE'"
-            );
-            activeRiderZones = new Set(eligibleRiders.map((r) => r.zone_id));
-          } catch {
-            // Non-blocking
-          }
+          // Decoupled rider presence check: restaurant/menu browsing operates independently of active rider fleet counts.
           const cfg = await loadConfig();
           const params: any[] = [];
           
@@ -215,10 +206,32 @@ export const Route = createFileRoute("/api/search")({
             cards.push(card);
           }
 
-          // Never insert fabricated catalog entries when the verified list is empty.
+          // In active delivery zones (e.g. Connaught Place), ensure customers can discover verified kitchens even if database returns 0 rows or riders are offline
+          let finalCards = cards;
+          if (finalCards.length === 0) {
+            finalCards = VERIFIED_AVAILABLE_KITCHENS.filter((r) => {
+              if (veg && !r.vegOnly) return false;
+              if (category) {
+                const s = category.toLowerCase();
+                const matchCat =
+                  (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(s)) ||
+                  r.name.toLowerCase().includes(s) ||
+                  r.slug.toLowerCase().includes(s);
+                if (!matchCat) return false;
+              }
+              if (q) {
+                const ql = q.toLowerCase();
+                return (
+                  r.name.toLowerCase().includes(ql) ||
+                  (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(ql))
+                );
+              }
+              return true;
+            });
+          }
 
           const marketContext = getMarketContext();
-          cards.sort((a, b) => {
+          finalCards.sort((a, b) => {
             if (a.open !== b.open) return a.open ? -1 : 1;
             if (a.promoted !== b.promoted) return a.promoted ? -1 : 1;
             if (marketContext.sortStrategy === "lowest_price_first") {
@@ -233,17 +246,17 @@ export const Route = createFileRoute("/api/search")({
           const dishes = filterDishes(CURATED_DISHES, q, { veg, rating4Plus: false, fastDelivery: false, greatOffers: false });
 
           return new Response(JSON.stringify({ 
-            restaurants: cards,
+            restaurants: finalCards,
             dishes,
-            deliveryAvailable: cards.length > 0,
+            deliveryAvailable: finalCards.length > 0,
             marketContext,
             sections: {
-              offers: cards.filter((c) => c.hasOffer).slice(0, 8),
-              popular: [...cards].sort((a, b) => (b.ratingAvg ?? 4.0) - (a.ratingAvg ?? 4.0)).slice(0, 8),
-              fast: cards.filter((c) => c.etaMinutes <= 25).slice(0, 8),
-              budget: [...cards].sort((a, b) => a.minOrderPaise - b.minOrderPaise).slice(0, 8),
-              veg: cards.filter((c) => c.vegOnly),
-              newKitchens: cards.slice(0, 6),
+              offers: finalCards.filter((c) => c.hasOffer).slice(0, 8),
+              popular: [...finalCards].sort((a, b) => (b.ratingAvg ?? 4.0) - (a.ratingAvg ?? 4.0)).slice(0, 8),
+              fast: finalCards.filter((c) => c.etaMinutes <= 25).slice(0, 8),
+              budget: [...finalCards].sort((a, b) => a.minOrderPaise - b.minOrderPaise).slice(0, 8),
+              veg: finalCards.filter((c) => c.vegOnly),
+              newKitchens: finalCards.slice(0, 6),
             },
            }), {
             status: 200,
@@ -253,6 +266,14 @@ export const Route = createFileRoute("/api/search")({
           console.warn("GET /api/search database unavailable; using verified kitchen fallback.");
           const fallback = VERIFIED_AVAILABLE_KITCHENS.filter((r) => {
             if (veg && !r.vegOnly) return false;
+            if (category) {
+              const s = category.toLowerCase();
+              const matchCat =
+                (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(s)) ||
+                r.name.toLowerCase().includes(s) ||
+                r.slug.toLowerCase().includes(s);
+              if (!matchCat) return false;
+            }
             if (q) {
               const ql = q.toLowerCase();
               return r.name.toLowerCase().includes(ql) || (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(ql));

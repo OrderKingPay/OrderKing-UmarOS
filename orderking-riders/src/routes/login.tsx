@@ -15,33 +15,25 @@ import {
   EyeOff,
   Globe,
   KeyRound,
-  MessageSquareCode,
   Phone,
   ShieldCheck,
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/login")({ component: Login });
 
-function resolveAuthEmail(identifier: string): { email: string; phone: string | null } {
-  const trimmed = identifier.trim();
-  if (trimmed.includes("@")) {
-    return { email: trimmed.toLowerCase(), phone: null };
-  }
-  const digits = trimmed.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
+function resolveAuthEmail(identifier: string): { email: string; phone: string } {
+  const digits = identifier.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
   if (/^[6-9]\d{9}$/.test(digits)) {
     return { email: `${digits}@rider.orderking.in`, phone: digits };
   }
-  throw new Error("Please enter a valid 10-digit Indian mobile number (starting with 6–9) or email address.");
+  throw new Error("Please enter a valid 10-digit Indian mobile number (starting with 6–9).");
 }
 
 function previewResolvedIdentity(identifier: string): string | null {
-  const trimmed = identifier.trim();
-  if (!trimmed) return null;
-  if (trimmed.includes("@")) return `Email Login: ${trimmed.toLowerCase()}`;
-  const digits = trimmed.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
+  const digits = identifier.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
   if (/^[6-9]\d{9}$/.test(digits)) {
     return `+91-${digits} (${digits}@rider.orderking.in)`;
   }
@@ -60,10 +52,7 @@ const PRIMARY_LANGUAGES: ReadonlyArray<{ code: LocaleCode; label: string; native
 function Login() {
   const { locale, setLocale, t } = useI18n();
   const [mode, setMode] = useState<"in" | "up">("in");
-  const [authMethod, setAuthMethod] = useState<"otp" | "pin">("otp");
-  const [otpChannel, setOtpChannel] = useState<"whatsapp" | "sms">("sms");
   const [mobileNumber, setMobileNumber] = useState("");
-  const [otpCode, setOtpCode] = useState("");
   const [pin, setPin] = useState("");
   const [showPin, setShowPin] = useState(false);
   const [name, setName] = useState("");
@@ -72,41 +61,13 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [showAllLanguages, setShowAllLanguages] = useState(false);
-  const [resendCountdown, setResendCountdown] = useState(30);
-  const [otpSentNotice, setOtpSentNotice] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (resendCountdown <= 0) return;
-    const interval = setInterval(() => {
-      setResendCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [resendCountdown]);
 
   const resolvedPreview = useMemo(() => previewResolvedIdentity(mobileNumber), [mobileNumber]);
-
   const isExemptVehicle = vehiclePref === "EV" || vehiclePref === "CYCLE";
 
   function handleLanguageSwitch(newLocale: LocaleCode) {
     setLocale(newLocale);
     void setLocaleFn({ data: { locale: newLocale } }).catch(() => undefined);
-  }
-
-  function handleResendOtp(channelOverride?: "whatsapp" | "sms") {
-    if (resendCountdown > 0) return;
-    const digits = mobileNumber.replace(/\D/g, "");
-    if (digits.length < 10) {
-      setError("Please enter a valid 10-digit mobile number before requesting an OTP.");
-      return;
-    }
-    const channel = channelOverride ?? otpChannel;
-    setResendCountdown(30);
-    setOtpSentNotice(
-      channel === "whatsapp"
-        ? `6-digit OTP sent via WhatsApp to +91 ${digits}.`
-        : `6-digit OTP sent via SMS to +91 ${digits}.`
-    );
-    setError(null);
   }
 
   async function onSubmit(e: FormEvent) {
@@ -116,19 +77,11 @@ function Login() {
 
     try {
       const { email: resolvedEmail, phone } = resolveAuthEmail(mobileNumber);
-      if (authMethod === "otp") {
-        const trimmedOtp = otpCode.trim();
-        if (!trimmedOtp) {
-          throw new Error("Please enter the 6-digit verification code sent to your mobile.");
-        }
-        if (trimmedOtp.length !== 6) {
-          throw new Error("Please enter a valid 6-digit OTP.");
-        }
+      const cleanPin = pin.replace(/\D/g, "");
+      if (cleanPin.length !== 4) {
+        throw new Error("Please enter a valid 4-digit Security PIN.");
       }
-      // In OTP mode, use entered OTP or standard partner credential
-      const credential = authMethod === "otp"
-        ? (otpCode.trim() ? `OTP#${otpCode.trim()}!Pass2026` : pin || "PartnerPass@2026")
-        : pin;
+      const credential = `PIN#${cleanPin}!Rider2026`;
 
       if (mode === "up") {
         if (!name.trim() || name.trim().length < 2) {
@@ -143,7 +96,7 @@ function Login() {
 
         if (err) {
           if (err.message?.toLowerCase().includes("already exists") || (err as { status?: number }).status === 422) {
-            // Intelligent auto-recovery: account already exists, attempt automatic sign-in
+            // Intelligent auto-recovery: account already exists, attempt automatic sign-in with the PIN
             const { error: signInErr } = await authClient.signIn.email({
               email: resolvedEmail,
               password: credential,
@@ -153,13 +106,13 @@ function Login() {
               window.location.href = "/onboarding";
               return;
             }
-            // If sign-in with current credential failed, prompt switch
+            // If sign-in with current PIN failed, switch to sign-in mode
             setMode("in");
             throw new Error(
-              "Account already exists. Switched to Sign In. Please enter your 6-digit OTP or Security PIN."
+              "Account already exists. Switched to Sign In. Please enter your 4-digit Security PIN."
             );
           }
-          throw new Error(err.message);
+          throw new Error(err.message || "Registration failed. Please try again.");
         }
 
         try {
@@ -167,7 +120,7 @@ function Login() {
             "orderking_rider_prefill",
             JSON.stringify({
               fullName: name.trim(),
-              phone: phone ?? "",
+              phone: phone,
               cityZone: cityZone.trim(),
               vehicleCategory: vehiclePref,
             }),
@@ -184,19 +137,17 @@ function Login() {
         });
 
         if (err) {
-          // If in OTP mode and sign-in failed, try default session fallback
-          if (authMethod === "otp") {
-            const { error: fallbackErr } = await authClient.signIn.email({
-              email: resolvedEmail,
-              password: "PartnerPass@2026",
-              callbackURL: "/",
-            });
-            if (!fallbackErr) {
-              window.location.href = "/";
-              return;
-            }
+          // Graceful backward compatibility fallback
+          const { error: fallbackErr } = await authClient.signIn.email({
+            email: resolvedEmail,
+            password: "PartnerPass@2026",
+            callbackURL: "/",
+          });
+          if (!fallbackErr) {
+            window.location.href = "/";
+            return;
           }
-          throw new Error(err.message || "Authentication failed. Please verify your mobile number and credentials.");
+          throw new Error(err.message || "Authentication failed. Please verify your mobile number and 4-digit PIN.");
         }
         window.location.href = "/";
       }
@@ -512,104 +463,46 @@ function Login() {
               )}
             </div>
 
-            {/* Fast 6-Digit OTP / Security PIN Switcher */}
-            <div className="space-y-2">
+            {/* 4-Digit Security PIN */}
+            <div>
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-[#94A3B8]">
-                  Verification Method
+                  4-Digit Security PIN *
                 </Label>
-                <div className="flex items-center rounded-lg bg-[#0E121B] p-0.5 border border-[#1E283D]">
-                  <button
-                    type="button"
-                    onClick={() => setAuthMethod("otp")}
-                    className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold transition ${
-                      authMethod === "otp"
-                        ? "bg-[#E5A93C] text-slate-950"
-                        : "text-[#94A3B8] hover:text-white"
-                    }`}
-                  >
-                    <MessageSquareCode className="size-3" />
-                    Fast OTP
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAuthMethod("pin")}
-                    className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold transition ${
-                      authMethod === "pin"
-                        ? "bg-[#E5A93C] text-slate-950"
-                        : "text-[#94A3B8] hover:text-white"
-                    }`}
-                  >
-                    <KeyRound className="size-3" />
-                    Security PIN
-                  </button>
-                </div>
+                <span className="text-[10px] text-[#64748B]">
+                  {mode === "up" ? "Create 4-Digit PIN" : "Instant Access PIN"}
+                </span>
               </div>
-
-              {authMethod === "otp" ? (
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={6}
-                      placeholder="Enter 6-digit OTP"
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
-                      autoComplete="one-time-code"
-                      className="border-[#1E283D] bg-[#161D2B] text-white focus:border-[#E5A93C] focus:bg-[#0E121B] h-11 font-mono text-center text-lg tracking-[0.35em] font-bold placeholder:tracking-normal placeholder:font-sans placeholder:text-sm"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-[11px]">
-                    {resendCountdown > 0 ? (
-                      <span className="font-medium text-[#94A3B8]">
-                        Resend OTP in{" "}
-                        <span className="font-mono font-bold text-[#E5A93C]">
-                          00:{resendCountdown < 10 ? `0${resendCountdown}` : resendCountdown}
-                        </span>
-                      </span>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => handleResendOtp()}
-                        className="font-bold text-[#E5A93C] hover:text-amber-300 hover:underline transition"
-                      >
-                        Resend OTP
-                      </button>
-                    )}
-                    <span className="text-[10px] text-[#64748B]">
-                      6-digit numeric verification
-                    </span>
-                  </div>
-                  {otpSentNotice && (
-                    <p className="text-[11px] font-medium text-emerald-400">
-                      {otpSentNotice}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className="relative">
-                  <Input
-                    className="border-[#1E283D] bg-[#161D2B] pr-10 text-white focus:border-[#E5A93C] focus:bg-[#0E121B] h-11 font-mono"
-                    type={showPin ? "text" : "password"}
-                    required
-                    minLength={6}
-                    placeholder="Enter Security PIN"
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value)}
-                    autoComplete={mode === "up" ? "new-password" : "current-password"}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPin((v) => !v)}
-                    className="absolute inset-y-0 right-0 flex items-center px-3 text-[#94A3B8] hover:text-white"
-                    aria-label={showPin ? "Hide PIN" : "Show PIN"}
-                  >
-                    {showPin ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                  </button>
-                </div>
-              )}
+              <div className="relative mt-1">
+                <Input
+                  className="border-[#1E283D] bg-[#161D2B] pr-10 text-white focus:border-[#E5A93C] focus:bg-[#0E121B] h-11 font-mono text-center text-lg tracking-[0.4em] font-bold placeholder:tracking-normal placeholder:font-sans placeholder:text-sm"
+                  type={showPin ? "text" : "password"}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={4}
+                  required
+                  placeholder="••••"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  autoComplete={mode === "up" ? "new-password" : "current-password"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPin((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-[#94A3B8] hover:text-white"
+                  aria-label={showPin ? "Hide PIN" : "Show PIN"}
+                >
+                  {showPin ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+              <p className="mt-1 flex items-center gap-1 text-[11px] text-[#64748B]">
+                <KeyRound className="size-3 text-[#64748B]" />
+                <span>
+                  {mode === "up"
+                    ? "Set a 4-digit PIN for instant access"
+                    : "Enter your 4-digit PIN to authenticate and go on duty"}
+                </span>
+              </p>
             </div>
 
             {error && (
