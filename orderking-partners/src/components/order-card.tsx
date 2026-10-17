@@ -577,7 +577,7 @@ export function OrderCard({
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 
-      {/* Authentic Zomato Structured Order Rejection Dialog */}
+      {/* Authentic Tier-1 Leader Structured Order Rejection Dialog */}
       <StructuredRejectionModal
         isOpen={rejectOpen}
         onClose={() => setRejectOpen(false)}

@@ -236,7 +236,7 @@ export function CancellationGraceWindow({
             <div className="rounded-2xl bg-amber-50 border border-amber-200 p-3.5 text-xs text-amber-950 space-y-1.5">
               <p className="font-bold flex items-center gap-1.5">
                 <span>🛡️</span>
-                <span>Zomato-Parity Instant Guarantee</span>
+                <span>Tier-1 Parity Instant Guarantee</span>
               </p>
               <p className="text-stone-700">
                 100% of {formatPaise(totalPaise, { locale })} will be credited back instantly without

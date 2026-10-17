@@ -144,7 +144,7 @@ export function getCoolingOffInfo(
 
 /**
  * Dignified, realistic operational reasons for pre-pickup trip reassignment
- * without harsh financial or disciplinary penalty (Leading Zomato / Tier-1 Fleet standard).
+ * without harsh financial or disciplinary penalty (Tier-1 Fleet standard).
  */
 export const JUSTIFIED_OPERATIONAL_REASONS = [
   "Bike Breakdown / Tyre Puncture 🛵",

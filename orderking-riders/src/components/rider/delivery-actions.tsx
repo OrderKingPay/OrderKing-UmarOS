@@ -488,7 +488,7 @@ export function DeliveryActions({
             </div>
 
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Zomato Delivery Standard: Snap a clear photo of the physical paper bill attached to the parcel before confirming pickup.
+              Tier-1 Delivery Standard: Snap a clear photo of the physical paper bill attached to the parcel before confirming pickup.
             </p>
 
             <input
@@ -1014,7 +1014,7 @@ export function DeliveryActions({
         </div>
       ) : null}
 
-      {/* Supreme Zomato Fleet Emergency Safety Sheet */}
+      {/* Supreme Tier-1 Fleet Emergency Safety Sheet */}
       <RiderEmergencySafetySheet
         isOpen={sosOpen}
         onClose={() => setSosOpen(false)}

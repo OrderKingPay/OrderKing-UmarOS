@@ -17,8 +17,8 @@ export const Route = createFileRoute('/')({
   errorComponent: AppErrorComponent,
   head: () => ({
     meta: [
-      { property: 'og:title', content: 'OrderKing - Uncompromising Culinary Excellence' },
-      { property: 'og:description', content: 'Curated gastronomy. Impeccable delivery.' },
+      { property: 'og:title', content: 'OrderKing - Direct Kitchen Delivery & Transparent Pricing' },
+      { property: 'og:description', content: 'FSSAI verified partner kitchens, zero menu markups, and express 25-30m delivery.' },
     ],
   }),
 });
@@ -44,16 +44,16 @@ function Home() {
   return (
     <CustomerShell onSearch={() => void navigate({ to: "/search" })}>
       <div className="min-h-full bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB]">
-        {/* Prestige Royal Trust Strip */}
+        {/* Transparent Pricing & Hygiene Trust Strip */}
         <div className="border-b border-amber-900/10 bg-gradient-to-r from-amber-500/10 via-yellow-400/15 to-amber-500/10 px-3 py-1.5 text-center backdrop-blur-xs">
           <div className="flex items-center justify-center gap-2 text-[11px] font-extrabold text-amber-950">
             <span className="flex size-4 items-center justify-center rounded-full bg-amber-400/80 text-[10px] shadow-2xs">
               👑
             </span>
             <span className="tracking-tight">
-              Prestige Gastronomy · <span className="text-amber-800">0% Menu Markups</span> · FSSAI Verified Kitchens
+              Direct Kitchen Delivery · <span className="text-amber-800">0% Menu Markups</span> · FSSAI Verified Kitchens
             </span>
-            <span className="hidden sm:inline text-amber-700">· 100% Direct Chef Delivery</span>
+            <span className="hidden sm:inline text-amber-700">· 25-30m Express Dispatch</span>
           </div>
         </div>
 

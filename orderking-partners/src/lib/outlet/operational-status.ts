@@ -1,6 +1,6 @@
 /**
  * OUTLET EMERGENCY PAUSE & OPERATIONAL STATUS ENGINE
- * Authentic Zomato Merchant Operations & Kitchen Shield:
+ * Authentic Tier-1 Leader Merchant Operations & Kitchen Shield:
  * - 🟢 Online (Accepting Orders)
  * - 🟡 Paused for 30 Mins (Kitchen Catch-up)
  * - 🟡 Paused for 60 Mins (Lunch / Dinner Surge Recovery)

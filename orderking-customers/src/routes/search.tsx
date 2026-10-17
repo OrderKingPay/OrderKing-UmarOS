@@ -774,7 +774,7 @@ function PredictiveSearchPage() {
           )}
         </div>
 
-        {/* 5. FLOATING BOTTOM CART BAR (Zomato-grade 1-tap checkout transition) */}
+        {/* 5. FLOATING BOTTOM CART BAR (Tier-1 Parity 1-tap checkout transition) */}
         {totalCartCount > 0 && (
           <div className="fixed bottom-3 inset-x-3 sm:inset-x-auto sm:right-6 sm:w-96 z-40 animate-in slide-in-from-bottom-4 duration-300">
             <Link

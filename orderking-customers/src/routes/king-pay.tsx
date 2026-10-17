@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { KingPayShell, type KingPaySection } from "@/components/fintech/kingpay-shell";
 import { KingPayCategoryHub } from "@/components/fintech/kingpay-category-hub";
@@ -7,7 +7,14 @@ import { AppErrorComponent } from "@/lib/error-component";
 import { AddMoneyModal } from "@/components/fintech/add-money-modal";
 import { ScanQrModal } from "@/components/fintech/scan-qr-modal";
 
+export type KingPaySearch = {
+  tab?: string;
+};
+
 export const Route = createFileRoute("/king-pay")({
+  validateSearch: (search: Record<string, unknown>): KingPaySearch => ({
+    tab: typeof search.tab === "string" ? search.tab : undefined,
+  }),
   component: OrderKingPayPage,
   pendingComponent: KingPayPageSkeleton,
   errorComponent: AppErrorComponent,
@@ -21,7 +28,20 @@ import {
 } from "@/lib/kingpay/ledger-binding";
 
 function OrderKingPayPage() {
-  const [activeSection, setActiveSection] = useState<KingPaySection>("pay");
+  const search = Route.useSearch();
+  const hash = useRouterState({ select: (s) => s?.location?.hash ?? "" }) ?? "";
+  const initialSection: KingPaySection =
+    search?.tab === "passbook" || (hash || "").replace(/^#/, "").toLowerCase() === "passbook"
+      ? "passbook"
+      : "pay";
+  const [activeSection, setActiveSection] = useState<KingPaySection>(initialSection);
+
+  useEffect(() => {
+    const cleanHash = (hash || "").replace(/^#/, "").toLowerCase();
+    if (search?.tab === "passbook" || cleanHash === "passbook") {
+      setActiveSection("passbook");
+    }
+  }, [search?.tab, hash]);
   const { user } = useCurrentUserState();
   const userId = user?.id || "dev-user";
 

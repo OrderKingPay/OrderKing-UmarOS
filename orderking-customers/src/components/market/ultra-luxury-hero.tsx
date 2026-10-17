@@ -126,7 +126,7 @@ export function UltraLuxuryHero() {
 
   return (
     <section
-      aria-label="OrderKing Prestige Gastronomy"
+      aria-label="OrderKing Kitchen Specialties"
       className="relative w-full overflow-hidden rounded-[32px] border-2 border-amber-400/70 bg-gradient-to-br from-slate-950 via-[#18130d] to-amber-950 p-4 sm:p-6 text-white shadow-[0_20px_50px_rgba(245,158,11,0.22)] select-none"
     >
       {/* ─── PRISMATIC SPECULAR AURAS ─── */}
@@ -135,12 +135,12 @@ export function UltraLuxuryHero() {
       <div className="pointer-events-none absolute -left-16 -bottom-16 size-64 rounded-full bg-gradient-to-tr from-emerald-500/15 via-teal-500/10 to-transparent blur-3xl" />
 
       <div className="relative z-10 space-y-4">
-        {/* ROW 1: Royal Crown Seal & Pan-India Dispatch Pill */}
+        {/* ROW 1: FSSAI Verified Badge & 25-30m Delivery Pill */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/70 bg-gradient-to-r from-amber-950/90 via-yellow-900/70 to-amber-950/90 px-3.5 py-1 shadow-[0_2px_12px_rgba(245,158,11,0.3)] backdrop-blur-md">
             <Crown className="size-3.5 text-amber-400 fill-amber-400 animate-pulse" />
             <span className="text-[10.5px] font-black uppercase tracking-widest text-amber-200">
-              OrderKing Prestige Gastronomy
+              OrderKing Express Kitchens
             </span>
           </div>
 
@@ -151,7 +151,11 @@ export function UltraLuxuryHero() {
             </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
               <ShieldCheck className="size-3" />
-              Direct Chef Handover
+              FSSAI Lic. Certified
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
+              <Clock className="size-3" />
+              25-30m Delivery
             </span>
           </div>
         </div>
@@ -159,13 +163,13 @@ export function UltraLuxuryHero() {
         {/* ROW 2: Hero Headline & Value Props */}
         <div className="space-y-1.5">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
-            Curated Culinary Excellence.{" "}
+            Fresh Kitchen Specialties.{" "}
             <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
-              Zero Predatory Fees.
+              Zero Hidden Markups.
             </span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
-            Direct pricing from master cloud kitchens. While competitors add 15-30% restaurant markups and hidden packaging fees, OrderKing delivers pristine gastronomy with 100% price transparency.
+            Direct pricing from FSSAI-certified partner kitchens. No inflated aggregator commissions or hidden packaging fees—hot, authentic meals delivered in 25-30 minutes with complete price transparency.
           </p>
         </div>
 
@@ -174,7 +178,7 @@ export function UltraLuxuryHero() {
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
               <Flame className="size-3.5 text-amber-400" />
-              <span>Sovereign Chef Specialties · Instant 1-Tap Discovery</span>
+              <span>Fresh Kitchen Specialties · 25-30m Express Delivery</span>
             </span>
             <Link
               to="/search"
@@ -272,14 +276,14 @@ export function UltraLuxuryHero() {
           </div>
         </div>
 
-        {/* ROW 4: ZERO-TYPING MULTILINGUAL AUTOCORRECT STRIP */}
+        {/* ROW 4: MULTILINGUAL SMART SEARCH STRIP */}
         <div className="rounded-2xl border border-amber-400/30 bg-slate-900/60 p-2.5 flex flex-wrap items-center justify-between gap-2 backdrop-blur-md">
           <div className="flex items-center gap-1.5">
             <span className="flex size-6 items-center justify-center rounded-lg bg-amber-400/20 text-amber-300 text-xs shadow-2xs">
               🌐
             </span>
             <span className="text-[11px] font-black text-amber-200">
-              Zero-Typing Smart Autocorrect Active
+              Multilingual Voice &amp; Fast Search Active
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-slate-300">

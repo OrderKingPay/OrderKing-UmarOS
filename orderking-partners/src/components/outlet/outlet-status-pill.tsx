@@ -156,7 +156,7 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
         />
       </button>
 
-      {/* Authentic Zomato Operational Status Popover */}
+      {/* Authentic Tier-1 Operational Status Popover */}
       {dropdownOpen && (
         <div
           role="menu"

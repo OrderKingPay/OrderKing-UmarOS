@@ -24,7 +24,7 @@ import {
 import type { CartLineInput, MenuItemView } from "@/lib/market-types";
 
 describe("1. Pre-Order Delivery Partner Tip Selector (100% to Rider)", () => {
-  it("provides authentic Zomato preset tip chips with tags and rupee values", () => {
+  it("provides authentic Tier-1 Leader preset tip chips with tags and rupee values", () => {
     expect(TIP_PRESETS).toHaveLength(3);
 
     const [chip20, chip30, chip50] = TIP_PRESETS;

@@ -1,5 +1,5 @@
 /**
- * AUTHENTIC ZOMATO STRUCTURED ORDER REJECTION & STOCKOUT LINK
+ * AUTHENTIC TIER-1 LEADER STRUCTURED ORDER REJECTION & STOCKOUT LINK
  * 
  * Enforces structured operational rejection reasons:
  * 1. 'Kitchen Overloaded / Too Many Orders' (kitchen_overloaded)
@@ -14,7 +14,7 @@ import {
 } from "@/lib/menu/timed-stockout";
 import type { RejectReason } from "@/lib/orders/state-machine";
 
-export interface ZomatoRejectionReasonConfig {
+export interface Tier1RejectionReasonConfig {
   id: "kitchen_overloaded" | "item_unavailable" | "restaurant_closed" | "technical_issue";
   label: string;
   sublabel: string;
@@ -22,7 +22,7 @@ export interface ZomatoRejectionReasonConfig {
   requiresItemChecklist?: boolean;
 }
 
-export const ZOMATO_REJECTION_REASONS: readonly ZomatoRejectionReasonConfig[] = [
+export const TIER1_REJECTION_REASONS: readonly Tier1RejectionReasonConfig[] = [
   {
     id: "kitchen_overloaded",
     label: "Kitchen Overloaded / Too Many Orders",
@@ -79,10 +79,10 @@ export interface ProcessRejectionResult {
 }
 
 /**
- * Validates and processes a structured Zomato order rejection.
+ * Validates and processes a structured Tier-1 Leader order rejection.
  */
 export function processStructuredRejection(input: ProcessRejectionInput): ProcessRejectionResult {
-  const reasonConfig = ZOMATO_REJECTION_REASONS.find((r) => r.id === input.reason);
+  const reasonConfig = TIER1_REJECTION_REASONS.find((r) => r.id === input.reason);
   const reasonLabel = reasonConfig ? reasonConfig.label : "Other operational reason";
 
   if (input.reason === "item_unavailable") {

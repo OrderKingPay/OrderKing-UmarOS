@@ -155,25 +155,25 @@ export const STANDARD_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: numb
 ];
 
 /**
- * Authentic Zomato Daily Milestone Slabs:
+ * Authentic Tier-1 Leader Daily Milestone Slabs:
  * - 5 orders: +₹50 (5,000 paise)
  * - 10 orders: +₹150 (15,000 paise)
  * - 15 orders: +₹275 (27,500 paise)
  */
-export type ZomatoDailyMilestoneSlab = {
+export type Tier1DailyMilestoneSlab = {
   orders: number;
   bonusPaise: number;
   bonusRupees: number;
   label: string;
 };
 
-export const ZOMATO_DAILY_MILESTONE_SLABS: ReadonlyArray<ZomatoDailyMilestoneSlab> = [
+export const TIER1_DAILY_MILESTONE_SLABS: ReadonlyArray<Tier1DailyMilestoneSlab> = [
   { orders: 5, bonusPaise: 5000, bonusRupees: 50, label: "+₹50" },
   { orders: 10, bonusPaise: 15000, bonusRupees: 150, label: "+₹150" },
   { orders: 15, bonusPaise: 27500, bonusRupees: 275, label: "+₹275" },
 ];
 
-export type ZomatoDailyMilestoneProgress = {
+export type Tier1DailyMilestoneProgress = {
   completedOrders: number;
   bonusPaise: number;
   bonusRupees: number;
@@ -184,14 +184,14 @@ export type ZomatoDailyMilestoneProgress = {
   progressPct: number;
   headline: string;
   subtext: string;
-  slabs: Array<ZomatoDailyMilestoneSlab & { isUnlocked: boolean; isCurrentTarget: boolean }>;
-  nextSlab: ZomatoDailyMilestoneSlab | null;
+  slabs: Array<Tier1DailyMilestoneSlab & { isUnlocked: boolean; isCurrentTarget: boolean }>;
+  nextSlab: Tier1DailyMilestoneSlab | null;
 };
 
-export function calculateZomatoMilestoneBonus(
+export function calculateTier1MilestoneBonus(
   completedOrders: number,
-  slabs: ReadonlyArray<ZomatoDailyMilestoneSlab> = ZOMATO_DAILY_MILESTONE_SLABS,
-): ZomatoDailyMilestoneProgress {
+  slabs: ReadonlyArray<Tier1DailyMilestoneSlab> = TIER1_DAILY_MILESTONE_SLABS,
+): Tier1DailyMilestoneProgress {
   const safeCompleted = Math.max(0, Math.floor(Number(completedOrders) || 0));
 
   // Determine unlocked bonus from completed orders

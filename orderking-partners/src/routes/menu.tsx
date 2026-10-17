@@ -1159,7 +1159,7 @@ function MenuPage() {
                 {timedOutOfStockItems.length} Timed Out-of-Stock Dish(es) Active
               </span>
               <span className="text-[11px] opacity-85 ml-2 font-sans hidden sm:inline">
-                (Zomato Auto-Reset Engine: automatically reactivates dishes when scheduled timer expires)
+                (Tier-1 Leader Auto-Reset Engine: automatically reactivates dishes when scheduled timer expires)
               </span>
             </div>
           </div>

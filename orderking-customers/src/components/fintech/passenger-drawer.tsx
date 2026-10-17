@@ -511,7 +511,7 @@ export function PassengerDrawer({
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                    Instant cash usable across 10,000+ dining, airport restaurants, and Swiggy/Zomato orders.
+                    Instant cash usable across 10,000+ dining, airport restaurants, and partner food delivery orders.
                   </p>
                 </div>
               </label>

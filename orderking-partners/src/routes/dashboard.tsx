@@ -421,7 +421,7 @@ function DashboardPage() {
           </Card>
         ) : null}
 
-        {/* Real-World Zomato Owner Daily Business Summary & Settlement Ledger */}
+        {/* Real-World Tier-1 Leader Owner Daily Business Summary & Settlement Ledger */}
         <DailyPerformanceLedgerCard
           customSummary={
             d?.today

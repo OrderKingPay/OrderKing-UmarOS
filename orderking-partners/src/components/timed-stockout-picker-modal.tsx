@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Clock, Sunrise, Infinity, X, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  ZOMATO_STOCKOUT_PRESETS,
+  TIER1_STOCKOUT_PRESETS,
   type TimedStockoutOption,
   calculateStockoutExpiry,
 } from "@/lib/menu/timed-stockout";
@@ -43,7 +43,7 @@ export function TimedStockoutPickerModal({
             <div className="flex items-center gap-2">
               <span className="flex size-2 rounded-full bg-rose-500 animate-pulse" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-rose-400 font-mono">
-                Zomato Stockout Control
+                Tier-1 Stockout Control
               </span>
             </div>
             <h2 id="stockout-modal-title" className="text-lg font-bold text-white mt-1">
@@ -64,9 +64,9 @@ export function TimedStockoutPickerModal({
           </button>
         </div>
 
-        {/* 4 Authentic Zomato Presets */}
+        {/* 4 Authentic Tier-1 Leader Presets */}
         <div className="space-y-2.5">
-          {ZOMATO_STOCKOUT_PRESETS.map((preset) => {
+          {TIER1_STOCKOUT_PRESETS.map((preset) => {
             const isSelected = selectedOption === preset.id;
             const expiryInfo = calculateStockoutExpiry(preset.id, now);
 

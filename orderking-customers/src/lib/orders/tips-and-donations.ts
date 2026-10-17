@@ -1,5 +1,5 @@
 /**
- * Zomato Parity: Pre-Order Delivery Partner Tips & Feeding India Micro-Donations
+ * Tier-1 Legacy Leader Parity: Pre-Order Delivery Partner Tips & Feeding India Micro-Donations
  * 100% of tips go to riders with 0% platform commission or fee.
  * 100% of Feeding India micro-donations (₹2) go to daily wage and child meal programs.
  */

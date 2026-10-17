@@ -12,7 +12,7 @@ import {
   PERIOD_LEAVE_STORAGE_KEY,
 } from "../components/rider/rider-benefits-hub";
 
-describe("Supreme Rider App Completion Suite: Zomato Delivery Partner Benchmark", () => {
+describe("Supreme Rider App Completion Suite: Tier-1 Delivery Partner Benchmark", () => {
   describe("1. Customer Masked Calling & Cloud Telephony Bridge", () => {
     function getVirtualProxyDial(contactMasked: string | null | undefined): string {
       const digits = (contactMasked || "").replace(/\D/g, "");
@@ -85,7 +85,7 @@ describe("Supreme Rider App Completion Suite: Zomato Delivery Partner Benchmark"
       vi.unstubAllGlobals();
     });
 
-    it("enforces Zomato standard 30-second accept countdown timer clamp", () => {
+    it("enforces Tier-1 standard 30-second accept countdown timer clamp", () => {
       const MAX_ACCEPT_TIMER_SEC = 30;
       const testRemaining = 45;
       const clamped = Math.min(MAX_ACCEPT_TIMER_SEC, testRemaining);

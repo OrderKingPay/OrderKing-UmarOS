@@ -54,7 +54,7 @@ import { CoolingOffBanner } from "./cooling-off-banner";
 import { FloatingCashCard } from "./floating-cash-card";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
-import { calculateDailyMilestoneProgress, calculateZomatoMilestoneBonus } from "@/lib/rider/gig-engine";
+import { calculateDailyMilestoneProgress, calculateTier1MilestoneBonus } from "@/lib/rider/gig-engine";
 import { VipAmbassadorPass } from "./vip-ambassador-pass";
 import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
@@ -150,7 +150,7 @@ function DailyMilestoneCard({
   completed: number;
   performance: RiderPerformance | null;
 }) {
-  const milestone = calculateZomatoMilestoneBonus(completed);
+  const milestone = calculateTier1MilestoneBonus(completed);
   const acceptancePct =
     performance && performance.offered > 0
       ? Math.round((performance.accepted / performance.offered) * 100)
@@ -165,7 +165,7 @@ function DailyMilestoneCard({
       {/* Background Ambient Glow */}
       <div className="absolute -top-12 -right-12 size-36 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
 
-      {/* Zomato Gamified Headline Banner */}
+      {/* Tier-1 Gamified Headline Banner */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-[#E5A93C] border border-[#E5A93C]/30 shadow-inner">
@@ -208,7 +208,7 @@ function DailyMilestoneCard({
         </div>
       </div>
 
-      {/* Zomato Milestone Slabs: 5 orders = +₹50, 10 orders = +₹150, 15 orders = +₹275 */}
+      {/* Tier-1 Milestone Slabs: 5 orders = +₹50, 10 orders = +₹150, 15 orders = +₹275 */}
       <div className="grid grid-cols-3 gap-2 text-center">
         {milestone.slabs.map((slab) => (
           <div
@@ -501,7 +501,7 @@ export function HelmetVerificationModal({
                 Mandatory Live Helmet Verification
               </h3>
               <p className="text-[11px] text-muted-foreground">
-                Zomato Safety Standard · Front Camera Live Check
+                Tier-1 Safety Standard · Front Camera Live Check
               </p>
             </div>
           </div>
@@ -1011,14 +1011,14 @@ export function HomeView() {
         ) : null}
 
         {(() => {
-          const zomatoBonus = calculateZomatoMilestoneBonus(home.completedToday);
-          const totalEarningsPaise = (home.todayEarningsPaise || 0) + zomatoBonus.bonusPaise;
+          const tier1Bonus = calculateTier1MilestoneBonus(home.completedToday);
+          const totalEarningsPaise = (home.todayEarningsPaise || 0) + tier1Bonus.bonusPaise;
           return (
             <dl className="grid grid-cols-3 gap-2 text-center">
               <Stat
                 label={t("todayEarnings")}
                 value={formatPaise(totalEarningsPaise)}
-                subtext={zomatoBonus.bonusPaise > 0 ? `+₹${zomatoBonus.bonusRupees} Milestone` : undefined}
+                subtext={tier1Bonus.bonusPaise > 0 ? `+₹${tier1Bonus.bonusRupees} Milestone` : undefined}
               />
               <Stat label={t("completed")} value={String(home.completedToday)} />
               <Stat
@@ -1083,7 +1083,7 @@ export function HomeView() {
           ) : (
             <div className="space-y-2.5">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Zomato Safety Standard: You must take a live front-camera selfie wearing your strapped BIS helmet and OrderKing delivery bag to unlock the online slider.
+                Tier-1 Safety Standard: You must take a live front-camera selfie wearing your strapped BIS helmet and OrderKing delivery bag to unlock the online slider.
               </p>
               <Button
                 type="button"
@@ -1493,7 +1493,7 @@ export function HomeView() {
         onVerified={handleHelmetVerified}
       />
 
-      {/* Supreme Zomato Fleet Emergency Safety Sheet */}
+      {/* Supreme Tier-1 Fleet Emergency Safety Sheet */}
       <RiderEmergencySafetySheet
         isOpen={sosOpen}
         onClose={() => setSosOpen(false)}
@@ -1565,7 +1565,7 @@ function OfferCard({
     ? `https://www.google.com/maps/dir/?api=1&destination=${offer.pickupLocation.lat},${offer.pickupLocation.lng}&travelmode=two-wheeler`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${offer.restaurant.name} ${offer.restaurant.address || offer.restaurant.area}`)}`;
 
-  // 30-second countdown timer calculations (Zomato standard)
+  // 30-second countdown timer calculations (Tier-1 standard)
   const maxTimerSec = 30;
   const timerPct = Math.min(100, Math.max(0, (remaining / maxTimerSec) * 100));
   const isUrgent = remaining <= 10;

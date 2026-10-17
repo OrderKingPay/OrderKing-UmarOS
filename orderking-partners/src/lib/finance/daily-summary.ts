@@ -1,6 +1,6 @@
 /**
  * DAILY BUSINESS SUMMARY & SETTLEMENT LEDGER ENGINE
- * Authentic Zomato Owner Performance & Financial Parity:
+ * Authentic Tier-1 Legacy Leader Owner Performance & Financial Parity:
  * - Today's Delivered Orders Count
  * - Gross GMV (Paise to INR)
  * - Total Deductions Breakdown:
@@ -95,7 +95,7 @@ export function formatTPlus1Countdown(
 }
 
 /**
- * Computes authentic Zomato Daily Business Performance & Settlement Ledger.
+ * Computes authentic Tier-1 Leader Daily Business Performance & Settlement Ledger.
  */
 export function calculateDailyBusinessSummary(
   orders: DeliveredOrderInput[],

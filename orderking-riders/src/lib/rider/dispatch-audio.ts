@@ -57,7 +57,7 @@ class AudioAlertSynthesizer {
 
   /**
    * Plays an authentic piercing high-decibel dispatch radar siren horn pattern
-   * (Zomato/Swiggy dual-tone klaxon horn with harmonic overtone & native vibration).
+   * (Tier-1 dual-tone klaxon horn with harmonic overtone & native vibration).
    */
   public playDispatchChime() {
     this.playPiercingRadarSiren();

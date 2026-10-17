@@ -1,6 +1,6 @@
 /**
  * KITCHEN RUSH / OVERLOAD BUFFER MODE ENGINE
- * Authentic Zomato Partner Parity:
+ * Authentic Tier-1 Leader Partner Parity:
  * - Prominent Amber/Red status banner and header toggle.
  * - Adds a configurable buffer (+10 mins or +15 mins) to active incoming order prep times.
  * - Dynamically pushes back rider dispatch and arrival windows to eliminate courier idle wait.

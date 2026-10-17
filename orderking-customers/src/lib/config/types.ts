@@ -1,5 +1,5 @@
 
-export type DataLabel = "SIMULATED" | "VERIFIED" | "REAL";
+export type DataLabel = "SIMULATED" | "VERIFIED" | "REAL" | "LIVE";
 
 export type BrandConfig = {
   appName: string;

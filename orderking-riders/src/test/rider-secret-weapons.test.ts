@@ -4,8 +4,8 @@ import {
   type EmergencyDistressPayload,
 } from "../components/rider/rider-emergency-sos";
 import {
-  calculateZomatoMilestoneBonus,
-  ZOMATO_DAILY_MILESTONE_SLABS,
+  calculateTier1MilestoneBonus,
+  TIER1_DAILY_MILESTONE_SLABS,
 } from "../lib/rider/gig-engine";
 import {
   calculateCancellationPenalty,
@@ -16,7 +16,7 @@ import { RiderEngine } from "../lib/rider/engine";
 import { MemoryStore } from "../lib/rider/memory-store";
 import type { Delivery, RiderDisciplineConfig } from "../lib/rider/types";
 
-describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
+describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
   const defaultDisciplineConfig: RiderDisciplineConfig = {
     enabled: true,
     floatingCashLimitInr: 2000,
@@ -116,21 +116,21 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
   // 2. Daily Delivery Milestones & Incentive Tracker Tests
   // =========================================================================
   describe("2. Daily Delivery Milestones & Incentive Tracker", () => {
-    it("defines authentic Zomato milestone slabs: 5 orders = ₹50, 10 orders = ₹150, 15 orders = ₹275", () => {
-      expect(ZOMATO_DAILY_MILESTONE_SLABS).toHaveLength(3);
-      expect(ZOMATO_DAILY_MILESTONE_SLABS[0]).toEqual({
+    it("defines authentic Tier-1 Leader milestone slabs: 5 orders = ₹50, 10 orders = ₹150, 15 orders = ₹275", () => {
+      expect(TIER1_DAILY_MILESTONE_SLABS).toHaveLength(3);
+      expect(TIER1_DAILY_MILESTONE_SLABS[0]).toEqual({
         orders: 5,
         bonusPaise: 5000,
         bonusRupees: 50,
         label: "+₹50",
       });
-      expect(ZOMATO_DAILY_MILESTONE_SLABS[1]).toEqual({
+      expect(TIER1_DAILY_MILESTONE_SLABS[1]).toEqual({
         orders: 10,
         bonusPaise: 15000,
         bonusRupees: 150,
         label: "+₹150",
       });
-      expect(ZOMATO_DAILY_MILESTONE_SLABS[2]).toEqual({
+      expect(TIER1_DAILY_MILESTONE_SLABS[2]).toEqual({
         orders: 15,
         bonusPaise: 27500,
         bonusRupees: 275,
@@ -139,7 +139,7 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
     });
 
     it("calculates progress at 0 completed orders with Star 10-order target headline", () => {
-      const res = calculateZomatoMilestoneBonus(0);
+      const res = calculateTier1MilestoneBonus(0);
       expect(res.completedOrders).toBe(0);
       expect(res.bonusPaise).toBe(0);
       expect(res.bonusRupees).toBe(0);
@@ -152,7 +152,7 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
     });
 
     it("calculates progress at Slab 1 boundary (5 completed orders = +₹50)", () => {
-      const res = calculateZomatoMilestoneBonus(5);
+      const res = calculateTier1MilestoneBonus(5);
       expect(res.completedOrders).toBe(5);
       expect(res.bonusPaise).toBe(5000);
       expect(res.bonusRupees).toBe(50);
@@ -166,7 +166,7 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
     });
 
     it("verifies exact prompt requirement: 6/10 orders completed gives 60% progress and +₹50 bonus", () => {
-      const res = calculateZomatoMilestoneBonus(6);
+      const res = calculateTier1MilestoneBonus(6);
       expect(res.completedOrders).toBe(6);
       expect(res.targetOrders).toBe(10);
       expect(res.progressPct).toBe(60); // 6/10 = 60%
@@ -177,7 +177,7 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
     });
 
     it("advances target to 15 orders (+₹275) upon completing 10 orders (Slab 2 boundary)", () => {
-      const res = calculateZomatoMilestoneBonus(10);
+      const res = calculateTier1MilestoneBonus(10);
       expect(res.completedOrders).toBe(10);
       expect(res.bonusPaise).toBe(15000);
       expect(res.bonusRupees).toBe(150);
@@ -192,7 +192,7 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
     });
 
     it("unlocks maximum slab (+₹275) and caps progress at 100% on 15 completed orders (Slab 3 boundary)", () => {
-      const res = calculateZomatoMilestoneBonus(15);
+      const res = calculateTier1MilestoneBonus(15);
       expect(res.completedOrders).toBe(15);
       expect(res.bonusPaise).toBe(27500);
       expect(res.bonusRupees).toBe(275);
@@ -204,7 +204,7 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
     });
 
     it("maintains 100% progress and caps bonus at ₹275 for over-achieving couriers (e.g. 20 orders)", () => {
-      const res = calculateZomatoMilestoneBonus(20);
+      const res = calculateTier1MilestoneBonus(20);
       expect(res.completedOrders).toBe(20);
       expect(res.bonusPaise).toBe(27500);
       expect(res.bonusRupees).toBe(275);
@@ -216,7 +216,7 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
       const baseDailyEarningsPaise = 42000; // ₹420 base + distance pay
       const completed = 10; // Unlocked ₹150 (15,000 paise) milestone bonus
 
-      const milestone = calculateZomatoMilestoneBonus(completed);
+      const milestone = calculateTier1MilestoneBonus(completed);
       const totalEarningsWithBonusPaise = baseDailyEarningsPaise + milestone.bonusPaise;
 
       expect(milestone.bonusPaise).toBe(15000);
@@ -225,12 +225,12 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
     });
 
     it("safely handles negative or invalid order inputs without runtime errors", () => {
-      const negativeRes = calculateZomatoMilestoneBonus(-5);
+      const negativeRes = calculateTier1MilestoneBonus(-5);
       expect(negativeRes.completedOrders).toBe(0);
       expect(negativeRes.progressPct).toBe(0);
       expect(negativeRes.bonusPaise).toBe(0);
 
-      const nanRes = calculateZomatoMilestoneBonus(NaN as unknown as number);
+      const nanRes = calculateTier1MilestoneBonus(NaN as unknown as number);
       expect(nanRes.completedOrders).toBe(0);
       expect(nanRes.progressPct).toBe(0);
     });
@@ -383,7 +383,7 @@ describe("Supreme Zomato Rider Superpowers & Fleet Safety Test Suite", () => {
   describe("4. End-to-End RiderEngine State Transition & Operational Reassignment", () => {
     let store: MemoryStore;
     let engine: RiderEngine;
-    const userId = "user_rider_zomato_1";
+    const userId = "user_rider_tier1_1";
 
     beforeEach(async () => {
       store = new MemoryStore();

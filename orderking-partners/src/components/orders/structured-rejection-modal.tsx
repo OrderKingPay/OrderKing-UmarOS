@@ -12,11 +12,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  ZOMATO_REJECTION_REASONS,
+  TIER1_REJECTION_REASONS,
   processStructuredRejection,
 } from "@/lib/orders/structured-rejection";
 import {
-  ZOMATO_STOCKOUT_PRESETS,
+  TIER1_STOCKOUT_PRESETS,
   type TimedStockoutOption,
   calculateStockoutExpiry,
 } from "@/lib/menu/timed-stockout";
@@ -129,7 +129,7 @@ export function StructuredRejectionModal({
             <div className="flex items-center gap-2">
               <span className="flex size-2 rounded-full bg-rose-500 animate-pulse" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-rose-400 font-mono">
-                Zomato Order Rejection Protocol
+                Tier-1 Order Rejection Protocol
               </span>
             </div>
             <h2 id="structured-reject-title" className="text-lg font-bold text-white mt-1">
@@ -167,7 +167,7 @@ export function StructuredRejectionModal({
             1. Select Operational Reason:
           </label>
           <div className="space-y-2">
-            {ZOMATO_REJECTION_REASONS.map((r) => {
+            {TIER1_REJECTION_REASONS.map((r) => {
               const isSelected = selectedReason === r.id;
               return (
                 <label
@@ -281,7 +281,7 @@ export function StructuredRejectionModal({
                 3. Choose Timed Stockout Duration:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {ZOMATO_STOCKOUT_PRESETS.map((preset) => {
+                {TIER1_STOCKOUT_PRESETS.map((preset) => {
                   const isPresetSelected = stockoutOption === preset.id;
                   const expiry = calculateStockoutExpiry(preset.id);
                   const preview =

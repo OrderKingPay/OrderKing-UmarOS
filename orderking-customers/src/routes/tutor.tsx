@@ -688,12 +688,20 @@ interface SubmittedJobApplication {
 
 const JOB_APPLICATIONS_STORAGE_KEY = "orderking_job_applications_v1";
 
+export type TutorSearch = {
+  tab?: string;
+};
+
 export const Route = createFileRoute('/tutor')({
+  validateSearch: (search: Record<string, unknown>): TutorSearch => ({
+    tab: typeof search.tab === "string" ? search.tab : undefined,
+  }),
   component: IntelligencePage,
   errorComponent: AppErrorComponent,
 });
 
 function IntelligencePage() {
+  const search = Route.useSearch();
   const [message, setMessage] = useState("");
   const [board, setBoard] = useState("CBSE");
   const [stdClass, setStdClass] = useState("Class 10");
@@ -723,9 +731,29 @@ function IntelligencePage() {
   const sectionHash = useRouterState({ select: (s) => s?.location?.hash ?? "" }) ?? "";
   useEffect(() => {
     const cleanHash = (sectionHash || "").replace(/^#/, "").toLowerCase();
-    if (cleanHash === "jobs") setMode("jobs");
-    else if (cleanHash === "tutor") setMode("tutor");
-  }, [sectionHash]);
+    if (
+      cleanHash === "jobs" ||
+      cleanHash === "my-jobs" ||
+      cleanHash === "saved-jobs" ||
+      cleanHash === "my-applications" ||
+      search?.tab === "my-applications" ||
+      search?.tab === "jobs"
+    ) {
+      setMode("jobs");
+      if (
+        cleanHash === "my-jobs" ||
+        cleanHash === "saved-jobs" ||
+        cleanHash === "my-applications" ||
+        search?.tab === "my-applications"
+      ) {
+        setTimeout(() => {
+          document.getElementById("my-jobs")?.scrollIntoView({ behavior: "smooth" });
+        }, 150);
+      }
+    } else if (cleanHash === "tutor") {
+      setMode("tutor");
+    }
+  }, [sectionHash, search?.tab]);
 
   useEffect(() => {
     try {
@@ -1611,13 +1639,18 @@ function IntelligencePage() {
               </div>
             </div>
 
-            {/* Submitted Applications Tracker (if any) */}
-            {submittedApplications.length > 0 && (
-              <div className="rounded-3xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">
-                <h3 className="text-sm font-black text-white flex items-center gap-2">
+            {/* 5th Tab Target: My Career · Application Tracking & Saved Jobs */}
+            <div id="my-jobs" className="rounded-3xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">
+              <h3 className="text-sm font-black text-white flex items-center justify-between">
+                <span className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-emerald-400" />
-                  Your Submitted Applications
-                </h3>
+                  My Career · Submitted Applications &amp; Tracking
+                </span>
+                <span className="text-[10px] font-bold text-zinc-400">
+                  {submittedApplications.length} {submittedApplications.length === 1 ? "Application" : "Applications"}
+                </span>
+              </h3>
+              {submittedApplications.length > 0 ? (
                 <div className="space-y-2">
                   {submittedApplications.map((app) => (
                     <div
@@ -1640,8 +1673,16 @@ function IntelligencePage() {
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/40 p-5 text-center space-y-2">
+                  <Briefcase className="size-7 mx-auto text-zinc-500" />
+                  <p className="text-xs font-bold text-zinc-300">No applications submitted yet</p>
+                  <p className="text-[11px] text-zinc-500 max-w-sm mx-auto">
+                    Explore high-yield verified jobs below, filter by remote or salary, and apply in 1-tap with direct employer dispatch.
+                  </p>
+                </div>
+              )}
+            </div>
 
             {/* Filtered Job Openings List */}
             <div>

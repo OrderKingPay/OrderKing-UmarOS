@@ -232,7 +232,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
                 <span>0% Menu Markups</span>
               </div>
               <p className="mt-1 text-[11px] text-slate-300">
-                Swiggy & Zomato charge 15-30% restaurant commission. OrderKing passes 100% savings to your bill.
+                Dominant legacy aggregators charge 15-30% restaurant commission. OrderKing passes 100% savings to your bill.
               </p>
             </div>
 

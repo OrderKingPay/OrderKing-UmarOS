@@ -6,7 +6,7 @@ import {
   formatStockoutRemaining,
   findExpiredItemIds,
   LocalStockoutScheduler,
-  ZOMATO_STOCKOUT_PRESETS,
+  TIER1_STOCKOUT_PRESETS,
 } from "../lib/menu/timed-stockout.ts";
 import {
   calculateOrderRushEta,
@@ -14,10 +14,10 @@ import {
   useKitchenRushStore,
 } from "../lib/orders/kitchen-rush.ts";
 
-describe("Merchant Zomato Partner Parity Test Suite", () => {
+describe("Merchant Tier-1 Partner Parity Test Suite", () => {
   describe("1. Timed Item Out-of-Stock Auto-Reset Engine", () => {
-    it("provides the four authentic Zomato stockout presets", () => {
-      expect(ZOMATO_STOCKOUT_PRESETS.map((p) => p.label)).toEqual([
+    it("provides the four authentic Tier-1 Leader stockout presets", () => {
+      expect(TIER1_STOCKOUT_PRESETS.map((p) => p.label)).toEqual([
         "Turn off for 2 Hours",
         "Turn off for 4 Hours",
         "Turn off until Tomorrow 8:00 AM",
@@ -49,7 +49,7 @@ describe("Merchant Zomato Partner Parity Test Suite", () => {
       expect(nextMorningC.getMinutes()).toBe(0);
     });
 
-    it("calculates exact expiry timestamps for all 4 Zomato options", () => {
+    it("calculates exact expiry timestamps for all 4 Tier-1 options", () => {
       const baseNow = new Date("2026-10-17T12:00:00.000Z");
 
       // 2 Hours

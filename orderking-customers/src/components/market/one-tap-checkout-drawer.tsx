@@ -118,7 +118,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
                 </span>
               </div>
               <p className="text-[11px] text-gray-600 font-medium mt-0.5">
-                {restaurantName ? `Ordering from ${restaurantName}` : "Prestige Gastronomy"}
+                {restaurantName ? `Ordering from ${restaurantName}` : "Verified Kitchen Delivery"}
               </p>
             </div>
           </div>

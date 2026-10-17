@@ -130,7 +130,7 @@ export function PeriodLeaveModal({
                 Female Partner Period Leave
               </h3>
               <p className="text-xs text-muted-foreground">
-                Zomato Safety Model · 2 Days/Month Menstrual Welfare
+                Tier-1 Safety Model · 2 Days/Month Menstrual Welfare
               </p>
             </div>
           </div>
@@ -705,7 +705,7 @@ export function RiderBenefitsHub({
             </div>
           </div>
 
-          {/* Female Partner Menstrual Health Leave (Zomato Welfare Standard) */}
+          {/* Female Partner Menstrual Health Leave (Tier-1 Welfare Standard) */}
           <div className="rounded-xl border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-pink-500/5 to-purple-500/10 p-4 space-y-2.5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -717,7 +717,7 @@ export function RiderBenefitsHub({
                     Female Delivery Partner Welfare: Period Leave (2 Days/Month)
                   </h4>
                   <p className="text-[11px] text-muted-foreground">
-                    Zomato Benchmark Model · Paid rest allowance &amp; 100% protected tier ranking
+                    Tier-1 Benchmark Model · Paid rest allowance &amp; 100% protected tier ranking
                   </p>
                 </div>
               </div>

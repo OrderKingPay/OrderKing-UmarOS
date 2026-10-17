@@ -3,7 +3,7 @@
  * 
  * Verifies:
  * 1. Structured Rejection Modal & Timed Stockout Link
- *    - All 4 Zomato operational rejection reasons
+ *    - All 4 Tier-1 Leader operational rejection reasons
  *    - Dish checklist validation & automatic timed stockout transitions
  * 2. Outlet Emergency Pause & Operational Status Switch
  *    - 🟢 Online, 🟡 Paused 30m, 🟡 Paused 60m, 🔴 Offline
@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
-  ZOMATO_REJECTION_REASONS,
+  TIER1_REJECTION_REASONS,
   processStructuredRejection,
 } from "../lib/orders/structured-rejection";
 import {
@@ -42,8 +42,8 @@ describe("Merchant Secret Weapons & Operational Resilience Suite", () => {
   // 1. Structured Order Rejection Modal & Timed Stockout Link
   // ==========================================================================
   describe("1. Structured Order Rejection & Timed Stockout Link", () => {
-    it("provides the four authentic Zomato operational rejection reasons", () => {
-      const reasonLabels = ZOMATO_REJECTION_REASONS.map((r) => r.label);
+    it("provides the four authentic Tier-1 Leader operational rejection reasons", () => {
+      const reasonLabels = TIER1_REJECTION_REASONS.map((r) => r.label);
       expect(reasonLabels).toEqual([
         "Kitchen Overloaded / Too Many Orders",
         "Item(s) in Order Out of Stock",
@@ -51,7 +51,7 @@ describe("Merchant Secret Weapons & Operational Resilience Suite", () => {
         "Power / Gas / Technical Outage",
       ]);
 
-      const reasonIds = ZOMATO_REJECTION_REASONS.map((r) => r.id);
+      const reasonIds = TIER1_REJECTION_REASONS.map((r) => r.id);
       expect(reasonIds).toEqual([
         "kitchen_overloaded",
         "item_unavailable",

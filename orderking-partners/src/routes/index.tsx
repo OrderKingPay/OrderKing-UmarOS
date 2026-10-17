@@ -173,7 +173,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Live Benchmark Performance: Zomato Owner Settlement Ledger */}
+      {/* Live Benchmark Performance: Tier-1 Leader Settlement Ledger */}
       <section className="py-12 border-t border-slate-800/80 bg-slate-950">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-8">

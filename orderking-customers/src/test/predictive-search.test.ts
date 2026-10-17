@@ -43,7 +43,7 @@ class LocalStorageMock {
   }
 }
 
-describe("Supreme Zomato-Grade Predictive Search Engine", () => {
+describe("Supreme Tier-1 Parity Predictive Search Engine", () => {
   let localStorageMock: LocalStorageMock;
 
   beforeEach(() => {

@@ -183,7 +183,7 @@ export function OneTapStockToggle({
             type="button"
             disabled={disabled || loading}
             onClick={() => setModalOpen(true)}
-            title="Set timed out-of-stock duration (Zomato Partner Parity)"
+            title="Set timed out-of-stock duration (Tier-1 Partner Parity)"
             className="p-1.5 rounded-md bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition cursor-pointer"
           >
             <Clock className="size-3.5" />
@@ -213,7 +213,7 @@ export function OneTapStockToggle({
         )}
       </div>
 
-      {/* Zomato Timed Availability Modal */}
+      {/* Tier-1 Timed Availability Modal */}
       <TimedStockoutPickerModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

@@ -1,6 +1,6 @@
 /**
  * TIMED ITEM OUT-OF-STOCK AUTO-RESET ENGINE
- * Authentic Zomato Partner Parity:
+ * Authentic Tier-1 Legacy Market Leader Partner Parity:
  * 1. 'Turn off for 2 Hours' (Lunch rush recovery)
  * 2. 'Turn off for 4 Hours'
  * 3. 'Turn off until Tomorrow 8:00 AM' (Standard end-of-day stockout)
@@ -26,7 +26,7 @@ export interface StockoutPresetConfig {
   icon: string;
 }
 
-export const ZOMATO_STOCKOUT_PRESETS: StockoutPresetConfig[] = [
+export const TIER1_STOCKOUT_PRESETS: StockoutPresetConfig[] = [
   {
     id: "TURN_OFF_2_HOURS",
     label: "Turn off for 2 Hours",
@@ -57,7 +57,7 @@ export const ZOMATO_STOCKOUT_PRESETS: StockoutPresetConfig[] = [
 
 /**
  * Calculates the exact Tomorrow 08:00 AM timestamp.
- * Standard Zomato end-of-day stockout resets at 08:00 AM the following calendar day.
+ * Standard Tier-1 Leader end-of-day stockout resets at 08:00 AM the following calendar day.
  */
 export function getTomorrow08AM(refDate: Date = new Date()): Date {
   const target = new Date(refDate.getTime());
@@ -131,7 +131,7 @@ export function isStockoutExpired(nextAvailableAt?: string | null, now: Date = n
 }
 
 /**
- * Formats remaining stockout time in authentic Zomato Partner style.
+ * Formats remaining stockout time in authentic Tier-1 Leader Partner style.
  */
 export function formatStockoutRemaining(nextAvailableAt?: string | null, now: Date = new Date()): string {
   if (!nextAvailableAt) return "Turned off indefinitely";
