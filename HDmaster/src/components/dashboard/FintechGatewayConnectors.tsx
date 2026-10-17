@@ -1,163 +1,83 @@
-import React, { useState } from 'react';
-import { Eye, EyeOff, ShieldCheck, Key, RefreshCw, AlertCircle } from 'lucide-react';
+import { ShieldAlert, LockKeyhole, ServerCog } from "lucide-react";
 
-interface GatewayConfig {
+type Provider = {
   id: string;
   name: string;
-  description: string;
-  keyLabel: string;
-}
+  purpose: string;
+  requirement: string;
+};
 
-const gateways: GatewayConfig[] = [
+const providers: Provider[] = [
   {
-    id: 'setu_upi',
-    name: 'Setu UPI / NPCI Switch',
-    description: 'Required to process BharatQR scans and collect payments',
-    keyLabel: 'Setu API Key'
+    id: "merchant_upi",
+    name: "Merchant UPI acquiring",
+    purpose: "UPI collect and merchant QR payments",
+    requirement: "Authorized acquiring/PSP provider, approved merchant, and signed payment verification",
   },
   {
-    id: 'razorpayx',
-    name: 'RazorpayX / Cashfree Payouts',
-    description: 'Required for P2P transfers to phone numbers and vendors',
-    keyLabel: 'Payouts API Key'
+    id: "payouts",
+    name: "Merchant and rider payouts",
+    purpose: "Beneficiary-verified disbursements and settlement reconciliation",
+    requirement: "Authorized payout provider, approved beneficiaries, verified transfer and bank reconciliation",
   },
   {
-    id: 'bbps',
-    name: 'BBPS (Bharat Bill Payment System)',
-    description: 'Required to clear utility/rent bills and recurring payments',
-    keyLabel: 'BBPS Auth Key'
-  }
+    id: "bbps",
+    name: "Bill payments",
+    purpose: "Provider-backed utility and recurring bill workflows",
+    requirement: "Eligible BBPS integration and contracted provider verification",
+  },
 ];
 
+/**
+ * Read-only safety boundary until an authenticated server endpoint can attest
+ * specific provider capabilities. No client-side credential collection and no
+ * optimistic "Connected" state based on a timer or key-looking text.
+ */
 export const FintechGatewayConnectors = () => {
-  const [keys, setKeys] = useState<Record<string, string>>({});
-  const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
-  const [status, setStatus] = useState<Record<string, 'missing' | 'saving' | 'connected'>>({
-    setu_upi: 'missing',
-    razorpayx: 'missing',
-    bbps: 'missing'
-  });
-
-  const handleKeyChange = (id: string, value: string) => {
-    setKeys(prev => ({ ...prev, [id]: value }));
-  };
-
-  const toggleVisibility = (id: string) => {
-    setShowKeys(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const handleConnect = (id: string) => {
-    if (!keys[id]) return;
-    setStatus(prev => ({ ...prev, [id]: 'saving' }));
-    
-    // Simulate API connection
-    setTimeout(() => {
-      setStatus(prev => ({ ...prev, [id]: 'connected' }));
-    }, 1500);
-  };
-
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-      <div className="p-6 border-b border-slate-100 bg-slate-50">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
+    <section
+      aria-labelledby="financial-provider-readiness"
+      className="overflow-hidden rounded-2xl border border-amber-300/30 bg-slate-950 text-slate-100 shadow-xl"
+    >
+      <header className="border-b border-amber-300/20 bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/40 p-6">
+        <div className="flex items-start gap-3">
+          <ShieldAlert aria-hidden="true" className="mt-0.5 h-6 w-6 shrink-0 text-amber-300" />
           <div>
-            <h2 className="text-lg font-semibold text-slate-800">Production API Gateway Connectors</h2>
-            <p className="text-sm text-slate-500">Configure licensed banking keys for real money movement</p>
+            <h2 id="financial-provider-readiness" className="text-lg font-bold tracking-wide text-white">
+              Financial integrations — verification required
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-200">
+              No live provider connection is verified by this dashboard. Financial features remain gated
+              until a server-side integration proves onboarding, authorization and transaction readiness.
+            </p>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="divide-y divide-slate-100">
-        {gateways.map(gateway => (
-          <div key={gateway.id} className="p-6 flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-8">
-            <div className="flex-1">
-              <h3 className="text-base font-medium text-slate-800 flex items-center">
-                {gateway.name}
-                {status[gateway.id] === 'connected' && (
-                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full">Connected</span>
-                )}
-              </h3>
-              <p className="text-sm text-slate-500 mt-1">{gateway.description}</p>
+      <div className="divide-y divide-white/10">
+        {providers.map((provider) => (
+          <div key={provider.id} className="grid gap-3 p-5 sm:grid-cols-[1fr_auto] sm:items-start">
+            <div>
+              <h3 className="font-semibold text-slate-100">{provider.name}</h3>
+              <p className="mt-1 text-sm text-slate-300">{provider.purpose}</p>
+              <p className="mt-2 text-xs leading-relaxed text-slate-300">{provider.requirement}</p>
             </div>
-            
-            <div className="flex-1 max-w-md">
-              <label className="block text-xs font-medium text-slate-700 mb-1.5">
-                {gateway.keyLabel}
-              </label>
-              
-              <div className="flex space-x-3">
-                <div className="relative flex-1">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Key className="h-4 w-4 text-slate-400" />
-                  </div>
-                  <input
-                    type={showKeys[gateway.id] ? "text" : "password"}
-                    value={keys[gateway.id] || ''}
-                    onChange={(e) => handleKeyChange(gateway.id, e.target.value)}
-                    placeholder={status[gateway.id] === 'connected' ? "••••••••••••••••" : "Enter production key..."}
-                    className="block w-full pl-10 pr-10 py-2 sm:text-sm border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 border outline-none"
-                    disabled={status[gateway.id] === 'connected'}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => toggleVisibility(gateway.id)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    disabled={status[gateway.id] === 'connected'}
-                  >
-                    {showKeys[gateway.id] ? (
-                      <EyeOff className="h-4 w-4 text-slate-400 hover:text-slate-600" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-slate-400 hover:text-slate-600" />
-                    )}
-                  </button>
-                </div>
-                
-                {status[gateway.id] === 'missing' && (
-                  <button
-                    onClick={() => handleConnect(gateway.id)}
-                    disabled={!keys[gateway.id]}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Connect
-                  </button>
-                )}
-                
-                {status[gateway.id] === 'saving' && (
-                  <button
-                    disabled
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 opacity-75 cursor-wait"
-                  >
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Verifying
-                  </button>
-                )}
-                
-                {status[gateway.id] === 'connected' && (
-                  <button
-                    onClick={() => {
-                      setStatus(prev => ({ ...prev, [gateway.id]: 'missing' }));
-                      setKeys(prev => ({ ...prev, [gateway.id]: '' }));
-                    }}
-                    className="inline-flex items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Disconnect
-                  </button>
-                )}
-              </div>
-              
-              {status[gateway.id] === 'missing' && (
-                <div className="mt-2 flex items-center text-xs text-amber-600">
-                  <AlertCircle className="h-3.5 w-3.5 mr-1" />
-                  <span>AWAITING PRODUCTION KEYS</span>
-                </div>
-              )}
-            </div>
+            <span className="inline-flex h-fit items-center gap-1.5 self-start rounded-full border border-amber-300/40 bg-amber-300/10 px-3 py-1.5 text-xs font-semibold text-amber-200">
+              <LockKeyhole aria-hidden="true" className="h-3.5 w-3.5" />
+              Unverified
+            </span>
           </div>
         ))}
       </div>
-    </div>
+
+      <footer className="flex gap-3 border-t border-white/10 bg-slate-900/80 p-5 text-sm leading-relaxed text-slate-200">
+        <ServerCog aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" />
+        <p>
+          Configure secrets only in the authorized server/Cloudflare environment, never in this browser.
+          When a verified backend capability endpoint is implemented, replace this conservative status
+          with authenticated, timestamped provider checks. Never mark a provider connected from a timeout.
+        </p>
+      </footer>
+    </section>
   );
 };
