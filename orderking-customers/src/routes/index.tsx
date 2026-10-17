@@ -26,7 +26,7 @@ export const Route = createFileRoute('/')({
 function Home() {
   const navigate = useNavigate();
   const location = useLocationStore((s) => s.location);
-  const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : true;
+  const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : false;
 
   useEffect(() => {
     void trackAnalytics({
@@ -51,9 +51,9 @@ function Home() {
               👑
             </span>
             <span className="tracking-tight">
-              Prestige Gastronomy · <span className="text-amber-800">0% Menu Markups</span> · FSSAI Verified Kitchens
+              Explore local cuisines · <span className="text-amber-800">Prices shown from participating menus</span>
             </span>
-            <span className="hidden sm:inline text-amber-700">· 100% Direct Chef Delivery</span>
+            <span className="hidden sm:inline text-amber-700">· Availability confirmed during checkout</span>
           </div>
         </div>
 
