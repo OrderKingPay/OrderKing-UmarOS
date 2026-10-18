@@ -204,7 +204,7 @@ export function SelfServeLandingModule() {
             <div>
               <Label className="text-xs text-slate-300">Owner / Authorized Signatory Name *</Label>
               <Input
-                placeholder="e.g. Mohammad Umar"
+                placeholder="e.g. Rajesh Kumar"
                 value={ownerName}
                 onChange={(e) => setOwnerName(e.target.value)}
                 className="bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 text-sm"

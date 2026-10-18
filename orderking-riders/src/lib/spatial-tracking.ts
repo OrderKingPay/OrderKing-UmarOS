@@ -313,7 +313,7 @@ export class SpatialTrackingService {
   private riderId: string;
   private watchId?: number;
   private fallbackQueue = new TelematicsQueue();
-  private umarOSEndpoint = 'https://api.umaros.orderking.com/telematics/ingest';
+  private telematicsEndpoint = 'https://api.orderking.com/telematics/ingest';
   private lastCoordinate?: GPSCoordinate;
   
   constructor(riderId: string) {
@@ -384,20 +384,20 @@ export class SpatialTrackingService {
       bearing,
     };
     
-    await this.transmitToUmarOS(payload);
+    await this.transmitTelematics(payload);
   }
   
   private handlePositionError(error: GeolocationPositionError): void {
     console.error(`Geolocation error (${error.code}): ${error.message}`);
   }
 
-  private async transmitToUmarOS(payload: TelematicsPayload): Promise<void> {
+  private async transmitTelematics(payload: TelematicsPayload): Promise<void> {
     try {
       if (typeof navigator !== "undefined" && !navigator.onLine) {
         throw new Error('Device offline, routing to fallback queue.');
       }
       
-      const response = await fetch(this.umarOSEndpoint, {
+      const response = await fetch(this.telematicsEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -407,7 +407,7 @@ export class SpatialTrackingService {
       });
       
       if (!response.ok) {
-        throw new Error(`UmarOS ingestion failed with status ${response.status}`);
+        throw new Error(`Telematics ingestion failed with status ${response.status}`);
       }
     } catch (error) {
       console.warn('Transmission failed, queuing for Starlink/2G fallback sync.', error);
@@ -423,7 +423,7 @@ export class SpatialTrackingService {
     const payloads = this.fallbackQueue.dequeueAll();
     
     try {
-      const response = await fetch(`${this.umarOSEndpoint}/batch`, {
+      const response = await fetch(`${this.telematicsEndpoint}/batch`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -433,7 +433,7 @@ export class SpatialTrackingService {
       });
       
       if (!response.ok) {
-        throw new Error(`Batch UmarOS ingestion failed with status ${response.status}`);
+        throw new Error(`Batch telematics ingestion failed with status ${response.status}`);
       }
     } catch (error) {
       console.error('Fallback sync failed, requeuing payloads.', error);

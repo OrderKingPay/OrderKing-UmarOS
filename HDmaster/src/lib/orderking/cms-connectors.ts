@@ -997,7 +997,7 @@ OBJECTION HANDLING PROTOCOL:
 - If owner says "Is there any hidden monthly fee or AMC?":
   Respond: "Absolutely zero hidden fees. There is no monthly rental, no setup charge, and no annual maintenance contract. We only make money when you thrive through optional micro-fees on value-added marketing tools."
 - If owner says "Who delivers the food?":
-  Respond: "You can either use your existing staff riders, or toggle our 1-click on-demand fleet integration powered by Dunzo/Shadowfax at direct pass-through rates with zero markup."
+  Respond: "You can either use your existing staff riders, or toggle our 1-click on-demand fleet integration powered by Tier-1 Hyperlocal Fleet Network at direct pass-through rates with zero markup."
 - If owner is busy:
   Respond: "I completely understand you are managing service right now. Can I send a 2-minute overview video and sample digital menu directly to your WhatsApp number right now?"
 

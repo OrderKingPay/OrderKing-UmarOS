@@ -598,7 +598,7 @@ export const CORE_ECOSYSTEM_APPS: EcosystemApp[] = [
 
   // Logistics & Hyperlocal Operations
   { id: "app-hyperlocal-fleet", name: "OrderKing Rider Dispatch", category: "logistics", description: "Algorithmic nearest-rider allocation, batch pickup, live geofence radar", iconName: "Truck", authMethod: "HMAC Token", status: "CONFIGURATION_REQUIRED", actions: ["assign_rider", "recalculate_routes"] },
-  { id: "app-dunzo", name: "Dunzo for Business API", category: "logistics", description: "Third-party on-demand delivery fallback during peak demand surges", iconName: "Truck", authMethod: "API Key", status: "CONFIGURATION_REQUIRED", actions: ["create_task", "cancel_task"] },
+  { id: "app-ondemand-fleet", name: "Tier-1 On-Demand Fleet API", category: "logistics", description: "Third-party on-demand delivery fallback during peak demand surges", iconName: "Truck", authMethod: "API Key", status: "CONFIGURATION_REQUIRED", actions: ["create_task", "cancel_task"] },
   { id: "app-shadowfax", name: "Shadowfax Hyperlocal Rails", category: "logistics", description: "Intercity and hyperlocal express courier integration", iconName: "Truck", authMethod: "API Key", status: "CONFIGURATION_REQUIRED", actions: ["create_order", "track_rider"] },
   { id: "app-shiprocket", name: "Shiprocket Logistics Hub", category: "logistics", description: "E-commerce pan-India courier aggregator with automated airway bill", iconName: "Truck", authMethod: "API Key", status: "CONFIGURATION_REQUIRED", actions: ["generate_awb", "schedule_pickup"] },
 

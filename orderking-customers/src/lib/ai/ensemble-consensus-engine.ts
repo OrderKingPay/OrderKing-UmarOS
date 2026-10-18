@@ -185,7 +185,7 @@ export class EnsembleConsensusEngine {
     return {
       query: q,
       overallConsensusAgreement: agreementScore,
-      primaryModelWinner: connectedModels[0]?.modelName || "Umar Local Sovereign Core",
+      primaryModelWinner: connectedModels[0]?.modelName || "OrderKing Local Sovereign Core",
       unifiedSynthesis,
       executiveActionPlan,
       modelsBreakdown,

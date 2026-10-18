@@ -194,7 +194,7 @@ function Page() {
     : 0;
   const latestSettlement = settlements[0] ?? null;
 
-  function buildUmarAuditMetadata(wfId: WorkflowId): {
+  function buildAutoAuditMetadata(wfId: WorkflowId): {
     summaryLines: string[];
     resolutionAdvice: string;
     auditHeader: string;
@@ -212,7 +212,7 @@ function Page() {
             ? `✅ You have passed the 10-minute grace window (${kitchenWaitMins}m elapsed). +₹${accruedKitchenBonusInr} wait compensation is accruing automatically. Submit below to lock your audit timestamp or request penalty-free reassignment if wait >20m.`
             : `⏱️ Wait timer is at ${kitchenWaitMins}m. Ensure you have tapped 'Arrived at Restaurant' & 'Restaurant Not Ready'. Automatic ₹1/min compensation begins at 10 minutes.`
           : "ℹ️ You have no active pickup right now. You can still submit a kitchen delay audit for a recent order below.",
-        auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=KITCHEN_WAIT_DELAY | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | RESTAURANT=${activeOrder?.restaurant.name ?? "NA"} | WAIT_MINS=${kitchenWaitMins} | BONUS_INR=${accruedKitchenBonusInr}]`,
+        auditHeader: `[FLEET_AUTO_AUDIT | WORKFLOW=KITCHEN_WAIT_DELAY | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | RESTAURANT=${activeOrder?.restaurant.name ?? "NA"} | WAIT_MINS=${kitchenWaitMins} | BONUS_INR=${accruedKitchenBonusInr}]`,
       };
     }
 
@@ -230,7 +230,7 @@ function Page() {
             ? "✅ 3 call attempts and 10+ minutes doorstep wait verified! You qualify for 100% Base + Distance payout with zero cancellation penalty. Log this Order King audit and tap 'Customer Unavailable' on the delivery screen."
             : `⚠️ Policy requires ${Math.max(0, 3 - attempts)} more call attempt(s) and ${Math.max(0, 10 - customerWaitMins)} more wait minute(s) at the drop pin to unlock automatic zero-penalty return.`
           : "ℹ️ No active customer drop in progress. Log an audit ticket below if you are disputing a past unreachable-customer trip.",
-        auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=CUSTOMER_UNREACHABLE | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | DROP=${activeOrder?.customer.area ?? "NA"} | CALLS=${attempts}/3 | WAIT_MINS=${customerWaitMins}]`,
+        auditHeader: `[FLEET_AUTO_AUDIT | WORKFLOW=CUSTOMER_UNREACHABLE | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | DROP=${activeOrder?.customer.area ?? "NA"} | CALLS=${attempts}/3 | WAIT_MINS=${customerWaitMins}]`,
       };
     }
 
@@ -245,7 +245,7 @@ function Page() {
           unreconciledPaise > 0
             ? `💵 Your ledger shows ${formatPaise(unreconciledPaise)} in pending COD cash. Attach your UPI deposit UTR or describe the customer short-cash amount below so Order King reconciles your float limit automatically.`
             : "✅ Your COD float balance is ₹0 (100% reconciled). Use the form below if you need to report a customer cash dispute on an active order.",
-        auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=COD_CASH_MISMATCH | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | UNRECONCILED_INR=${(unreconciledPaise / 100).toFixed(2)} | ACTIVE_COD_INR=${((activeOrder?.codAmountPaise ?? 0) / 100).toFixed(2)}]`,
+        auditHeader: `[FLEET_AUTO_AUDIT | WORKFLOW=COD_CASH_MISMATCH | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | UNRECONCILED_INR=${(unreconciledPaise / 100).toFixed(2)} | ACTIVE_COD_INR=${((activeOrder?.codAmountPaise ?? 0) / 100).toFixed(2)}]`,
       };
     }
 
@@ -263,7 +263,7 @@ function Page() {
         ],
         resolutionAdvice:
           "📊 Statutory floor guarantees ₹35 base (up to 2 km) + ₹8/km beyond 2 km + ₹1/min kitchen wait (>10m) + 100% customer tips. Submit below to trigger an automated Order King route-distance & payout ledger audit.",
-        auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=PAYOUT_AUDIT | RIDER=${riderId.slice(0, 8)} | TRIPS_TODAY=${home?.completedToday ?? 0} | NET_INR=${((earnings?.totals.net ?? 0) / 100).toFixed(2)} | SETTLEMENT=${latestSettlement?.status ?? "NONE"} | DEST=${payoutDest}]`,
+        auditHeader: `[FLEET_AUTO_AUDIT | WORKFLOW=PAYOUT_AUDIT | RIDER=${riderId.slice(0, 8)} | TRIPS_TODAY=${home?.completedToday ?? 0} | NET_INR=${((earnings?.totals.net ?? 0) / 100).toFixed(2)} | SETTLEMENT=${latestSettlement?.status ?? "NONE"} | DEST=${payoutDest}]`,
       };
     }
 
@@ -276,11 +276,11 @@ function Page() {
       ],
       resolutionAdvice:
         "📍 If a building gate or mall entrance is offset from the restaurant/customer map pin, log this telemetry snapshot so Order King authorizes geofence arrival and protects your on-time score.",
-      auditHeader: `[UMAR_AUTO_AUDIT | WORKFLOW=APP_GPS_ISSUE | RIDER=${riderId.slice(0, 8)} | STATUS=${home?.rider.status ?? "NA"} | ORDER=${orderCode} | STAGE=${activeOrder?.state ?? "IDLE"}]`,
+      auditHeader: `[FLEET_AUTO_AUDIT | WORKFLOW=APP_GPS_ISSUE | RIDER=${riderId.slice(0, 8)} | STATUS=${home?.rider.status ?? "NA"} | ORDER=${orderCode} | STAGE=${activeOrder?.state ?? "IDLE"}]`,
     };
   }
 
-  const currentDiagnosis = buildUmarAuditMetadata(activeWorkflow.id);
+  const currentDiagnosis = buildAutoAuditMetadata(activeWorkflow.id);
 
   async function submitGuidedWorkflow() {
     if (!workflowNote.trim()) return;
@@ -370,7 +370,7 @@ function Page() {
   }
 
   function parseTicketMessage(raw: string): { auditMeta: string | null; body: string } {
-    if (raw.startsWith("[UMAR_AUTO_AUDIT")) {
+    if (raw.startsWith("[FLEET_AUTO_AUDIT") || raw.startsWith("[UMAR_AUTO_AUDIT")) {
       const closeIdx = raw.indexOf("]");
       if (closeIdx !== -1) {
         return {
@@ -389,12 +389,12 @@ function Page() {
           <div>
             <h1 className="font-display text-3xl">{t("support")}</h1>
             <p className="text-xs text-muted-foreground">
-              Autonomous Employee-Less UMAR OS Resolution Desk · Live Account Telemetry Bound
+              Autonomous OrderKing Fleet AI Resolution Desk · Live Account Telemetry Bound
             </p>
           </div>
           <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>24x7 Autonomous UMAR OS Active</span>
+            <span>24x7 Autonomous Fleet AI Active</span>
           </div>
         </div>
 
@@ -424,7 +424,7 @@ function Page() {
             <Badge tone="online">AUTO-DIAGNOSIS</Badge>
           </div>
           <p className="text-xs text-muted-foreground">
-            Select your issue below. UMAR OS automatically inspects your live order, wait timers, COD float, and earnings ledger to resolve your issue or attach verified audit telemetry without waiting for human call-center staff.
+            Select your issue below. OrderKing Fleet AI automatically inspects your live order, wait timers, COD float, and earnings ledger to resolve your issue or attach verified audit telemetry without waiting for human call-center staff.
           </p>
 
           {/* Workflow Selector Pills */}
@@ -501,7 +501,7 @@ function Page() {
               <Input
                 value={workflowNote}
                 onChange={(e) => setWorkflowNote(e.target.value)}
-                placeholder="Describe specific details for automated UMAR OS audit…"
+                placeholder="Describe specific details for automated Fleet AI audit…"
               />
             </div>
 
@@ -525,7 +525,7 @@ function Page() {
                 onClick={() => void submitGuidedWorkflow()}
               >
                 {workflowSubmitting
-                  ? "Submitting UMAR Audit…"
+                  ? "Submitting Fleet Audit…"
                   : `⚡ Log Verified ${activeWorkflow.title} Audit`}
               </Button>
             </div>
@@ -712,7 +712,7 @@ function Page() {
                           </CardTitle>
                           <Badge tone="muted">{ticket.topic.replaceAll("_", " ")}</Badge>
                           {parsed.auditMeta ? (
-                            <Badge tone="online">UMAR AUTO-AUDIT</Badge>
+                            <Badge tone="online">FLEET AUTO-AUDIT</Badge>
                           ) : null}
                         </div>
                         <Badge tone={ticket.status === "OPEN" ? "busy" : "online"}>

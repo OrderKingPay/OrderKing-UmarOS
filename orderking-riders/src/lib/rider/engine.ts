@@ -362,14 +362,21 @@ export class RiderEngine {
   }
 
   async ensureRider(user: SessionUser): Promise<RiderProfile> {
+    const phoneFromEmail = user.email ? (user.email.match(/^(\d{10})@/)?.[1] ?? "") : "";
     const existing = await this.store.getRiderByUserId(user.id);
-    if (existing) return existing;
+    if (existing) {
+      if (!existing.phone && phoneFromEmail) {
+        existing.phone = phoneFromEmail;
+        await this.store.upsertRider(existing);
+      }
+      return existing;
+    }
     const now = this.now();
     const rider: RiderProfile = {
       id: nid(),
       userId: user.id,
       fullName: user.name ?? "",
-      phone: "",
+      phone: phoneFromEmail,
       email: user.email ?? "",
       photoUrl: user.image ?? null,
       address: "",

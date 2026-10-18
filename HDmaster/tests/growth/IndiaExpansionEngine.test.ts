@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { IndiaExpansionEngine, PinCodeMetrics } from '../../src/lib/orderking/growth/IndiaExpansionEngine.ts';
-import { CustomerLTVStats, RestaurantLTVStats } from '../../src/lib/orderking/growth/ReferralRewardCalculator.ts';
+import { IndiaExpansionEngine, type PinCodeMetrics } from '../../src/lib/orderking/growth/IndiaExpansionEngine.ts';
+import type { CustomerLTVStats, RestaurantLTVStats } from '../../src/lib/orderking/growth/ReferralRewardCalculator.ts';
 
 describe('IndiaExpansionEngine', () => {
   const engine = new IndiaExpansionEngine('https://orderking.in');
@@ -64,7 +64,7 @@ describe('IndiaExpansionEngine', () => {
     
     // Overall Progress: 800/1000(80) + 20/30(66.6) + 40/50(80) = 226.6 / 3 = 75
     assert.ok(loop.message.includes('75%'));
-    assert.ok(loop.message.includes('Zomato/Swiggy వదిలేయండి!'));
+    assert.ok(loop.message.includes('Legacy aggregators వదిలేయండి!'));
     assert.ok(loop.message.includes('UPI'));
     assert.ok(loop.url.includes('https://wa.me/?text='));
   });
@@ -88,7 +88,7 @@ describe('IndiaExpansionEngine', () => {
 
     const offer = engine.generateMicroFranchiseOffer('influencer_foodie123', metrics, restaurantLtvStats);
     
-    assert.ok(offer.businessPitch.includes('Zomato takes 25%. We take 5%.'));
+    assert.ok(offer.businessPitch.includes('Tier-1 Legacy Market Leader takes 25%. We take 5%.'));
     assert.strictEqual(offer.estimatedMonthlyPassiveIncomePerRestaurantINR, 2000); // 2% of 1 Lakh
   });
 });

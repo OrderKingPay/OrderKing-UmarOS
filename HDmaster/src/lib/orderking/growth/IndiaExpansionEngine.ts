@@ -1,5 +1,6 @@
 import { ViralDistributionEngine } from './ViralDistributionEngine.ts';
-import { ReferralRewardCalculator, CustomerLTVStats, RestaurantLTVStats } from './ReferralRewardCalculator.ts';
+import { ReferralRewardCalculator } from './ReferralRewardCalculator.ts';
+import type { CustomerLTVStats, RestaurantLTVStats } from './ReferralRewardCalculator.ts';
 
 // --- Production-Ready Types & Interfaces ---
 export type PincodeTier = 'TIER_1' | 'TIER_2' | 'TIER_3';

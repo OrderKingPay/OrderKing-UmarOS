@@ -87,6 +87,22 @@ function Login() {
         if (!name.trim() || name.trim().length < 2) {
           throw new Error("Please enter your full legal name as per Aadhaar / Driving Licence.");
         }
+
+        // Store prefill draft immediately so KYC desk has it even on network edge cases
+        try {
+          localStorage.setItem(
+            "orderking_rider_prefill",
+            JSON.stringify({
+              fullName: name.trim(),
+              phone: phone,
+              cityZone: cityZone.trim(),
+              vehicleCategory: vehiclePref,
+            }),
+          );
+        } catch {
+          /* ignore storage quota errors */
+        }
+
         const { error: err } = await authClient.signUp.email({
           email: resolvedEmail,
           password: credential,
@@ -115,19 +131,6 @@ function Login() {
           throw new Error(err.message || "Registration failed. Please try again.");
         }
 
-        try {
-          localStorage.setItem(
-            "orderking_rider_prefill",
-            JSON.stringify({
-              fullName: name.trim(),
-              phone: phone,
-              cityZone: cityZone.trim(),
-              vehicleCategory: vehiclePref,
-            }),
-          );
-        } catch {
-          /* ignore storage quota errors */
-        }
         window.location.href = "/onboarding";
       } else {
         const { error: err } = await authClient.signIn.email({
@@ -543,7 +546,7 @@ function Login() {
                   Verifying...
                 </span>
               ) : mode === "up" ? (
-                "Continue"
+                "Register & Submit KYC →"
               ) : (
                 "Verify & Go on Duty"
               )}

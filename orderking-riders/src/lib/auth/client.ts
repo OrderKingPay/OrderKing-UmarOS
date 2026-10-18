@@ -23,7 +23,7 @@ const getBaseURL = () => {
     if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
     if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
   }
-  return "https://orderking-riders.pages.dev";
+  return "https://rider.orderkingpay.com";
 };
 
 export const authClient = createAuthClient({

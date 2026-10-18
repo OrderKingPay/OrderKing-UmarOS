@@ -229,7 +229,7 @@ export async function tryExecutePartnerAiCommand(
       });
 
       const label = targetStatus === "sold_out" ? "Out of Stock (Sold Out)" : "In-Stock (Available)";
-      let confirmation = `✅ "${matchedItem.name}" is now marked ${label}. Propagated to customer app and UmarOS instantly!`;
+      let confirmation = `✅ "${matchedItem.name}" is now marked ${label}. Propagated to customer app and ecosystem catalog instantly!`;
 
       if (ctx.languageCode === "hi") {
         confirmation = `✅ "${matchedItem.name}" को ${targetStatus === "sold_out" ? "आउट ऑफ स्टॉक (समाप्त)" : "इन-स्टॉक (उपलब्ध)"} मार्क कर दिया गया है। तुरंत लाइव लागू!`;

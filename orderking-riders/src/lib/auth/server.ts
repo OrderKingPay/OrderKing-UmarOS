@@ -113,19 +113,30 @@ const LOCAL_DEV_ORIGINS: string[] = [
   "http://localhost:8085",
   "http://127.0.0.1:8085",
 ];
-const baseURL = explicitBaseURL ?? {
-  // Include loopback hosts so dynamic baseURL resolves for local email/password
-  // (not only the preview wildcard).
+const baseURL = {
+  // Dynamic baseURL resolves per-request host against allowedHosts
   allowedHosts: [
       ...previewAllowedHosts, 
       "localhost", 
       "127.0.0.1", 
       "[::1]",
+      "orderkingpay.com",
+      "www.orderkingpay.com",
+      "rider.orderkingpay.com",
+      "riders.orderkingpay.com",
+      "partner.orderkingpay.com",
+      "partners.orderkingpay.com",
+      "admin.orderkingpay.com",
+      "*.orderkingpay.com",
+      "orderking.in",
+      "*.orderking.in",
+      "*.pages.dev",
+      "*.vercel.app",
+      "*.netlify.app",
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
-  // (preview is https; local dev is http).
   protocol: "auto" as const,
-  fallback: "https://orderking-riders.pages.dev",
+  fallback: explicitBaseURL ?? "https://rider.orderkingpay.com",
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
@@ -135,6 +146,24 @@ const trustedOrigins: string[] = [
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
+  "https://orderkingpay.com",
+  "http://orderkingpay.com",
+  "https://www.orderkingpay.com",
+  "http://www.orderkingpay.com",
+  "https://rider.orderkingpay.com",
+  "http://rider.orderkingpay.com",
+  "https://riders.orderkingpay.com",
+  "http://riders.orderkingpay.com",
+  "https://partner.orderkingpay.com",
+  "http://partner.orderkingpay.com",
+  "https://partners.orderkingpay.com",
+  "http://partners.orderkingpay.com",
+  "https://admin.orderkingpay.com",
+  "http://admin.orderkingpay.com",
+  "https://ops.orderkingpay.com",
+  "http://ops.orderkingpay.com",
+  "https://*.orderkingpay.com",
+  "http://*.orderkingpay.com",
   "https://orderking.in",
   "http://orderking.in",
   "https://riders.orderking.in",
@@ -143,8 +172,8 @@ const trustedOrigins: string[] = [
   "http://partner.orderking.in",
   "https://admin.orderking.in",
   "http://admin.orderking.in",
-  "https://umaros.orderking.in",
-  "http://umaros.orderking.in",
+  "https://ops.orderking.in",
+  "http://ops.orderking.in",
   "https://*.orderking.in",
   "http://*.orderking.in",
   "https://*.pages.dev",
