@@ -107,162 +107,7 @@ const CURATED_FOOD_CATEGORIES = [
   },
 ];
 
-export const VERIFIED_AVAILABLE_KITCHENS: RestaurantCard[] = [
-  {
-    id: "rst_saravanaa_bhavan",
-    slug: "saravanaa-bhavan-cp",
-    name: "Saravanaa Bhavan",
-    coverImage: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=720&auto=format&fit=crop&q=80",
-    cuisineSummary: "South Indian · Dosa & Idli · Pure Veg · Thali · Filter Coffee",
-    vegOnly: true,
-    prepMinutes: 18,
-    dataLabel: "LIVE",
-    promoted: true,
-    distanceKm: 1.2,
-    etaMinutes: 25,
-    deliveryFeePaise: 0,
-    minOrderPaise: 9900,
-    open: true,
-    hasOffer: true,
-    offerLabel: "Pure Veg Gold Standard",
-    zoneName: "Connaught Place",
-    ratingAvg: 4.8,
-    ratingCount: 2310,
-    fssaiLicenseNumber: "10014011002134",
-  },
-  {
-    id: "rst_karims_cp",
-    slug: "karims-connaught-place",
-    name: "Karim's Mughal Delicacies",
-    coverImage: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=720&auto=format&fit=crop&q=80",
-    cuisineSummary: "Biryani · Mughlai · Kebabs · Rolls",
-    vegOnly: false,
-    prepMinutes: 22,
-    dataLabel: "LIVE",
-    promoted: true,
-    distanceKm: 1.5,
-    etaMinutes: 28,
-    deliveryFeePaise: 0,
-    minOrderPaise: 19900,
-    open: true,
-    hasOffer: true,
-    offerLabel: "Authentic Dum Biryani & Rolls",
-    zoneName: "Connaught Place",
-    ratingAvg: 4.8,
-    ratingCount: 3100,
-    fssaiLicenseNumber: "13317002000214",
-  },
-  {
-    id: "rst_kake_da_hotel",
-    slug: "kake-da-hotel-cp",
-    name: "Kake Da Hotel",
-    coverImage: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=720&auto=format&fit=crop&q=80",
-    cuisineSummary: "North Indian · Thali · Dal Makhani · Tandoori",
-    vegOnly: false,
-    prepMinutes: 20,
-    dataLabel: "LIVE",
-    promoted: true,
-    distanceKm: 1.1,
-    etaMinutes: 26,
-    deliveryFeePaise: 0,
-    minOrderPaise: 14900,
-    open: true,
-    hasOffer: true,
-    offerLabel: "Original Recipe Thali",
-    zoneName: "Connaught Place",
-    ratingAvg: 4.8,
-    ratingCount: 1420,
-    fssaiLicenseNumber: "10012011000341",
-  },
-  {
-    id: "rst_wengers_deli",
-    slug: "wengers-deli-cp",
-    name: "Wenger's Bakery & Deli",
-    coverImage: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=720&auto=format&fit=crop&q=80",
-    cuisineSummary: "Desserts · Bakery · Cakes · Savouries",
-    vegOnly: false,
-    prepMinutes: 15,
-    dataLabel: "LIVE",
-    promoted: false,
-    distanceKm: 0.9,
-    etaMinutes: 25,
-    deliveryFeePaise: 0,
-    minOrderPaise: 9900,
-    open: true,
-    hasOffer: true,
-    offerLabel: "Fresh Artisan Desserts & Pastries",
-    zoneName: "Connaught Place",
-    ratingAvg: 4.9,
-    ratingCount: 4200,
-    fssaiLicenseNumber: "10014011001892",
-  },
-  {
-    id: "rst_bikanervala_cp",
-    slug: "bikanervala-cp",
-    name: "Bikanervala Heritage",
-    coverImage: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=720&auto=format&fit=crop&q=80",
-    cuisineSummary: "Thali · North Indian · Pure Veg · Street Food · Sweets",
-    vegOnly: true,
-    prepMinutes: 20,
-    dataLabel: "LIVE",
-    promoted: false,
-    distanceKm: 1.4,
-    etaMinutes: 29,
-    deliveryFeePaise: 0,
-    minOrderPaise: 9900,
-    open: true,
-    hasOffer: true,
-    offerLabel: "Special Deluxe Thali & Sweets",
-    zoneName: "Connaught Place",
-    ratingAvg: 4.7,
-    ratingCount: 1980,
-    fssaiLicenseNumber: "10019011005521",
-  },
-  {
-    id: "rst_pizza_express_cp",
-    slug: "pizza-express-cp",
-    name: "PizzaExpress & Italian Bistro",
-    coverImage: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=720&auto=format&fit=crop&q=80",
-    cuisineSummary: "Pizza · Italian · Gourmet Pasta · Romana",
-    vegOnly: false,
-    prepMinutes: 20,
-    dataLabel: "LIVE",
-    promoted: false,
-    distanceKm: 1.8,
-    etaMinutes: 27,
-    deliveryFeePaise: 0,
-    minOrderPaise: 19900,
-    open: true,
-    hasOffer: true,
-    offerLabel: "Woodfired Romana Pizza",
-    zoneName: "Connaught Place",
-    ratingAvg: 4.7,
-    ratingCount: 980,
-    fssaiLicenseNumber: "13314002000109",
-  },
-  {
-    id: "rst_burger_club_cp",
-    slug: "the-burger-club-cp",
-    name: "The Burger Club",
-    coverImage: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=720&auto=format&fit=crop&q=80",
-    cuisineSummary: "Burgers · Fast Food · Crispy Fries · Shakes",
-    vegOnly: false,
-    prepMinutes: 18,
-    dataLabel: "LIVE",
-    promoted: false,
-    distanceKm: 1.3,
-    etaMinutes: 25,
-    deliveryFeePaise: 0,
-    minOrderPaise: 12900,
-    open: true,
-    hasOffer: true,
-    offerLabel: "Signature Juicy Grilled Burgers",
-    zoneName: "Connaught Place",
-    ratingAvg: 4.6,
-    ratingCount: 1650,
-    fssaiLicenseNumber: "10018011004928",
-  },
-];
+export const VERIFIED_AVAILABLE_KITCHENS: RestaurantCard[] = [];
 
 export function HomeFeed({
   q,
@@ -431,7 +276,7 @@ export function HomeFeed({
     const raw: RestaurantCard[] =
       list.data?.restaurants && list.data.restaurants.length > 0
         ? list.data.restaurants
-        : VERIFIED_AVAILABLE_KITCHENS;
+        : [];
 
     const matched = raw
       .filter((r) => {
@@ -461,11 +306,8 @@ export function HomeFeed({
         return true;
       });
 
-    // Eliminate empty "0 places" state: always fall back to verified kitchens
-    const finalKitchens =
-      matched.length > 0
-        ? matched
-        : VERIFIED_AVAILABLE_KITCHENS.filter((r) => dietFilter !== "veg" || r.vegOnly);
+    // Only actual API results may populate the restaurant grid.
+    const finalKitchens = matched;
 
     return finalKitchens.sort((a, b) => {
         const etaA = typeof a.etaMinutes === "number" ? a.etaMinutes : Number(a.etaMinutes || 30);
@@ -489,36 +331,6 @@ export function HomeFeed({
 
   return (
     <div className="space-y-5 px-3 py-3 sm:px-4 sm:py-4 bg-[#FCFAF7] text-gray-900">
-      {/* MONSOON / RAIN EMERGENCY SURGE ALERT BANNER */}
-      {isRainSurge && (
-        <div className="rounded-2xl border border-sky-400/50 bg-gradient-to-r from-sky-500/20 via-blue-500/15 to-indigo-500/20 p-4 text-sky-950 dark:text-sky-100 shadow-sm flex items-center justify-between gap-3 animate-in fade-in duration-300">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/20 text-sky-600 dark:text-sky-300 text-xl font-bold">
-              🌧️
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display text-sm font-black text-sky-950 dark:text-sky-100">
-                  Monsoon Rain Surge Active
-                </span>
-                <span className="rounded-full bg-sky-500/30 border border-sky-400/40 px-2 py-0.5 text-[9px] font-black uppercase text-sky-900 dark:text-sky-200">
-                  Priority Dispatch
-                </span>
-              </div>
-              <p className="text-xs text-sky-800/90 dark:text-sky-300/90 mt-0.5">
-                Heavy monsoon showers in your sector. Delivery champions receive 100% of weather hardship bonuses. Please allow a few extra minutes for road safety.
-              </p>
-            </div>
-          </div>
-          <CloudRain className="size-6 text-sky-500 shrink-0 hidden sm:block animate-bounce" />
-        </div>
-      )}
-
-      {/* UNSERVICEABLE LOCATION HIGH-UTILITY PLATFORM SERVICES (KingPay UPI, IRCTC PNR, Fleet Jobs) */}
-      {!isDeliveryActive && (
-        <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
-      )}
-
       {/* 1. ULTRA-LUXURY HORIZONTAL CIRCULAR FOOD CATEGORIES (Distinct Gradient Border & Emoji Labels) */}
       {!q && (
         <section aria-label="Food Categories" className="pt-1">
@@ -653,8 +465,8 @@ export function HomeFeed({
         </div>
 
         {/* Place Count */}
-        <span className="text-[11px] font-black text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0 shadow-2xs">
-          {`${filteredRestaurants.length} active kitchens delivering`}
+        <span className="text-[11px] font-bold text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0">
+          {`${filteredRestaurants.length} restaurants found`}
         </span>
       </div>
 
@@ -687,9 +499,7 @@ export function HomeFeed({
       )}
 
       {/* 4. CURATED COLLECTIONS */}
-      {!q && (
-        <CuratedCollections className="pt-2" />
-      )}
+      {false && !q && (<CuratedCollections className="pt-2" />)}
 
       {/* 5. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
       <section aria-label="Restaurants Grid" className="pt-2">
@@ -700,7 +510,7 @@ export function HomeFeed({
                 ? "Explore this category"
                 : dietFilter === "veg"
                 ? "Pure vegetarian restaurants"
-                : `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi")}`}
+                : `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`}
             </h2>
             <p className="text-xs text-gray-500 font-medium">
               Explore menus and delivery options in {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your neighborhood")}
@@ -750,8 +560,8 @@ export function HomeFeed({
         ) : filteredRestaurants.length === 0 ? (
           <div className="rounded-2xl border border-amber-200/80 bg-white p-8 text-center space-y-3 shadow-sm">
             <Utensils className="size-10 text-amber-500 mx-auto" />
-            <h3 className="font-extrabold text-gray-900 text-base">Explore Verified Kitchens</h3>
-            <p className="text-xs text-gray-500 max-w-sm mx-auto">Active partner kitchens delivering fresh meals in 25-30 minutes with 0% menu markup.</p>
+            <h3 className="font-extrabold text-gray-900 text-base">No restaurants available here yet</h3>
+            <p className="text-xs text-gray-500 max-w-sm mx-auto">Try another delivery location or reset your filters to see available restaurants.</p>
             <Button
               type="button"
               variant="outline"
