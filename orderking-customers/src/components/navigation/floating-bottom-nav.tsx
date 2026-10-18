@@ -441,7 +441,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
               preload="intent"
               onClick={onTap}
               className="group relative -mt-7 sm:-mt-8 flex flex-col items-center justify-center no-underline transition-all duration-300 active:scale-95 transform-gpu will-change-transform"
-              title="King Pay UPI & 24K Sovereign Gold"
+              title="Payment tools and order services"
             >
               {/* 24K Gold Sovereign Beveled Frame with Pulse Ring */}
               <div
@@ -464,7 +464,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                   <Crown className="size-7 sm:size-8 text-amber-300 fill-amber-400/60 drop-shadow-[0_2px_16px_rgba(245,158,11,1)] stroke-[2.4]" />
                 </div>
 
-                {/* 3D 24K GOLD Crown Sovereign Badge */}
+                {/* 3D KING PAY Crown Sovereign Badge */}
                 <div
                   className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-2.5 py-[1.5px] shadow-[0_3px_10px_rgba(0,0,0,0.4)] border border-amber-100"
                   style={{
@@ -473,14 +473,14 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                 >
                   <span className="flex items-center gap-1 text-[7px] sm:text-[8px] font-black uppercase tracking-wider text-stone-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)]">
                     <Crown className="size-2 text-stone-950 fill-stone-950" />
-                    24K GOLD
+                    KING PAY
                   </span>
                 </div>
 
                 {/* TOOLS SERVICES Badge */}
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-stone-950 px-2.5 py-[1px] shadow-[0_3px_8px_rgba(0,0,0,0.5)] border border-amber-400 flex items-center gap-1">
                   <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[7px] sm:text-[7.5px] font-black text-amber-300 tracking-wider">UPI INSTANT</span>
+                  <span className="text-[7px] sm:text-[7.5px] font-black text-amber-300 tracking-wider">TOOLS</span>
                 </div>
               </div>
 
@@ -489,7 +489,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                 King Pay
               </span>
 
-              {/* Sub-Pill: 0% FEE */}
+              {/* Sub-Pill: SERVICES */}
               <span
                 className={cn(
                   "text-[6.5px] sm:text-[7px] font-black tracking-widest uppercase px-1.5 py-[0.5px] rounded-full mt-0.5 shadow-2xs border transition-all",
@@ -498,7 +498,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                     : "text-amber-300/90 bg-amber-950/70 border-amber-500/30"
                 )}
               >
-                0% FEE
+                SERVICES
               </span>
 
               {/* 3D Tactile 24K Gold Bar Indicator */}
