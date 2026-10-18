@@ -285,17 +285,17 @@ export function KingPayFinanceSearch({
   const [isFocused, setIsFocused] = useState(false);
 
   const categories = [
-    { id: "all", label: "All Items", icon: "✨" },
-    { id: "upi", label: "UPI & Transfer", icon: "⚡" },
+    { id: "all", label: "External Providers", icon: "🔗" },
+
     { id: "bills", label: "Bills & Recharge", icon: "💡" },
-    { id: "autopay", label: "Autopay", icon: "🔄" },
-    { id: "rewards", label: "Rewards & Cash", icon: "🎁" },
-    { id: "loans", label: "Loans & Credit", icon: "💰" },
-    { id: "wealth", label: "Gold & Travel", icon: "🌟" },
+
+
+
+    { id: "wealth", label: "Travel & Financial Services", icon: "🔗" },
   ];
 
   const filteredItems = useMemo(() => {
-    return FINANCE_SEARCH_INDEX.filter((item) => {
+    return FINANCE_SEARCH_INDEX.filter((item) => item.actionType === "url").map((item) => ({ ...item, badge: "External provider", subtitle: "Visit the external provider to check actual availability, pricing and conditions.", actionPayload: item.actionPayload?.split("?")[0] })).filter((item) => {
       const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
       const q = query.toLowerCase().trim();
       const matchesQuery =

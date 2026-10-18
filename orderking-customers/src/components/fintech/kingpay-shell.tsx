@@ -129,6 +129,9 @@ export function KingPayShell({
               </span>
             </button>
 
+            {/* Hide QR scan and wallet top-up until provider authorization is verified. Original controls retained. */}
+            {false && (
+              <>
             {/* Scan QR Quick Action */}
             <button
               type="button"
@@ -158,6 +161,9 @@ export function KingPayShell({
               </div>
               <PlusCircle className="size-3.5 text-amber-400 ml-0.5 group-hover:rotate-90 transition-transform" />
             </button>
+
+              </>
+            )}
 
             {/* Far-right unified profile entry. Avatar is device-local until secure profile storage is enabled. */}
             <Link to={user ? "/account" : "/login"} aria-label={user ? "Open your OrderKing profile" : "Sign in to OrderKing"}
