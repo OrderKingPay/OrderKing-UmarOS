@@ -39,7 +39,7 @@ export const Route = createFileRoute("/api/sync/customizations/latest")({
               palette: {
                 ...DEFAULT_RIDER_CUSTOMIZATION_STATE.designTokens.palette,
                 primary: DEFAULT_BRANDING.colors.primary,
-                accent: DEFAULT_BRANDING.colors.accent,
+                accent: DEFAULT_BRANDING.colors.primary,
               },
             },
           },
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/api/sync/customizations/latest")({
             brand: {
               appName: DEFAULT_BRANDING.appName,
               primaryColor: DEFAULT_BRANDING.colors.primary,
-              accentColor: DEFAULT_BRANDING.colors.accent,
+              accentColor: DEFAULT_BRANDING.colors.primary,
               logoUrl: "/logo.jpg",
               supportPhone: "+918000000000",
               supportWhatsApp: "+918000000000",
