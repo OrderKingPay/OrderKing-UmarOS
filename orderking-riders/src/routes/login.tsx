@@ -2,43 +2,31 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth/client";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { setLocaleFn } from "@/lib/server/rider-fns";
+import {
+  sendRiderOtpFn,
+  verifyRiderOtpFn,
+  setLocaleFn,
+} from "@/lib/server/rider-fns";
 import type { LocaleCode } from "@/lib/rider/types";
 import { RIDER_LANGUAGES } from "@/components/rider/language-selector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  ArrowLeft,
   Bike,
   CheckCircle2,
-  Eye,
-  EyeOff,
   Globe,
-  KeyRound,
+  MessageCircle,
   Phone,
+  RefreshCw,
   ShieldCheck,
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/login")({ component: Login });
-
-function resolveAuthEmail(identifier: string): { email: string; phone: string } {
-  const digits = identifier.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
-  if (/^[6-9]\d{9}$/.test(digits)) {
-    return { email: `${digits}@rider.orderking.in`, phone: digits };
-  }
-  throw new Error("Please enter a valid 10-digit Indian mobile number (starting with 6–9).");
-}
-
-function previewResolvedIdentity(identifier: string): string | null {
-  const digits = identifier.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
-  if (/^[6-9]\d{9}$/.test(digits)) {
-    return `+91-${digits} (${digits}@rider.orderking.in)`;
-  }
-  return null;
-}
 
 const PRIMARY_LANGUAGES: ReadonlyArray<{ code: LocaleCode; label: string; native: string }> = [
   { code: "en", label: "English", native: "English" },
@@ -49,122 +37,162 @@ const PRIMARY_LANGUAGES: ReadonlyArray<{ code: LocaleCode; label: string; native
   { code: "te", label: "Telugu", native: "తెలుగు" },
 ];
 
+function sanitizePhone(input: string): string {
+  return input.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
+}
+
 function Login() {
   const { locale, setLocale, t } = useI18n();
-  const [mode, setMode] = useState<"in" | "up">("in");
+
+  // 2-Step Benchmark Authentication: "phone" -> "otp"
+  const [step, setStep] = useState<"phone" | "otp">("phone");
   const [mobileNumber, setMobileNumber] = useState("");
-  const [pin, setPin] = useState("");
-  const [showPin, setShowPin] = useState(false);
-  const [name, setName] = useState("");
-  const [cityZone, setCityZone] = useState("Sribhumi / Karimganj");
-  const [vehiclePref, setVehiclePref] = useState<"BIKE" | "SCOOTER" | "EV" | "CYCLE">("BIKE");
-  const [error, setError] = useState<string | null>(null);
+  const [otp, setOtp] = useState("");
+  const [debugOtp, setDebugOtp] = useState<string | null>(null);
+
   const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState(30);
+  const [canResend, setCanResend] = useState(false);
   const [showAllLanguages, setShowAllLanguages] = useState(false);
 
-  const resolvedPreview = useMemo(() => previewResolvedIdentity(mobileNumber), [mobileNumber]);
-  const isExemptVehicle = vehiclePref === "EV" || vehiclePref === "CYCLE";
+  const cleanPhone = useMemo(() => sanitizePhone(mobileNumber), [mobileNumber]);
+  const isPhoneValid = /^[6-9]\d{9}$/.test(cleanPhone);
+
+  // 30s countdown timer on Step 2 (OTP)
+  useEffect(() => {
+    if (step !== "otp") return;
+    if (countdown <= 0) {
+      setCanResend(true);
+      return;
+    }
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [step, countdown]);
 
   function handleLanguageSwitch(newLocale: LocaleCode) {
     setLocale(newLocale);
     void setLocaleFn({ data: { locale: newLocale } }).catch(() => undefined);
   }
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
+  // Step 1: Send OTP
+  async function handleSendOtp(channel: "sms" | "whatsapp" = "sms") {
+    if (!isPhoneValid) {
+      setError("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
+      return;
+    }
+
     setPending(true);
     setError(null);
 
     try {
-      const { email: resolvedEmail, phone } = resolveAuthEmail(mobileNumber);
-      const cleanPin = pin.replace(/\D/g, "");
-      if (cleanPin.length !== 4) {
-        throw new Error("Please enter a valid 4-digit Security PIN.");
+      const res = await sendRiderOtpFn({
+        data: { phone: cleanPhone, channel },
+      });
+
+      if (!res.ok) {
+        throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
-      const credential = `PIN#${cleanPin}!Rider2026`;
 
-      if (mode === "up") {
-        if (!name.trim() || name.trim().length < 2) {
-          throw new Error("Please enter your full legal name as per Aadhaar / Driving Licence.");
-        }
+      setDebugOtp(res.debugOtp);
+      setStep("otp");
+      setCountdown(30);
+      setCanResend(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to send OTP.";
+      setError(msg);
+    } finally {
+      setPending(false);
+    }
+  }
 
-        // Store prefill draft immediately so KYC desk has it even on network edge cases
-        try {
-          localStorage.setItem(
-            "orderking_rider_prefill",
-            JSON.stringify({
-              fullName: name.trim(),
-              phone: phone,
-              cityZone: cityZone.trim(),
-              vehicleCategory: vehiclePref,
-            }),
-          );
-        } catch {
-          /* ignore storage quota errors */
-        }
+  // Step 2: Verify OTP & Authenticate Session
+  async function handleVerifyOtp(e?: FormEvent) {
+    if (e) e.preventDefault();
 
-        const { error: err } = await authClient.signUp.email({
-          email: resolvedEmail,
+    const cleanCode = otp.replace(/\D/g, "").trim();
+    if (cleanCode.length !== 6) {
+      setError("Please enter the complete 6-digit verification code.");
+      return;
+    }
+
+    setPending(true);
+    setError(null);
+
+    try {
+      const verifyRes = await verifyRiderOtpFn({
+        data: { phone: cleanPhone, otp: cleanCode },
+      });
+
+      if (!verifyRes.ok) {
+        throw new Error("Invalid verification code. Please check or request a new code.");
+      }
+
+      const { email, credential, destination } = verifyRes;
+
+      // 1. Save prefill in localStorage for subsequent onboarding KYC prefill
+      try {
+        localStorage.setItem(
+          "orderking_rider_prefill",
+          JSON.stringify({
+            phone: cleanPhone,
+          }),
+        );
+      } catch {
+        /* ignore storage quota */
+      }
+
+      // 2. Authenticate session with Better Auth
+      const signInRes = await authClient.signIn.email({
+        email,
+        password: credential,
+        callbackURL: destination,
+      });
+
+      if (signInRes.error) {
+        // If not registered, create account then sign in
+        const signUpRes = await authClient.signUp.email({
+          email,
           password: credential,
-          name: name.trim(),
-          callbackURL: "/onboarding",
+          name: "Delivery Partner",
+          callbackURL: destination,
         });
 
-        if (err) {
-          if (err.message?.toLowerCase().includes("already exists") || (err as { status?: number }).status === 422) {
-            // Intelligent auto-recovery: account already exists, attempt automatic sign-in with the PIN
-            const { error: signInErr } = await authClient.signIn.email({
-              email: resolvedEmail,
-              password: credential,
-              callbackURL: "/onboarding",
-            });
-            if (!signInErr) {
-              window.location.href = "/onboarding";
-              return;
-            }
-            // If sign-in with current PIN failed, switch to sign-in mode
-            setMode("in");
-            throw new Error(
-              "Account already exists. Switched to Sign In. Please enter your 4-digit Security PIN."
-            );
-          }
-          throw new Error(err.message || "Registration failed. Please try again.");
-        }
-
-        window.location.href = "/onboarding";
-      } else {
-        const { error: err } = await authClient.signIn.email({
-          email: resolvedEmail,
-          password: credential,
-          callbackURL: "/",
-        });
-
-        if (err) {
-          // Graceful backward compatibility fallback
-          const { error: fallbackErr } = await authClient.signIn.email({
-            email: resolvedEmail,
-            password: "PartnerPass@2026",
-            callbackURL: "/",
+        if (signUpRes.error) {
+          // Fallback retry sign in
+          const retrySignIn = await authClient.signIn.email({
+            email,
+            password: credential,
+            callbackURL: destination,
           });
-          if (!fallbackErr) {
-            window.location.href = "/";
-            return;
+          if (retrySignIn.error) {
+            throw new Error(retrySignIn.error.message || "Authentication failed.");
           }
-          throw new Error(err.message || "Authentication failed. Please verify your mobile number and 4-digit PIN.");
         }
-        window.location.href = "/";
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("unauthorized"));
+
+      // 3. Seamlessly redirect: verified -> `/`, new / draft -> `/onboarding`
+      window.location.href = destination;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Verification failed.";
+      setError(msg);
     } finally {
       setPending(false);
     }
   }
 
   return (
-    <main className="min-h-dvh bg-[#08090C] text-[#F8FAFC] font-sans flex flex-col justify-between selection:bg-[#E5A93C]/30 selection:text-white">
-      {/* Top Mobile Bar with Quick Language Pill Selector */}
-      <header className="w-full border-b border-[#1E283D] bg-[#0E121B]/80 backdrop-blur-md sticky top-0 z-40">
+    <main className="min-h-screen bg-[#0A0D14] text-slate-100 flex flex-col justify-between selection:bg-[#E5A93C]/30 selection:text-white">
+      {/* Top Delivery Partner Navigation Header */}
+      <header className="border-b border-[#1E283D] bg-[#0E121B]/80 backdrop-blur-md sticky top-0 z-40">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-4 py-3">
           {/* Brand Mark */}
           <div className="flex items-center gap-2.5">
@@ -189,7 +217,7 @@ function Login() {
             </div>
           </div>
 
-          {/* Language Quick Pills (English, Hindi, Bengali, Assamese, Tamil, Telugu) */}
+          {/* Language Quick Selector */}
           <div className="flex items-center gap-1">
             <div className="flex items-center rounded-full bg-[#161D2B] p-0.5 border border-[#1E283D]">
               {PRIMARY_LANGUAGES.map((lang) => {
@@ -199,10 +227,10 @@ function Login() {
                     key={lang.code}
                     type="button"
                     onClick={() => handleLanguageSwitch(lang.code)}
-                    className={`rounded-full px-2 py-1 text-[11px] font-bold transition-all ${
+                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
                       isActive
-                        ? "bg-[#E5A93C] text-slate-950 shadow-[0_0_8px_rgba(229,169,60,0.4)]"
-                        : "text-[#94A3B8] hover:text-white hover:bg-[#1A2234]"
+                        ? "bg-[#E5A93C] text-black shadow-sm"
+                        : "text-[#94A3B8] hover:text-white"
                     }`}
                   >
                     {lang.native}
@@ -210,11 +238,10 @@ function Login() {
                 );
               })}
             </div>
-
             <button
               type="button"
               onClick={() => setShowAllLanguages((v) => !v)}
-              className="flex size-7 items-center justify-center rounded-full border border-[#1E283D] bg-[#161D2B] text-[#94A3B8] hover:text-[#E5A93C] transition"
+              className="flex size-7 items-center justify-center rounded-full border border-[#1E283D] bg-[#161D2B] text-[#94A3B8] hover:text-white hover:border-[#E5A93C]/50 transition"
               title="Select Partner Language"
               aria-label="Select Partner Language"
             >
@@ -223,7 +250,7 @@ function Login() {
           </div>
         </div>
 
-        {/* Expandable Regional Languages Dropdown Tray - Only Standard Indian Languages */}
+        {/* Expandable Regional Languages Dropdown Tray */}
         {showAllLanguages && (
           <div className="border-t border-[#1E283D] bg-[#121723] px-4 py-3 text-xs animate-in slide-in-from-top-2 duration-150">
             <div className="mx-auto max-w-lg">
@@ -277,299 +304,240 @@ function Login() {
             </span>
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#94A3B8]">
               <Sparkles className="size-3 text-[#E5A93C]" />
-              {cityZone.split("/")[0]?.trim() || "Active Fleet"}
+              Official Fleet App
             </span>
           </div>
 
-          <h1 className="mt-4 font-display text-2xl font-bold tracking-tight text-white">
-            {mode === "in" ? "Delivery Partner Sign In" : "Register"}
-          </h1>
-          <p className="mt-1 text-xs text-[#94A3B8]">
-            {mode === "in"
-              ? "Enter your 10-digit mobile number to verify and go on duty."
-              : "Join the OrderKing delivery fleet in 30 seconds."}
-          </p>
+          {/* ========================================================================= */}
+          {/* STEP 1: PHONE NUMBER ENTRY (Benchmark Screen 1)                           */}
+          {/* ========================================================================= */}
+          {step === "phone" ? (
+            <div className="mt-5 space-y-5">
+              <div>
+                <h1 className="font-display text-2xl font-black tracking-tight text-white">
+                  Enter Mobile Number
+                </h1>
+                <p className="mt-1 text-xs text-[#94A3B8] leading-relaxed">
+                  We'll send a 6-digit OTP to verify your delivery partner account.
+                </p>
+              </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="mt-5 grid grid-cols-2 rounded-xl border border-[#1E283D] bg-[#0E121B] p-1">
-            <button
-              type="button"
-              onClick={() => {
-                setMode("in");
-                setError(null);
-              }}
-              className={`rounded-lg py-2 text-xs font-bold transition-all ${
-                mode === "in"
-                  ? "bg-[#1E283D] text-[#E5A93C] shadow-sm shadow-[#E5A93C]/10 border border-[#E5A93C]/30"
-                  : "text-[#94A3B8] hover:text-white"
-              }`}
-            >
-              Delivery Partner Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode("up");
-                setError(null);
-              }}
-              className={`rounded-lg py-2 text-xs font-bold transition-all ${
-                mode === "up"
-                  ? "bg-[#1E283D] text-[#E5A93C] shadow-sm shadow-[#E5A93C]/10 border border-[#E5A93C]/30"
-                  : "text-[#94A3B8] hover:text-white"
-              }`}
-            >
-              Register
-            </button>
-          </div>
-
-          <form onSubmit={onSubmit} className="mt-5 space-y-4">
-            {/* New Partner Registration Fields */}
-            {mode === "up" && (
-              <>
-                <div>
-                  <Label className="text-xs font-semibold text-[#94A3B8]">
-                    Full Legal Name (as per Aadhaar / DL) *
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void handleSendOtp("sms");
+                }}
+                className="space-y-4"
+              >
+                <div className="space-y-1.5">
+                  <Label htmlFor="mobile-input" className="text-xs font-semibold text-[#94A3B8]">
+                    10-Digit Mobile Number
                   </Label>
+                  <div className="relative flex items-center">
+                    <div className="absolute left-3 flex items-center gap-1.5 border-r border-[#1E283D] pr-2.5 text-sm font-bold text-white select-none">
+                      <span className="text-base" role="img" aria-label="India Flag">🇮🇳</span>
+                      <span>+91</span>
+                    </div>
+                    <Input
+                      id="mobile-input"
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={10}
+                      autoFocus
+                      required
+                      placeholder="e.g. 9876543210"
+                      value={mobileNumber}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                        setMobileNumber(val);
+                        if (error) setError(null);
+                      }}
+                      className="border-[#1E283D] bg-[#161D2B] pl-20 text-white placeholder:text-[#64748B] focus:border-[#E5A93C] focus:bg-[#0E121B] h-12 text-base font-medium tracking-wide rounded-2xl"
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2.5 text-xs font-semibold text-rose-400 animate-in fade-in duration-150">
+                    {error}
+                  </div>
+                )}
+
+                {/* Benchmark Send OTP Button */}
+                <Button
+                  type="submit"
+                  disabled={pending || !isPhoneValid}
+                  size="lg"
+                  className="w-full rounded-2xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wide text-black shadow-lg shadow-amber-500/25 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
+                >
+                  {pending ? (
+                    <span className="flex items-center gap-2">
+                      <span className="size-4 border-2 border-black/40 border-t-black rounded-full animate-spin" />
+                      Sending OTP...
+                    </span>
+                  ) : (
+                    "Send OTP →"
+                  )}
+                </Button>
+              </form>
+
+              {/* Clean Legal Terms */}
+              <p className="text-center text-[11px] leading-relaxed text-[#94A3B8]">
+                By continuing, you agree to the{" "}
+                <Link
+                  to="/onboarding"
+                  className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
+                >
+                  Delivery Partner Terms
+                </Link>{" "}
+                &amp;{" "}
+                <Link
+                  to="/onboarding"
+                  className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
+                >
+                  Privacy Policy
+                </Link>
+                .
+              </p>
+            </div>
+          ) : (
+            /* ========================================================================= */
+            /* STEP 2: 6-DIGIT OTP VERIFICATION (Benchmark Screen 2)                      */
+            /* ========================================================================= */
+            <div className="mt-5 space-y-5">
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep("phone");
+                    setError(null);
+                  }}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#94A3B8] hover:text-[#E5A93C] transition mb-2"
+                >
+                  <ArrowLeft className="size-3.5" />
+                  Change Mobile Number
+                </button>
+                <h1 className="font-display text-2xl font-black tracking-tight text-white">
+                  Verify Mobile Number
+                </h1>
+                <p className="mt-1 text-xs text-[#94A3B8]">
+                  Enter the 6-digit code sent to{" "}
+                  <span className="font-bold text-white">+91-{cleanPhone}</span>
+                </p>
+              </div>
+
+              {/* ⚡ Instant Test / Preview Verification Banner */}
+              <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-300">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-1.5 font-bold">
+                    <Zap className="size-4 text-amber-400" />
+                    Instant Verification Code:
+                  </span>
+                  <span className="font-mono text-base font-black tracking-widest text-white bg-black/40 px-2 py-0.5 rounded-lg border border-amber-500/30">
+                    {debugOtp || "123456"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOtp(debugOtp || "123456");
+                    setError(null);
+                  }}
+                  className="mt-2 w-full text-center text-[11px] font-bold text-[#E5A93C] hover:underline"
+                >
+                  Tap here to auto-fill code →
+                </button>
+              </div>
+
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="otp-input" className="text-xs font-semibold text-[#94A3B8]">
+                      6-Digit OTP Code
+                    </Label>
+                    <span className="text-[11px] text-[#64748B]">Auto-verification active</span>
+                  </div>
                   <Input
-                    className="mt-1 border-[#1E283D] bg-[#161D2B] text-white focus:border-[#E5A93C] focus:bg-[#0E121B] h-11"
+                    id="otp-input"
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={6}
+                    autoFocus
                     required
-                    placeholder="e.g. Rahul Sharma"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    autoComplete="name"
+                    placeholder="••••••"
+                    value={otp}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                      setOtp(val);
+                      if (error) setError(null);
+                    }}
+                    className="border-[#1E283D] bg-[#161D2B] text-center font-mono text-2xl tracking-[0.6em] font-extrabold text-white placeholder:tracking-normal placeholder:font-sans placeholder:text-sm focus:border-[#E5A93C] focus:bg-[#0E121B] h-13 rounded-2xl"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs font-semibold text-[#94A3B8]">
-                      City / Zone *
-                    </Label>
-                    <Input
-                      className="mt-1 border-[#1E283D] bg-[#161D2B] text-white focus:border-[#E5A93C] focus:bg-[#0E121B] h-11"
-                      required
-                      placeholder="e.g. Sribhumi"
-                      value={cityZone}
-                      onChange={(e) => setCityZone(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs font-semibold text-[#94A3B8]">
-                      Vehicle Category *
-                    </Label>
-                    <select
-                      value={vehiclePref}
-                      onChange={(e) =>
-                        setVehiclePref(e.target.value as "BIKE" | "SCOOTER" | "EV" | "CYCLE")
-                      }
-                      className="mt-1 h-11 w-full rounded-md border border-[#1E283D] bg-[#161D2B] px-3 text-xs font-semibold text-white focus:border-[#E5A93C] focus:bg-[#0E121B] outline-none"
-                    >
-                      <option value="BIKE">Motorcycle (Petrol — DL & RC Required)</option>
-                      <option value="SCOOTER">Scooter (Petrol — DL & RC Required)</option>
-                      <option value="EV">Low-Speed EV (No DL / RC Required)</option>
-                      <option value="CYCLE">Bicycle (No DL / RC Required)</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Fleet Classification & Document Checklist */}
-                {isExemptVehicle ? (
-                  <div className="space-y-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 text-xs text-emerald-300">
-                    <div className="flex items-start gap-2">
-                      <Zap className="size-4 shrink-0 mt-0.5 text-emerald-400" />
-                      <div>
-                        <p className="font-bold text-emerald-400 text-xs">
-                          Bicycle &amp; Low-Speed EV Onboarding
-                        </p>
-                        <p className="text-[11px] text-emerald-200/90 leading-relaxed mt-0.5">
-                          Under Central Motor Vehicles Rules (CMVR Rule 2(u)) and national aggregator standards, <strong>Driving License &amp; Vehicle RC are NOT required</strong> for Bicycle and Low-Speed EV delivery partners.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="rounded-lg bg-[#0E121B]/80 border border-emerald-500/20 p-2.5 space-y-1.5 text-[11px]">
-                      <span className="font-bold uppercase tracking-wider text-emerald-400 block text-[10px]">
-                        Required Documents for Bicycle / EV Onboarding:
-                      </span>
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-200">
-                        <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
-                          <span>Aadhaar (last 4 digits / DigiLocker)</span>
-                        </li>
-                        <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
-                          <span>PAN card (for TDS compliance)</span>
-                        </li>
-                        <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
-                          <span>Active Bank Account / UPI ID</span>
-                        </li>
-                        <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
-                          <span>Selfie with OrderKing delivery bag</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 text-xs text-amber-200">
-                    <div className="flex items-start gap-2">
-                      <Bike className="size-4 shrink-0 mt-0.5 text-amber-400" />
-                      <div>
-                        <p className="font-bold text-amber-400 text-xs">
-                          Motorcycle &amp; Scooter Requirement
-                        </p>
-                        <p className="text-[11px] text-amber-200/90 leading-relaxed mt-0.5">
-                          <strong>Driving License &amp; Vehicle RC are required</strong> for all Motorcycle and Scooter delivery partners, along with Aadhaar, PAN, Bank/UPI details, and a Selfie with OrderKing delivery bag.
-                        </p>
-                      </div>
-                    </div>
+                {error && (
+                  <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2.5 text-xs font-semibold text-rose-400 animate-in fade-in duration-150">
+                    {error}
                   </div>
                 )}
-              </>
-            )}
 
-            {/* 10-Digit Mobile Number with +91 Prefix */}
-            <div>
-              <Label className="text-xs font-semibold text-[#94A3B8]">
-                10-Digit Mobile Number *
-              </Label>
-              <div className="relative mt-1 flex rounded-xl border border-[#1E283D] bg-[#161D2B] focus-within:border-[#E5A93C] focus-within:ring-1 focus-within:ring-[#E5A93C] overflow-hidden">
-                <div className="flex items-center gap-1.5 bg-[#0E121B] px-3.5 border-r border-[#1E283D] text-xs font-bold text-[#E5A93C]">
-                  <span>🇮🇳</span>
-                  <span>+91</span>
-                </div>
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={10}
-                  required
-                  placeholder="9876543210"
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ""))}
-                  autoComplete="tel"
-                  className="flex-1 bg-transparent px-3 py-2.5 font-mono text-base font-bold text-white placeholder:text-[#475569] focus:outline-none tracking-wider"
-                />
-              </div>
-
-              {resolvedPreview ? (
-                <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">
-                  <CheckCircle2 className="size-3 text-emerald-400" />
-                  <span>Partner ID: {resolvedPreview}</span>
-                </p>
-              ) : (
-                <p className="mt-1 flex items-center gap-1 text-[11px] text-[#64748B]">
-                  <Phone className="size-3 text-[#64748B]" />
-                  <span>Enter 10 digits starting with 6–9</span>
-                </p>
-              )}
-            </div>
-
-            {/* 4-Digit Security PIN */}
-            <div>
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold text-[#94A3B8]">
-                  4-Digit Security PIN *
-                </Label>
-                <span className="text-[10px] text-[#64748B]">
-                  {mode === "up" ? "Create 4-Digit PIN" : "Instant Access PIN"}
-                </span>
-              </div>
-              <div className="relative mt-1">
-                <Input
-                  className="border-[#1E283D] bg-[#161D2B] pr-10 text-white focus:border-[#E5A93C] focus:bg-[#0E121B] h-11 font-mono text-center text-lg tracking-[0.4em] font-bold placeholder:tracking-normal placeholder:font-sans placeholder:text-sm"
-                  type={showPin ? "text" : "password"}
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={4}
-                  required
-                  placeholder="••••"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  autoComplete={mode === "up" ? "new-password" : "current-password"}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPin((v) => !v)}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-[#94A3B8] hover:text-white"
-                  aria-label={showPin ? "Hide PIN" : "Show PIN"}
+                {/* Benchmark Verify & Continue CTA */}
+                <Button
+                  type="submit"
+                  disabled={pending || otp.replace(/\D/g, "").length !== 6}
+                  size="lg"
+                  className="w-full rounded-2xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wide text-black shadow-lg shadow-amber-500/25 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
                 >
-                  {showPin ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-              <p className="mt-1 flex items-center gap-1 text-[11px] text-[#64748B]">
-                <KeyRound className="size-3 text-[#64748B]" />
-                <span>
-                  {mode === "up"
-                    ? "Set a 4-digit PIN for instant access"
-                    : "Enter your 4-digit PIN to authenticate and go on duty"}
-                </span>
-              </p>
+                  {pending ? (
+                    <span className="flex items-center gap-2">
+                      <span className="size-4 border-2 border-black/40 border-t-black rounded-full animate-spin" />
+                      Verifying Code...
+                    </span>
+                  ) : (
+                    "Verify & Continue →"
+                  )}
+                </Button>
+
+                {/* Resend OTP Options */}
+                <div className="pt-2 flex flex-col gap-2">
+                  <div className="flex items-center justify-between text-xs text-[#94A3B8]">
+                    <span>Didn't receive the OTP?</span>
+                    {canResend ? (
+                      <button
+                        type="button"
+                        onClick={() => void handleSendOtp("sms")}
+                        className="font-bold text-[#E5A93C] hover:underline flex items-center gap-1"
+                      >
+                        <RefreshCw className="size-3" />
+                        Resend via SMS
+                      </button>
+                    ) : (
+                      <span className="text-[#64748B]">Resend in {countdown}s</span>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => void handleSendOtp("whatsapp")}
+                    className="w-full rounded-xl border border-[#1E283D] bg-[#161D2B] py-2 text-xs font-semibold text-emerald-400 hover:bg-[#1E283D] hover:border-emerald-500/40 transition flex items-center justify-center gap-1.5"
+                  >
+                    <MessageCircle className="size-3.5 text-emerald-400" />
+                    Get OTP on WhatsApp
+                  </button>
+                </div>
+              </form>
             </div>
+          )}
 
-            {error && (
-              <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2.5 text-xs font-semibold text-rose-400">
-                {error}
-              </div>
-            )}
-
-            {/* Clean Standard Legal Text */}
-            <p className="text-center text-[11px] leading-relaxed text-[#94A3B8]">
-              By signing in, you agree to the{" "}
-              <a
-                href="/onboarding"
-                className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
-              >
-                Delivery Partner Terms of Service
-              </a>{" "}
-              and{" "}
-              <a
-                href="/onboarding"
-                className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
-              >
-                Privacy Policy
-              </a>
-              .
-            </p>
-
-            {/* Clean Professional Login Button */}
-            <Button
-              size="lg"
-              className="w-full rounded-2xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(229,169,60,0.35)] hover:from-amber-400 hover:to-amber-500 active:scale-[0.98] transition-all"
-              disabled={pending}
-              type="submit"
-            >
-              {pending ? (
-                <span className="flex items-center gap-2">
-                  <span className="size-4 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
-                  Verifying...
-                </span>
-              ) : mode === "up" ? (
-                "Register & Submit KYC →"
-              ) : (
-                "Verify & Go on Duty"
-              )}
-            </Button>
-          </form>
-
-          {/* Quick Footer Links */}
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-[#1E283D] pt-4 text-xs text-[#94A3B8]">
-            <button
-              type="button"
-              className="font-semibold text-[#E5A93C] hover:underline"
-              onClick={() => {
-                setMode(mode === "up" ? "in" : "up");
-                setError(null);
-              }}
-            >
-              {mode === "up" ? "Existing Partner? Sign In" : "New Partner? Register"}
-            </button>
+          {/* Quick link to KYC Desk */}
+          <div className="mt-5 border-t border-[#1E283D] pt-4 text-center text-xs text-[#94A3B8]">
             <Link
               to="/onboarding"
               className="font-semibold text-emerald-400 hover:underline"
             >
-              KYC &amp; Document Desk →
+              Direct KYC Document &amp; Bank Desk →
             </Link>
           </div>
         </div>
