@@ -558,7 +558,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
     const raw: RestaurantCard[] =
       list.data?.restaurants && list.data.restaurants.length > 0
         ? list.data.restaurants
-        : VERIFIED_AVAILABLE_KITCHENS;
+        : [];
 
     const matched = raw
       .filter((r) => {
@@ -578,10 +578,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
       });
 
     // Eliminate empty "0 places" state: always fall back to verified kitchens
-    const finalKitchens =
-      matched.length > 0
-        ? matched
-        : VERIFIED_AVAILABLE_KITCHENS.filter((r) => dietFilter !== "veg" || r.vegOnly);
+    const finalKitchens = matched;
 
     return finalKitchens.sort((a, b) => {
         const ratingA =
