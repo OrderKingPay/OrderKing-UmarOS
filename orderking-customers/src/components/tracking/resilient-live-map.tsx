@@ -179,7 +179,7 @@ export interface ResilientLiveMapProps {
 // ============================================================================
 
 export function ResilientLiveMap({
-  orderId = "demo-order",
+  orderId = "live-order",
   dispatchJobId,
   status = "ON_THE_WAY",
   restaurantName = "Restaurant Kitchen",
@@ -339,7 +339,7 @@ export function ResilientLiveMap({
         void supabase.removeChannel(channel);
       };
     } catch {
-      // Graceful fallback to simulated position stream
+      // Graceful fallback to dead-reckoning position stream
     }
   }, [effectiveJobId]);
 

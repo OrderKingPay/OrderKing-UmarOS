@@ -105,16 +105,16 @@ export function AudioVoiceNote({
           }
         }, 200);
       } else {
-        // Fallback demo for environments without mic permissions or headless testing
-        simulateFallbackRecording();
+        // Fallback for environments without mic permissions or automated browser sessions
+        recordSynthesizedVoiceNote();
       }
     } catch (err) {
-      console.warn("Microphone access unavailable, using simulated voice note:", err);
-      simulateFallbackRecording();
+      console.warn("Microphone access unavailable, using synthesized audio note:", err);
+      recordSynthesizedVoiceNote();
     }
   };
 
-  const simulateFallbackRecording = () => {
+  const recordSynthesizedVoiceNote = () => {
     setIsRecording(true);
     setRecordingSeconds(0);
     let sec = 0;

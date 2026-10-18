@@ -190,7 +190,7 @@ function PromotionsPage() {
     amountRupees?: string;
     minOrderRupees: string;
     maxDiscountRupees?: string;
-    sampleBasketRupees: string;
+    benchmarkBasketRupees: string;
   }) {
     setName(preset.offerName);
     setKind(preset.kind);
@@ -198,7 +198,7 @@ function PromotionsPage() {
     if (preset.amountRupees) setAmountRupees(preset.amountRupees);
     setMinOrderRupees(preset.minOrderRupees);
     if (preset.maxDiscountRupees !== undefined) setMaxDiscountRupees(preset.maxDiscountRupees);
-    setSimOrderRupees(preset.sampleBasketRupees);
+    setSimOrderRupees(preset.benchmarkBasketRupees);
     setPlaybookAppliedNotice(
       `Loaded "${preset.offerName}" into the calculator and offer builder below. Review your net take-home margin before activating.`,
     );
@@ -347,7 +347,7 @@ function PromotionsPage() {
                       kind: "fixed",
                       amountRupees: "40",
                       minOrderRupees: "199",
-                      sampleBasketRupees: "220",
+                      benchmarkBasketRupees: "220",
                     })
                   }
                 >
@@ -386,7 +386,7 @@ function PromotionsPage() {
                       percent: "15",
                       minOrderRupees: "149",
                       maxDiscountRupees: "45",
-                      sampleBasketRupees: "180",
+                      benchmarkBasketRupees: "180",
                     })
                   }
                 >
@@ -424,7 +424,7 @@ function PromotionsPage() {
                       kind: "fixed",
                       amountRupees: "90",
                       minOrderRupees: "499",
-                      sampleBasketRupees: "540",
+                      benchmarkBasketRupees: "540",
                     })
                   }
                 >
@@ -528,7 +528,7 @@ function PromotionsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs text-slate-300">Sample Customer Food Value (₹)</Label>
+              <Label className="text-xs text-slate-300">Benchmark Order Value (₹)</Label>
               <Input
                 type="number"
                 min={0}
@@ -538,7 +538,7 @@ function PromotionsPage() {
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">Sample Packaging Charge (₹)</Label>
+              <Label className="text-xs text-slate-300">Benchmark Packaging Fee (₹)</Label>
               <Input
                 type="number"
                 min={0}

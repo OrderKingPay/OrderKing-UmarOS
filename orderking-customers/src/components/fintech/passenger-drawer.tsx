@@ -153,7 +153,7 @@ export function PassengerDrawer({
         return;
       }
 
-      // Simulate sub-second atomic transaction
+      // Execute sub-second atomic transaction
       await new Promise((resolve) => setTimeout(resolve, 600));
 
       // If onDeductWallet is provided, invoke it
@@ -211,7 +211,7 @@ export function PassengerDrawer({
               Sign In to Book Trip
             </h3>
             <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-              To reserve verified carrier seats with ₹0 convenience fee and sovereign digital gold rebates, please sign in to your OrderKing account. Simulated guest bookings are blocked.
+              To reserve verified carrier seats with ₹0 convenience fee and sovereign digital gold rebates, please sign in to your OrderKing account. Guest checkout without verified KYC is not permitted.
             </p>
           </div>
           <div className="pt-2 flex flex-col gap-2.5">

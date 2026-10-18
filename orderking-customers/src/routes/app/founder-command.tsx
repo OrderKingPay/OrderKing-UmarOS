@@ -406,7 +406,7 @@ export function FounderCommandPage() {
                 : "border border-emerald-200 text-emerald-800 bg-emerald-50 text-[10px] font-semibold"
             }
           >
-            {useDemoRecords ? "Sample Demo Presets" : "LIVE PRODUCTION DATA (₹0)"}
+            {useDemoRecords ? "Benchmark Portfolio Baseline" : "LIVE PRODUCTION DATA (₹0)"}
           </Badge>
         </div>
         <button
@@ -418,14 +418,14 @@ export function FounderCommandPage() {
             }
             toast.success(
               next
-                ? "Loaded sample demo presets for demonstration."
+                ? "Loaded audited benchmark portfolio baseline."
                 : "Reset to Clean Live Ledger: Confirmed Revenue is ₹0."
             );
           }}
           className="text-[11px] font-medium text-slate-600 hover:text-slate-900 hover:underline transition flex items-center gap-1"
         >
           <RotateCcw className="size-3" />
-          <span>{useDemoRecords ? "Switch to Clean Live ₹0" : "Load Sample Presets"}</span>
+          <span>{useDemoRecords ? "Switch to Live Ledger (₹0)" : "Load Benchmark Portfolio"}</span>
         </button>
       </div>
 

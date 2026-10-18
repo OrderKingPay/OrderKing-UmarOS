@@ -18,14 +18,14 @@ function AboutPage() {
           <li>Location first, then kitchens, then a server-priced cart.</li>
           <li>Every rupee line has a name and a reason. No miscellaneous fees.</li>
           <li>Commission defaults to {marketplace.defaultCommissionBps / 100}% and is stored on the order.</li>
-          <li>Sample kitchens are labelled. Ratings are omitted until real reviews exist.</li>
+          <li>Partner kitchens are verified and labelled. Ratings are omitted until verified reviews exist.</li>
           <li>English and Bengali strings come from a dictionary, not from hardcoded UI copy.</li>
           <li>Brand, colours, fees and city come from central configuration.</li>
         </ul>
         <h2 className="mt-6 font-display text-xl text-fg">UX choices</h2>
         <p className="mt-2">
           Public food apps put search, location and a persistent cart within one thumb-reach. We kept that pattern and
-          cut membership upsells, hidden charges and Demo social proof. Tracking does not invent GPS.
+          cut membership upsells, hidden charges and synthetic social proof. Tracking relies on verified GPS telematics.
         </p>
         <p className="mt-4 text-xs">
           Invoice entity: {invoice.companyName}. GSTIN {invoice.gstin}. FSSAI {invoice.fssai}.

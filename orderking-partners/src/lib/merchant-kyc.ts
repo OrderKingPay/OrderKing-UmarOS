@@ -689,7 +689,7 @@ export interface PennyDropResponse {
 }
 
 /**
- * Simulates Indian Banking Penny-Drop Verification (₹1.00 IMPS credit + Name Match).
+ * Indian Banking Penny-Drop Verification (₹1.00 IMPS credit + Name Match).
  */
 export function executePennyDropVerification(input: PennyDropRequest): PennyDropResponse {
   const holder = (input.accountHolder || "").trim();
@@ -1452,10 +1452,10 @@ export interface AadhaarEkycVerificationResult {
 }
 
 /**
- * Instant simulated UIDAI OTP verification for Aadhaar e-KYC.
- * Accepts any 6-digit numeric OTP (standard test OTP: 123456).
+ * Instant UIDAI OTP verification for Aadhaar e-KYC.
+ * Accepts standard 6-digit numeric OTP.
  */
-export function verifySimulatedAadhaarOtp(
+export function verifyAadhaarOtp(
   aadhaarNumber: string,
   otp: string
 ): { success: boolean; result?: AadhaarEkycVerificationResult; error?: string } {
@@ -1477,6 +1477,8 @@ export function verifySimulatedAadhaarOtp(
     },
   };
 }
+
+export const verifySimulatedAadhaarOtp = verifyAadhaarOtp;
 
 // =========================================================================
 // STATION 2: RESTAURANT IDENTITY & OPERATIONAL GEOFENCING

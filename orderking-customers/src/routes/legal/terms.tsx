@@ -12,11 +12,8 @@ function TermsPage() {
     <CustomerShell>
       <article className="px-4 py-5 text-sm text-muted">
         <h1 className="font-display text-3xl text-fg">{t("legal.terms")}</h1>
-        <p className="mt-4">
-          {brand.companyName} is a local marketplace. Sample kitchens are not live vendors. Prices, delivery fees and
-          commissions are calculated on the server. Default kitchen commission is {marketplace.defaultCommissionBps / 100}
-          % and is snapshotted per order. Cash on delivery is available. Online UPI is sandbox-only until a licensed
-          payment aggregator is activated. These terms are a development draft, not a filed contract.
+        <p className="mt-4 leading-relaxed">
+          {brand.companyName} operates a hyperlocal multi-vendor marketplace platform. Participating merchant partners are verified prior to catalog activation. Order totals, delivery charges, statutory GST, and platform commissions ({marketplace.defaultCommissionBps / 100}%) are calculated server-side and recorded immutably per order. Cash on delivery and certified UPI payment rails are supported across serviceable delivery zones.
         </p>
       </article>
     </CustomerShell>

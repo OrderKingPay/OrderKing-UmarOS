@@ -1078,7 +1078,7 @@ function SettingsPage() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] text-slate-400">Test Basket:</span>
+                <span className="text-[11px] text-slate-400">Benchmark Basket:</span>
                 {[250, 500, 1000, 2000].map((amt) => (
                   <button
                     key={amt}

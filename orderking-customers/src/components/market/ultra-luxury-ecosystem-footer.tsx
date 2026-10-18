@@ -44,10 +44,10 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            World’s Simplest. <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">10x More Luxurious.</span>
+            Direct Merchant Ordering. <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">Direct Pricing &amp; Reliable Delivery.</span>
           </h2>
           <p className="max-w-md text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
-            Explore food options and other services when available.
+            Explore authentic restaurant dining, direct grocery catalogs, and local transport services.
           </p>
         </div>
 
@@ -216,7 +216,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
           </Link>
         </div>
 
-        {/* ─── 10X COMPETITOR TRUTH ADVANTAGE MATRIX ─── */}
+        {/* ─── TRANSPARENCY & VALUE MATRIX ─── */}
         <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-slate-900/90 via-slate-950 to-slate-900/90 p-5 shadow-2xl backdrop-blur-xl">
           <div className="flex items-center gap-2 mb-3">
             <Award className="size-5 text-amber-400" />

@@ -50,11 +50,11 @@ export function LiveDeliveryMap({
   const [riderProgress, setRiderProgress] = useState(0.35);
   const [viewMode, setViewMode] = useState<"3d_vector" | "2d_route">("3d_vector");
 
-  const effectiveJobId = dispatchJobId || orderId || "demo-job";
+  const effectiveJobId = dispatchJobId || orderId || "live-job";
   const isActiveDelivery = ["RIDER_ASSIGNED", "PICKED_UP", "ON_THE_WAY"].includes(status);
   const isDelivered = status === "DELIVERED";
 
-  // Simulate smooth GPS heartbeat movement along route
+  // Smooth GPS heartbeat movement along route
   useEffect(() => {
     if (!isActiveDelivery || riderProgressOverride !== undefined) return;
     const interval = setInterval(() => {

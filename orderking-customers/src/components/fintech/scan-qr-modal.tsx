@@ -403,7 +403,7 @@ export function ScanQrModal({
             </div>
 
             {mode === "camera" ? (
-              /* Simulated Active Camera Viewfinder */
+              /* BharatQR Optical Viewfinder */
               <div className="space-y-4">
                 <div className="relative aspect-square max-h-64 mx-auto w-full rounded-2xl overflow-hidden bg-black border-2 border-dashed border-amber-400/60 flex flex-col items-center justify-center p-4">
                   {/* Scanner Laser Animation */}

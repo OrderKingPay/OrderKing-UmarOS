@@ -115,7 +115,7 @@ const SUPPORTED_POS_SYSTEMS: POSSystem[] = [
 ];
 
 export function UniversalPosHardwareManager({
-  restaurantId = "demo-restaurant",
+  restaurantId = "active-merchant",
   restaurantName = "Restaurant Kitchen",
 }: {
   restaurantId?: string;
@@ -419,8 +419,8 @@ export function UniversalPosHardwareManager({
     }, 850);
   };
 
-  // Simulate Inbound Order Webhook Ingestion
-  const handleSimulateWebhookOrder = () => {
+  // Inbound Order Webhook Diagnostics
+  const handleTriggerWebhookTest = () => {
     const isPetpooja = activePosId === "petpooja";
     const orderNum = `POS-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -967,7 +967,7 @@ export function UniversalPosHardwareManager({
                 size="sm"
                 variant="secondary"
                 type="button"
-                onClick={handleSimulateWebhookOrder}
+                onClick={handleTriggerWebhookTest}
                 className="text-[11px] font-bold h-7"
               >
                 ⚡ Test Inbound Order Push

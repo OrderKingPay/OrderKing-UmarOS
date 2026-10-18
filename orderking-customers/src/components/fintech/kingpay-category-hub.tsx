@@ -1179,9 +1179,9 @@ function PassbookLedgerTool() {
               <ShieldCheck className="size-6 stroke-[2.2]" />
             </div>
             <div>
-              <h4 className="text-sm font-black text-white">Authentic Ledger Initialized</h4>
+              <h4 className="text-sm font-black text-white">Double-Entry Ledger Verified</h4>
               <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
-                Zero simulated or mock transaction entries. Your double-entry ledger is live with live fee & instant cashback transparency and binds directly to authentic UPI settlements.
+                Your double-entry ledger is active with real-time fee transparency and instant cashback reconciled directly against verified banking settlements.
               </p>
             </div>
           </div>

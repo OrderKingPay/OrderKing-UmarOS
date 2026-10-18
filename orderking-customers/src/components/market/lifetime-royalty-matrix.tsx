@@ -77,7 +77,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
     },
   });
 
-  // Live real data fallbacks (Zero Demo data)
+  // Production fallback states
   const referralCode = data?.referralCode || "KING50";
   const shareUrl = data?.shareUrl || `https://orderking.in/r/${referralCode}?src=lifetime_royalty`;
   const walletBalanceRupees = (data?.walletBalancePaise || 0) / 100;
@@ -87,7 +87,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
   const totalEarnedRupees = (data?.totalRoyaltyEarnedPaise || 0) / 100;
   const recruitsList = data?.recruits || [];
 
-  // Mathematical Virus Calculations (Accurate to 100 bps = 1.00%)
+  // Network Growth Analytics (Accurate to 100 bps = 1.00%)
   const simMonthlyGmv = calcRecruits * calcFrequency * calcAov;
   const simMonthlyRoyalty = simMonthlyGmv * 0.01;
   const simDailyRoyalty = simMonthlyRoyalty / 30;
@@ -260,7 +260,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
         </div>
       </div>
 
-      {/* 2. REAL FINANCIAL METRICS AUDIT HUB (ZERO Demo DATA) */}
+      {/* 2. FINANCIAL METRICS AUDIT HUB */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Metric 1: Lifetime Royalty Earned */}
         <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xs space-y-2">
@@ -488,7 +488,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
         </div>
       </div>
 
-      {/* 4. RECRUITS DASHBOARD & AUDIT LEDGER (ZERO Demo DATA) */}
+      {/* 4. RECRUITS DASHBOARD & AUDIT LEDGER */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="space-y-0.5">

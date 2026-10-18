@@ -209,7 +209,7 @@ export function ReceiveMoneyQrStudio({
     toast.success("High-Resolution QR Poster downloaded!");
   };
 
-  // Play Simulated Audio Soundbox Chime
+  // Play Merchant Soundbox Audio Notification
   const handleTestSoundbox = () => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       try {

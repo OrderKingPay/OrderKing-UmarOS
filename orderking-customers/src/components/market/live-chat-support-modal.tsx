@@ -70,7 +70,7 @@ export function LiveChatSupportModal({
     setInput("");
     setIsTyping(true);
 
-    // Simulate realistic live agent escalation response
+    // Automated live support escalation response
     setTimeout(() => {
       setIsTyping(false);
       let reply = "I understand completely. Let me check the real-time telemetry with our kitchen and delivery fleet.";

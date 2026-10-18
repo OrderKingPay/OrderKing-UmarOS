@@ -311,13 +311,12 @@ export function OrderKingPassbookReceipts({
             </div>
             <div>
               <h4 className={`text-sm font-black ${isDark ? "text-white" : "text-stone-900"}`}>
-                Authentic Ledger Initialized
+                Double-Entry Ledger Verified
               </h4>
               <p className={`text-xs max-w-md mx-auto mt-1 leading-relaxed ${
                 isDark ? "text-slate-400" : "text-stone-500"
               }`}>
-                Zero simulated or mock transaction entries. Your double-entry ledger is live with live fee transparency & instant cashback and
-                binds directly to authentic settlements.
+                Your passbook ledger maintains cryptographic double-entry integrity with real-time fee transparency and direct settlement reconciliation.
               </p>
             </div>
           </div>

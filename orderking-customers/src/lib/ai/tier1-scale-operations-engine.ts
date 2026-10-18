@@ -1,8 +1,8 @@
 
 
 /**
- * HDmaster AI - Tier-1 Scale Autonomous Operations Engine
- * 10000x Real-time Capacity. Zero Physical Employees Required.
+ * OrderKing Autonomous Operations Engine
+ * Tier-1 Hyperlocal Real-time Automated Logistics Engine.
  */
 
 import { supabase } from "../db-cloud";
@@ -10,9 +10,9 @@ import { supabase } from "../db-cloud";
 export class Tier1ScaleOperationsEngine {
   
   /**
-   * REPLACES: Human Dispatchers & Fleet Managers
-   * Automatically calculates exact geolocation vectors, traffic algorithms, 
-   * and restaurant prep times to instantly assign the perfect rider.
+   * Autonomous Fleet Dispatch Engine
+   * Automatically calculates exact geolocation vectors, traffic models, 
+   * and kitchen prep times to dispatch optimal delivery partners.
    */
   static async autonomousFleetDispatch(orderId: string) {
     try {

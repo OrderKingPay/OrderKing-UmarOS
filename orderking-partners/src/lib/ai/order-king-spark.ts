@@ -627,7 +627,7 @@ export class OrderKingSpark {
     ) {
       const disputes = this.getActiveDisputes();
       const first = disputes[0] ?? {
-        disputeId: "dsp-demo-01",
+        disputeId: "dsp-ref-8831",
         orderId: "ord-8831",
         customerName: "Rahul Sharma",
         complaintType: "FOOD_SPILL" as const,

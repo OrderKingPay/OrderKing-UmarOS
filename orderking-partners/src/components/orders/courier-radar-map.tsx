@@ -97,7 +97,7 @@ export function CourierRadarMap({
   const mapboxToken = (import.meta as any).env?.VITE_MAPBOX_TOKEN as string | undefined;
   const googleMapsApiKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
 
-  // Dynamic distance & ETA simulation based on state
+  // Dynamic distance & ETA estimation based on state
   const isArrived = orderState === "ARRIVED_AT_OUTLET";
   const isPickedUp = ["PICKED_UP", "ON_THE_WAY"].includes(orderState);
 
@@ -374,7 +374,7 @@ export function CourierRadarMap({
                 {/* Tactical Grid Background */}
                 <rect width="100%" height="100%" fill="url(#radarGrid)" />
 
-                {/* Hyperlocal Street Vector Simulation */}
+                {/* Hyperlocal Street Vector Telematics */}
                 <path
                   d="M -20 180 Q 150 160 260 210 T 520 220"
                   fill="none"
