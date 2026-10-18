@@ -332,7 +332,7 @@ export function HomeFeed({
   return (
     <div className="space-y-5 px-3 py-3 sm:px-4 sm:py-4 bg-[#FCFAF7] text-gray-900">
       {/* 1. ULTRA-LUXURY HORIZONTAL CIRCULAR FOOD CATEGORIES (Distinct Gradient Border & Emoji Labels) */}
-      {!q && (
+      {!q && (list.data?.restaurants?.length ?? 0) > 0 && (
         <section aria-label="Food Categories" className="pt-1">
           <div className="flex items-center justify-between mb-2.5">
             <div>
@@ -401,7 +401,7 @@ export function HomeFeed({
       )}
 
       {/* 2. SECONDARY QUICK FILTER PILLS (Distinct Color Background when active) & RESULT COUNT */}
-      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+      {(list.data?.restaurants?.length ?? 0) > 0 && <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
         <div className="flex items-center gap-2 shrink-0">
           {/* Fast Delivery: Amber / Orange */}
           <button
@@ -468,7 +468,7 @@ export function HomeFeed({
         <span className="text-[11px] font-bold text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0">
           {`${filteredRestaurants.length} restaurants found`}
         </span>
-      </div>
+      </div>}
 
       {/* 3. ACTIVE ORDER BANNER (Real Data Only) */}
       {activeOrder && !q && (
@@ -560,8 +560,8 @@ export function HomeFeed({
         ) : filteredRestaurants.length === 0 ? (
           <div className="rounded-2xl border border-amber-200/80 bg-white p-8 text-center space-y-3 shadow-sm">
             <Utensils className="size-10 text-amber-500 mx-auto" />
-            <h3 className="font-extrabold text-gray-900 text-base">No restaurants available here yet</h3>
-            <p className="text-xs text-gray-500 max-w-sm mx-auto">Try another delivery location or reset your filters to see available restaurants.</p>
+            <h3 className="font-extrabold text-gray-900 text-base">No restaurants available for this location</h3>
+            <p className="text-xs text-gray-500 max-w-sm mx-auto">Try another delivery location or reset your filters. We show only actual partner restaurants.</p>
             <Button
               type="button"
               variant="outline"
@@ -577,6 +577,17 @@ export function HomeFeed({
             >
               Reset Filters
             </Button>
+            {(list.data?.restaurants?.length ?? 0) === 0 && (
+              <div className="mx-auto mt-5 max-w-lg border-t border-gray-100 pt-4">
+                <p className="mb-3 text-sm font-semibold text-gray-800">More to explore{location?.cityName && location.cityName !== "Locating..." ? " in " + location.cityName : ""}</p>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  <Link to="/tutor" className="rounded-xl border border-gray-200 bg-white p-3 text-sm font-semibold text-gray-900 hover:border-amber-400">Learn &amp; study <span className="block text-xs font-normal text-gray-500">Learning tools</span></Link>
+                  <Link to="/travel" className="rounded-xl border border-gray-200 bg-white p-3 text-sm font-semibold text-gray-900 hover:border-amber-400">Plan travel <span className="block text-xs font-normal text-gray-500">Check provider availability</span></Link>
+                  <Link to="/king-pay" className="rounded-xl border border-gray-200 bg-white p-3 text-sm font-semibold text-gray-900 hover:border-amber-400">Payment tools <span className="block text-xs font-normal text-gray-500">Calculators &amp; information</span></Link>
+                </div>
+                <p className="mt-2 text-xs text-gray-500">Travel bookings and payment services depend on verified providers. No service availability is promised here.</p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
@@ -643,7 +654,7 @@ export function HomeFeed({
       )}
 
       {/* 2.5. ELEGANT GIFT TREAT TO FRIENDS (Compact WhatsApp Share) */}
-      {!q && (
+      {!q && filteredRestaurants.length > 0 && (
         <section aria-label="Gift Treat to Friends" className="pt-1">
           <WhatsAppViralBountiesWidget source="home_feed" />
         </section>
