@@ -93,11 +93,11 @@ function createNeonSql(): Promise<Sql> {
   globalRef.__pgSqlPromise__ ??= (async () => {
     // Regular Postgres driver: node-postgres (`pg`) — works directly with Neon's
     // pooled endpoint. One pool per process; warm serverless instances reuse it.
-    const { Pool, types } = await import("@neondatabase/serverless");
+    const { Pool, types } = await import("pg");
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing"); const pool = new Pool({ connectionString: url });
+    const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing"); const pool = new Pool({ connectionString: url, max: 3, connectionTimeoutMillis: 8000, idleTimeoutMillis: 30000, allowExitOnIdle: true });
     const run = async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
