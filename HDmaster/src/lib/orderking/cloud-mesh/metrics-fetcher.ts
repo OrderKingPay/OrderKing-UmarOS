@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 export async function getClusterMetrics() {
-  const K8S_URL = process.env.K8S_CLUSTER_URL || 'http://localhost:8080';
+  const K8S_URL = process.env.K8S_CLUSTER_URL || 'https://orderking-hdmaster.pages.dev';
   const K8S_TOKEN = process.env.K8S_TOKEN || '';
 
   try {

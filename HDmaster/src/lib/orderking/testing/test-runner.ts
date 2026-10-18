@@ -1,6 +1,6 @@
 import { getSql } from '../../db';
 
-export async function runHealthCheck(baseUrl: string = 'http://localhost:3000') {
+export async function runHealthCheck(baseUrl: string = 'https://orderking-customers.pages.dev') {
   try {
     const response = await fetch(`${baseUrl}/api/health`);
     const sql = await getSql();
@@ -18,7 +18,7 @@ export async function runHealthCheck(baseUrl: string = 'http://localhost:3000') 
   }
 }
 
-export async function runSmokeTests(baseUrl: string = 'http://localhost:3000') {
+export async function runSmokeTests(baseUrl: string = 'https://orderking-customers.pages.dev') {
   const endpoints = ['/api/orders', '/api/restaurants'];
   const results = [];
   
