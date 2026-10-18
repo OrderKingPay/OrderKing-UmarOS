@@ -25,10 +25,13 @@ import {
   LayoutGrid,
   Monitor,
   Printer,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 import { KingPaySoundboxEngine } from "@/components/KingPaySoundboxEngine";
 import { KitchenDisplayStation } from "@/components/kitchen-display-station";
 import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware";
+import { inferDishComplexity } from "@/lib/orders/dynamic-kpt";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/kitchen")({ component: KitchenPage });
@@ -523,6 +526,23 @@ export function KitchenPage({
             );
           })}
         </div>
+
+        {/* Dynamic KPT & Station Load Telemetry */}
+        <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2 text-slate-300">
+            <Clock className="size-3.5 text-emerald-400" />
+            <span>
+              Dynamic KPT Dispatch Synchronization:{" "}
+              <strong className="text-emerald-400">
+                {20 + throttleBuffer}m base ETA
+              </strong>
+              {throttleBuffer > 0 ? ` (+${throttleBuffer}m kitchen throttle)` : " (Optimal pacing)"}
+            </span>
+          </div>
+          <span className="text-[10px] font-mono text-slate-400">
+            Nominal Capacity: 6 concurrent tickets · Courier dispatch synchronized to packaging
+          </span>
+        </div>
       </Card>
 
       {/* King Pay Merchant Soundbox Software */}
@@ -625,7 +645,7 @@ export function KitchenPage({
 
       {activeTab === "KDS" && (
         <div className="pt-2">
-          <KitchenDisplayStation prepThrottleBuffer={throttleBuffer} />
+          <KitchenDisplayStation orders={q.data?.orders ?? []} prepThrottleBuffer={throttleBuffer} />
         </div>
       )}
 

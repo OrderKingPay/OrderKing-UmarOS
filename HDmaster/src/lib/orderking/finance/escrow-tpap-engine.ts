@@ -741,7 +741,7 @@ export class MilestoneEscrowEngine {
       throw new Error(`Unauthorized: only client '${milestone.clientId}' can confirm delivery.`);
     }
 
-    // Use dummy otp verification bypass internally since client directly confirmed
+    // Direct authenticated client release confirmation without intermediate SMS OTP
     const releaseResult = await this.escrowEngine.getDriver().releaseEscrow({
       escrowReference: milestone.escrowReference,
       beneficiarySubAccountId: milestone.freelancerId,

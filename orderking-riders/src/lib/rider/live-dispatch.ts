@@ -30,7 +30,27 @@ export class LiveDispatchAdapter implements DispatchPort {
     
     const job = jobRes[0];
     
-    // Find riders within 5km using PostGIS or bounding box
+    // Find nearest riders within 5km using PostGIS match_nearest_riders function
+    try {
+      const nearestRiders = await sql`
+        SELECT rider_id, user_id, distance_meters, lat, lng, status, kyc_status
+        FROM match_nearest_riders(${job.pickup_lat}, ${job.pickup_lng}, 5000, 10)
+      `;
+      if (nearestRiders.length > 0) {
+        return nearestRiders.map((r: any) => ({
+          riderId: r.rider_id,
+          userId: r.user_id,
+          status: r.status,
+          kycStatus: r.kyc_status,
+          preferredZones: [],
+          lastPoint: { lat: Number(r.lat), lng: Number(r.lng) }
+        }));
+      }
+    } catch (e) {
+      console.warn("[LiveDispatchAdapter] match_nearest_riders query fallback:", e);
+    }
+
+    // Direct PostGIS table query fallback
     const riders = await sql`
       SELECT r.rider_id, r.user_id, r.status, r.kyc_status, l.lat, l.lng
       FROM riders r
@@ -42,6 +62,11 @@ export class LiveDispatchAdapter implements DispatchPort {
         ST_MakePoint(${job.pickup_lng}, ${job.pickup_lat})::geography, 
         5000
       )
+      ORDER BY ST_Distance(
+        ST_MakePoint(l.lng, l.lat)::geography,
+        ST_MakePoint(${job.pickup_lng}, ${job.pickup_lat})::geography
+      ) ASC
+      LIMIT 10
     `;
 
     return riders.map((r: any) => ({

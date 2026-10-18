@@ -610,54 +610,61 @@ export function TravelPage() {
           activeTab={activeTab}
         />
 
-        {/* ULTRA-LUXURIOUS TRAVELSTATION SKY GRADIENT HERO */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#050D24] via-[#0E1A40] to-[#1E0F3D] text-white p-6 sm:p-8 shadow-2xl border border-sky-400/30">
-          {/* Celestial Cosmic Lighting & Ambient Sky Orbs */}
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 -mb-20 w-72 h-72 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400/10 via-transparent to-transparent pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+        {/* COMPACT HIGH-DENSITY TRAVEL HERO */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#050D24] via-[#0E1A40] to-[#1E0F3D] text-white p-4 sm:p-5 shadow-xl border border-sky-400/30">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-400/15 border border-sky-400/40 px-3 py-1 text-xs font-black text-sky-300 shadow-xs">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1 rounded-full bg-sky-400/20 border border-sky-400/40 px-2 py-0.5 text-[10px] font-black text-sky-300">
                   <span>✈️</span>
-                  <span>Travel information and planning</span>
+                  <span>TravelStation</span>
                 </span>
-                <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2 py-0.5 text-[10px] font-extrabold">
-                  Provider fees shown when available
-                </span>
-                <span className="rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 px-2 py-0.5 text-[10px] font-extrabold">
-                  Confirm provider connections before booking
+                <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
+                  0% Platform Markup
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-                OrderKing TravelStation
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                Book Flights, Trains, Buses &amp; Cabs
               </h1>
-              <p className="mt-1.5 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Explore travel categories. Availability, booking prices and fees require confirmation from the actual provider.
-              </p>
             </div>
 
+            {/* My Trips Quick Link */}
+            <button
+              type="button"
+              onClick={() => setActiveTab("trips")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition border shrink-0 ${
+                activeTab === "trips"
+                  ? "bg-sky-500 text-slate-950 border-sky-400 font-black shadow-xs"
+                  : "bg-white/10 text-slate-200 border-white/15 hover:bg-white/20"
+              }`}
+            >
+              <Compass className="size-3.5 text-sky-300" />
+              <span>My Bookings</span>
+              {savedTrips.length > 0 && (
+                <span className="rounded-full bg-emerald-500/30 text-emerald-300 px-1.5 py-0.2 text-[10px] font-black">
+                  {savedTrips.length}
+                </span>
+              )}
+            </button>
           </div>
 
-          {/* Search across all categories, sub-categories, routes & PNR tools */}
-          <div className="relative mt-6 space-y-2 z-10">
-            <label htmlFor="travel-service-search" className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-              <Search className="size-3.5 text-sky-400" />
-              Search Indian Flights, Trains, Buses, Hotels, Cabs &amp; PNR Tools
-            </label>
-            <input
-              id="travel-service-search"
-              type="search"
-              autoComplete="off"
-              value={serviceQuery}
-              onChange={(e) => setServiceQuery(e.target.value)}
-              placeholder="Search Flights (DEL➔BOM), IRCTC Trains, AC Sleeper Buses, Luxury Stays, PNR Enquiry..."
-              className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-slate-400 outline-none focus:border-sky-400 focus:bg-white/15 transition backdrop-blur-md"
-            />
+          {/* Quick Search */}
+          <div className="relative mt-3">
+            <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 shadow-inner">
+              <Search className="size-4 text-sky-300 shrink-0" aria-hidden />
+              <input
+                id="travel-service-search"
+                type="search"
+                autoComplete="off"
+                value={serviceQuery}
+                onChange={(e) => setServiceQuery(e.target.value)}
+                placeholder="Search Flights (DEL➔BOM), IRCTC Trains, Sleeper Buses, Stays, Cabs..."
+                aria-label="Search travel services"
+                className="h-10 min-w-0 flex-1 bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-400 focus:outline-none"
+              />
+            </div>
             {serviceQuery.trim() && (
-              <div className="max-h-56 space-y-1 overflow-y-auto rounded-2xl border border-white/20 bg-slate-950 p-2 shadow-2xl">
+              <div className="absolute left-0 right-0 top-12 z-20 max-h-48 space-y-1 overflow-y-auto rounded-xl border border-white/20 bg-slate-950 p-2 shadow-2xl">
                 {TRAVEL_CATEGORIES.flatMap((cat) =>
                   cat.subCategories
                     .filter((sub) =>
@@ -675,10 +682,10 @@ export function TravelPage() {
                       setActiveSubCategory((prev) => ({ ...prev, [cat.id]: sub }));
                       setServiceQuery("");
                     }}
-                    className="flex items-center justify-between w-full rounded-xl px-3 py-2 text-left text-xs sm:text-sm text-slate-100 hover:bg-white/10 transition"
+                    className="flex items-center justify-between w-full rounded-lg px-2.5 py-1.5 text-left text-xs text-slate-100 hover:bg-white/10 transition"
                   >
                     <span className="font-bold">{sub}</span>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-sky-400/20 text-sky-300 px-2 py-0.5 border border-sky-400/30">
+                    <span className="text-[9px] font-extrabold uppercase rounded bg-sky-400/20 text-sky-300 px-1.5 py-0.5">
                       {cat.label}
                     </span>
                   </button>
@@ -687,214 +694,32 @@ export function TravelPage() {
             )}
           </div>
 
-          {/* =====================================================================
-              5 BOOKING CARDS IN LUXURY GRID:
-              Flight (Sky Blue) · Train (Emerald) · Bus (Orange) · Hotel (Royal Purple) · Cab (Yellow)
-             ===================================================================== */}
-          <div className="mt-7 pt-6 border-t border-white/10">
-            <div className="flex items-center justify-between mb-3.5">
-              <span className="text-[11px] font-black uppercase tracking-widest text-sky-300 flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-sky-400" />
-                Choose travel type
-              </span>
-              <span className="text-[10px] text-slate-400 font-bold hidden sm:inline">
-                Click any category to load verified desk
-              </span>
-            </div>
+          {/* Quick Category Switcher Tabs */}
+          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {TRAVEL_CATEGORIES.map((cat) => {
+              const isSelected = activeTab === cat.id;
+              const Icon = cat.id === "flights" ? Plane : cat.id === "trains" ? Train : cat.id === "buses" ? Bus : cat.id === "hotels" ? Building2 : cat.id === "cabs" ? Car : CreditCard;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setActiveTab(cat.id)}
+                  className={`flex items-center gap-1.5 shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+                    isSelected
+                      ? "bg-sky-400 text-slate-950 border-sky-300 font-black shadow-xs"
+                      : "bg-white/10 text-slate-200 border-white/10 hover:bg-white/20"
+                  }`}
+                >
+                  <Icon className="size-3.5" />
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-              {/* 1. FLIGHT (Sky Blue) */}
-              <button
-                type="button"
-                onClick={() => setActiveTab("flights")}
-                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  activeTab === "flights"
-                    ? "bg-gradient-to-br from-sky-500/25 via-sky-600/15 to-blue-950/70 border-sky-400 shadow-[0_0_25px_rgba(56,189,248,0.3)] ring-1 ring-sky-400/60"
-                    : "bg-white/[0.04] border-white/10 hover:border-sky-400/50 hover:bg-sky-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-400/40 shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
-                    <Plane className="size-6 sm:size-7" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-sky-400/20 text-sky-300 border border-sky-400/40 px-2 py-0.5">
-                    Save ₹399
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-sky-300 transition-colors">
-                  Flights
-                </h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
-                  Domestic &amp; International Fares
-                </p>
-                <div className="mt-2.5 flex items-center justify-between border-t border-sky-400/20 pt-2 text-[10px] font-bold text-sky-300">
-                  <span>OrderKing Direct</span>
-                  <span>Details ➔</span>
-                </div>
-              </button>
-
-              {/* 2. TRAIN (Emerald) */}
-              <button
-                type="button"
-                onClick={() => setActiveTab("trains")}
-                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  activeTab === "trains"
-                    ? "bg-gradient-to-br from-emerald-500/25 via-emerald-600/15 to-teal-950/70 border-emerald-400 shadow-[0_0_25px_rgba(52,211,153,0.3)] ring-1 ring-emerald-400/60"
-                    : "bg-white/[0.04] border-white/10 hover:border-emerald-400/50 hover:bg-emerald-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-                    <Train className="size-6 sm:size-7" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 px-2 py-0.5">
-                    CRIS / PNR
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-emerald-300 transition-colors">
-                  Trains &amp; IRCTC
-                </h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
-                  Live 10-Digit PNR · Vande Bharat
-                </p>
-                <div className="mt-2.5 flex items-center justify-between border-t border-emerald-400/20 pt-2 text-[10px] font-bold text-emerald-300">
-                  <span>IRCTC Direct</span>
-                  <span>Official Tariff ➔</span>
-                </div>
-              </button>
-
-              {/* 3. BUS (Orange) */}
-              <button
-                type="button"
-                onClick={() => setActiveTab("buses")}
-                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  activeTab === "buses"
-                    ? "bg-gradient-to-br from-orange-500/25 via-amber-600/15 to-rose-950/70 border-orange-400 shadow-[0_0_25px_rgba(251,146,60,0.3)] ring-1 ring-orange-400/60"
-                    : "bg-white/[0.04] border-white/10 hover:border-orange-400/50 hover:bg-orange-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-orange-500/20 text-orange-400 border border-orange-400/40 shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
-                    <Bus className="size-6 sm:size-7" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-orange-400/20 text-orange-300 border border-orange-400/40 px-2 py-0.5">
-                    Sovereign Bus
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-orange-300 transition-colors">
-                  Buses &amp; Sleepers
-                </h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
-                  Intercity AC Sleeper · State RTCs
-                </p>
-                <div className="mt-2.5 flex items-center justify-between border-t border-orange-400/20 pt-2 text-[10px] font-bold text-orange-300">
-                  <span>Volvo &amp; Scania</span>
-                  <span>Zero Agent Fee ➔</span>
-                </div>
-              </button>
-
-              {/* 4. HOTEL (Royal Purple) */}
-              <button
-                type="button"
-                onClick={() => setActiveTab("hotels")}
-                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  activeTab === "hotels"
-                    ? "bg-gradient-to-br from-purple-500/25 via-indigo-600/15 to-slate-950/70 border-purple-400 shadow-[0_0_25px_rgba(192,132,252,0.3)] ring-1 ring-purple-400/60"
-                    : "bg-white/[0.04] border-white/10 hover:border-purple-400/50 hover:bg-purple-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-300 border border-purple-400/40 shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
-                    <Building2 className="size-6 sm:size-7" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-purple-400/20 text-purple-300 border border-purple-400/40 px-2 py-0.5">
-                    5-Star Luxury
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-purple-300 transition-colors">
-                  Hotels &amp; Stays
-                </h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
-                  Luxury Resorts &amp; Business GST
-                </p>
-                <div className="mt-2.5 flex items-center justify-between border-t border-purple-400/20 pt-2 text-[10px] font-bold text-purple-300">
-                  <span>Verified Stays</span>
-                  <span>GST Invoice ➔</span>
-                </div>
-              </button>
-
-              {/* 5. CAB (Yellow) */}
-              <button
-                type="button"
-                onClick={() => setActiveTab("cabs")}
-                className={`col-span-2 sm:col-span-1 rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  activeTab === "cabs"
-                    ? "bg-gradient-to-br from-amber-400/25 via-yellow-500/15 to-slate-950/70 border-yellow-300 shadow-[0_0_25px_rgba(253,224,71,0.3)] ring-1 ring-yellow-300/60"
-                    : "bg-white/[0.04] border-white/10 hover:border-yellow-300/50 hover:bg-amber-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-amber-400/20 text-yellow-300 border border-yellow-300/40 shadow-md shadow-yellow-500/20 group-hover:scale-105 transition-transform">
-                    <Car className="size-6 sm:size-7" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-yellow-400/20 text-yellow-300 border border-yellow-300/40 px-2 py-0.5">
-                    Flat Rates
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-yellow-300 transition-colors">
-                  Cabs &amp; Airport
-                </h3>
-                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
-                  Airport Chauffeur &amp; Outstation
-                </p>
-                <div className="mt-2.5 flex items-center justify-between border-t border-yellow-300/20 pt-2 text-[10px] font-bold text-yellow-300">
-                  <span>Doorstep Pickup</span>
-                  <span>Metered Fare ➔</span>
-                </div>
-              </button>
-            </div>
-
-            {/* Secondary navigation for FASTag & My Trips */}
-            <div className="mt-3.5 flex flex-wrap items-center gap-2 pt-3 border-t border-white/10">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">
-                More Travel Utilities:
-              </span>
-              <button
-                type="button"
-                onClick={() => setActiveTab("fastag")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
-                  activeTab === "fastag"
-                    ? "bg-purple-600 text-white border-purple-400 shadow-sm"
-                    : "bg-white/10 text-slate-200 border-white/10 hover:bg-white/20"
-                }`}
-              >
-                <CreditCard className="size-3.5 text-purple-300" />
-                <span>FASTag &amp; Highway Toll</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("trips")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
-                  activeTab === "trips"
-                    ? "bg-sky-600 text-white border-sky-400 shadow-sm"
-                    : "bg-white/10 text-slate-200 border-white/10 hover:bg-white/20"
-                }`}
-              >
-                <Compass className="size-3.5 text-sky-300" />
-                <span>My Trips &amp; Bookings</span>
-                {savedTrips.length > 0 && (
-                  <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 text-[10px] font-black">
-                    {savedTrips.length}
-                  </span>
-                )}
-              </button>
-            </div>
-
-            {/* Sub-Category Strip for Active Primary Category */}
-            <div className="mt-3 flex flex-wrap items-center gap-2 pt-3 border-t border-white/10">
-              <span className="text-[10px] font-black uppercase tracking-widest text-sky-300 mr-1">
-                {currentCategory.label} Sub-Categories:
-              </span>
+          {/* Sub-Category Strip for Active Category */}
+          {currentCategory.subCategories.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap items-center gap-1.5 pt-2.5 border-t border-white/10">
               {currentCategory.subCategories.map((sub) => {
                 const isSelected = currentSub === sub;
                 return (
@@ -907,10 +732,10 @@ export function TravelPage() {
                         [activeTab]: sub,
                       }))
                     }
-                    className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                    className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
                       isSelected
-                        ? "bg-sky-400 text-slate-950 font-black shadow-xs"
-                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                        ? "bg-sky-300 text-slate-950 font-black shadow-xs"
+                        : "bg-white/5 text-slate-300 hover:bg-white/15"
                     }`}
                   >
                     {sub}
@@ -918,7 +743,7 @@ export function TravelPage() {
                 );
               })}
             </div>
-          </div>
+          )}
         </div>
 
         {/* =====================================================================

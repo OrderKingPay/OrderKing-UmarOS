@@ -17,6 +17,7 @@ import { OrderKingMark } from "@/components/brand/wordmark";
 import { resilientLazy, ModalErrorBoundary } from "@/components/common/resilient-lazy";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OneTapCheckoutDrawer } from "@/components/market/one-tap-checkout-drawer";
+import { ContextualCrossSellBar } from "@/components/market/contextual-cross-sell-bar";
 
 const LazyLocationDialog = resilientLazy(
   () => import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog })),
@@ -402,6 +403,9 @@ export function CustomerShell({
         )}
       </header>
 
+      {/* Contextual Geographic Intelligence & Cross-Ecosystem Recommendation Bar */}
+      <ContextualCrossSellBar />
+
       {/* Main Content Area */}
       <main id="main" className="flex-1 w-full">
         <ErrorBoundary sectionName="Page Content">
@@ -413,8 +417,19 @@ export function CustomerShell({
       {path !== "/" ? <UltraLuxuryEcosystemFooter /> : null}
 
       {/* Floating View Cart & 1-Tap Checkout Bar */}
-      {isDeliveryActive && count > 0 && path !== "/cart" && path !== "/checkout" ? (
-        <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex justify-center px-4">
+      {count > 0 && path !== "/cart" && path !== "/checkout" ? (
+        <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex flex-col items-center justify-center px-4 gap-1.5">
+          {/* Active Cart Cross-Sell Strip ("Add Mart essentials with ₹0 extra delivery fee") */}
+          <Link
+            to="/search"
+            search={{ q: "mart" } as any}
+            className="pointer-events-auto flex items-center justify-center gap-1.5 rounded-full bg-emerald-950/95 text-emerald-200 border border-emerald-400/60 px-3 py-1 text-[11px] font-bold shadow-lg hover:bg-emerald-900 transition no-underline active:scale-95 backdrop-blur-md"
+          >
+            <Sparkles className="size-3 text-amber-300" />
+            <span>Add Mart essentials with ₹0 extra delivery fee</span>
+            <ChevronDown className="size-3 -rotate-90 text-emerald-400" />
+          </Link>
+
           <div className="pointer-events-auto flex min-h-12 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-r from-slate-950 via-[#18130d] to-slate-950 px-3.5 py-2.5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.45)] transition-all font-bold border border-amber-400/60 backdrop-blur-md">
             <div className="flex items-center gap-2">
               <span className="flex size-7 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 text-slate-950 text-xs font-black shadow-md">

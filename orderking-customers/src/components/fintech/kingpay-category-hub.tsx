@@ -89,7 +89,7 @@ function UpiQrGeneratorTool() {
             1-Tap Dynamic UPI QR Generator
           </h3>
           <p className="text-xs text-slate-400">
-            Generates live NPCI deep-linking payload compatible with GPay, PhonePe, Paytm, and BHIM
+            Generates standard NPCI deep-linking payload compatible with all authorized UPI apps and BHIM
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -1277,38 +1277,32 @@ export function KingPayCategoryHub({
   return (
     <div className="mx-auto max-w-5xl space-y-5 px-4 py-6 font-sans">
       {/* RBI COMPLIANT FINTECH SUITE HERO */}
-      <header className="relative overflow-hidden rounded-3xl border border-amber-400/50 bg-gradient-to-r from-amber-950/80 via-slate-950 to-[#2A1D07] p-6 sm:p-7 shadow-[0_0_35px_rgba(245,158,11,0.25)] text-white">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-400/10 via-transparent to-transparent pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <header className="relative overflow-hidden rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-950/70 via-slate-950 to-slate-900 p-4 sm:p-5 shadow-lg text-white">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2.5">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/50 px-3 py-1 text-xs font-black text-amber-300 shadow-sm">
-                <Crown className="size-3.5" />
-                <span>Payment information &amp; calculators</span>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/20 border border-amber-400/40 px-2 py-0.5 text-[10px] font-black text-amber-300">
+                <Crown className="size-3" />
+                <span>Instant Finance &amp; Calculators</span>
               </span>
-              <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold">
-                Availability depends on provider verification
+              <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
+                Paise Arithmetic
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              OrderKing <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200">KingPay</span>
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+              OrderKing <span className="text-amber-400">KingPay Hub</span>
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Use available payment tools and calculators. Payment services require active provider verification; estimates are not bank offers.
+            <p className="text-xs text-slate-300">
+              Direct UPI, split bills, EMI calculators, and double-entry passbook ledger.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-amber-400/40 bg-black/50 p-4 text-right backdrop-blur-xl shrink-0">
+          <div className="rounded-xl border border-amber-400/30 bg-black/40 px-3.5 py-2 text-left sm:text-right shrink-0">
             <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
               SafeInteger Precision
             </span>
-            <span className="text-lg font-black text-white font-mono block mt-0.5">
+            <span className="text-sm font-black text-white font-mono block">
               100 Paise = ₹1.00
-            </span>
-            <span className="text-[10px] text-slate-400 block">
-              Zero Floating-Point Drift
             </span>
           </div>
         </div>

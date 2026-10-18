@@ -109,7 +109,7 @@ function CheckoutPage() {
   const { restaurantId, restaurantName, items, coupon, clear } = useCartStore();
   const location = useLocationStore((s) => s.location);
   const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("RAZORPAY_ONLINE");
-  const [preferredUpiApp, setPreferredUpiApp] = useState<string>("GPay");
+  const [preferredUpiApp, setPreferredUpiApp] = useState<string>("UPI QR");
   const [notes, setNotes] = useState("");
   const [forSomeoneElse, setForSomeoneElse] = useState(false);
   const [recipientName, setRecipientName] = useState("");
@@ -955,7 +955,7 @@ function CheckoutPage() {
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-zinc-500">
-                        Instant gateway verification via GPay, PhonePe, Paytm, or Credit/Debit Cards
+                        Instant gateway verification via any UPI app, NetBanking, or Credit/Debit Cards
                       </p>
                     </div>
                   </label>
@@ -963,13 +963,13 @@ function CheckoutPage() {
                   {method === "RAZORPAY_ONLINE" && (
                     <div className="mt-3 border-t border-zinc-200 dark:border-zinc-800 pt-3">
                       <p className="text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-2">
-                        Preferred Payment App ({preferredUpiApp})
+                        Preferred Payment Method ({preferredUpiApp})
                       </p>
                       <div className="grid grid-cols-4 gap-2">
-                        {(["GPay", "PhonePe", "Paytm", "Cards"] as const).map((appLabel) => {
+                        {(["UPI QR", "Fast UPI", "NetBanking", "Cards"] as const).map((appLabel) => {
                           const isSelected = preferredUpiApp === appLabel;
                           const icon =
-                            appLabel === "GPay" ? "🟢" : appLabel === "PhonePe" ? "🟣" : appLabel === "Paytm" ? "🔵" : "💳";
+                            appLabel === "UPI QR" ? "📱" : appLabel === "Fast UPI" ? "⚡" : appLabel === "NetBanking" ? "🏛️" : "💳";
                           return (
                             <button
                               key={appLabel}

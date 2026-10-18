@@ -330,20 +330,17 @@ export function HomeFeed({
   }, [list.data?.restaurants, dietFilter, filterRating, filterOffers, filterBudget, filterFast, selectedCategory, q]);
 
   return (
-    <div className="space-y-5 px-3 py-3 sm:px-4 sm:py-4 bg-[#FCFAF7] text-gray-900">
-      {/* 1. ULTRA-LUXURY HORIZONTAL CIRCULAR FOOD CATEGORIES (Distinct Gradient Border & Emoji Labels) */}
+    <div className="space-y-4 px-3 py-2 sm:px-4 sm:py-3 bg-[#FCFAF7] text-gray-900">
+      {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
       {!q && (list.data?.restaurants?.length ?? 0) > 0 && (
-        <section aria-label="Food Categories" className="pt-1">
-          <div className="flex items-center justify-between mb-2.5">
-            <div>
-              <h2 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
-                Inspiration for your order
-              </h2>
-              <p className="text-xs text-gray-500 font-medium">Explore top dishes &amp; restaurants</p>
-            </div>
+        <section aria-label="Food Categories" className="pt-0.5">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
+              Food Categories
+            </h2>
             <Link
               to="/search"
-              className="text-xs font-black text-[#E23744] hover:underline flex items-center gap-0.5"
+              className="text-xs font-bold text-[#E23744] hover:underline flex items-center gap-0.5"
             >
               See all <ChevronRight className="size-3.5" />
             </Link>
@@ -498,24 +495,18 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* 4. CURATED COLLECTIONS */}
-      {false && !q && (<CuratedCollections className="pt-2" />)}
-
-      {/* 5. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
-      <section aria-label="Restaurants Grid" className="pt-2">
-        <div className="flex items-center justify-between mb-3.5">
-          <div>
-            <h2 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
-              {selectedCategory
-                ? "Explore this category"
-                : dietFilter === "veg"
-                ? "Pure vegetarian restaurants"
-                : `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`}
-            </h2>
-            <p className="text-xs text-gray-500 font-medium">
-              Explore menus and delivery options in {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your neighborhood")}
-            </p>
-          </div>
+      {/* RESTAURANTS GRID */}
+      <section aria-label="Restaurants Grid" className="pt-1">
+        <div className="flex items-center justify-between mb-2.5">
+          <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
+            {!isDeliveryActive
+              ? `Services in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`
+              : selectedCategory
+              ? "Filtered restaurants"
+              : dietFilter === "veg"
+              ? "Pure vegetarian restaurants"
+              : `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`}
+          </h2>
         </div>
 
         {list.isPending && !list.data ? (
@@ -558,36 +549,30 @@ export function HomeFeed({
             </Button>
           </div>
         ) : filteredRestaurants.length === 0 ? (
-          <div className="rounded-2xl border border-amber-200/80 bg-white p-8 text-center space-y-3 shadow-sm">
-            <Utensils className="size-10 text-amber-500 mx-auto" />
-            <h3 className="font-extrabold text-gray-900 text-base">No restaurants available for this location</h3>
-            <p className="text-xs text-gray-500 max-w-sm mx-auto">Try another delivery location or reset your filters. We show only actual partner restaurants.</p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSelectedCategory(null);
-                setFilterFast(false);
-                setFilterRating(false);
-                setFilterOffers(false);
-                setFilterBudget(false);
-              }}
-              className="mt-2 bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 font-bold"
-            >
-              Reset Filters
-            </Button>
-            {(list.data?.restaurants?.length ?? 0) === 0 && (
-              <div className="mx-auto mt-5 max-w-lg border-t border-gray-100 pt-4">
-                <p className="mb-3 text-sm font-semibold text-gray-800">More to explore{location?.cityName && location.cityName !== "Locating..." ? " in " + location.cityName : ""}</p>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                  <Link to="/tutor" className="rounded-xl border border-gray-200 bg-white p-3 text-sm font-semibold text-gray-900 hover:border-amber-400">Learn &amp; study <span className="block text-xs font-normal text-gray-500">Learning tools</span></Link>
-                  <Link to="/travel" className="rounded-xl border border-gray-200 bg-white p-3 text-sm font-semibold text-gray-900 hover:border-amber-400">Plan travel <span className="block text-xs font-normal text-gray-500">Check provider availability</span></Link>
-                  <Link to="/king-pay" className="rounded-xl border border-gray-200 bg-white p-3 text-sm font-semibold text-gray-900 hover:border-amber-400">Payment tools <span className="block text-xs font-normal text-gray-500">Calculators &amp; information</span></Link>
-                </div>
-                <p className="mt-2 text-xs text-gray-500">Travel bookings and payment services depend on verified providers. No service availability is promised here.</p>
+          <div className="space-y-4">
+            {list.data && list.data.restaurants.length > 0 && (
+              <div className="rounded-2xl border border-amber-200/80 bg-white p-6 text-center space-y-3 shadow-sm">
+                <Utensils className="size-8 text-amber-500 mx-auto" />
+                <h3 className="font-extrabold text-gray-900 text-base">No restaurants match your current filters</h3>
+                <p className="text-xs text-gray-500 max-w-sm mx-auto">Try resetting your filters or selecting a different dish category.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    setFilterFast(false);
+                    setFilterRating(false);
+                    setFilterOffers(false);
+                    setFilterBudget(false);
+                  }}
+                  className="bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 font-bold"
+                >
+                  Reset Filters
+                </Button>
               </div>
             )}
+            <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">

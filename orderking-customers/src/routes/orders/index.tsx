@@ -104,18 +104,17 @@ function OrdersPage() {
 
   return (
     <CustomerShell>
-      <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-5 pb-28">
+      <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-4 pb-24">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display text-3xl font-black text-stone-900 tracking-tight">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
               {t("orders.title")}
             </h1>
-            <p className="mt-0.5 text-xs font-bold text-amber-800">
-              Live Royal Deliveries &amp; Order History
+            <p className="mt-0.5 text-xs font-medium text-stone-500">
+              Track active orders &amp; previous deliveries
             </p>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-950 shadow-2xs">
-            <span>👑</span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-stone-100 border border-stone-200 px-3 py-1 text-xs font-bold text-stone-700">
             <span>{list.length} Orders</span>
           </span>
         </div>

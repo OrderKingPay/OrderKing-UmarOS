@@ -1,6 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { UtensilsCrossed, GraduationCap, Wallet, Plane, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocationStore } from "@/lib/stores/location";
+import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 export type ActivePlatform = "delivery" | "kingpay" | "travel" | "tutor";
 
@@ -82,6 +84,9 @@ export const CUSTOMER_PRIMARY_TABS = [
 
 export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps) {
   const pathname = useRouterState({ select: (s) => s?.location?.pathname ?? "/" });
+  const location = useLocationStore((s) => s.location);
+  const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : true;
+
   const isCurrent = (id: (typeof CUSTOMER_PRIMARY_TABS)[number]["id"]) => {
     if (id === "food") return pathname === "/" || pathname.startsWith("/restaurants") || pathname.startsWith("/menu") || pathname.startsWith("/dining") || pathname.startsWith("/search") || pathname.startsWith("/cart");
     if (id === "learn") return pathname.startsWith("/tutor");
@@ -94,12 +99,19 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
       <ul className="grid grid-cols-5 gap-1 rounded-2xl border border-amber-400/40 bg-[#141414]/95 p-2 shadow-lg backdrop-blur-xl" role="list">
         {CUSTOMER_PRIMARY_TABS.map(({ id, label, to, icon: Icon }) => {
           const active = isCurrent(id);
+          const tabTitle = id === "food" && !isDeliveryActive ? "Mart / Food (Regional delivery)" : label;
+          const displayLabel = id === "food" && !isDeliveryActive ? "Mart/Food" : label;
           return (
             <li key={id} className="min-w-0">
-              <Link to={to} preload="intent" aria-current={active ? "page" : undefined} title={label}
+              <Link to={to} preload="intent" aria-current={active ? "page" : undefined} title={tabTitle}
                 className={cn("flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl px-0.5 py-1 text-[10px] font-semibold no-underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300", active ? "bg-amber-400 text-slate-950" : "text-stone-200 hover:bg-white/10 hover:text-white")}>
-                <Icon className="size-5" aria-hidden="true" />
-                <span className="block w-full truncate text-center">{label}</span>
+                <div className="relative">
+                  <Icon className="size-5" aria-hidden="true" />
+                  {id === "food" && !isDeliveryActive && (
+                    <span className="absolute -top-1 -right-1 size-1.5 rounded-full bg-amber-400 ring-1 ring-black" title="Mart Delivery Active" />
+                  )}
+                </div>
+                <span className="block w-full truncate text-center">{displayLabel}</span>
               </Link>
             </li>
           );

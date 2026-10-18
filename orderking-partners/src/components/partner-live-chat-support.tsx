@@ -20,58 +20,37 @@ export interface ChatMessage {
   timestamp: string;
 }
 
-export function PartnerLiveChatSupport() {
-  const [threads, setThreads] = useState<ChatThread[]>([
-    {
-      id: "th-1",
-      type: "RIDER",
-      targetName: "Rider Amit Kumar",
-      orderNumber: "OK-94281",
-      lastMessage: "I have reached outside the restaurant pickup gate.",
-      timeAgo: "1m ago",
-      unread: true,
-    },
-    {
-      id: "th-2",
-      type: "CUSTOMER",
-      targetName: "Priya S. (Customer)",
-      orderNumber: "OK-94280",
-      lastMessage: "Please make sure to add extra mint chutney packets.",
-      timeAgo: "6m ago",
-      unread: false,
-    },
-    {
-      id: "th-3",
-      type: "SUPPORT",
-      targetName: "OrderKing Merchant Operations",
-      lastMessage: "Daily settlements batch initiated at 18:00 IST.",
-      timeAgo: "22m ago",
-      unread: false,
-    },
-  ]);
-
-  const [activeThreadId, setActiveThreadId] = useState<string>("th-1");
+export function PartnerLiveChatSupport({
+  initialThreads = [],
+  initialMessages = {},
+  onSendMessage,
+}: {
+  initialThreads?: ChatThread[];
+  initialMessages?: Record<string, ChatMessage[]>;
+  onSendMessage?: (threadId: string, text: string) => Promise<void> | void;
+} = {}) {
+  const [threads, setThreads] = useState<ChatThread[]>(initialThreads);
+  const [activeThreadId, setActiveThreadId] = useState<string>(initialThreads[0]?.id || "");
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({
-    "th-1": [
-      { id: "m1", sender: "system", text: "Chat connected with assigned rider Amit Kumar for Order #OK-94281", timestamp: "18:02" },
-      { id: "m2", sender: "them", text: "I have reached outside the restaurant pickup gate.", timestamp: "18:04" },
-    ],
-    "th-2": [
-      { id: "m3", sender: "them", text: "Please make sure to add extra mint chutney packets.", timestamp: "17:58" },
-      { id: "m4", sender: "me", text: "Sure Priya, we have packed 2 extra containers with your Biryani!", timestamp: "18:00" },
-    ],
-    "th-3": [
-      { id: "m5", sender: "them", text: "Daily settlements batch initiated at 18:00 IST.", timestamp: "17:45" },
-    ],
-  });
+  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>(initialMessages);
 
-  const activeThread = threads.find((t) => t.id === activeThreadId) || threads[0];
-  const activeMessages = messages[activeThreadId] || [];
+  useEffect(() => {
+    setThreads(initialThreads);
+    if (!activeThreadId && initialThreads.length > 0 && initialThreads[0]) {
+      setActiveThreadId(initialThreads[0].id);
+    }
+  }, [initialThreads]);
+
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
+
+  const activeThread = threads.find((t) => t.id === activeThreadId);
+  const activeMessages = activeThreadId ? messages[activeThreadId] || [] : [];
 
   const handleSend = (textToSend?: string) => {
     const text = (textToSend ?? input).trim();
-    if (!text) return;
+    if (!text || !activeThreadId) return;
 
     const newMsg: ChatMessage = {
       id: `m-${Date.now()}`,
@@ -85,25 +64,19 @@ export function PartnerLiveChatSupport() {
       [activeThreadId]: [...(prev[activeThreadId] || []), newMsg],
     }));
     setInput("");
-
-    // Quick simulated rider acknowledgement
-    if (activeThread.type === "RIDER") {
-      setTimeout(() => {
-        setMessages((prev) => ({
-          ...prev,
-          [activeThreadId]: [
-            ...(prev[activeThreadId] || []),
-            {
-              id: `m-${Date.now() + 1}`,
-              sender: "them",
-              text: "Got it! Waiting at collection counter.",
-              timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-            },
-          ],
-        }));
-      }, 1000);
-    }
+    onSendMessage?.(activeThreadId, text);
   };
+  if (threads.length === 0 || !activeThread) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border p-12 text-center space-y-2 bg-surface min-h-[300px] flex flex-col items-center justify-center">
+        <MessageSquare className="size-8 text-muted" />
+        <h3 className="text-sm font-bold text-fg">No Active Communication Channels</h3>
+        <p className="text-xs text-muted max-w-sm">
+          Direct messaging with assigned delivery couriers and merchant support will activate dynamically when active orders are placed.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 rounded-2xl border border-border bg-surface overflow-hidden min-h-[500px]">
@@ -249,7 +222,7 @@ export function PartnerLiveChatSupport() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={`Message ${activeThread.targetName}...`}
+            placeholder={activeThread ? `Message ${activeThread.targetName}...` : "Type a message..."}
             className="flex-1 rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs focus:border-primary focus:outline-hidden"
             onKeyDown={(e) => {
               if (e.key === "Enter") {

@@ -76,20 +76,14 @@ export function KingPayShell({
         <div className="mx-auto flex max-w-lg flex-wrap items-center justify-between gap-3 md:max-w-5xl">
           {/* KingPay Brand Identity */}
           <div className="flex items-center gap-2.5">
-            <KingPayMark className="size-9 rounded-xl shadow-md" />
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-display font-black text-lg tracking-tight text-fg leading-none">
-                  King<span className="text-amber-500">Pay</span>
-                </span>
-                <span className="rounded-full bg-emerald-500/15 px-1.5 py-0.2 text-[9px] font-extrabold text-emerald-700 dark:text-emerald-300">
-                  Service catalogue
-                </span>
-              </div>
-              <p className="text-[10px] text-muted leading-tight mt-0.5 flex items-center gap-1">
-                <ShieldCheck className="size-3 text-emerald-600" />
-                <span>Transaction tools require verified providers</span>
-              </p>
+            <KingPayMark className="size-8 rounded-xl shadow-md" />
+            <div className="flex items-center gap-1.5">
+              <span className="font-display font-black text-lg tracking-tight text-fg leading-none">
+                King<span className="text-amber-500">Pay</span>
+              </span>
+              <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                Fintech Hub
+              </span>
             </div>
           </div>
 
@@ -192,11 +186,8 @@ export function KingPayShell({
         </div>
       </header>
 
-      {/* Search only the existing King Pay screens, without suggesting transactions are searchable. */}
-      <section aria-label="King Pay service search" className="mx-auto w-full max-w-lg px-4 pt-4 md:max-w-5xl">
-        <label htmlFor="kingpay-service-search" className="mb-2 block text-xs font-semibold text-slate-300">
-          Find a King Pay service
-        </label>
+      {/* Search King Pay services */}
+      <section aria-label="King Pay service search" className="mx-auto w-full max-w-lg px-4 pt-3 md:max-w-5xl">
         <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3">
           <Search className="size-4 text-amber-300" aria-hidden />
           <input
@@ -205,8 +196,9 @@ export function KingPayShell({
             value={serviceQuery}
             autoComplete="off"
             onChange={(e) => setServiceQuery(e.target.value)}
-            placeholder="Search UPI, bills, FASTag, passbook, wealth, travel..."
-            className="h-11 min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
+            placeholder="Search payments, bills, FASTag, passbook, wealth, travel..."
+            aria-label="Search King Pay services"
+            className="h-10 min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
           />
         </div>
         {serviceQuery.trim() && (

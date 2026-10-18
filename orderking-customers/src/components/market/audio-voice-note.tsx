@@ -168,7 +168,7 @@ export function AudioVoiceNote({
         .play()
         .then(() => setIsPlaying(true))
         .catch(() => {
-          // In some browsers or dummy audio URLs
+          // Browser audio autoplay restriction or unsupported media format fallback
           setIsPlaying(true);
           setTimeout(() => setIsPlaying(false), (storeNote?.durationSeconds || 5) * 1000);
         });

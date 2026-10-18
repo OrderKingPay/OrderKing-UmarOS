@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, MessageSquare, ThumbsUp, CornerDownRight, Send, Flag, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,44 +16,20 @@ export interface RestaurantReview {
   ownerReply?: string | null;
 }
 
-export function ReviewReplyManager() {
+export function ReviewReplyManager({
+  initialReviews = [],
+  onReply,
+}: {
+  initialReviews?: RestaurantReview[];
+  onReply?: (id: string, text: string) => Promise<void> | void;
+} = {}) {
   const [filterRating, setFilterRating] = useState<number | "ALL">("ALL");
   const [replyInput, setReplyInput] = useState<Record<string, string>>({});
-  const [reviews, setReviews] = useState<RestaurantReview[]>([
-    {
-      id: "rev-1",
-      customerName: "Rohan V.",
-      orderNumber: "OK-94281",
-      rating: 5,
-      date: "Today at 14:20",
-      dishName: "Hyderabadi Chicken Dum Biryani",
-      comment: "Absolutely outstanding aroma! Rice grains were long and tender chicken pieces had authentic spices. Arrived steaming hot.",
-      photos: ["https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=300&q=80"],
-      ownerReply: "Thank you so much Rohan! We take pride in our 4-hour slow dum process. Looking forward to cooking for you again soon! – Head Chef",
-    },
-    {
-      id: "rev-2",
-      customerName: "Sneha M.",
-      orderNumber: "OK-94270",
-      rating: 3,
-      date: "Yesterday",
-      dishName: "Paneer Butter Masala & Garlic Naan",
-      comment: "Taste was decent but the naan turned chewy during transit. Could packaging be improved with foil wrap?",
-      photos: [],
-      ownerReply: null,
-    },
-    {
-      id: "rev-3",
-      customerName: "Karan D.",
-      orderNumber: "OK-94265",
-      rating: 1,
-      date: "2 days ago",
-      dishName: "Cold Coffee with Ice Cream",
-      comment: "Ice cream was completely melted inside the delivery bag.",
-      photos: [],
-      ownerReply: null,
-    },
-  ]);
+  const [reviews, setReviews] = useState<RestaurantReview[]>(initialReviews);
+
+  useEffect(() => {
+    setReviews(initialReviews);
+  }, [initialReviews]);
 
   const handlePostReply = (id: string) => {
     const text = replyInput[id]?.trim();
@@ -111,7 +87,13 @@ export function ReviewReplyManager() {
 
       {/* Review List */}
       <div className="space-y-3">
-        {filtered.map((r) => (
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border p-8 text-center space-y-1.5 text-xs text-muted">
+            <p className="font-semibold text-fg">No Customer Reviews Found</p>
+            <p>Verified customer ratings and review comments will appear here automatically.</p>
+          </div>
+        ) : (
+          filtered.map((r) => (
           <Card key={r.id} className="p-4 space-y-3">
             {/* Header info */}
             <div className="flex items-start justify-between">
@@ -195,7 +177,7 @@ export function ReviewReplyManager() {
               </div>
             )}
           </Card>
-        ))}
+        )))}
       </div>
     </div>
   );

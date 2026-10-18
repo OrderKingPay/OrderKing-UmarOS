@@ -968,67 +968,55 @@ function IntelligencePage() {
     <CustomerShell>
       <div className="flex flex-col min-h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
         
-        {/* ULTRA-LUXURIOUS AMETHYST PURPLE TO INDIGO HERO */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#1B0B2E] via-[#2A134E] to-[#120E38] border-b border-purple-500/30 px-4 sm:px-6 py-6 sm:py-8 shadow-2xl text-white">
-          {/* Ambient Amethyst & Indigo Glow Orbs */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-purple-600/15 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
-          <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none -mb-20" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-400/10 via-transparent to-transparent pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* COMPACT HIGH-DENSITY TUTOR HERO */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#1B0B2E] via-[#2A134E] to-[#120E38] border-b border-purple-500/30 px-4 py-3 sm:px-6 sm:py-4 text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <div className="flex flex-wrap items-center gap-2 mb-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-400/15 border border-purple-400/40 px-3 py-1 text-xs font-black text-purple-300 shadow-xs">
-                  <span>🔮</span>
-                  <span>Learn and explore careers</span>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1 rounded-full bg-purple-400/20 border border-purple-400/40 px-2 py-0.5 text-[10px] font-black text-purple-300">
+                  <span>🎓</span>
+                  <span>LearnKing &amp; Careers</span>
                 </span>
-                <span className="rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 px-2.5 py-0.5 text-[10px] font-extrabold">
-                  Choose your subject and language
-                </span>
-                <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold">
-                  Job listings require verification
+                <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
+                  28 State Boards
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-                Learn and find work
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                LearnKing AI &amp; Opportunities
               </h1>
-              <p className="mt-1.5 text-xs sm:text-sm text-purple-200/90 max-w-2xl leading-relaxed">
-                Explore learning tools. Job listings appear only after actual employer and opening verification.
-              </p>
             </div>
 
             {/* Mode Selector */}
-            <div className="flex items-center bg-black/40 border border-purple-400/30 p-1.5 rounded-2xl shrink-0 backdrop-blur-xl shadow-xl self-start md:self-auto">
+            <div className="flex items-center bg-black/40 border border-purple-400/30 p-1 rounded-xl shrink-0 backdrop-blur-xl shadow-lg self-start sm:self-auto">
               <button
                 type="button"
                 onClick={() => setMode("tutor")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   mode === "tutor"
                     ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black shadow-md shadow-purple-600/30"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <GraduationCap className="size-4" />
-                <span>LearnKing AI</span>
+                <GraduationCap className="size-3.5" />
+                <span>AI Tutor</span>
               </button>
               <button
                 type="button"
                 onClick={() => setMode("jobs")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   mode === "jobs"
                     ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-md shadow-emerald-600/30"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <Briefcase className="size-4" />
-                <span>Available jobs</span>
-                <span className="rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] px-1.5 py-0.2 font-extrabold">
-                  {VERIFIED_JOB_OPENINGS.length} Roles
+                <Briefcase className="size-3.5" />
+                <span>Available Jobs</span>
+                <span className="rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] px-1.5 py-0.2 font-extrabold ml-0.5">
+                  {VERIFIED_JOB_OPENINGS.length}
                 </span>
               </button>
             </div>
           </div>
-
         </div>
 
         {/* Dynamic Controls Sub-Panel (Curriculum or Jobs Filters) */}
@@ -1094,7 +1082,7 @@ function IntelligencePage() {
                 </div>
 
                 {/* Quick Study Prompts for Active Tutor Category / Sub-Category */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none pt-0.5">
                   {filteredTutorPrompts.map((item) => (
                     <button
                       key={item.subCategory + item.subject}
@@ -1105,26 +1093,23 @@ function IntelligencePage() {
                         setDifficulty(item.difficulty);
                         setMessage(item.prompt);
                       }}
-                      className="rounded-xl border border-zinc-800 bg-zinc-900/70 hover:border-amber-500/50 p-2.5 text-left transition flex items-start justify-between gap-2"
+                      className="rounded-xl border border-zinc-800 bg-zinc-900/70 hover:border-amber-500/50 p-2 text-left transition flex items-center justify-between gap-2 shrink-0 max-w-[260px] active:scale-95"
                     >
-                      <div>
-                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
-                          {item.subCategory} · {item.subject}
+                      <div className="min-w-0">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 truncate block">
+                          {item.subCategory}
                         </span>
-                        <p className="text-xs text-zinc-200 line-clamp-1 mt-0.5">
+                        <p className="text-xs text-zinc-200 truncate mt-0.5">
                           {item.prompt}
                         </p>
                       </div>
-                      <ArrowRight className="size-3.5 text-zinc-500 shrink-0 mt-1" />
+                      <ArrowRight className="size-3.5 text-zinc-500 shrink-0 ml-1" />
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-2 relative z-10">
-                <label htmlFor="tutor-topic-search" className="text-[11px] font-semibold text-zinc-300">
-                  Search study topics &amp; mathematics modules
-                </label>
+              <div className="space-y-1.5 relative z-10">
                 <input
                   id="tutor-topic-search"
                   type="search"

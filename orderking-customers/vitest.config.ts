@@ -25,6 +25,7 @@ export default defineConfig({
       "src/test/npci-upi-intent.test.ts",
       "src/test/fintech-reality-suite.test.ts",
       "src/test/search-connaught-place.test.ts",
+      "src/test/geographic-intelligence-recommendation.test.ts",
     ],
     environment: "node",
   },

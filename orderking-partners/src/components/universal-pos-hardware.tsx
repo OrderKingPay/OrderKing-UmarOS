@@ -8,6 +8,9 @@ import {
   type PaperWidth,
   type EscPosReceiptData,
 } from "@/lib/hardware/escpos";
+import { ringPosAlarm } from "@/lib/hardware/pos-alarm";
+
+export { ringPosAlarm };
 
 type PrinterInterface = "network" | "bluetooth" | "usb" | "browser";
 
@@ -149,6 +152,7 @@ export function UniversalPosHardwareManager({
   const [printerConnected, setPrinterConnected] = useState(true);
   const [showTestPrintModal, setShowTestPrintModal] = useState(false);
   const [viewHexDump, setViewHexDump] = useState(false);
+  const [isAlarmRinging, setIsAlarmRinging] = useState(false);
 
   // --- Network Socket State & Telemetry ---
   const [socketStatus, setSocketStatus] = useState<"IDLE" | "CONNECTING" | "TRANSMITTING" | "CONNECTED" | "ERROR">("CONNECTED");
@@ -526,6 +530,19 @@ export function UniversalPosHardwareManager({
     }
   };
 
+  const handleTriggerKitchenAlarm = async () => {
+    setIsAlarmRinging(true);
+    toast.info("Ringing 880Hz POS Kitchen Acoustic Alarm...");
+    try {
+      await ringPosAlarm(1200);
+      toast.success("POS Kitchen Acoustic Alarm test complete!");
+    } catch {
+      toast.error("Failed to ring kitchen alarm");
+    } finally {
+      setIsAlarmRinging(false);
+    }
+  };
+
   const selectedPos = SUPPORTED_POS_SYSTEMS.find((p) => p.id === activePosId) || SUPPORTED_POS_SYSTEMS[0];
   const webhookUrl = `https://api.orderking.in/v1/pos/${selectedPos.webhookSlug}/webhook/${restaurantId}`;
 
@@ -553,6 +570,16 @@ export function UniversalPosHardwareManager({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              type="button"
+              disabled={isAlarmRinging}
+              onClick={handleTriggerKitchenAlarm}
+              className="text-xs font-bold border-amber-500/40 text-amber-500 hover:bg-amber-500/10"
+            >
+              {isAlarmRinging ? "🔊 Ringing..." : "🔔 880Hz Kitchen Buzzer"}
+            </Button>
             <Button
               size="sm"
               variant="outline"

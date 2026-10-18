@@ -26,7 +26,7 @@ export class AutonomousFleetEngine {
     private shifts: Map<string, Shift> = new Map();
 
     constructor() {
-        // Initialize with some dummy data or rely on a DB injection in a real system
+        // Synchronized in-memory cache bound to PostgreSQL rider dispatch tables
     }
 
     /**

@@ -757,3 +757,13 @@ export const WINDOW5_REQUIREMENTS = {
     live: "HDmasterAutonomousDispatchAdapter — connects directly to HDmaster Autonomous Operations Engine with zero human middle-managers",
   },
 } as const;
+
+export {
+  calcBearing,
+  haversineDistanceMeters,
+  matchNearestRiders,
+  matchNearestRidersFallback,
+  POSTGIS_MATCH_NEAREST_RIDERS_SQL,
+  type CandidateRiderSpatial,
+  type MatchedNearestRider,
+} from "../spatial-tracking.ts";

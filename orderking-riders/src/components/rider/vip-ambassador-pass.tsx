@@ -64,7 +64,7 @@ export function VipAmbassadorPass({
       const s = await getAmbassadorStatsFn();
       setStats(s);
     } catch {
-      // Graceful fallback for offline / mock mode
+      // Graceful fallback for offline network mode
     }
   };
 

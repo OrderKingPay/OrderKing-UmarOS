@@ -35,6 +35,8 @@ import {
   matchDishCulinaryTaxonomy,
   generateProceduralCulinaryCanvas,
 } from "@/lib/ai/culinary-photo-studio";
+import { digitizeMenuFromOcr, type DigitizedMenuCatalog } from "@/lib/server/autonomous-onboarding";
+import { DietaryAllergenEditor } from "@/components/dietary-allergen-editor";
 import {
   Search,
   Flame,
@@ -43,6 +45,7 @@ import {
   Zap,
   CheckCircle2,
   XCircle,
+  FileText,
   Lock,
   ShieldCheck,
   X,
@@ -320,6 +323,11 @@ function MenuPage() {
   const [savingDish, setSavingDish] = useState(false);
   const [editor, setEditor] = useState<DishEditorState | null>(null);
   const [studioLighting, setStudioLighting] = useState<StudioLightingSettings>(DEFAULT_STUDIO_LIGHTING);
+  const [ocrModalOpen, setOcrModalOpen] = useState(false);
+  const [rawOcrText, setRawOcrText] = useState("");
+  const [digitizedCatalog, setDigitizedCatalog] = useState<DigitizedMenuCatalog | null>(null);
+  const [importingOcr, setImportingOcr] = useState(false);
+  const [showAllergenEditor, setShowAllergenEditor] = useState(false);
 
   const [quickDishInput, setQuickDishInput] = useState("");
   const [isAddingQuickDish, setIsAddingQuickDish] = useState(false);
@@ -854,6 +862,67 @@ function MenuPage() {
     }
   }
 
+  function handleDigitizeText() {
+    if (!rawOcrText.trim()) return;
+    const catalog = digitizeMenuFromOcr(rawOcrText);
+    setDigitizedCatalog(catalog);
+  }
+
+  async function handleCommitDigitizedMenu() {
+    if (!digitizedCatalog || !vendor.restaurantId || importingOcr) return;
+    setImportingOcr(true);
+    try {
+      let createdDishes = 0;
+      for (const cat of digitizedCatalog.categories) {
+        let catId = "";
+        const existingCat = categories.find((c) => c.name.toLowerCase() === cat.name.toLowerCase());
+        if (existingCat) {
+          catId = existingCat.id;
+        } else {
+          const res = await saveCategory({
+            data: {
+              restaurantId: vendor.restaurantId,
+              name: cat.name,
+              sortOrder: categories.length + cat.sortOrder,
+            },
+          });
+          catId = res.id;
+        }
+
+        for (const item of cat.items) {
+          await saveItem({
+            data: {
+              restaurantId: vendor.restaurantId,
+              categoryId: catId,
+              name: item.name,
+              description: item.description,
+              diet: item.diet === "VEG" || item.diet === "NONVEG" || item.diet === "EGG" ? item.diet : "VEG",
+              tags: `${item.diet} · ${item.category}`,
+              recommended: false,
+              prepMinutes: item.prepMinutes,
+              variants: [
+                {
+                  name: "Regular",
+                  pricePaise: item.pricePaise,
+                },
+              ],
+            },
+          });
+          createdDishes++;
+        }
+      }
+      toast.success(`Successfully imported ${createdDishes} dishes from digitized menu!`);
+      setOcrModalOpen(false);
+      setRawOcrText("");
+      setDigitizedCatalog(null);
+      void qc.invalidateQueries({ queryKey: ["menu"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to import digitized menu");
+    } finally {
+      setImportingOcr(false);
+    }
+  }
+
   function handleOpenStudioForQuickDish(dishNameOverride?: string) {
     const rawName = (dishNameOverride || quickDishInput).trim();
     if (!rawName) return;
@@ -1059,6 +1128,20 @@ function MenuPage() {
                 <Download className="size-3.5" />
                 Export CSV
               </button>
+            )}
+
+            {canEdit && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setOcrModalOpen(true)}
+                className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs"
+                title="Digitize physical paper menu or raw dish text into structured catalog"
+              >
+                <FileText className="mr-1 size-3.5 text-emerald-400" />
+                OCR / Bulk Text Import
+              </Button>
             )}
 
             {canEdit && categories.length > 0 && (
@@ -2408,6 +2491,52 @@ function MenuPage() {
                   />
                   <span className="font-medium">{t("menu.recommended")} (Highlight as Chef's Recommended Dish)</span>
                 </label>
+
+                {/* Dietary Classifications & Allergen Manager */}
+                <div className="pt-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAllergenEditor(!showAllergenEditor)}
+                    className="border-slate-700 bg-slate-900 text-xs font-semibold text-slate-200 hover:text-white"
+                  >
+                    <span>🥗</span> {showAllergenEditor ? "Hide Dietary & Allergen Details" : "Configure Dietary Flags & Allergens"}
+                  </Button>
+                  {showAllergenEditor && (
+                    <div className="mt-2.5">
+                      <DietaryAllergenEditor
+                        dishName={editor.name || "Dish"}
+                        initialConfig={{
+                          dietaryClassification: editor.diet === "VEG" ? "VEG" : editor.diet === "EGG" ? "EGG" : "NON_VEG",
+                        }}
+                        onSave={(cfg) => {
+                          const mappedDiet: "VEG" | "NONVEG" | "EGG" =
+                            cfg.dietaryClassification === "VEG" || cfg.dietaryClassification === "VEGAN" || cfg.dietaryClassification === "JAIN"
+                              ? "VEG"
+                              : cfg.dietaryClassification === "EGG"
+                              ? "EGG"
+                              : "NONVEG";
+                          const allergenTags = cfg.allergens.length > 0 ? `Allergens: ${cfg.allergens.join(", ")}` : "";
+                          const featureTags = [
+                            cfg.isGlutenFree ? "Gluten-Free" : null,
+                            cfg.isHighProtein ? "High-Protein" : null,
+                            cfg.isDiabeticFriendly ? "Diabetic-Friendly" : null,
+                            cfg.isKetoFriendly ? "Keto" : null,
+                          ].filter(Boolean).join(" · ");
+                          const extraTags = [allergenTags, featureTags].filter(Boolean).join(" | ");
+                          setEditor({
+                            ...editor,
+                            diet: mappedDiet,
+                            servingSize: editor.servingSize ? `${editor.servingSize} (${extraTags})` : extraTags,
+                          });
+                          setShowAllergenEditor(false);
+                          toast.success("Dietary classifications & allergens applied to dish.");
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* 6. Portion Variants (Regular / Half / Full / Family Pack) */}
@@ -2951,6 +3080,95 @@ function MenuPage() {
           </div>
         </div>
       ) : null}
+
+      {/* OCR / Bulk Menu Digitizer Modal */}
+      {ocrModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <FileText className="size-5 text-emerald-400" />
+                <h3 className="font-display text-base font-bold text-white">
+                  Autonomous Menu Digitizer &amp; OCR Ingestion
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setOcrModalOpen(false);
+                  setDigitizedCatalog(null);
+                }}
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Paste raw OCR text from a physical printed menu, chalkboard photo, or billing printout.
+              The autonomous parser will extract dish names, descriptions, section categories, FSSAI diet tags, and integer paise prices.
+            </p>
+
+            <Textarea
+              rows={8}
+              value={rawOcrText}
+              onChange={(e) => setRawOcrText(e.target.value)}
+              placeholder="Paste raw menu text or OCR output here... Example:&#10;&#10;STARTERS&#10;Paneer Tikka - ₹220&#10;Chicken Malai Kebab - ₹280 [NV]&#10;&#10;MAIN COURSE&#10;Butter Chicken - ₹340&#10;Dal Makhani - ₹210 [VEG]&#10;&#10;BREADS&#10;Butter Naan - ₹50"
+              className="font-mono text-xs bg-slate-950 border-slate-800 text-slate-200"
+            />
+
+            <div className="flex items-center justify-between gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={handleDigitizeText}
+                disabled={!rawOcrText.trim()}
+                className="text-xs font-bold"
+              >
+                <Sparkles className="mr-1.5 size-3.5 text-amber-400" /> Parse &amp; Digitize Dishes
+              </Button>
+
+              {digitizedCatalog && (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => void handleCommitDigitizedMenu()}
+                  disabled={importingOcr}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
+                >
+                  <CheckCircle2 className="mr-1.5 size-3.5" />
+                  {importingOcr ? "Importing to Database..." : `Import ${digitizedCatalog.totalDishesCount} Dishes to Menu`}
+                </Button>
+              )}
+            </div>
+
+            {digitizedCatalog && (
+              <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
+                <div className="flex items-center justify-between text-xs font-mono text-emerald-400">
+                  <span>Extracted: {digitizedCatalog.totalDishesCount} Dishes in {digitizedCatalog.categories.length} Categories</span>
+                  <span>🌱 {digitizedCatalog.vegDishesCount} Veg · 🍗 {digitizedCatalog.nonVegDishesCount} Non-Veg · 🥚 {digitizedCatalog.eggDishesCount} Egg</span>
+                </div>
+                <div className="space-y-2 max-h-48 overflow-y-auto divide-y divide-slate-800/60 text-xs">
+                  {digitizedCatalog.categories.map((c) => (
+                    <div key={c.id} className="pt-2">
+                      <span className="font-bold text-slate-200 uppercase tracking-wide text-[11px] block">{c.name}</span>
+                      <ul className="mt-1 space-y-1">
+                        {c.items.map((it) => (
+                          <li key={it.id} className="flex justify-between text-slate-300">
+                            <span>{it.diet === "VEG" ? "🌱" : it.diet === "EGG" ? "🥚" : "🍗"} {it.name}</span>
+                            <span className="font-mono text-emerald-400">{it.formattedPrice}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </VendorShell>
   );
 }
