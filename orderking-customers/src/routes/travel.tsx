@@ -1143,17 +1143,20 @@ export function TravelPage() {
                       <Button
                         type="button"
                         onClick={() => {
-                          if (!flightPnrInput || flightPnrInput.trim().length < 5) {
-                            toast.error("Please enter a valid 6-character airline PNR.");
-                            return;
-                          }
-                          toast.success(
-                            `Verified web check-in for ${airlineCheckInCode} PNR ${flightPnrInput.trim()}. Digital boarding pass ready for E-Gates with ₹0 fee.`
-                          );
+                          const links: Record<string, string> = {
+                            "6E (IndiGo)": "https://www.goindigo.in/web-check-in.html",
+                            "AI (Air India)": "https://www.airindia.com/in/en/manage/web-check-in.html",
+                            "QP (Akasa Air)": "https://www.akasaair.com/check-in",
+                            "IX (Air India Express)": "https://www.airindiaexpress.com/check-in",
+                            "SG (SpiceJet)": "https://www.spicejet.com/webcheckin",
+                          };
+                          const target = links[airlineCheckInCode] || "https://www.goindigo.in/web-check-in.html";
+                          toast.success(`Redirecting to official ${airlineCheckInCode} web check-in portal...`);
+                          window.open(target, "_blank", "noopener,noreferrer");
                         }}
                         className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs"
                       >
-                        Verify In-App Check-In ➔
+                        Launch Official Web Check-In ➔
                       </Button>
                     </div>
                   </div>
