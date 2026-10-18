@@ -50,7 +50,7 @@ export function SmartZeroDeliveryFallbackCard({
             OrderKing Core Services Available in {currentCity}
           </h3>
           <p className="text-xs sm:text-sm text-stone-600 max-w-2xl mx-auto leading-relaxed font-medium">
-            While on-demand rider dispatch is expanding in your immediate pincode, you can instantly use KingPay UPI &amp; Bill Splitting, check live IRCTC train PNR status with 0% convenience fees, or join our delivery fleet.
+            Food delivery is not available in this selected area. You can explore other services, subject to availability.
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export function SmartZeroDeliveryFallbackCard({
                   <QrCode className="size-5" />
                 </div>
                 <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-violet-100 text-violet-900 border border-violet-300">
-                  0% UPI CHARGES
+                  CHECK AVAILABILITY
                 </span>
               </div>
               <h4 className="font-black text-base text-stone-900">
@@ -91,7 +91,7 @@ export function SmartZeroDeliveryFallbackCard({
                   <Train className="size-5" />
                 </div>
                 <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
-                  0% CONVENIENCE FEE
+                  CHECK PROVIDER FEES
                 </span>
               </div>
               <h4 className="font-black text-base text-stone-900">
@@ -125,7 +125,7 @@ export function SmartZeroDeliveryFallbackCard({
                 Join Delivery Fleet &amp; Earn
               </h4>
               <p className="text-xs text-stone-500 mt-1.5 leading-relaxed">
-                Become an OrderKing delivery partner in your city. Daily direct UPI bank payouts, weather hardship bonuses, and 100% customer tips.
+                Become an OrderKing delivery partner in your city. Terms and payout options depend on your active rider agreement.
               </p>
             </div>
             <Link
@@ -142,12 +142,12 @@ export function SmartZeroDeliveryFallbackCard({
         <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-[11px] text-stone-500 font-medium">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="size-3.5 text-emerald-600" />
-            <span>100% FSSAI Certified Kitchens</span>
+            <span>Check restaurant information</span>
           </span>
           <span>·</span>
-          <span>NPCI Compliant UPI Rails</span>
+          <span>Confirm payment availability</span>
           <span>·</span>
-          <span>Official IRCTC PNR Verification</span>
+          <span>Check rail provider availability</span>
         </div>
       </div>
     </div>

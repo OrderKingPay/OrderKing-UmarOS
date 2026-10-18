@@ -47,7 +47,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             World’s Simplest. <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">10x More Luxurious.</span>
           </h2>
           <p className="max-w-md text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
-            Uncompromising culinary perfection, real-time NPCI payments, zero-fee sovereign travel, and master AI intelligence — architected for absolute zero-friction living.
+            Explore food options and other services when available.
           </p>
         </div>
 
@@ -221,7 +221,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
           <div className="flex items-center gap-2 mb-3">
             <Award className="size-5 text-amber-400" />
             <span className="text-xs font-black uppercase tracking-wider text-amber-200">
-              The 10x Sovereign Advantage vs Competitors
+              What to check before you order
             </span>
           </div>
 
@@ -229,30 +229,30 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             <div className="rounded-2xl border border-emerald-500/20 bg-emerald-950/20 p-3">
               <div className="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
                 <CheckCircle2 className="size-3.5" />
-                <span>0% Menu Markups</span>
+                <span>Compare menu prices</span>
               </div>
               <p className="mt-1 text-[11px] text-slate-300">
-                Dominant legacy aggregators charge 15-30% restaurant commission. OrderKing passes 100% savings to your bill.
+                Check item prices and the complete payable total before confirming.
               </p>
             </div>
 
             <div className="rounded-2xl border border-sky-500/20 bg-sky-950/20 p-3">
               <div className="text-[11px] font-bold text-sky-400 flex items-center gap-1">
                 <CheckCircle2 className="size-3.5" />
-                <span>Zero Travel Convenience Fees</span>
+                <span>Review travel fees</span>
               </div>
               <p className="mt-1 text-[11px] text-slate-300">
-                MakeMyTrip charges ₹399–₹600 convenience fees. OrderKing charges exactly ₹0 on confirmed flights.
+                Fees and availability depend on the actual booking provider.
               </p>
             </div>
 
             <div className="rounded-2xl border border-amber-500/20 bg-amber-950/20 p-3">
               <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1">
                 <CheckCircle2 className="size-3.5" />
-                <span>Instant Real Ledger Balance</span>
+                <span>Payment confirmation</span>
               </div>
               <p className="mt-1 text-[11px] text-slate-300">
-                Direct Supabase double-entry ledger verified against Reserve Bank & NPCI UPI protocols. Zero simulated balances.
+                Payment status is confirmed only after verification by the payment provider.
               </p>
             </div>
           </div>
@@ -262,25 +262,25 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-4 border-t border-white/10 text-[11px] font-bold text-slate-400">
           <div className="flex items-center gap-1.5">
             <ShieldCheck className="size-4 text-emerald-400" />
-            <span>FSSAI Certified Kitchens</span>
+            <span>Check restaurant details</span>
           </div>
           <div className="flex items-center gap-1.5">
             <Lock className="size-4 text-amber-400" />
-            <span>NPCI 256-Bit Encrypted UPI</span>
+            <span>Payment options vary by availability</span>
           </div>
           <div className="flex items-center gap-1.5">
             <Plane className="size-4 text-sky-400" />
-            <span>IATA / DGCA Aviation Gateway</span>
+            <span>Travel services depend on providers</span>
           </div>
           <div className="flex items-center gap-1.5">
             <GraduationCap className="size-4 text-indigo-400" />
-            <span>NCERT / CBSE Aligned AI</span>
+            <span>AI assistance when available</span>
           </div>
         </div>
 
         {/* ─── SOVEREIGN COPYRIGHT & ATTRIBUTION ─── */}
         <div className="text-center text-[11px] text-slate-500 font-medium">
-          © {new Date().getFullYear()} OrderKing Sovereign Group. All Rights Reserved. Engineered for 100% Autonomous Precision.
+          © {new Date().getFullYear()} OrderKing Sovereign Group. All Rights Reserved.
         </div>
       </div>
     </footer>
