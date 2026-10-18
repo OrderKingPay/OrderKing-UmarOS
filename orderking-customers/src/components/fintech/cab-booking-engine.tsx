@@ -84,11 +84,11 @@ export function CabBookingEngine({
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Sovereign Cab &amp; Airport Chauffeur Dispatch
+                On-Demand Airport &amp; City Cabs
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300">
                 <Sparkles className="size-3 text-amber-400" />
-                Verified Drivers · Zero Surge Markups · 100% In-App Dispatch
+                Verified Drivers · Zero Surge Markups · Direct Mobility Dispatch
               </div>
             </div>
           </div>
@@ -270,17 +270,28 @@ export function CabBookingEngine({
                     </span>
                   </div>
 
-                  <Button
-                    type="button"
-                    onClick={() => handleOpenBooking(q)}
-                    className="h-10 px-5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 flex items-center gap-1.5"
-                  >
-                    {user ? (
-                      <>Dispatch Cab (₹0 Fee) <ArrowRight className="size-4" /></>
-                    ) : (
-                      <>Sign in to Dispatch <ArrowRight className="size-4" /></>
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(drop)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => toast.success(`Opening Uber dispatch for ${pickup} ➔ ${drop}...`)}
+                      className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md inline-flex items-center gap-1.5 no-underline transition"
+                    >
+                      <span>Uber</span>
+                      <ArrowRight className="size-3.5" />
+                    </a>
+                    <a
+                      href="https://www.olacabs.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => toast.success(`Opening Ola Cabs dispatch...`)}
+                      className="h-10 px-3.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
+                    >
+                      <span>Ola</span>
+                      <ArrowRight className="size-3.5" />
+                    </a>
+                  </div>
                 </div>
               </div>
             );

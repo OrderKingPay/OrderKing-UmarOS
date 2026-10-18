@@ -60,9 +60,14 @@ export async function getSessionUser(
   if (!authConfigured && !gateIdentityEnabled()) return null;
   const request = getRequest();
   if (!request) return null;
-  let headers = request.headers;
+  const headers = new Headers(request.headers);
+  if (!headers.get("host")) {
+    headers.set("host", "partner.orderkingpay.com");
+  }
+  if (!headers.get("x-forwarded-proto")) {
+    headers.set("x-forwarded-proto", "https");
+  }
   if (bearerToken) {
-    headers = new Headers(request.headers);
     headers.set("Authorization", `Bearer ${bearerToken}`);
   }
   try {

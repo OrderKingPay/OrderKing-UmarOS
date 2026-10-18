@@ -54,7 +54,7 @@ const LUXURY_THEMES: Array<{
     accentText: "text-amber-400",
     badgeBg: "bg-amber-400/20 text-amber-300 border-amber-400/40",
     textColor: "text-amber-100",
-    tagline: "✨ Classic Gold Merchant Edition",
+    tagline: "Classic Gold · Merchant Standard",
   },
   {
     id: "festive_red",
@@ -65,7 +65,7 @@ const LUXURY_THEMES: Array<{
     accentText: "text-rose-400",
     badgeBg: "bg-rose-400/20 text-rose-200 border-rose-400/40",
     textColor: "text-rose-100",
-    tagline: "🧧 Auspicious Shagun & Blessed Wishes",
+    tagline: "Festive Red · Retail Counter",
   },
   {
     id: "celebration",
@@ -76,7 +76,7 @@ const LUXURY_THEMES: Array<{
     accentText: "text-purple-300",
     badgeBg: "bg-purple-400/20 text-purple-200 border-purple-400/40",
     textColor: "text-purple-100",
-    tagline: "🎉 Celebrate & Spread Pure Happiness",
+    tagline: "Celebration Purple · Events & Counter",
   },
   {
     id: "festive_diya",
@@ -87,29 +87,29 @@ const LUXURY_THEMES: Array<{
     accentText: "text-cyan-300",
     badgeBg: "bg-cyan-400/20 text-cyan-200 border-cyan-400/40",
     textColor: "text-cyan-100",
-    tagline: "🪔 Festival of Joy & Prosperity",
+    tagline: "Festive Cyan · Seasonal Counter",
   },
   {
     id: "business_blue",
-    name: "Business Blue",
+    name: "Corporate Blue",
     icon: "💼",
     cardBg: "bg-gradient-to-b from-[#0B1528] via-[#132347] to-[#070D1B]",
     borderClass: "border-2 border-blue-400/90 shadow-[0_12px_40px_rgba(59,130,246,0.35)]",
     accentText: "text-blue-300",
     badgeBg: "bg-blue-400/20 text-blue-200 border-blue-400/40",
     textColor: "text-blue-100",
-    tagline: "💼 Professional Enterprise Merchant",
+    tagline: "Corporate Blue · Enterprise Desk",
   },
   {
     id: "cozy_cafe",
-    name: "Cafe & Bistro",
+    name: "Dining & Hospitality",
     icon: "☕",
     cardBg: "bg-gradient-to-b from-[#24140D] via-[#351E14] to-[#170D08]",
     borderClass: "border-2 border-orange-400/90 shadow-[0_12px_40px_rgba(251,146,60,0.35)]",
     accentText: "text-orange-300",
     badgeBg: "bg-orange-400/20 text-orange-200 border-orange-400/40",
     textColor: "text-orange-100",
-    tagline: "☕ Dining, Chai & Counter Payments",
+    tagline: "Dining & Hospitality · Counter QR",
   },
 ];
 
@@ -191,7 +191,7 @@ export function ReceiveMoneyQrStudio({
     const amtText = amount ? `₹${amount}` : "payment";
     const noteText = note ? `\nPurpose: "${note}"` : "";
     const msg = encodeURIComponent(
-      `Hello! Please pay ${amtText} directly via KingPay or any UPI App (GPay, PhonePe, Paytm): \n${generateUpiUri()}${noteText}\n\n0% convenience fee with KingPay!`
+      `Hello! Please pay ${amtText} directly via UPI (GPay, PhonePe, Paytm, or BHIM): \n${generateUpiUri()}${noteText}\n\nDirect bank-to-bank settlement via NPCI UPI network.`
     );
     window.open(`https://wa.me/?text=${msg}`, "_blank");
   };
@@ -214,7 +214,7 @@ export function ReceiveMoneyQrStudio({
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       try {
         const amtText = amount ? `₹${amount}` : "payment";
-        const utterance = new SpeechSynthesisUtterance(`KingPay: ${amtText} payment received with zero fees!`);
+        const utterance = new SpeechSynthesisUtterance(`Payment received: ${amtText} via UPI.`);
         utterance.rate = 1.0;
         utterance.pitch = 1.2;
         window.speechSynthesis.speak(utterance);
@@ -237,7 +237,7 @@ export function ReceiveMoneyQrStudio({
                 Receive Money &amp; Custom QR
               </h2>
               <p className="text-[11px] text-muted">
-                Compatible with all UPI Apps · 0% Fee · Instant Settlement
+                Compatible with all authorized UPI PSP Apps · Direct Bank Settlement
               </p>
             </div>
           </div>
@@ -508,12 +508,12 @@ export function ReceiveMoneyQrStudio({
           <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-800 dark:text-emerald-200 space-y-1">
             <div className="flex items-center gap-1.5 font-bold">
               <ShieldCheck className="size-4 text-emerald-600" />
-              <span>Why Merchants Choose KingPay UPI QR</span>
+              <span>Merchant Settlement Standard</span>
             </div>
             <p className="text-[11px] text-muted leading-relaxed">
-              • 0% convenience fee for payer &amp; receiver<br />
-              • Instant bank settlement in 2 seconds<br />
-              • Direct, secure bank-to-bank settlement via NPCI UPI network
+              • Direct bank-to-bank settlement via NPCI UPI network<br />
+              • Zero intermediary wallet withholding<br />
+              • Instant transaction reconciliation on connected accounts
             </p>
           </div>
         </div>

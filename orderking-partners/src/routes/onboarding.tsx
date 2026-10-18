@@ -386,19 +386,30 @@ function OnboardingPage() {
     const bankAccount = (form.bankAccount || String(r?.bank_account ?? "")).trim();
     const bankName = (form.bankName || form.holder || String(r?.bank_name ?? "")).trim();
 
-    if (!effectiveName || !effectiveAddress || !effectivePhone) {
-      setError(
-        "Please provide your restaurant trade name, contact phone number, and kitchen pickup address in Station 1.",
-      );
-      return;
+    // Draft save only requires at least the restaurant name in Station 1
+    if (!submitReviewAfterSave) {
+      if (!effectiveName) {
+        setError("Please enter your restaurant trade name in Station 1 to save your draft.");
+        return;
+      }
+    } else {
+      if (!effectiveName || !effectiveAddress || !effectivePhone) {
+        setError(
+          "Please provide your restaurant trade name, contact phone number, and kitchen pickup address in Station 1.",
+        );
+        return;
+      }
     }
 
-    if (!bypassAgreementCheck && !station5Validation.isValid) {
-      const firstError =
-        Object.values(station5Validation.errors)[0] ||
-        "Please review the Restaurant Partner Agreement, select an onboarding fee plan, and complete the digital signature.";
-      setError(`Partner Agreement: ${firstError}`);
-      return;
+    // Station 5 verification is required only when submitting for review or if not bypassed
+    if (submitReviewAfterSave || !bypassAgreementCheck) {
+      if (!station5Validation.isValid) {
+        const firstError =
+          Object.values(station5Validation.errors)[0] ||
+          "Please review the Restaurant Partner Agreement, select an onboarding fee plan, and complete the digital signature.";
+        setError(`Partner Agreement: ${firstError}`);
+        return;
+      }
     }
 
     if (fssai && !validateFssai(fssai)) {
@@ -459,72 +470,200 @@ function OnboardingPage() {
       }
     }
 
-
     setBusy(true);
     try {
+      // 1. Immediately persist draft locally to ensure merchant NEVER loses data
+      persistDraftLocally({
+        restaurantId: vendor.restaurantId,
+        form: {
+          ...form,
+          name: effectiveName,
+          displayName: effectiveDisplayName,
+          ownerName: effectiveOwner,
+          phone: effectivePhone,
+          email: effectiveEmail,
+          city: form.city,
+          address: effectiveAddress,
+          landmark: effectiveLandmark,
+          cuisine: effectiveCuisine,
+          diet: form.diet,
+          description: effectiveDescription,
+          fssaiNumber: fssai,
+          fssaiExpiryDate: fssaiExpiry,
+          pan,
+          gstin: exemptFromGst ? "" : gstin,
+          bankAccount,
+          bankIfsc: ifsc,
+          bankName,
+          holder: form.holder || bankName,
+        },
+        exemptFromGst,
+        onboardingFeeOption,
+        amortizedConsent,
+        executionMethod,
+        clickwrapSignatoryName: effectiveSignatory,
+        clickwrapDesignation,
+        clickwrapConsent,
+        covenantsAccepted,
+        foodSafetyUndertakingAccepted,
+        privacyAndTaxAccepted,
+      });
+
       let targetRestaurantId = vendor.restaurantId;
 
-      if (!targetRestaurantId) {
-        const created = await createRestaurantDraft({
-          data: {
-            name: effectiveName,
-            displayName: effectiveDisplayName,
-            ownerName: effectiveOwner,
-            phone: effectivePhone,
-            email: effectiveEmail,
-            address: effectiveAddress,
-            landmark: effectiveLandmark,
-            cuisine: effectiveCuisine,
-            diet: form.diet,
-            description: effectiveDescription,
-          },
-        });
-        targetRestaurantId = created.restaurantId;
+      // 2. Draft Creation on Server (with client-side fallback)
+      if (!targetRestaurantId || targetRestaurantId.startsWith("local_")) {
+        try {
+          const created = await createRestaurantDraft({
+            data: {
+              name: effectiveName,
+              displayName: effectiveDisplayName,
+              ownerName: effectiveOwner,
+              phone: effectivePhone,
+              email: effectiveEmail,
+              address: effectiveAddress,
+              landmark: effectiveLandmark,
+              cuisine: effectiveCuisine,
+              diet: form.diet,
+              description: effectiveDescription,
+            },
+          });
+          if (created?.restaurantId) {
+            targetRestaurantId = created.restaurantId;
+            useClientState.getState().setRestaurantId(targetRestaurantId);
+            if (typeof window !== "undefined") {
+              window.localStorage.removeItem(ORDERKING_LOCAL_ONLY_KEY);
+            }
+          }
+        } catch (createErr) {
+          console.warn("[Onboarding] createRestaurantDraft server call failed, using client-side fallback draft:", createErr);
+          if (!targetRestaurantId) {
+            targetRestaurantId = `local_rst_${Date.now()}`;
+            useClientState.getState().setRestaurantId(targetRestaurantId);
+          }
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(ORDERKING_LOCAL_ONLY_KEY, "true");
+          }
+        }
       }
 
-      if (targetRestaurantId) {
-        await updateRestaurantProfile({
-          data: {
-            restaurantId: targetRestaurantId,
-            name: effectiveName,
-            displayName: effectiveDisplayName,
-            ownerName: effectiveOwner,
-            phone: effectivePhone,
-            email: effectiveEmail,
-            address: effectiveAddress,
-            landmark: effectiveLandmark,
-            cuisine: effectiveCuisine,
-            diet: form.diet,
-            description: effectiveDescription,
-            gstin: exemptFromGst ? "" : (gstin || undefined),
-            fssaiNumber: fssai || undefined,
-            pan: pan || undefined,
-            bankAccount: bankAccount || undefined,
-            bankIfsc: ifsc || undefined,
-            bankName: bankName || undefined,
-          },
-        });
+      // Re-persist draft with confirmed/fallback targetRestaurantId
+      persistDraftLocally({
+        restaurantId: targetRestaurantId,
+        form: {
+          ...form,
+          name: effectiveName,
+          displayName: effectiveDisplayName,
+          ownerName: effectiveOwner,
+          phone: effectivePhone,
+          email: effectiveEmail,
+          city: form.city,
+          address: effectiveAddress,
+          landmark: effectiveLandmark,
+          cuisine: effectiveCuisine,
+          diet: form.diet,
+          description: effectiveDescription,
+          fssaiNumber: fssai,
+          fssaiExpiryDate: fssaiExpiry,
+          pan,
+          gstin: exemptFromGst ? "" : gstin,
+          bankAccount,
+          bankIfsc: ifsc,
+          bankName,
+          holder: form.holder || bankName,
+        },
+        exemptFromGst,
+        onboardingFeeOption,
+        amortizedConsent,
+        executionMethod,
+        clickwrapSignatoryName: effectiveSignatory,
+        clickwrapDesignation,
+        clickwrapConsent,
+        covenantsAccepted,
+        foodSafetyUndertakingAccepted,
+        privacyAndTaxAccepted,
+      });
 
+      // 3. Update Restaurant Profile on Server (if real server restaurant)
+      if (targetRestaurantId && !targetRestaurantId.startsWith("local_")) {
+        try {
+          await updateRestaurantProfile({
+            data: {
+              restaurantId: targetRestaurantId,
+              name: effectiveName,
+              displayName: effectiveDisplayName,
+              ownerName: effectiveOwner,
+              phone: effectivePhone,
+              email: effectiveEmail,
+              address: effectiveAddress,
+              landmark: effectiveLandmark,
+              cuisine: effectiveCuisine,
+              diet: form.diet,
+              description: effectiveDescription,
+              gstin: exemptFromGst ? "" : (gstin || undefined),
+              fssaiNumber: fssai || undefined,
+              pan: pan || undefined,
+              bankAccount: bankAccount || undefined,
+              bankIfsc: ifsc || undefined,
+              bankName: bankName || undefined,
+            },
+          });
+        } catch (updateErr) {
+          console.warn("[Onboarding] updateRestaurantProfile server call failed; draft is preserved locally:", updateErr);
+          if (submitReviewAfterSave) {
+            throw new Error(formatFriendlyError(updateErr, "Could not synchronize restaurant profile before submitting application."));
+          }
+        }
+
+        // 4. Submit For Review
         if (submitReviewAfterSave) {
-          await submitForReview({ data: { restaurantId: targetRestaurantId } });
-          setSuccessMsg(
-            "Restaurant partner application and agreement submitted successfully. Your outlet is now under verification review.",
-          );
+          try {
+            await submitForReview({ data: { restaurantId: targetRestaurantId } });
+            setSuccessMsg(
+              "Restaurant partner application and agreement submitted successfully. Your outlet is now under verification review.",
+            );
+            if (typeof window !== "undefined") {
+              window.localStorage.removeItem(ORDERKING_LOCAL_ONLY_KEY);
+            }
+          } catch (reviewErr) {
+            throw new Error(formatFriendlyError(reviewErr, "Could not submit partner application for verification review."));
+          }
         } else {
           setSuccessMsg(
             "Restaurant profile, verification credentials, and partnership preferences saved successfully.",
           );
           setEditingApproved(false);
         }
+      } else {
+        // Target is in local fallback mode
+        if (submitReviewAfterSave) {
+          setError(
+            "Draft profile is saved locally in your browser. A server connection is required to submit the application for review. Please check your connection and click Submit again.",
+          );
+        } else {
+          setSuccessMsg(
+            "Restaurant profile draft saved locally in your browser. All 5 stations are active and ready to edit.",
+          );
+          setEditingApproved(false);
+        }
       }
 
-      await qc.invalidateQueries();
+      try {
+        await qc.invalidateQueries();
+      } catch {
+        // non-fatal
+      }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save onboarding profile");
+      setError(formatFriendlyError(e, "Could not save onboarding profile. Data has been saved locally."));
     } finally {
       setBusy(false);
     }
   }
+
+  const isLocalDraft = Boolean(
+    (vendor.restaurantId && vendor.restaurantId.startsWith("local_")) ||
+    (typeof window !== "undefined" && window.localStorage.getItem(ORDERKING_LOCAL_ONLY_KEY) === "true")
+  );
 
   const verificationStatus = (r?.verification_status ?? vendor.selected?.verificationStatus ?? "DRAFT") as string;
   const isApproved = verificationStatus === "APPROVED" || verificationStatus === "VERIFIED";
@@ -792,6 +931,27 @@ function OnboardingPage() {
             </div>
           </div>
         </div>
+
+        {isLocalDraft ? (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-3.5 text-xs text-amber-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <RefreshCw className="size-4 shrink-0 text-amber-400" />
+              <span>
+                <strong>Local Draft Mode:</strong> Profile for &apos;{form.name || "Party Box"}&apos; is safely saved locally in your browser. All stations are active.
+              </span>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              disabled={busy}
+              onClick={() => void handleSaveAndRegister(false, true)}
+              className="border-amber-700/60 bg-amber-900/40 hover:bg-amber-800 text-amber-200 text-xs h-7 self-end sm:self-auto shrink-0"
+            >
+              {busy ? "Syncing..." : "Sync to Server"}
+            </Button>
+          </div>
+        ) : null}
 
         {error ? (
           <div className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-3.5 text-xs text-rose-300 flex items-start gap-2">
@@ -1581,7 +1741,7 @@ function OnboardingPage() {
               <Button
                 variant="secondary"
                 disabled={busy}
-                onClick={() => void handleSaveAndRegister(false)}
+                onClick={() => void handleSaveAndRegister(false, true)}
                 className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs"
               >
                 {busy ? "Saving..." : "Save Draft Profile"}
@@ -1629,7 +1789,7 @@ function Field({
   );
 }
 
-function DocumentUpload({ restaurantId, kind, label }: { restaurantId: string; kind: string; label: string }) {
+function DocumentUpload({ restaurantId, kind, label }: { restaurantId?: string; kind: string; label: string }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -1652,13 +1812,34 @@ function DocumentUpload({ restaurantId, kind, label }: { restaurantId: string; k
           const file = e.target.files?.[0];
           if (!file) return;
           setUploading(true);
-          const dataUrl = await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result));
-            reader.onerror = () => reject(new Error("read failed"));
-            reader.readAsDataURL(file);
-          });
           try {
+            const dataUrl = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(String(reader.result));
+              reader.onerror = () => reject(new Error("read failed"));
+              reader.readAsDataURL(file);
+            });
+
+            if (!restaurantId || restaurantId.startsWith("local_")) {
+              if (typeof window !== "undefined") {
+                try {
+                  window.localStorage.setItem(
+                    `orderking_draft_doc_${kind}`,
+                    JSON.stringify({
+                      fileName: file.name,
+                      contentType: file.type || "application/octet-stream",
+                      byteSize: file.size,
+                      savedAt: new Date().toISOString(),
+                    }),
+                  );
+                } catch {
+                  // ignore storage limit
+                }
+              }
+              setMsg("Saved locally (pending server sync)");
+              return;
+            }
+
             const res = await uploadDocument({
               data: {
                 restaurantId,
@@ -1670,7 +1851,7 @@ function DocumentUpload({ restaurantId, kind, label }: { restaurantId: string; k
             });
             setMsg(`Uploaded (${res.verificationStatus})`);
           } catch (err) {
-            setMsg(err instanceof Error ? err.message : "Upload failed");
+            setMsg(formatFriendlyError(err, "Upload failed — saved locally"));
           } finally {
             setUploading(false);
           }

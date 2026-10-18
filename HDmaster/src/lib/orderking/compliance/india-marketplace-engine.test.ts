@@ -12,6 +12,8 @@ import {
   indiaMarketplaceEngine,
   TIER1_MARKETPLACE_COMMISSION_TIERS,
   INDIAN_STATE_CODES,
+  CENTRAL_COMMISSION_TIERS,
+  CENTRAL_COMMISSION_TIER_PERCENTAGES,
 } from "./india-marketplace-engine.ts";
 import { toPaise, fromPaise } from "../money.ts";
 
@@ -588,6 +590,63 @@ describe("🇮🇳 India-Specific Marketplace, Tax & Regulatory Compliance Engin
         foodGrossPaise: 50000,
       });
       expect(settlement.isReconciled).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // 7. CENTRAL COMMISSION RATE TIERS & STATUTORY TAX INVARIANTS
+  // ==========================================================================
+  describe("7. Central Commission Rate Tiers (0%, 3%, 5%, 8%, 12%, 18%) & Statutory Tax Policies", () => {
+    it("verifies all 6 Central commission rate tiers exist with exact bps and statutory categories", () => {
+      expect(CENTRAL_COMMISSION_TIER_PERCENTAGES).toEqual([0, 3, 5, 8, 12, 18]);
+      expect(CENTRAL_COMMISSION_TIERS).toHaveLength(6);
+
+      const expectedTiers = [
+        { pct: 0, bps: 0, category: "DINE_IN" },
+        { pct: 3, bps: 300, category: "ESSENTIAL" },
+        { pct: 5, bps: 500, category: "HYPERLOCAL" },
+        { pct: 8, bps: 800, category: "STATUTORY_FLOOR" },
+        { pct: 12, bps: 1200, category: "STANDARD" },
+        { pct: 18, bps: 1800, category: "ENTERPRISE" },
+      ];
+
+      expectedTiers.forEach((expected, idx) => {
+        const tier = CENTRAL_COMMISSION_TIERS[idx];
+        expect(tier.pct).toBe(expected.pct);
+        expect(tier.bps).toBe(expected.bps);
+        expect(tier.category).toBe(expected.category);
+        expect(tier.label).toBeTruthy();
+        expect(tier.description).toBeTruthy();
+      });
+    });
+
+    it("verifies statutory tax policies: Section 9(5) 5% Food GST, SAC 9985 18% marketplace GST, Section 52 TCS, Section 194-O TDS", () => {
+      // 1. Section 9(5) Food GST: 5% (500 bps = 250 CGST + 250 SGST)
+      expect(INDIA_COMPLIANCE_RATES.FOOD_GST_BPS).toBe(500);
+      expect(INDIA_COMPLIANCE_RATES.FOOD_CGST_BPS).toBe(250);
+      expect(INDIA_COMPLIANCE_RATES.FOOD_SGST_BPS).toBe(250);
+      expect(INDIA_COMPLIANCE_RATES.FOOD_IGST_BPS).toBe(500);
+
+      // 2. SAC 9985 / 9983 Platform Fee GST: 18% (1800 bps = 900 CGST + 900 SGST)
+      expect(INDIA_COMPLIANCE_RATES.PLATFORM_FEE_GST_BPS).toBe(1800);
+      expect(INDIA_COMPLIANCE_RATES.PLATFORM_FEE_CGST_BPS).toBe(900);
+      expect(INDIA_COMPLIANCE_RATES.PLATFORM_FEE_SGST_BPS).toBe(900);
+      expect(INDIA_COMPLIANCE_RATES.PLATFORM_FEE_IGST_BPS).toBe(1800);
+
+      // 3. SAC 9968 Delivery Fee GST: 18% (1800 bps)
+      expect(INDIA_COMPLIANCE_RATES.DELIVERY_FEE_GST_BPS).toBe(1800);
+
+      // 4. Section 52 TCS: 1% (100 bps = 50 CGST + 50 SGST)
+      expect(INDIA_COMPLIANCE_RATES.TCS_BPS).toBe(100);
+      expect(INDIA_COMPLIANCE_RATES.TCS_CGST_BPS).toBe(50);
+      expect(INDIA_COMPLIANCE_RATES.TCS_SGST_BPS).toBe(50);
+      expect(INDIA_COMPLIANCE_RATES.TCS_IGST_BPS).toBe(100);
+
+      // 5. Section 194-O TDS: 1% (100 bps)
+      expect(INDIA_COMPLIANCE_RATES.TDS_BPS).toBe(100);
+
+      // 6. Statutory Floor: 8% (800 bps)
+      expect(INDIA_COMPLIANCE_RATES.MIN_COMMISSION_BPS).toBe(800);
     });
   });
 });

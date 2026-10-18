@@ -92,7 +92,7 @@ export function TrainBookingEngine({
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Sovereign Indian Railways &amp; IRCTC Direct
+                Official Indian Railways &amp; IRCTC Rail Handoff
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-300">
                 <Sparkles className="size-3 text-indigo-400" />
@@ -356,17 +356,16 @@ export function TrainBookingEngine({
                     </div>
                   </div>
 
-                  <Button
-                    type="button"
-                    onClick={() => handleOpenBooking(q)}
-                    className="h-11 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
+                  <a
+                    href={`https://www.irctc.co.in/nget/train-search?from=${encodeURIComponent((q.fromCode || from).replace(/[^A-Za-z]/g, "").toUpperCase())}&to=${encodeURIComponent((q.toCode || to).replace(/[^A-Za-z]/g, "").toUpperCase())}&date=${journeyDate}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => toast.success(`Redirecting to official IRCTC portal for ${q.fromCode || from} ➔ ${q.toCode || to}...`)}
+                    className="h-11 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md shadow-indigo-600/20 inline-flex items-center gap-1.5 no-underline transition"
                   >
-                    {user ? (
-                      <>Book In-App (₹0 Fee) <ArrowRight className="size-4" /></>
-                    ) : (
-                      <>Sign in to Book <ArrowRight className="size-4" /></>
-                    )}
-                  </Button>
+                    <span>Book on Official IRCTC</span>
+                    <ArrowRight className="size-4" />
+                  </a>
                 </div>
               </div>
             );

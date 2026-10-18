@@ -109,7 +109,7 @@ export function BusBookingEngine({
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Sovereign Intercity AC Sleeper Buses
+                Intercity AC Sleeper &amp; Volvo Buses
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-300">
                 <Sparkles className="size-3 text-rose-400" />
@@ -310,16 +310,19 @@ export function BusBookingEngine({
                     ))}
                   </div>
 
-                  <Button
-                    type="button"
+                  <a
+                    href={`https://www.redbus.in/bus-tickets/${encodeURIComponent((q.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((q.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleStartBooking(q);
+                      toast.success(`Redirecting to official redBus portal for ${q.fromCity} ➔ ${q.toCity}...`);
                     }}
-                    className="h-9 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs"
+                    className="h-9 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
                   >
-                    {user ? "Select Seats & Book In-App ➔" : "Sign in to Book ➔"}
-                  </Button>
+                    <span>Book on redBus</span>
+                    <ArrowRight className="size-3.5" />
+                  </a>
                 </div>
               </div>
             );
@@ -441,13 +444,15 @@ export function BusBookingEngine({
                   {formatPaise((currentQuote.baseFarePaise + currentQuote.carrierTaxesPaise) * selectedSeatIds.length)}
                 </span>
               </div>
-              <Button
-                type="button"
-                onClick={() => handleStartBooking(currentQuote)}
-                className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md shadow-rose-600/25"
+              <a
+                href={`https://www.redbus.in/bus-tickets/${encodeURIComponent((currentQuote.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((currentQuote.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => toast.success(`Redirecting to redBus to finalize ${selectedSeatIds.join(", ")} berths...`)}
+                className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md shadow-rose-600/25 inline-flex items-center justify-center gap-1.5 no-underline transition"
               >
-                {user ? "Proceed to In-App Checkout ➔" : "Sign in to Book In-App ➔"}
-              </Button>
+                <span>Book Selected Berths on redBus ➔</span>
+              </a>
             </div>
           </div>
         </div>
