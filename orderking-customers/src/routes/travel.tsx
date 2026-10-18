@@ -245,7 +245,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
     id: "vip_concierge",
     label: "VIP Concierge & Charters",
-    badge: "Sovereign VIP",
+    badge: "Verified VIP",
     keywords: "private jet aviation helicopter charter taj oberoi heritage stay executive chauffeur vip concierge luxury",
     subCategories: [
       "Private Aviation & Jet Charters",
@@ -282,7 +282,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
     id: "buses",
     label: "Buses & Sleepers",
-    badge: "Sovereign Bus",
+    badge: "Verified AC Sleeper",
     keywords: "bus interstate sleeper ac ksrtc msrtc upsrtc zingbus luxury seater volvo",
     subCategories: [
       "Intercity AC Sleepers",
@@ -294,7 +294,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
     id: "hotels",
     label: "Hotels & Stays",
-    badge: "6% Rebate",
+    badge: "6% Discount",
     keywords: "rooms resorts accommodation luxury 5-star business homestays villas budget stays",
     subCategories: [
       "Luxury 5-Star & Resorts",
@@ -603,7 +603,7 @@ export function TravelPage() {
   const busOtaFee = 45 * busPassengers;
   const busOtaTotal = busOrderKingTotal + busOtaFee;
 
-  // Real-time Hotel Tariff & Rebate Calculations
+  // Real-time Hotel Tariff & Direct Partner Discount Calculations
   const hotelTariffPerNight =
     currentSub === "Luxury 5-Star & Resorts" ? 8500 :
     currentSub === "Family Homestays & Villas" ? 5500 :
@@ -612,8 +612,8 @@ export function TravelPage() {
   const hotelGstRate = hotelTariffPerNight > 7500 ? 0.18 : 0.12;
   const hotelGst = Math.round(hotelTotalBase * hotelGstRate);
   const hotelTotalBilled = hotelTotalBase + hotelGst;
-  const hotelSovereignRebate = Math.round(hotelTotalBase * 0.06);
-  const hotelEffectiveCost = hotelTotalBilled - hotelSovereignRebate;
+  const hotelPartnerDiscount = Math.round(hotelTotalBase * 0.06);
+  const hotelEffectiveCost = hotelTotalBilled - hotelPartnerDiscount;
 
   // Real-time Cab Metered & Surge Calculations
   const cabPerKmRate = cabVehicleClass === "mini" ? 11 : cabVehicleClass === "suv" ? 19 : 14;
@@ -886,14 +886,14 @@ export function TravelPage() {
                   </div>
                 </div>
 
-                {/* OrderKing Sovereign Travel Card */}
+                {/* OrderKing Direct Travel Card */}
                 <div className="rounded-2xl border border-emerald-500/40 bg-emerald-950/25 p-4 space-y-3 shadow-lg shadow-emerald-500/10">
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">
                         OrderKing TravelStation
                       </span>
-                      <h3 className="text-sm font-black text-white">Direct Sovereign Partner Handoff</h3>
+                      <h3 className="text-sm font-black text-white">Direct Partner Handoff</h3>
                     </div>
                     <span className="text-xs font-black text-emerald-300 bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-1 rounded-lg">
                       ₹0 Desk Markup
@@ -1403,7 +1403,7 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start">
-                  IRCTC Direct Sovereign Ticketing
+                  Official IRCTC Portal Redirect
                 </span>
               </div>
 
@@ -1772,7 +1772,7 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-orange-800 bg-orange-100 px-3 py-1 rounded-full self-start sm:self-auto">
-                  Sovereign AC Sleeper Fleet
+                  Verified Intercity Bus Routes
                 </span>
               </div>
 
@@ -2125,15 +2125,15 @@ export function TravelPage() {
               </div>
             </div>
 
-            {/* Real-time Hotel Tariff & 6% Sovereign Rebate Breakdown */}
+            {/* Real-time Hotel Tariff & Transparent Savings Breakdown */}
             <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50/50 via-slate-50/70 to-purple-50/40 p-4 sm:p-5 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/60 pb-3">
                 <span className="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-1.5">
                   <TrendingDown className="size-4 text-emerald-600" />
-                  Live Tariff Calculation &amp; 6% Sovereign Rebate ({hotelNights} Night{hotelNights > 1 ? "s" : ""} · {hotelRooms} Room{hotelRooms > 1 ? "s" : ""})
+                  Live Tariff Calculation &amp; Price Comparison ({hotelNights} Night{hotelNights > 1 ? "s" : ""} · {hotelRooms} Room{hotelRooms > 1 ? "s" : ""})
                 </span>
                 <span className="text-xs font-black text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300 flex items-center gap-1">
-                  <Coins className="size-3 text-amber-700" /> 6% Rebate: ₹{hotelSovereignRebate.toLocaleString("en-IN")} into Wallet / 24K Gold
+                  <Coins className="size-3 text-amber-700" /> 6% Direct Partner Discount: ₹{hotelSovereignRebate.toLocaleString("en-IN")}
                 </span>
               </div>
 
@@ -2156,7 +2156,7 @@ export function TravelPage() {
                 <div className="bg-white p-3 rounded-xl border border-amber-300 bg-amber-50/50">
                   <span className="text-amber-950 block text-[11px] font-bold">Effective Net Cost</span>
                   <span className="text-base font-black text-amber-950 font-mono">₹{hotelEffectiveCost.toLocaleString("en-IN")}</span>
-                  <span className="text-[10px] text-emerald-700 font-bold block mt-0.5">After ₹{hotelSovereignRebate} Rebate</span>
+                  <span className="text-[10px] text-emerald-700 font-bold block mt-0.5">After ₹{hotelSovereignRebate} Partner Discount</span>
                 </div>
               </div>
             </div>

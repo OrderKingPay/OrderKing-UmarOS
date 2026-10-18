@@ -524,7 +524,7 @@ function Login() {
                     className="w-full rounded-xl border border-[#1E283D] bg-[#161D2B] py-2 text-xs font-semibold text-emerald-400 hover:bg-[#1E283D] hover:border-emerald-500/40 transition flex items-center justify-center gap-1.5"
                   >
                     <MessageCircle className="size-3.5 text-emerald-400" />
-                    Get OTP on WhatsApp
+                    Resend via WhatsApp
                   </button>
                 </div>
               </form>

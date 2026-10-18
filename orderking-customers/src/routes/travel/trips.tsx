@@ -117,10 +117,10 @@ function MyTripsPage() {
       <div className="min-h-dvh bg-slate-50 px-4 py-6 pb-32 text-slate-900">
         <div className="mx-auto max-w-5xl space-y-5">
           <header className="rounded-3xl border border-amber-300/30 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-950 p-6 text-white shadow-xl">
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-amber-300"><Crown className="size-5" /> OrderKing Travel Sovereign Hub</p>
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-amber-300"><Crown className="size-5" /> OrderKing Travel Hub</p>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight">My Trips &amp; Live Tracking</h1>
-            <p className="mt-2 max-w-xl text-sm text-slate-200">1-Tap Direct IRCTC PNR validation, live airport gate departures, and sovereign travel bookings with 0% platform markups.</p>
-            <p className="mt-3 flex items-center gap-2 text-xs text-amber-200"><ShieldCheck className="size-4" /> 100% Verified Carrier Tracking &amp; Zero Rumor Guarantee</p>
+            <p className="mt-2 max-w-xl text-sm text-slate-200">1-Tap Direct IRCTC PNR validation, live airport gate departures, and direct fare comparison with 0% platform markups.</p>
+            <p className="mt-3 flex items-center gap-2 text-xs text-amber-200"><ShieldCheck className="size-4" /> 100% Verified Carrier Tracking</p>
           </header>
 
           <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" aria-label="Travel bookings">
@@ -176,7 +176,7 @@ function MyTripsPage() {
                             {formatPaise(t.fareBreakdown.totalCheckoutPaise)}
                           </span>
                           <span className="text-[10px] text-emerald-600 font-bold block">
-                            0% Fee Sovereign
+                            Direct Verified
                           </span>
                         </div>
                         <button
@@ -198,11 +198,11 @@ function MyTripsPage() {
                 <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
                   {isPending ? "Checking account..." : !user
                     ? "Sign in to prepare your private trip centre."
-                    : "You have no active bookings in this view. Book flights, trains, stays, and buses directly with 0% fees."}
+                    : "You have no active bookings in this view. Compare flights, trains, stays, and buses directly with 0% markup."}
                 </p>
                 <Link to="/travel"
                   className="mt-4 inline-flex rounded-xl bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white no-underline">
-                  Explore Sovereign Travel
+                  Explore Travel Comparison
                 </Link>
               </div>
             )}
@@ -337,7 +337,7 @@ function MyTripsPage() {
 
           <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-xs text-slate-600">
             <p className="flex gap-2"><CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
-              Sovereign travel bookings receive automatic digital invoices, 100% partner rebate in 24K Gold or Food wallet, and zero cancellation convenience penalties.
+              Direct travel comparisons include automatic digital receipts, verified partner redirects, and transparent zero convenience markup.
             </p>
             <Link to="/support" className="mt-2 inline-block font-semibold text-emerald-800 underline">Customer support</Link>
           </div>
