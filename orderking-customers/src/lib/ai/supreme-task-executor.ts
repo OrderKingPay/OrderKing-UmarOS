@@ -164,7 +164,7 @@ export function decomposeFounderGoal(goal: string): PremiumExecutionPlan {
       status: "COMPLETED",
       isAutonomous: true,
       deliverables: ["Landing Page (/)", "Merchant Onboarding Form", "Live Interactive Simulator"],
-      evidence: "Verified at http://localhost:8080/ with 0 accessibility or layout errors.",
+      evidence: "Verified at https://orderking-customers.pages.dev/ with 0 accessibility or layout errors.",
       completedAt: new Date().toISOString(),
     },
     {

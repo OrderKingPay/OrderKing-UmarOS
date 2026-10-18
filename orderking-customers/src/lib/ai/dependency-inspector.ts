@@ -176,7 +176,7 @@ export const SYSTEM_DEPENDENCIES: SystemDependency[] = [
       "Create access token with full project deploy scope.",
       "Add `VERCEL_TOKEN=your_token` to environment.",
     ],
-    fallbackModeDescription: "Running via local Vite preview host at `http://localhost:8080`.",
+    fallbackModeDescription: "Running via local Vite preview host at `https://orderking-customers.pages.dev`.",
   },
   {
     id: "DEP-RESEND",

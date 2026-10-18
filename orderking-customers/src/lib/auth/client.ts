@@ -21,7 +21,7 @@ import { GROK_PROVIDERS } from "./providers";
 function getAppBaseUrl() {
   if (typeof window !== "undefined") return window.location.origin;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return process.env.BETTER_AUTH_URL || "http://127.0.0.1:8080";
+  return process.env.BETTER_AUTH_URL || "https://orderking-customers.pages.dev";
 }
 
 const getBaseURL = () => {
@@ -30,7 +30,7 @@ const getBaseURL = () => {
     if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
     if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
   }
-  return "http://localhost:8080";
+  return "https://orderking-customers.pages.dev";
 };
 
 export const authClient = createAuthClient({

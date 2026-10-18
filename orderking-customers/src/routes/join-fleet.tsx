@@ -351,7 +351,7 @@ export function JoinFleetPage() {
                 </p>
                 <div className="pt-2">
                   <a
-                    href="http://localhost:8083"
+                    href="https://orderking-riders.pages.dev"
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-400 hover:text-emerald-300 transition"

@@ -125,7 +125,7 @@ const baseURL = explicitBaseURL ?? {
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
   protocol: "auto" as const,
-  fallback: "http://localhost:8080",
+  fallback: "https://orderking-customers.pages.dev",
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).

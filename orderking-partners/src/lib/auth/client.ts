@@ -23,7 +23,7 @@ const getBaseURL = () => {
     if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
     if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
   }
-  return "http://localhost:8080";
+  return "https://orderking-partners.pages.dev";
 };
 
 export const authClient = createAuthClient({
