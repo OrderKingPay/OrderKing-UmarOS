@@ -196,7 +196,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
       role="navigation"
       aria-label="OrderKing Dynamic Platform Dock"
       className={cn(
-        "fixed inset-x-0 bottom-2 sm:bottom-3.5 z-50 pointer-events-none mx-auto w-full max-w-lg px-2 sm:px-3 select-none",
+        "fixed inset-x-0 bottom-2 sm:bottom-3.5 z-50 pointer-events-none mx-auto w-full max-w-lg px-2 sm:px-3 select-none md:hidden",
         className
       )}
     >
@@ -233,7 +233,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
         }}
       />
 
-      {/* ─── SUPREME ULTRA-LUXURY 3D OBSIDIAN & 24K GOLD DOCK ─── */}
+      {/* ─── SUPREME ULTRA-LUXURY 3D OBSIDIAN & KING PAY DOCK ─── */}
       <div
         className="pointer-events-auto relative overflow-visible rounded-[30px] sm:rounded-[34px] px-1.5 sm:px-2 pt-2 pb-1.5 transition-all duration-300 transform-gpu"
         style={{
@@ -457,7 +457,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                 }}
               >
                 {/* Obsidian Core with 3D Embossed Imperial Crown */}
-                <div className="flex size-[52px] sm:size-[58px] items-center justify-center rounded-[22px] sm:rounded-[24px] bg-gradient-to-b from-stone-950 via-[#18130e] to-amber-950 text-amber-300 shadow-[inset_0_3px_10px_rgba(0,0,0,0.95)] relative overflow-hidden border border-amber-400/50">
+                <div className="flex size-11 sm:size-12 items-center justify-center rounded-[22px] sm:rounded-[24px] bg-gradient-to-b from-stone-950 via-[#18130e] to-amber-950 text-amber-300 shadow-[inset_0_3px_10px_rgba(0,0,0,0.95)] relative overflow-hidden border border-amber-400/50">
                   {/* Diagonal Specular Sheen Beam */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-amber-300/25 to-transparent pointer-events-none" />
                   
@@ -477,7 +477,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                   </span>
                 </div>
 
-                {/* UPI INSTANT 0% FEE Badge */}
+                {/* TOOLS SERVICES Badge */}
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-stone-950 px-2.5 py-[1px] shadow-[0_3px_8px_rgba(0,0,0,0.5)] border border-amber-400 flex items-center gap-1">
                   <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="text-[7px] sm:text-[7.5px] font-black text-amber-300 tracking-wider">UPI INSTANT</span>
