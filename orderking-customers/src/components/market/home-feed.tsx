@@ -306,7 +306,7 @@ export function HomeFeed({
         return true;
       });
 
-    // Eliminate empty "0 places" state: always fall back to verified kitchens
+    // Only actual API results may populate the restaurant grid.
     const finalKitchens = matched;
 
     return finalKitchens.sort((a, b) => {
@@ -331,36 +331,6 @@ export function HomeFeed({
 
   return (
     <div className="space-y-5 px-3 py-3 sm:px-4 sm:py-4 bg-[#FCFAF7] text-gray-900">
-      {/* MONSOON / RAIN EMERGENCY SURGE ALERT BANNER */}
-      {isRainSurge && (
-        <div className="rounded-2xl border border-sky-400/50 bg-gradient-to-r from-sky-500/20 via-blue-500/15 to-indigo-500/20 p-4 text-sky-950 dark:text-sky-100 shadow-sm flex items-center justify-between gap-3 animate-in fade-in duration-300">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/20 text-sky-600 dark:text-sky-300 text-xl font-bold">
-              🌧️
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display text-sm font-black text-sky-950 dark:text-sky-100">
-                  Monsoon Rain Surge Active
-                </span>
-                <span className="rounded-full bg-sky-500/30 border border-sky-400/40 px-2 py-0.5 text-[9px] font-black uppercase text-sky-900 dark:text-sky-200">
-                  Priority Dispatch
-                </span>
-              </div>
-              <p className="text-xs text-sky-800/90 dark:text-sky-300/90 mt-0.5">
-                Heavy monsoon showers in your sector. Delivery champions receive 100% of weather hardship bonuses. Please allow a few extra minutes for road safety.
-              </p>
-            </div>
-          </div>
-          <CloudRain className="size-6 text-sky-500 shrink-0 hidden sm:block animate-bounce" />
-        </div>
-      )}
-
-      {/* UNSERVICEABLE LOCATION HIGH-UTILITY PLATFORM SERVICES (KingPay UPI, IRCTC PNR, Fleet Jobs) */}
-      {!isDeliveryActive && (
-        <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
-      )}
-
       {/* 1. ULTRA-LUXURY HORIZONTAL CIRCULAR FOOD CATEGORIES (Distinct Gradient Border & Emoji Labels) */}
       {!q && (
         <section aria-label="Food Categories" className="pt-1">
@@ -495,7 +465,7 @@ export function HomeFeed({
         </div>
 
         {/* Place Count */}
-        <span className="text-[11px] font-black text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0 shadow-2xs">
+        <span className="text-[11px] font-bold text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0">
           {`${filteredRestaurants.length} restaurants found`}
         </span>
       </div>
@@ -590,8 +560,8 @@ export function HomeFeed({
         ) : filteredRestaurants.length === 0 ? (
           <div className="rounded-2xl border border-amber-200/80 bg-white p-8 text-center space-y-3 shadow-sm">
             <Utensils className="size-10 text-amber-500 mx-auto" />
-            <h3 className="font-extrabold text-gray-900 text-base">Explore Verified Kitchens</h3>
-            <p className="text-xs text-gray-500 max-w-sm mx-auto">Active partner kitchens delivering fresh meals in 25-30 minutes with 0% menu markup.</p>
+            <h3 className="font-extrabold text-gray-900 text-base">No restaurants available here yet</h3>
+            <p className="text-xs text-gray-500 max-w-sm mx-auto">Try another delivery location or reset your filters to see available restaurants.</p>
             <Button
               type="button"
               variant="outline"
