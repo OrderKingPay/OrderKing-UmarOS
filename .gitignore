@@ -51,3 +51,4 @@ npm-debug.log*
 # Editor & OS
 .DS_Store
 Thumbs.db
+apply_keys_oneshot.ps1

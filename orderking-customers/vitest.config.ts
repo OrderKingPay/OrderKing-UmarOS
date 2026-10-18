@@ -12,6 +12,7 @@ export default defineConfig({
       "src/test/sovereign-travel-engine.test.ts",
       "src/test/crypto-security.test.ts",
       "src/test/navigation-integrity.test.ts",
+      "src/test/stable-navigation.test.ts",
       "src/test/sdui-token-ingestion.test.ts",
       "src/test/resilient-live-map.test.ts",
       "src/test/razorpay-edge-webhook.test.ts",

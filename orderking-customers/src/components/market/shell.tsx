@@ -10,7 +10,6 @@ import {
   UtensilsCrossed,
   Plane,
   GraduationCap,
-  Wine,
   Sparkles,
 } from "lucide-react";
 import { useState, useEffect, Suspense } from "react";
@@ -60,7 +59,7 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
     icon: UtensilsCrossed,
     iconGradient: "from-amber-400 via-emerald-500 to-teal-800",
     to: "/",
-    match: (p: string) => p === "/" || p.startsWith("/r/") || p.startsWith("/cart") || p.startsWith("/search"),
+    match: (p: string) => p === "/" || p.startsWith("/r/") || p.startsWith("/cart") || p.startsWith("/search") || p.startsWith("/dining") || p.startsWith("/restaurants") || p.startsWith("/menu"),
   },
   {
     id: "kingpay",
@@ -84,7 +83,7 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   },
   {
     id: "tutor",
-    name: "Tutor",
+    name: "Learn",
     badge: "",
     badgeColor: "bg-purple-500/20 text-purple-900 border-purple-400/50",
     icon: GraduationCap,
@@ -93,14 +92,14 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
     match: (p: string) => p.startsWith("/tutor"),
   },
   {
-    id: "dining",
-    name: "Dining",
+    id: "orders",
+    name: "Orders",
     badge: "",
-    badgeColor: "bg-rose-500/20 text-rose-900 border-rose-400/50",
-    icon: Wine,
-    iconGradient: "from-rose-400 via-pink-500 to-rose-800",
-    to: "/dining",
-    match: (p: string) => p.startsWith("/dining"),
+    badgeColor: "",
+    icon: ShoppingBag,
+    iconGradient: "from-rose-400 via-red-500 to-rose-800",
+    to: "/orders",
+    match: (p: string) => p.startsWith("/orders"),
   },
 ];
 
@@ -329,16 +328,13 @@ export function CustomerShell({
                   <Icon className="size-3" />
                 </div>
                 <span className="text-[11px] font-black">{tab.name}</span>
-                <span className={cn("text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded-full border leading-none shadow-2xs", tab.badgeColor)}>
-                  {tab.badge || null}
-                </span>
               </Link>
             );
           })}
         </div>
 
         {/* ROW 2: Luxury search bar (glassmorphism, golden focus ring) + Pure Veg/All toggle */}
-        {path !== "/search" && !["/tutor", "/travel", "/orders", "/support", "/earn"].some((prefix) => path.startsWith(prefix)) && (
+        {(path === "/" || ["/restaurants", "/menu", "/r/", "/dining", "/cart"].some((prefix) => path.startsWith(prefix))) && (
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5 sm:gap-2">
               {/* Luxury Center Search (Glassmorphism, golden focus ring) */}
