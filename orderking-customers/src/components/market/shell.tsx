@@ -138,7 +138,7 @@ export function CustomerShell({
     ["/restaurants", "/menu", "/r/", "/dining", "/cart"].some((prefix) => path.startsWith(prefix));
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-[#FCFAF7] text-gray-900 pb-20 md:max-w-5xl">
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-[#FCFAF7] text-gray-900 pb-28 md:max-w-5xl">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:text-black focus:shadow-md"
@@ -272,7 +272,7 @@ export function CustomerShell({
         </div>
 
         {/* ROW 1.5: Sovereign Ecosystem Horizontal Tabs (Food, KingPay, Travel, AI Tutor, VIP Dining) */}
-        <div className="hidden md:flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none select-none">
+        <div className="hidden">
           {SOVEREIGN_ECOSYSTEM_TABS.map((tab) => {
             const isActive = tab.match(path);
             const Icon = tab.icon;

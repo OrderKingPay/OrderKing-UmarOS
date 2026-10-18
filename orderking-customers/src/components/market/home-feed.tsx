@@ -30,7 +30,6 @@ import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
-import { SmartZeroDeliveryFallbackCard } from "@/components/market/zero-delivery-fallback-card";
 import { ServiceShortcuts } from "@/components/market/service-shortcuts";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
@@ -335,11 +334,11 @@ export function HomeFeed({
       {!q && <ServiceShortcuts emphasizeAlternatives={Boolean(list.data && isZeroDeliveryInRadius)} />}
 
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
-      {!q && (list.data?.restaurants?.length ?? 0) > 0 && (
+      {!q && (
         <section aria-label="Food Categories" className="pt-0.5">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
-              Food Categories
+              Explore food
             </h2>
             <Link
               to="/search"
@@ -503,7 +502,7 @@ export function HomeFeed({
         <div className="flex items-center justify-between mb-2.5">
           <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
             {!isDeliveryActive
-              ? `Services in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`
+              ? `Restaurants near ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`
               : selectedCategory
               ? "Filtered restaurants"
               : dietFilter === "veg"
@@ -575,7 +574,20 @@ export function HomeFeed({
                 </Button>
               </div>
             )}
-            <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
+            <div
+              data-testid="food-availability-note"
+              role="status"
+              className="rounded-2xl border border-stone-200 bg-white px-4 py-4 text-left shadow-sm sm:px-5"
+            >
+              <p className="text-sm font-extrabold text-stone-900">
+                {!isDeliveryActive || list.data?.deliveryAvailable === false
+                  ? "Food delivery is not available at this address yet."
+                  : "No restaurants are available for this location right now."}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-stone-600">
+                Select another delivery address above to discover real restaurants and menus.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">

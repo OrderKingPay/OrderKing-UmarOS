@@ -184,12 +184,12 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-lg px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden",
+        "pointer-events-none fixed inset-x-0 bottom-0 z-[70] mx-auto w-full max-w-lg px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:max-w-[680px] md:pb-4",
         className
       )}
     >
       <ul role="list" data-testid="customer-bottom-nav"
-        className="grid grid-cols-3 gap-1.5 rounded-2xl border border-amber-400/40 bg-[#141414]/95 p-1.5 shadow-2xl backdrop-blur-xl">
+        className="pointer-events-auto grid grid-cols-3 gap-1.5 rounded-[24px] border border-amber-300/70 bg-gradient-to-br from-[#0d111b]/98 via-[#201b18]/98 to-[#181312]/98 p-2 shadow-[0_18px_50px_rgba(15,12,10,0.46),0_0_0_1px_rgba(245,158,11,0.18)] backdrop-blur-2xl">
         {THREE_TAB_CUSTOMER_NAV.map(({ id, label, to, icon: Icon }) => (
           <li key={id} className="min-w-0">
             <Link
@@ -198,10 +198,11 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
               aria-label={label}
               aria-current={id === active ? "page" : undefined}
               className={cn(
-                "flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1 text-xs font-bold no-underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300",
-                id === active ? "bg-amber-400 text-slate-950" :
-                id === "kingpay" ? "-translate-y-2 scale-[1.04] border border-amber-300/60 bg-gradient-to-b from-amber-500/25 to-amber-400/10 text-amber-200 shadow-[0_0_22px_rgba(245,158,11,0.25)] hover:bg-amber-400/25" :
-                "text-stone-200 hover:bg-white/10 hover:text-white"
+                "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-1.5 text-[11px] font-extrabold tracking-tight no-underline transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 sm:min-h-[62px] sm:text-xs",
+                id === active ? "bg-gradient-to-br from-[#ffedaf] via-amber-400 to-amber-500 text-slate-950 shadow-[0_4px_20px_rgba(245,158,11,0.32)]" :
+                id === "kingpay" ? "border border-amber-400/50 bg-gradient-to-b from-amber-400/20 to-amber-500/10 text-amber-100 shadow-[0_0_20px_rgba(245,158,11,0.18)] hover:bg-amber-400/25" :
+                "text-stone-200 hover:bg-white/10 hover:text-white",
+                id === "kingpay" && "-translate-y-1 ring-1 ring-amber-400/35"
               )}
             >
               <Icon className="size-5 shrink-0" aria-hidden="true" />
