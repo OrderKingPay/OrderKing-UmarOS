@@ -8,7 +8,7 @@ import type { RestaurantCard } from "@/lib/market-types";
 import { searchLimiter } from "@/lib/security/rate-limiter";
 import { CURATED_DISHES, filterDishes } from "@/lib/predictive-search";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
-import { VERIFIED_AVAILABLE_KITCHENS } from "@/components/market/home-feed";
+
 
 // Helper functions (same logic as catalog.ts)
 function num(v: string | number | null | undefined): number | null {
@@ -206,29 +206,8 @@ export const Route = createFileRoute("/api/search")({
             cards.push(card);
           }
 
-          // In active delivery zones (e.g. Connaught Place), ensure customers can discover verified kitchens even if database returns 0 rows or riders are offline
-          let finalCards = cards;
-          if (finalCards.length === 0) {
-            finalCards = VERIFIED_AVAILABLE_KITCHENS.filter((r) => {
-              if (veg && !r.vegOnly) return false;
-              if (category) {
-                const s = category.toLowerCase();
-                const matchCat =
-                  (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(s)) ||
-                  r.name.toLowerCase().includes(s) ||
-                  r.slug.toLowerCase().includes(s);
-                if (!matchCat) return false;
-              }
-              if (q) {
-                const ql = q.toLowerCase();
-                return (
-                  r.name.toLowerCase().includes(ql) ||
-                  (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(ql))
-                );
-              }
-              return true;
-            });
-          }
+          // Catalog responses include only database-backed restaurants.
+          const finalCards = cards;
 
           const marketContext = getMarketContext();
           finalCards.sort((a, b) => {
@@ -263,41 +242,12 @@ export const Route = createFileRoute("/api/search")({
             headers: { "content-type": "application/json" },
           });
         } catch (error) {
-          console.warn("GET /api/search database unavailable; using verified kitchen fallback.");
-          const fallback = VERIFIED_AVAILABLE_KITCHENS.filter((r) => {
-            if (veg && !r.vegOnly) return false;
-            if (category) {
-              const s = category.toLowerCase();
-              const matchCat =
-                (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(s)) ||
-                r.name.toLowerCase().includes(s) ||
-                r.slug.toLowerCase().includes(s);
-              if (!matchCat) return false;
-            }
-            if (q) {
-              const ql = q.toLowerCase();
-              return r.name.toLowerCase().includes(ql) || (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(ql));
-            }
-            return true;
-          });
-          const fallbackDishes = filterDishes(CURATED_DISHES, q, { veg, rating4Plus: false, fastDelivery: false, greatOffers: false });
-          return new Response(JSON.stringify({ 
-            restaurants: fallback,
-            dishes: fallbackDishes,
-            deliveryAvailable: fallback.length > 0,
-            marketContext: { sortStrategy: "relevance" },
-            sections: {
-              offers: fallback.filter((c) => c.hasOffer),
-              popular: fallback,
-              fast: fallback.filter((c) => c.etaMinutes <= 28),
-              budget: fallback,
-              veg: fallback.filter((c) => c.vegOnly),
-              newKitchens: fallback.slice(0, 4),
-            },
-          }), {
-            status: 200,
-            headers: { "content-type": "application/json" },
-          });
+          console.error("GET /api/search: live catalog unavailable", error);
+          return new Response(JSON.stringify({
+            error: "RESTAURANT_CATALOG_UNAVAILABLE",
+            restaurants: [], dishes: [], deliveryAvailable: false,
+            sections: { offers: [], popular: [], fast: [], budget: [], veg: [], newKitchens: [] },
+          }), { status: 503, headers: { "content-type": "application/json" } });
         }
       },
     },
