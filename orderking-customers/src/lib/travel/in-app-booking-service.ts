@@ -1,4 +1,5 @@
 import { PAISE_PER_RUPEE } from "@/lib/money";
+import { supabase } from "@/lib/db-cloud";
 
 export const SOVEREIGN_TRAVEL_DISCLAIMER =
   "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon charter confirmation.";
@@ -1167,3 +1168,121 @@ function syncTicketToSavedTrips(ticket: SovereignETicket): void {
     // ignore
   }
 }
+
+// ============================================================================
+// B2B Travel Partner Bookings Supabase Integration
+// ============================================================================
+
+export type B2BBookingType = "FLIGHT" | "TRAIN" | "BUS" | "HOTEL";
+export type B2BPartnerProvider = "KIWI" | "TRAVELPAYOUTS" | "CONFIRMTKT" | "REDBUS" | "BOOKING_COM";
+export type B2BBookingStatus = "INITIATED" | "HANDOFF_COMPLETED" | "CONFIRMED" | "FAILED";
+
+export interface TravelPartnerBookingRecord {
+  id?: string;
+  userId?: string | null;
+  bookingType: B2BBookingType;
+  partnerProvider: B2BPartnerProvider;
+  carrierName?: string | null;
+  carrierCode?: string | null;
+  routeSummary: string;
+  fareAmountInr: number;
+  platformConvenienceFeeInr?: number;
+  commissionExpectedInr?: number;
+  cashbackAccruedPaise?: number;
+  bookingStatus?: B2BBookingStatus;
+  affiliateDeepLink?: string | null;
+  createdAt?: string;
+}
+
+export interface TravelPartnerBookingResult {
+  success: boolean;
+  bookingId?: string;
+  error?: string;
+}
+
+/**
+ * Logs a B2B travel partner booking lead or checkout to Supabase `travel_partner_bookings`.
+ * Uses authentic production data only — zero mock fallbacks.
+ */
+export async function logTravelPartnerBooking(
+  booking: TravelPartnerBookingRecord
+): Promise<TravelPartnerBookingResult> {
+  try {
+    const payload = {
+      user_id: booking.userId ?? null,
+      booking_type: booking.bookingType,
+      partner_provider: booking.partnerProvider,
+      carrier_name: booking.carrierName ?? null,
+      carrier_code: booking.carrierCode ?? null,
+      route_summary: booking.routeSummary,
+      fare_amount_inr: booking.fareAmountInr,
+      platform_convenience_fee_inr: booking.platformConvenienceFeeInr ?? 29.0,
+      commission_expected_inr: booking.commissionExpectedInr ?? 0.0,
+      cashback_accrued_paise: booking.cashbackAccruedPaise ?? 500,
+      booking_status: booking.bookingStatus ?? "INITIATED",
+      affiliate_deep_link: booking.affiliateDeepLink ?? null,
+    };
+
+    const { data, error } = await supabase
+      .from("travel_partner_bookings")
+      .insert(payload)
+      .select("id")
+      .single();
+
+    if (error) {
+      console.warn("Failed to log B2B booking to Supabase travel_partner_bookings:", error.message);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, bookingId: data?.id };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error logging travel partner booking";
+    console.warn("Error in logTravelPartnerBooking:", message);
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Updates the booking status of an existing travel partner booking in Supabase.
+ */
+export async function updateTravelPartnerBookingStatus(
+  bookingId: string,
+  status: B2BBookingStatus
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("travel_partner_bookings")
+      .update({ booking_status: status })
+      .eq("id", bookingId);
+
+    if (error) {
+      console.warn("Failed to update B2B booking status:", error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn("Error updating travel partner booking status:", err);
+    return false;
+  }
+}
+
+/**
+ * Fetches user travel partner booking history from Supabase `travel_partner_bookings`.
+ */
+export async function fetchUserTravelPartnerBookings(userId: string): Promise<any[]> {
+  try {
+    const { data, error } = await supabase
+      .from("travel_partner_bookings")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error || !data) {
+      return [];
+    }
+    return data;
+  } catch {
+    return [];
+  }
+}
+

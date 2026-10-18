@@ -115,6 +115,7 @@ function RestaurantPage() {
   const location = useLocationStore((s) => s.location);
   const user = useCurrentUser();
   const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const cartItems = useCartStore((s) => s.items);
   const cartRestaurantId = useCartStore((s) => s.restaurantId);
@@ -165,6 +166,55 @@ function RestaurantPage() {
       }
     }
   }, [restaurant, slug, activeCategory]);
+
+  // Live Supabase Realtime synchronization with Merchant catalog updates & stockout toggles
+  useEffect(() => {
+    const restaurantId = restaurant?.card?.id;
+    if (!restaurantId) return;
+
+    const channel = supabase
+      .channel(`customer-menu-sync-${restaurantId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "item_availability",
+          filter: `restaurant_id=eq.${restaurantId}`,
+        },
+        () => {
+          void qc.invalidateQueries({ queryKey: ["restaurant", slug] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "items",
+        },
+        () => {
+          void qc.invalidateQueries({ queryKey: ["restaurant", slug] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "restaurants",
+          filter: `id=eq.${restaurantId}`,
+        },
+        () => {
+          void qc.invalidateQueries({ queryKey: ["restaurant", slug] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [restaurant?.card?.id, slug, qc]);
 
   const add = (restId: string, restName: string, line: CartItem) => {
     const result = addItem(restId, restName, line);

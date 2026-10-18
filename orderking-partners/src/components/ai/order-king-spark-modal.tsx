@@ -13,6 +13,7 @@ import { useVendor } from "@/components/use-vendor";
 import { can } from "@/lib/rbac";
 import { useClientState } from "@/lib/client-state";
 import type { DietFlag } from "@/lib/contracts";
+import { platformConfig, type AppLanguage } from "@/lib/platform-config";
 import { tryExecutePartnerAiCommand } from "@/lib/ai/partner-ai-actions";
 
 export interface OrderKingSparkModalProps {
@@ -73,6 +74,8 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
   const globalLang = useClientState((s) => s.lang);
   const setGlobalLang = useClientState((s) => s.setLang);
   const [selectedLangCode, setSelectedLangCode] = useState<string>(globalLang || "en");
+  const canEditMenu = can(vendor.role, "menu.edit");
+  const canEditAvailability = can(vendor.role, "availability.edit");
 
   // Quiet-hours & Advisory Schedule Customizer state
   const [showScheduleDrawer, setShowScheduleDrawer] = useState(false);
@@ -371,23 +374,31 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
 
     try {
       if (restaurantId) {
-        const actionResult = await tryExecutePartnerAiCommand(question, restaurantId);
+        const actionResult = await tryExecutePartnerAiCommand(question, {
+          restaurantId,
+          categories: (menuQuery.data?.categories ?? []).map((c) => ({ id: c.id, name: c.name })),
+          items: (menuQuery.data?.items ?? []).map((it) => ({
+            ...it,
+            variants: it.variants.map((v) => ({ id: v.id, name: v.name, pricePaise: v.pricePaise })),
+          })),
+          dashboard: dashQuery.data,
+          languageCode: activeLang.code,
+          canEditMenu: Boolean(vendor.role && can(vendor.role, "menu.edit") && !menuQuery.data?.isMenuLocked),
+          canEditAvailability: Boolean(vendor.role && can(vendor.role, "availability.edit") && !menuQuery.data?.isMenuLocked),
+        });
         if (actionResult.handled) {
-          if (actionResult.mutationType === "menu") {
-            await qc.invalidateQueries({ queryKey: ["menu", restaurantId] });
-            await qc.invalidateQueries({ queryKey: ["dashboard", restaurantId] });
-          } else if (actionResult.mutationType === "kitchen") {
-            await qc.invalidateQueries({ queryKey: ["dashboard", restaurantId] });
-            await qc.invalidateQueries({ queryKey: ["menu", restaurantId] });
-          }
+          await Promise.all([
+            qc.invalidateQueries({ queryKey: ["menu", restaurantId] }),
+            qc.invalidateQueries({ queryKey: ["dashboard", restaurantId] }),
+          ]);
           setMessages((prev) => [
             ...prev,
             {
               id: `spark-${Date.now()}`,
               sender: "spark",
-              text: actionResult.response,
+              text: actionResult.replyText,
               timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-              provenanceNote: "Executed live kitchen action through UmarOS unified partner API.",
+              provenanceNote: "Executed live kitchen action through King AI partner engine.",
             },
           ]);
           return;

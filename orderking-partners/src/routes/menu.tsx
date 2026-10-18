@@ -9,7 +9,7 @@ import { MoneyText } from "@/components/money-text";
 import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { can } from "@/lib/rbac";
-import { rupeesToPaise } from "@/lib/money";
+import { rupeesToPaise, formatINR } from "@/lib/money";
 import {
   duplicateItem,
   getMenu,
@@ -333,6 +333,13 @@ function MenuPage() {
   const [quickDishInput, setQuickDishInput] = useState("");
   const [isAddingQuickDish, setIsAddingQuickDish] = useState(false);
   const [quickFeedback, setQuickFeedback] = useState<string | null>(null);
+
+  const [quickEditingVariant, setQuickEditingVariant] = useState<{
+    itemId: string;
+    variantId: string;
+    priceRupees: string;
+  } | null>(null);
+  const [savingQuickPrice, setSavingQuickPrice] = useState(false);
 
   const quickTaxonomy = useMemo(() => {
     if (!quickDishInput.trim()) return null;
@@ -1144,10 +1151,62 @@ function MenuPage() {
     }
   }
 
+  async function handleQuickSaveVariantPrice(
+    item: (typeof allItems)[number],
+    variantId: string,
+    newPriceRupees: number
+  ) {
+    if (isNaN(newPriceRupees) || newPriceRupees <= 0 || !vendor.restaurantId) return;
+    setSavingQuickPrice(true);
+    try {
+      const updatedVariants = item.variants.map((v) =>
+        v.id === variantId
+          ? { id: v.id, name: v.name, pricePaise: Math.round(newPriceRupees * 100) }
+          : { id: v.id, name: v.name, pricePaise: v.pricePaise }
+      );
+      await saveItem({
+        data: {
+          restaurantId: vendor.restaurantId,
+          id: item.id,
+          categoryId: item.category_id,
+          name: item.name,
+          description: item.description ?? "",
+          diet: (item.diet as "VEG" | "NONVEG" | "EGG") || "VEG",
+          tags: item.tags ?? "",
+          recommended: Boolean(item.recommended),
+          prepMinutes: item.prep_minutes,
+          imageUrl: item.image_url,
+          addonIds: item.addonIds ?? [],
+          variants: updatedVariants,
+          modifierGroups: (item as any).modifierGroups ?? [],
+        },
+      });
+      setQuickEditingVariant(null);
+      void qc.invalidateQueries({ queryKey: ["menu"] });
+      toast.success(`Updated "${item.name}" price to ₹${newPriceRupees}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update price");
+    } finally {
+      setSavingQuickPrice(false);
+    }
+  }
+
   const baseSellingPrice = editor?.variants[0]?.price ?? "";
   const basePriceRupees = Number(baseSellingPrice) > 0 ? Number(baseSellingPrice) : 0;
   const gst5PercentRupees = Math.round(basePriceRupees * 5) / 100;
   const customerMenuTotalRupees = Math.round((basePriceRupees + gst5PercentRupees) * 100) / 100;
+
+  const sparkDrawerPricing = useMemo(() => {
+    if (!editor?.name?.trim()) return null;
+    const cat = categories.find((c) => c.id === editor.categoryId)?.name;
+    const currentPaise = Math.round(Number(baseSellingPrice || 0) * 100);
+    return orderKingSpark.optimizeDishPricing({
+      id: editor.id || "drawer_dish",
+      name: editor.name,
+      pricePaise: currentPaise,
+      category: cat,
+    });
+  }, [editor?.id, editor?.name, editor?.categoryId, baseSellingPrice, categories]);
 
   const validVariants = useMemo(
     () =>
@@ -1965,14 +2024,103 @@ function MenuPage() {
                           <div className="text-sm text-muted line-clamp-2">{item.description}</div>
                         ) : null}
                         <div className="mt-1 flex flex-wrap gap-2 text-sm">
-                          {item.variants.map((v) => (
-                            <span
-                              key={v.id}
-                              className="rounded-full bg-surface-2 border border-border/60 px-2.5 py-0.5 text-xs font-medium"
-                            >
-                              {v.name}: <MoneyText paise={v.pricePaise} />
-                            </span>
-                          ))}
+                          {item.variants.map((v) => {
+                            const isEditingThis =
+                              quickEditingVariant?.itemId === item.id &&
+                              quickEditingVariant?.variantId === v.id;
+
+                            if (isEditingThis) {
+                              return (
+                                <form
+                                  key={v.id}
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const p = parseFloat(quickEditingVariant.priceRupees);
+                                    if (!isNaN(p) && p > 0) {
+                                      void handleQuickSaveVariantPrice(item, v.id, p);
+                                    }
+                                  }}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1 rounded-full bg-slate-900 border border-emerald-500/80 px-2 py-0.5 text-xs shadow-md"
+                                >
+                                  <span className="font-semibold text-slate-300">{v.name}: ₹</span>
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    step="1"
+                                    autoFocus
+                                    value={quickEditingVariant.priceRupees}
+                                    onChange={(e) =>
+                                      setQuickEditingVariant({
+                                        ...quickEditingVariant,
+                                        priceRupees: e.target.value,
+                                      })
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Escape") {
+                                        e.preventDefault();
+                                        setQuickEditingVariant(null);
+                                      }
+                                    }}
+                                    className="w-16 rounded border border-slate-700 bg-slate-950 px-1 py-0.5 text-xs text-right text-emerald-400 font-mono focus:border-emerald-500 focus:outline-none"
+                                  />
+                                  <button
+                                    type="submit"
+                                    disabled={savingQuickPrice}
+                                    title="Save price (Enter)"
+                                    className="rounded p-0.5 text-emerald-400 hover:bg-emerald-950/60 transition"
+                                  >
+                                    <Check className="size-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setQuickEditingVariant(null);
+                                    }}
+                                    title="Cancel (Esc)"
+                                    className="rounded p-0.5 text-slate-400 hover:text-white transition"
+                                  >
+                                    <X className="size-3.5" />
+                                  </button>
+                                </form>
+                              );
+                            }
+
+                            return (
+                              <span
+                                key={v.id}
+                                className="inline-flex items-center gap-1.5 rounded-full bg-surface-2 border border-border/60 px-2.5 py-0.5 text-xs font-medium group"
+                              >
+                                <span>{v.name}: <MoneyText paise={v.pricePaise} /></span>
+                                {canEdit && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setQuickEditingVariant({
+                                        itemId: item.id,
+                                        variantId: v.id,
+                                        priceRupees: String(Math.round(v.pricePaise / 100)),
+                                      });
+                                    }}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    title="1-Tap Quick Price Edit"
+                                    className="text-slate-400 opacity-60 group-hover:opacity-100 hover:text-amber-400 transition ml-0.5"
+                                  >
+                                    <Pencil className="size-3" />
+                                  </button>
+                                )}
+                              </span>
+                            );
+                          })}
                         </div>
                       </div>
                     </label>
@@ -2295,6 +2443,35 @@ function MenuPage() {
                     <span className="mt-1 block text-[10px] text-slate-400">
                       Primary ({editor.variants[0]?.name || "Regular"}) rate before GST
                     </span>
+                    {sparkDrawerPricing && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const recInr = (sparkDrawerPricing.recommendedPricePaise / 100).toString();
+                          const variants =
+                            editor.variants.length > 0
+                              ? [...editor.variants]
+                              : [{ name: "Regular", price: recInr }];
+                          variants[0] = { ...variants[0], price: recInr };
+                          setEditor({ ...editor, variants });
+                        }}
+                        className="mt-2 flex items-center justify-between gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-300 hover:bg-amber-500/20 transition cursor-pointer w-full text-left"
+                        title={sparkDrawerPricing.commercialRationale}
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <Sparkles className="size-3 text-amber-400 shrink-0" />
+                          <span className="truncate font-semibold">
+                            Spark AI: ₹{(sparkDrawerPricing.recommendedPricePaise / 100).toFixed(0)}
+                            <span className="text-slate-400 font-normal ml-1">
+                              ({sparkDrawerPricing.priceDeltaPaise >= 0 ? "+" : ""}{formatINR(sparkDrawerPricing.priceDeltaPaise)})
+                            </span>
+                          </span>
+                        </div>
+                        <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 uppercase tracking-wider shrink-0">
+                          Apply
+                        </span>
+                      </button>
+                    )}
                   </div>
 
                   <div>

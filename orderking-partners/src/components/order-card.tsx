@@ -12,6 +12,7 @@ import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transiti
 import { delayOrderPrep } from "@/lib/server/api-orders";
 import { enqueueMutation } from "@/lib/offline/durable-queue";
 import { StructuredRejectionModal } from "@/components/orders/structured-rejection-modal";
+import { CourierRadarMap } from "@/components/orders/courier-radar-map";
 import { toast } from "sonner";
 import { Clock } from "lucide-react";
 
