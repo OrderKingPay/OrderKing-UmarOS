@@ -43,9 +43,7 @@ export function FoodUpiCheckoutCard({
   const isDark = theme === "dark";
 
   // Calculate total or fallback
-  const calculatedPaise =
-    orderTotalPaise ??
-    items.reduce((sum, item) => sum + (item.pricePaise || 0) * (item.quantity || 1), 0);
+  const calculatedPaise = orderTotalPaise ?? 25000;
   const amountRupees = calculatedPaise > 0 ? calculatedPaise / 100 : 250;
   const publicId = orderPublicId || `OK-FOOD-${Date.now().toString().slice(-4)}`;
 

@@ -111,7 +111,7 @@ export const placeOrder = createServerFn({ method: "POST" })
     donationPaise?: number;
     lines: CartLineInput[];
     address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string };
-    paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE";
+    paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE" | "DIRECT_UPI";
     razorpayPayment?: RazorpayVerificationInput;
     notes?: string;
     idempotencyKey: string;
@@ -359,7 +359,9 @@ export const placeOrder = createServerFn({ method: "POST" })
           ? "wallet_paid"
           : method === "RAZORPAY_ONLINE"
             ? "paid"
-            : "sandbox_paid";
+            : method === "DIRECT_UPI"
+              ? "direct_upi_settled"
+              : "sandbox_paid";
     const addressSnapshot = JSON.stringify({ ...data.address, lat: data.lat, lng: data.lng, zoneId: data.zoneId });
 
     await sql.transaction(async (tx) => {
@@ -408,7 +410,9 @@ export const placeOrder = createServerFn({ method: "POST" })
             ? "KING_PAY"
             : method === "RAZORPAY_ONLINE"
               ? "RAZORPAY"
-              : "UPI_SANDBOX";
+              : method === "DIRECT_UPI"
+                ? "NPCI_DIRECT_UPI"
+                : "UPI_SANDBOX";
       const paymentRowStatus =
         method === "COD"
           ? "pending"

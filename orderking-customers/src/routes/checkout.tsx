@@ -24,8 +24,23 @@ import {
   Zap,
   Moon,
   Receipt,
+  QrCode,
+  ExternalLink,
+  Share2,
+  Smartphone,
+  Copy,
 } from "lucide-react";
 import { toast } from "sonner";
+import { DirectUpiIntentModal } from "@/components/fintech/direct-upi-intent-modal";
+import {
+  triggerWhatsAppDispatchWithGps,
+  FOUNDER_UPI_VPA,
+  FOUNDER_MERCHANT_NAME,
+} from "@/lib/dispatch/whatsapp-gps-bridge";
+import {
+  buildNPCIUpiIntentUrl,
+  generateAllUPIAppLinks,
+} from "@/lib/payments/npci-upi-intent";
 import { QuoteLines } from "@/components/market/quote-lines";
 import { CheckoutUpsellEngine } from "@/components/market/checkout-upsell-engine";
 import { LocationDialog } from "@/components/market/location-dialog";
@@ -108,8 +123,12 @@ function CheckoutPage() {
   const { user, isPending } = useCurrentUserState();
   const { restaurantId, restaurantName, items, coupon, clear } = useCartStore();
   const location = useLocationStore((s) => s.location);
-  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("RAZORPAY_ONLINE");
+  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY" | "DIRECT_UPI">("DIRECT_UPI");
   const [preferredUpiApp, setPreferredUpiApp] = useState<string>("UPI QR");
+  const [directUpiModalOpen, setDirectUpiModalOpen] = useState(false);
+  const [directUpiTxnRef, setDirectUpiTxnRef] = useState<string>("");
+  const [isDispatchingWhatsApp, setIsDispatchingWhatsApp] = useState(false);
+  const [whatsappDispatched, setWhatsappDispatched] = useState(false);
   const [notes, setNotes] = useState("");
   const [forSomeoneElse, setForSomeoneElse] = useState(false);
   const [recipientName, setRecipientName] = useState("");
@@ -241,7 +260,7 @@ function CheckoutPage() {
       }
 
       const placeFinalOrder = async (
-        finalPaymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE",
+        finalPaymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE" | "DIRECT_UPI",
         razorpayPayment?: RazorpayVerificationInput
       ) => {
         const result =
@@ -257,7 +276,7 @@ function CheckoutPage() {
                   donationPaise,
                   lines: items,
                   address: { line1: location.line1, area: location.zoneName, label: location.label },
-                  paymentMethod: finalPaymentMethod as "COD" | "UPI_SANDBOX" | "KING_PAY",
+                  paymentMethod: finalPaymentMethod,
                   notes: orderNotes,
                   idempotencyKey,
                 },
@@ -862,6 +881,146 @@ function CheckoutPage() {
                   </span>
                 </div>
 
+                {/* 0% Direct NPCI UPI Intent link & Live Dynamic BharatQR */}
+                <div
+                  className={`rounded-2xl border-2 transition-all p-4 duration-300 ${
+                    method === "DIRECT_UPI"
+                      ? "border-amber-400 bg-gradient-to-br from-amber-500/20 via-yellow-400/15 to-amber-600/20 shadow-[0_8px_25px_rgba(245,158,11,0.25)]"
+                      : "border-amber-400/30 bg-surface hover:border-amber-400/60"
+                  }`}
+                >
+                  <label className="flex cursor-pointer items-start gap-3.5">
+                    <input
+                      type="radio"
+                      name="pay"
+                      className="mt-1 size-5 text-amber-500 focus:ring-amber-400"
+                      checked={method === "DIRECT_UPI"}
+                      onChange={() => setMethod("DIRECT_UPI")}
+                    />
+                    <div className="flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs">
+                            ⚡
+                          </span>
+                          <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
+                            0% Fee Direct NPCI UPI Intent &amp; Live QR
+                          </span>
+                        </div>
+                        <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300 self-start sm:self-auto">
+                          0% Gateway Deduction
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                        100% of money settles directly into the founder bank account via NPCI UPI network. Zero intermediary gateway commission.
+                      </p>
+                    </div>
+                  </label>
+
+                  {method === "DIRECT_UPI" && (
+                    <div className="mt-3.5 border-t border-amber-400/30 pt-3 space-y-3">
+                      {/* VPA Details */}
+                      <div className="flex items-center justify-between bg-black/40 rounded-xl p-2.5 text-xs">
+                        <span className="text-zinc-400">Founder Settlement VPA:</span>
+                        <div className="flex items-center gap-1.5 font-mono font-bold text-amber-300">
+                          <span>{FOUNDER_UPI_VPA}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (typeof navigator !== "undefined" && navigator.clipboard) {
+                                void navigator.clipboard.writeText(FOUNDER_UPI_VPA);
+                                toast.success("Founder VPA copied to clipboard!");
+                              }
+                            }}
+                            className="p-1 hover:text-white transition"
+                            title="Copy VPA"
+                          >
+                            <Copy className="size-3" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* 1-Tap Mobile UPI Intent Launcher */}
+                      <a
+                        href={buildNPCIUpiIntentUrl({
+                          vpa: FOUNDER_UPI_VPA,
+                          payeeName: FOUNDER_MERCHANT_NAME,
+                          amountInRupees: totalPayable / 100,
+                          currency: "INR",
+                          transactionRef: `OKUPI-${Date.now().toString().slice(-6)}`,
+                          transactionNote: `OrderKing Feast ${restaurantName || ""}`.trim().slice(0, 50),
+                          merchantCategoryCode: "5812",
+                          mode: "02",
+                        })}
+                        className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-500/30 transition active:scale-95 no-underline"
+                      >
+                        <Zap className="size-4 fill-zinc-950" />
+                        <span>Open in UPI App (GPay / PhonePe / Paytm)</span>
+                      </a>
+
+                      {/* App Buttons + Live QR Trigger */}
+                      <div className="grid grid-cols-4 gap-2">
+                        <a
+                          href={buildNPCIUpiIntentUrl({
+                            vpa: FOUNDER_UPI_VPA,
+                            payeeName: FOUNDER_MERCHANT_NAME,
+                            amountInRupees: totalPayable / 100,
+                            currency: "INR",
+                            transactionRef: `OKUPI-${Date.now().toString().slice(-6)}`,
+                            transactionNote: `OrderKing Feast`,
+                            merchantCategoryCode: "5812",
+                          }).replace(/^upi:\/\/pay/, "tez://upi/pay")}
+                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
+                        >
+                          <span className="text-base">⚡</span>
+                          <span className="text-[10px] font-bold mt-0.5">GPay</span>
+                        </a>
+
+                        <a
+                          href={buildNPCIUpiIntentUrl({
+                            vpa: FOUNDER_UPI_VPA,
+                            payeeName: FOUNDER_MERCHANT_NAME,
+                            amountInRupees: totalPayable / 100,
+                            currency: "INR",
+                            transactionRef: `OKUPI-${Date.now().toString().slice(-6)}`,
+                            transactionNote: `OrderKing Feast`,
+                            merchantCategoryCode: "5812",
+                          }).replace(/^upi:\/\/pay/, "phonepe://pay")}
+                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
+                        >
+                          <span className="text-base">🟣</span>
+                          <span className="text-[10px] font-bold mt-0.5">PhonePe</span>
+                        </a>
+
+                        <a
+                          href={buildNPCIUpiIntentUrl({
+                            vpa: FOUNDER_UPI_VPA,
+                            payeeName: FOUNDER_MERCHANT_NAME,
+                            amountInRupees: totalPayable / 100,
+                            currency: "INR",
+                            transactionRef: `OKUPI-${Date.now().toString().slice(-6)}`,
+                            transactionNote: `OrderKing Feast`,
+                            merchantCategoryCode: "5812",
+                          }).replace(/^upi:\/\/pay/, "paytmmp://pay")}
+                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
+                        >
+                          <span className="text-base">🔵</span>
+                          <span className="text-[10px] font-bold mt-0.5">Paytm</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => setDirectUpiModalOpen(true)}
+                          className="flex flex-col items-center justify-center rounded-xl border border-amber-400/50 bg-amber-500/10 p-2 transition hover:bg-amber-500/20 cursor-pointer"
+                        >
+                          <QrCode className="size-4 text-amber-500" />
+                          <span className="text-[10px] font-bold text-amber-900 dark:text-amber-200 mt-0.5">Live QR</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* KingPay Wallet: Royal 24k Gold Highlight Card */}
                 <div
                   className={`rounded-2xl border-2 transition-all p-4 duration-300 ${
@@ -1272,6 +1431,78 @@ function CheckoutPage() {
                 )}
               </div>
 
+              {/* WhatsApp Kitchen, Pharmacy, & Dispatch GPS Auto-Bridge */}
+              <section className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 via-white to-green-500/10 dark:from-emerald-950/40 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-md space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 font-bold text-lg">
+                      📲
+                    </div>
+                    <div>
+                      <h3 className="font-display text-sm sm:text-base font-extrabold text-emerald-950 dark:text-emerald-100 flex items-center gap-1.5">
+                        <span>WhatsApp Kitchen &amp; Dispatch GPS Auto-Bridge</span>
+                        <span className="text-[9px] rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.2 font-black text-emerald-600 dark:text-emerald-300">
+                          wa.me
+                        </span>
+                      </h3>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                        Autonomous dispatch bridge captures your live GPS coordinates via browser geolocation and routes directly to kitchen &amp; rider WhatsApp.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
+                  <Button
+                    type="button"
+                    disabled={isDispatchingWhatsApp}
+                    onClick={async () => {
+                      setIsDispatchingWhatsApp(true);
+                      try {
+                        const { coordinates } = await triggerWhatsAppDispatchWithGps({
+                          storeType: "kitchen",
+                          orderId: `OK-${Date.now().toString().slice(-6)}`,
+                          storeName: restaurantName || "OrderKing Kitchen",
+                          customerName: (user as any)?.name || "Royal Customer",
+                          customerPhone: (user as any)?.phone || "",
+                          items: items.map((i, idx) => ({ name: `Item #${idx + 1}`, quantity: i.quantity || 1 })),
+                          totalPaise: totalPayable,
+                          deliveryAddress: location.line1 || "Customer Delivery Location",
+                          deliveryInstructions: notes,
+                          paymentMethod: method === "DIRECT_UPI" ? "0% NPCI UPI Intent" : method,
+                          coordinates: location.lat && location.lng ? { lat: location.lat, lng: location.lng } : null,
+                        });
+                        setWhatsappDispatched(true);
+                        toast.success(
+                          coordinates
+                            ? `GPS coordinates (${coordinates.lat}, ${coordinates.lng}) acquired! WhatsApp dispatch bridge opened.`
+                            : "WhatsApp dispatch bridge opened with order address!"
+                        );
+                      } catch {
+                        toast.error("Failed to trigger WhatsApp GPS bridge.");
+                      } finally {
+                        setIsDispatchingWhatsApp(false);
+                      }
+                    }}
+                    className="w-full sm:flex-1 h-11 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-500/25 transition active:scale-95 cursor-pointer"
+                  >
+                    {isDispatchingWhatsApp ? (
+                      <span className="flex items-center gap-2">
+                        <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Acquiring GPS Satellite Pin...</span>
+                      </span>
+                    ) : (
+                      <>
+                        <Share2 className="size-4" />
+                        <span>
+                          {whatsappDispatched ? "✓ WhatsApp Dispatch Sent (Resend)" : "Trigger WhatsApp Kitchen GPS Auto-Bridge"}
+                        </span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </section>
+
               {/* Gamified Referral Loop */}
               <ReferralGamifiedLoop source="checkout" className="my-6" />
 
@@ -1331,6 +1562,18 @@ function CheckoutPage() {
             onSchedule={(slot) => {
               setScheduledSlot(slot);
               toast.success(`Delivery slot reserved for ${slot.date} (${slot.timeSlot})`);
+            }}
+          />
+
+          {/* Direct NPCI UPI Intent & Dynamic Live BharatQR Modal */}
+          <DirectUpiIntentModal
+            isOpen={directUpiModalOpen}
+            onClose={() => setDirectUpiModalOpen(false)}
+            orderTotalPaise={totalPayable}
+            orderNotes={restaurantName || "OrderKing Kitchen"}
+            onPaymentConfirmed={(txnRef) => {
+              setDirectUpiTxnRef(txnRef);
+              void submit();
             }}
           />
 

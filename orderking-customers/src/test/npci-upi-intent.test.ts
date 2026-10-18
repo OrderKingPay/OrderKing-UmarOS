@@ -275,4 +275,78 @@ describe("NPCI UPI Intent & Dynamic BharatQR Engine", () => {
       expect(internalTxnId).not.toMatch(/^UTR\d{12}$/);
     });
   });
+
+  describe("WhatsApp Kitchen, Pharmacy, & Dispatch GPS Auto-Bridge (wa.me)", () => {
+    it("generates formatted wa.me dispatch link with live GPS coordinates for kitchen", async () => {
+      const {
+        formatWhatsAppDispatchMessage,
+        generateWhatsAppDispatchUrl,
+        DEFAULT_DISPATCH_PHONE,
+      } = await import("../lib/dispatch/whatsapp-gps-bridge");
+
+      const msg = formatWhatsAppDispatchMessage({
+        storeType: "kitchen",
+        orderId: "OK-KITCHEN-8841",
+        publicId: "OK-KITCHEN-8841",
+        storeName: "Royal Awadh Cloud Kitchen",
+        customerName: "Rohan Varma",
+        customerPhone: "9876543210",
+        items: [
+          { name: "Dum Biryani Handi", quantity: 2 },
+          { name: "Garlic Butter Naan", quantity: 4 },
+        ],
+        totalPaise: 95000, // ₹950.00
+        deliveryAddress: "Flat 402, Royal Palms, Connaught Place, New Delhi",
+        paymentMethod: "0% NPCI UPI Intent",
+        paymentRef: "OKUPI-8841-9921",
+        coordinates: { lat: 28.6315, lng: 77.2167 },
+      });
+
+      expect(msg).toContain("ORDERKING AUTONOMOUS DISPATCH AUTO-BRIDGE");
+      expect(msg).toContain("KITCHEN LIVE ORDER");
+      expect(msg).toContain("Order ID:* #OK-KITCHEN-8841");
+      expect(msg).toContain("Store / Kitchen:* Royal Awadh Cloud Kitchen");
+      expect(msg).toContain("2x Dum Biryani Handi");
+      expect(msg).toContain("4x Garlic Butter Naan");
+      expect(msg).toContain("₹950.00");
+      expect(msg).toContain("0% Fee");
+      expect(msg).toContain("28.6315, 77.2167");
+      expect(msg).toContain("https://www.google.com/maps?q=28.6315,77.2167");
+
+      const url = generateWhatsAppDispatchUrl({
+        storeType: "kitchen",
+        orderId: "OK-KITCHEN-8841",
+        storeName: "Royal Awadh Cloud Kitchen",
+        items: [{ name: "Dum Biryani Handi", quantity: 2 }],
+        totalPaise: 95000,
+        deliveryAddress: "Flat 402, Royal Palms",
+        paymentMethod: "0% NPCI UPI Intent",
+        coordinates: { lat: 28.6315, lng: 77.2167 },
+      });
+
+      expect(url.startsWith(`https://wa.me/${DEFAULT_DISPATCH_PHONE}?text=`)).toBe(true);
+      expect(url).toContain(encodeURIComponent("https://www.google.com/maps?q=28.6315,77.2167"));
+    });
+
+    it("formats pharmacy emergency dispatch payload with GPS coordinates", async () => {
+      const { formatWhatsAppDispatchMessage } = await import("../lib/dispatch/whatsapp-gps-bridge");
+
+      const msg = formatWhatsAppDispatchMessage({
+        storeType: "pharmacy",
+        orderId: "MED-9021",
+        storeName: "Apollo 24x7 Express",
+        items: [{ name: "Paracetamol 650mg", quantity: 1 }],
+        totalPaise: 15000,
+        deliveryAddress: "HSR Layout Sector 2, Bengaluru",
+        paymentMethod: "DIRECT_UPI",
+        coordinates: { lat: 12.9141, lng: 77.6517 },
+      });
+
+      expect(msg).toContain("PHARMACY EMERGENCY DISPATCH");
+      expect(msg).toContain("MED-9021");
+      expect(msg).toContain("Apollo 24x7 Express");
+      expect(msg).toContain("12.9141, 77.6517");
+      expect(msg).toContain("https://www.google.com/maps?q=12.9141,77.6517");
+    });
+  });
 });

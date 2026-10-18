@@ -27,6 +27,7 @@ import { CartConflictModal } from "@/components/market/cart-conflict-modal";
 import { CancellationGraceWindow } from "@/components/market/cancellation-grace-window";
 import { OrdersPageSkeleton } from "@/components/skeletons/route-skeletons";
 import { AppErrorComponent } from "@/lib/error-component";
+import { triggerWhatsAppDispatchWithGps } from "@/lib/dispatch/whatsapp-gps-bridge";
 
 export const Route = createFileRoute("/orders/$id")({
   component: OrderDetailPage,
@@ -877,6 +878,59 @@ function OrderDetailPage() {
             }}
           >
             📲 Share UPI Split Link (WhatsApp / SMS)
+          </Button>
+        </div>
+
+        {/* WhatsApp Kitchen, Pharmacy, & Dispatch GPS Auto-Bridge */}
+        <div className="mt-4 rounded-3xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-white to-green-500/5 dark:from-emerald-950/40 dark:via-zinc-900 dark:to-zinc-850 p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 text-sm">
+                📲
+              </span>
+              <div>
+                <h3 className="font-semibold text-sm text-emerald-950 dark:text-emerald-100">
+                  WhatsApp Kitchen &amp; Dispatch GPS Auto-Bridge
+                </h3>
+                <p className="text-xs text-muted">
+                  Auto-relay order details and live GPS coordinates to kitchen &amp; dispatch team
+                </p>
+              </div>
+            </div>
+            <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[9px] font-black uppercase text-emerald-700 dark:text-emerald-300">
+              wa.me
+            </span>
+          </div>
+
+          <Button
+            size="sm"
+            className="w-full text-xs font-bold bg-[#25D366] hover:bg-[#20ba59] text-white flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+            onClick={async () => {
+              toast.info("Acquiring GPS coordinates for autonomous dispatch...");
+              try {
+                const { coordinates } = await triggerWhatsAppDispatchWithGps({
+                  storeType: "kitchen",
+                  orderId: order.summary.publicId,
+                  publicId: order.summary.publicId,
+                  storeName: order.summary.restaurantName || "OrderKing Kitchen",
+                  customerName: (user as any)?.name || "Customer",
+                  customerPhone: (user as any)?.phone || "",
+                  items: order.items.map((it: any) => ({ name: it.name, quantity: it.quantity })),
+                  totalPaise: order.summary.totalPaise,
+                  deliveryAddress: order.address || "Customer Address",
+                  paymentMethod: order.paymentMethod || "DIRECT_UPI",
+                });
+                toast.success(
+                  coordinates
+                    ? `GPS coordinates (${coordinates.lat}, ${coordinates.lng}) linked! WhatsApp auto-bridge opened.`
+                    : "WhatsApp dispatch bridge opened!"
+                );
+              } catch {
+                toast.error("Failed to open WhatsApp bridge.");
+              }
+            }}
+          >
+            🚀 Launch WhatsApp Kitchen GPS Auto-Bridge
           </Button>
         </div>
 

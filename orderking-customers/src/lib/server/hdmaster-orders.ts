@@ -23,7 +23,7 @@ export const placeOrderViaHDmaster = createServerFn({ method: "POST" })
     donationPaise?: number;
     lines: CartLineInput[];
     address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string };
-    paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY";
+    paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "DIRECT_UPI";
     notes?: string;
     idempotencyKey: string;
   }) => input)

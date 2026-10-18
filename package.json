@@ -1,26 +1,29 @@
 {
-    "name":  "orderking-quadcore",
-    "version":  "1.0.0",
-    "private":  true,
-    "packageManager":  "pnpm@9.15.4",
-    "scripts":  {
-                    "build":  "turbo run build",
-                    "dev":  "turbo run dev",
-                    "lint":  "turbo run lint",
-                    "test":  "turbo run test",
-                    "typecheck":  "turbo run typecheck"
-                },
-    "devDependencies":  {
-                            "turbo":  "latest"
-                        },
-    "dependencies":  {
-                         "@google/genai":  "^2.27.0",
-                         "@types/express":  "^5.0.6",
-                         "ethers":  "^6.17.0",
-                         "express":  "^5.2.1"
-                     },
-    
-    "resolutions":  {
-                        "nanostores":  "1.5.4"
-                    }
+    "name": "orderking-quadcore",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "packageManager": "pnpm@9.15.4",
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "test": "turbo run test",
+        "typecheck": "turbo run typecheck",
+        "start:superapp": "node server.js"
+    },
+    "devDependencies": {
+        "turbo": "latest"
+    },
+    "dependencies": {
+        "@google/genai": "^2.27.0",
+        "@types/express": "^5.0.6",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "ethers": "^6.17.0",
+        "express": "^5.2.1"
+    },
+    "resolutions": {
+        "nanostores": "1.5.4"
+    }
 }
