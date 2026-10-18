@@ -52,56 +52,12 @@ const SEARCH_PLACEHOLDERS = [
 ];
 
 export const SOVEREIGN_ECOSYSTEM_TABS = [
-  {
-    id: "food",
-    name: "Food",
-    badge: "",
-    badgeColor: "bg-emerald-500/20 text-emerald-800 border-emerald-400/50",
-    icon: UtensilsCrossed,
-    iconGradient: "from-amber-400 via-emerald-500 to-teal-800",
-    to: "/",
-    match: (p: string) => p === "/" || p.startsWith("/r/") || p.startsWith("/cart") || p.startsWith("/search") || p.startsWith("/dining") || p.startsWith("/restaurants") || p.startsWith("/menu"),
-  },
-  {
-    id: "kingpay",
-    name: "KingPay",
-    badge: "",
-    badgeColor: "bg-amber-500/25 text-amber-900 border-amber-400/60",
-    icon: Crown,
-    iconGradient: "from-yellow-400 via-amber-500 to-amber-700",
-    to: "/king-pay",
-    match: (p: string) => p.startsWith("/king-pay") || p.startsWith("/kingpay"),
-  },
-  {
-    id: "travel",
-    name: "Travel",
-    badge: "",
-    badgeColor: "bg-sky-500/20 text-sky-900 border-sky-400/50",
-    icon: Plane,
-    iconGradient: "from-sky-400 via-blue-500 to-indigo-800",
-    to: "/travel",
-    match: (p: string) => p.startsWith("/travel"),
-  },
-  {
-    id: "tutor",
-    name: "Learn",
-    badge: "",
-    badgeColor: "bg-purple-500/20 text-purple-900 border-purple-400/50",
-    icon: GraduationCap,
-    iconGradient: "from-indigo-400 via-purple-500 to-purple-800",
-    to: "/tutor-jobs",
-    match: (p: string) => p.startsWith("/tutor") || p.startsWith("/tutor-jobs"),
-  },
-  {
-    id: "orders",
-    name: "Orders",
-    badge: "",
-    badgeColor: "",
-    icon: ShoppingBag,
-    iconGradient: "from-rose-400 via-red-500 to-rose-800",
-    to: "/orders",
-    match: (p: string) => p.startsWith("/orders"),
-  },
+  { id: "food", name: "Food", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
+    match: (p: string) => p === "/" || ["/delivery", "/r/", "/search", "/cart", "/checkout", "/dining", "/offers"].some((v) => p.startsWith(v)) },
+  { id: "kingpay", name: "KingPay", icon: Crown, iconGradient: "from-yellow-400 to-amber-700", to: "/kingpay",
+    match: (p: string) => ["/kingpay", "/king-pay", "/travel", "/tutor", "/news", "/earn"].some((v) => p.startsWith(v)) },
+  { id: "orders", name: "Orders & Passes", icon: ShoppingBag, iconGradient: "from-rose-500 to-rose-800", to: "/orders",
+    match: (p: string) => p.startsWith("/orders") },
 ];
 
 export const POPULAR_INDIAN_DISH_CHIPS = [
@@ -310,7 +266,7 @@ export function CustomerShell({
         </div>
 
         {/* ROW 1.5: Sovereign Ecosystem Horizontal Tabs (Food, KingPay, Travel, AI Tutor, VIP Dining) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none select-none">
+        <div className="hidden md:flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none select-none">
           {SOVEREIGN_ECOSYSTEM_TABS.map((tab) => {
             const isActive = tab.match(path);
             const Icon = tab.icon;

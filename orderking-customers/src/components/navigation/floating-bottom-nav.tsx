@@ -168,8 +168,8 @@ export interface FloatingBottomNavProps {
 /** Exactly three visible customer navigation destinations. */
 export const THREE_TAB_CUSTOMER_NAV = [
   { id: "food", label: "Food", to: "/", icon: UtensilsCrossed },
-  { id: "services", label: "Services", to: "/kingpay", icon: LayoutGrid },
-  { id: "orders", label: "Orders", to: "/orders", icon: ShoppingBag },
+  { id: "kingpay", label: "KingPay", to: "/kingpay", icon: Wallet },
+  { id: "orders", label: "Orders & Passes", to: "/orders", icon: ShoppingBag },
 ] as const;
 
 export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps) {
@@ -178,7 +178,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
     ["/delivery", "/r/", "/restaurants", "/menu", "/dining", "/search", "/cart", "/checkout", "/offers", "/rewards"].some((p) => pathname.startsWith(p));
   const orders = pathname.startsWith("/orders");
   const services = ["/kingpay", "/king-pay", "/travel", "/tutor", "/earn", "/news"].some((p) => pathname.startsWith(p));
-  const active = orders ? "orders" : food ? "food" : services ? "services" : null;
+  const active = orders ? "orders" : food ? "food" : services ? "kingpay" : null;
 
   return (
     <nav
@@ -200,7 +200,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
               className={cn(
                 "flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1 text-xs font-bold no-underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300",
                 id === active ? "bg-amber-400 text-slate-950" :
-                id === "services" ? "border border-amber-400/35 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20" :
+                id === "kingpay" ? "-translate-y-2 scale-[1.04] border border-amber-300/60 bg-gradient-to-b from-amber-500/25 to-amber-400/10 text-amber-200 shadow-[0_0_22px_rgba(245,158,11,0.25)] hover:bg-amber-400/25" :
                 "text-stone-200 hover:bg-white/10 hover:text-white"
               )}
             >

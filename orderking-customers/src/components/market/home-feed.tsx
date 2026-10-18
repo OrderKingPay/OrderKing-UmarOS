@@ -31,6 +31,7 @@ import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 import { SmartZeroDeliveryFallbackCard } from "@/components/market/zero-delivery-fallback-card";
+import { ServiceShortcuts } from "@/components/market/service-shortcuts";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 // Curated high-resolution categories with distinct gradient colors (Biryani, Pizza, Rolls, Thali, Burgers, Desserts)
@@ -331,6 +332,8 @@ export function HomeFeed({
 
   return (
     <div className="space-y-4 px-3 py-2 sm:px-4 sm:py-3 bg-[#FCFAF7] text-gray-900">
+      {!q && <ServiceShortcuts emphasizeAlternatives={Boolean(list.data && isZeroDeliveryInRadius)} />}
+
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
       {!q && (list.data?.restaurants?.length ?? 0) > 0 && (
         <section aria-label="Food Categories" className="pt-0.5">
