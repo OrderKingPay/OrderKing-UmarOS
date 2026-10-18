@@ -125,7 +125,7 @@ BEGIN
 
     RETURN QUERY
     UPDATE public.dead_letter_queue
-    SET 
+    SET
         retry_count = v_retries,
         status = v_new_status,
         next_retry_at = v_next,
@@ -193,7 +193,7 @@ BEGIN
     -- Ensure menu_items is published to supabase_realtime
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'menu_items') THEN
         IF NOT EXISTS (
-            SELECT 1 FROM pg_publication_tables 
+            SELECT 1 FROM pg_publication_tables
             WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'menu_items'
         ) THEN
             ALTER PUBLICATION supabase_realtime ADD TABLE public.menu_items;
@@ -203,7 +203,7 @@ BEGIN
     -- Ensure dispatch_jobs is published to supabase_realtime
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'dispatch_jobs') THEN
         IF NOT EXISTS (
-            SELECT 1 FROM pg_publication_tables 
+            SELECT 1 FROM pg_publication_tables
             WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'dispatch_jobs'
         ) THEN
             ALTER PUBLICATION supabase_realtime ADD TABLE public.dispatch_jobs;
@@ -213,7 +213,7 @@ BEGIN
     -- Ensure orders is published to supabase_realtime
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'orders') THEN
         IF NOT EXISTS (
-            SELECT 1 FROM pg_publication_tables 
+            SELECT 1 FROM pg_publication_tables
             WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'orders'
         ) THEN
             ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
