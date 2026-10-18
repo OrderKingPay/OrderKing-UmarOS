@@ -346,35 +346,77 @@ export function ReceiveMoneyQrStudio({
           </div>
 
           {/* Action Buttons under the card */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-4 w-full max-w-sm">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleDownloadQr}
-              className="flex-1 text-xs font-bold py-2 flex items-center justify-center gap-1.5"
+          <div className="flex flex-col gap-2 mt-4 w-full max-w-sm">
+            {/* Direct Mobile UPI Intent Trigger */}
+            <a
+              href={generateUpiUri()}
+              className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30 transition active:scale-95 no-underline"
             >
-              <Download className="size-3.5" />
-              <span>Download QR</span>
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleShareWhatsApp}
-              className="flex-1 text-xs font-bold py-2 bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/40 flex items-center justify-center gap-1.5"
-            >
-              <Share2 className="size-3.5" />
-              <span>WhatsApp</span>
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleTestSoundbox}
-              className="text-xs font-semibold py-2 px-3 flex items-center gap-1"
-              title="Test Soundbox Audio"
-            >
-              <Volume2 className="size-3.5 text-amber-500" />
-              <span>Soundbox</span>
-            </Button>
+              <Zap className="size-4 fill-zinc-950" />
+              <span>Open in UPI App (GPay / PhonePe / Paytm)</span>
+            </a>
+
+            {/* App Fast Choosers */}
+            <div className="grid grid-cols-3 gap-1.5">
+              <a
+                href={generateUpiUri().replace(/^upi:\/\/pay/, "tez://upi/pay")}
+                className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
+              >
+                <span>⚡</span> GPay
+              </a>
+              <a
+                href={generateUpiUri().replace(/^upi:\/\/pay/, "phonepe://pay")}
+                className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
+              >
+                <span>🟣</span> PhonePe
+              </a>
+              <a
+                href={generateUpiUri().replace(/^upi:\/\/pay/, "paytmmp://pay")}
+                className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
+              >
+                <span>🔵</span> Paytm
+              </a>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleCopyLink}
+                className="flex-1 text-xs font-bold py-2 flex items-center justify-center gap-1.5"
+              >
+                {copiedLink ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+                <span>{copiedLink ? "Copied Link" : "Copy UPI Link"}</span>
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleDownloadQr}
+                className="flex-1 text-xs font-bold py-2 flex items-center justify-center gap-1.5"
+              >
+                <Download className="size-3.5" />
+                <span>Download QR</span>
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleShareWhatsApp}
+                className="flex-1 text-xs font-bold py-2 bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/40 flex items-center justify-center gap-1.5"
+              >
+                <Share2 className="size-3.5" />
+                <span>WhatsApp</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleTestSoundbox}
+                className="text-xs font-semibold py-2 px-3 flex items-center gap-1"
+                title="Test Soundbox Audio"
+              >
+                <Volume2 className="size-3.5 text-amber-500" />
+                <span>Soundbox</span>
+              </Button>
+            </div>
           </div>
         </div>
 

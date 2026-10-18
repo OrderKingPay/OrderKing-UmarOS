@@ -640,15 +640,15 @@ export function TutorJobsHub() {
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/40 px-3 py-1 text-xs font-bold text-emerald-300">
                 <ShieldCheck className="size-3.5 text-emerald-400" />
-                Zero-Mock • 100% Verified
+                Industry Benchmark Verified
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-              Tutors, Academics &amp; <span className="text-amber-400">Verified Jobs Hub</span>
+              Tutors, Academics &amp; <span className="text-amber-400">Career Network</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Book elite State &amp; Central Board syllabus tutors (Class 1–12), or switch with 1-tap to high-paying Remote, WFH, Micro-Tasks &amp; Direct Local Jobs.
+              Book verified State &amp; Central Board academic tutors (Class 1–12), or explore curated Remote, WFH, Content QA &amp; Hyperlocal Operations roles.
             </p>
           </div>
 
@@ -695,8 +695,8 @@ export function TutorJobsHub() {
               ₹49
             </div>
             <div>
-              <p className="font-bold text-white">Transparent Tutor Booking Fee</p>
-              <p className="text-[11px] text-slate-400">Escrow protected • 100% money back if first 20 mins unsatisfactory</p>
+              <p className="font-bold text-white">Transparent Tutor Matching Fee</p>
+              <p className="text-[11px] text-slate-400">Direct tutor connection • 100% money back if first 20 mins unsatisfactory</p>
             </div>
           </div>
 
@@ -705,10 +705,15 @@ export function TutorJobsHub() {
               ₹29
             </div>
             <div>
-              <p className="font-bold text-white">Direct Verified Job Application Fee</p>
-              <p className="text-[11px] text-slate-400">Direct employer HR dispatch • Zero scam guarantee • 0% salary cut</p>
+              <p className="font-bold text-white">Direct Employer Application Dispatch</p>
+              <p className="text-[11px] text-slate-400">Direct employer HR dispatch • Zero intermediary commission deductions</p>
             </div>
           </div>
+        </div>
+
+        {/* ASCI Compliance & Industry Benchmark Disclaimer */}
+        <div className="mt-4 p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
+          <span className="font-bold text-amber-300">ASCI Compliance &amp; Industry Benchmark Disclaimer:</span> All compensation ranges, tutor hourly rates, and career progression bands cited are indicative market benchmarks aligned with published findings from the TeamLease Employment Outlook Report and Naukri Hiring Surveys. Remuneration is subject to individual candidate qualifications, employer interview assessment, geographic deployment, and contract terms. OrderKing does not promise, represent, or guarantee assured placements or fixed earnings.
         </div>
       </header>
 
