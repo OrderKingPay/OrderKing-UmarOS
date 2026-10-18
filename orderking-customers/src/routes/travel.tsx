@@ -622,34 +622,23 @@ export function TravelPage() {
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-400/15 border border-sky-400/40 px-3 py-1 text-xs font-black text-sky-300 shadow-xs">
                   <span>✈️</span>
-                  <span>TravelStation · Zero-Markup Travel Concierge</span>
+                  <span>Travel information and planning</span>
                 </span>
                 <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2 py-0.5 text-[10px] font-extrabold">
-                  0% Convenience Fee Guaranteed
+                  Provider fees shown when available
                 </span>
                 <span className="rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 px-2 py-0.5 text-[10px] font-extrabold">
-                  CRIS &amp; GDS Partner Handoff
+                  Confirm provider connections before booking
                 </span>
               </div>
               <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
                 OrderKing TravelStation
               </h1>
               <p className="mt-1.5 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Compare live fares across domestic airlines, Indian Railways IRCTC, intercity AC sleeper buses, verified luxury stays, and airport chauffeurs. Never pay hidden convenience markups added at OTA checkout.
+                Explore travel categories. Availability, booking prices and fees require confirmation from the actual provider.
               </p>
             </div>
 
-            {/* Platform Desk Fee Guarantee Callout */}
-            <div className="flex items-center gap-3.5 bg-white/[0.07] border border-white/15 rounded-2xl p-4 backdrop-blur-xl shadow-xl self-start md:self-auto shrink-0">
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-black text-xl shadow-inner">
-                ₹0
-              </div>
-              <div>
-                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Platform Desk Fee</p>
-                <p className="text-xs sm:text-sm font-black text-emerald-300">Zero OrderKing Markup</p>
-                <p className="text-[10px] font-bold text-sky-300">You Save ₹399 / ticket vs OTAs</p>
-              </div>
-            </div>
           </div>
 
           {/* Search across all categories, sub-categories, routes & PNR tools */}
@@ -706,7 +695,7 @@ export function TravelPage() {
             <div className="flex items-center justify-between mb-3.5">
               <span className="text-[11px] font-black uppercase tracking-widest text-sky-300 flex items-center gap-1.5">
                 <Sparkles className="size-3.5 text-sky-400" />
-                Select Travel Mode (0% Platform Markup Guaranteed)
+                Choose travel type
               </span>
               <span className="text-[10px] text-slate-400 font-bold hidden sm:inline">
                 Click any category to load verified desk
@@ -740,7 +729,7 @@ export function TravelPage() {
                 </p>
                 <div className="mt-2.5 flex items-center justify-between border-t border-sky-400/20 pt-2 text-[10px] font-bold text-sky-300">
                   <span>OrderKing Direct</span>
-                  <span>0% Markup ➔</span>
+                  <span>Details ➔</span>
                 </div>
               </button>
 

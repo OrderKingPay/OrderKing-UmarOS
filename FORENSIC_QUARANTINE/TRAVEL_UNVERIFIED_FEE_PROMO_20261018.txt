@@ -1,0 +1,11 @@
+            {/* Platform Desk Fee Guarantee Callout */}
+            <div className="flex items-center gap-3.5 bg-white/[0.07] border border-white/15 rounded-2xl p-4 backdrop-blur-xl shadow-xl self-start md:self-auto shrink-0">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-black text-xl shadow-inner">
+                ₹0
+              </div>
+              <div>
+                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Platform Desk Fee</p>
+                <p className="text-xs sm:text-sm font-black text-emerald-300">Confirm final fees with provider</p>
+                <p className="text-[10px] font-bold text-sky-300">No savings guarantee</p>
+              </div>
+            </div>

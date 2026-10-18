@@ -29,111 +29,10 @@ import { AppErrorComponent } from "@/lib/error-component";
 import { computeDeterministicSkillMatch } from "@/lib/career/skill-matcher";
 import { getSql } from "@/lib/db";
 
-function generateCurriculumFallback(data: {
-  message: string;
-  board: string;
-  stdClass: string;
-  subject: string;
-  language: string;
-  difficulty: string;
-  tone: string;
-  goal: string;
-}): string {
-  const q = data.message.trim();
-  const sub = data.subject || "General Academic Studies";
-  const brd = data.board || "CBSE / NCERT";
-  const cls = data.stdClass || "Class 10";
-
-  // Official State and National Board Authorities across all 28 Indian States & NCERT
-  const boardAuthorityMap: Record<string, string> = {
-    CBSE: "Central Board of Secondary Education (CBSE • NCERT)",
-    ICSE: "Council for the Indian School Certificate Examinations (CISCE / ICSE)",
-    NCERT: "National Council of Educational Research and Training (NCERT Exemplar Standards)",
-    "Andhra Pradesh Board": "Board of Intermediate & Secondary Education Andhra Pradesh (BIEAP / BSEAP)",
-    "Arunachal Pradesh Board": "Directorate of School Education Arunachal Pradesh (DSEAP)",
-    "Assam Board": "Assam Higher Secondary Education Council (AHSEC / SEBA)",
-    "Bihar Board": "Bihar School Examination Board (BSEB)",
-    "Chhattisgarh Board": "Chhattisgarh Board of Secondary Education (CGBSE)",
-    "Goa Board": "Goa Board of Secondary and Higher Secondary Education (GBSHSE)",
-    "Gujarat Board": "Gujarat Secondary and Higher Secondary Education Board (GSEB)",
-    "Haryana Board": "Board of School Education Haryana (HBSE / BSEH)",
-    "Himachal Pradesh Board": "Himachal Pradesh Board of School Education (HPBOSE)",
-    "Jharkhand Board": "Jharkhand Academic Council (JAC)",
-    "Karnataka Board": "Karnataka School Examination and Assessment Board (KSEAB)",
-    "Kerala Board": "Kerala Directorate of Higher Secondary Education (DHSE / KBPE)",
-    "Madhya Pradesh Board": "Madhya Pradesh Board of Secondary Education (MPBSE)",
-    "Maharashtra Board": "Maharashtra State Board of Secondary and Higher Secondary Education (MSBSHSE)",
-    "Manipur Board": "Board of Secondary Education Manipur (BSEM / COHSEM)",
-    "Meghalaya Board": "Meghalaya Board of School Education (MBOSE)",
-    "Mizoram Board": "Mizoram Board of School Education (MBSE)",
-    "Nagaland Board": "Nagaland Board of School Education (NBSE)",
-    "Odisha Board": "Board of Secondary Education Odisha (BSE / CHSE)",
-    "Punjab Board": "Punjab School Education Board (PSEB)",
-    "Rajasthan Board": "Board of Secondary Education Rajasthan (RBSE / BSER)",
-    "Sikkim Board": "Sikkim State Board / Affiliated National Curriculum",
-    "Tamil Nadu State Board": "Tamil Nadu Directorate of Government Examinations (TNDGE Samacheer Kalvi)",
-    "Telangana Board": "Telangana State Board of Intermediate Education (TSBIE / BSE)",
-    "Tripura Board": "Tripura Board of Secondary Education (TBSE)",
-    "UP Board": "Uttar Pradesh Madhyamik Shiksha Parishad (UPMSP)",
-    "Uttarakhand Board": "Uttarakhand Board of School Education (UBSE)",
-    "West Bengal Board": "West Bengal Board of Secondary Education (WBBSE / WBCHSE)",
-    "Jammu & Kashmir Board": "Jammu and Kashmir Board of School Education (JKBOSE)",
-    NIOS: "National Institute of Open Schooling (NIOS)",
-  };
-
-  const authorityName = boardAuthorityMap[brd] || `${brd} Examination Authority`;
-
-  return `📚 **OrderKing Sovereign Academic Consultant [${authorityName} • ${cls} • ${sub}]**
-
----
-
-### 🎯 1. Fundamental Principle & Syllabus Definition (1 Mark Allocation)
-- **Official Board Alignment**: Evaluated under the **${brd}** curriculum standards for **${cls}** in **${sub}**.
-- **Student Inquiry**: *"${q}"*
-- **Textbook Baseline**: We begin by stating the canonical definition, defining known physical/mathematical parameters, and verifying boundary conditions.
-
----
-
-### 📐 2. Canonical Governing Formula & Theorems (1.5 Marks Allocation)
-- **Primary Standard Relation**:
-  $$\\text{Governing Equation} = \\text{Standard Formulation under } ${brd} \\text{ Textbook}$$
-- **Symbolic Conventions**:
-  - All variables are defined in standard S.I. units ($m, s, kg, N, J, V, \\text{mol}$).
-  - All sign conventions (Cartesian coordinate signs, clockwise/counter-clockwise directions) are declared explicitly.
-
----
-
-### 📝 3. Methodical Step-by-Step Mathematical Derivation (2.5 – 3 Marks Allocation)
-*In Indian Board Exams (${brd}), skipping intermediate mathematical lines incurs penalty marks. Follow this exact derivation:*
-1. **Step 1 (Given Data & Constraints)**:
-   - State given numerical and algebraic variables with positive/negative directions.
-2. **Step 2 (Theorem & Formula Substitution)**:
-   - Substitute given values into the governing relation without bypassing algebraic expansions.
-3. **Step 3 (Methodical Algebraic Simplification)**:
-   - Simplify terms line by line so the board examiner can award full step marks for intermediate working.
-4. **Step 4 (Final Value Computation & Dimensional Verification)**:
-   - Compute the exact numerical result or simplified algebraic closed form.
-
----
-
-### 🎯 4. Concluding Statement & Unit Specification (1 Mark Allocation)
-- **Final Boxed Answer**:
-  $$\\boxed{\\text{Result with proper SI Units}}$$
-- **Mandatory Board Closing**: Conclude with *"Hence Proved / Hence Evaluated"* as required in ${brd} subjective answer sheets.
-
----
-
-### 💡 5. ${brd} Examiner Step-Marking Scheme & Scoring Checklist
-| Step Stage | Examiner Evaluation Criterion | Allocated Marks |
-| :--- | :--- | :--- |
-| **Stage 1: Given Data & Formula** | Given data declaration & official formula citation | **1.0 Mark** |
-| **Stage 2: Step Working** | Accurate value substitution & intermediate algebra | **2.0 Marks** |
-| **Stage 3: Boxed Answer & Units** | Final answer in boxed format with correct SI units | **1.0 Mark** |
-| **Stage 4: Presentation & Method** | Clean margins, step numbering, and textbook terminology | **+1.0 Mark** |
-
-- **Common Pitfall to Avoid**: Forgetting to convert units to SI (e.g. $cm \\rightarrow m$, $km/h \\rightarrow m/s$), or missing the minus sign in vectors/derivatives.
-- **Revision Tip**: Review the exemplary solved problems in your official NCERT / ${brd} textbook end-of-chapter exercises for maximum retention!`;
+function generateCurriculumFallback(data: { message: string; board: string; stdClass: string; subject: string; language: string; difficulty: string; tone: string; goal: string }): string {
+ return "The tutoring service could not verify an answer right now. Please try again when the AI service is available.";
 }
+
 
 export const askIntelligenceFn = createServerFn({ method: "POST" })
   .validator((data: { 
@@ -738,144 +637,7 @@ export const JOB_CATEGORY_SUBCATEGORIES: Record<JobPrimaryCategory, readonly str
   ],
 };
 
-export const VERIFIED_JOB_OPENINGS: readonly JobOpeningItem[] = [
-  {
-    id: "job-del-ev-fleet",
-    title: "OrderKing EV & 2-Wheeler Delivery Partner",
-    category: "Delivery & Logistics",
-    subCategory: "EV & 2-Wheeler Fleet",
-    location: "All Major Cities · Flexible Zone Shift",
-    employmentType: "Independent Gig Partner",
-    compensationBand: "Per-Order Payout + Distance & Weather Incentives",
-    badge: "Active Onboarding",
-    description:
-      "Partner with the OrderKing hyperlocal delivery network using your electric scooter, motorcycle, or cycle. Weekly bank settlements with accidental cover under Code on Social Security 2020 norms.",
-    requirements: [
-      "Valid Driving Licence & RC (for motorized 2-wheelers) or Aadhaar ID (for EV/Cycle).",
-      "Android smartphone with active GPS and bank account linked for NEFT/UPI settlement.",
-      "Adherence to tamper-evident food safety seal handling protocols.",
-    ],
-  },
-  {
-    id: "job-del-hub-sort",
-    title: "Dark Store & Dispatch Hub Sorting Associate",
-    category: "Delivery & Logistics",
-    subCategory: "Hyperlocal Grocery Dispatch",
-    location: "Metro Hubs · 8-Hour Rotational Shift",
-    employmentType: "Full-Time On-Site",
-    compensationBand: "₹18,000 – ₹24,000 / month (Bank Payroll)",
-    badge: "Shift Role",
-    description:
-      "Manage fast-moving grocery & FMCG order picking, cold-chain crate staging, and rider handoff inside local dispatch hubs.",
-    requirements: [
-      "Ability to scan barcode SKUs accurately and verify expiry/MRP labels.",
-      "Familiarity with cold-storage and ambient zone separation.",
-      "10th / 12th pass with basic smartphone scanner proficiency.",
-    ],
-  },
-  {
-    id: "job-cul-commis",
-    title: "Cloud Kitchen Commis Chef & Prep Specialist",
-    category: "Restaurant & Culinary",
-    subCategory: "Cloud Kitchen Commis & Chef",
-    location: "Partner Restaurants · City Kitchens",
-    employmentType: "Full-Time Hospitality",
-    compensationBand: "₹20,000 – ₹32,000 / month",
-    badge: "Culinary",
-    description:
-      "Work with verified OrderKing partner restaurants and cloud kitchens on high-volume North Indian, South Indian, or Continental station prep.",
-    requirements: [
-      "Prior kitchen station experience or culinary diploma preferred.",
-      "Strict compliance with FSSAI Schedule IV personal hygiene and temperature logs.",
-      "Consistent portioning and KDS ticket preparation discipline.",
-    ],
-  },
-  {
-    id: "job-cul-hygiene",
-    title: "FSSAI Packaging & Kitchen Hygiene Lead",
-    category: "Restaurant & Culinary",
-    subCategory: "FSSAI Hygiene & Packaging Lead",
-    location: "Multi-Brand Cloud Kitchens",
-    employmentType: "Full-Time On-Site",
-    compensationBand: "₹22,000 – ₹30,000 / month",
-    badge: "FSSAI Standard",
-    description:
-      "Supervise food-grade container sealing, allergen labeling, and dispatch counter sanitation across high-volume restaurant partner outlets.",
-    requirements: [
-      "FoSTaC (Food Safety Training & Certification) awareness or hospitality background.",
-      "Audit tamper-evident seals and hot/cold bag segregation before rider handoff.",
-      "Maintain daily kitchen sanitation and pest-control checklists.",
-    ],
-  },
-  {
-    id: "job-ops-merchant",
-    title: "Merchant Onboarding & Field Growth Executive",
-    category: "Retail & Operations",
-    subCategory: "Merchant Onboarding Executive",
-    location: "Field Role · Tier-1 & Tier-2 Cities",
-    employmentType: "Full-Time / Contract",
-    compensationBand: "₹24,000 – ₹36,000 / month + Verified Store Milestones",
-    badge: "Field Growth",
-    description:
-      "Onboard licensed local restaurants, bakeries, and sweet shops onto the OrderKing platform, assisting owners with FSSAI/GSTIN verification and menu digitization.",
-    requirements: [
-      "Strong fluency in local regional language and English/Hindi.",
-      "Understanding of FSSAI 14-digit licence, GSTIN, and restaurant POS onboarding.",
-      "Two-wheeler for local merchant visits within assigned city pin codes.",
-    ],
-  },
-  {
-    id: "job-ops-catalog",
-    title: "City Menu & Inventory Catalog Auditor",
-    category: "Retail & Operations",
-    subCategory: "Inventory & Catalog Auditor",
-    location: "Hybrid · Regional Operations Desk",
-    employmentType: "Contract / Full-Time",
-    compensationBand: "₹18,000 – ₹25,000 / month",
-    badge: "Operations",
-    description:
-      "Audit merchant menu pricing, veg/non-veg classification badges, and GST slab mappings against physical restaurant tariff cards.",
-    requirements: [
-      "High attention to detail in verifying item prices and portion descriptions.",
-      "Familiarity with Indian food categories and dietary classification norms.",
-      "Proficiency with spreadsheets and catalog management tools.",
-    ],
-  },
-  {
-    id: "job-rem-translation",
-    title: "Regional Culinary & App Localization Specialist",
-    category: "Digital & Remote",
-    subCategory: "Regional Language Translation",
-    location: "Remote · Pan-India",
-    employmentType: "Verified Freelance Contract",
-    compensationBand: "Contract Rate per Verified Batch (Bank/UPI Settlement)",
-    badge: "Remote",
-    description:
-      "Translate dish names, ingredient notes, and partner onboarding guides accurately across Hindi, Bengali, Tamil, Telugu, Marathi, Kannada, and Gujarati.",
-    requirements: [
-      "Native-level reading and writing proficiency in at least one Indian regional language.",
-      "Ability to preserve authentic culinary terminology without literal mistranslation.",
-      "Pass sample localization quality review by editorial team.",
-    ],
-  },
-  {
-    id: "job-rem-academic",
-    title: "NCERT / State Board Academic Solution Reviewer",
-    category: "Digital & Remote",
-    subCategory: "Academic Content Reviewer",
-    location: "Remote · Flexible Hours",
-    employmentType: "Subject Matter Expert Contract",
-    compensationBand: "Contract Rate per Reviewed Module",
-    badge: "Academic SME",
-    description:
-      "Review and fact-check step-by-step Mathematics, Physics, and Chemistry solutions for alignment with CBSE, ICSE, and Indian State Board marking schemes.",
-    requirements: [
-      "B.Sc / M.Sc / B.Tech or teaching experience in Senior Secondary Mathematics or Science.",
-      "Deep familiarity with NCERT textbooks and step-wise board exam marking criteria.",
-      "Submit clear mathematical corrections during credential review.",
-    ],
-  },
-] as const;
+export const VERIFIED_JOB_OPENINGS: readonly JobOpeningItem[] = []; // Only DB-verified, currently open roles may appear here.
 
 interface SubmittedJobApplication {
   jobId: string;
@@ -1218,20 +980,20 @@ function IntelligencePage() {
               <div className="flex flex-wrap items-center gap-2 mb-2.5">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-400/15 border border-purple-400/40 px-3 py-1 text-xs font-black text-purple-300 shadow-xs">
                   <span>🔮</span>
-                  <span>OrderKing Academy &amp; Sovereign Careers</span>
+                  <span>Learn and explore careers</span>
                 </span>
                 <span className="rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 px-2.5 py-0.5 text-[10px] font-extrabold">
-                  23 Indian Languages · NCERT &amp; 28 State Boards
+                  Choose your subject and language
                 </span>
                 <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold">
-                  100% Employer Credential Review
+                  Job listings require verification
                 </span>
               </div>
               <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-                LearnKing &amp; JobKing
+                Learn and find work
               </h1>
               <p className="mt-1.5 text-xs sm:text-sm text-purple-200/90 max-w-2xl leading-relaxed">
-                Step-by-step NCERT &amp; Indian state board exam solutions, high-yield software &amp; AI courses, and verified hyperlocal logistics, culinary, operations, and remote freelance jobs across India.
+                Explore learning tools. Job listings appear only after actual employer and opening verification.
               </p>
             </div>
 
@@ -1259,7 +1021,7 @@ function IntelligencePage() {
                 }`}
               >
                 <Briefcase className="size-4" />
-                <span>JobKing Verified</span>
+                <span>Available jobs</span>
                 <span className="rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] px-1.5 py-0.2 font-extrabold">
                   {VERIFIED_JOB_OPENINGS.length} Roles
                 </span>
@@ -1267,199 +1029,6 @@ function IntelligencePage() {
             </div>
           </div>
 
-          {/* =====================================================================
-              THE 4 PRIMARY CATEGORIES:
-              1. Tutoring (Amethyst / Royal Purple)
-              2. Freelance Jobs (Electric Cyan / Teal)
-              3. Skill Courses (Sunset Amber / Gold)
-              4. Earn Money (Emerald Green / Jade)
-              Each category with its own gradient card & earning potential display!
-             ===================================================================== */}
-          <div className="mt-6 pt-5 border-t border-purple-500/20">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-black uppercase tracking-widest text-purple-300 flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-purple-400" />
-                Featured Career &amp; Learning Pathways
-              </span>
-              <span className="text-[10px] text-purple-300/70 font-bold hidden sm:inline">
-                Click any pathway to activate tools
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-              {/* 1. TUTORING */}
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("tutor");
-                  setTutorCategory("School & Board Exams");
-                  setTutorSubCategory("All");
-                }}
-                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  mode === "tutor" && tutorCategory === "School & Board Exams"
-                    ? "bg-gradient-to-br from-purple-900/40 via-purple-800/20 to-indigo-950/70 border-purple-400 shadow-[0_0_25px_rgba(192,132,252,0.25)] ring-1 ring-purple-400/60"
-                    : "bg-white/[0.04] border-purple-500/20 hover:border-purple-400/50 hover:bg-purple-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-300 border border-purple-400/40 shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
-                    <GraduationCap className="size-6" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-purple-400/20 text-purple-300 border border-purple-400/30 px-2 py-0.5">
-                    CBSE &amp; State
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-purple-300 transition-colors">
-                  Academic Tutoring
-                </h3>
-                <p className="text-[11px] text-purple-200/80 mt-0.5 leading-snug">
-                  CBSE, ICSE, 28 State Boards &amp; Higher Mathematics. Step-by-step marking schemes.
-                </p>
-
-                {/* Earning Potential Display */}
-                <div className="mt-3 rounded-xl bg-purple-500/15 border border-purple-400/30 p-2.5 text-center">
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-purple-300 block">
-                    Tutor Earning Potential
-                  </span>
-                  <span className="text-xs sm:text-sm font-black font-mono text-purple-200 block mt-0.5">
-                    ₹25,000 – ₹60,000 / mo
-                  </span>
-                  <span className="text-[9px] text-purple-300/80 block">
-                    as verified SME or Online Academic Coach
-                  </span>
-                </div>
-              </button>
-
-              {/* 2. FREELANCE JOBS */}
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("jobs");
-                  setJobCategory("Digital & Remote");
-                  setJobSubCategory("ALL");
-                }}
-                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  mode === "jobs" && jobCategory === "Digital & Remote"
-                    ? "bg-gradient-to-br from-cyan-950/40 via-teal-900/20 to-slate-950/70 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/60"
-                    : "bg-white/[0.04] border-cyan-500/20 hover:border-cyan-400/50 hover:bg-cyan-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-                    <Briefcase className="size-6" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-cyan-400/20 text-cyan-300 border border-cyan-400/30 px-2 py-0.5">
-                    Remote Pan-India
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-cyan-300 transition-colors">
-                  Freelance Jobs
-                </h3>
-                <p className="text-[11px] text-cyan-200/80 mt-0.5 leading-snug">
-                  23-language app localization, catalog QA &amp; academic solution auditing.
-                </p>
-
-                {/* Earning Potential Display */}
-                <div className="mt-3 rounded-xl bg-cyan-500/15 border border-cyan-400/30 p-2.5 text-center">
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-cyan-300 block">
-                    Freelance Earning Potential
-                  </span>
-                  <span className="text-xs sm:text-sm font-black font-mono text-cyan-200 block mt-0.5">
-                    ₹15,000 – ₹45,000 / mo
-                  </span>
-                  <span className="text-[9px] text-cyan-300/80 block">
-                    on verified batches &amp; contract settlement
-                  </span>
-                </div>
-              </button>
-
-              {/* 3. SKILL COURSES */}
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("tutor");
-                  setTutorCategory("Coding & AI Skills");
-                  setTutorSubCategory("All");
-                }}
-                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  mode === "tutor" && tutorCategory === "Coding & AI Skills"
-                    ? "bg-gradient-to-br from-amber-950/40 via-orange-900/20 to-indigo-950/70 border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.25)] ring-1 ring-amber-400/60"
-                    : "bg-white/[0.04] border-amber-500/20 hover:border-amber-400/50 hover:bg-amber-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform">
-                    <BrainCircuit className="size-6" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5">
-                    Tech &amp; AI
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-amber-300 transition-colors">
-                  Skill Courses
-                </h3>
-                <p className="text-[11px] text-amber-200/80 mt-0.5 leading-snug">
-                  Full-Stack TypeScript, Python, Prompt Engineering, DSA &amp; Spoken English.
-                </p>
-
-                {/* Earning Potential Display */}
-                <div className="mt-3 rounded-xl bg-amber-500/15 border border-amber-400/30 p-2.5 text-center">
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-300 block">
-                    Career Uplift Potential
-                  </span>
-                  <span className="text-xs sm:text-sm font-black font-mono text-amber-200 block mt-0.5">
-                    ₹4.5L – ₹18L / year
-                  </span>
-                  <span className="text-[9px] text-amber-300/80 block">
-                    entry-to-senior tech &amp; engineering salaries
-                  </span>
-                </div>
-              </button>
-
-              {/* 4. EARN MONEY */}
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("jobs");
-                  setJobCategory("ALL");
-                  setJobSubCategory("ALL");
-                }}
-                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
-                  mode === "jobs" && jobCategory === "ALL"
-                    ? "bg-gradient-to-br from-emerald-950/40 via-teal-900/20 to-slate-950/70 border-emerald-400 shadow-[0_0_25px_rgba(52,211,153,0.25)] ring-1 ring-emerald-400/60"
-                    : "bg-white/[0.04] border-emerald-500/20 hover:border-emerald-400/50 hover:bg-emerald-950/30"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-                    <ShieldCheck className="size-6" />
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5">
-                    Fleet &amp; Hubs
-                  </span>
-                </div>
-                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-emerald-300 transition-colors">
-                  Earn Money
-                </h3>
-                <p className="text-[11px] text-emerald-200/80 mt-0.5 leading-snug">
-                  EV &amp; 2-Wheeler delivery partners, hub sorters, commis chefs &amp; field leads.
-                </p>
-
-                {/* Earning Potential Display */}
-                <div className="mt-3 rounded-xl bg-emerald-500/15 border border-emerald-400/30 p-2.5 text-center">
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">
-                    Partner Earning Potential
-                  </span>
-                  <span className="text-xs sm:text-sm font-black font-mono text-emerald-200 block mt-0.5">
-                    ₹18,000 – ₹36,000 / mo
-                  </span>
-                  <span className="text-[9px] text-emerald-300/80 block">
-                    weekly bank settlements + incentives &amp; insurance
-                  </span>
-                </div>
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Dynamic Controls Sub-Panel (Curriculum or Jobs Filters) */}

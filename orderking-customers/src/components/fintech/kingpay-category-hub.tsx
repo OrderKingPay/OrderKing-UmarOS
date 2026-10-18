@@ -206,7 +206,7 @@ function UpiQrGeneratorTool() {
         {/* QR Code Presentation Box */}
         <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-amber-400/50 bg-black/60 p-6 text-center shadow-inner relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500" />
-          
+
           <div className="bg-white p-3.5 rounded-2xl shadow-2xl ring-4 ring-amber-400/20 mb-4">
             <img
               src={qrImageUrl}
@@ -1085,7 +1085,7 @@ function PassbookLedgerTool() {
             {formatPaise(walletBalancePaise)}
           </span>
           <span className="text-[10px] text-emerald-400 font-bold block mt-1">
-            ● RBI PA/PPI Compliant Balance
+            ● Transaction records
           </span>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
@@ -1207,7 +1207,7 @@ export function KingPayCategoryHub({
       ? "loan_emi"
       : activeSection === "wealth"
       ? "yield_est"
-      : "qr_generator"
+      : "split_bill"
   );
 
   useEffect(() => {
@@ -1218,7 +1218,7 @@ export function KingPayCategoryHub({
     } else if (activeSection === "wealth") {
       setActiveTab("yield_est");
     } else if (activeSection === "pay") {
-      setActiveTab("qr_generator");
+      setActiveTab("split_bill");
     }
   }, [activeSection]);
 
@@ -1239,8 +1239,8 @@ export function KingPayCategoryHub({
     },
     {
       id: "qr_generator" as const,
-      label: "1-Tap UPI QR Generator",
-      sub: "BharatQR & Scan-to-Pay",
+      label: "UPI QR (verification required)",
+      sub: "Not available until payee verification",
       icon: QrCode,
       section: "pay" as KingPaySection,
     },
@@ -1286,17 +1286,17 @@ export function KingPayCategoryHub({
             <div className="flex flex-wrap items-center gap-2 mb-2.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/50 px-3 py-1 text-xs font-black text-amber-300 shadow-sm">
                 <Crown className="size-3.5" />
-                <span>RBI PA/PPI Compliant Payment &amp; Utility Hub</span>
+                <span>Payment information &amp; calculators</span>
               </span>
               <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold">
-                100% Live &amp; Functional Tools
+                Availability depends on provider verification
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               OrderKing <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200">KingPay</span>
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Live Razorpay UPI food checkout, NPCI UPI QR Generator, fair friend bill-split engine, instant reducing-balance loan EMI, statutory 5% hospitality GST calculator, and quarterly compound yield estimators with zero platform surcharge.
+              Use available payment tools and calculators. Payment services require active provider verification; estimates are not bank offers.
             </p>
           </div>
 
@@ -1316,7 +1316,7 @@ export function KingPayCategoryHub({
 
       {/* Live Tool Selection Deck */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-        {TABS.map((tab) => {
+        {TABS.filter((tab) => tab.id !== "qr_generator").map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
@@ -1343,7 +1343,7 @@ export function KingPayCategoryHub({
                 >
                   <Icon className="size-3.5" />
                 </span>
-                <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+
               </div>
               <p className="text-[11px] font-black truncate">{tab.label}</p>
               <p className="text-[9px] text-slate-400 truncate mt-0.5">{tab.sub}</p>
