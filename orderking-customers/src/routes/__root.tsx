@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo } from "react";
 import {
   CustomizationProvider,
+  DEFAULT_CUSTOMIZATION_STATE,
   useCustomizationSync,
   useUmarOsLiveConfig,
   toDynamicCustomizationState,
@@ -350,6 +351,8 @@ function Root() {
         ...live.pageLayouts,
       },
       customerPricing: {
+        ...DEFAULT_CUSTOMIZATION_STATE.customerPricing!,
+        ...(base.customerPricing || {}),
         ...(sse.customerPricing || {}),
         ...(live.customerPricing || {}),
       },
