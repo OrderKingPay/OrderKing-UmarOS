@@ -140,7 +140,7 @@ export function SelfServeLandingModule() {
               Self-Serve Restaurant Onboarding
             </span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800">
-              100% Zomato-Parity KYC
+              100% Industry Benchmark KYC
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-white mt-1">

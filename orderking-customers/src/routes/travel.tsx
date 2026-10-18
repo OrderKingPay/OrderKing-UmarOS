@@ -9,7 +9,6 @@ import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-mo
 import {
   type SovereignETicket,
   getStoredETickets,
-  issueSovereignETicket,
 } from "@/lib/travel/in-app-booking-service";
 import { SovereignTravelConcierge } from "@/components/fintech/sovereign-travel-concierge";
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
@@ -78,6 +77,53 @@ export interface PopularRoute {
   farePaise: number;
   partnerUrl: string;
   highlight: string;
+}
+
+export function getRoutePartnerHandoff(
+  route: PopularRoute,
+  opts?: { departureDate?: string; passengers?: number; cabinClass?: string }
+): {
+  url: string;
+  partnerName: string;
+  portalName: string;
+} {
+  const departureDate = opts?.departureDate || new Date().toISOString().split("T")[0];
+  const passengers = opts?.passengers || 1;
+  const cabinClass = opts?.cabinClass || "Economy";
+
+  if (route.type === "flight") {
+    const deepLink = buildOfficialAirlineDeepLink({
+      carrierCode: "6E",
+      from: route.fromCode,
+      to: route.toCode,
+      departureDate,
+      passengers,
+      cabinClass,
+    });
+    return {
+      url: deepLink.bookingUrl,
+      partnerName: "IndiGo Airlines",
+      portalName: deepLink.portalName,
+    };
+  }
+
+  if (route.type === "train") {
+    const cleanFrom = route.fromCode.replace(/[^A-Za-z]/g, "").toUpperCase();
+    const cleanTo = route.toCode.replace(/[^A-Za-z]/g, "").toUpperCase();
+    return {
+      url: `https://www.irctc.co.in/nget/train-search?from=${cleanFrom}&to=${cleanTo}&date=${departureDate}`,
+      partnerName: "IRCTC Official Rail",
+      portalName: "irctc.co.in",
+    };
+  }
+
+  const sourceCity = route.fromCity.replace(/\(.*\)/, "").trim();
+  const destCity = route.toCity.replace(/\(.*\)/, "").trim();
+  return {
+    url: `https://www.redbus.in/bus-tickets/${encodeURIComponent(sourceCity.toLowerCase())}-to-${encodeURIComponent(destCity.toLowerCase())}`,
+    partnerName: "RedBus Partner",
+    portalName: "redbus.in",
+  };
 }
 
 export const POPULAR_ROUTES: readonly PopularRoute[] = [
@@ -487,47 +533,14 @@ export function TravelPage() {
       }
     }
 
-    // Synthesize sovereign confirmed ticket view for in-app display
-    toast.info("A supplier-issued confirmed ticket is required. No reservation has been created.");
-    return;
-    const syntheticTicket: SovereignETicket = issueSovereignETicket({
-      quote: {
-        id: `synth-${trip.id}`,
-        mode: (trip.bookingType.toLowerCase() as any) || "flight",
-        carrierCode: trip.providerName.slice(0, 2).toUpperCase() || "OK",
-        carrierName: trip.providerName,
-        serviceNumber: trip.bookingRef,
-        title: `${trip.providerName} (${trip.routeOrLocation})`,
-        fromCity: trip.routeOrLocation.split("➔")[0]?.trim() || "New Delhi",
-        toCity: trip.routeOrLocation.split("➔")[1]?.trim() || "Mumbai",
-        departureTime: "10:00",
-        arrivalTime: "12:30",
-        duration: "2h 30m",
-        baseFarePaise: 420000,
-        carrierTaxesPaise: 65000,
-        orderKingDeskFeePaise: 0,
-        otaBenchmarkFeePaise: 39900,
-        partnerRebateBps: 200,
-        seatsAvailable: 5,
-      },
-      passengers: [
-        {
-          id: "pax-1",
-          fullName: "Hasan Raza",
-          age: 28,
-          gender: "male",
-          seatPreference: "Window",
-        },
-      ],
-      contact: {
-        phone: "9876543210",
-        email: "hasan@orderking.in",
-      },
-      paymentMethod: "kingpay_wallet",
-      rebateDestination: "24k_gold",
-      travelDate: trip.travelDate,
-    });
-    setActiveTicketModal(syntheticTicket);
+    if (trip.bookingType === "Flight") {
+      setActiveTab("flights");
+      setFlightPnrInput(trip.bookingRef);
+      toast.success(`Loaded flight booking reference ${trip.bookingRef} to check status.`);
+      return;
+    }
+
+    toast.info(`Viewing saved ${trip.bookingType} itinerary reference (${trip.bookingRef}).`);
   };
 
   const handleCheckPnr = async (e: React.FormEvent) => {
@@ -542,9 +555,20 @@ export function TravelPage() {
     finally{setCheckingPnr(false);}
   };
 
+  const FASTAG_BANK_PORTALS: Record<string, string> = {
+    "ICICI Bank FASTag": "https://www.icicibank.com/personal-banking/cards/prepaid-card/fastag",
+    "State Bank of India FASTag": "https://fastag.onlinesbi.bank/",
+    "HDFC Bank FASTag": "https://www.hdfcbank.com/personal/pay/cards/fastag",
+    "Axis Bank FASTag": "https://www.axisbank.com/retail/cards/fastag",
+    "Kotak Mahindra Bank FASTag": "https://www.kotak.com/en/personal-banking/cards/prepaid-cards/fastag.html",
+    "IDFC FIRST Bank FASTag": "https://www.idfcfirstbank.com/personal-banking/payments/fastag",
+  };
+
   const handleFastagBankPortal = () => {
-    if(!vehicleNo?.trim()){toast.error("Enter your vehicle registration number.");return;}
-    toast.info("FASTag payment has not been processed. A verified issuer payment integration is required.");
+    if(!vehicleNo?.trim()){toast.error("Enter your vehicle registration number (e.g. DL 01 AB 1234).");return;}
+    const portalUrl = FASTAG_BANK_PORTALS[fastagBank] || "https://ihmcl.co.in/";
+    toast.success(`Handoff to official ${fastagBank} portal for vehicle ${vehicleNo.toUpperCase()}...`);
+    window.open(portalUrl, "_blank", "noopener,noreferrer");
   };
 
   const currentCategory = TRAVEL_CATEGORIES.find((c) => c.id === activeTab) ?? TRAVEL_CATEGORIES[0];
@@ -600,17 +624,20 @@ export function TravelPage() {
 
   return (
     <CustomerShell>
-      <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8 space-y-6">
-        <LivePnrStatusBar />
-        <TravelCategoryDeck
-          onChoose={(id) => {
-            setActiveTab(id);
-          }}
-          onOpenTrips={() => {
-            setActiveTab("trips");
-          }}
-          activeTab={activeTab}
-        />
+      <div className="mx-auto max-w-5xl px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
+        {/* TOP STATUS BAR & CATEGORY DECK - SEAMLESS ALIGNMENT */}
+        <div className="space-y-2.5">
+          <LivePnrStatusBar />
+          <TravelCategoryDeck
+            onChoose={(id) => {
+              setActiveTab(id);
+            }}
+            onOpenTrips={() => {
+              setActiveTab("trips");
+            }}
+            activeTab={activeTab}
+          />
+        </div>
 
         {/* COMPACT HIGH-DENSITY TRAVEL HERO */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#050D24] via-[#0E1A40] to-[#1E0F3D] text-white p-4 sm:p-5 shadow-xl border border-sky-400/30">
@@ -886,6 +913,31 @@ export function TravelPage() {
                       <span>Total Billed at Checkout</span>
                       <span className="font-mono text-emerald-300">{formatPaise(orderKingTotalCostPaise)}</span>
                     </div>
+
+                    <div className="pt-2 border-t border-emerald-500/20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                      <span className="text-[11px] text-emerald-200">
+                        Direct airline booking link with 0% platform fee.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const deepLink = buildOfficialAirlineDeepLink({
+                            carrierCode: "6E",
+                            from: flightFrom || "DEL",
+                            to: flightTo || "BOM",
+                            departureDate: flightDate,
+                            passengers: comparisonPassengers,
+                            cabinClass: "Economy",
+                          });
+                          toast.success(`Handoff to official ${deepLink.portalName} with zero convenience markup.`);
+                          window.open(deepLink.bookingUrl, "_blank", "noopener,noreferrer");
+                        }}
+                        className="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs transition shadow-xs whitespace-nowrap"
+                      >
+                        <span>Book Direct on Airline (₹0 Fee)</span>
+                        <ArrowUpRight className="size-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -939,37 +991,58 @@ export function TravelPage() {
                   </p>
                 </div>
 
-                <div className="border-t border-slate-200/80 pt-2.5">
-                  <div className="flex items-baseline justify-between mb-2">
+                <div className="border-t border-slate-200/80 pt-2.5 space-y-2">
+                  <div className="flex items-baseline justify-between">
                     <span className="text-[10px] font-bold text-slate-500 uppercase">Starting From</span>
                     <span className="text-sm font-black font-mono text-slate-900">
                       {formatPaise(route.farePaise)}
                     </span>
                   </div>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      if (route.type === "flight") {
-                        setActiveTab("flights");
-                        setFlightFrom(`${route.fromCity} (${route.fromCode})`);
-                        setFlightTo(`${route.toCity} (${route.toCode})`);
-                        toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} flight corridor.`);
-                      } else if (route.type === "train") {
-                        setActiveTab("trains");
-                        setTrainFrom(`${route.fromCity} (${route.fromCode})`);
-                        setTrainTo(`${route.toCity} (${route.toCode})`);
-                        toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} rail corridor.`);
-                      } else {
-                        setActiveTab("buses");
-                        setBusFrom(route.fromCity);
-                        setBusTo(route.toCity);
-                        toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} bus corridor.`);
-                      }
-                    }}
-                    className="w-full h-9 rounded-xl bg-slate-900 hover:bg-sky-600 text-white font-black text-xs transition"
-                  >
-                    Compare Live Fares ➔
-                  </Button>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const handoff = getRoutePartnerHandoff(route, {
+                          departureDate: flightDate,
+                          passengers: flightPassengers,
+                          cabinClass: flightClass,
+                        });
+                        toast.success(
+                          `Handoff to official ${handoff.portalName} for ${route.fromCity} ➔ ${route.toCity} (0% intermediary fee).`
+                        );
+                        window.open(handoff.url, "_blank", "noopener,noreferrer");
+                      }}
+                      className="w-full h-8 px-2 rounded-xl bg-slate-900 hover:bg-sky-600 text-white font-black text-[11px] transition flex items-center justify-center gap-1 shadow-xs"
+                    >
+                      <span>Book Direct</span>
+                      <ArrowUpRight className="size-3" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (route.type === "flight") {
+                          setActiveTab("flights");
+                          setFlightFrom(`${route.fromCity} (${route.fromCode})`);
+                          setFlightTo(`${route.toCity} (${route.toCode})`);
+                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} sector.`);
+                        } else if (route.type === "train") {
+                          setActiveTab("trains");
+                          setTrainFrom(`${route.fromCity} (${route.fromCode})`);
+                          setTrainTo(`${route.toCity} (${route.toCode})`);
+                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} rail.`);
+                        } else {
+                          setActiveTab("buses");
+                          setBusFrom(route.fromCity);
+                          setBusTo(route.toCity);
+                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} bus.`);
+                        }
+                      }}
+                      className="w-full h-8 px-2 rounded-xl border-slate-200 text-slate-700 hover:text-sky-700 hover:border-sky-300 font-bold text-[11px] transition"
+                    >
+                      Compare
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -1459,54 +1532,16 @@ export function TravelPage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   onClick={() => {
-                    toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
-                    return;
-                    const synth = issueSovereignETicket({
-                      quote: {
-                        id: `tr-direct-${Date.now()}`,
-                        mode: "train",
-                        carrierCode: "IRCTC",
-                        carrierName: "Indian Railways",
-                        serviceNumber: "20608 / VANDE BHARAT",
-                        title: "Vande Bharat Express",
-                        fromCity: trainFrom,
-                        fromCode: trainFrom.includes("(") ? trainFrom.split("(")[1]?.replace(")", "") : "NDLS",
-                        toCity: trainTo,
-                        toCode: trainTo.includes("(") ? trainTo.split("(")[1]?.replace(")", "") : "MMCT",
-                        departureTime: "06:00",
-                        arrivalTime: "14:15",
-                        duration: "8h 15m",
-                        baseFarePaise: trainTotalBase,
-                        carrierTaxesPaise: trainGst + trainIrctcLevy,
-                        orderKingDeskFeePaise: 0,
-                        otaBenchmarkFeePaise: 4000,
-                        partnerRebateBps: 100,
-                        seatsAvailable: 48,
-                        platform: "Platform 1",
-                        trainClass: trainClass as any,
-                        quota: trainQuota as any,
-                      },
-                      passengers: Array.from({ length: trainPassengers }, (_, i) => ({
-                        id: `pax-${i + 1}`,
-                        fullName: i === 0 ? "Hasan Raza" : `Passenger ${i + 1}`,
-                        age: 28,
-                        gender: "male",
-                        seatPreference: "Lower Berth",
-                      })),
-                      contact: {
-                        phone: "9876543210",
-                        email: "hasan@orderking.in",
-                      },
-                      paymentMethod: "kingpay_wallet",
-                      rebateDestination: "24k_gold",
-                      travelDate: trainDate,
-                    });
-                    setActiveTicketModal(synth);
-                    toast.success(`Issued Sovereign IRCTC E-Ticket for ${trainFrom} ➔ ${trainTo} with ₹0 fee!`);
+                    const cleanFrom = (trainFrom.includes("(") ? trainFrom.split("(")[1]?.replace(")", "") : trainFrom).trim().toUpperCase();
+                    const cleanTo = (trainTo.includes("(") ? trainTo.split("(")[1]?.replace(")", "") : trainTo).trim().toUpperCase();
+                    const irctcUrl = `https://www.irctc.co.in/nget/train-search?from=${encodeURIComponent(cleanFrom)}&to=${encodeURIComponent(cleanTo)}&date=${trainDate}`;
+                    toast.success(`Handoff to official IRCTC portal for ${cleanFrom} ➔ ${cleanTo}...`);
+                    window.open(irctcUrl, "_blank", "noopener,noreferrer");
                   }}
-                  className="flex-1 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm transition shadow-md shadow-indigo-600/20"
+                  className="flex-1 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm transition shadow-md shadow-indigo-600/20 flex items-center justify-center gap-1.5"
                 >
-                  Book Direct IRCTC Train In-App (₹0 Fee) ➔
+                  <span>Book on Official IRCTC Portal (0% Markup)</span>
+                  <ArrowUpRight className="size-4" />
                 </Button>
                 <Button
                   variant="outline"
@@ -1883,52 +1918,16 @@ export function TravelPage() {
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Button
                   onClick={() => {
-                    toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
-                    return;
-                    const synth = issueSovereignETicket({
-                      quote: {
-                        id: `bs-direct-${Date.now()}`,
-                        mode: "bus",
-                        carrierCode: "INTR",
-                        carrierName: busOperator !== "All Operators" ? busOperator : "IntrCity SmartBus",
-                        serviceNumber: "KA-01-AK-9021",
-                        title: `${busOperator !== "All Operators" ? busOperator : "Volvo AC Sleeper"} Express`,
-                        fromCity: busFrom,
-                        toCity: busTo,
-                        departureTime: "20:30",
-                        arrivalTime: "06:45 (+1)",
-                        duration: "10h 15m",
-                        baseFarePaise: busTotalBase,
-                        carrierTaxesPaise: busGst,
-                        orderKingDeskFeePaise: 0,
-                        otaBenchmarkFeePaise: 4500,
-                        partnerRebateBps: 300,
-                        seatsAvailable: 19,
-                        boardingPoint: busFrom,
-                        droppingPoint: busTo,
-                        busType: busClass,
-                      },
-                      passengers: Array.from({ length: busPassengers }, (_, i) => ({
-                        id: `pax-${i + 1}`,
-                        fullName: i === 0 ? "Hasan Raza" : `Passenger ${i + 1}`,
-                        age: 28,
-                        gender: "male",
-                        seatPreference: "Window",
-                      })),
-                      contact: {
-                        phone: "9876543210",
-                        email: "hasan@orderking.in",
-                      },
-                      paymentMethod: "kingpay_wallet",
-                      rebateDestination: "24k_gold",
-                      travelDate: busDate,
-                    });
-                    setActiveTicketModal(synth);
-                    toast.success(`Issued Sovereign Bus E-Ticket for ${busFrom} ➔ ${busTo} with ₹0 fee!`);
+                    const cleanSource = busFrom.replace(/\(.*\)/, "").trim().toLowerCase();
+                    const cleanDest = busTo.replace(/\(.*\)/, "").trim().toLowerCase();
+                    const redBusUrl = `https://www.redbus.in/bus-tickets/${encodeURIComponent(cleanSource)}-to-${encodeURIComponent(cleanDest)}?onward=${busDate}`;
+                    toast.success(`Handoff to partner RedBus for ${busFrom} ➔ ${busTo}...`);
+                    window.open(redBusUrl, "_blank", "noopener,noreferrer");
                   }}
-                  className="flex-1 h-12 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-sm transition shadow-md shadow-orange-600/20"
+                  className="flex-1 h-12 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-sm transition shadow-md shadow-orange-600/20 flex items-center justify-center gap-1.5"
                 >
-                  Book Direct AC Sleeper Bus In-App (₹0 Fee) ➔
+                  <span>Book on Partner RedBus (0% Desk Fee)</span>
+                  <ArrowUpRight className="size-4" />
                 </Button>
                 <Button
                   variant="outline"
@@ -2232,51 +2231,19 @@ export function TravelPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => {
-                  toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
-                    return;
-                    const synth = issueSovereignETicket({
-                    quote: {
-                      id: `ht-direct-${Date.now()}`,
-                      mode: "flight" as any,
-                      carrierCode: "HTL",
-                      carrierName: `${currentSub} (${hotelCity})`,
-                      serviceNumber: `OK-HT-${Date.now().toString().slice(-6)}`,
-                      title: `${currentSub} Voucher (${hotelCity})`,
-                      fromCity: hotelCity,
-                      toCity: hotelCity,
-                      departureTime: "14:00 (Check-In)",
-                      arrivalTime: "12:00 (Check-Out)",
-                      duration: `${hotelNights} Night(s)`,
-                      baseFarePaise: hotelTotalBase,
-                      carrierTaxesPaise: hotelGst,
-                      orderKingDeskFeePaise: 0,
-                      otaBenchmarkFeePaise: 79900,
-                      partnerRebateBps: 600,
-                      seatsAvailable: 3,
-                    },
-                    passengers: [
-                      {
-                        id: "pax-1",
-                        fullName: "Hasan Raza",
-                        age: 28,
-                        gender: "male",
-                        seatPreference: "King Bed",
-                      },
-                    ],
-                    contact: {
-                      phone: "9876543210",
-                      email: "hasan@orderking.in",
-                    },
-                    paymentMethod: "kingpay_wallet",
-                    rebateDestination: "24k_gold",
-                    travelDate: hotelCheckIn,
-                  });
-                  setActiveTicketModal(synth);
-                  toast.success(`Reserved ${currentSub} in ${hotelCity} with ₹${hotelSovereignRebate} 24K Gold rebate!`);
+                  const checkIn = hotelCheckIn;
+                  const dNext = new Date(checkIn);
+                  dNext.setDate(dNext.getDate() + hotelNights);
+                  const checkOut = dNext.toISOString().split("T")[0];
+                  const cleanCity = hotelCity.replace(/\,.*$/, "").trim();
+                  const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?cid=1890000&city=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${hotelRooms}&adults=${hotelRooms * 2}`;
+                  toast.success(`Handoff to hotel partner for ${cleanCity} (${hotelNights} nights)...`);
+                  window.open(agodaUrl, "_blank", "noopener,noreferrer");
                 }}
-                className="flex-1 h-12 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm shadow-md shadow-amber-500/20"
+                className="flex-1 h-12 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5"
               >
-                Reserve {currentSub} In-App (0% Markup) ➔
+                <span>Reserve {currentSub} on Hotel Partner (0% Markup)</span>
+                <ArrowUpRight className="size-4" />
               </Button>
               <Button
                 type="button"
@@ -2465,55 +2432,14 @@ export function TravelPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => {
-                  toast.info("Live supplier ticket issuance is not connected. No booking or payment occurred.");
-                    return;
-                    const synth = issueSovereignETicket({
-                    quote: {
-                      id: `cb-direct-${Date.now()}`,
-                      mode: "cab",
-                      carrierCode: "OK-CAB",
-                      carrierName: "OrderKing Chauffeur",
-                      serviceNumber: "DL-1Z-9281",
-                      title: `Prime Sedan Chauffeur (${currentSub})`,
-                      fromCity: cabPickup,
-                      toCity: cabDrop,
-                      departureTime: "Instant Dispatch",
-                      arrivalTime: "Est. 45 mins",
-                      duration: "45 mins",
-                      baseFarePaise: cabMeteredBase,
-                      carrierTaxesPaise: cabAirportFee,
-                      orderKingDeskFeePaise: 0,
-                      otaBenchmarkFeePaise: 5000,
-                      partnerRebateBps: 250,
-                      seatsAvailable: 4,
-                      driverName: "Rajesh Kumar",
-                      vehicleModel: "Maruti Suzuki Dzire",
-                      vehiclePlate: "DL-1Z-9281",
-                      etaMinutes: 4,
-                    },
-                    passengers: [
-                      {
-                        id: "pax-1",
-                        fullName: "Hasan Raza",
-                        age: 28,
-                        gender: "male",
-                        seatPreference: "Window",
-                      },
-                    ],
-                    contact: {
-                      phone: "9876543210",
-                      email: "hasan@orderking.in",
-                    },
-                    paymentMethod: "kingpay_wallet",
-                    rebateDestination: "24k_gold",
-                    travelDate: new Date().toISOString().split("T")[0],
-                  });
-                  setActiveTicketModal(synth);
-                  toast.success(`Dispatched verified chauffeur for ${cabPickup} with ₹0 surge fee!`);
+                  const uberUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(cabDrop)}`;
+                  toast.success(`Opening mobility dispatcher for ${cabPickup} ➔ ${cabDrop}...`);
+                  window.open(uberUrl, "_blank", "noopener,noreferrer");
                 }}
-                className="flex-1 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md shadow-emerald-600/20"
+                className="flex-1 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5"
               >
-                Dispatch Sovereign Cab In-App (₹0 Surge) ➔
+                <span>Dispatch via Mobility Partner (Tracked Fare)</span>
+                <ArrowUpRight className="size-4" />
               </Button>
               <Button
                 type="button"

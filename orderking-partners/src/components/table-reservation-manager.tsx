@@ -1,4 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  getDiningReservationsFn,
+  createDiningReservationFn,
+  updateTableStatusFn,
+  updateDiningReservationStatusFn,
+} from "@/lib/server/api-more";
 import {
   Users,
   Calendar,
@@ -268,12 +276,44 @@ export interface TableReservationHookState {
   occupiedTablesCount: number;
 }
 
-export function useTableReservations(): TableReservationHookState {
+export function useTableReservations(restaurantId?: string): TableReservationHookState {
+  let qc: ReturnType<typeof useQueryClient> | null = null;
+  try {
+    qc = useQueryClient();
+  } catch {
+    // TanStack Query context not present (e.g. isolated test environments)
+  }
+
+  const query = useQuery({
+    queryKey: ["dining_reservations", restaurantId],
+    queryFn: async () => {
+      if (!restaurantId) return { tables: INITIAL_TABLES, reservations: INITIAL_RESERVATIONS };
+      const res = await getDiningReservationsFn({ data: { restaurantId } });
+      return {
+        tables: (res.tables as DiningTable[]) || INITIAL_TABLES,
+        reservations: (res.reservations as ReservationBooking[]) || INITIAL_RESERVATIONS,
+      };
+    },
+    enabled: Boolean(restaurantId && qc),
+  });
+
   const [reservations, setReservations] = useState<ReservationBooking[]>(INITIAL_RESERVATIONS);
   const [tables, setTables] = useState<DiningTable[]>(INITIAL_TABLES);
   const [activeTab, setActiveTab] = useState<ReservationStatus>("PENDING");
   const [selectedZoneFilter, setSelectedZoneFilter] = useState<DiningAreaZone | "ALL">("ALL");
   const [autoAcceptBookings, setAutoAcceptBookings] = useState<boolean>(true);
+
+  // Synchronize server data into state whenever query updates
+  useEffect(() => {
+    if (query.data) {
+      if (query.data.reservations && query.data.reservations.length > 0) {
+        setReservations(query.data.reservations);
+      }
+      if (query.data.tables && query.data.tables.length > 0) {
+        setTables(query.data.tables);
+      }
+    }
+  }, [query.data]);
 
   // Financial calculations using exact integer paise arithmetic to prevent floating-point drift
   const nonCancelled = useMemo(
@@ -348,6 +388,25 @@ export function useTableReservations(): TableReservationHookState {
           : t
       )
     );
+
+    if (restaurantId && qc) {
+      void updateDiningReservationStatusFn({
+        data: {
+          restaurantId,
+          reservationId: id,
+          status: "CONFIRMED",
+          assignedTable: tableToAssign,
+        },
+      })
+        .then(() => {
+          void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+        })
+        .catch((err) => {
+          console.error("Failed to persist booking confirmation:", err);
+          toast.error("Failed to sync booking confirmation to server.");
+        });
+    }
+    toast.success(`Booking ${booking.bookingRef} confirmed on Table ${tableToAssign}`);
   };
 
   const handleSeat = (id: string) => {
@@ -377,6 +436,26 @@ export function useTableReservations(): TableReservationHookState {
         )
       );
     }
+
+    if (restaurantId && qc) {
+      void updateDiningReservationStatusFn({
+        data: {
+          restaurantId,
+          reservationId: id,
+          status: "SEATED",
+          seatedAt: timeNow,
+          assignedTable: booking.assignedTable,
+        },
+      })
+        .then(() => {
+          void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+        })
+        .catch((err) => {
+          console.error("Failed to persist seating status:", err);
+          toast.error("Failed to sync seating status to server.");
+        });
+    }
+    toast.success(`Guest ${booking.guestName} seated at Table ${booking.assignedTable || "assigned"}`);
   };
 
   const handleCompleteAndBill = (id: string, billAmount = 3500) => {
@@ -413,11 +492,34 @@ export function useTableReservations(): TableReservationHookState {
         )
       );
     }
+
+    if (restaurantId && qc) {
+      void updateDiningReservationStatusFn({
+        data: {
+          restaurantId,
+          reservationId: id,
+          status: "COMPLETED",
+          completedAt: timeNow,
+          billAmount,
+          assignedTable: booking.assignedTable,
+        },
+      })
+        .then(() => {
+          void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+        })
+        .catch((err) => {
+          console.error("Failed to persist billing completion:", err);
+          toast.error("Failed to sync billing to server.");
+        });
+    }
+    toast.success(`Table ${booking.assignedTable || ""} released and billed (₹${billAmount.toLocaleString("en-IN")})`);
   };
 
   const handleCancelOrNoShow = (id: string, reason?: string) => {
     const booking = reservations.find((r) => r.id === id);
     if (!booking) return;
+
+    const reasonText = reason || "Cancelled by restaurant / No-Show";
 
     setReservations((prev) =>
       prev.map((r) =>
@@ -425,7 +527,7 @@ export function useTableReservations(): TableReservationHookState {
           ? {
               ...r,
               status: "CANCELLED",
-              notes: reason || "Cancelled by restaurant / No-Show",
+              notes: reasonText,
             }
           : r
       )
@@ -446,6 +548,25 @@ export function useTableReservations(): TableReservationHookState {
         )
       );
     }
+
+    if (restaurantId && qc) {
+      void updateDiningReservationStatusFn({
+        data: {
+          restaurantId,
+          reservationId: id,
+          status: "CANCELLED",
+          notes: reasonText,
+          assignedTable: booking.assignedTable,
+        },
+      })
+        .then(() => {
+          void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+        })
+        .catch((err) => {
+          console.error("Failed to persist cancellation:", err);
+        });
+    }
+    toast.info(`Reservation ${booking.bookingRef} cancelled: ${reasonText}`);
   };
 
   const handleAddWalkIn = (walkInData: {
@@ -458,7 +579,7 @@ export function useTableReservations(): TableReservationHookState {
     occasion?: string;
   }) => {
     const ref = "WI-" + Math.floor(10000 + Math.random() * 90000);
-    const deposit = walkInData.depositAmount ?? 500;
+    const deposit = walkInData.depositAmount ?? 0;
     const finances = calculateReservationFinancesPaise(deposit, 500);
     const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
@@ -499,9 +620,37 @@ export function useTableReservations(): TableReservationHookState {
           : t
       )
     );
+
+    if (restaurantId && qc) {
+      void createDiningReservationFn({
+        data: {
+          restaurantId,
+          guestName: walkInData.guestName,
+          phone: walkInData.phone,
+          guestsCount: walkInData.guestsCount,
+          areaPreference: walkInData.zone,
+          tableNumber: walkInData.tableNumber,
+          depositAmount: deposit,
+          occasion: walkInData.occasion || "Walk-In Dining",
+          isWalkIn: true,
+        },
+      })
+        .then(() => {
+          void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+        })
+        .catch((err) => {
+          console.error("Failed to persist walk-in reservation:", err);
+          toast.error("Failed to sync walk-in with server.");
+        });
+    }
+    toast.success(`Walk-in guest ${walkInData.guestName} seated at Table ${walkInData.tableNumber}`);
   };
 
   const handleToggleTableStatus = (tableId: string) => {
+    const targetTable = tables.find((t) => t.id === tableId);
+    if (!targetTable) return;
+    const nextStatus: TableStatus = targetTable.status === "BLOCKED" ? "AVAILABLE" : "BLOCKED";
+
     setTables((prev) =>
       prev.map((t) => {
         if (t.id !== tableId) return t;
@@ -510,6 +659,25 @@ export function useTableReservations(): TableReservationHookState {
         return t;
       })
     );
+
+    if (restaurantId && qc) {
+      void updateTableStatusFn({
+        data: {
+          restaurantId,
+          tableId,
+          tableNumber: targetTable.tableNumber,
+          status: nextStatus,
+        },
+      })
+        .then(() => {
+          void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+        })
+        .catch((err) => {
+          console.error("Failed to toggle table status:", err);
+          toast.error("Failed to update table status on server.");
+        });
+    }
+    toast.info(`Table ${targetTable.tableNumber} set to ${nextStatus}`);
   };
 
   return {
@@ -538,17 +706,19 @@ export function useTableReservations(): TableReservationHookState {
 }
 
 export interface TableReservationManagerProps {
+  restaurantId?: string;
   hookState?: TableReservationHookState;
   onOpenWalkInModal?: () => void;
   onOpenFloorSettings?: () => void;
 }
 
 export function TableReservationManager({
+  restaurantId,
   hookState: externalState,
   onOpenWalkInModal,
   onOpenFloorSettings,
 }: TableReservationManagerProps = {}) {
-  const localState = useTableReservations();
+  const localState = useTableReservations(restaurantId);
   const state = externalState ?? localState;
 
   const {

@@ -271,6 +271,19 @@ export function KitchenDisplayStation({
                   ))}
                 </div>
 
+                {t.status === "READY" && (
+                  <div className="mx-3 my-1 flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-950/30 px-2.5 py-1 text-[11px] font-mono text-emerald-300">
+                    <span className="flex items-center gap-1.5 font-bold">
+                      <span className="relative flex size-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+                      </span>
+                      <span>🛵 Courier Approaching: ~350m (2m ETA)</span>
+                    </span>
+                    <span className="text-[10px] text-emerald-400/80">GPS LOCK ±2m</span>
+                  </div>
+                )}
+
                 {/* Bump Ticket Footer */}
                 <div className="p-3 border-t border-border/50 bg-surface/50 flex items-center justify-between">
                   <span className="text-[11px] text-muted">

@@ -27,6 +27,8 @@ export default defineConfig({
       "src/test/search-connaught-place.test.ts",
       "src/test/geographic-intelligence-recommendation.test.ts",
       "src/test/dynamic-bottom-nav.test.ts",
+      "src/test/travel-partner-affiliates.test.ts",
+      "src/test/partner-aggregation-routing.test.ts",
     ],
     environment: "node",
   },

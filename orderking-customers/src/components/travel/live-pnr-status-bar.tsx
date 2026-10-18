@@ -33,6 +33,7 @@ export interface LivePnrStatusBarProps {
   defaultConvenienceFeeInr?: number;
   defaultCashbackInr?: number;
   onCheckoutSuccess?: (orderId: string, pnr: string) => void;
+  className?: string;
 }
 
 const TRAIN_PNR_REGEX = /^\d{10}$/;
@@ -46,6 +47,7 @@ export const LivePnrStatusBar: React.FC<LivePnrStatusBarProps> = ({
   defaultConvenienceFeeInr = 29,
   defaultCashbackInr = 5,
   onCheckoutSuccess,
+  className = "",
 }) => {
   const [pnrInput, setPnrInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -209,21 +211,34 @@ export const LivePnrStatusBar: React.FC<LivePnrStatusBarProps> = ({
   };
 
   return (
-    <div className="w-full bg-white border-b border-slate-200 px-3 py-2">
-      <div className="max-w-screen-md mx-auto space-y-2">
-        {/* Compact Top Bar (<44px height) */}
-        <form onSubmit={handlePnrLookup} className="flex items-center gap-1.5">
+    <div className={`w-full rounded-2xl border border-slate-200/90 bg-white p-3 sm:p-4 shadow-xs ${className}`}>
+      <div className="w-full space-y-2.5">
+        {/* Compact Executive PNR Strip */}
+        <form onSubmit={handlePnrLookup} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="flex size-8 items-center justify-center rounded-xl bg-sky-100 text-sky-800 text-sm">
+              🎫
+            </span>
+            <div>
+              <span className="text-xs font-black text-slate-900 uppercase tracking-wider block">
+                Live PNR Status
+              </span>
+              <span className="text-[10px] text-slate-500 font-medium hidden sm:block">
+                IRCTC Rail (10 Digits) &amp; Airline (6 Chars)
+              </span>
+            </div>
+          </div>
           <div className="relative flex-1">
             <input
               type="text"
               value={pnrInput}
               onChange={(e) => setPnrInput(sanitizePnr(e.target.value))}
-              placeholder="Enter 10-digit Train PNR or 6-char Flight PNR"
+              placeholder="Enter 10-digit Train PNR or 6-char Airline PNR (e.g. 2458910342 or AB12CD)"
               aria-label="PNR Number"
-              className="w-full h-9 pl-2.5 pr-16 text-xs font-semibold tracking-wider text-slate-900 bg-slate-50 border border-slate-300 rounded-md focus:outline-none focus:border-slate-900"
+              className="w-full h-10 pl-3 pr-20 text-xs font-mono font-bold tracking-wider text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-sky-500 transition"
             />
             {pnrInput.length > 0 && (
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-200 text-slate-800">
                 {detectMode(pnrInput) ?? `${pnrInput.length}/10`}
               </span>
             )}
@@ -231,9 +246,9 @@ export const LivePnrStatusBar: React.FC<LivePnrStatusBarProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="h-9 px-3 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-amber-400 text-xs font-extrabold rounded-md whitespace-nowrap transition-colors"
+            className="h-10 px-4 bg-slate-900 hover:bg-sky-600 disabled:opacity-50 text-white text-xs font-black rounded-xl whitespace-nowrap transition-colors flex items-center justify-center gap-1.5 shadow-xs"
           >
-            {loading ? 'Checking...' : 'Live PNR'}
+            {loading ? "Checking..." : "Check Live PNR ➔"}
           </button>
         </form>
 

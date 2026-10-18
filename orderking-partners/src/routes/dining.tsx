@@ -37,7 +37,7 @@ function DiningPage() {
   const commissionTokens = useCommissionTokens();
   const dineInCommissionDisplay =
     commissionTokens.dineInBps === 0 ? "0%" : `${(commissionTokens.dineInBps / 100).toFixed(0)}%`;
-  const reservationState = useTableReservations();
+  const reservationState = useTableReservations(vendor.restaurantId);
 
   const {
     activeBookingsCount,
@@ -264,6 +264,7 @@ function DiningPage() {
 
         {/* MAIN DINING & TABLE RESERVATION MANAGER COMPONENT */}
         <TableReservationManager
+          restaurantId={vendor.restaurantId}
           hookState={reservationState}
           onOpenWalkInModal={() => setWalkInModalOpen(true)}
           onOpenFloorSettings={() => setFloorSettingsModalOpen(true)}

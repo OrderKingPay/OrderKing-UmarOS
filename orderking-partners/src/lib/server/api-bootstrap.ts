@@ -5,6 +5,7 @@ import { platformConfig } from "@/lib/platform-config";
 import { notificationChannelStatus } from "@/lib/adapters/notifications";
 import { storageAdapter } from "@/lib/adapters/storage";
 import { dispatchAdapter } from "@/lib/adapters/dispatch";
+import { getBankingGatewayStatus } from "@/lib/adapters/banking-gateway";
 import { newId } from "@/lib/utils";
 import { loadMemberships, writeAudit } from "./helpers";
 import { validateUpload } from "@/lib/adapters/storage";
@@ -86,6 +87,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
     const customization = buildPartnerCustomizationState();
+    const bankingStatus = getBankingGatewayStatus();
     try {
       const sql = await getSql();
       const memberships = await loadMemberships(sql, context.userId);
@@ -106,7 +108,13 @@ export const getBootstrap = createServerFn({ method: "GET" })
           notifications: notificationChannelStatus(),
           storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
           dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
-          payments: { connected: false, provider: "NOT_CONNECTED" },
+          payments: {
+            connected: bankingStatus.readyForLivePayouts,
+            provider: bankingStatus.activeProvider,
+            status: bankingStatus.status,
+            instructions: bankingStatus.instructions,
+          },
+          banking: bankingStatus,
           ai: { connected: Boolean(process.env.XAI_API_KEY), provider: process.env.XAI_API_KEY ? "xAI" : "NOT_CONNECTED" },
         },
         commissionOptionsBps: [...platformConfig.commission.allowedBps],
@@ -130,7 +138,13 @@ export const getBootstrap = createServerFn({ method: "GET" })
           notifications: notificationChannelStatus(),
           storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
           dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
-          payments: { connected: false, provider: "NOT_CONNECTED" },
+          payments: {
+            connected: bankingStatus.readyForLivePayouts,
+            provider: bankingStatus.activeProvider,
+            status: bankingStatus.status,
+            instructions: bankingStatus.instructions,
+          },
+          banking: bankingStatus,
           ai: { connected: Boolean(process.env.XAI_API_KEY), provider: process.env.XAI_API_KEY ? "xAI" : "NOT_CONNECTED" },
         },
         commissionOptionsBps: [...platformConfig.commission.allowedBps],
@@ -584,8 +598,8 @@ export const verifyBankPennyDrop = createServerFn({ method: "POST" })
       }
     }
 
-    const { executePennyDropVerification } = await import("@/lib/merchant-kyc");
-    const result = executePennyDropVerification({
+    const { verifyBankPennyDropLive } = await import("@/lib/adapters/banking-gateway");
+    const result = await verifyBankPennyDropLive({
       accountHolder: data.accountHolder,
       accountNumber: data.accountNumber,
       confirmAccountNumber: data.confirmAccountNumber,
@@ -605,10 +619,13 @@ export const verifyBankPennyDrop = createServerFn({ method: "POST" })
           entityId: data.restaurantId,
           detail: JSON.stringify({
             status: result.status,
+            gatewayStatus: result.gatewayStatus,
+            provider: result.provider,
             impsRrn: result.impsRrn,
             beneficiaryName: result.beneficiaryName,
             bankName: result.bankName,
             nameMatchScore: result.nameMatchScore,
+            operationalNote: result.operationalNote,
           }),
         });
       } catch (e) {
@@ -617,6 +634,13 @@ export const verifyBankPennyDrop = createServerFn({ method: "POST" })
     }
 
     return result;
+  });
+
+export const getBankingGatewayHealth = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async () => {
+    const { getBankingGatewayStatus } = await import("@/lib/adapters/banking-gateway");
+    return getBankingGatewayStatus();
   });
 
 

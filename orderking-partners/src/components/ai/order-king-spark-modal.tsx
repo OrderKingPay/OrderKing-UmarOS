@@ -74,8 +74,6 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
   const globalLang = useClientState((s) => s.lang);
   const setGlobalLang = useClientState((s) => s.setLang);
   const [selectedLangCode, setSelectedLangCode] = useState<string>(globalLang || "en");
-  const canEditMenu = can(vendor.role, "menu.edit");
-  const canEditAvailability = can(vendor.role, "availability.edit");
 
   // Quiet-hours & Advisory Schedule Customizer state
   const [showScheduleDrawer, setShowScheduleDrawer] = useState(false);
@@ -383,8 +381,8 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           })),
           dashboard: dashQuery.data,
           languageCode: activeLang.code,
-          canEditMenu: Boolean(vendor.role && can(vendor.role, "menu.edit") && !menuQuery.data?.isMenuLocked),
-          canEditAvailability: Boolean(vendor.role && can(vendor.role, "availability.edit") && !menuQuery.data?.isMenuLocked),
+          canEditMenu: canEdit,
+          canEditAvailability: canAvail,
         });
         if (actionResult.handled) {
           await Promise.all([

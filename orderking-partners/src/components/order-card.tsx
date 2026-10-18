@@ -631,6 +631,17 @@ export function OrderCard({
         }}
       />
 
+      {/* Live Mini GPS Courier Radar Map Component */}
+      {["READY", "RIDER_ASSIGNED", "ARRIVED_AT_OUTLET", "PICKED_UP", "ON_THE_WAY"].includes(order.state) && (
+        <CourierRadarMap
+          orderNumber={order.orderNumber}
+          orderState={order.state}
+          customerArea={order.customerArea}
+          onOpenHandoverModal={() => setHandoverModalOpen(true)}
+          className="my-1"
+        />
+      )}
+
       <div className="flex flex-wrap gap-2">
           {order.state === "PLACED" ? (
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
@@ -926,21 +937,14 @@ export function OrderCard({
               </button>
             </div>
 
-            {/* Rider Identity Card */}
-            <div className="rounded-xl border border-line bg-surface-2 p-3 space-y-1 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-foreground">🛵 OrderKing Fleet Delivery Partner</span>
-                <span className="rounded bg-leaf/20 px-2 py-0.5 text-[10px] font-mono font-bold text-leaf">
-                  ARRIVED AT OUTLET
-                </span>
-              </div>
-              <div className="text-muted">
-                Rider: <strong className="text-foreground">Rajesh Kumar</strong> (Hero Electric DL-01-EQ-3841)
-              </div>
-              <div className="text-muted">
-                Zone: <strong className="text-foreground">{order.customerArea || "Customer Delivery"}</strong>
-              </div>
-            </div>
+            {/* Upgraded Live GPS Courier Radar Map */}
+            <CourierRadarMap
+              orderNumber={order.orderNumber}
+              orderState={order.state === "PICKED_UP" ? "PICKED_UP" : "ARRIVED_AT_OUTLET"}
+              customerArea={order.customerArea}
+              compact={false}
+              className="border-emerald-500/40"
+            />
 
             {/* Verification Inputs */}
             <div className="space-y-3">

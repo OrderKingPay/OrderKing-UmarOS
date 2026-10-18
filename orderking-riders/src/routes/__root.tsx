@@ -105,8 +105,17 @@ export const Route = createRootRoute({
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                  if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                  }
+                });
                 window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js').catch(err => {
+                  navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(reg => {
+                    reg.update().catch(() => {});
+                  }).catch(err => {
                     console.log('SW registration failed: ', err);
                   });
                 });

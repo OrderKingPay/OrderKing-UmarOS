@@ -15,14 +15,18 @@ import { formatINR, STATUTORY_TAX_RATES } from "@/lib/money";
 import { can } from "@/lib/rbac";
 import { platformConfig } from "@/lib/platform-config";
 import { useCommissionTokens } from "@orderking/ui";
+import { MonthlyGstr1InvoiceModal } from "@/components/settlements/monthly-gstr1-invoice-modal";
 import {
   Banknote,
   Building2,
   CheckCircle2,
   Clock,
   Download,
+  FileCheck2,
   FileSpreadsheet,
+  FileText,
   Info,
+  Printer,
   Scale,
   ShieldCheck,
   Zap,
@@ -38,6 +42,7 @@ function SettlementsPage() {
   const canEditBank = vendor.role ? can(vendor.role, "settings.financial") : false;
 
   const [selectedCycle, setSelectedCycle] = useState<"STANDARD_WEEKLY" | "EXPRESS_DAILY">("STANDARD_WEEKLY");
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [expressSettling, setExpressSettling] = useState(false);
   const [expressSuccess, setExpressSuccess] = useState<{
     batchId: string;
@@ -221,6 +226,7 @@ function SettlementsPage() {
       acc.food += l.foodValuePaise;
       acc.packing += l.packingPaise;
       acc.gross += l.grossSalesPaise;
+      acc.delivery += Math.round(l.grossSalesPaise * 0.05);
       acc.restDisc += l.restaurantDiscountPaise;
       acc.platDisc += l.platformFundedDiscountPaise;
       acc.commission += l.commissionPaise;
@@ -238,6 +244,7 @@ function SettlementsPage() {
       food: 0,
       packing: 0,
       gross: 0,
+      delivery: 0,
       restDisc: 0,
       platDisc: 0,
       commission: 0,
@@ -323,6 +330,24 @@ function SettlementsPage() {
               </div>
 
               <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setShowInvoiceModal(true)}
+                  className="h-9 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-md shadow-emerald-950 flex items-center gap-1.5"
+                >
+                  <FileText className="size-4 text-emerald-100" />
+                  Download Official Monthly Tax Invoice
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowInvoiceModal(true)}
+                  className="h-9 text-xs border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5"
+                >
+                  <Printer className="size-3.5 text-emerald-400" />
+                  Print Tax Invoice
+                </Button>
                 <Button variant="secondary" size="sm" onClick={() => download("csv")} className="h-9 text-xs">
                   <FileSpreadsheet className="mr-1.5 size-4 text-emerald-400" />
                   {t("settlements.exportCsv")}
@@ -503,6 +528,14 @@ function SettlementsPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => setShowInvoiceModal(true)}
+                  className="h-7 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium gap-1 shadow-sm"
+                >
+                  <FileText className="size-3 text-emerald-100" />
+                  GSTR-1 Tax Invoice (PDF)
+                </Button>
                 <span className="text-[10px] font-mono text-slate-400 bg-slate-950 border border-slate-800 px-2 py-1 rounded">
                   GSTR-8 TCS &amp; Form 16A TDS Reconciled
                 </span>
@@ -607,7 +640,15 @@ function SettlementsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowInvoiceModal(true)}
+                    className="h-8 text-xs border-slate-700 bg-slate-950 hover:bg-slate-800 text-slate-200"
+                  >
+                    <FileText className="size-3.5 mr-1 text-emerald-400" /> Tax Invoice (PDF)
+                  </Button>
                   <Button
                     size="sm"
                     variant="secondary"
@@ -674,6 +715,17 @@ function SettlementsPage() {
           ))
         )}
       </div>
+
+      <MonthlyGstr1InvoiceModal
+        isOpen={showInvoiceModal}
+        onClose={() => setShowInvoiceModal(false)}
+        restaurant={r}
+        restaurantName={vendor.selected?.restaurantName}
+        restaurantId={vendor.restaurantId}
+        commissionPct={effectiveCommissionPct}
+        totals={totals}
+        settledOrdersCount={allLines.length}
+      />
     </VendorShell>
   );
 }

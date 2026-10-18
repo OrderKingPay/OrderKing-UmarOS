@@ -561,3 +561,565 @@ export const sendKingAiTestNotification = createServerFn({ method: "POST" })
 
 export const sendUmarOsTestNotification = sendKingAiTestNotification;
 
+// ============================================================================
+// DINING TABLE RESERVATIONS DATABASE PERSISTENCE ENGINE
+// Hyperlocal Multi-Device Real-Time Seating Orchestration & 0% Merchant Commission
+// ============================================================================
+
+async function ensureDiningTablesSchema(sql: any) {
+  await sql`
+    create table if not exists dining_tables (
+      id text primary key,
+      restaurant_id text not null references restaurants(id) on delete cascade,
+      table_number text not null,
+      zone text not null,
+      capacity_tag text not null default '4-Seater',
+      max_guests integer not null default 4,
+      status text not null default 'AVAILABLE',
+      current_booking_ref text,
+      guest_name text,
+      seated_since text,
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now(),
+      unique (restaurant_id, table_number)
+    );
+  `;
+  await sql`
+    create index if not exists dining_tables_restaurant_idx on dining_tables (restaurant_id);
+  `;
+  await sql`
+    create table if not exists dining_reservations (
+      id text primary key,
+      restaurant_id text not null references restaurants(id) on delete cascade,
+      booking_ref text not null,
+      guest_name text not null,
+      phone text not null,
+      guests_count integer not null default 2,
+      time_slot text not null,
+      date text not null default 'Today',
+      area_preference text not null,
+      occasion text,
+      status text not null default 'PENDING',
+      assigned_table text,
+      deposit_amount integer not null default 0,
+      platform_fee_percent numeric(5,2) not null default 5.00,
+      platform_fee_amount integer not null default 0,
+      net_restaurant_payable integer not null default 0,
+      merchant_commission_percent numeric(5,2) not null default 0.00,
+      seated_at text,
+      completed_at text,
+      bill_amount integer,
+      notes text,
+      is_walk_in boolean not null default false,
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now()
+    );
+  `;
+  await sql`
+    create index if not exists dining_reservations_restaurant_idx on dining_reservations (restaurant_id, status);
+  `;
+}
+
+const DEFAULT_SEED_TABLES = [
+  // AC Indoor Main Hall
+  { tableNumber: "T-01", zone: "AC Indoor Main Hall", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
+  { tableNumber: "T-02", zone: "AC Indoor Main Hall", capacityTag: "4-Seater", maxGuests: 4, status: "RESERVED", currentBookingRef: "TB-83419", guestName: "Rohan & Dev" },
+  { tableNumber: "T-03", zone: "AC Indoor Main Hall", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
+  { tableNumber: "T-04", zone: "AC Indoor Main Hall", capacityTag: "6-Seater Family", maxGuests: 6, status: "OCCUPIED", currentBookingRef: "TB-78901", guestName: "Mehta Family", seatedSince: "7:10 PM" },
+  { tableNumber: "T-05", zone: "AC Indoor Main Hall", capacityTag: "10-Seater Banquet", maxGuests: 10, status: "AVAILABLE" },
+
+  // Rooftop Open Air
+  { tableNumber: "R-01", zone: "Rooftop Open Air", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
+  { tableNumber: "R-02", zone: "Rooftop Open Air", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
+  { tableNumber: "R-03", zone: "Rooftop Open Air", capacityTag: "4-Seater", maxGuests: 4, status: "RESERVED", currentBookingRef: "TB-98241", guestName: "Ananya Roy" },
+  { tableNumber: "R-04", zone: "Rooftop Open Air", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
+
+  // Outdoor Patio
+  { tableNumber: "P-01", zone: "Outdoor Patio", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
+  { tableNumber: "P-02", zone: "Outdoor Patio", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
+  { tableNumber: "P-03", zone: "Outdoor Patio", capacityTag: "6-Seater Family", maxGuests: 6, status: "BLOCKED" },
+
+  // Private Cabana / VIP Lounge
+  { tableNumber: "V-01", zone: "Private Cabana / VIP Lounge", capacityTag: "6-Seater Family", maxGuests: 6, status: "OCCUPIED", currentBookingRef: "TB-71104", guestName: "Sengupta Family", seatedSince: "7:35 PM" },
+  { tableNumber: "V-02", zone: "Private Cabana / VIP Lounge", capacityTag: "10-Seater Banquet", maxGuests: 10, status: "AVAILABLE" },
+];
+
+const DEFAULT_SEED_RESERVATIONS = [
+  {
+    bookingRef: "TB-98241",
+    guestName: "Ananya Roy",
+    phone: "+91 98301 22345",
+    guestsCount: 4,
+    timeSlot: "8:00 PM",
+    date: "Today",
+    areaPreference: "Rooftop Open Air",
+    occasion: "Birthday Celebration",
+    status: "PENDING",
+    depositAmount: 500,
+    platformFeePercent: 5,
+    platformFeeAmount: 25,
+    netRestaurantPayable: 475,
+  },
+  {
+    bookingRef: "TB-83419",
+    guestName: "Rohan & Dev",
+    phone: "+91 91234 56789",
+    guestsCount: 2,
+    timeSlot: "8:30 PM",
+    date: "Today",
+    areaPreference: "AC Indoor Main Hall",
+    occasion: "Candlelight Dinner",
+    status: "CONFIRMED",
+    assignedTable: "T-02",
+    depositAmount: 500,
+    platformFeePercent: 5,
+    platformFeeAmount: 25,
+    netRestaurantPayable: 475,
+  },
+  {
+    bookingRef: "TB-71104",
+    guestName: "Sengupta Family",
+    phone: "+91 98451 99120",
+    guestsCount: 6,
+    timeSlot: "7:30 PM",
+    date: "Today",
+    areaPreference: "Private Cabana / VIP Lounge",
+    occasion: "Family Reunion",
+    status: "SEATED",
+    assignedTable: "V-01",
+    seatedAt: "7:35 PM",
+    depositAmount: 1000,
+    platformFeePercent: 5,
+    platformFeeAmount: 50,
+    netRestaurantPayable: 950,
+  },
+  {
+    bookingRef: "TB-65280",
+    guestName: "Vikram Malhotra & Team",
+    phone: "+91 99001 12233",
+    guestsCount: 8,
+    timeSlot: "6:00 PM",
+    date: "Today",
+    areaPreference: "Private Cabana / VIP Lounge",
+    occasion: "Corporate Deal Dinner",
+    status: "COMPLETED",
+    assignedTable: "V-02",
+    seatedAt: "6:05 PM",
+    completedAt: "7:45 PM",
+    depositAmount: 1000,
+    platformFeePercent: 5,
+    platformFeeAmount: 50,
+    netRestaurantPayable: 950,
+    billAmount: 8450,
+  },
+  {
+    bookingRef: "TB-59012",
+    guestName: "Pooja Hegde",
+    phone: "+91 97112 33445",
+    guestsCount: 2,
+    timeSlot: "6:30 PM",
+    date: "Today",
+    areaPreference: "Outdoor Patio",
+    occasion: "Casual Catchup",
+    status: "CANCELLED",
+    depositAmount: 500,
+    platformFeePercent: 5,
+    platformFeeAmount: 25,
+    netRestaurantPayable: 475,
+    notes: "Guest notified late arrival / cancelled table",
+  },
+];
+
+export const getDiningReservationsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
+      await ensureDiningTablesSchema(sql);
+
+      // Check if tables are already seeded for this restaurant
+      const existingTablesCount = await sql<{ count: number }>`
+        select count(*)::int as count from dining_tables where restaurant_id = ${ctx.restaurantId}
+      `;
+
+      if ((existingTablesCount[0]?.count ?? 0) === 0) {
+        // Auto-seed default floor tables
+        for (const tbl of DEFAULT_SEED_TABLES) {
+          await sql`
+            insert into dining_tables (
+              id, restaurant_id, table_number, zone, capacity_tag, max_guests, status,
+              current_booking_ref, guest_name, seated_since
+            ) values (
+              ${newId("dtbl")}, ${ctx.restaurantId}, ${tbl.tableNumber}, ${tbl.zone},
+              ${tbl.capacityTag}, ${tbl.maxGuests}, ${tbl.status},
+              ${tbl.currentBookingRef ?? null}, ${tbl.guestName ?? null}, ${tbl.seatedSince ?? null}
+            ) on conflict (restaurant_id, table_number) do nothing
+          `;
+        }
+      }
+
+      // Check if sample reservations are seeded
+      const existingResCount = await sql<{ count: number }>`
+        select count(*)::int as count from dining_reservations where restaurant_id = ${ctx.restaurantId}
+      `;
+
+      if ((existingResCount[0]?.count ?? 0) === 0) {
+        for (const res of DEFAULT_SEED_RESERVATIONS) {
+          await sql`
+            insert into dining_reservations (
+              id, restaurant_id, booking_ref, guest_name, phone, guests_count, time_slot,
+              date, area_preference, occasion, status, assigned_table, deposit_amount,
+              platform_fee_percent, platform_fee_amount, net_restaurant_payable,
+              merchant_commission_percent, seated_at, completed_at, bill_amount, notes, is_walk_in
+            ) values (
+              ${newId("dres")}, ${ctx.restaurantId}, ${res.bookingRef}, ${res.guestName},
+              ${res.phone}, ${res.guestsCount}, ${res.timeSlot}, ${res.date},
+              ${res.areaPreference}, ${res.occasion ?? null}, ${res.status},
+              ${(res as any).assignedTable ?? null}, ${res.depositAmount},
+              ${res.platformFeePercent}, ${res.platformFeeAmount}, ${res.netRestaurantPayable},
+              0.00, ${(res as any).seatedAt ?? null}, ${(res as any).completedAt ?? null},
+              ${(res as any).billAmount ?? null}, ${(res as any).notes ?? null}, false
+            )
+          `;
+        }
+      }
+
+      const tablesRows = await sql<{
+        id: string;
+        tableNumber: string;
+        zone: string;
+        capacityTag: string;
+        maxGuests: number;
+        status: string;
+        currentBookingRef: string | null;
+        guestName: string | null;
+        seatedSince: string | null;
+      }>`
+        select id, table_number as "tableNumber", zone, capacity_tag as "capacityTag",
+               max_guests as "maxGuests", status, current_booking_ref as "currentBookingRef",
+               guest_name as "guestName", seated_since as "seatedSince"
+        from dining_tables
+        where restaurant_id = ${ctx.restaurantId}
+        order by table_number asc
+      `;
+
+      const reservationsRows = await sql<{
+        id: string;
+        bookingRef: string;
+        guestName: string;
+        phone: string;
+        guestsCount: number;
+        timeSlot: string;
+        date: string;
+        areaPreference: string;
+        occasion: string | null;
+        status: string;
+        assignedTable: string | null;
+        depositAmount: number;
+        platformFeePercent: number;
+        platformFeeAmount: number;
+        netRestaurantPayable: number;
+        merchantCommissionPercent: number;
+        seatedAt: string | null;
+        completedAt: string | null;
+        billAmount: number | null;
+        notes: string | null;
+        isWalkIn: boolean;
+        createdAt: string;
+      }>`
+        select id, booking_ref as "bookingRef", guest_name as "guestName", phone,
+               guests_count as "guestsCount", time_slot as "timeSlot", date,
+               area_preference as "areaPreference", occasion, status,
+               assigned_table as "assignedTable", deposit_amount as "depositAmount",
+               platform_fee_percent as "platformFeePercent",
+               platform_fee_amount as "platformFeeAmount",
+               net_restaurant_payable as "netRestaurantPayable",
+               merchant_commission_percent as "merchantCommissionPercent",
+               seated_at as "seatedAt", completed_at as "completedAt",
+               bill_amount as "billAmount", notes, is_walk_in as "isWalkIn",
+               created_at::text as "createdAt"
+        from dining_reservations
+        where restaurant_id = ${ctx.restaurantId}
+        order by created_at desc
+      `;
+
+      // Helper to compute human-readable relative time
+      const computeCreatedAgo = (createdAtIso: string) => {
+        const msDiff = Date.now() - new Date(createdAtIso).getTime();
+        const mins = Math.max(1, Math.floor(msDiff / 60000));
+        if (mins < 60) return `${mins} mins ago`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+        return `${Math.floor(hours / 24)}d ago`;
+      };
+
+      const reservations = reservationsRows.map((r) => ({
+        id: r.id,
+        bookingRef: r.bookingRef,
+        guestName: r.guestName,
+        phone: r.phone,
+        guestsCount: r.guestsCount,
+        timeSlot: r.timeSlot,
+        date: r.date,
+        areaPreference: r.areaPreference as any,
+        occasion: r.occasion ?? undefined,
+        status: r.status as any,
+        assignedTable: r.assignedTable ?? undefined,
+        createdAgo: computeCreatedAgo(r.createdAt),
+        depositAmount: Number(r.depositAmount),
+        platformFeePercent: Number(r.platformFeePercent),
+        platformFeeAmount: Number(r.platformFeeAmount),
+        netRestaurantPayable: Number(r.netRestaurantPayable),
+        merchantCommissionPercent: Number(r.merchantCommissionPercent || 0),
+        seatedAt: r.seatedAt ?? undefined,
+        completedAt: r.completedAt ?? undefined,
+        billAmount: r.billAmount != null ? Number(r.billAmount) : undefined,
+        notes: r.notes ?? undefined,
+        isWalkIn: Boolean(r.isWalkIn),
+      }));
+
+      const tables = tablesRows.map((t) => ({
+        id: t.id,
+        tableNumber: t.tableNumber,
+        zone: t.zone as any,
+        capacityTag: t.capacityTag as any,
+        maxGuests: t.maxGuests,
+        status: t.status as any,
+        currentBookingRef: t.currentBookingRef ?? undefined,
+        guestName: t.guestName ?? undefined,
+        seatedSince: t.seatedSince ?? undefined,
+      }));
+
+      return {
+        ok: true as const,
+        tables,
+        reservations,
+      };
+    });
+  });
+
+export const createDiningReservationFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    guestName: string;
+    phone: string;
+    guestsCount: number;
+    timeSlot?: string;
+    date?: string;
+    areaPreference: string;
+    occasion?: string;
+    tableNumber?: string;
+    depositAmount?: number;
+    isWalkIn?: boolean;
+  }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
+      await ensureDiningTablesSchema(sql);
+
+      const reservationId = newId("dres");
+      const prefix = data.isWalkIn ? "WI-" : "TB-";
+      const bookingRef = prefix + Math.floor(10000 + Math.random() * 90000);
+
+      const depositRupees = data.depositAmount ?? (data.isWalkIn ? 0 : 500);
+      const depositPaise = Math.round(depositRupees * 100);
+      const platformFeePaise = Math.round((depositPaise * 500) / 10000); // 5.00%
+      const netRestaurantPayablePaise = depositPaise - platformFeePaise;
+      const platformFeeAmount = Math.round(platformFeePaise / 100);
+      const netRestaurantPayable = Math.round(netRestaurantPayablePaise / 100);
+
+      const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const initialStatus = data.isWalkIn ? "SEATED" : data.tableNumber ? "CONFIRMED" : "PENDING";
+
+      await sql`
+        insert into dining_reservations (
+          id, restaurant_id, booking_ref, guest_name, phone, guests_count, time_slot,
+          date, area_preference, occasion, status, assigned_table, deposit_amount,
+          platform_fee_percent, platform_fee_amount, net_restaurant_payable,
+          merchant_commission_percent, seated_at, is_walk_in
+        ) values (
+          ${reservationId}, ${ctx.restaurantId}, ${bookingRef}, ${data.guestName.trim()},
+          ${data.phone.trim()}, ${data.guestsCount}, ${data.timeSlot || timeNow},
+          ${data.date || "Today"}, ${data.areaPreference}, ${data.occasion || (data.isWalkIn ? "Walk-In Dining" : null)},
+          ${initialStatus}, ${data.tableNumber || null}, ${depositRupees},
+          5.00, ${platformFeeAmount}, ${netRestaurantPayable},
+          0.00, ${data.isWalkIn ? timeNow : null}, ${Boolean(data.isWalkIn)}
+        )
+      `;
+
+      // Update table status if table assigned
+      if (data.tableNumber) {
+        const tableStatus = data.isWalkIn ? "OCCUPIED" : "RESERVED";
+        await sql`
+          update dining_tables
+          set status = ${tableStatus},
+              current_booking_ref = ${bookingRef},
+              guest_name = ${data.guestName.trim()},
+              seated_since = ${data.isWalkIn ? timeNow : null},
+              updated_at = now()
+          where restaurant_id = ${ctx.restaurantId}
+            and table_number = ${data.tableNumber}
+        `;
+      }
+
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: data.isWalkIn ? "walk_in_seated" : "reservation_created",
+        entityType: "dining_reservation",
+        entityId: reservationId,
+        detail: `Ref ${bookingRef} for ${data.guestName} (${data.guestsCount} pax) at ${data.tableNumber || "unassigned table"}`,
+      });
+
+      return {
+        ok: true as const,
+        id: reservationId,
+        bookingRef,
+      };
+    });
+  });
+
+export const updateTableStatusFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    tableId?: string;
+    tableNumber?: string;
+    status: "AVAILABLE" | "RESERVED" | "OCCUPIED" | "BLOCKED";
+  }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
+      await ensureDiningTablesSchema(sql);
+
+      const clearOccupancy = ["AVAILABLE", "BLOCKED"].includes(data.status);
+
+      if (clearOccupancy) {
+        await sql`
+          update dining_tables
+          set status = ${data.status},
+              current_booking_ref = null,
+              guest_name = null,
+              seated_since = null,
+              updated_at = now()
+          where restaurant_id = ${ctx.restaurantId}
+            and (id = ${data.tableId ?? null} or table_number = ${data.tableNumber ?? null})
+        `;
+      } else {
+        await sql`
+          update dining_tables
+          set status = ${data.status},
+              updated_at = now()
+          where restaurant_id = ${ctx.restaurantId}
+            and (id = ${data.tableId ?? null} or table_number = ${data.tableNumber ?? null})
+        `;
+      }
+
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: "dining_table_status_change",
+        entityType: "dining_table",
+        entityId: data.tableId || data.tableNumber || ctx.restaurantId,
+        detail: `Table status changed to ${data.status}`,
+      });
+
+      return { ok: true as const };
+    });
+  });
+
+export const updateDiningReservationStatusFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    reservationId: string;
+    status: "PENDING" | "CONFIRMED" | "SEATED" | "COMPLETED" | "CANCELLED";
+    assignedTable?: string;
+    seatedAt?: string;
+    completedAt?: string;
+    billAmount?: number;
+    notes?: string;
+  }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
+      await ensureDiningTablesSchema(sql);
+
+      const existing = await sql<{
+        id: string;
+        booking_ref: string;
+        guest_name: string;
+        assigned_table: string | null;
+      }>`
+        select id, booking_ref, guest_name, assigned_table
+        from dining_reservations
+        where id = ${data.reservationId} and restaurant_id = ${ctx.restaurantId}
+        limit 1
+      `;
+
+      const res = existing[0];
+      if (!res) throw new Error("Reservation not found");
+
+      const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const tableToUse = data.assignedTable || res.assigned_table;
+
+      await sql`
+        update dining_reservations
+        set status = ${data.status},
+            assigned_table = ${tableToUse ?? null},
+            seated_at = coalesce(${data.seatedAt ?? null}, (case when ${data.status} = 'SEATED' then ${timeNow} else seated_at end)),
+            completed_at = coalesce(${data.completedAt ?? null}, (case when ${data.status} = 'COMPLETED' then ${timeNow} else completed_at end)),
+            bill_amount = coalesce(${data.billAmount ?? null}, bill_amount),
+            notes = coalesce(${data.notes ?? null}, notes),
+            updated_at = now()
+        where id = ${data.reservationId} and restaurant_id = ${ctx.restaurantId}
+      `;
+
+      // Synchronize associated table in dining_tables
+      if (tableToUse) {
+        if (data.status === "CONFIRMED") {
+          await sql`
+            update dining_tables
+            set status = 'RESERVED',
+                current_booking_ref = ${res.booking_ref},
+                guest_name = ${res.guest_name},
+                updated_at = now()
+            where restaurant_id = ${ctx.restaurantId}
+              and table_number = ${tableToUse}
+          `;
+        } else if (data.status === "SEATED") {
+          await sql`
+            update dining_tables
+            set status = 'OCCUPIED',
+                current_booking_ref = ${res.booking_ref},
+                guest_name = ${res.guest_name},
+                seated_since = coalesce(${data.seatedAt ?? null}, ${timeNow}),
+                updated_at = now()
+            where restaurant_id = ${ctx.restaurantId}
+              and table_number = ${tableToUse}
+          `;
+        } else if (["COMPLETED", "CANCELLED"].includes(data.status)) {
+          await sql`
+            update dining_tables
+            set status = 'AVAILABLE',
+                current_booking_ref = null,
+                guest_name = null,
+                seated_since = null,
+                updated_at = now()
+            where restaurant_id = ${ctx.restaurantId}
+              and table_number = ${tableToUse}
+          `;
+        }
+      }
+
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: `reservation_${data.status.toLowerCase()}`,
+        entityType: "dining_reservation",
+        entityId: data.reservationId,
+        detail: `Status -> ${data.status} on table ${tableToUse || "N/A"}`,
+      });
+
+      return { ok: true as const };
+    });
+  });
+
