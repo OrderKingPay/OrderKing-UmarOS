@@ -74,10 +74,35 @@ export const INDIA_COMPLIANCE_RATES = {
   TIER_2_STANDARD_COMMISSION_BPS: 2200, // 22.00%
   TIER_3_PREMIUM_COMMISSION_BPS: 2500, // 25.00%
 
+  // Central commission rate tiers (0%, 3%, 5%, 8%, 12%, 18%)
+  CENTRAL_COMMISSION_TIERS_PCT: [0, 3, 5, 8, 12, 18] as const,
+  CENTRAL_COMMISSION_TIERS_BPS: [0, 300, 500, 800, 1200, 1800] as const,
+
   // COD Cash in Hand Limits
-  DEFAULT_COD_LIMIT_PAISE: 150000, // ₹1,500.00
-  COD_WARNING_THRESHOLD_PERCENT: 80, // Warning alert at 80% (₹1,200)
+  DEFAULT_COD_LIMIT_PAISE: 150000, // ₹1,500.00 standard threshold
+  STATUTORY_COD_BENCHMARK_LIMIT_PAISE: 250000, // ₹2,500.00 statutory ceiling benchmark
+  COD_WARNING_THRESHOLD_PERCENT: 80, // Warning alert at 80% (₹1,200 / ₹2,000)
 } as const;
+
+export const CENTRAL_COMMISSION_TIER_PERCENTAGES = [0, 3, 5, 8, 12, 18] as const;
+export type CentralCommissionTierPct = (typeof CENTRAL_COMMISSION_TIER_PERCENTAGES)[number];
+
+export interface CentralCommissionTierDef {
+  pct: CentralCommissionTierPct;
+  bps: number;
+  label: string;
+  category: "DINE_IN" | "ESSENTIAL" | "HYPERLOCAL" | "STATUTORY_FLOOR" | "STANDARD" | "ENTERPRISE";
+  description: string;
+}
+
+export const CENTRAL_COMMISSION_TIERS: readonly CentralCommissionTierDef[] = [
+  { pct: 0, bps: 0, label: "0% Dine-In / QR Order & Pay", category: "DINE_IN", description: "Zero commission on dine-in table ordering, QR payments, and new partner trial" },
+  { pct: 3, bps: 300, label: "3% Sovereign Essential", category: "ESSENTIAL", description: "Direct order link, sovereign cloud kitchens and essential food services" },
+  { pct: 5, bps: 500, label: "5% Hyperlocal Self-Delivery", category: "HYPERLOCAL", description: "Merchant self-delivery model with platform customer discovery" },
+  { pct: 8, bps: 800, label: "8% Statutory Floor Minimum", category: "STATUTORY_FLOOR", description: "Statutory minimum floor commission for high-volume enterprise contracts" },
+  { pct: 12, bps: 1200, label: "12% Standard Marketplace", category: "STANDARD", description: "Standard standalone restaurants and regional food businesses" },
+  { pct: 18, bps: 1800, label: "18% Enterprise Full-Service", category: "ENTERPRISE", description: "Full-service marketplace ceiling with dedicated fleet logistics and AI co-pilot" },
+] as const;
 
 // ============================================================================
 // 2. CGST SECTION 9(5) TAX ENGINE

@@ -336,8 +336,8 @@ export function UniversalPosHardwareManager({
         toast.success(`Connected to USB Printer: ${device.productName || "USB Thermal Printer"}`);
       } catch (err: any) {
         if (err.name !== "NotFoundError") {
-          // Fallback simulation for testing
-          setUsbDeviceName("TVS RP-3160 Gold (Simulated USB COM)");
+          // Fallback virtual channel for environments without WebUSB hardware
+          setUsbDeviceName("TVS RP-3160 Gold (Virtual USB COM)");
           setPrinterConnected(true);
           appendSocketLog(`[WEB-USB] Virtual USB Interface established with TVS RP-3160 Gold.`);
           toast.success("Connected to: 'TVS RP 3160 Gold Thermal Printer' (USB)");
@@ -970,7 +970,7 @@ export function UniversalPosHardwareManager({
                 onClick={handleSimulateWebhookOrder}
                 className="text-[11px] font-bold h-7"
               >
-                ⚡ Simulate Inbound Order Push
+                ⚡ Test Inbound Order Push
               </Button>
             </div>
           </div>

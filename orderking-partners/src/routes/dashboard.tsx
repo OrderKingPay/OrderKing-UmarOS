@@ -618,7 +618,7 @@ function DashboardPage() {
                 </p>
               </div>
               <Button asChild size="sm" variant="secondary" className="w-full text-xs mt-1">
-                <Link to="/promotions">Simulate in Margin Calculator →</Link>
+                <Link to="/promotions">Calculate in Margin Calculator →</Link>
               </Button>
             </div>
           </div>

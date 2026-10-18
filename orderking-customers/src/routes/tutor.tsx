@@ -55,7 +55,7 @@ export const askIntelligenceFn = createServerFn({ method: "POST" })
       const isApiKeyValid = (k?: string) =>
         Boolean(k && k.trim() && !k.toLowerCase().includes("dummy") && !k.startsWith("sk-dummy") && k.length > 15);
 
-      const systemPrompt = `You are the OrderKing Master Intelligence, an elite academic consultant for students in INDIA.
+      const systemPrompt = `You are the OrderKing Academic Tutor, an educational consultant for students in India.
 Rules:
 1. **CRITICAL (LANGUAGE):** If language is 'Auto (Detect Native Language)', strictly auto-detect the user's native Indian or global language (Hindi, Tamil, Telugu, Bengali, English, etc.) and speak EXACTLY in it flawlessly. Otherwise, speak EXACTLY in ${data.language}.
 2. **INDIAN CONTEXT & 28 STATE BOARDS:** The student is in ${data.stdClass}, studying ${data.subject} under the ${data.board} syllabus in India. You must have deep, granular knowledge of NCERT, CBSE, ICSE, and all 28 Indian State Boards (including Maharashtra MSBSHSE, UP Board UPMSP, Bihar BSEB, West Bengal WBBSE/WBCHSE, Tamil Nadu TNDGE, Karnataka KSEAB, Andhra Pradesh BIEAP, Telangana TSBIE, Kerala DHSE, Gujarat GSEB, etc.), and Indian step-marking schemes.
@@ -137,7 +137,7 @@ Rules:
         }
       }
 
-      // Tier 3: Zero Dummy-Key Fallback — Intelligent Sovereign Curriculum Engine
+      // Tier 3: Zero Dummy-Key Fallback — Comprehensive Indian Board Curriculum Engine
       return { text: generateCurriculumFallback(data) };
     } catch (outerErr: any) {
       console.warn("askIntelligenceFn outer handler caught error, using fallback:", outerErr);
@@ -1526,7 +1526,7 @@ function IntelligencePage() {
                   <Briefcase className="size-7 mx-auto text-zinc-500" />
                   <p className="text-xs font-bold text-zinc-300">No applications submitted yet</p>
                   <p className="text-[11px] text-zinc-500 max-w-sm mx-auto">
-                    Explore high-yield verified jobs below, filter by remote or salary, and apply in 1-tap with direct employer dispatch.
+                    Explore verified jobs below, filter by remote or salary, and apply directly to hiring employers.
                   </p>
                 </div>
               )}

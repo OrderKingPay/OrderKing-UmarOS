@@ -17,12 +17,15 @@ import {
 import { Button } from "@/components/ui/button";
 
 export type LuxuryTheme =
-  | "royal_gold"
-  | "shagun_red"
+  | "classic_gold"
+  | "festive_red"
   | "celebration"
   | "festive_diya"
-  | "titanium_platinum"
-  | "cozy_cafe";
+  | "business_blue"
+  | "cozy_cafe"
+  | "royal_gold"
+  | "shagun_red"
+  | "titanium_platinum";
 
 type Props = {
   defaultUpiId?: string;
@@ -43,19 +46,19 @@ const LUXURY_THEMES: Array<{
   tagline: string;
 }> = [
   {
-    id: "royal_gold",
-    name: "24K Royal Gold",
-    icon: "👑",
+    id: "classic_gold",
+    name: "Classic Gold",
+    icon: "🪙",
     cardBg: "bg-gradient-to-b from-[#1C1504] via-[#2A1F07] to-[#120D02]",
     borderClass: "border-2 border-amber-400/90 shadow-[0_12px_40px_rgba(245,158,11,0.35)]",
     accentText: "text-amber-400",
     badgeBg: "bg-amber-400/20 text-amber-300 border-amber-400/40",
     textColor: "text-amber-100",
-    tagline: "✨ Royal 24K Gold Sovereign Edition",
+    tagline: "✨ Classic Gold Merchant Edition",
   },
   {
-    id: "shagun_red",
-    name: "Shagun & Wedding",
+    id: "festive_red",
+    name: "Festive Red",
     icon: "🧧",
     cardBg: "bg-gradient-to-b from-[#2B080C] via-[#3D0C12] to-[#1A0407]",
     borderClass: "border-2 border-rose-400/90 shadow-[0_12px_40px_rgba(244,63,94,0.35)]",
@@ -66,7 +69,7 @@ const LUXURY_THEMES: Array<{
   },
   {
     id: "celebration",
-    name: "Birthday Party",
+    name: "Celebration Purple",
     icon: "🎂",
     cardBg: "bg-gradient-to-b from-[#1E112A] via-[#2D1A3E] to-[#130B1C]",
     borderClass: "border-2 border-purple-400/90 shadow-[0_12px_40px_rgba(192,132,252,0.35)]",
@@ -77,25 +80,25 @@ const LUXURY_THEMES: Array<{
   },
   {
     id: "festive_diya",
-    name: "Festive Light",
+    name: "Festive Cyan",
     icon: "🪔",
     cardBg: "bg-gradient-to-b from-[#081C1E] via-[#0E2C2E] to-[#041112]",
     borderClass: "border-2 border-cyan-400/90 shadow-[0_12px_40px_rgba(34,211,238,0.35)]",
     accentText: "text-cyan-300",
     badgeBg: "bg-cyan-400/20 text-cyan-200 border-cyan-400/40",
     textColor: "text-cyan-100",
-    tagline: "🪔 Festival of Joy & Divine Prosperity",
+    tagline: "🪔 Festival of Joy & Prosperity",
   },
   {
-    id: "titanium_platinum",
-    name: "Titanium Platinum",
-    icon: "💎",
-    cardBg: "bg-gradient-to-b from-[#111827] via-[#1F2937] to-[#0F172A]",
-    borderClass: "border-2 border-slate-300/90 shadow-[0_12px_40px_rgba(255,255,255,0.15)]",
-    accentText: "text-slate-200",
-    badgeBg: "bg-slate-300/20 text-slate-100 border-slate-300/40",
-    textColor: "text-slate-100",
-    tagline: "💎 Ultra-Clean Platinum Precision",
+    id: "business_blue",
+    name: "Business Blue",
+    icon: "💼",
+    cardBg: "bg-gradient-to-b from-[#0B1528] via-[#132347] to-[#070D1B]",
+    borderClass: "border-2 border-blue-400/90 shadow-[0_12px_40px_rgba(59,130,246,0.35)]",
+    accentText: "text-blue-300",
+    badgeBg: "bg-blue-400/20 text-blue-200 border-blue-400/40",
+    textColor: "text-blue-100",
+    tagline: "💼 Professional Enterprise Merchant",
   },
   {
     id: "cozy_cafe",
@@ -106,7 +109,7 @@ const LUXURY_THEMES: Array<{
     accentText: "text-orange-300",
     badgeBg: "bg-orange-400/20 text-orange-200 border-orange-400/40",
     textColor: "text-orange-100",
-    tagline: "☕ Chai, Treats & Friendly Moments",
+    tagline: "☕ Dining, Chai & Counter Payments",
   },
 ];
 
@@ -124,7 +127,7 @@ const QUICK_AMOUNTS = ["100", "250", "500", "1000", "2100", "5000"];
 
 export function ReceiveMoneyQrStudio({
   defaultUpiId = "orderking.pay@okaxis",
-  defaultName = "OrderKing Sovereign Merchant",
+  defaultName = "OrderKing Merchant",
   onClose,
   isModal = false,
 }: Props) {
@@ -132,7 +135,7 @@ export function ReceiveMoneyQrStudio({
   const [payeeName, setPayeeName] = useState(defaultName);
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
-  const [selectedTheme, setSelectedTheme] = useState<LuxuryTheme>("royal_gold");
+  const [selectedTheme, setSelectedTheme] = useState<LuxuryTheme>("classic_gold");
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
@@ -269,7 +272,7 @@ export function ReceiveMoneyQrStudio({
                 <span className={activeTheme.accentText}>{activeTheme.tagline}</span>
               </div>
               <h3 className="font-display text-xl font-black text-fg tracking-tight">
-                King<span className="text-amber-400">Pay</span> Sovereign QR
+                King<span className="text-amber-400">Pay</span> UPI QR
               </h3>
               <p className="text-xs text-fg/80 font-medium">
                 {payeeName || "OrderKing User"}
@@ -377,10 +380,10 @@ export function ReceiveMoneyQrStudio({
 
         {/* RIGHT COLUMN: CUSTOMIZATION CONTROLS */}
         <div className="lg:col-span-6 space-y-5">
-          {/* 1. Select Luxury / Gifting Style */}
+          {/* 1. Select Theme Style */}
           <div>
             <label className="block text-xs font-black uppercase tracking-wider text-muted mb-2">
-              🎨 1. Choose Luxury &amp; Gifting Style
+              🎨 1. Choose Theme Style
             </label>
             <div className="grid grid-cols-3 gap-2">
               {LUXURY_THEMES.map((theme) => (
@@ -501,16 +504,16 @@ export function ReceiveMoneyQrStudio({
             />
           </div>
 
-          {/* 5. Benefits Guarantee Pill */}
+          {/* 5. Benefits Summary */}
           <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-800 dark:text-emerald-200 space-y-1">
             <div className="flex items-center gap-1.5 font-bold">
               <ShieldCheck className="size-4 text-emerald-600" />
-              <span>Why Everyone Prefers KingPay Sovereign QR</span>
+              <span>Why Merchants Choose KingPay UPI QR</span>
             </div>
             <p className="text-[11px] text-muted leading-relaxed">
               • 0% convenience fee for payer &amp; receiver<br />
               • Instant bank settlement in 2 seconds<br />
-              • 24K pure digital gold cashback awarded on every payment
+              • Direct, secure bank-to-bank settlement via NPCI UPI network
             </p>
           </div>
         </div>

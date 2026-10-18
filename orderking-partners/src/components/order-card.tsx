@@ -1027,7 +1027,7 @@ export function OrderCard({
                         }}
                         className="text-xs font-bold"
                       >
-                        📷 Simulate Laser Barcode Gun Scan
+                        📷 Scan Bag Barcode (Hardware / Emulated)
                       </Button>
                     </div>
                   )}

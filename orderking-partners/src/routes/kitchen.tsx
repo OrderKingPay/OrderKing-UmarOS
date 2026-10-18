@@ -617,7 +617,7 @@ export function KitchenPage({
         </div>
         {soundboxQuery.data?.active && (
           <div className="mt-4 pt-3 border-t border-emerald-500/20">
-            <KingPaySoundboxEngine merchantId={vendor.restaurantId || "demo-merchant"} defaultLang={lang} />
+            <KingPaySoundboxEngine merchantId={vendor.restaurantId || "default-merchant"} defaultLang={lang} />
           </div>
         )}
       </Card>

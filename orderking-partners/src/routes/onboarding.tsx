@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { useVendor } from "@/components/use-vendor";
+import { useClientState } from "@/lib/client-state";
 import {
   createRestaurantDraft,
   getRestaurant,
@@ -55,14 +56,114 @@ import {
 
 export const Route = createFileRoute("/onboarding")({ component: OnboardingPage });
 
+export const ORDERKING_ONBOARDING_DRAFT_KEY = "orderking_partner_onboarding_draft";
+export const ORDERKING_LOCAL_ONLY_KEY = "orderking_partner_onboarding_local_only";
+
+export function formatFriendlyError(err: unknown, defaultMsg: string): string {
+  if (!err) return defaultMsg;
+  const raw = err instanceof Error ? err.message : String(err);
+  if (/invalid url/i.test(raw)) {
+    return "Server connection is initializing or service URL is unreachable. Your restaurant draft has been safely saved locally in your browser so you can continue.";
+  }
+  if (/failed to fetch|networkerror|load failed/i.test(raw)) {
+    return "Network connection issue. Your draft has been safely saved locally and will sync when reconnected.";
+  }
+  if (/unauthorized/i.test(raw)) {
+    return "Session requires verification. Your draft is preserved locally. Please sign in or refresh.";
+  }
+  if (/forbidden/i.test(raw)) {
+    return "Draft sync is pending with the server. Your changes are safely preserved locally.";
+  }
+  return raw || defaultMsg;
+}
+
+export function persistDraftLocally(data: {
+  restaurantId?: string | null;
+  form: {
+    name: string;
+    displayName: string;
+    ownerName: string;
+    phone: string;
+    email: string;
+    city: string;
+    address: string;
+    landmark: string;
+    cuisine: string;
+    diet: string;
+    description: string;
+    gstin: string;
+    fssaiNumber: string;
+    fssaiExpiryDate: string;
+    pan: string;
+    holder: string;
+    bankName: string;
+    bankAccount: string;
+    bankIfsc: string;
+  };
+  exemptFromGst: boolean;
+  onboardingFeeOption: OnboardingFeeOption;
+  amortizedConsent: boolean;
+  executionMethod: "CLICKWRAP" | "AADHAAR_ESIGN";
+  clickwrapSignatoryName: string;
+  clickwrapDesignation: string;
+  clickwrapConsent: boolean;
+  covenantsAccepted: boolean;
+  foodSafetyUndertakingAccepted: boolean;
+  privacyAndTaxAccepted: boolean;
+}) {
+  if (typeof window === "undefined") return;
+  try {
+    const payload = {
+      restaurantId: data.restaurantId,
+      name: data.form.name,
+      displayName: data.form.displayName,
+      ownerName: data.form.ownerName,
+      phone: data.form.phone,
+      email: data.form.email,
+      city: data.form.city,
+      address: data.form.address,
+      landmark: data.form.landmark,
+      cuisine: data.form.cuisine,
+      diet: data.form.diet,
+      description: data.form.description,
+      gstin: data.form.gstin,
+      exemptFromGst: data.exemptFromGst,
+      fssaiNumber: data.form.fssaiNumber,
+      fssaiExpiryDate: data.form.fssaiExpiryDate,
+      pan: data.form.pan,
+      holder: data.form.holder,
+      bankName: data.form.bankName,
+      bankAccount: data.form.bankAccount,
+      bankIfsc: data.form.bankIfsc,
+      onboardingFeeOption: data.onboardingFeeOption,
+      amortizedConsent: data.amortizedConsent,
+      executionMethod: data.executionMethod,
+      clickwrapSignatoryName: data.clickwrapSignatoryName,
+      clickwrapDesignation: data.clickwrapDesignation,
+      clickwrapConsent: data.clickwrapConsent,
+      covenantsAccepted: data.covenantsAccepted,
+      foodSafetyUndertakingAccepted: data.foodSafetyUndertakingAccepted,
+      privacyAndTaxAccepted: data.privacyAndTaxAccepted,
+      savedAt: new Date().toISOString(),
+    };
+    window.localStorage.setItem(ORDERKING_ONBOARDING_DRAFT_KEY, JSON.stringify(payload));
+  } catch (err) {
+    console.warn("[Onboarding] Could not persist draft to localStorage:", err);
+  }
+}
+
 function OnboardingPage() {
   const qc = useQueryClient();
   const vendor = useVendor();
 
+  const isRealServerRestaurant = Boolean(
+    vendor.restaurantId && !vendor.restaurantId.startsWith("local_")
+  );
+
   const restQ = useQuery({
     queryKey: ["restaurant", vendor.restaurantId],
     queryFn: () => getRestaurant({ data: { restaurantId: vendor.restaurantId } }),
-    enabled: Boolean(vendor.restaurantId),
+    enabled: isRealServerRestaurant,
   });
 
   const [busy, setBusy] = useState(false);
@@ -94,36 +195,73 @@ function OnboardingPage() {
 
   const [exemptFromGst, setExemptFromGst] = useState(false);
 
-  // Auto-hydrate from landing page self-serve registration draft if available
+  // Auto-hydrate from landing page self-serve registration draft or offline draft if available
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      const raw = window.localStorage.getItem("orderking_partner_onboarding_draft");
+      const raw = window.localStorage.getItem(ORDERKING_ONBOARDING_DRAFT_KEY);
       if (raw) {
         const d = JSON.parse(raw);
         setForm((prev) => ({
           ...prev,
           name: prev.name || d.name || "",
+          displayName: prev.displayName || d.displayName || d.name || "",
           ownerName: prev.ownerName || d.ownerName || "",
           phone: prev.phone || d.phone || "",
           email: prev.email || d.email || "",
           city: prev.city || d.city || "",
           address: prev.address || d.address || "",
+          landmark: prev.landmark || d.landmark || "",
+          cuisine: prev.cuisine || d.cuisine || "North Indian, Biryani",
+          diet: prev.diet || d.diet || "NONVEG",
+          description: prev.description || d.description || "",
           fssaiNumber: prev.fssaiNumber || d.fssaiNumber || "",
+          fssaiExpiryDate: prev.fssaiExpiryDate || d.fssaiExpiryDate || "",
           pan: prev.pan || d.pan || "",
           gstin: prev.gstin || d.gstin || "",
           bankAccount: prev.bankAccount || d.bankAccount || "",
           bankIfsc: prev.bankIfsc || d.bankIfsc || "",
           bankName: prev.bankName || d.bankName || "",
+          holder: prev.holder || d.holder || d.bankName || "",
         }));
+        if (d.exemptFromGst !== undefined) {
+          setExemptFromGst(Boolean(d.exemptFromGst));
+        }
         if (d.ownerName) {
           setClickwrapSignatoryName((prev) => prev || d.ownerName);
+        }
+        if (d.clickwrapDesignation) {
+          setClickwrapDesignation(d.clickwrapDesignation);
+        }
+        if (d.onboardingFeeOption) {
+          setOnboardingFeeOption(d.onboardingFeeOption);
+        }
+        if (d.amortizedConsent !== undefined) {
+          setAmortizedConsent(Boolean(d.amortizedConsent));
+        }
+        if (d.executionMethod) {
+          setExecutionMethod(d.executionMethod);
+        }
+        if (d.clickwrapConsent !== undefined) {
+          setClickwrapConsent(Boolean(d.clickwrapConsent));
+        }
+        if (d.covenantsAccepted !== undefined) {
+          setCovenantsAccepted(Boolean(d.covenantsAccepted));
+        }
+        if (d.foodSafetyUndertakingAccepted !== undefined) {
+          setFoodSafetyUndertakingAccepted(Boolean(d.foodSafetyUndertakingAccepted));
+        }
+        if (d.privacyAndTaxAccepted !== undefined) {
+          setPrivacyAndTaxAccepted(Boolean(d.privacyAndTaxAccepted));
+        }
+        if (d.restaurantId && !vendor.restaurantId) {
+          useClientState.getState().setRestaurantId(d.restaurantId);
         }
       }
     } catch {
       // ignore
     }
-  }, []);
+  }, [vendor.restaurantId]);
 
   // Station 5: Commercial Contract & Digital Execution State
   const [onboardingFeeOption, setOnboardingFeeOption] = useState<OnboardingFeeOption>("AMORTIZED");

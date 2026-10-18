@@ -62,6 +62,13 @@ import {
   DEFAULT_RIDER_DISCIPLINE_SETTINGS,
   type RiderDisciplineSettings,
 } from "@/lib/orderking/types";
+import {
+  CENTRAL_COMMISSION_TIERS,
+  CENTRAL_COMMISSION_TIER_PERCENTAGES,
+  type CentralCommissionTierDef,
+} from "@/lib/orderking/compliance/india-marketplace-engine";
+
+export { CENTRAL_COMMISSION_TIERS, CENTRAL_COMMISSION_TIER_PERCENTAGES, type CentralCommissionTierDef };
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
@@ -1626,6 +1633,44 @@ function SettingsPage() {
                     <span className="text-[11px] font-mono text-slate-500">
                       Tier-1 Parity · 4 Clear Economic Tiers
                     </span>
+                  </div>
+
+                  {/* Central Master Controls: Commission Rate Tiers (0%, 3%, 5%, 8%, 12%, 18%) */}
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-600" />
+                        Central Master Controls · Commission Rate Tiers (0%, 3%, 5%, 8%, 12%, 18%)
+                      </span>
+                      <span className="text-[10px] font-mono text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded font-bold">
+                        Active: {econState.restaurant_commission_pct}%
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                      {CENTRAL_COMMISSION_TIERS.map((tier) => {
+                        const isSelected = econState.restaurant_commission_pct === tier.pct;
+                        return (
+                          <button
+                            key={tier.pct}
+                            type="button"
+                            onClick={() => {
+                              setEconState((p) => ({ ...p, restaurant_commission_pct: tier.pct }));
+                              setMasterControlsState((p) => ({ ...p, standard_commission_pct: tier.pct }));
+                            }}
+                            className={`p-2 rounded-lg text-left border transition-all ${
+                              isSelected
+                                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
+                                : "bg-white text-slate-800 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50"
+                            }`}
+                          >
+                            <div className="text-sm font-black font-mono">{tier.pct}%</div>
+                            <div className={`text-[10px] font-bold line-clamp-1 ${isSelected ? "text-emerald-100" : "text-slate-600"}`}>
+                              {tier.label}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

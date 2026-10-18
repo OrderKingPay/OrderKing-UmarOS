@@ -1439,6 +1439,63 @@ function MenuPage() {
         </div>
       </div>
 
+      {/* Kitchen Rush / Surge Operational Overload Controls */}
+      {kitchenRushMode && (
+        <div className="rounded-xl border border-amber-500/60 bg-gradient-to-r from-amber-950/50 via-slate-900 to-amber-950/40 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-200 font-mono shadow-md">
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400">
+              <Flame className="size-4.5 animate-pulse text-amber-400" />
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-white text-xs sm:text-sm">
+                  Kitchen Rush Surge Active (+{kitchenRush.bufferMinutes}m Prep Buffer)
+                </span>
+                <span className="rounded bg-amber-500/30 border border-amber-400/50 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 uppercase">
+                  Tactile Touch Targets Active
+                </span>
+              </div>
+              <p className="text-[11px] text-amber-300/80 font-sans mt-0.5">
+                Incoming order prep windows expanded. Rider dispatch deferred automatically to prevent kitchen counter congestion. Dish stock toggles enlarged for high-speed touch input.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center rounded-lg border border-amber-500/40 bg-slate-950/80 p-0.5">
+              <button
+                type="button"
+                onClick={() => kitchenRush.setBuffer(10)}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
+                  kitchenRush.bufferMinutes === 10
+                    ? "bg-amber-500 text-black shadow-xs"
+                    : "text-amber-300 hover:text-white"
+                }`}
+              >
+                +10 Mins
+              </button>
+              <button
+                type="button"
+                onClick={() => kitchenRush.setBuffer(15)}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
+                  kitchenRush.bufferMinutes === 15
+                    ? "bg-amber-500 text-black shadow-xs"
+                    : "text-amber-300 hover:text-white"
+                }`}
+              >
+                +15 Mins
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => kitchenRush.deactivate()}
+              className="px-3 py-1 rounded-lg border border-amber-500/40 bg-amber-950/80 hover:bg-amber-900 text-amber-200 text-xs font-bold transition cursor-pointer"
+            >
+              Turn Off Rush
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Timed Out-of-Stock Status & Automated Inventory Replenishment Banner */}
       {timedOutOfStockItems.length > 0 && (
         <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-300 font-mono">

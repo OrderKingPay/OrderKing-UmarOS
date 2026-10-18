@@ -1049,7 +1049,7 @@ export function TravelPage() {
           </div>
         </div>
 
-        {/* SOVEREIGN TRAVEL ENGINE CONCIERGE (0% FEE GUARANTEE & DIRECT TICKETING) */}
+        {/* TRAVEL ENGINE CONCIERGE (0% FEE GUARANTEE & DIRECT TICKETING) */}
         <SovereignTravelConcierge
           onSaveTrip={(trip) => {
             persistTrips([trip, ...savedTrips]);
@@ -1213,7 +1213,7 @@ export function TravelPage() {
                     </h2>
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    Direct GDS pass-through with zero platform surcharge. Compare live airline tariffs.
+                    Direct airline GDS fare integration with zero platform surcharge. Compare live airline tariffs.
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-black text-emerald-700">
@@ -1300,7 +1300,7 @@ export function TravelPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sky-200/60 pb-3">
                   <span className="text-xs font-black uppercase tracking-wider text-sky-900 flex items-center gap-1.5">
                     <TrendingDown className="size-4 text-emerald-600" />
-                    Live Sovereign Pass-Through Calculation ({flightPassengers} Pax · {flightClass})
+                    Direct Airline Fare Audit ({flightPassengers} Pax · {flightClass})
                   </span>
                   <span className="text-xs font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300">
                     Instant Savings: ₹{flightOtaConvenienceFee} vs Major OTAs
@@ -1377,7 +1377,7 @@ export function TravelPage() {
               </div>
             </div>
 
-            {/* Embedded Sovereign Flight Booking Engine */}
+            {/* Embedded Flight Booking Engine */}
             <FlightBookingEngine initialFrom={flightFrom} initialTo={flightTo} />
           </div>
         )}
@@ -1403,7 +1403,7 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start">
-                  Official IRCTC Portal Redirect
+                  Official IRCTC Booking Redirect
                 </span>
               </div>
 
@@ -1498,7 +1498,7 @@ export function TravelPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-200/60 pb-3">
                   <span className="text-xs font-black uppercase tracking-wider text-indigo-900 flex items-center gap-1.5">
                     <TrendingDown className="size-4 text-emerald-600" />
-                    IRCTC Official Fare Pass-Through ({trainPassengers} Pax · Class {trainClass})
+                    Official IRCTC Fare Audit ({trainPassengers} Pax · Class {trainClass})
                   </span>
                   <span className="text-xs font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300">
                     Instant Savings: ₹{trainAgentSurcharge} vs Agent Portals
@@ -1566,7 +1566,7 @@ export function TravelPage() {
               </div>
             </div>
 
-            {/* Embedded Sovereign Train Booking Engine */}
+            {/* Embedded Train Booking Engine */}
             <TrainBookingEngine initialFrom={trainFrom} initialTo={trainTo} />
 
             {/* Live PNR Enquiry */}
@@ -1772,7 +1772,7 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-orange-800 bg-orange-100 px-3 py-1 rounded-full self-start sm:self-auto">
-                  Verified Intercity Bus Routes
+                  Verified AC Sleeper Operators
                 </span>
               </div>
 
@@ -1946,7 +1946,7 @@ export function TravelPage() {
                       id: `trip-${Date.now()}`,
                       bookingType: "Bus",
                       providerName: `${busOperator !== "All Operators" ? busOperator : "Intercity Bus"} (${busClass})`,
-                      bookingRef: "SOVEREIGN-BUS-DIRECT",
+                      bookingRef: "BUS-OPERATOR-DIRECT",
                       travelDate: busDate,
                       routeOrLocation: `${busFrom} ➔ ${busTo}`,
                       notes: `${busPassengers} Passengers · Fare: ₹${busOrderKingTotal}`,
@@ -1962,7 +1962,7 @@ export function TravelPage() {
               </div>
             </div>
 
-            {/* Embedded Sovereign Bus Booking Engine with interactive berth layout */}
+            {/* Embedded Bus Booking Engine with interactive berth layout */}
             <BusBookingEngine initialFrom={busFrom} initialTo={busTo} />
 
             {/* Popular Overnight Bus Corridors */}
@@ -2133,7 +2133,7 @@ export function TravelPage() {
                   Live Tariff Calculation &amp; Price Comparison ({hotelNights} Night{hotelNights > 1 ? "s" : ""} · {hotelRooms} Room{hotelRooms > 1 ? "s" : ""})
                 </span>
                 <span className="text-xs font-black text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300 flex items-center gap-1">
-                  <Coins className="size-3 text-amber-700" /> 6% Direct Partner Discount: ₹{hotelSovereignRebate.toLocaleString("en-IN")}
+                  <Coins className="size-3 text-amber-700" /> 6% Direct Partner Discount: ₹{hotelPartnerDiscount.toLocaleString("en-IN")}
                 </span>
               </div>
 
@@ -2156,7 +2156,7 @@ export function TravelPage() {
                 <div className="bg-white p-3 rounded-xl border border-amber-300 bg-amber-50/50">
                   <span className="text-amber-950 block text-[11px] font-bold">Effective Net Cost</span>
                   <span className="text-base font-black text-amber-950 font-mono">₹{hotelEffectiveCost.toLocaleString("en-IN")}</span>
-                  <span className="text-[10px] text-emerald-700 font-bold block mt-0.5">After ₹{hotelSovereignRebate} Partner Discount</span>
+                  <span className="text-[10px] text-emerald-700 font-bold block mt-0.5">After ₹{hotelPartnerDiscount} Partner Discount</span>
                 </div>
               </div>
             </div>

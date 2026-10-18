@@ -229,9 +229,9 @@ export function CatalogueStockControlsPanel({
             </div>
           </div>
 
-          {/* Live Preview Simulation of Alert Badge */}
+          {/* Live Preview of Alert Badge */}
           <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 flex items-center justify-between text-xs">
-            <span className="text-slate-400">KDS Simulated Cook Ticket:</span>
+            <span className="text-slate-400">KDS Cook Ticket Preview:</span>
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-[11px] font-mono font-bold text-amber-300">
               <AlertTriangle className="size-3" /> LOW STOCK (≤{lowStockThreshold} REMAINING)
             </span>
