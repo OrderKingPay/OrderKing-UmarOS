@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { AppErrorComponent } from "@/lib/error-component";
 import { computeDeterministicSkillMatch } from "@/lib/career/skill-matcher";
 import { getSql } from "@/lib/db";
+import { TutorJobsHub } from "@/components/tutor-jobs/tutor-jobs-hub";
 
 function generateCurriculumFallback(data: { message: string; board: string; stdClass: string; subject: string; language: string; difficulty: string; tone: string; goal: string }): string {
  return "The tutoring service could not verify an answer right now. Please try again when the AI service is available.";
@@ -677,7 +678,7 @@ function IntelligencePage() {
   const [tone, setTone] = useState("Direct Easy Exam Answers");
   const [goal, setGoal] = useState("Concept Mastery");
   const [showConfig, setShowConfig] = useState(true);
-  const [mode, setMode] = useState<"tutor" | "jobs">("tutor");
+  const [mode, setMode] = useState<"tutor" | "jobs" | "hub">("hub");
 
   // Academic Tutor Category & Sub-Category state
   const [tutorCategory, setTutorCategory] = useState<TutorPrimaryCategory>("School & Board Exams");
@@ -716,8 +717,10 @@ function IntelligencePage() {
           document.getElementById("my-jobs")?.scrollIntoView({ behavior: "smooth" });
         }, 150);
       }
-    } else if (cleanHash === "tutor") {
+    } else if (cleanHash === "tutor" || search?.tab === "tutor") {
       setMode("tutor");
+    } else if (cleanHash === "hub" || search?.tab === "hub") {
+      setMode("hub");
     }
   }, [sectionHash, search?.tab]);
 
@@ -987,7 +990,19 @@ function IntelligencePage() {
             </div>
 
             {/* Mode Selector */}
-            <div className="flex items-center bg-black/40 border border-purple-400/30 p-1 rounded-xl shrink-0 backdrop-blur-xl shadow-lg self-start sm:self-auto">
+            <div className="flex items-center bg-black/40 border border-purple-400/30 p-1 rounded-xl shrink-0 backdrop-blur-xl shadow-lg self-start sm:self-auto gap-1">
+              <button
+                type="button"
+                onClick={() => setMode("hub")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  mode === "hub"
+                    ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black shadow-md shadow-amber-500/30"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                <Sparkles className="size-3.5" />
+                <span>Syllabus &amp; WFH Hub</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setMode("tutor")}
@@ -1019,6 +1034,12 @@ function IntelligencePage() {
           </div>
         </div>
 
+        {mode === "hub" ? (
+          <div className="py-2">
+            <TutorJobsHub />
+          </div>
+        ) : (
+          <>
         {/* Dynamic Controls Sub-Panel (Curriculum or Jobs Filters) */}
         <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-3.5 z-10 flex flex-col gap-3 shadow-sm relative overflow-hidden">
           
@@ -1719,6 +1740,8 @@ function IntelligencePage() {
               </div>
             </form>
           </div>
+        )}
+          </>
         )}
 
         </div>

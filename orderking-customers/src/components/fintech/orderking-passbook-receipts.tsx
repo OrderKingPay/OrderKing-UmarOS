@@ -316,7 +316,7 @@ export function OrderKingPassbookReceipts({
               <p className={`text-xs max-w-md mx-auto mt-1 leading-relaxed ${
                 isDark ? "text-slate-400" : "text-stone-500"
               }`}>
-                Zero simulated or mock transaction entries. Your double-entry ledger is live with ₹0 platform fee and
+                Zero simulated or mock transaction entries. Your double-entry ledger is live with live fee transparency & instant cashback and
                 binds directly to authentic settlements.
               </p>
             </div>

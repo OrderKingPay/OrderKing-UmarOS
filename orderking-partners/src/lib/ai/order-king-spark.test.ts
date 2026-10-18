@@ -223,4 +223,77 @@ describe("Order King Spark - Partner AI Assistant", () => {
     assert.ok(growthReply.text.includes("Order King Spark Active"));
     assert.equal(growthReply.actionCard?.type, "growth_plan");
   });
+
+  test("optimizes dish pricing to increase merchant GMV and founder commission (28% platform rate)", () => {
+    // Underpriced Biryani: ₹260 -> benchmark ₹349
+    const biryaniOpt = orderKingSpark.optimizeDishPricing({
+      id: "dish-biryani-test",
+      name: "Hyderabadi Dum Biryani",
+      pricePaise: 26000,
+      category: "Biryani & Rice",
+      ordersCount: 8,
+    });
+
+    assert.equal(biryaniOpt.currentPricePaise, 26000);
+    assert.equal(biryaniOpt.recommendedPricePaise, 34900);
+    assert.equal(biryaniOpt.priceDeltaPaise, 8900); // +₹89 lift
+    assert.ok(biryaniOpt.projectedGmvLiftPercent >= 34);
+    assert.ok(biryaniOpt.estimatedWeeklyGmvIncreasePaise > 0);
+    assert.equal(biryaniOpt.founderCommissionRateBps, 2800); // 28%
+    assert.equal(
+      biryaniOpt.estimatedWeeklyFounderCommissionIncreasePaise,
+      Math.round((biryaniOpt.estimatedWeeklyGmvIncreasePaise * 28) / 100)
+    );
+    assert.equal(biryaniOpt.elasticityTier, "HIGH_DEMAND_INELASTIC");
+
+    // Underpriced Paneer Tikka: ₹220 -> benchmark ₹289
+    const paneerOpt = orderKingSpark.optimizeDishPricing({
+      id: "dish-paneer-test",
+      name: "Paneer Tikka Masala",
+      pricePaise: 22000,
+      category: "Curries",
+    });
+
+    assert.equal(paneerOpt.recommendedPricePaise, 28900);
+    assert.equal(paneerOpt.priceDeltaPaise, 6900); // +₹69
+    assert.ok(paneerOpt.estimatedWeeklyFounderCommissionIncreasePaise > 0);
+
+    // Batch optimization returns prioritized opportunities
+    const batch = orderKingSpark.batchOptimizeMenuPricing([
+      { id: "1", name: "Hyderabadi Dum Biryani", pricePaise: 26000 },
+      { id: "2", name: "Butter Naan", pricePaise: 4000 },
+      { id: "3", name: "Premium Lobster", pricePaise: 120000 },
+    ]);
+
+    assert.ok(batch.length >= 2);
+    assert.ok(batch[0].estimatedWeeklyGmvIncreasePaise >= batch[1].estimatedWeeklyGmvIncreasePaise);
+  });
+
+  test("generates high-converting meal combos that expand Average Order Value and Founder Commission", () => {
+    const sampleMenu = [
+      { id: "it-1", name: "Murgh Makhani (Butter Chicken)", pricePaise: 32000, category: "Main Course", diet: "NONVEG" },
+      { id: "it-2", name: "Paneer Butter Masala", pricePaise: 28000, category: "Main Course", diet: "VEG" },
+      { id: "it-3", name: "Butter Naan (2 pcs)", pricePaise: 8000, category: "Breads", diet: "VEG" },
+    ];
+
+    const combos = orderKingSpark.generateComboRecommendations(sampleMenu);
+    assert.ok(combos.length >= 2);
+
+    // 1. Solo Feast Combo
+    const solo = combos[0];
+    assert.ok(solo.name.includes("Executive Solo Feast"));
+    assert.equal(solo.category, "Recommended & Combos");
+    assert.ok(solo.bundlePricePaise < solo.standaloneSumPaise); // Bundle discount exists
+    assert.ok(solo.customerSavingsPercent >= 10);
+    assert.equal(solo.merchantGrossMarginPercent, 68);
+    assert.equal(solo.projectedAovLiftPercent, 24);
+    assert.equal(solo.founderCommissionPaise, Math.round((solo.bundlePricePaise * 28) / 100));
+
+    // 2. Twin Sharing Combo
+    const twin = combos[1];
+    assert.ok(twin.name.includes("Royal Twin Feast"));
+    assert.ok(twin.bundlePricePaise > solo.bundlePricePaise);
+    assert.equal(twin.projectedAovLiftPercent, 38);
+    assert.equal(twin.founderCommissionPaise, Math.round((twin.bundlePricePaise * 28) / 100));
+  });
 });

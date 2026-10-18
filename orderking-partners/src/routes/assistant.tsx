@@ -12,11 +12,12 @@ import { getDashboard, quickThrottleKitchen } from "@/lib/server/api-orders";
 import { getMenu, saveItem, setAvailability } from "@/lib/server/api-menu";
 import { getAnalytics, getPromotions, getSettlements } from "@/lib/server/api-finance";
 import { formatINR, mulBps } from "@/lib/money";
+import type { DietFlag } from "@/lib/contracts";
 import { can } from "@/lib/rbac";
 import { useClientState } from "@/lib/client-state";
 import { platformConfig, type AppLanguage } from "@/lib/platform-config";
-import type { DietFlag } from "@/lib/contracts";
 import { orderKingSpark } from "@/lib/ai/order-king-spark";
+import { tryExecutePartnerAiCommand } from "@/lib/ai/partner-ai-actions";
 
 export const Route = createFileRoute("/assistant")({ component: AssistantPage });
 
@@ -787,6 +788,34 @@ function AssistantPage() {
 
     setLog((l) => [...l, { role: "user", text: userQuestion, langCode: activeLang.code }]);
     try {
+      // 1. Try instant natural language action execution (Add dish, change price, stockout, sales check)
+      const actionResult = await tryExecutePartnerAiCommand(userQuestion, {
+        restaurantId: vendor.restaurantId,
+        categories: menu.data?.categories ?? [],
+        items: (menu.data?.items ?? []).map((it) => ({
+          ...it,
+          variants: it.variants.map((v) => ({ id: v.id, name: v.name, pricePaise: v.pricePaise })),
+        })),
+        dashboard: dash.data,
+        languageCode: activeLang.code,
+        canEditMenu: Boolean(vendor.role && can(vendor.role, "menu.edit") && !menu.data?.isMenuLocked),
+        canEditAvailability: Boolean(vendor.role && can(vendor.role, "availability.edit") && !menu.data?.isMenuLocked),
+      });
+
+      if (actionResult.handled) {
+        await Promise.all([
+          qc.invalidateQueries({ queryKey: ["menu"] }),
+          qc.invalidateQueries({ queryKey: ["dashboard"] }),
+        ]);
+        setLog((l) => [
+          ...l,
+          { role: "assistant", text: actionResult.replyText, langCode: activeLang.code },
+        ]);
+        setBusy(false);
+        setQ("");
+        return;
+      }
+
       const res = await askAssistant({
         data: { restaurantId: vendor.restaurantId, question: promptWithLanguage },
       });

@@ -10,6 +10,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { createClient, SupabaseClient, RealtimeChannel } from "@supabase/supabase-js";
+export { createClient, type SupabaseClient, type RealtimeChannel } from "@supabase/supabase-js";
 import type { DynamicCustomizationState } from "./customization-provider";
 
 export interface UmarOsCustomizationConfig {

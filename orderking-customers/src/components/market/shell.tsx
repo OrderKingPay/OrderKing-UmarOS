@@ -70,7 +70,7 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
     icon: Crown,
     iconGradient: "from-yellow-400 via-amber-500 to-amber-700",
     to: "/king-pay",
-    match: (p: string) => p.startsWith("/king-pay"),
+    match: (p: string) => p.startsWith("/king-pay") || p.startsWith("/kingpay"),
   },
   {
     id: "travel",
@@ -89,8 +89,8 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
     badgeColor: "bg-purple-500/20 text-purple-900 border-purple-400/50",
     icon: GraduationCap,
     iconGradient: "from-indigo-400 via-purple-500 to-purple-800",
-    to: "/tutor",
-    match: (p: string) => p.startsWith("/tutor"),
+    to: "/tutor-jobs",
+    match: (p: string) => p.startsWith("/tutor") || p.startsWith("/tutor-jobs"),
   },
   {
     id: "orders",

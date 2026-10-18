@@ -65,6 +65,7 @@ import { TravelPage } from "@/components/travel/TravelPage";
 import { lazyWithRetry } from "@/lib/lazy-retry";
 import { AdminErrorBoundary } from "@/components/error-boundary";
 import { AppErrorComponent } from "@/lib/error-component";
+import { UmarAiCommandBar } from "@/components/umar-ai/umar-ai-command-bar";
 
 const LazyGlobalGodEyeMap = lazyWithRetry(
   () => import("@/components/dashboard/GlobalGodEyeMap"),
@@ -2452,6 +2453,9 @@ function UmarOSDashboard() {
           MAIN ACTIVE WORLD VIEWPORT (ONLY 1 WORLD RENDERS AT A TIME!)
       ===================================================================== */}
       <main className="max-w-7xl mx-auto px-4 pt-5 space-y-5">
+        {/* UMAR AI REAL-TIME NATURAL LANGUAGE COMMAND BAR */}
+        <UmarAiCommandBar />
+
         {/* Save confirmation toast banner */}
         {saveBanner && (
           <div className="rounded-xl bg-emerald-950 text-emerald-100 border border-emerald-700 px-4 py-3 flex items-center justify-between gap-3 shadow-sm">

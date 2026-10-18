@@ -12,8 +12,8 @@ import { formatINR } from "@/lib/money";
 import { useVendor } from "@/components/use-vendor";
 import { can } from "@/lib/rbac";
 import { useClientState } from "@/lib/client-state";
-import { platformConfig, type AppLanguage } from "@/lib/platform-config";
 import type { DietFlag } from "@/lib/contracts";
+import { tryExecutePartnerAiCommand } from "@/lib/ai/partner-ai-actions";
 
 export interface OrderKingSparkModalProps {
   isOpen: boolean;
@@ -370,6 +370,30 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     setSending(true);
 
     try {
+      if (restaurantId) {
+        const actionResult = await tryExecutePartnerAiCommand(question, restaurantId);
+        if (actionResult.handled) {
+          if (actionResult.mutationType === "menu") {
+            await qc.invalidateQueries({ queryKey: ["menu", restaurantId] });
+            await qc.invalidateQueries({ queryKey: ["dashboard", restaurantId] });
+          } else if (actionResult.mutationType === "kitchen") {
+            await qc.invalidateQueries({ queryKey: ["dashboard", restaurantId] });
+            await qc.invalidateQueries({ queryKey: ["menu", restaurantId] });
+          }
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `spark-${Date.now()}`,
+              sender: "spark",
+              text: actionResult.response,
+              timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              provenanceNote: "Executed live kitchen action through UmarOS unified partner API.",
+            },
+          ]);
+          return;
+        }
+      }
+
       const result = await askAssistant({ data: { restaurantId, question: promptWithLanguage } });
       const responseText = result.ok
         ? result.text

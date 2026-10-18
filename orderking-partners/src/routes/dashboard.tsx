@@ -17,6 +17,7 @@ import {
 } from "@/lib/server/api-orders";
 import { formatINR } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
 import { DailyPerformanceLedgerCard } from "@/components/dashboard/daily-performance-ledger-card";
 import {
@@ -72,6 +73,25 @@ function DashboardPage() {
       await quickThrottleKitchen({
         data: { restaurantId: vendor.restaurantId, mode },
       });
+      if (mode === "RUSH") {
+        useKitchenRushStore.getState().activate(15);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("ok_kitchen_paused", "false");
+        }
+      } else if (mode === "NORMAL") {
+        useKitchenRushStore.getState().deactivate();
+        if (typeof window !== "undefined") {
+          localStorage.setItem("ok_kitchen_paused", "false");
+        }
+      } else if (mode === "PAUSE") {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("ok_kitchen_paused", "true");
+        }
+      } else if (mode === "RESUME") {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("ok_kitchen_paused", "false");
+        }
+      }
       await qc.invalidateQueries({ queryKey: ["dashboard"] });
       const labels: Record<typeof mode, string> = {
         NORMAL: "Standard kitchen prep time (20 mins) applied.",
@@ -523,14 +543,14 @@ function DashboardPage() {
           </Card>
         </div>
 
-        {/* OMR OS Algorithmic Growth, Prep-SLA & Margin Optimization Advisor */}
+        {/* Operational Growth & Kitchen Efficiency Advisor */}
         <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <Cpu className="size-5 text-emerald-400" />
               <div>
                 <h3 className="font-display text-sm font-bold uppercase tracking-wider text-white">
-                  OMR OS Algorithmic Growth &amp; Kitchen Efficiency Advisor
+                  Operational Growth &amp; Kitchen Efficiency Advisor
                 </h3>
                 <p className="text-xs text-slate-400">
                   Deterministic recommendations calculated from your live kitchen queue, menu availability, and basket AOV.
@@ -538,7 +558,7 @@ function DashboardPage() {
               </div>
             </div>
             <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded self-start sm:self-center">
-              AUTONOMOUS TELEMETRY
+              OPERATIONAL INTELLIGENCE
             </span>
           </div>
 

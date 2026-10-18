@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
 import { Button } from "@/components/ui/button";
@@ -90,10 +90,40 @@ function OnboardingPage() {
     bankName: "",
     bankAccount: "",
     bankIfsc: "",
-    seedSim: false,
   });
 
   const [exemptFromGst, setExemptFromGst] = useState(false);
+
+  // Auto-hydrate from landing page self-serve registration draft if available
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem("orderking_partner_onboarding_draft");
+      if (raw) {
+        const d = JSON.parse(raw);
+        setForm((prev) => ({
+          ...prev,
+          name: prev.name || d.name || "",
+          ownerName: prev.ownerName || d.ownerName || "",
+          phone: prev.phone || d.phone || "",
+          email: prev.email || d.email || "",
+          city: prev.city || d.city || "",
+          address: prev.address || d.address || "",
+          fssaiNumber: prev.fssaiNumber || d.fssaiNumber || "",
+          pan: prev.pan || d.pan || "",
+          gstin: prev.gstin || d.gstin || "",
+          bankAccount: prev.bankAccount || d.bankAccount || "",
+          bankIfsc: prev.bankIfsc || d.bankIfsc || "",
+          bankName: prev.bankName || d.bankName || "",
+        }));
+        if (d.ownerName) {
+          setClickwrapSignatoryName((prev) => prev || d.ownerName);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   // Station 5: Commercial Contract & Digital Execution State
   const [onboardingFeeOption, setOnboardingFeeOption] = useState<OnboardingFeeOption>("AMORTIZED");

@@ -13,9 +13,11 @@
 import type { AvailabilityStatus } from "@/lib/contracts";
 
 export type TimedStockoutOption =
+  | "TURN_OFF_NEXT_MEAL"
+  | "TURN_OFF_TOMORROW_8AM"
   | "TURN_OFF_2_HOURS"
   | "TURN_OFF_4_HOURS"
-  | "TURN_OFF_TOMORROW_8AM"
+  | "CUSTOM"
   | "TURN_OFF_INDEFINITELY";
 
 export interface StockoutPresetConfig {
@@ -27,6 +29,18 @@ export interface StockoutPresetConfig {
 }
 
 export const TIER1_STOCKOUT_PRESETS: StockoutPresetConfig[] = [
+  {
+    id: "TURN_OFF_NEXT_MEAL",
+    label: "Turn on for Next Meal",
+    sublabel: "Resumes for upcoming lunch or dinner shift",
+    icon: "Utensils",
+  },
+  {
+    id: "TURN_OFF_TOMORROW_8AM",
+    label: "Turn on Tomorrow 8:00 AM",
+    sublabel: "Standard end-of-day stockout",
+    icon: "Sunrise",
+  },
   {
     id: "TURN_OFF_2_HOURS",
     label: "Turn off for 2 Hours",
@@ -42,15 +56,15 @@ export const TIER1_STOCKOUT_PRESETS: StockoutPresetConfig[] = [
     icon: "Clock",
   },
   {
-    id: "TURN_OFF_TOMORROW_8AM",
-    label: "Turn off until Tomorrow 8:00 AM",
-    sublabel: "Standard end-of-day stockout",
-    icon: "Sunrise",
+    id: "CUSTOM",
+    label: "Custom Time",
+    sublabel: "Specific date or hour duration",
+    icon: "Clock",
   },
   {
     id: "TURN_OFF_INDEFINITELY",
     label: "Turn off Indefinitely",
-    sublabel: "Manual turn on required",
+    sublabel: "Manual reactivation required",
     icon: "Infinity",
   },
 ];
@@ -67,11 +81,40 @@ export function getTomorrow08AM(refDate: Date = new Date()): Date {
 }
 
 /**
+ * Exact Tier-1 Partner Next Meal calculation:
+ * - Morning before 11:30 AM: next meal is Lunch (12:30 PM today)
+ * - Afternoon (11:30 AM - 6:30 PM): next meal is Dinner (7:30 PM today)
+ * - Evening after 6:30 PM: next meal is Tomorrow Breakfast (8:00 AM tomorrow)
+ */
+export function getNextMealTime(refDate: Date = new Date()): {
+  date: Date;
+  mealLabel: string;
+  mealType: "LUNCH" | "DINNER" | "BREAKFAST";
+} {
+  const target = new Date(refDate.getTime());
+  const hours = refDate.getHours();
+  const minutes = refDate.getMinutes();
+  const timeVal = hours + minutes / 60;
+
+  if (timeVal < 11.5) {
+    target.setHours(12, 30, 0, 0);
+    return { date: target, mealLabel: "Lunch (12:30 PM)", mealType: "LUNCH" };
+  } else if (timeVal < 18.5) {
+    target.setHours(19, 30, 0, 0);
+    return { date: target, mealLabel: "Dinner (7:30 PM)", mealType: "DINNER" };
+  } else {
+    const tmrw = getTomorrow08AM(refDate);
+    return { date: tmrw, mealLabel: "Tomorrow Breakfast (8:00 AM)", mealType: "BREAKFAST" };
+  }
+}
+
+/**
  * Computes the target expiration Date and availability status for a given preset option.
  */
 export function calculateStockoutExpiry(
   option: TimedStockoutOption,
-  refDate: Date = new Date()
+  refDate: Date = new Date(),
+  customTime?: Date | string | null
 ): {
   status: AvailabilityStatus;
   nextAvailableAt: string | null;
@@ -84,6 +127,16 @@ export function calculateStockoutExpiry(
       nextAvailableAt: null,
       expiryDate: null,
       label: "Turn off Indefinitely",
+    };
+  }
+
+  if (option === "TURN_OFF_NEXT_MEAL") {
+    const nextMeal = getNextMealTime(refDate);
+    return {
+      status: "temporarily_unavailable",
+      nextAvailableAt: nextMeal.date.toISOString(),
+      expiryDate: nextMeal.date,
+      label: `Turn on next meal (${nextMeal.mealLabel})`,
     };
   }
 
@@ -114,6 +167,16 @@ export function calculateStockoutExpiry(
       nextAvailableAt: expiry.toISOString(),
       expiryDate: expiry,
       label: "Turn off until Tomorrow 8:00 AM",
+    };
+  }
+
+  if (option === "CUSTOM") {
+    const expiry = customTime ? new Date(customTime) : new Date(refDate.getTime() + 3 * 60 * 60 * 1000);
+    return {
+      status: "temporarily_unavailable",
+      nextAvailableAt: expiry.toISOString(),
+      expiryDate: expiry,
+      label: `Custom Time (${expiry.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })})`,
     };
   }
 

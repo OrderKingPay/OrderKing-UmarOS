@@ -926,7 +926,7 @@ export function FoodAiConcierge({
       q.includes("वॉलेट")
     ) {
       return {
-        text: `Looking for 1-Tap Zero-Fee UPI payments, custom QR with gifting notes, vehicle police challans, or electricity bills? You can switch directly to King Pay below! ${selectedPersona.encouragement}`,
+        text: `Looking for 1-Tap Live Fee & Instant Cashback UPI payments, custom QR with gifting notes, vehicle police challans, or electricity bills? You can switch directly to King Pay below! ${selectedPersona.encouragement}`,
         action: { type: "OPEN_KINGPAY", label: "👑 Open King Pay" },
       };
     }

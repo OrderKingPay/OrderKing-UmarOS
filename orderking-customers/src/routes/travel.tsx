@@ -13,6 +13,7 @@ import {
 } from "@/lib/travel/in-app-booking-service";
 import { SovereignTravelConcierge } from "@/components/fintech/sovereign-travel-concierge";
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
+import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
 import { buildOfficialAirlineDeepLink } from "@/lib/travel/airline-deep-links";
 import { type VIPTravelCategory } from "@/lib/travel/sovereign-travel-engine";
 import {
@@ -600,6 +601,7 @@ export function TravelPage() {
   return (
     <CustomerShell>
       <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8 space-y-6">
+        <LivePnrStatusBar />
         <TravelCategoryDeck
           onChoose={(id) => {
             setActiveTab(id);

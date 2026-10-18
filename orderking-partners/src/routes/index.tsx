@@ -22,7 +22,7 @@ import {
   ShieldCheck,
   Store,
 } from "lucide-react";
-import { DailyPerformanceLedgerCard } from "@/components/dashboard/daily-performance-ledger-card";
+import { SelfServeLandingModule } from "@/components/onboarding/self-serve-landing-module";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -173,23 +173,10 @@ function Home() {
         </div>
       </section>
 
-      {/* Live Benchmark Performance: Tier-1 Leader Settlement Ledger */}
+      {/* Active Partner Onboarding & Self-Serve Outlet Registration */}
       <section className="py-12 border-t border-slate-800/80 bg-slate-950">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-8">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-medium text-emerald-400">
-              <Receipt className="size-3.5" />
-              TRANSPARENT SETTLEMENT LEDGER
-            </div>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl font-extrabold text-white">
-              Real-World Daily Business Performance &amp; T+1 Payouts
-            </h2>
-            <p className="mt-2 text-slate-300 text-xs sm:text-sm">
-              Complete visibility into every rupee. Track delivered orders, gross GMV, platform take-rates, statutory GST §9(5), and automated bank deposits.
-            </p>
-          </div>
-
-          <DailyPerformanceLedgerCard isInteractiveSample />
+          <SelfServeLandingModule />
         </div>
       </section>
 

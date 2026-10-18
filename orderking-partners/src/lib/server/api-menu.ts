@@ -177,6 +177,14 @@ export const saveCategory = createServerFn({ method: "POST" })
           update categories set name = ${name}, sort_order = ${asInt(data.sortOrder)}
           where id = ${data.id} and restaurant_id = ${ctx.restaurantId}
         `;
+        try {
+          await sql`
+            update menu_categories set name_en = ${name}, name_bn = ${name}, sort_order = ${asInt(data.sortOrder, 1)}
+            where id = ${data.id} and restaurant_id = ${ctx.restaurantId}
+          `;
+        } catch {
+          // non-fatal
+        }
         return { ok: true as const, id: data.id };
       }
       const id = newId("cat");
@@ -184,6 +192,15 @@ export const saveCategory = createServerFn({ method: "POST" })
         insert into categories (id, restaurant_id, name, sort_order)
         values (${id}, ${ctx.restaurantId}, ${name}, ${asInt(data.sortOrder)})
       `;
+      try {
+        await sql`
+          insert into menu_categories (id, restaurant_id, name_en, name_bn, sort_order)
+          values (${id}, ${ctx.restaurantId}, ${name}, ${name}, ${asInt(data.sortOrder, 1)})
+          on conflict (id) do update set name_en = excluded.name_en, sort_order = excluded.sort_order
+        `;
+      } catch {
+        // non-fatal
+      }
       return { ok: true as const, id };
     });
   });
@@ -356,6 +373,30 @@ export const saveItem = createServerFn({ method: "POST" })
           select ${itemId}, id from addons where id = ${aid} and restaurant_id = ${ctx.restaurantId}
         `;
       }
+      const basePricePaise = data.variants[0]?.pricePaise ?? 0;
+      const isVeg = (data.diet ?? "NONVEG") === "VEG";
+      try {
+        await sql`
+          insert into menu_items (
+            id, restaurant_id, category_id, name_en, name, description_en,
+            veg, available, base_price_paise, price_paise, sort_order, data_label
+          ) values (
+            ${itemId}, ${ctx.restaurantId}, ${data.categoryId}, ${name}, ${name}, ${data.description ?? ""},
+            ${isVeg}, true, ${basePricePaise}, ${basePricePaise}, 1, 'REAL'
+          )
+          on conflict (id) do update set
+            category_id = excluded.category_id,
+            name_en = excluded.name_en,
+            name = excluded.name,
+            description_en = excluded.description_en,
+            veg = excluded.veg,
+            base_price_paise = excluded.base_price_paise,
+            price_paise = excluded.price_paise
+        `;
+      } catch {
+        // non-fatal if table schema differs in development
+      }
+
       await writeAudit(sql, {
         restaurantId: ctx.restaurantId,
         actorUserId: context.userId,
@@ -443,6 +484,15 @@ export const setAvailability = createServerFn({ method: "POST" })
             next_available_at = excluded.next_available_at,
             updated_at = now()
         `;
+        try {
+          await sql`
+            update menu_items
+            set available = (${data.status} = 'available')
+            where id = ${itemId} and restaurant_id = ${ctx.restaurantId}
+          `;
+        } catch {
+          // non-fatal
+        }
       }
       return { ok: true as const };
     });

@@ -197,8 +197,8 @@ export function CustomerConciergeDrawer({
     // 4. KingPay, UPI QR Scanner & Utility Bills
     if (q.includes("pay") || q.includes("kingpay") || q.includes("bill") || q.includes("recharge") || q.includes("balance") || q.includes("electricity") || q.includes("wallet")) {
       return {
-        reply: `KingPay provides 1-tap instant zero-fee UPI payments, merchant QR scanning, electricity bill clearance with instant cashback, and secure bank balance verification with bank-grade encryption.`,
-        action: { type: "NAVIGATE", label: "💳 Launch KingPay Zero-Fee Hub", url: "/king-pay" },
+        reply: `KingPay provides 1-tap instant live fee & instant cashback UPI payments, merchant QR scanning, electricity bill clearance with instant cashback, and secure bank balance verification with bank-grade encryption.`,
+        action: { type: "NAVIGATE", label: "💳 Launch KingPay Live Fee & Cashback Hub", url: "/king-pay" },
       };
     }
 

@@ -32,6 +32,7 @@ import { KingPaySoundboxEngine } from "@/components/KingPaySoundboxEngine";
 import { KitchenDisplayStation } from "@/components/kitchen-display-station";
 import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware";
 import { inferDishComplexity } from "@/lib/orders/dynamic-kpt";
+import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/kitchen")({ component: KitchenPage });
@@ -216,8 +217,10 @@ export function KitchenPage({
       localStorage.setItem("ok_kitchen_paused", "false");
     }
     if (buffer > 0) {
+      useKitchenRushStore.getState().activate(buffer === 10 ? 10 : 15);
       toast.warning(`🔥 Kitchen Rush Buffer: +${buffer} mins prep buffer applied! Riders and customers notified.`);
     } else {
+      useKitchenRushStore.getState().deactivate();
       toast.success("Standard Kitchen SLA Restored (+0 mins).");
     }
   };
@@ -358,14 +361,25 @@ export function KitchenPage({
           </button>
           <button
             type="button"
-            onClick={() => handleSetThrottle(15)}
+            onClick={() => handleSetThrottle(10)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
-              throttleBuffer === 15 && !kitchenPaused
+              throttleBuffer === 10 && !kitchenPaused
                 ? "bg-amber-600 text-white shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
             }`}
           >
-            Rush (+15m)
+            Rush (+10m)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSetThrottle(15)}
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
+              throttleBuffer === 15 && !kitchenPaused
+                ? "bg-orange-600 text-white shadow-xs"
+                : "bg-surface border border-line text-muted hover:text-foreground"
+            }`}
+          >
+            Surge (+15m)
           </button>
           <button
             type="button"
@@ -376,7 +390,7 @@ export function KitchenPage({
                 : "bg-surface border border-line text-muted hover:text-foreground"
             }`}
           >
-            Surge (+30m)
+            Peak (+30m)
           </button>
           <button
             type="button"

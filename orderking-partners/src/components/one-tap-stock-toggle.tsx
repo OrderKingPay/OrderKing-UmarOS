@@ -73,10 +73,17 @@ export function OneTapStockToggle({
   };
 
   // Turn OFF via Timed Availability Picker Modal
-  const handleConfirmStockout = async (option: TimedStockoutOption) => {
+  const handleConfirmStockout = async (
+    option: TimedStockoutOption,
+    customTime?: Date | string | null
+  ) => {
     if (disabled || loading || !restaurantId) return;
 
-    const { status, nextAvailableAt: targetNextAt } = calculateStockoutExpiry(option);
+    const { status, nextAvailableAt: targetNextAt } = calculateStockoutExpiry(
+      option,
+      new Date(),
+      customTime
+    );
     setOptimisticStatus(status);
     setOptimisticNextAt(targetNextAt);
     setLoading(true);

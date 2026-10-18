@@ -26,6 +26,7 @@ export default defineConfig({
       "src/test/fintech-reality-suite.test.ts",
       "src/test/search-connaught-place.test.ts",
       "src/test/geographic-intelligence-recommendation.test.ts",
+      "src/test/dynamic-bottom-nav.test.ts",
     ],
     environment: "node",
   },

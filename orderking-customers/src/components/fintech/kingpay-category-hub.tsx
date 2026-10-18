@@ -30,6 +30,7 @@ import {
   ChevronDown,
   ChevronUp,
   Lock,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
@@ -38,8 +39,9 @@ import type { KingPaySection } from "./kingpay-shell";
 import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { FoodUpiCheckoutCard } from "./food-upi-checkout-card";
+import { RemittanceDesk } from "@/components/kingpay/remittance-desk";
 
-type ActiveTab = "food_checkout" | "qr_generator" | "split_bill" | "loan_emi" | "gst_calc" | "yield_est" | "gold_tracker" | "passbook";
+type ActiveTab = "food_checkout" | "remittance" | "qr_generator" | "split_bill" | "loan_emi" | "gst_calc" | "yield_est" | "gold_tracker" | "passbook";
 
 // ==========================================
 // 1. 1-TAP UPI QR GENERATOR
@@ -1179,7 +1181,7 @@ function PassbookLedgerTool() {
             <div>
               <h4 className="text-sm font-black text-white">Authentic Ledger Initialized</h4>
               <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
-                Zero simulated or mock transaction entries. Your double-entry ledger is live with ₹0 fee and binds directly to authentic UPI settlements.
+                Zero simulated or mock transaction entries. Your double-entry ledger is live with live fee & instant cashback transparency and binds directly to authentic UPI settlements.
               </p>
             </div>
           </div>
@@ -1223,6 +1225,13 @@ export function KingPayCategoryHub({
   }, [activeSection]);
 
   const TABS = [
+    {
+      id: "remittance" as const,
+      label: "Global Remittance",
+      sub: "SAR/AED/USD Corridor",
+      icon: Globe,
+      section: "pay" as KingPaySection,
+    },
     {
       id: "food_checkout" as const,
       label: "Razorpay UPI Checkout",
@@ -1348,6 +1357,7 @@ export function KingPayCategoryHub({
 
       {/* Active Live Tool Panel */}
       <div className="transition-all duration-300">
+        {activeTab === "remittance" && <RemittanceDesk />}
         {activeTab === "food_checkout" && <FoodUpiCheckoutCard theme="dark" />}
         {activeTab === "passbook" && <PassbookLedgerTool />}
         {activeTab === "qr_generator" && <UpiQrGeneratorTool />}

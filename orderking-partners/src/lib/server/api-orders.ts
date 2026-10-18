@@ -94,6 +94,11 @@ export const saveHours = createServerFn({ method: "POST" }).middleware([authMidd
     await sql`delete from restaurant_hours where restaurant_id = ${ctx.restaurantId}`;
     for (const s of data.shifts) { if (s.weekday < 0 || s.weekday > 6) continue; await sql`insert into restaurant_hours (id, restaurant_id, weekday, open_minutes, close_minutes) values (${newId("hrs")}, ${ctx.restaurantId}, ${s.weekday}, ${s.openMinutes}, ${s.closeMinutes})`; }
     await sql`update restaurants set emergency_closed = ${Boolean(data.emergencyClosed)}, vacation_mode = ${Boolean(data.vacationMode)}, weekly_holidays = ${data.weeklyHolidays ?? ""}, prep_minutes = ${asInt(data.prepMinutes, 20)}, peak_prep_minutes = ${asInt(data.peakPrepMinutes, 30)}, updated_at = now() where id = ${ctx.restaurantId}`;
+    try {
+      await sql`update restaurant_outlets set open_override = ${data.emergencyClosed ? false : null}, active = ${!data.emergencyClosed} where restaurant_id = ${ctx.restaurantId}`;
+    } catch {
+      // non-fatal
+    }
     return { ok: true as const };
   });
 });
@@ -109,8 +114,18 @@ export const quickThrottleKitchen = createServerFn({ method: "POST" })
         await sql`update restaurants set prep_minutes = 20, updated_at = now() where id = ${ctx.restaurantId}`;
       } else if (data.mode === "PAUSE") {
         await sql`update restaurants set emergency_closed = true, updated_at = now() where id = ${ctx.restaurantId}`;
+        try {
+          await sql`update restaurant_outlets set open_override = false, active = false where restaurant_id = ${ctx.restaurantId}`;
+        } catch {
+          // non-fatal
+        }
       } else if (data.mode === "RESUME") {
         await sql`update restaurants set emergency_closed = false, updated_at = now() where id = ${ctx.restaurantId}`;
+        try {
+          await sql`update restaurant_outlets set open_override = true, active = true where restaurant_id = ${ctx.restaurantId}`;
+        } catch {
+          // non-fatal
+        }
       }
       return { ok: true as const, mode: data.mode };
     });

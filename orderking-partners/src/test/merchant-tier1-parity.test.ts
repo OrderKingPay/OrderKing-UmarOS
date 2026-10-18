@@ -16,13 +16,41 @@ import {
 
 describe("Merchant Tier-1 Partner Parity Test Suite", () => {
   describe("1. Timed Item Out-of-Stock Auto-Reset Engine", () => {
-    it("provides the four authentic Tier-1 Leader stockout presets", () => {
+    it("provides the authentic Tier-1 Partner stockout replenishment presets", () => {
       expect(TIER1_STOCKOUT_PRESETS.map((p) => p.label)).toEqual([
+        "Turn on for Next Meal",
+        "Turn on Tomorrow 8:00 AM",
         "Turn off for 2 Hours",
         "Turn off for 4 Hours",
-        "Turn off until Tomorrow 8:00 AM",
+        "Custom Time",
         "Turn off Indefinitely",
       ]);
+    });
+
+    it("calculates exact Tier-1 Next Meal time across meal shift windows", () => {
+      // 1. Morning (10:15 AM) -> Lunch at 12:30 PM today
+      const morning = new Date(2026, 9, 17, 10, 15, 0);
+      const nextMealMorning = calculateStockoutExpiry("TURN_OFF_NEXT_MEAL", morning);
+      expect(nextMealMorning.status).toBe("temporarily_unavailable");
+      expect(nextMealMorning.expiryDate?.getHours()).toBe(12);
+      expect(nextMealMorning.expiryDate?.getMinutes()).toBe(30);
+      expect(nextMealMorning.expiryDate?.getDate()).toBe(17);
+
+      // 2. Afternoon (14:45 / 2:45 PM) -> Dinner at 7:30 PM today
+      const afternoon = new Date(2026, 9, 17, 14, 45, 0);
+      const nextMealAfternoon = calculateStockoutExpiry("TURN_OFF_NEXT_MEAL", afternoon);
+      expect(nextMealAfternoon.status).toBe("temporarily_unavailable");
+      expect(nextMealAfternoon.expiryDate?.getHours()).toBe(19);
+      expect(nextMealAfternoon.expiryDate?.getMinutes()).toBe(30);
+      expect(nextMealAfternoon.expiryDate?.getDate()).toBe(17);
+
+      // 3. Late evening (20:30 / 8:30 PM) -> Tomorrow Breakfast at 8:00 AM
+      const lateEvening = new Date(2026, 9, 17, 20, 30, 0);
+      const nextMealNight = calculateStockoutExpiry("TURN_OFF_NEXT_MEAL", lateEvening);
+      expect(nextMealNight.status).toBe("temporarily_unavailable");
+      expect(nextMealNight.expiryDate?.getHours()).toBe(8);
+      expect(nextMealNight.expiryDate?.getMinutes()).toBe(0);
+      expect(nextMealNight.expiryDate?.getDate()).toBe(18);
     });
 
     it("calculates Tomorrow 08:00 AM correctly across various day times", () => {
@@ -49,7 +77,7 @@ describe("Merchant Tier-1 Partner Parity Test Suite", () => {
       expect(nextMorningC.getMinutes()).toBe(0);
     });
 
-    it("calculates exact expiry timestamps for all 4 Tier-1 options", () => {
+    it("calculates exact expiry timestamps for all Tier-1 options including Custom", () => {
       const baseNow = new Date("2026-10-17T12:00:00.000Z");
 
       // 2 Hours
@@ -72,6 +100,12 @@ describe("Merchant Tier-1 Partner Parity Test Suite", () => {
       const expDate = new Date(tomorrow8.nextAvailableAt!);
       expect(expDate.getHours()).toBe(8);
       expect(expDate.getMinutes()).toBe(0);
+
+      // Custom Time
+      const customDate = new Date("2026-10-17T17:30:00.000Z");
+      const customResult = calculateStockoutExpiry("CUSTOM", baseNow, customDate);
+      expect(customResult.status).toBe("temporarily_unavailable");
+      expect(customResult.nextAvailableAt).toBe(customDate.toISOString());
 
       // Indefinitely
       const indefinite = calculateStockoutExpiry("TURN_OFF_INDEFINITELY", baseNow);

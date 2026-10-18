@@ -65,6 +65,7 @@ import {
   Wand2,
   Image as ImageIcon,
   RefreshCw,
+  TrendingUp,
 } from "lucide-react";
 
 export const Route = createFileRoute("/menu")({ component: MenuPage });
@@ -387,12 +388,12 @@ function MenuPage() {
     schedulerRef.current.sync(allItems);
   }, [allItems]);
 
-  // Supabase Realtime subscription for live item_availability changes
+  // Supabase Realtime subscription for live item_availability, items, and categories changes
   useEffect(() => {
     if (!vendor.restaurantId) return;
 
     const channel = supabaseCloud
-      .channel(`partner-menu-availability-${vendor.restaurantId}`)
+      .channel(`partner-menu-sync-${vendor.restaurantId}`)
       .on(
         "postgres_changes",
         {
@@ -404,6 +405,30 @@ function MenuPage() {
         () => {
           void qc.invalidateQueries({ queryKey: ["menu"] });
           void qc.invalidateQueries({ queryKey: ["dashboard"] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "items",
+          filter: `restaurant_id=eq.${vendor.restaurantId}`,
+        },
+        () => {
+          void qc.invalidateQueries({ queryKey: ["menu"] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "categories",
+          filter: `restaurant_id=eq.${vendor.restaurantId}`,
+        },
+        () => {
+          void qc.invalidateQueries({ queryKey: ["menu"] });
         },
       )
       .subscribe();
@@ -537,6 +562,129 @@ function MenuPage() {
     a.download = `orderking-menu-catalog-${vendor.restaurantId || "export"}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  const [applyingSparkItem, setApplyingSparkItem] = useState<string | null>(null);
+
+  const sparkPricingRecommendations = useMemo(() => {
+    if (!allItems.length) return [];
+    return orderKingSpark.batchOptimizeMenuPricing(
+      allItems.map((it) => ({
+        id: it.id,
+        name: it.name,
+        pricePaise: it.variants[0]?.pricePaise ?? 0,
+        category: categories.find((c) => c.id === it.category_id)?.name,
+      }))
+    );
+  }, [allItems, categories]);
+
+  const sparkComboRecommendations = useMemo(() => {
+    if (!allItems.length) return [];
+    return orderKingSpark.generateComboRecommendations(
+      allItems.map((it) => ({
+        id: it.id,
+        name: it.name,
+        pricePaise: it.variants[0]?.pricePaise ?? 0,
+        category: categories.find((c) => c.id === it.category_id)?.name,
+        diet: it.diet,
+        prep_minutes: it.prep_minutes,
+      }))
+    );
+  }, [allItems, categories]);
+
+  async function handleApplySparkPrice(opt: ReturnType<typeof orderKingSpark.optimizeDishPricing>) {
+    if (!vendor.restaurantId || applyingSparkItem) return;
+    const targetItem = allItems.find((i) => i.id === opt.itemId);
+    if (!targetItem) return;
+
+    setApplyingSparkItem(opt.itemId);
+    try {
+      const updatedVariants = targetItem.variants.map((v, idx) => {
+        if (idx === 0) {
+          return { ...v, pricePaise: opt.recommendedPricePaise };
+        }
+        return v;
+      });
+
+      await saveItem({
+        data: {
+          restaurantId: vendor.restaurantId,
+          id: targetItem.id,
+          categoryId: targetItem.category_id,
+          name: targetItem.name,
+          description: targetItem.description,
+          diet: (targetItem.diet as any) || "NONVEG",
+          tags: targetItem.tags,
+          recommended: targetItem.recommended,
+          prepMinutes: targetItem.prep_minutes,
+          imageUrl: targetItem.image_url,
+          variants: updatedVariants.map((v) => ({
+            id: v.id,
+            name: v.name,
+            pricePaise: v.pricePaise,
+          })),
+        },
+      });
+
+      toast.success(
+        `Optimized ${opt.itemName} price to ₹${(opt.recommendedPricePaise / 100).toFixed(2)} (+${opt.projectedGmvLiftPercent}% GMV).`
+      );
+      void qc.invalidateQueries({ queryKey: ["menu"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update price");
+    } finally {
+      setApplyingSparkItem(null);
+    }
+  }
+
+  async function handleApplySparkCombo(combo: ReturnType<typeof orderKingSpark.generateComboRecommendations>[number]) {
+    if (!vendor.restaurantId || applyingSparkItem) return;
+    setApplyingSparkItem(combo.id);
+
+    try {
+      let targetCatId = "";
+      const existingCat = categories.find(
+        (c) => c.name.toLowerCase().includes("combo") || c.name.toLowerCase().includes("recommended")
+      );
+      if (existingCat) {
+        targetCatId = existingCat.id;
+      } else {
+        const catRes = await saveCategory({
+          data: {
+            restaurantId: vendor.restaurantId,
+            name: "Recommended & Combos",
+            sortOrder: 0,
+          },
+        });
+        targetCatId = catRes.id;
+      }
+
+      await saveItem({
+        data: {
+          restaurantId: vendor.restaurantId,
+          categoryId: targetCatId,
+          name: combo.name,
+          description: combo.description,
+          diet: combo.diet,
+          tags: "High Margin Combo · Value Meal · Serves 1-2",
+          recommended: true,
+          prepMinutes: combo.prepMinutes,
+          variants: [
+            {
+              name: "Combo Meal",
+              pricePaise: combo.bundlePricePaise,
+            },
+          ],
+        },
+      });
+
+      toast.success(`✨ Added ${combo.name} to menu at ₹${(combo.bundlePricePaise / 100).toFixed(2)}!`);
+      void qc.invalidateQueries({ queryKey: ["menu"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to add combo");
+    } finally {
+      setApplyingSparkItem(null);
+    }
   }
 
   function openNewDishDrawer(defaultCategoryId?: string) {
@@ -1232,7 +1380,7 @@ function MenuPage() {
         </div>
       </div>
 
-      {/* Timed Out-of-Stock Status & Automated Reset Engine Banner */}
+      {/* Timed Out-of-Stock Status & Automated Inventory Replenishment Banner */}
       {timedOutOfStockItems.length > 0 && (
         <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-300 font-mono">
           <div className="flex items-center gap-2">
@@ -1242,7 +1390,7 @@ function MenuPage() {
                 {timedOutOfStockItems.length} Timed Out-of-Stock Dish(es) Active
               </span>
               <span className="text-[11px] opacity-85 ml-2 font-sans hidden sm:inline">
-                (Tier-1 Leader Auto-Reset Engine: automatically reactivates dishes when scheduled timer expires)
+                (Automated Inventory Replenishment: automatically reactivates dishes when scheduled timer expires)
               </span>
             </div>
           </div>
@@ -1262,7 +1410,153 @@ function MenuPage() {
         </div>
       )}
 
-      {/* Self-Service Category Builder & 1-Tap Standard Templates */}
+      {/* Spark AI Dish Pricing & High-Margin Combo Engine */}
+      {canEdit && (sparkPricingRecommendations.length > 0 || sparkComboRecommendations.length > 0) && (
+        <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/25 via-slate-900/90 to-amber-950/25 p-4 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400">
+                <Sparkles className="size-4" />
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white">Spark AI Dish Pricing &amp; High-Margin Combo Engine</h3>
+                  <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400 uppercase">
+                    GMV &amp; Margin Optimization
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  Data-driven price benchmarking and meal bundles calibrated to expand Average Order Value (AOV), merchant earnings, and platform commission.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* 1. Smart Dish Price Optimization */}
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+                <span className="flex items-center gap-1.5 font-mono uppercase tracking-wider text-amber-400">
+                  <TrendingUp className="size-3.5" /> Price Benchmarking Opportunities ({sparkPricingRecommendations.length})
+                </span>
+                <span className="text-[11px] text-slate-400 font-mono">28% Standard Commission Tier</span>
+              </div>
+
+              {sparkPricingRecommendations.length === 0 ? (
+                <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-3 text-xs text-slate-400">
+                  All active dishes are currently priced at optimal corridor benchmarks.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {sparkPricingRecommendations.slice(0, 3).map((opt) => (
+                    <div
+                      key={opt.itemId}
+                      className="rounded-xl border border-slate-800 bg-slate-950/80 p-3 flex flex-col justify-between gap-2"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="font-semibold text-xs text-white">{opt.itemName}</div>
+                          <div className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                            {opt.commercialRationale}
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="text-xs font-mono font-bold text-emerald-400">
+                            ₹{(opt.currentPricePaise / 100).toFixed(0)} → ₹{(opt.recommendedPricePaise / 100).toFixed(0)}
+                          </div>
+                          <div className="text-[10px] font-mono text-emerald-300 font-semibold">
+                            +{opt.projectedGmvLiftPercent}% GMV Lift
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-[11px] font-mono">
+                        <div className="text-slate-400">
+                          Est. Weekly GMV: <strong className="text-white">+₹{(opt.estimatedWeeklyGmvIncreasePaise / 100).toFixed(0)}</strong>
+                          {" · "}
+                          Platform Comm: <strong className="text-amber-400">+₹{(opt.estimatedWeeklyFounderCommissionIncreasePaise / 100).toFixed(0)}</strong>
+                        </div>
+                        <Button
+                          size="sm"
+                          type="button"
+                          disabled={applyingSparkItem === opt.itemId}
+                          onClick={() => void handleApplySparkPrice(opt)}
+                          className="h-7 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold font-sans px-3"
+                        >
+                          {applyingSparkItem === opt.itemId ? "Applying..." : `Apply Price (₹${(opt.recommendedPricePaise / 100).toFixed(0)})`}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 2. High-Converting Meal Combos */}
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+                <span className="flex items-center gap-1.5 font-mono uppercase tracking-wider text-amber-400">
+                  <Layers className="size-3.5" /> High-Converting Meal Bundles ({sparkComboRecommendations.length})
+                </span>
+                <span className="text-[11px] text-slate-400 font-mono">Boosts Cart AOV +24-38%</span>
+              </div>
+
+              {sparkComboRecommendations.length === 0 ? (
+                <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-3 text-xs text-slate-400">
+                  Add more dishes to your menu to generate automated meal bundles.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {sparkComboRecommendations.map((combo) => (
+                    <div
+                      key={combo.id}
+                      className="rounded-xl border border-slate-800 bg-slate-950/80 p-3 flex flex-col justify-between gap-2"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <FssaiDietBadge diet={combo.diet} />
+                            <span className="font-semibold text-xs text-white">{combo.name}</span>
+                          </div>
+                          <span className="rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 text-[10px] font-mono font-bold">
+                            Save {combo.customerSavingsPercent}%
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-300 mt-1">
+                          Includes: {combo.includedItemNames.join(" + ")}
+                        </div>
+                        <div className="text-[10px] text-slate-400 mt-0.5">
+                          {combo.commercialRationale}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-[11px] font-mono">
+                        <div className="text-slate-300">
+                          Bundle Price: <strong className="text-white text-xs">₹{(combo.bundlePricePaise / 100).toFixed(0)}</strong>
+                          <span className="line-through text-slate-500 ml-1">₹{(combo.standaloneSumPaise / 100).toFixed(0)}</span>
+                          {" · "}
+                          Comm: <strong className="text-amber-400">₹{(combo.founderCommissionPaise / 100).toFixed(0)}</strong>
+                        </div>
+                        <Button
+                          size="sm"
+                          type="button"
+                          disabled={applyingSparkItem === combo.id}
+                          onClick={() => void handleApplySparkCombo(combo)}
+                          className="h-7 text-xs bg-amber-600 hover:bg-amber-500 text-white font-semibold font-sans px-3"
+                        >
+                          {applyingSparkItem === combo.id ? "Adding..." : "+ Add Combo to Menu"}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Self-Service Category Builder & Standard Templates */}
       {canEdit ? (
         <div className="rounded-xl border border-border bg-surface-1 p-3.5 space-y-2.5">
           <form
@@ -1291,7 +1585,7 @@ function MenuPage() {
 
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] font-mono text-muted flex items-center gap-1">
-              <Layers className="size-3" /> 1-Tap Category Templates:
+              <Layers className="size-3" /> Standard Categories:
             </span>
             {QUICK_CATEGORY_TEMPLATES.map((tpl) => {
               const exists = categories.some(
@@ -1327,23 +1621,23 @@ function MenuPage() {
         </div>
       ) : null}
 
-      {/* King AI 1-Tap Express Menu Studio: Instant Dish Creation & Studio Photo Plating */}
+      {/* Fast Item Creator & Studio Visuals */}
       {canEdit && (
-        <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/20 via-slate-900/90 to-amber-950/20 p-4 shadow-sm space-y-3">
+        <div className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400">
-                <Sparkles className="size-4 animate-pulse" />
+              <span className="flex size-7 items-center justify-center rounded-lg bg-surface-2 border border-border text-foreground">
+                <Sparkles className="size-4" />
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-white">King AI 1-Tap Express Menu Studio</h3>
-                  <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400 uppercase">
-                    Effortless Menu Creation
+                  <h3 className="text-sm font-bold text-white">Fast Item Creator &amp; Studio Visuals</h3>
+                  <span className="rounded-full bg-surface-2 border border-border px-2 py-0.5 text-[10px] font-mono font-bold text-muted uppercase">
+                    Catalog Engine
                   </span>
                 </div>
                 <p className="text-xs text-slate-300">
-                  Type any dish name or tap a signature item below. King AI auto-assigns category, FSSAI diet badge, benchmark pricing, and high-resolution 4:3 studio culinary photography in 1 tap.
+                  Type any dish name. Automatically infers category, FSSAI diet classification, corridor benchmark pricing, and studio 4:3 culinary visual.
                 </p>
               </div>
             </div>
@@ -1357,7 +1651,7 @@ function MenuPage() {
           {/* Quick Input Bar */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
-              <Wand2 className="size-4 text-amber-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Wand2 className="size-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={quickDishInput}
@@ -1368,8 +1662,8 @@ function MenuPage() {
                     void handleQuickAddDish();
                   }
                 }}
-                placeholder="Quick-create dish with AI photo (e.g. Paneer Tikka, Chicken Biryani, Butter Naan, Masala Dosa)..."
-                className="w-full pl-9 pr-8 py-2.5 bg-slate-950 border border-amber-500/30 rounded-lg text-xs sm:text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-amber-400 font-sans shadow-inner"
+                placeholder="Create dish (e.g. Paneer Tikka, Chicken Biryani, Butter Naan, Masala Dosa)..."
+                className="w-full pl-9 pr-8 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-xs sm:text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 font-sans shadow-inner"
               />
               {quickDishInput && (
                 <button
@@ -1386,10 +1680,10 @@ function MenuPage() {
               type="button"
               disabled={!quickDishInput.trim() || isAddingQuickDish}
               onClick={() => void handleQuickAddDish()}
-              className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shrink-0 shadow-sm"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 shadow-sm"
             >
               <Zap className="mr-1.5 size-3.5" />
-              {isAddingQuickDish ? "Plating & Adding..." : "Add to Menu with AI Photo (1-Tap)"}
+              {isAddingQuickDish ? "Adding to Menu..." : "Add to Menu"}
             </Button>
 
             <Button

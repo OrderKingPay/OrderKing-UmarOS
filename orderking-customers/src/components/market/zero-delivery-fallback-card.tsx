@@ -87,7 +87,7 @@ export function SmartZeroDeliveryFallbackCard({
               </p>
             ) : isNightHour ? (
               <p>
-                <strong className="font-bold text-stone-900">22:00–06:00 Night Desk:</strong> Live IRCTC train PNR tracking, outstation cab comparisons, and 24/7 instant zero-fee UPI transfers and mobile recharges are fully active.
+                <strong className="font-bold text-stone-900">22:00–06:00 Night Desk:</strong> Live IRCTC train PNR tracking, outstation cab comparisons, and 24/7 instant live fee & instant cashback UPI transfers and mobile recharges are fully active.
               </p>
             ) : (
               <p>
@@ -141,7 +141,7 @@ export function SmartZeroDeliveryFallbackCard({
                 KingPay UPI &amp; Bill Payments
               </h4>
               <p className="text-xs text-stone-500 mt-1.5 leading-relaxed font-medium">
-                Instant 256-bit zero-fee UPI transfers, mobile recharges, and utility bill payments available 24/7 across India.
+                Instant 256-bit live fee & instant cashback UPI transfers, mobile recharges, and utility bill payments available 24/7 across India.
               </p>
             </div>
             <Link

@@ -27,25 +27,11 @@ import {
 export interface DailyPerformanceLedgerCardProps {
   orders?: DeliveredOrderInput[];
   customSummary?: Partial<DailyBusinessSummary>;
-  isInteractiveSample?: boolean;
 }
-
-// Realistic sample benchmark data for dashboard / landing previews
-const SAMPLE_DELIVERED_ORDERS: DeliveredOrderInput[] = [
-  { id: "ord_101", foodValuePaise: 45000, packingPaise: 3000, restaurantDiscountPaise: 4000, commissionBps: 2500 },
-  { id: "ord_102", foodValuePaise: 72000, packingPaise: 4500, restaurantDiscountPaise: 5000, commissionBps: 2500 },
-  { id: "ord_103", foodValuePaise: 31000, packingPaise: 2000, restaurantDiscountPaise: 0, commissionBps: 2500 },
-  { id: "ord_104", foodValuePaise: 89000, packingPaise: 6000, restaurantDiscountPaise: 10000, commissionBps: 2500 },
-  { id: "ord_105", foodValuePaise: 54000, packingPaise: 3500, restaurantDiscountPaise: 5000, commissionBps: 2500 },
-  { id: "ord_106", foodValuePaise: 63000, packingPaise: 4000, restaurantDiscountPaise: 0, commissionBps: 2500 },
-  { id: "ord_107", foodValuePaise: 42000, packingPaise: 2500, restaurantDiscountPaise: 3000, commissionBps: 2500 },
-  { id: "ord_108", foodValuePaise: 96000, packingPaise: 5000, restaurantDiscountPaise: 8000, commissionBps: 2500 },
-];
 
 export function DailyPerformanceLedgerCard({
   orders,
   customSummary,
-  isInteractiveSample = false,
 }: DailyPerformanceLedgerCardProps) {
   const [showItemized, setShowItemized] = useState(false);
   const [now, setNow] = useState(() => new Date());
@@ -56,7 +42,7 @@ export function DailyPerformanceLedgerCard({
     return () => clearInterval(timer);
   }, []);
 
-  const effectiveOrders = orders && orders.length > 0 ? orders : SAMPLE_DELIVERED_ORDERS;
+  const effectiveOrders = orders && orders.length > 0 ? orders : [];
   const computed = calculateDailyBusinessSummary(effectiveOrders, { refDate: now });
 
   const summary: DailyBusinessSummary = {
@@ -82,11 +68,6 @@ export function DailyPerformanceLedgerCard({
             <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 font-mono">
               Daily Business Performance &amp; Settlement Ledger
             </span>
-            {isInteractiveSample && (
-              <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                Live Sample Simulation
-              </span>
-            )}
           </div>
           <h3 className="text-lg sm:text-xl font-extrabold text-white mt-1">
             Today&apos;s Revenue &amp; Estimated Net Payout

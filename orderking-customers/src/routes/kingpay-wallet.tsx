@@ -11,7 +11,9 @@ import {
   ArrowRightLeft,
   ChevronRight,
   ShieldCheck,
-  Gift
+  Gift,
+  Globe,
+  Sparkles
 } from "lucide-react";
 
 export const Route = createFileRoute("/kingpay-wallet")({
@@ -106,6 +108,34 @@ function KingPayWallet() {
           <span className="text-[13px] font-bold text-gray-400 group-hover:text-gray-200 transition-colors tracking-wide text-center leading-snug">
             Verified Order<br/>Ledger (/king-pay)
           </span>
+        </Link>
+      </div>
+
+      {/* Global Remittance Desk Feature Card */}
+      <div className="px-6 mt-6">
+        <Link
+          to="/kingpay/remittance"
+          className="block rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/70 via-[#18120c] to-slate-900 p-5 shadow-xl hover:border-amber-400/60 transition group no-underline text-white"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-black uppercase text-amber-300">
+              <Globe className="w-3 h-3 text-amber-400" />
+              PA-CB Compliant
+            </span>
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+              0.45% Founder Markup
+            </span>
+          </div>
+          <h3 className="text-base font-black text-white group-hover:text-amber-300 transition-colors">
+            Global Remittance Desk (SAR, AED, USD, QAR, GBP)
+          </h3>
+          <p className="text-xs text-gray-400 mt-1">
+            Send directly to India (UPI / Bank) &amp; Bangladesh (bKash / Bank) with instant nodal settlement.
+          </p>
+          <div className="mt-3 flex items-center justify-between text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
+            <span>Calculate Live Exchange Rate &amp; Send</span>
+            <ChevronRight className="w-4 h-4" />
+          </div>
         </Link>
       </div>
 

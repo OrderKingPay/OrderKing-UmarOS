@@ -284,12 +284,7 @@ export function StructuredRejectionModal({
                 {TIER1_STOCKOUT_PRESETS.map((preset) => {
                   const isPresetSelected = stockoutOption === preset.id;
                   const expiry = calculateStockoutExpiry(preset.id);
-                  const preview =
-                    preset.id === "TURN_OFF_TOMORROW_8AM"
-                      ? "Tomorrow 8 AM"
-                      : preset.id === "TURN_OFF_INDEFINITELY"
-                      ? "Until turned on"
-                      : `${preset.durationHours} Hours`;
+                  const preview = expiry.label;
 
                   return (
                     <button

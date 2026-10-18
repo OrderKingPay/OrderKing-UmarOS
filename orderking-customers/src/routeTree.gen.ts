@@ -42,6 +42,9 @@ import { Route as AppFounderCommandRouteImport } from './routes/app/founder-comm
 import { Route as DeliveryIndexRouteImport } from './routes/delivery/index'
 import { Route as DevBrandRouteImport } from './routes/dev/brand'
 import { Route as KingPayAssistRouteImport } from './routes/king-pay/assist'
+import { Route as KingpayIndexRouteImport } from './routes/kingpay/index'
+import { Route as KingpayPassbookRouteImport } from './routes/kingpay/passbook'
+import { Route as KingpayRemittanceRouteImport } from './routes/kingpay/remittance'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as LegalRefundsRouteImport } from './routes/legal/refunds'
 import { Route as LegalTermsRouteImport } from './routes/legal/terms'
@@ -50,6 +53,8 @@ import { Route as OrdersIdRouteImport } from './routes/orders/$id'
 import { Route as RSlugRouteImport } from './routes/r/$slug'
 import { Route as TrackingDispatchJobIdRouteImport } from './routes/tracking.$dispatchJobId'
 import { Route as TravelTripsRouteImport } from './routes/travel/trips'
+import { Route as TutorJobsIndexRouteImport } from './routes/tutor-jobs/index'
+import { Route as TutorJobsHistoryRouteImport } from './routes/tutor-jobs/history'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
 import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
@@ -229,6 +234,21 @@ const KingPayAssistRoute = KingPayAssistRouteImport.update({
   path: '/assist',
   getParentRoute: () => KingPayRoute,
 } as any)
+const KingpayIndexRoute = KingpayIndexRouteImport.update({
+  id: '/kingpay/',
+  path: '/kingpay/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KingpayPassbookRoute = KingpayPassbookRouteImport.update({
+  id: '/kingpay/passbook',
+  path: '/kingpay/passbook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KingpayRemittanceRoute = KingpayRemittanceRouteImport.update({
+  id: '/kingpay/remittance',
+  path: '/kingpay/remittance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   id: '/legal/privacy',
   path: '/legal/privacy',
@@ -268,6 +288,16 @@ const TravelTripsRoute = TravelTripsRouteImport.update({
   id: '/trips',
   path: '/trips',
   getParentRoute: () => TravelRoute,
+} as any)
+const TutorJobsIndexRoute = TutorJobsIndexRouteImport.update({
+  id: '/tutor-jobs/',
+  path: '/tutor-jobs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorJobsHistoryRoute = TutorJobsHistoryRouteImport.update({
+  id: '/tutor-jobs/history',
+  path: '/tutor-jobs/history',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   id: '/api/admin/settings',
@@ -368,6 +398,8 @@ export interface FileRoutesByFullPath {
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/king-pay/assist': typeof KingPayAssistRoute
+  '/kingpay/passbook': typeof KingpayPassbookRoute
+  '/kingpay/remittance': typeof KingpayRemittanceRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -375,9 +407,12 @@ export interface FileRoutesByFullPath {
   '/r/$slug': typeof RSlugRoute
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/travel/trips': typeof TravelTripsRoute
+  '/tutor-jobs/history': typeof TutorJobsHistoryRoute
   '/account/': typeof AccountIndexRoute
   '/delivery/': typeof DeliveryIndexRoute
+  '/kingpay/': typeof KingpayIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/tutor-jobs/': typeof TutorJobsIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -424,6 +459,8 @@ export interface FileRoutesByTo {
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/king-pay/assist': typeof KingPayAssistRoute
+  '/kingpay/passbook': typeof KingpayPassbookRoute
+  '/kingpay/remittance': typeof KingpayRemittanceRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -431,9 +468,12 @@ export interface FileRoutesByTo {
   '/r/$slug': typeof RSlugRoute
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/travel/trips': typeof TravelTripsRoute
+  '/tutor-jobs/history': typeof TutorJobsHistoryRoute
   '/account': typeof AccountIndexRoute
   '/delivery': typeof DeliveryIndexRoute
+  '/kingpay': typeof KingpayIndexRoute
   '/orders': typeof OrdersIndexRoute
+  '/tutor-jobs': typeof TutorJobsIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -481,6 +521,8 @@ export interface FileRoutesById {
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/king-pay/assist': typeof KingPayAssistRoute
+  '/kingpay/passbook': typeof KingpayPassbookRoute
+  '/kingpay/remittance': typeof KingpayRemittanceRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -488,9 +530,12 @@ export interface FileRoutesById {
   '/r/$slug': typeof RSlugRoute
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/travel/trips': typeof TravelTripsRoute
+  '/tutor-jobs/history': typeof TutorJobsHistoryRoute
   '/account/': typeof AccountIndexRoute
   '/delivery/': typeof DeliveryIndexRoute
+  '/kingpay/': typeof KingpayIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/tutor-jobs/': typeof TutorJobsIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -539,6 +584,8 @@ export interface FileRouteTypes {
     | '/app/founder-command'
     | '/dev/brand'
     | '/king-pay/assist'
+    | '/kingpay/passbook'
+    | '/kingpay/remittance'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -546,9 +593,12 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/tracking/$dispatchJobId'
     | '/travel/trips'
+    | '/tutor-jobs/history'
     | '/account/'
     | '/delivery/'
+    | '/kingpay/'
     | '/orders/'
+    | '/tutor-jobs/'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
@@ -595,6 +645,8 @@ export interface FileRouteTypes {
     | '/app/founder-command'
     | '/dev/brand'
     | '/king-pay/assist'
+    | '/kingpay/passbook'
+    | '/kingpay/remittance'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -602,9 +654,12 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/tracking/$dispatchJobId'
     | '/travel/trips'
+    | '/tutor-jobs/history'
     | '/account'
     | '/delivery'
+    | '/kingpay'
     | '/orders'
+    | '/tutor-jobs'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
@@ -651,6 +706,8 @@ export interface FileRouteTypes {
     | '/app/founder-command'
     | '/dev/brand'
     | '/king-pay/assist'
+    | '/kingpay/passbook'
+    | '/kingpay/remittance'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -658,9 +715,12 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/tracking/$dispatchJobId'
     | '/travel/trips'
+    | '/tutor-jobs/history'
     | '/account/'
     | '/delivery/'
+    | '/kingpay/'
     | '/orders/'
+    | '/tutor-jobs/'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
@@ -707,15 +767,20 @@ export interface RootRouteChildren {
   ApiWhatsappRoute: typeof ApiWhatsappRoute
   AppFounderCommandRoute: typeof AppFounderCommandRoute
   DevBrandRoute: typeof DevBrandRoute
+  KingpayPassbookRoute: typeof KingpayPassbookRoute
+  KingpayRemittanceRoute: typeof KingpayRemittanceRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRefundsRoute: typeof LegalRefundsRoute
   LegalTermsRoute: typeof LegalTermsRoute
   OrdersIdRoute: typeof OrdersIdRoute
   RSlugRoute: typeof RSlugRoute
   TrackingDispatchJobIdRoute: typeof TrackingDispatchJobIdRoute
+  TutorJobsHistoryRoute: typeof TutorJobsHistoryRoute
   AccountIndexRoute: typeof AccountIndexRoute
   DeliveryIndexRoute: typeof DeliveryIndexRoute
+  KingpayIndexRoute: typeof KingpayIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
+  TutorJobsIndexRoute: typeof TutorJobsIndexRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminTestConnectionRoute: typeof ApiAdminTestConnectionRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
@@ -963,6 +1028,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KingPayAssistRouteImport
       parentRoute: typeof KingPayRoute
     }
+    '/kingpay/': {
+      id: '/kingpay/'
+      path: '/kingpay'
+      fullPath: '/kingpay/'
+      preLoaderRoute: typeof KingpayIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kingpay/passbook': {
+      id: '/kingpay/passbook'
+      path: '/kingpay/passbook'
+      fullPath: '/kingpay/passbook'
+      preLoaderRoute: typeof KingpayPassbookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kingpay/remittance': {
+      id: '/kingpay/remittance'
+      path: '/kingpay/remittance'
+      fullPath: '/kingpay/remittance'
+      preLoaderRoute: typeof KingpayRemittanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/privacy': {
       id: '/legal/privacy'
       path: '/legal/privacy'
@@ -1018,6 +1104,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/travel/trips'
       preLoaderRoute: typeof TravelTripsRouteImport
       parentRoute: typeof TravelRoute
+    }
+    '/tutor-jobs/': {
+      id: '/tutor-jobs/'
+      path: '/tutor-jobs'
+      fullPath: '/tutor-jobs/'
+      preLoaderRoute: typeof TutorJobsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutor-jobs/history': {
+      id: '/tutor-jobs/history'
+      path: '/tutor-jobs/history'
+      fullPath: '/tutor-jobs/history'
+      preLoaderRoute: typeof TutorJobsHistoryRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/settings': {
       id: '/api/admin/settings'
@@ -1179,15 +1279,20 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWhatsappRoute: ApiWhatsappRoute,
   AppFounderCommandRoute: AppFounderCommandRoute,
   DevBrandRoute: DevBrandRoute,
+  KingpayPassbookRoute: KingpayPassbookRoute,
+  KingpayRemittanceRoute: KingpayRemittanceRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRefundsRoute: LegalRefundsRoute,
   LegalTermsRoute: LegalTermsRoute,
   OrdersIdRoute: OrdersIdRoute,
   RSlugRoute: RSlugRoute,
   TrackingDispatchJobIdRoute: TrackingDispatchJobIdRoute,
+  TutorJobsHistoryRoute: TutorJobsHistoryRoute,
   AccountIndexRoute: AccountIndexRoute,
   DeliveryIndexRoute: DeliveryIndexRoute,
+  KingpayIndexRoute: KingpayIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
+  TutorJobsIndexRoute: TutorJobsIndexRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminTestConnectionRoute: ApiAdminTestConnectionRoute,
   ApiAiChatRoute: ApiAiChatRoute,
@@ -1204,12 +1309,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
