@@ -10,6 +10,7 @@ import {
   UtensilsCrossed,
   Plane,
   GraduationCap,
+  Briefcase,
   Sparkles,
 } from "lucide-react";
 import { useState, useEffect, Suspense } from "react";
@@ -190,6 +191,46 @@ export function CustomerShell({
               </div>
             </button>
           </div>
+
+          {/* Row 1 Center: Sovereign Top Navigation (Travel, AI Tutor, Jobs) matching visual screenshot */}
+          <nav aria-label="OrderKing Sovereign Services" className="hidden sm:flex items-center gap-1.5 md:gap-2">
+            <Link
+              to="/travel"
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
+                path.startsWith("/travel")
+                  ? "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                  : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+              )}
+            >
+              <Plane className="size-3.5 text-amber-600" />
+              <span>Travel</span>
+            </Link>
+            <Link
+              to="/tutor"
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
+                path.startsWith("/tutor")
+                  ? "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                  : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+              )}
+            >
+              <GraduationCap className="size-3.5 text-amber-600" />
+              <span>AI Tutor</span>
+            </Link>
+            <Link
+              to="/tutor-jobs"
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
+                path.startsWith("/tutor-jobs")
+                  ? "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                  : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+              )}
+            >
+              <Briefcase className="size-3.5 text-amber-600" />
+              <span>Jobs</span>
+            </Link>
+          </nav>
 
           {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">

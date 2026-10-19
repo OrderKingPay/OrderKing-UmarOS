@@ -41,12 +41,14 @@ export function ServiceShortcuts({
 
   const sorted = OPTIONS
     .filter((item) => {
+      if (flags["service_" + item.key] === false) return false;
       const configuredZones = flags["zones_" + item.key];
       const inConfiguredZone = zone !== "unselected" &&
         Array.isArray(configuredZones) && configuredZones.includes(zone);
-      return flags["service_" + item.key] === true &&
+      const isExplicitlyConfigured = flags["service_" + item.key] === true &&
         flags["verified_" + item.key] === true &&
         (flags["nationwide_" + item.key] === true || inConfiguredZone);
+      return isExplicitlyConfigured || flags["service_" + item.key] === undefined;
     })
     .sort((a, b) => Math.max(0, Number(counts[b.key]) || 0) - Math.max(0, Number(counts[a.key]) || 0));
 

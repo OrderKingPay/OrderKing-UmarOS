@@ -945,9 +945,7 @@ export function issueSovereignETicket(params: {
   if (params.quote.mode === "train") {
     assertTrainPaymentPermitted();
     const isAuth =
-      params.supplierState !== "unauthenticated" &&
-      params.supplierState !== "offline" &&
-      params.supplierState !== "rate_limited" &&
+      params.supplierState === "online" &&
       Boolean(params.verifiedPaymentToken?.startsWith("IRCTC-PSP-")) &&
       isIrctcPspAuthenticated();
     if (!isAuth) {

@@ -6,3 +6,5 @@ export * from "./customization-provider";
 export * from "./sync-client";
 export * from "./supabase-sync-client";
 export * from "./tax";
+export * from "./fssai";
+export * from "./dpdp";

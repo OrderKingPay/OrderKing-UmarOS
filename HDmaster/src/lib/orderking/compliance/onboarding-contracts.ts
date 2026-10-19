@@ -32,6 +32,10 @@ export interface ContractResult {
   statutoryAct?: string;
   governingLaw?: string;
   digitalSignatureRef?: string;
+  fssaiNumber?: string;
+  gstin?: string;
+  commissionRate?: string;
+  settlementCycle?: string;
 }
 
 export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
@@ -292,6 +296,213 @@ export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
   }
 ];
 
+export const OFFICIAL_MERCHANT_SECTIONS: LegalSectionDetail[] = [
+  {
+    sectionNumber: "1",
+    title: "Definitions and Statutory Standing",
+    statutoryBasis: "Section 9(5), Central Goods and Services Tax Act, 2017 & Section 3, Food Safety and Standards Act, 2006",
+    summary: "Establishes legal definitions for E-Commerce Operator (ECO), Food Business Operator (FBO), Net Taxable Supplies, and Principal-to-Principal commercial engagement.",
+    fullLegalText: `1.1 "Electronic Commerce Operator" (ECO) or "OrderKing" means OrderKing Technologies Private Limited, operating as a digital marketplace aggregator facilitating online restaurant ordering and food delivery.
+1.2 "Restaurant Partner" or "Food Business Operator" (FBO) means the licensed food business entity entering into this Agreement, holding a valid 14-digit registration or license under the Food Safety and Standards Act, 2006.
+1.3 "Net Taxable Supplies" means the aggregate value of food and beverages ordered through the Platform excluding allowable customer discounts, refunds, and cancellations pursuant to Section 52 of the CGST Act, 2017.
+1.4 "Principal-to-Principal Status": The engagement between OrderKing and the Restaurant Partner is strictly on a principal-to-principal basis. Neither party is the agent, legal representative, partner, or joint venturer of the other.`,
+    keyHighlights: [
+      "Principal-to-Principal commercial contracting relationship",
+      "Statutory definition of OrderKing as ECO under Section 9(5) CGST Act",
+      "Statutory definition of Restaurant Partner as licensed FBO under FSSAI 2006"
+    ]
+  },
+  {
+    sectionNumber: "2",
+    title: "Non-Exclusive Digital Listing & Menu Parity",
+    statutoryBasis: "Section 2(e), Competition Act, 2002 & Consumer Protection (E-Commerce) Rules, 2020",
+    summary: "Guarantees non-exclusive digital listing, real-time inventory synchronization, and price parity without unfair delivery markups.",
+    fullLegalText: `2.1 Non-Exclusive Engagement: The Restaurant Partner may freely list their offerings on competing food delivery platforms or operate independent dine-in and delivery services without platform restriction or exclusivity penalty.
+2.2 Catalog & Menu Integrity: The Restaurant Partner shall provide authentic item descriptions, high-resolution kitchen photography, accurate ingredient specifications, and real-time inventory availability.
+2.3 Price Parity Undertaking: The Restaurant Partner warrants that prices and item portions listed on the OrderKing Platform shall maintain fair parity with the prices displayed on their physical dine-in or takeaway menus, avoiding artificial price inflation on delivery orders.`,
+    keyHighlights: [
+      "100% non-exclusive partnership with zero competitor restrictions",
+      "Menu and portion parity with physical restaurant dine-in pricing",
+      "Real-time item availability and catalog updates"
+    ]
+  },
+  {
+    sectionNumber: "3",
+    title: "FSSAI Food Safety Act 2006 & Mandatory 14-Digit Registration",
+    statutoryBasis: "Sections 31 & 65, Food Safety and Standards Act, 2006 & FoSCoS Regulations",
+    summary: "Mandates valid 14-digit FSSAI license, automated FoSCoS renewal window tracking, and instant platform deactivation on license expiration.",
+    fullLegalText: `3.1 Mandatory 14-Digit FSSAI License: The Restaurant Partner warrants that they possess an active, valid 14-digit FSSAI registration or license issued by the Food Safety and Standards Authority of India (FSSAI) via the FoSCoS portal for the designated kitchen premises.
+3.2 License Display Obligation: Pursuant to statutory e-commerce guidelines, OrderKing shall prominently display the Restaurant Partner's 14-digit FSSAI number and hygiene rating on the digital menu page prior to consumer checkout.
+3.3 Expiry Tracking & Automated Ordering Halt: The Restaurant Partner shall upload renewed license documentation at least thirty (30) days prior to license expiry. In the event that an FSSAI license expires or is revoked/suspended by food safety authorities, OrderKing automated compliance gates shall immediately halt ordering and delist the kitchen until valid certification is verified.`,
+    keyHighlights: [
+      "Mandatory valid 14-digit FSSAI FoSCoS license verification",
+      "Prominent customer-facing display of 14-digit license number",
+      "Automated platform ordering halt immediately upon license expiration"
+    ]
+  },
+  {
+    sectionNumber: "4",
+    title: "Dietary Labelling & Declarations: FSS (Labelling and Display) Regs 2020",
+    statutoryBasis: "Regulations 5(4)(c) & 5(5), Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    summary: "Enforces mandatory Green Dot (Vegetarian), Brown Triangle/Red Dot (Non-Vegetarian), Egg declarations, and allergen disclosures on all menu items.",
+    fullLegalText: `4.1 Mandatory Dietary Symbols: In strict compliance with Regulation 5(4)(c) of the Food Safety and Standards (Labelling and Display) Regulations, 2020:
+  (a) Every vegetarian food item shall bear the statutory green symbol consisting of a green filled circle inside a green outline square;
+  (b) Every non-vegetarian food item shall bear the statutory symbol consisting of a brown filled triangle inside a brown outline square (or red circle indicator);
+  (c) Items containing egg components shall declare mandatory egg allergen notifications.
+4.2 Allergen Disclosures: The Restaurant Partner shall disclose common food allergens (including gluten, dairy, tree nuts, peanuts, soy, and shellfish) for all listed preparations.
+4.3 Misbranding Liability: Any deliberate or negligent misclassification of a non-vegetarian or egg-containing dish as vegetarian constitutes gross statutory misbranding under Section 52 of the Food Safety and Standards Act, 2006, resulting in immediate suspension and total merchant indemnification.`,
+    keyHighlights: [
+      "Statutory Green Dot (Vegetarian) and Brown Triangle (Non-Vegetarian) labeling",
+      "Mandatory egg declarations and allergen disclosures prior to checkout",
+      "Strict liability and zero tolerance for vegetarian misbranding"
+    ]
+  },
+  {
+    sectionNumber: "5",
+    title: "Kitchen Preparation SOP, Hygiene & Tamper-Evident Packaging",
+    statutoryBasis: "Schedule 4, FSS (Licensing and Registration of Food Businesses) Regulations, 2011",
+    summary: "Mandates segregated prep cookware, thermal temperature preservation, tamper-evident security seals, and Kitchen Order Ticket (KOT) prep SLAs.",
+    fullLegalText: `5.1 Kitchen Hygiene & Segregation: The Restaurant Partner shall maintain sanitary cooking environments in accordance with Schedule 4 of the FSSAI Regulations, including dedicated cookware, utensils, and cutting boards for vegetarian and non-vegetarian food preparations.
+5.2 Tamper-Evident Security Packaging: All food items dispatched for delivery must be securely sealed inside food-grade packaging using tamper-evident stickers, heat-sealed bags, or zip ties. The packaging must visibly demonstrate if unauthorized opening occurs prior to customer handover.
+5.3 Food Quality & Temperature Maintenance: Freshly prepared hot meals must be packed at safe food-holding temperatures, with hot and cold beverages segregated into separate thermal packages.
+5.4 Kitchen Preparation SLA: The Partner shall accept and prepare orders within agreed Kitchen Preparation Time (KPT) thresholds (standard 12-18 minutes) to minimize rider waiting time and ensure peak food freshness.`,
+    keyHighlights: [
+      "Mandatory tamper-evident security seals on all delivered food containers",
+      "Schedule 4 hygiene with segregated vegetarian and non-vegetarian prep",
+      "Thermal packaging standards with hot/cold separation",
+      "Strict Kitchen Preparation Time (KPT) SLAs"
+    ]
+  },
+  {
+    sectionNumber: "6",
+    title: "Commercial Terms, Commission Structure & Fee Schedules",
+    statutoryBasis: "Sections 2(d) & 10, Indian Contract Act, 1872",
+    summary: "Details agreed platform commission, transparent payment gateway processing fees, zero hidden charges, and transparent commercial accounting.",
+    fullLegalText: `6.1 Platform Service Fee / Commission: The Restaurant Partner agrees to pay OrderKing a platform commission fee calculated as an agreed percentage (typically 15% to 25% plus applicable 18% GST) of the Net Food Value of completed orders.
+6.2 Payment Processing Charges: A nominal payment gateway facilitation fee (typically 1.5% to 2.0% plus GST) applies to digital transactions processed via credit cards, net banking, or UPI.
+6.3 Zero Hidden Deductions: OrderKing shall levy no onboarding maintenance fees, hidden advertising surcharges, or unauthorized deductions not expressly documented in the Partner Dashboard rate card.`,
+    keyHighlights: [
+      "Agreed platform commission rate (15-25% + 18% GST) on net food value",
+      "Standard payment gateway fee pass-through",
+      "Zero hidden fees, transparent dashboard accounting"
+    ]
+  },
+  {
+    sectionNumber: "7",
+    title: "CGST Act Section 9(5) Food Delivery Tax Remittance & ITC Inadmissibility",
+    statutoryBasis: "Section 9(5), Central Goods and Services Tax Act, 2017 & Notification No. 17/2021-CT(R)",
+    summary: "Platform directly collects and remits 5% GST on restaurant food delivery into Government Treasury with zero Input Tax Credit (ITC).",
+    fullLegalText: `7.1 Statutory ECO Tax Remittance: Pursuant to Section 9(5) of the Central Goods and Services Tax (CGST) Act, 2017 read with Notification No. 17/2021-Central Tax (Rate), OrderKing as the Electronic Commerce Operator is legally responsible for paying Goods and Services Tax at the rate of 5% on restaurant food delivery services.
+7.2 Input Tax Credit (ITC) Inadmissibility: The Restaurant Partner acknowledges that under Notification No. 17/2021-CT(R), the 5% GST on restaurant food delivery is discharged without the benefit of Input Tax Credit (ITC). Neither OrderKing nor the Restaurant Partner may claim ITC against this food tax liability.
+7.3 Segregation in Tax Invoices & GSTR-3B: Invoices issued by OrderKing for food delivery supplies shall distinctly show the 5% Section 9(5) GST discharged by OrderKing under Table 3.1.1(i) of GSTR-3B. The Restaurant Partner shall report such turnover in Table 3.1.1(ii) of their respective GSTR-3B as supplies on which ECO pays tax.`,
+    keyHighlights: [
+      "OrderKing directly remits 5% GST under Section 9(5) CGST Act",
+      "Input Tax Credit (ITC) strictly blocked under Notification 17/2021-CT(R)",
+      "Statutory segregation in GSTR-3B Table 3.1.1(i) and Table 3.1.1(ii)"
+    ]
+  },
+  {
+    sectionNumber: "8",
+    title: "Section 52 TCS & Section 194-O TDS Statutory Withholding",
+    statutoryBasis: "Section 52, CGST Act, 2017 & Section 194-O, Income Tax Act, 1961",
+    summary: "Enforces 1% Tax Collected at Source (TCS) and 1% Income Tax TDS withholding on merchant sales with automated Form 16A and GSTR-8 returns.",
+    fullLegalText: `8.1 Section 52 TCS Withholding: Pursuant to Section 52 of the CGST Act, 2017, OrderKing shall collect Tax Collected at Source (TCS) at the statutory rate of 1% (0.5% CGST + 0.5% SGST or 1% IGST) on the net value of taxable supplies made through the platform. OrderKing shall deposit the collected TCS and file monthly GSTR-8 returns.
+8.2 Section 194-O Income Tax TDS: Pursuant to Section 194-O of the Income Tax Act, 1961, OrderKing shall deduct Tax Deducted at Source (TDS) at the statutory rate of 1% on the gross amount of sales facilitated through the digital marketplace.
+8.3 Statutory PAN Validation & Form 16A: The Restaurant Partner shall furnish a valid Permanent Account Number (PAN). In the absence of a valid PAN, TDS shall be withheld at the higher penal rate of 5% pursuant to Section 206AA. OrderKing shall furnish quarterly Form 16A certificates for all tax deductions made.`,
+    keyHighlights: [
+      "1% TCS deducted under Section 52 CGST Act with monthly GSTR-8 filing",
+      "1% TDS deducted under Section 194-O Income Tax Act",
+      "Mandatory PAN validation with quarterly Form 16A certificates"
+    ]
+  },
+  {
+    sectionNumber: "9",
+    title: "Daily T+1 Merchant Settlement Cycle, Midnight Cutoff & Section 34 Credit Notes",
+    statutoryBasis: "Section 34, CGST Act, 2017 & RBI Master Directions on Payment Aggregators",
+    summary: "Guarantees daily T+1 payout compilation at 12:00 Midnight IST, next-morning 10:00 AM dispatch, and automated Section 34 CGST Act credit notes.",
+    fullLegalText: `9.1 Midnight Cutoff & Settlement Calculation: The daily settlement window closes at 12:00 Midnight IST (23:59:59.999+05:30) for all orders completed during that calendar day (T).
+9.2 Next-Morning 10:00 AM Dispatch: Payouts for the compiled T settlement batch are dispatched automatically to the Restaurant Partner's verified bank account via NEFT/RTGS/IMPS at 10:00 AM IST on the next banking day (T+1).
+9.3 Settlement Formula:
+    Net Settlement Payout = Gross Food Value
+      - Customer Discounts Funded by Merchant
+      - Platform Commission Fee
+      - GST on Platform Commission (18%)
+      - Section 9(5) Food GST (5%)
+      - Section 52 TCS (1%)
+      - Section 194-O TDS (1%)
+      + Section 34 Statutory Credit Notes for Refunds/Cancellations.
+9.4 Section 34 CGST Act Automated Credit Notes: Where an order is cancelled, refunded, or subject to post-sale discount, OrderKing shall automatically generate a statutory GST Credit Note reversing platform commission, commission GST, TCS, and Section 9(5) tax in strict adherence to Section 34 of the CGST Act.`,
+    keyHighlights: [
+      "T+1 settlement compilation with exact 12:00 Midnight IST cutoff",
+      "Automated bank payout dispatch at 10:00 AM IST next morning",
+      "Automated Section 34 CGST Act credit notes for cancellations and refunds",
+      "Zero floating-point rounding drift with 100% integer-paise accounting"
+    ]
+  },
+  {
+    sectionNumber: "10",
+    title: "Digital Personal Data Protection (DPDP) Act, 2023 & Customer Telephony Masking",
+    statutoryBasis: "Sections 6, 8 & 12, Digital Personal Data Protection Act, 2023 & Section 36, CGST Act, 2017",
+    summary: "Guarantees virtual telephone bridging, customer PII masking, strict non-solicitation, and 72-month statutory financial ledger retention under Section 36 CGST Act.",
+    fullLegalText: `10.1 Customer Telephony Privacy Masking: Pursuant to Section 8 of the Digital Personal Data Protection Act, 2023, OrderKing routes all merchant-to-customer communications through virtualized telephone proxy bridges. The Restaurant Partner shall never receive the customer's true telephone number.
+10.2 Purpose Limitation & Non-Solicitation: Customer personal data (including names and delivery instructions) is disclosed solely for the purpose of food preparation and packaging. The Restaurant Partner shall not export, harvest, store, or utilize customer contact details for off-platform promotional messaging, marketing spam, or unsolicited communication.
+10.3 Right to Oblivion & Tax Retention Balance: Upon receipt of a Data Principal Erasure Request under Section 12 of the DPDP Act 2023, customer identifying details shall be cryptographically shredded. However, pursuant to Section 36 of the CGST Act, 2017, all underlying financial transaction ledgers, tax invoices, and credit notes shall be preserved for seventy-two (72) months in anonymized format for statutory audit compliance.`,
+    keyHighlights: [
+      "Virtual VoIP telephone bridge ensures zero customer phone disclosure",
+      "Strict purpose limitation and complete ban on marketing solicitation",
+      "Cryptographic shredding for erasure requests balanced with 72-month CGST tax retention"
+    ]
+  },
+  {
+    sectionNumber: "11",
+    title: "Merchant Representations, Product Warranties & Food Contamination Indemnity",
+    statutoryBasis: "Sections 59 & 65, Food Safety and Standards Act, 2006 & Section 124, Indian Contract Act, 1872",
+    summary: "Restaurant warrants complete food freshness and safety, and indemnifies OrderKing against food poisoning, foreign contaminants, or consumer health claims.",
+    fullLegalText: `11.1 Food Quality Warranties: The Restaurant Partner warrants that all food preparations dispatched:
+  (a) Are prepared using fresh, unadulterated, non-expired ingredients;
+  (b) Comply with all microbial, chemical, and physical food safety standards prescribed by FSSAI;
+  (c) Are completely free of foreign contaminants, pests, glass, metallic fragments, or pathogenic organisms.
+11.2 Statutory Indemnity for Food Safety Violations: The Restaurant Partner shall defend, indemnify, and hold harmless OrderKing, its directors, employees, and logistics partners against any civil liabilities, consumer forum awards, medical expenses, or criminal fines arising out of food contamination, foreign objects, allergen failures, or foodborne illness under Section 65 of the Food Safety and Standards Act, 2006.`,
+    keyHighlights: [
+      "Absolute warranty of ingredient freshness and zero contamination",
+      "Full merchant indemnity for consumer health claims, allergens, and food poisoning",
+      "Compliance with Section 65 Food Safety and Standards Act, 2006"
+    ]
+  },
+  {
+    sectionNumber: "12",
+    title: "Term, Non-Exclusive Disengagement, Suspension & Principles of Natural Justice",
+    statutoryBasis: "Principles of Natural Justice & Section 39, Indian Contract Act, 1872",
+    summary: "Provides voluntary at-will exit, 7-day cure notice for operational non-compliance, and immediate suspension only for expired FSSAI or contamination.",
+    fullLegalText: `12.1 Term & At-Will Exit: This Agreement is effective upon electronic assent and remains in force indefinitely. Either party may voluntarily terminate this Agreement without penalty by providing seven (7) days written notice via the Partner Dashboard.
+12.2 Grounds for Immediate Platform Suspension: OrderKing reserves the right to suspend or freeze digital listing immediately upon:
+  (a) Expiration, cancellation, or suspension of the Restaurant Partner's FSSAI license;
+  (b) Validated severe consumer food poisoning incidents or viral hygiene contamination;
+  (c) Fraudulent tax billing or intentional misrepresentation of menu items.
+12.3 Principles of Natural Justice: Prior to permanent platform deactivation for non-emergency infractions, OrderKing shall furnish a written explanation notice. The Restaurant Partner shall have seven (7) calendar days to cure the defect or submit written representations before final administrative action.`,
+    keyHighlights: [
+      "Voluntary at-will disengagement with 7-day notice",
+      "Immediate ordering freeze only for expired FSSAI or verified food hazard",
+      "7-day natural justice notice and cure window for operational disputes"
+    ]
+  },
+  {
+    sectionNumber: "13",
+    title: "Two-Tier Dispute Resolution, Arbitration Act, 1996 & Section 10A IT Act Digital Assent",
+    statutoryBasis: "Arbitration and Conciliation Act, 1996 & Section 10A, Information Technology Act, 2000",
+    summary: "Establishes 15-day Grievance Redressal conciliation, binding Indian arbitration, and legally enforceable clickwrap electronic assent.",
+    fullLegalText: `13.1 Tier-1 Grievance Redressal: In the event of any commercial or operational dispute, the parties shall first submit the matter to the OrderKing Merchant Grievance Redressal Desk (Email: merchant-compliance@orderking.in). The Grievance Officer shall issue a reasoned decision within fifteen (15) working days.
+13.2 Tier-2 Sole Arbitration: Any dispute remaining unresolved after conciliation shall be referred to and finally resolved by a sole independent arbitrator appointed in accordance with the Arbitration and Conciliation Act, 1996. The seat and venue of arbitration shall be New Delhi, India (or the State Capital having territorial jurisdiction). The proceedings shall be conducted in English, and the arbitral award shall be final and binding.
+13.3 Digital Clickwrap Assent & Electronic Admissibility: Pursuant to Section 10A of the Information Technology Act, 2000, the Restaurant Partner's digital action of clicking "I Agree", checking the onboarding assent box, or submitting authenticated KYC records constitutes a legally valid, binding signature admissible in evidence under Section 65B of the Indian Evidence Act, 1872 / Section 63 of the Bharatiya Sakshya Adhiniyam, 2023.`,
+    keyHighlights: [
+      "Tier 1: Dedicated Merchant Grievance Officer resolution within 15 working days",
+      "Tier 2: Sole Arbitrator under the Arbitration and Conciliation Act, 1996",
+      "Enforceable digital clickwrap agreement under Section 10A Information Technology Act, 2000",
+      "Conclusive electronic evidence under Section 65B Indian Evidence Act"
+    ]
+  }
+];
+
 export class DigitalContractEngine {
   /**
    * Generates a strict legal contractor agreement for a delivery rider,
@@ -331,20 +542,23 @@ export class DigitalContractEngine {
   }
 
   /**
-   * Generates a merchant processing agreement for a restaurant partner.
+   * Generates an official Merchant Partner Agreement for a restaurant partner,
+   * fully compliant with FSSAI Act 2006, CGST Act Section 9(5), Section 52 TCS, Section 194-O TDS,
+   * DPDP Act 2023, and T+1 Daily Settlements.
    * Branded exclusively for OrderKing Partner Network.
    */
   public generateRestaurantPartnerAgreement(
     restaurantId: string,
     fssai: string,
-    gst: string
+    gst: string,
+    commissionRate: number = 20
   ): ContractResult {
     const timestamp = new Date().toISOString();
     const contractId = `REST-AGMT-${restaurantId}-${Date.now()}`;
     
     console.log(`[CONTRACT ENGINE] Generating official OrderKing Merchant Partner Agreement for Restaurant ${restaurantId}`);
     console.log(`[CONTRACT ENGINE] Verified FSSAI: ${fssai}, GSTIN: ${gst}`);
-    console.log(`[CONTRACT ENGINE] Terms included: Platform commission rates (20-30%), data privacy policies, minimum quality standards, exclusivity clauses.`);
+    console.log(`[CONTRACT ENGINE] Terms included: Platform commission rate (${commissionRate}%), Section 9(5) CGST Act (5% GST without ITC), Section 52 TCS (1%), Section 194-O TDS (1%), T+1 Daily Settlements (Midnight Cutoff, 10:00 AM Dispatch), DPDP Act 2023 privacy governance.`);
     console.log(`[CONTRACT ENGINE] STATUS: Awaiting mandatory final approval from UmarOS Compliance Center.`);
 
     return {
@@ -354,7 +568,15 @@ export class DigitalContractEngine {
       documentType: 'MERCHANT_PARTNER_AGREEMENT',
       status: 'PENDING_SIGNATURE',
       umarOsApprovalStatus: 'PENDING',
-      contentSummary: 'Official OrderKing restaurant partner agreement, detailing commission structures, food safety (FSSAI) compliance, and platform data privacy policies.'
+      contentSummary: 'Official OrderKing Restaurant Partner Agreement compliant with FSSAI Act 2006, CGST Act Section 9(5), Section 52 TCS, Section 194-O TDS, DPDP Act 2023, and T+1 Daily Settlements.',
+      legalSections: OFFICIAL_MERCHANT_SECTIONS,
+      fssaiNumber: fssai,
+      gstin: gst,
+      commissionRate: `${commissionRate}%`,
+      settlementCycle: 'T+1 Daily (Midnight Cutoff, 10:00 AM Dispatch)',
+      statutoryAct: 'Food Safety and Standards Act, 2006 & CGST Act, 2017',
+      governingLaw: 'Laws of the Republic of India',
+      digitalSignatureRef: `SIG-REST-${restaurantId}-${Date.now()}`
     };
   }
 
