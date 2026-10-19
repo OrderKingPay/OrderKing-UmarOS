@@ -4,7 +4,6 @@ import {
   Download,
   ArrowDownLeft,
   ArrowUpRight,
-  ShieldCheck,
   Search,
   Calendar,
   FileText,
@@ -58,10 +57,10 @@ export function OrderKingPassbookReceipts({
 
   const handleDownloadStatement = () => {
     try {
-      const header = "OrderKing KingPay Official Passbook Statement\n";
-      const userLine = `Account ID: ${user?.id || "dev-user"} | Generated: ${new Date().toISOString()}\n`;
-      const balanceLine = `Available Prepaid Balance: ₹${(walletBalancePaise / 100).toFixed(2)}\n\n`;
-      const colHeader = "Timestamp,Transaction ID / UTR,Direction,Amount (INR),Account,Memo\n";
+      const header = "OrderKing KingPay Local Activity Export\n";
+      const userLine = `Account ID: ${user?.id || "Not signed in"} | Generated: ${new Date().toISOString()}\n`;
+      const balanceLine = `Displayed balance (verify with provider): ₹${(walletBalancePaise / 100).toFixed(2)}\n\n`;
+      const colHeader = "Timestamp,Local reference or UTR (unverified),Direction,Amount (INR),Account,Memo\n";
       const rows = entries
         .map(
           (e) =>
@@ -76,11 +75,11 @@ export function OrderKingPassbookReceipts({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `OrderKing_Passbook_Statement_${Date.now()}.csv`);
+      link.setAttribute("download", `OrderKing_Local_Activity_${Date.now()}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success("Authentic passbook statement downloaded.");
+      toast.success("Local activity export downloaded.");
     } catch {
       toast.error("Failed to generate statement file.");
     }
@@ -118,17 +117,17 @@ export function OrderKingPassbookReceipts({
               }`}
             >
               <Receipt className="size-3.5" />
-              <span>Official Passbook &amp; UTR Desk</span>
+              <span>Saved Activity &amp; UTR Notes</span>
             </span>
             <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-600 dark:text-emerald-300 px-2 py-0.5 text-[9px] font-black">
-              RBI DOUBLE-ENTRY
+              Provider verification required
             </span>
           </div>
           <h2 className={`text-xl font-black tracking-tight ${isDark ? "text-white" : "text-stone-900"}`}>
-            Authentic Transaction Ledger &amp; Receipts
+            Local Transaction Activity &amp; Receipts
           </h2>
           <p className={`text-xs mt-0.5 ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-            100% verified settlement records. Every debit strictly matches an authenticated double-entry credit.
+            These entries are stored on this device and are not proof of payment. Verify UTR and settlement with your payment provider.
           </p>
         </div>
 
@@ -156,13 +155,13 @@ export function OrderKingPassbookReceipts({
           }`}
         >
           <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
-            Prepaid Wallet Balance
+            Displayed KingPay Balance
           </span>
           <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? "text-white" : "text-stone-900"}`}>
             {formatPaise(walletBalancePaise)}
           </span>
           <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block mt-1">
-            ● RBI PA/PPI Compliant Balance
+            Confirm available funds with your provider
           </span>
         </div>
         <div
@@ -173,13 +172,13 @@ export function OrderKingPassbookReceipts({
           <span className={`text-[10px] font-black uppercase tracking-wider block ${
             isDark ? "text-slate-400" : "text-stone-500"
           }`}>
-            Total Ledger Rows
+            Locally Saved Entries
           </span>
           <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? "text-white" : "text-stone-900"}`}>
             {entries.length}
           </span>
           <span className={`text-[10px] block mt-1 ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-            Immutable Double-Entry Records
+            Local records are not bank statements
           </span>
         </div>
         <div
@@ -190,13 +189,13 @@ export function OrderKingPassbookReceipts({
           <span className={`text-[10px] font-black uppercase tracking-wider block ${
             isDark ? "text-slate-400" : "text-stone-500"
           }`}>
-            Platform Transaction Surcharge
+            Provider charges and fees
           </span>
           <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 block mt-0.5">
-            ₹0.00
+            Varies
           </span>
           <span className={`text-[10px] block mt-1 ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-            0% Gateway Fee on Direct UPI
+            Confirm charges before authorizing a payment
           </span>
         </div>
       </div>
@@ -228,9 +227,9 @@ export function OrderKingPassbookReceipts({
             isDark ? "text-slate-300" : "text-stone-700"
           }`}
         >
-          <span>Recent UTR Records &amp; Entries</span>
+          <span>Saved Local Activity</span>
           <span className={`text-[10px] font-mono ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-            SafeInteger Paise Precision
+            For reference only
           </span>
         </h3>
 
@@ -262,7 +261,7 @@ export function OrderKingPassbookReceipts({
                   <div>
                     <div className="flex items-center gap-2">
                       <span className={`text-xs font-bold ${isDark ? "text-white" : "text-stone-900"}`}>
-                        {entry.memo || (entry.direction === "CREDIT" ? "Wallet Top-Up" : "UPI Payment")}
+                        {entry.memo || (entry.direction === "CREDIT" ? "Credit" : "Debit")}
                       </span>
                       <span
                         className={`text-[9px] font-mono px-2 py-0.5 rounded-full border ${
@@ -275,7 +274,7 @@ export function OrderKingPassbookReceipts({
                       </span>
                     </div>
                     <p className={`text-[10px] font-mono mt-0.5 ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-                      UTR: {entry.transaction_id || "OKPAY-AUTHENTIC"} · {new Date(entry.timestamp).toLocaleString()}
+                      Reference: {entry.transaction_id || entry.entry_id || "Not provided"} · {new Date(entry.timestamp).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -293,7 +292,7 @@ export function OrderKingPassbookReceipts({
                     {entry.direction === "CREDIT" ? "+" : "-"}
                     {formatPaise(Number(entry.amount_paise) || 0)}
                   </span>
-                  <span className="text-[9px] text-emerald-500 font-bold">✓ NPCI SETTLED</span>
+                  <span className="text-[9px] text-stone-500 font-bold">Unverified local record</span>
                 </div>
               </div>
             ))}
@@ -307,16 +306,16 @@ export function OrderKingPassbookReceipts({
             }`}
           >
             <div className="size-12 rounded-2xl bg-amber-500/10 border border-amber-400/30 flex items-center justify-center mx-auto text-amber-500">
-              <ShieldCheck className="size-6 stroke-[2.2]" />
+              <Receipt className="size-6 stroke-[2.2]" />
             </div>
             <div>
               <h4 className={`text-sm font-black ${isDark ? "text-white" : "text-stone-900"}`}>
-                Double-Entry Ledger Verified
+                No saved activity
               </h4>
               <p className={`text-xs max-w-md mx-auto mt-1 leading-relaxed ${
                 isDark ? "text-slate-400" : "text-stone-500"
               }`}>
-                Your passbook ledger maintains cryptographic double-entry integrity with real-time fee transparency and direct settlement reconciliation.
+                No local activity is saved. For verified transactions, consult your payment provider's official statement.
               </p>
             </div>
           </div>

@@ -17,7 +17,6 @@ import { OrderKingMark } from "@/components/brand/wordmark";
 import { resilientLazy, ModalErrorBoundary } from "@/components/common/resilient-lazy";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OneTapCheckoutDrawer } from "@/components/market/one-tap-checkout-drawer";
-import { ContextualCrossSellBar } from "@/components/market/contextual-cross-sell-bar";
 import { ServiceShortcuts } from "@/components/market/service-shortcuts";
 
 const LazyLocationDialog = resilientLazy(
@@ -33,7 +32,6 @@ const LazyCustomerConciergeDrawer = resilientLazy(
   "AI Concierge"
 );
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
-import { UltraLuxuryEcosystemFooter } from "@/components/market/ultra-luxury-ecosystem-footer";
 import { useDietStore } from "@/lib/stores/diet";
 import { useBrand, useT } from "@/components/providers";
 import { cartCount, useCartStore } from "@/lib/stores/cart";
@@ -270,31 +268,6 @@ export function CustomerShell({
           </div>
         </div>
 
-        {/* ROW 1.5: Sovereign Ecosystem Horizontal Tabs (Food, KingPay, Travel, AI Tutor, VIP Dining) */}
-        <div className="hidden">
-          {SOVEREIGN_ECOSYSTEM_TABS.map((tab) => {
-            const isActive = tab.match(path);
-            const Icon = tab.icon;
-            return (
-              <Link
-                key={tab.id}
-                to={tab.to}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-black transition-all shrink-0 no-underline active:scale-95 border",
-                  isActive
-                    ? "bg-gradient-to-r from-slate-950 via-slate-900 to-amber-950 text-amber-200 border-amber-400/80 shadow-[0_2px_10px_rgba(245,158,11,0.25)] ring-1 ring-amber-400/50"
-                    : "bg-white/80 hover:bg-white text-gray-700 border-amber-200/70 hover:border-amber-400/60 shadow-2xs"
-                )}
-              >
-                <div className={cn("flex size-4.5 items-center justify-center rounded-lg bg-gradient-to-br text-white shadow-2xs", tab.iconGradient)}>
-                  <Icon className="size-3" />
-                </div>
-                <span className="text-[11px] font-black">{tab.name}</span>
-              </Link>
-            );
-          })}
-        </div>
-
         {/* ROW 2: Luxury search bar (glassmorphism, golden focus ring) + Pure Veg/All toggle */}
         {hasSearchRow && (
           <div className="space-y-1.5">
@@ -334,8 +307,6 @@ export function CustomerShell({
         {path === "/" && <div className="lg:hidden"><ServiceShortcuts variant="compact" /></div>}
       </header>
 
-      {/* Contextual Geographic Intelligence & Cross-Ecosystem Recommendation Bar */}
-      {path !== "/" && <ContextualCrossSellBar />}
 
       {/* Main Content Area */}
       <main id="main" className="flex-1 w-full">
@@ -344,23 +315,10 @@ export function CustomerShell({
         </ErrorBoundary>
       </main>
 
-      {/* ULTRA-LUXURY 3D ECOSYSTEM PORTAL & FOOTER */}
-      {path !== "/" ? <UltraLuxuryEcosystemFooter /> : null}
 
       {/* Floating View Cart & 1-Tap Checkout Bar */}
       {count > 0 && path !== "/cart" && path !== "/checkout" ? (
         <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex flex-col items-center justify-center px-4 gap-1.5">
-          {/* Active Cart Cross-Sell Strip ("Add Mart essentials with ₹0 extra delivery fee") */}
-          <Link
-            to="/search"
-            search={{ q: "mart" } as any}
-            className="pointer-events-auto flex items-center justify-center gap-1.5 rounded-full bg-emerald-950/95 text-emerald-200 border border-emerald-400/60 px-3 py-1 text-[11px] font-bold shadow-lg hover:bg-emerald-900 transition no-underline active:scale-95 backdrop-blur-md"
-          >
-            <Sparkles className="size-3 text-amber-300" />
-            <span>Add Mart essentials with ₹0 extra delivery fee</span>
-            <ChevronDown className="size-3 -rotate-90 text-emerald-400" />
-          </Link>
-
           <div className="pointer-events-auto flex min-h-12 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-r from-slate-950 via-[#18130d] to-slate-950 px-3.5 py-2.5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.45)] transition-all font-bold border border-amber-400/60 backdrop-blur-md">
             <div className="flex items-center gap-2">
               <span className="flex size-7 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 text-slate-950 text-xs font-black shadow-md">
