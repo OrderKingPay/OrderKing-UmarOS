@@ -29,6 +29,7 @@ export default defineConfig({
       "src/test/dynamic-bottom-nav.test.ts",
       "src/test/travel-partner-affiliates.test.ts",
       "src/test/partner-aggregation-routing.test.ts",
+      "src/test/live-search-catalog.test.ts",
     ],
     environment: "node",
   },
