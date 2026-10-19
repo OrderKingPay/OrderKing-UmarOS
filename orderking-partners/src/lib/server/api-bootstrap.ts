@@ -399,11 +399,28 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         const openMin = hmToMinutes(data.openingTime);
         const closeMin = hmToMinutes(data.closingTime);
         for (let day = 0; day <= 6; day++) {
-          await sql`
-            update restaurant_hours
-            set open_minutes = ${openMin}, close_minutes = ${closeMin}
-            where restaurant_id = ${ctx.restaurantId} and weekday = ${day}
-          `;
+          try {
+            const existing = await sql<{ id: string }>`
+              select id from restaurant_hours
+              where restaurant_id = ${ctx.restaurantId} and weekday = ${day}
+              limit 1
+            `;
+            if (existing.length > 0) {
+              await sql`
+                update restaurant_hours
+                set open_minutes = ${openMin}, close_minutes = ${closeMin}
+                where restaurant_id = ${ctx.restaurantId} and weekday = ${day}
+              `;
+            } else {
+              const { newId } = await import("@/lib/utils");
+              await sql`
+                insert into restaurant_hours (id, restaurant_id, weekday, open_minutes, close_minutes)
+                values (${newId("hrs")}, ${ctx.restaurantId}, ${day}, ${openMin}, ${closeMin})
+              `;
+            }
+          } catch {
+            // non-fatal
+          }
         }
       }
 

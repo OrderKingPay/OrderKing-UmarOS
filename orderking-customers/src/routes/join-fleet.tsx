@@ -32,6 +32,8 @@ export function JoinFleetPage() {
   const [vehicleType, setVehicleType] = useState<"EV_SCOOTER" | "PETROL_BIKE" | "CYCLE">("EV_SCOOTER");
   const [idNumber, setIdNumber] = useState("");
   const [upiId, setUpiId] = useState("");
+  const [emergencyContactName, setEmergencyContactName] = useState("");
+  const [emergencyContactPhone, setEmergencyContactPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
   const [applicationId, setApplicationId] = useState("");
@@ -40,6 +42,10 @@ export function JoinFleetPage() {
     e.preventDefault();
     if (!fullName.trim() || !phoneNumber.trim()) {
       toast.error("Please enter your full legal name and phone number.");
+      return;
+    }
+    if (emergencyContactPhone && !/^[6-9]\d{9}$/.test(emergencyContactPhone.trim().replace(/\D/g, ""))) {
+      toast.error("Please enter a valid 10-digit Indian emergency contact phone number.");
       return;
     }
 
@@ -52,7 +58,7 @@ export function JoinFleetPage() {
           ? "Motorized 2-Wheeler (Motorcycle/Scooter)"
           : "Bicycle / Eco-Delivery";
 
-      const note = `City: ${city} | Vehicle: ${vehicleDesc} | ID/DL: ${idNumber || "Provided at Hub"} | UPI: ${upiId || "Pending Verification"}`;
+      const note = `City: ${city} | Vehicle: ${vehicleDesc} | ID/DL: ${idNumber.trim() || "Provided at Hub"} | UPI: ${upiId.trim() || "Pending Verification"} | EmergencyContact: ${emergencyContactName.trim() || "Next of Kin"} (${emergencyContactPhone.trim() || "On File"})`;
 
       const res = await submitJobApplicationFn({
         data: {
@@ -280,7 +286,7 @@ export function JoinFleetPage() {
                       </div>
                       <div>
                         <label className="text-xs font-bold text-zinc-300 block mb-1">
-                          UPI ID for Payouts (Optional)
+                          UPI ID for Daily Payouts (e.g. UPI VPA)
                         </label>
                         <input
                           type="text"
@@ -288,6 +294,34 @@ export function JoinFleetPage() {
                           onChange={(e) => setUpiId(e.target.value)}
                           placeholder="e.g. yourname@oksbi"
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2 pt-1 border-t border-zinc-800/80">
+                      <div>
+                        <label className="text-xs font-bold text-zinc-300 block mb-1">
+                          Emergency Contact Name (Next of Kin)
+                        </label>
+                        <input
+                          type="text"
+                          value={emergencyContactName}
+                          onChange={(e) => setEmergencyContactName(e.target.value)}
+                          placeholder="e.g. Sunita Devi (Spouse/Parent)"
+                          className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-zinc-300 block mb-1">
+                          Emergency Contact Mobile (10-digits)
+                        </label>
+                        <input
+                          type="tel"
+                          maxLength={10}
+                          value={emergencyContactPhone}
+                          onChange={(e) => setEmergencyContactPhone(e.target.value.replace(/\D/g, ""))}
+                          placeholder="e.g. 9876543210"
+                          className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition font-mono"
                         />
                       </div>
                     </div>

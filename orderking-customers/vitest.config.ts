@@ -30,6 +30,7 @@ export default defineConfig({
       "src/test/travel-partner-affiliates.test.ts",
       "src/test/partner-aggregation-routing.test.ts",
       "src/test/live-search-catalog.test.ts",
+      "src/test/irctc-fintech-reconciliation.test.ts",
     ],
     environment: "node",
   },

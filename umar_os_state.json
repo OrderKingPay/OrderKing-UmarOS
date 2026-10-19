@@ -1,0 +1,156 @@
+{
+  "umarConfig": {
+    "systemVersion": "UMAR OS v5.0 — Supreme Autonomous Core",
+    "activeGateway": "direct_upi",
+    "razorpayKeyId": "rzp_live_test",
+    "founderUpiId": "orderkingpay@upi",
+    "founderWhatsapp": "919864000000",
+    "travelpayoutsMarker": "500000",
+    "flightEngineMode": "HYBRID_DIRECT_AND_AFFILIATE",
+    "masterPromoCode": "KING500",
+    "flightFounderBaseMarkupINR": 450,
+    "flightConvenienceFeeINR": 310,
+    "flightAnchorDiscountINR": 500,
+    "foodPlatformCommissionPercent": 22,
+    "foodPackagingAndPlatformFeeINR": 35,
+    "foodToTravelCashbackPercent": 5,
+    "pharmacyMarginPercent": 25,
+    "pharmacyDeliveryFeeINR": 30,
+    "bbpsConvenienceFeeINR": 19,
+    "jobFastTrackFeeINR": 499,
+    "aiTutorProFeeINR": 199,
+    "referralRewardKingCashINR": 50
+  },
+  "ledger": {
+    "founderNetProfitINR": 35168,
+    "grossMerchandiseValueINR": 199768,
+    "userKingCashBalanceINR": 396,
+    "dailyStreakCount": 3,
+    "orders": [
+      {
+        "id": "OKP-53379",
+        "category": "FOOD_DELIVERY",
+        "title": "Royal Dum Biryani & Tandoori Family Combo",
+        "subtitle": "Instant Confirmed via 0% Fee UPI Rail",
+        "customerPaidINR": 474,
+        "wholesaleCostINR": 360,
+        "founderNetProfitINR": 114,
+        "paymentMethod": "0% Fee Direct UPI",
+        "activeGateway": "direct_upi",
+        "upiUri": "upi://pay?pa=orderkingpay%40upi&pn=OrderKingPay&am=474.00&cu=INR&tn=OKP-53379%20FOOD_DELIVERY",
+        "upiIntent": "upi://pay?pa=orderkingpay%40upi&pn=OrderKingPay&am=474.00&cu=INR&tn=OKP-53379%20FOOD_DELIVERY",
+        "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi%3A%2F%2Fpay%3Fpa%3Dorderkingpay%2540upi%26pn%3DOrderKingPay%26am%3D474.00%26cu%3DINR%26tn%3DOKP-53379%2520FOOD_DELIVERY",
+        "whatsappDispatchUrl": "https://wa.me/919864000000?text=*NEW%20ORDERKINGPAY%20DISPATCH%20%5BOKP-53379%5D*%0ACategory%3A%20FOOD_DELIVERY%0AItem%3A%20Royal%20Dum%20Biryani%20%26%20Tandoori%20Family%20Combo%0ACustomer%20Paid%3A%20%E2%82%B9474%20(0%25%20Fee%20Direct%20UPI)%0AProtected%20Founder%20Profit%3A%20%E2%82%B9114%0ACustomer%20GPS%3A%20https%3A%2F%2Fmaps.google.com%2F%3Fq%3D24.8652%2C92.3592",
+        "timestamp": "01:13 am"
+      },
+      {
+        "id": "OKP-97562",
+        "category": "EXPRESS_PHARMACY",
+        "title": "Family Emergency & Daily Wellness Kit",
+        "subtitle": "Instant Confirmed via Razorpay PG",
+        "customerPaidINR": 420,
+        "wholesaleCostINR": 300,
+        "founderNetProfitINR": 120,
+        "paymentMethod": "Razorpay PG",
+        "activeGateway": "razorpay",
+        "upiUri": "upi://pay?pa=orderkingpay%40upi&pn=OrderKingPay&am=420.00&cu=INR&tn=OKP-97562%20EXPRESS_PHARMACY",
+        "upiIntent": "upi://pay?pa=orderkingpay%40upi&pn=OrderKingPay&am=420.00&cu=INR&tn=OKP-97562%20EXPRESS_PHARMACY",
+        "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi%3A%2F%2Fpay%3Fpa%3Dorderkingpay%2540upi%26pn%3DOrderKingPay%26am%3D420.00%26cu%3DINR%26tn%3DOKP-97562%2520EXPRESS_PHARMACY",
+        "whatsappDispatchUrl": "https://wa.me/919864000000?text=*NEW%20ORDERKINGPAY%20DISPATCH%20%5BOKP-97562%5D*%0ACategory%3A%20EXPRESS_PHARMACY%0AItem%3A%20Family%20Emergency%20%26%20Daily%20Wellness%20Kit%0ACustomer%20Paid%3A%20%E2%82%B9420%20(Razorpay%20PG)%0AProtected%20Founder%20Profit%3A%20%E2%82%B9120%0ACustomer%20GPS%3A%20https%3A%2F%2Fmaps.google.com%2F%3Fq%3D24.8652%2C92.3592",
+        "timestamp": "01:12 am"
+      },
+      {
+        "id": "OKP-85466",
+        "category": "FOOD_DELIVERY",
+        "title": "Royal Dum Biryani & Tandoori Family Combo",
+        "subtitle": "Instant Confirmed via 0% Fee UPI Rail",
+        "customerPaidINR": 474,
+        "wholesaleCostINR": 360,
+        "founderNetProfitINR": 114,
+        "paymentMethod": "0% Fee Direct UPI",
+        "activeGateway": "direct_upi",
+        "upiUri": "upi://pay?pa=orderkingpay%40upi&pn=OrderKingPay&am=474.00&cu=INR&tn=OKP-85466%20FOOD_DELIVERY",
+        "upiIntent": "upi://pay?pa=orderkingpay%40upi&pn=OrderKingPay&am=474.00&cu=INR&tn=OKP-85466%20FOOD_DELIVERY",
+        "qrUrl": "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi%3A%2F%2Fpay%3Fpa%3Dorderkingpay%2540upi%26pn%3DOrderKingPay%26am%3D474.00%26cu%3DINR%26tn%3DOKP-85466%2520FOOD_DELIVERY",
+        "whatsappDispatchUrl": "https://wa.me/919864000000?text=*NEW%20ORDERKINGPAY%20DISPATCH%20%5BOKP-85466%5D*%0ACategory%3A%20FOOD_DELIVERY%0AItem%3A%20Royal%20Dum%20Biryani%20%26%20Tandoori%20Family%20Combo%0ACustomer%20Paid%3A%20%E2%82%B9474%20(0%25%20Fee%20Direct%20UPI)%0AProtected%20Founder%20Profit%3A%20%E2%82%B9114%0ACustomer%20GPS%3A%20https%3A%2F%2Fmaps.google.com%2F%3Fq%3D24.8652%2C92.3592",
+        "timestamp": "01:11 am"
+      },
+      {
+        "id": "OKP-91042",
+        "category": "FOOD",
+        "title": "Food Palace — Special Royal Chicken Biryani Combo (x2)",
+        "subtitle": "Karimganj Bypass • Dispatched via WhatsApp Bridge • +₹32 KingCash",
+        "customerPaidINR": 640,
+        "wholesaleCostINR": 465,
+        "founderNetProfitINR": 175,
+        "paymentMethod": "0% Fee Direct UPI",
+        "whatsappDispatchUrl": "https://wa.me/919864000000?text=Order%20OKP-91042",
+        "timestamp": "Today, 09:10 PM"
+      },
+      {
+        "id": "OKP-91018",
+        "category": "FLIGHT",
+        "title": "IndiGo 6E-204 • IXS (Silchar) → DEL (New Delhi)",
+        "subtitle": "Zero-Loss Engine • Promo KING500 Applied • PNR Issued",
+        "customerPaidINR": 5210,
+        "wholesaleCostINR": 4450,
+        "founderNetProfitINR": 760,
+        "paymentMethod": "0% Fee Direct UPI",
+        "whatsappDispatchUrl": "https://wa.me/919864000000?text=Flight%20OKP-91018",
+        "timestamp": "Today, 06:45 PM"
+      }
+    ]
+  },
+  "restaurants": [
+    {
+      "id": "rest_fp",
+      "name": "Food Palace",
+      "badge": "FLAGSHIP HIGHWAY HUB",
+      "rating": "4.9",
+      "eta": "20 mins",
+      "dish": "Royal Dum Biryani & Tandoori Family Combo",
+      "wholesalePrice": 360
+    },
+    {
+      "id": "rest_pb",
+      "name": "Party Box",
+      "badge": "FAST FOOD EXPRESS",
+      "rating": "4.8",
+      "eta": "15 mins",
+      "dish": "Crispy Zinger Bucket + Peri-Peri Fries",
+      "wholesalePrice": 420
+    },
+    {
+      "id": "rest_hd",
+      "name": "Highway Darbar Grill",
+      "badge": "LATE NIGHT KITCHEN",
+      "rating": "4.7",
+      "eta": "25 mins",
+      "dish": "Mutton Rogan Josh & Garlic Naan Platter",
+      "wholesalePrice": 490
+    }
+  ],
+  "dailyPharmacyAndMart": [
+    {
+      "id": "med_1",
+      "name": "Family Emergency & Daily Wellness Kit",
+      "category": "EXPRESS PHARMACY",
+      "eta": "15 mins",
+      "mrp": 480
+    },
+    {
+      "id": "med_2",
+      "name": "Costus Igneus (Spiral Ginger) & Herbal Care Pack",
+      "category": "AYURVEDA & HEALTH",
+      "eta": "20 mins",
+      "mrp": 350
+    },
+    {
+      "id": "mart_3",
+      "name": "Wholesale Household & Footwear Bulk Saver Pack",
+      "category": "KING WHOLESALE MART",
+      "eta": "Same Day",
+      "mrp": 1250
+    }
+  ]
+}

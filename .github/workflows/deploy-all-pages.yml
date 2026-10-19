@@ -79,7 +79,7 @@ jobs:
 
       - name: Build & Deploy Central Admin (HDmaster)
         run: |
-          pnpm --filter orderking-hdmaster run build
+          pnpm --filter HDmaster run build
           npx wrangler pages deploy HDmaster/dist --project-name=orderking-hdmaster --branch=main --commit-dirty=true --no-bundle
         env:
           NODE_ENV: production

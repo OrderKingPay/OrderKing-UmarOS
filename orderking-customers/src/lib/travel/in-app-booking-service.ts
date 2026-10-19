@@ -1,5 +1,6 @@
 import { PAISE_PER_RUPEE } from "@/lib/money";
 import { supabase } from "@/lib/db-cloud";
+import { isIrctcPspAuthenticated, assertTrainPaymentPermitted } from "./irctc-reconciliation";
 
 export const SOVEREIGN_TRAVEL_DISCLAIMER =
   "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon charter confirmation.";
@@ -169,13 +170,17 @@ export interface SovereignETicket {
 // ============================================================================
 
 export function generateSovereignPnr(mode: TravelMode): string {
-  const prefixMap: Record<TravelMode, string> = {
+  if (mode === "train") {
+    throw new Error(
+      "Synthetic Indian Railways PNR generation is strictly prohibited under CRIS/IRCTC regulations. Genuine 10-digit numeric PNRs are issued exclusively by Indian Railways PRS upon official ticket confirmation."
+    );
+  }
+  const prefixMap: Record<Exclude<TravelMode, "train">, string> = {
     flight: "OK-FL",
-    train: "OK-TR",
     bus: "OK-BS",
     cab: "OK-CB",
   };
-  const prefix = prefixMap[mode] || "OK-TRV";
+  const prefix = (prefixMap as any)[mode] || "OK-TRV";
   const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
   const timestampSuffix = Date.now().toString().slice(-4);
   return `${prefix}-${randomChars}${timestampSuffix}`;
@@ -871,6 +876,19 @@ export function checkSupplierGating(
     }
   }
 
+  // Strict IRCTC PSP Compliance Check for Train Bookings
+  if (mode === "train") {
+    const isPspAuth = options?.statusOverride === "online" || isIrctcPspAuthenticated(options?.authToken);
+    if (!isPspAuth) {
+      return {
+        available: false,
+        status: "unauthenticated",
+        message:
+          "IRCTC Direct PSP Gateway not connected: In accordance with Indian Railways CRIS guidelines, train bookings must be completed directly via the official IRCTC portal. No payment has been captured.",
+      };
+    }
+  }
+
   // Check if carrier API credentials exist in environment
   const envKey =
     typeof process !== "undefined" && process?.env
@@ -922,7 +940,34 @@ export function issueSovereignETicket(params: {
   if (!params.verifiedPaymentToken && !params.supplierReservationId && !params.isConfirmedSupplier) {
     throw new Error("Ticket issuance blocked: no confirmed supplier reservation or verified payment. " + SUPPLIER_UNAVAILABLE_MESSAGE);
   }
-  const pnr = generateSovereignPnr(params.quote.mode);
+
+  // IRCTC Compliance: Block synthetic train tickets unless authenticated IRCTC PSP is verified
+  if (params.quote.mode === "train") {
+    assertTrainPaymentPermitted();
+    const isAuth =
+      params.supplierState !== "unauthenticated" &&
+      params.supplierState !== "offline" &&
+      params.supplierState !== "rate_limited" &&
+      Boolean(params.verifiedPaymentToken?.startsWith("IRCTC-PSP-")) &&
+      isIrctcPspAuthenticated();
+    if (!isAuth) {
+      throw new SupplierUnavailableError(
+        "IRCTC train ticket booking requires authenticated IRCTC PSP integration. Synthetic train tickets are prohibited under CRIS regulations. Please book via official IRCTC portal."
+      );
+    }
+  }
+
+  let pnr: string;
+  if (params.quote.mode === "train") {
+    if (!params.supplierReservationId || !/^\d{10}$/.test(params.supplierReservationId)) {
+      throw new SupplierUnavailableError(
+        "IRCTC ticket confirmation requires a genuine 10-digit CRIS PRS reservation reference. In-app train bookings must be completed via official IRCTC portal (https://www.irctc.co.in/nget/train-search)."
+      );
+    }
+    pnr = params.supplierReservationId;
+  } else {
+    pnr = generateSovereignPnr(params.quote.mode);
+  }
   const bookingId = `BK-${Date.now().toString().slice(-8)}`;
   const dateStr = params.travelDate || new Date().toISOString().split("T")[0];
 
@@ -1021,7 +1066,12 @@ export function issueSovereignETicket(params: {
       rebateDestination: params.rebateDestination,
       rebateAmountCredited: rebateCreditedStr,
     },
-    cancellationPolicy: {
+    cancellationPolicy: params.quote.mode === "train" ? {
+      refundableUntil: "Subject to Indian Railways cancellation & TDR guidelines (up to 4 hours before departure)",
+      refundablePaise: fareCalc.totalCheckoutPaise,
+      orderKingPenaltyPaise: 0,
+      terms: "Refunds are processed in strict accordance with Indian Railways statutory clerkage and TDR rules via original payment gateway (T+2 to T+5 banking days).",
+    } : {
       refundableUntil: "Up to 4 hours before scheduled departure",
       refundablePaise: fareCalc.totalCheckoutPaise,
       orderKingPenaltyPaise: 0,
@@ -1123,7 +1173,15 @@ export function getStoredETickets(): SovereignETicket[] {
     const raw = window.localStorage.getItem(SOVEREIGN_ETICKETS_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    // Strict Fintech Audit: Filter out synthetic mock train tickets or fake PNRs (e.g. OK-TR-...)
+    // Authentic Indian Railways CRIS PNRs are strictly 10 digits
+    return parsed.filter((t: SovereignETicket) => {
+      if (t.mode === "train") {
+        return /^\d{10}$/.test(t.pnr);
+      }
+      return true;
+    });
   } catch {
     return [];
   }
@@ -1142,9 +1200,23 @@ export function saveETicketToStorage(ticket: SovereignETicket): void {
 
 function syncTicketToSavedTrips(ticket: SovereignETicket): void {
   if (typeof window === "undefined") return;
+  // Strictly prevent synthetic train tickets from syncing to saved trips
+  if (ticket.mode === "train" && !/^\d{10}$/.test(ticket.pnr)) {
+    return;
+  }
   try {
     const raw = window.localStorage.getItem(SAVED_TRIPS_STORAGE_KEY);
     const existing = raw ? JSON.parse(raw) : [];
+    // Cleanse any legacy synthetic train entries
+    const cleansedExisting = Array.isArray(existing)
+      ? existing.filter((t: any) => {
+          if (t.bookingType === "Train" && !/^\d{10}$/.test(t.bookingRef)) {
+            return false;
+          }
+          return t.bookingRef !== ticket.pnr;
+        })
+      : [];
+
     const modeName =
       ticket.mode === "flight" ? "Flight" :
       ticket.mode === "train" ? "Train" :
@@ -1162,7 +1234,7 @@ function syncTicketToSavedTrips(ticket: SovereignETicket): void {
       sovereignETicket: ticket,
     };
 
-    const nextTrips = [tripEntry, ...(Array.isArray(existing) ? existing.filter((t: any) => t.bookingRef !== ticket.pnr) : [])];
+    const nextTrips = [tripEntry, ...cleansedExisting];
     window.localStorage.setItem(SAVED_TRIPS_STORAGE_KEY, JSON.stringify(nextTrips));
   } catch {
     // ignore

@@ -17,7 +17,6 @@ import { OrderKingMark } from "@/components/brand/wordmark";
 import { resilientLazy, ModalErrorBoundary } from "@/components/common/resilient-lazy";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OneTapCheckoutDrawer } from "@/components/market/one-tap-checkout-drawer";
-import { ServiceShortcuts } from "@/components/market/service-shortcuts";
 
 const LazyLocationDialog = resilientLazy(
   () => import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog })),
@@ -192,7 +191,6 @@ export function CustomerShell({
             </button>
           </div>
 
-          {path === "/" && <div className="hidden min-w-0 flex-1 items-center justify-center px-2 lg:flex"><ServiceShortcuts variant="header" /></div>}
           {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* 1-Tap Language selector (English, Hindi, Bengali, etc.) */}
@@ -304,7 +302,6 @@ export function CustomerShell({
 
           </div>
         )}
-        {path === "/" && <div className="lg:hidden"><ServiceShortcuts variant="compact" /></div>}
       </header>
 
 

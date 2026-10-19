@@ -42,7 +42,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build HDmaster App
-        run: pnpm --filter orderking-hdmaster run build
+        run: pnpm --filter HDmaster run build
         env:
           NODE_ENV: production
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

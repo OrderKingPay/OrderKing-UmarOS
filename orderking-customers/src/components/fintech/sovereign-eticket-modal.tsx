@@ -339,21 +339,39 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
             </div>
           </div>
 
-          {/* Cancellation Policy with Instant KingPay Wallet Refund Guarantee */}
+          {/* Cancellation Policy with IRCTC TDR & Gateway Reconciliation Rules */}
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-1.5 text-xs">
             <span className="font-black text-emerald-900 flex items-center gap-1.5">
               <ShieldCheck className="size-4 text-emerald-600" />
-              Sovereign Cancellation &amp; Instant Wallet Refund Guarantee
+              {ticket.mode === "train"
+                ? "Indian Railways IRCTC Cancellation & TDR Policy"
+                : "Sovereign Cancellation & Instant Wallet Refund Guarantee"}
             </span>
-            <p className="text-emerald-800 leading-relaxed">
-              • <strong>Refund Timeline:</strong> {ticket.cancellationPolicy.refundableUntil}.
-            </p>
-            <p className="text-emerald-800 leading-relaxed">
-              • <strong>Instant Credit:</strong> 100% eligible refund ({formatPaise(ticket.fareBreakdown.totalCheckoutPaise)}) is credited instantly back to your KingPay Loyalty Wallet with ₹0 OrderKing penalty.
-            </p>
-            <p className="text-emerald-700 text-[11px]">
-              • <strong>Loyalty Reward:</strong> {ticket.payment.rebateAmountCredited} was credited to your portfolio.
-            </p>
+            {ticket.mode === "train" ? (
+              <>
+                <p className="text-emerald-800 leading-relaxed">
+                  • <strong>Statutory Timeline:</strong> Confirmed tickets are cancellable online up to 4 hours before scheduled departure (or chart preparation). Post-charting requires online TDR filing.
+                </p>
+                <p className="text-emerald-800 leading-relaxed">
+                  • <strong>Statutory Clerkage:</strong> Deductions follow Indian Railways guidelines based on class (1A/2A/3A/SL) and time to departure. OrderKing charges ₹0 platform cancellation penalty.
+                </p>
+                <p className="text-emerald-800 leading-relaxed">
+                  • <strong>Gateway Settlement SLA:</strong> Approved refunds are credited directly to your source bank or UPI account within T+2 to T+5 banking days.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-emerald-800 leading-relaxed">
+                  • <strong>Refund Timeline:</strong> {ticket.cancellationPolicy.refundableUntil}.
+                </p>
+                <p className="text-emerald-800 leading-relaxed">
+                  • <strong>Instant Credit:</strong> 100% eligible refund ({formatPaise(ticket.fareBreakdown.totalCheckoutPaise)}) is credited instantly back to your KingPay Loyalty Wallet with ₹0 OrderKing penalty.
+                </p>
+                <p className="text-emerald-700 text-[11px]">
+                  • <strong>Loyalty Reward:</strong> {ticket.payment.rebateAmountCredited} was credited to your portfolio.
+                </p>
+              </>
+            )}
           </div>
         </div>
 

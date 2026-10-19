@@ -870,7 +870,7 @@ export function FounderCommandPage() {
                     size="sm"
                     className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-fg shadow-sm"
                     onClick={() => {
-                      const link = `${window.location.origin}/rider`;
+                      const link = `${window.location.origin}/join-fleet`;
                       void navigator.clipboard?.writeText(link);
                       toast.success("Rider App PWA link copied! Riders can install from mobile browser.");
                     }}
@@ -883,7 +883,7 @@ export function FounderCommandPage() {
                     variant="outline"
                     className="text-xs font-bold"
                     onClick={() => {
-                      const msg = `Hi Rider Partner! Welcome to OrderKing Fleet. Install your Rider App here: ${window.location.origin}/rider`;
+                      const msg = `Hi Rider Partner! Welcome to OrderKing Fleet. Register for delivery fleet here: ${window.location.origin}/join-fleet`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                   >

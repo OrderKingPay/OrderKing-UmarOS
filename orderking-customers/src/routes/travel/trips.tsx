@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { CalendarDays, Clock3, Crown, FileText, Plane, Search, ShieldCheck, TrainFront, CheckCircle2, AlertCircle, QrCode, ArrowRight, Bus, Car } from "lucide-react";
+import { CalendarDays, Clock3, Crown, FileText, Plane, Search, ShieldCheck, TrainFront, CheckCircle2, AlertCircle, QrCode, ArrowRight, Bus, Car, ExternalLink } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { getStoredETickets, type SovereignETicket } from "@/lib/travel/in-app-booking-service";
@@ -51,6 +51,26 @@ function MyTripsPage() {
   useEffect(() => {
     setETickets(getStoredETickets());
   }, []);
+
+  const now = Date.now();
+  const filteredTickets = eTickets.filter((t) => {
+    const isCancelled = (t.status as string) === "CANCELLED" || (t as any).isCancelled;
+    if (view === "Cancelled / Refunds") {
+      return Boolean(isCancelled);
+    }
+    if (isCancelled) return false;
+    const depTime = new Date(t.departureTimestamp).getTime();
+    if (view === "Upcoming") {
+      return depTime >= now;
+    }
+    if (view === "In Transit") {
+      return depTime < now && depTime >= now - 6 * 3600 * 1000;
+    }
+    if (view === "Completed") {
+      return depTime < now - 6 * 3600 * 1000;
+    }
+    return true;
+  });
 
   const [pnr, setPnr] = useState("");
   const [pnrLoading, setPnrLoading] = useState(false);
@@ -125,7 +145,7 @@ function MyTripsPage() {
 
           <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" aria-label="Travel bookings">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-lg font-bold">Booking history ({eTickets.length})</h2>
+              <h2 className="text-lg font-bold">Booking history ({filteredTickets.length})</h2>
               <CalendarDays className="size-5 text-emerald-700" />
             </div>
             <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
@@ -138,9 +158,45 @@ function MyTripsPage() {
               ))}
             </div>
 
-            {eTickets.length > 0 ? (
+            {view === "Cancelled / Refunds" && (
+              <div className="mt-4 rounded-2xl border border-amber-300/40 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 text-white space-y-3 shadow-md">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="size-5 text-amber-400" />
+                    <h3 className="text-sm font-black text-amber-300">
+                      Indian Railways IRCTC Statutory Cancellation &amp; TDR Rules (Gazette 2015)
+                    </h3>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full">
+                    Sovereign Settlement Desk
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-300 pt-1">
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/10 space-y-1">
+                    <span className="font-bold text-white block">Confirmed E-Tickets Cancellation:</span>
+                    <p className="text-[11px] leading-relaxed">
+                      • <strong>&gt;48 hrs:</strong> Flat clerkage (1A/EC: ₹240+GST, 2A/1st: ₹200+GST, 3A/CC: ₹180+GST, SL: ₹120, 2S: ₹60).<br />
+                      • <strong>48h to 12h:</strong> 25% of fare (or flat minimum) + 5% GST on AC.<br />
+                      • <strong>12h to 4h:</strong> 50% of fare (or flat minimum) + 5% GST on AC.<br />
+                      • <strong>&lt;4 hrs / Post-Charting:</strong> Direct refund blocked; online TDR required.
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/10 space-y-1">
+                    <span className="font-bold text-white block">TDR Lifecycle &amp; Gateway SLA:</span>
+                    <p className="text-[11px] leading-relaxed">
+                      • <strong>TDR Grounds:</strong> Train delayed &gt;3 hrs, coach AC failure, route diversion.<br />
+                      • <strong>Audit Authority:</strong> Railway Zonal CCM (Claims) with 30-90 days verification.<br />
+                      • <strong>Settlement Timeline:</strong> <strong>T+2 to T+5 Banking Days</strong> directly to source payment gateway.<br />
+                      • <strong>OrderKing Guarantee:</strong> Strictly ₹0 platform cancellation penalty.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {filteredTickets.length > 0 ? (
               <div className="mt-4 space-y-3">
-                {eTickets.map((t) => {
+                {filteredTickets.map((t) => {
                   const ModeIcon = t.mode === "flight" ? Plane : t.mode === "train" ? TrainFront : t.mode === "bus" ? Bus : Car;
                   return (
                     <div
@@ -235,8 +291,31 @@ function MyTripsPage() {
               )}
 
               {pnrError && (
-                <div className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800">
-                  {pnrError}
+                <div className="rounded-xl bg-amber-50 border border-amber-200 p-3.5 text-xs text-amber-900 space-y-2">
+                  <p className="font-semibold">{pnrError}</p>
+                  <p className="text-[11px] text-amber-800">
+                    Indian Railways mandates captcha verification directly on government PRS endpoints. Check your PNR instantly on official government portals:
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <a
+                      href={`https://www.indianrail.gov.in/enquiry/PNR/PnrEnquiry.html?pnrno=${cleanPnr}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-black text-[11px] no-underline transition"
+                    >
+                      <span>Check on IndianRail.gov.in</span>
+                      <ExternalLink className="size-3" />
+                    </a>
+                    <a
+                      href="https://enquiry.indianrail.gov.in/mntes/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-black text-[11px] no-underline transition"
+                    >
+                      <span>CRIS NTES Live Spotting</span>
+                      <ExternalLink className="size-3" />
+                    </a>
+                  </div>
                 </div>
               )}
 

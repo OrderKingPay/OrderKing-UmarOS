@@ -9,7 +9,6 @@ import { DeviceAvatar } from "@/components/common/device-avatar";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
-import { UltraLuxuryEcosystemFooter } from "@/components/market/ultra-luxury-ecosystem-footer";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { formatPaise } from "@/lib/money";
 
@@ -227,9 +226,6 @@ export function KingPayShell({
           {children}
         </ErrorBoundary>
       </main>
-
-      {/* ULTRA-LUXURY 3D ECOSYSTEM PORTAL & FOOTER */}
-      <UltraLuxuryEcosystemFooter />
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
       <CustomerFloatingBottomNav />

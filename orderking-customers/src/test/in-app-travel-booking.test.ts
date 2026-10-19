@@ -206,9 +206,9 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
   });
 
   describe("Sovereign PNR & Sovereign Digital E-Ticket Generation", () => {
-    it("generates mode-specific Sovereign PNR codes adhering to OrderKing format", () => {
+    it("generates mode-specific Sovereign PNR codes adhering to OrderKing format and blocks synthetic train PNRs", () => {
       expect(generateSovereignPnr("flight")).toMatch(/^OK-FL-[A-Z0-9]{6}\d{4}$/);
-      expect(generateSovereignPnr("train")).toMatch(/^OK-TR-[A-Z0-9]{6}\d{4}$/);
+      expect(() => generateSovereignPnr("train")).toThrow(/CRIS\/IRCTC/);
       expect(generateSovereignPnr("bus")).toMatch(/^OK-BS-[A-Z0-9]{6}\d{4}$/);
       expect(generateSovereignPnr("cab")).toMatch(/^OK-CB-[A-Z0-9]{6}\d{4}$/);
     });

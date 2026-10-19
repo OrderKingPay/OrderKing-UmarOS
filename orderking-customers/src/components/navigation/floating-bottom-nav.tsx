@@ -186,12 +186,15 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "pointer-events-none fixed inset-x-0 bottom-0 z-[70] mx-auto w-full max-w-lg px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:max-w-[680px] md:pb-4",
+        "pointer-events-none fixed bottom-0 left-0 right-0 z-[70] flex justify-center px-2.5 sm:px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-4",
         className
       )}
     >
-      <ul role="list" data-testid="customer-bottom-nav"
-        className="pointer-events-auto grid grid-cols-3 gap-1.5 rounded-[24px] border border-amber-300/70 bg-gradient-to-br from-[#0d111b] via-[#201b18] to-[#181312] p-2 shadow-[0_18px_50px_rgba(15,12,10,0.46),0_0_0_1px_rgba(245,158,11,0.18)] backdrop-blur-2xl">
+      <ul
+        role="list"
+        data-testid="customer-bottom-nav"
+        className="pointer-events-auto grid w-full max-w-lg md:max-w-[560px] grid-cols-3 gap-1.5 sm:gap-2 rounded-[24px] border border-amber-400/60 bg-gradient-to-br from-[#0d111b] via-[#201b18] to-[#181312] p-1.5 sm:p-2 shadow-[0_18px_50px_rgba(15,12,10,0.5),0_0_0_1px_rgba(245,158,11,0.2)] backdrop-blur-2xl overflow-hidden"
+      >
         {tabs.map(({ id, label, to, icon: Icon }) => {
           const selected = id === activeId;
           return (

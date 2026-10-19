@@ -99,6 +99,11 @@ export function persistDraftLocally(data: {
     bankName: string;
     bankAccount: string;
     bankIfsc: string;
+    openingTime?: string;
+    closingTime?: string;
+    dishName?: string;
+    dishDiet?: string;
+    dishPrice?: string;
   };
   exemptFromGst: boolean;
   onboardingFeeOption: OnboardingFeeOption;
@@ -135,6 +140,11 @@ export function persistDraftLocally(data: {
       bankName: data.form.bankName,
       bankAccount: data.form.bankAccount,
       bankIfsc: data.form.bankIfsc,
+      openingTime: data.form.openingTime || "10:00",
+      closingTime: data.form.closingTime || "23:00",
+      dishName: data.form.dishName || "",
+      dishDiet: data.form.dishDiet || "NONVEG",
+      dishPrice: data.form.dishPrice || "",
       onboardingFeeOption: data.onboardingFeeOption,
       amortizedConsent: data.amortizedConsent,
       executionMethod: data.executionMethod,
@@ -191,6 +201,11 @@ function OnboardingPage() {
     bankName: "",
     bankAccount: "",
     bankIfsc: "",
+    openingTime: "10:00",
+    closingTime: "23:00",
+    dishName: "",
+    dishDiet: "NONVEG",
+    dishPrice: "",
   });
 
   const [exemptFromGst, setExemptFromGst] = useState(false);
@@ -223,6 +238,11 @@ function OnboardingPage() {
           bankIfsc: prev.bankIfsc || d.bankIfsc || "",
           bankName: prev.bankName || d.bankName || "",
           holder: prev.holder || d.holder || d.bankName || "",
+          openingTime: prev.openingTime || d.openingTime || "10:00",
+          closingTime: prev.closingTime || d.closingTime || "23:00",
+          dishName: prev.dishName || d.dishName || "",
+          dishDiet: d.dishDiet || prev.dishDiet || "NONVEG",
+          dishPrice: prev.dishPrice || d.dishPrice || "",
         }));
         if (d.exemptFromGst !== undefined) {
           setExemptFromGst(Boolean(d.exemptFromGst));
@@ -496,6 +516,11 @@ function OnboardingPage() {
           bankIfsc: ifsc,
           bankName,
           holder: form.holder || bankName,
+          openingTime: form.openingTime,
+          closingTime: form.closingTime,
+          dishName: form.dishName,
+          dishDiet: form.dishDiet,
+          dishPrice: form.dishPrice,
         },
         exemptFromGst,
         onboardingFeeOption,
@@ -571,6 +596,11 @@ function OnboardingPage() {
           bankIfsc: ifsc,
           bankName,
           holder: form.holder || bankName,
+          openingTime: form.openingTime,
+          closingTime: form.closingTime,
+          dishName: form.dishName,
+          dishDiet: form.dishDiet,
+          dishPrice: form.dishPrice,
         },
         exemptFromGst,
         onboardingFeeOption,
@@ -606,6 +636,8 @@ function OnboardingPage() {
               bankAccount: bankAccount || undefined,
               bankIfsc: ifsc || undefined,
               bankName: bankName || undefined,
+              openingTime: form.openingTime || undefined,
+              closingTime: form.closingTime || undefined,
             },
           });
         } catch (updateErr) {
@@ -923,7 +955,7 @@ function OnboardingPage() {
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 4</span>
-              <span className="font-medium text-slate-200">Verification Documents</span>
+              <span className="font-medium text-slate-200">Documents &amp; Menu</span>
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 5</span>
@@ -937,7 +969,7 @@ function OnboardingPage() {
             <div className="flex items-center gap-2">
               <RefreshCw className="size-4 shrink-0 text-amber-400" />
               <span>
-                <strong>Local Draft Mode:</strong> Profile for &apos;{form.name || "Party Box"}&apos; is safely saved locally in your browser. All stations are active.
+                <strong>Local Draft Mode:</strong> Profile for &apos;{form.name || "your restaurant"}&apos; is safely saved locally in your browser. All stations are active.
               </span>
             </div>
             <Button
@@ -1066,6 +1098,27 @@ function OnboardingPage() {
               </select>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-800">
+            <div>
+              <Label className="text-xs text-slate-300">Kitchen Opening Time (24h) *</Label>
+              <Input
+                type="time"
+                value={form.openingTime}
+                onChange={(e) => setForm({ ...form, openingTime: e.target.value })}
+                className="mt-1 border-slate-800 bg-slate-950 text-slate-100 focus:border-emerald-500 text-xs h-9"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-slate-300">Kitchen Closing Time (24h) *</Label>
+              <Input
+                type="time"
+                value={form.closingTime}
+                onChange={(e) => setForm({ ...form, closingTime: e.target.value })}
+                className="mt-1 border-slate-800 bg-slate-950 text-slate-100 focus:border-emerald-500 text-xs h-9"
+              />
+            </div>
+          </div>
         </Card>
 
         {/* STATION 2: FOOD SAFETY & BUSINESS CREDENTIALS */}
@@ -1190,17 +1243,17 @@ function OnboardingPage() {
           </div>
         </Card>
 
-        {/* STATION 4: PARTNER VERIFICATION DOCUMENTS */}
+        {/* STATION 4: VERIFICATION DOCUMENTS & MENU UPLOAD */}
         <Card className="border-slate-800 bg-slate-900/80 p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <FileCheck className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  4. Partner Verification Documents
+                  4. Verification Documents &amp; Menu Upload
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Upload certificates for quick verification. Accepts PDF, PNG, JPG under 10MB.
+                  Upload statutory FSSAI certificate, business PAN card, and restaurant menu / rate card photos. You can also configure your first signature dish for instant catalog digitization.
                 </p>
               </div>
             </div>
@@ -1208,7 +1261,7 @@ function OnboardingPage() {
           </div>
 
           {vendor.restaurantId ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <DocumentUpload restaurantId={vendor.restaurantId} kind="FSSAI_DOC" label="FSSAI License Certificate *" />
                 <DocumentUpload restaurantId={vendor.restaurantId} kind="PAN_DOC" label="Business / Proprietor PAN *" />
@@ -1227,10 +1280,63 @@ function OnboardingPage() {
                   ))}
                 </div>
               ) : null}
+
+              {/* Fast Menu Quick-Start Signature Dish */}
+              <div className="rounded-lg border border-slate-800/90 bg-slate-950/70 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-semibold text-slate-200">Flagship / Signature Dish (Menu Quick-Start)</h4>
+                  <span className="text-[10px] font-mono text-emerald-400">INSTANT DIGITIZATION</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2">
+                    <Label className="text-xs text-slate-300">Popular Dish Name</Label>
+                    <Input
+                      placeholder="e.g. Special Dum Biryani, Paneer Butter Masala"
+                      value={form.dishName}
+                      onChange={(e) => setForm({ ...form, dishName: e.target.value })}
+                      className="mt-1 border-slate-800 bg-slate-900 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 text-xs h-9"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-slate-300">Price (₹ INR)</Label>
+                    <Input
+                      placeholder="e.g. 299"
+                      value={form.dishPrice}
+                      onChange={(e) => setForm({ ...form, dishPrice: e.target.value.replace(/\D/g, "") })}
+                      className="mt-1 border-slate-800 bg-slate-900 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 font-mono text-xs h-9"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-xs text-slate-400">Dietary Tag:</span>
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, dishDiet: "NONVEG" })}
+                    className={`px-2.5 py-1 rounded text-[11px] font-medium flex items-center gap-1.5 transition ${
+                      form.dishDiet === "NONVEG"
+                        ? "bg-rose-950/70 text-rose-300 border border-rose-700"
+                        : "bg-slate-900 text-slate-400 border border-slate-800"
+                    }`}
+                  >
+                    <span className="size-2 rounded-full bg-rose-500" /> Non-Veg
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, dishDiet: "VEG" })}
+                    className={`px-2.5 py-1 rounded text-[11px] font-medium flex items-center gap-1.5 transition ${
+                      form.dishDiet === "VEG"
+                        ? "bg-emerald-950/70 text-emerald-300 border border-emerald-700"
+                        : "bg-slate-900 text-slate-400 border border-slate-800"
+                    }`}
+                  >
+                    <span className="size-2 rounded-full bg-emerald-500" /> Pure Veg
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-xs text-slate-400 flex items-center justify-between">
-              <span>Document upload unlocks instantly upon creating or saving your draft profile below.</span>
+              <span>Document and menu upload unlocks instantly upon creating or saving your draft profile below.</span>
               <span className="font-mono text-[10px] text-emerald-400">READY UPON SAVE</span>
             </div>
           )}

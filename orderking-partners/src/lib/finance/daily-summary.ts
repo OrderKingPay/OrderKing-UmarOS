@@ -55,7 +55,7 @@ export interface DailyBusinessSummary {
   netEstimatedPayoutPaise: Paise;
 
   // Settlement Timing
-  nextSettlementDate: string; // ISO timestamp (Tomorrow 08:00 AM)
+  nextSettlementDate: string; // ISO timestamp (Tomorrow 10:00 AM)
   nextSettlementFormatted: string;
   tPlus1RemainingMs: number;
   tPlus1Countdown: string;
@@ -63,12 +63,13 @@ export interface DailyBusinessSummary {
 }
 
 /**
- * Calculates the exact Tomorrow 08:00 AM timestamp for T+1 Daily Payout.
+ * Calculates the exact Tomorrow 10:00 AM timestamp for T+1 Daily Payout.
+ * All orders completed up to 12:00 Midnight are compiled and scheduled for bank transfer by 10:00 AM next morning.
  */
-export function getNextSettlementTimestamp(refDate: Date = new Date()): Date {
+export function getNextSettlementTimestamp(refDate: Date = new Date(), targetHour: number = 10): Date {
   const target = new Date(refDate.getTime());
   target.setDate(target.getDate() + 1);
-  target.setHours(8, 0, 0, 0);
+  target.setHours(targetHour, 0, 0, 0);
   return target;
 }
 
@@ -180,7 +181,7 @@ export function calculateDailyBusinessSummary(
     weekday: "short",
     month: "short",
     day: "numeric",
-  })} at 08:00 AM`;
+  })} at 10:00 AM`;
 
   return {
     deliveredOrdersCount: orders.length,

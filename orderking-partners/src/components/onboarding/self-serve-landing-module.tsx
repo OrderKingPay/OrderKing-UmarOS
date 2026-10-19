@@ -53,10 +53,10 @@ export function SelfServeLandingModule() {
   const [openTime, setOpenTime] = useState("10:00");
   const [closeTime, setCloseTime] = useState("23:00");
 
-  // Sample signature menu dish
-  const [dishName, setDishName] = useState("Special Dum Biryani");
+  // Signature menu dish (optional fast-start)
+  const [dishName, setDishName] = useState("");
   const [dishDiet, setDishDiet] = useState<"VEG" | "NONVEG">("NONVEG");
-  const [dishPrice, setDishPrice] = useState("299");
+  const [dishPrice, setDishPrice] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);

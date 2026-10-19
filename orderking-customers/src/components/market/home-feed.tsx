@@ -29,7 +29,6 @@ import { useCartStore } from "@/lib/stores/cart";
 import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
-import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 // Curated high-resolution categories with distinct gradient colors (Biryani, Pizza, Rolls, Thali, Burgers, Desserts)
@@ -646,14 +645,6 @@ export function HomeFeed({
           </div>
         </section>
       )}
-
-      {/* 2.5. ELEGANT GIFT TREAT TO FRIENDS (Compact WhatsApp Share) */}
-      {!q && filteredRestaurants.length > 0 && (
-        <section aria-label="Gift Treat to Friends" className="pt-1">
-          <WhatsAppViralBountiesWidget source="home_feed" />
-        </section>
-      )}
-
 
     </div>
   );

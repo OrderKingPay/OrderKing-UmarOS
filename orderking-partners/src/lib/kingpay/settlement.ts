@@ -386,4 +386,80 @@ export const settlementEngine = {
       };
     });
   },
+
+  /**
+   * Compiles all orders completed up to 12:00 Midnight IST and schedules payout for next morning 10:00 AM (T+1).
+   * Enforces statutory tax deductions: Sec 9(5) 5% GST, 1% Sec 52 TCS, 1% Sec 194-O TDS.
+   */
+  compileTPlus1MidnightBatch(params: {
+    restaurantId: string;
+    orderDate?: string;
+    orders: Array<{
+      orderId: string;
+      orderNumber?: string;
+      foodValuePaise: number;
+      packingPaise?: number;
+      restaurantDiscountPaise?: number;
+      commissionBps?: number;
+      completedAt?: string;
+    }>;
+  }) {
+    const refDate = params.orderDate ? new Date(params.orderDate) : new Date();
+    const orderDateStr = refDate.toISOString().split("T")[0];
+    const tPlus1Date = new Date(refDate.getTime());
+    tPlus1Date.setDate(tPlus1Date.getDate() + 1);
+    const payoutDateStr = tPlus1Date.toISOString().split("T")[0];
+
+    const cutoffTimestamp = `${orderDateStr}T23:59:59.999+05:30`;
+    const scheduledPayoutTimestamp = `${payoutDateStr}T10:00:00.000+05:30`;
+
+    const lines = params.orders.map((o) => {
+      return computeRestaurantPayable({
+        foodValuePaise: o.foodValuePaise,
+        packingPaise: o.packingPaise ?? 0,
+        restaurantDiscountPaise: o.restaurantDiscountPaise ?? 0,
+        platformFundedDiscountPaise: 0,
+        commissionBps: o.commissionBps ?? 1800,
+        cycleType: "EXPRESS_DAILY",
+        tcsSec52Bps: 100, // Enforce 1% Section 52 TCS
+        tdsSec194OBps: 100, // Enforce 1% Section 194-O TDS
+        sec9_5GstBps: 500, // Enforce 5% Section 9(5) Food GST
+      });
+    });
+
+    const totalGrossSalesPaise = addPaise(...lines.map((l) => l.grossSalesPaise), 0);
+    const totalNetTaxableSupplyPaise = addPaise(...lines.map((l) => l.netTaxableSupplyPaise), 0);
+    const totalCommissionPaise = addPaise(...lines.map((l) => l.commissionPaise), 0);
+    const totalCommissionGstPaise = addPaise(...lines.map((l) => l.commissionGstPaise), 0);
+    const totalTcsSec52Paise = addPaise(...lines.map((l) => l.tcsSec52Paise), 0);
+    const totalTdsSec194OPaise = addPaise(...lines.map((l) => l.tdsSec194OPaise), 0);
+    const totalSec9_5GstPaise = addPaise(...lines.map((l) => l.sec9_5GstPaise), 0);
+    const netBatchPayablePaise = addPaise(...lines.map((l) => l.restaurantPayablePaise), 0);
+
+    const batchId = `stl_tplus1_${params.restaurantId.slice(0, 8)}_${orderDateStr}_${Date.now()}`;
+
+    return {
+      batchId,
+      restaurantId: params.restaurantId,
+      orderDate: orderDateStr,
+      cutoffTimestamp,
+      scheduledPayoutTimestamp,
+      scheduledPayoutDate: payoutDateStr,
+      scheduledPayoutTime: "10:00 AM",
+      cycleType: "EXPRESS_DAILY" as const,
+      ordersCount: lines.length,
+      totals: {
+        totalGrossSalesPaise,
+        totalNetTaxableSupplyPaise,
+        totalCommissionPaise,
+        totalCommissionGstPaise,
+        totalTcsSec52Paise,
+        totalTdsSec194OPaise,
+        totalSec9_5GstPaise,
+        netBatchPayablePaise,
+      },
+      status: "SCHEDULED_FOR_10AM_PAYOUT" as const,
+      isMidnightCompiled: true,
+    };
+  },
 };

@@ -5,3 +5,4 @@ export * from "./skeleton";
 export * from "./customization-provider";
 export * from "./sync-client";
 export * from "./supabase-sync-client";
+export * from "./tax";

@@ -131,7 +131,21 @@ export function PassengerDrawer({
       return;
     }
 
-    // 3. Wallet balance check if KingPay Wallet chosen
+    // 3. Indian Railways CRIS Compliance: Zero payment capture for trains without verified IRCTC PSP
+    if (quote.mode === "train") {
+      toast.info("Connecting to official Indian Railways IRCTC portal for compliant booking...");
+      const fromParam = encodeURIComponent((quote.fromCode || quote.fromCity || "NDLS").replace(/[^A-Za-z]/g, "").toUpperCase());
+      const toParam = encodeURIComponent((quote.toCode || quote.toCity || "MMCT").replace(/[^A-Za-z]/g, "").toUpperCase());
+      const dateParam = travelDate || new Date().toISOString().split("T")[0];
+      const irctcUrl = `https://www.irctc.co.in/nget/train-search?from=${fromParam}&to=${toParam}&date=${dateParam}`;
+      if (typeof window !== "undefined") {
+        window.open(irctcUrl, "_blank", "noopener,noreferrer");
+      }
+      onClose();
+      return;
+    }
+
+    // 4. Wallet balance check if KingPay Wallet chosen
     if (paymentMethod === "kingpay_wallet") {
       if (walletBalancePaise < fareCalc.totalCheckoutPaise) {
         toast.error(
@@ -146,7 +160,7 @@ export function PassengerDrawer({
     setIsSubmitting(true);
 
     try {
-      // 4. Fail-Closed Supplier Gating: verify carrier/supplier connectivity first
+      // 5. Fail-Closed Supplier Gating: verify carrier/supplier connectivity first
       const supplierStatus = checkSupplierGating(quote.mode, quote.carrierCode);
       if (!supplierStatus.available) {
         toast.error(supplierStatus.message);
@@ -620,15 +634,36 @@ export function PassengerDrawer({
             </div>
           </div>
 
+          {/* IRCTC Compliance Notice for Train Bookings */}
+          {quote.mode === "train" && (
+            <div className="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-3.5 text-xs text-indigo-950 flex items-start gap-2.5">
+              <ShieldCheck className="size-4 shrink-0 mt-0.5 text-indigo-600" />
+              <p className="font-semibold leading-relaxed">
+                <strong>Indian Railways IRCTC Compliance:</strong> OrderKing charges strictly ₹0 platform fee.
+                In accordance with CRIS guidelines, train bookings and payment capture are completed via the official
+                IRCTC portal. No money will be charged to your bank or deducted from your wallet on this screen.
+              </p>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="pt-2 flex flex-col sm:flex-row gap-3">
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 h-13 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2"
+              className={`flex-1 h-13 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 ${
+                quote.mode === "train"
+                  ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/25"
+                  : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25"
+              }`}
             >
               {isSubmitting ? (
-                "Processing Sovereign Booking..."
+                "Connecting to Carrier..."
+              ) : quote.mode === "train" ? (
+                <>
+                  Proceed to Official IRCTC Portal (₹0 Surcharge)
+                  <ArrowRight className="size-4" />
+                </>
               ) : (
                 <>
                   Pay {formatPaise(fareCalc.totalCheckoutPaise)} &amp; Issue E-Ticket (0% Fee)

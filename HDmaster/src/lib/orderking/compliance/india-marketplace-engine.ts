@@ -1129,7 +1129,346 @@ export function calculateMerchantOrderSettlement(input: MerchantSettlementInput)
 }
 
 // ============================================================================
-// 7. UNIFIED UMAROS INDIA MARKETPLACE COMPLIANCE ENGINE
+// 7. STATUTORY PAN & BANK IFSC ONBOARDING VALIDATORS
+// ============================================================================
+
+export interface PanValidationResult {
+  isValid: boolean;
+  pan: string;
+  entityType?: string;
+  error?: string;
+}
+
+/**
+ * Validates a 10-character Indian Permanent Account Number (PAN) under Section 139A of Income Tax Act 1961.
+ * Format: 5 uppercase letters, 4 numeric digits, 1 uppercase letter (e.g. ABCDE1234F).
+ */
+export function validateIndianPAN(pan: string | null | undefined): PanValidationResult {
+  const sanitized = String(pan ?? "").trim().toUpperCase();
+  if (sanitized.length !== 10) {
+    return {
+      isValid: false,
+      pan: sanitized,
+      error: `PAN must be exactly 10 alphanumeric characters, received ${sanitized.length}`,
+    };
+  }
+
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  if (!panRegex.test(sanitized)) {
+    return {
+      isValid: false,
+      pan: sanitized,
+      error: "Invalid PAN format. Must be 5 uppercase letters, 4 numeric digits, 1 uppercase letter (e.g. ABCDE1234F)",
+    };
+  }
+
+  const entityChar = sanitized.charAt(3);
+  let entityType = "Individual / Proprietorship";
+  switch (entityChar) {
+    case "P": entityType = "Individual (Person) / Proprietorship"; break;
+    case "C": entityType = "Company (Private / Public Limited)"; break;
+    case "F": entityType = "Partnership Firm / LLP"; break;
+    case "H": entityType = "Hindu Undivided Family (HUF)"; break;
+    case "A": entityType = "Association of Persons (AOP)"; break;
+    case "T": entityType = "Trust"; break;
+    case "B": entityType = "Body of Individuals (BOI)"; break;
+    case "L": entityType = "Local Authority"; break;
+    case "J": entityType = "Artificial Juridical Person"; break;
+    case "G": entityType = "Government Agency"; break;
+  }
+
+  return {
+    isValid: true,
+    pan: sanitized,
+    entityType,
+  };
+}
+
+export interface IfscValidationResult {
+  isValid: boolean;
+  ifsc: string;
+  bankCode?: string;
+  branchCode?: string;
+  error?: string;
+}
+
+/**
+ * Validates an 11-character Indian Financial System Code (IFSC) for electronic bank payouts (NEFT/RTGS/IMPS).
+ * Format: 4 letters (bank code) + '0' (reserved) + 6 alphanumeric characters (branch code).
+ */
+export function validateIndianBankIFSC(ifsc: string | null | undefined): IfscValidationResult {
+  const sanitized = String(ifsc ?? "").trim().toUpperCase();
+  if (sanitized.length !== 11) {
+    return {
+      isValid: false,
+      ifsc: sanitized,
+      error: `Bank IFSC must be exactly 11 characters, received ${sanitized.length}`,
+    };
+  }
+
+  const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+  if (!ifscRegex.test(sanitized)) {
+    return {
+      isValid: false,
+      ifsc: sanitized,
+      error: "Invalid IFSC format. Expected 4 alphabetic characters, followed by '0', followed by 6 alphanumeric branch characters (e.g. HDFC0001234)",
+    };
+  }
+
+  return {
+    isValid: true,
+    ifsc: sanitized,
+    bankCode: sanitized.slice(0, 4),
+    branchCode: sanitized.slice(5, 11),
+  };
+}
+
+// ============================================================================
+// 8. T+1 DAILY MERCHANT SETTLEMENT ENGINE (MIDNIGHT TO 10:00 AM DISPATCH)
+// ============================================================================
+
+export interface TPlus1DailySettlementInput {
+  restaurantId: string;
+  restaurantName: string;
+  bankAccountMasked?: string;
+  ifscCode?: string;
+  payoutChannel?: "BANK_TRANSFER_NEFT_IMPS" | "UPI_PAYOUT";
+  orderDate?: string; // YYYY-MM-DD
+  orders: Array<{
+    orderId: string;
+    foodValuePaise: number;
+    packingPaise?: number;
+    restaurantDiscountPaise?: number;
+    commissionBps: number;
+    completedAt: string; // ISO timestamp
+  }>;
+}
+
+export interface TPlus1DailySettlementBatch {
+  batchId: string;
+  restaurantId: string;
+  restaurantName: string;
+  orderDate: string; // YYYY-MM-DD (Day T)
+  cutoffTimestamp: string; // YYYY-MM-DDT23:59:59.999+05:30 (Day T 12:00 Midnight IST)
+  scheduledPayoutTimestamp: string; // YYYY-MM-DDT10:00:00.000+05:30 (Day T+1 10:00 AM IST)
+  scheduledPayoutDate: string; // YYYY-MM-DD (Day T+1)
+  scheduledPayoutTime: string; // "10:00 AM"
+  payoutChannel: "BANK_TRANSFER_NEFT_IMPS" | "UPI_PAYOUT";
+  bankAccountMasked: string;
+  ifscCode: string;
+  ordersCount: number;
+
+  totalGrossSalesPaise: number;
+  totalFoodValuePaise: number;
+  totalPackingPaise: number;
+  totalRestaurantDiscountsPaise: number;
+  totalNetTaxableSupplyPaise: number;
+
+  totalCommissionPaise: number;
+  totalCommissionGstPaise: number; // 18% GST
+
+  totalTcsSection52Paise: number; // 1% TCS
+  totalTdsSection194OPaise: number; // 1% TDS
+  totalSec9_5FoodGstRemittedPaise: number; // 5% Food GST remitted by platform (NOT debited)
+
+  totalDeductionsPaise: number;
+  netPayablePaise: number;
+
+  status: "SCHEDULED_FOR_10AM_PAYOUT";
+  isMidnightCompiled: boolean;
+}
+
+/**
+ * Compiles all orders completed up to 12:00 Midnight IST and schedules payout for next morning 10:00 AM (T+1).
+ */
+export function compileTPlus1DailyMerchantSettlement(input: TPlus1DailySettlementInput): TPlus1DailySettlementBatch {
+  const refDate = input.orderDate ? new Date(input.orderDate) : new Date();
+  const orderDateStr = refDate.toISOString().split("T")[0];
+
+  // Day T+1 calculation
+  const tPlus1Date = new Date(refDate.getTime());
+  tPlus1Date.setDate(tPlus1Date.getDate() + 1);
+  const payoutDateStr = tPlus1Date.toISOString().split("T")[0];
+
+  // Strict statutory IST cutoff & scheduled dispatch timestamps
+  const cutoffTimestamp = `${orderDateStr}T23:59:59.999+05:30`;
+  const scheduledPayoutTimestamp = `${payoutDateStr}T10:00:00.000+05:30`;
+
+  let totalFood = 0;
+  let totalPacking = 0;
+  let totalDiscount = 0;
+  let totalCommission = 0;
+  let totalCommissionGst = 0;
+  let totalTcs = 0;
+  let totalTds = 0;
+  let totalSec95 = 0;
+
+  for (const o of input.orders) {
+    const food = Math.max(0, o.foodValuePaise);
+    const packing = Math.max(0, o.packingPaise ?? 0);
+    const disc = Math.max(0, o.restaurantDiscountPaise ?? 0);
+    const netTaxable = Math.max(0, food + packing - disc);
+
+    const comm = percentOf(netTaxable, o.commissionBps);
+    const commGst = percentOf(comm, INDIA_COMPLIANCE_RATES.PLATFORM_FEE_GST_BPS);
+
+    const tcs = percentOf(netTaxable, INDIA_COMPLIANCE_RATES.TCS_BPS);
+    const tds = percentOf(food + packing, INDIA_COMPLIANCE_RATES.TDS_BPS);
+    const sec95 = percentOf(netTaxable, INDIA_COMPLIANCE_RATES.FOOD_GST_BPS);
+
+    totalFood += food;
+    totalPacking += packing;
+    totalDiscount += disc;
+    totalCommission += comm;
+    totalCommissionGst += commGst;
+    totalTcs += tcs;
+    totalTds += tds;
+    totalSec95 += sec95;
+  }
+
+  const totalGrossSales = totalFood + totalPacking;
+  const totalNetTaxableSupply = Math.max(0, totalGrossSales - totalDiscount);
+  const totalDeductions = totalCommission + totalCommissionGst + totalTcs + totalTds;
+  const netPayable = Math.max(0, totalNetTaxableSupply - totalDeductions);
+
+  const batchId = `stl_tplus1_${input.restaurantId.slice(0, 8)}_${orderDateStr}_${Date.now()}`;
+
+  return {
+    batchId,
+    restaurantId: input.restaurantId,
+    restaurantName: input.restaurantName,
+    orderDate: orderDateStr,
+    cutoffTimestamp,
+    scheduledPayoutTimestamp,
+    scheduledPayoutDate: payoutDateStr,
+    scheduledPayoutTime: "10:00 AM",
+    payoutChannel: input.payoutChannel ?? "BANK_TRANSFER_NEFT_IMPS",
+    bankAccountMasked: input.bankAccountMasked || "XXXX-XXXX-4321",
+    ifscCode: input.ifscCode || "HDFC0001234",
+    ordersCount: input.orders.length,
+
+    totalGrossSalesPaise: totalGrossSales,
+    totalFoodValuePaise: totalFood,
+    totalPackingPaise: totalPacking,
+    totalRestaurantDiscountsPaise: totalDiscount,
+    totalNetTaxableSupplyPaise: totalNetTaxableSupply,
+
+    totalCommissionPaise: totalCommission,
+    totalCommissionGstPaise: totalCommissionGst,
+
+    totalTcsSection52Paise: totalTcs,
+    totalTdsSection194OPaise: totalTds,
+    totalSec9_5FoodGstRemittedPaise: totalSec95,
+
+    totalDeductionsPaise: totalDeductions,
+    netPayablePaise: netPayable,
+
+    status: "SCHEDULED_FOR_10AM_PAYOUT",
+    isMidnightCompiled: true,
+  };
+}
+
+// ============================================================================
+// 9. AUTOMATED STATUTORY CREDIT NOTE GENERATOR (SECTION 34 CGST ACT)
+// ============================================================================
+
+export type CreditNoteReasonCode =
+  | "01_SALES_RETURN"
+  | "02_POST_SALE_DISCOUNT"
+  | "03_DEFICIENCY_IN_SERVICE"
+  | "04_CORRECTION_IN_INVOICE"
+  | "05_ORDER_CANCELLED";
+
+export interface CreditNoteInputPaise {
+  originalInvoiceNumber: string;
+  originalOrderId: string;
+  restaurantId: string;
+  restaurantGstin?: string;
+  platformGstin?: string;
+  reasonCode: CreditNoteReasonCode;
+  reasonDescription: string;
+  taxableAmountPaise: number;
+  isInterstate?: boolean;
+}
+
+export interface StatutoryCreditNote {
+  creditNoteNumber: string;
+  statutoryBasis: "Section 34, Central Goods and Services Tax (CGST) Act, 2017";
+  issueDate: string;
+  originalInvoiceNumber: string;
+  originalOrderId: string;
+  restaurantId: string;
+  restaurantGstin: string;
+  platformGstin: string;
+  reasonCode: CreditNoteReasonCode;
+  reasonDescription: string;
+
+  taxableAmountPaise: number;
+  cgstPaise: number;
+  sgstPaise: number;
+  igstPaise: number;
+  totalGstPaise: number;
+  totalCreditNoteAmountPaise: number;
+
+  tcsReversalPaise: number;
+  tdsAdjustmentPaise: number;
+  digitalSignatureRef: string;
+}
+
+export function generateStatutoryCreditNote(input: CreditNoteInputPaise): StatutoryCreditNote {
+  const taxable = Math.max(0, input.taxableAmountPaise);
+  const isInterstate = Boolean(input.isInterstate);
+  const now = new Date();
+  const dateStr = now.toISOString().split("T")[0];
+  const yearMonth = dateStr.replace(/-/g, "").slice(0, 6);
+
+  let cgst = 0;
+  let sgst = 0;
+  let igst = 0;
+
+  // 18% GST reversal on platform commission adjustments
+  const rateBps = INDIA_COMPLIANCE_RATES.PLATFORM_FEE_GST_BPS;
+  if (isInterstate) {
+    igst = percentOf(taxable, rateBps);
+  } else {
+    cgst = percentOf(taxable, INDIA_COMPLIANCE_RATES.PLATFORM_FEE_CGST_BPS);
+    sgst = percentOf(taxable, INDIA_COMPLIANCE_RATES.PLATFORM_FEE_SGST_BPS);
+  }
+  const totalGst = isInterstate ? igst : cgst + sgst;
+
+  // Withholding reversals
+  const tcsReversal = percentOf(taxable, INDIA_COMPLIANCE_RATES.TCS_BPS);
+  const tdsAdjustment = percentOf(taxable, INDIA_COMPLIANCE_RATES.TDS_BPS);
+
+  const creditNoteNumber = `CN-${yearMonth}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+  return {
+    creditNoteNumber,
+    statutoryBasis: "Section 34, Central Goods and Services Tax (CGST) Act, 2017",
+    issueDate: dateStr,
+    originalInvoiceNumber: input.originalInvoiceNumber,
+    originalOrderId: input.originalOrderId,
+    restaurantId: input.restaurantId,
+    restaurantGstin: input.restaurantGstin || "URP (Unregistered Person)",
+    platformGstin: input.platformGstin || "07AAAAO0000A1Z5",
+    reasonCode: input.reasonCode,
+    reasonDescription: input.reasonDescription,
+
+    taxableAmountPaise: taxable,
+    cgstPaise: cgst,
+    sgstPaise: sgst,
+    igstPaise: igst,
+    totalGstPaise: totalGst,
+    totalCreditNoteAmountPaise: taxable + totalGst,
+
+    tcsReversalPaise: tcsReversal,
+    tdsAdjustmentPaise: tdsAdjustment,
+    digitalSignatureRef: `DSC-OK-ECO-${now.getTime()}`,
+  };
+}
+
+// ============================================================================
+// 10. UNIFIED UMAROS INDIA MARKETPLACE COMPLIANCE ENGINE
 // ============================================================================
 
 export class IndiaMarketplaceEngine {
@@ -1148,6 +1487,20 @@ export class IndiaMarketplaceEngine {
     options?: { currentYearTwoDigit?: number; minYearTwoDigit?: number },
   ): FSSAIValidationResult {
     return validateFSSAILicense(fssaiNumber, options);
+  }
+
+  /**
+   * Validates a 10-character Indian Permanent Account Number (PAN).
+   */
+  validatePAN(pan: string | null | undefined): PanValidationResult {
+    return validateIndianPAN(pan);
+  }
+
+  /**
+   * Validates an 11-character Indian Bank IFSC code.
+   */
+  validateIFSC(ifsc: string | null | undefined): IfscValidationResult {
+    return validateIndianBankIFSC(ifsc);
   }
 
   /**
@@ -1187,6 +1540,20 @@ export class IndiaMarketplaceEngine {
    */
   calculateMerchantSettlement(input: MerchantSettlementInput): MerchantSettlementResult {
     return calculateMerchantOrderSettlement(input);
+  }
+
+  /**
+   * Compiles orders up to 12:00 Midnight and schedules payout for next morning 10:00 AM (T+1).
+   */
+  compileTPlus1Settlement(input: TPlus1DailySettlementInput): TPlus1DailySettlementBatch {
+    return compileTPlus1DailyMerchantSettlement(input);
+  }
+
+  /**
+   * Generates a Section 34 CGST Act compliant automated Credit Note.
+   */
+  generateCreditNote(input: CreditNoteInputPaise): StatutoryCreditNote {
+    return generateStatutoryCreditNote(input);
   }
 }
 

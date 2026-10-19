@@ -21,5 +21,5 @@ describe("Live Real Restaurant Catalog Verification", () => {
     expect(names).toContain("Kake Da Hotel");
     expect(names).toContain("Saravanaa Bhavan");
     expect(names).toContain("Karim's Mughal Delicacies");
-  }, 20000);
+  }, 45000);
 });

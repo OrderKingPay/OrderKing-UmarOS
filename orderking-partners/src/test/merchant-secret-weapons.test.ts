@@ -377,23 +377,23 @@ describe("Merchant Secret Weapons & Operational Resilience Suite", () => {
       expect(summary.netEstimatedPayoutPaise).toBeGreaterThan(0);
     });
 
-    it("calculates T+1 settlement date (Tomorrow 08:00 AM) and countdown timer", () => {
+    it("calculates T+1 settlement date (Tomorrow 10:00 AM) and countdown timer", () => {
       const testNow = new Date(2026, 9, 17, 16, 30, 0); // 4:30 PM on Oct 17
       const nextDate = getNextSettlementTimestamp(testNow);
 
       expect(nextDate.getDate()).toBe(18); // Oct 18
-      expect(nextDate.getHours()).toBe(8);
+      expect(nextDate.getHours()).toBe(10);
       expect(nextDate.getMinutes()).toBe(0);
 
-      // 16:30 today to 08:00 tomorrow = 15 hours 30 mins
+      // 16:30 today to 10:00 tomorrow = 17 hours 30 mins
       const countdown = formatTPlus1Countdown(nextDate, testNow);
-      expect(countdown.formatted).toBe("15h 30m remaining");
-      expect(countdown.remainingMs).toBe(15.5 * 60 * 60 * 1000);
+      expect(countdown.formatted).toBe("17h 30m remaining");
+      expect(countdown.remainingMs).toBe(17.5 * 60 * 60 * 1000);
 
       const summary = calculateDailyBusinessSummary(orders, { refDate: testNow });
       expect(summary.settlementCycle).toBe("T+1 Express Daily Payout");
-      expect(summary.tPlus1Countdown).toBe("15h 30m remaining");
-      expect(summary.nextSettlementFormatted).toContain("at 08:00 AM");
+      expect(summary.tPlus1Countdown).toBe("17h 30m remaining");
+      expect(summary.nextSettlementFormatted).toContain("at 10:00 AM");
     });
   });
 });

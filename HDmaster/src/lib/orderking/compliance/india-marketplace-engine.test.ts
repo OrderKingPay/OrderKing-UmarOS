@@ -14,6 +14,10 @@ import {
   INDIAN_STATE_CODES,
   CENTRAL_COMMISSION_TIERS,
   CENTRAL_COMMISSION_TIER_PERCENTAGES,
+  validateIndianPAN,
+  validateIndianBankIFSC,
+  compileTPlus1DailyMerchantSettlement,
+  generateStatutoryCreditNote,
 } from "./india-marketplace-engine.ts";
 import { toPaise, fromPaise } from "../money.ts";
 
@@ -647,6 +651,149 @@ describe("🇮🇳 India-Specific Marketplace, Tax & Regulatory Compliance Engin
 
       // 6. Statutory Floor: 8% (800 bps)
       expect(INDIA_COMPLIANCE_RATES.MIN_COMMISSION_BPS).toBe(800);
+    });
+  });
+
+  // ==========================================================================
+  // 6. STATUTORY ONBOARDING VALIDATION: PAN & BANK IFSC
+  // ==========================================================================
+  describe("6. Statutory Onboarding Validation: PAN & Bank IFSC", () => {
+    it("validates 10-character PAN format and identifies entity type", () => {
+      // Individual / Proprietor PAN
+      const indPan = validateIndianPAN("ABCDE1234F");
+      expect(indPan.isValid).toBe(true);
+      expect(indPan.entityType).toContain("Individual");
+
+      // Company PAN
+      const coPan = validateIndianPAN("AAACC5678G");
+      expect(coPan.isValid).toBe(true);
+      expect(coPan.entityType).toContain("Company");
+
+      // Invalid PANs
+      expect(validateIndianPAN("INVALID").isValid).toBe(false);
+      expect(validateIndianPAN("12345ABCDE").isValid).toBe(false);
+      expect(validateIndianPAN("").isValid).toBe(false);
+
+      // Class method check
+      expect(indiaMarketplaceEngine.validatePAN("ABCDE1234F").isValid).toBe(true);
+    });
+
+    it("validates 11-character Bank IFSC format and extracts bank code", () => {
+      const validIfsc = validateIndianBankIFSC("HDFC0001234");
+      expect(validIfsc.isValid).toBe(true);
+      expect(validIfsc.bankCode).toBe("HDFC");
+      expect(validIfsc.branchCode).toBe("001234");
+
+      // Invalid IFSCs
+      expect(validateIndianBankIFSC("HDFC1234").isValid).toBe(false); // Length != 11
+      expect(validateIndianBankIFSC("HDFC1001234").isValid).toBe(false); // 5th char not '0'
+      expect(validateIndianBankIFSC("").isValid).toBe(false);
+
+      // Class method check
+      expect(indiaMarketplaceEngine.validateIFSC("SBIN0000456").isValid).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // 7. T+1 DAILY MERCHANT SETTLEMENT (MIDNIGHT CUTOFF TO 10:00 AM DISPATCH)
+  // ==========================================================================
+  describe("7. T+1 Daily Merchant Settlement Engine", () => {
+    it("compiles orders completed up to 12:00 Midnight and schedules payout for 10:00 AM next morning", () => {
+      const orderDate = "2026-10-18";
+      const batch = compileTPlus1DailyMerchantSettlement({
+        restaurantId: "rest_bikanervala_01",
+        restaurantName: "Bikanervala Sweets",
+        bankAccountMasked: "HDFC-XXXX-5521",
+        ifscCode: "HDFC0001234",
+        orderDate,
+        orders: [
+          {
+            orderId: "ord_1",
+            foodValuePaise: 40000, // ₹400
+            packingPaise: 2000, // ₹20
+            restaurantDiscountPaise: 2000, // ₹20
+            commissionBps: 1800, // 18%
+            completedAt: "2026-10-18T14:30:00Z",
+          },
+          {
+            orderId: "ord_2",
+            foodValuePaise: 60000, // ₹600
+            packingPaise: 3000, // ₹30
+            restaurantDiscountPaise: 0,
+            commissionBps: 1800, // 18%
+            completedAt: "2026-10-18T23:58:00Z", // Just before 12:00 Midnight
+          },
+        ],
+      });
+
+      expect(batch.orderDate).toBe("2026-10-18");
+      expect(batch.cutoffTimestamp).toBe("2026-10-18T23:59:59.999+05:30"); // 12:00 Midnight IST
+      expect(batch.scheduledPayoutDate).toBe("2026-10-19"); // Day T+1
+      expect(batch.scheduledPayoutTime).toBe("10:00 AM");
+      expect(batch.scheduledPayoutTimestamp).toBe("2026-10-19T10:00:00.000+05:30");
+      expect(batch.status).toBe("SCHEDULED_FOR_10AM_PAYOUT");
+      expect(batch.isMidnightCompiled).toBe(true);
+      expect(batch.ordersCount).toBe(2);
+
+      // Gross sales = 42000 + 63000 = 105000 paise
+      expect(batch.totalGrossSalesPaise).toBe(105000);
+      // Net taxable supply = 40000 + 63000 = 103000 paise
+      expect(batch.totalNetTaxableSupplyPaise).toBe(103000);
+
+      // Section 52 TCS = 1% of 103,000 = 1030 paise
+      expect(batch.totalTcsSection52Paise).toBe(1030);
+      // Section 194-O TDS = 1% of 105,000 = 1050 paise
+      expect(batch.totalTdsSection194OPaise).toBe(1050);
+
+      expect(batch.netPayablePaise).toBeGreaterThan(0);
+      expect(batch.netPayablePaise + batch.totalDeductionsPaise).toBe(batch.totalNetTaxableSupplyPaise);
+
+      // Engine class integration test
+      const engineBatch = indiaMarketplaceEngine.compileTPlus1Settlement({
+        restaurantId: "rest_test",
+        restaurantName: "Test Kitchen",
+        orders: [],
+      });
+      expect(engineBatch.scheduledPayoutTime).toBe("10:00 AM");
+    });
+  });
+
+  // ==========================================================================
+  // 8. AUTOMATED STATUTORY CREDIT NOTE GENERATOR (SECTION 34 CGST ACT)
+  // ==========================================================================
+  describe("8. Automated Statutory Credit Note Generator (Section 34 CGST Act)", () => {
+    it("generates GST credit note for order cancellation and adjusts tax withholdings", () => {
+      const cn = generateStatutoryCreditNote({
+        originalInvoiceNumber: "INV-202610-11223",
+        originalOrderId: "ord_cancel_77",
+        restaurantId: "rest_behrouz_01",
+        reasonCode: "05_ORDER_CANCELLED",
+        reasonDescription: "Kitchen stockout cancellation",
+        taxableAmountPaise: 40000, // ₹400
+      });
+
+      expect(cn.creditNoteNumber).toMatch(/^CN-\d{6}-\d{6}$/);
+      expect(cn.statutoryBasis).toContain("Section 34");
+      expect(cn.reasonCode).toBe("05_ORDER_CANCELLED");
+      expect(cn.taxableAmountPaise).toBe(40000);
+      expect(cn.cgstPaise).toBe(3600); // 9% CGST
+      expect(cn.sgstPaise).toBe(3600); // 9% SGST
+      expect(cn.totalGstPaise).toBe(7200); // 18% GST reversal
+      expect(cn.totalCreditNoteAmountPaise).toBe(47200);
+      expect(cn.tcsReversalPaise).toBe(400); // 1% TCS reversal
+      expect(cn.tdsAdjustmentPaise).toBe(400); // 1% TDS adjustment
+      expect(cn.digitalSignatureRef).toContain("DSC-OK-ECO-");
+
+      // Engine class integration
+      const engineCn = indiaMarketplaceEngine.generateCreditNote({
+        originalInvoiceNumber: "INV-100",
+        originalOrderId: "ord_100",
+        restaurantId: "rest_100",
+        reasonCode: "01_SALES_RETURN",
+        reasonDescription: "Return",
+        taxableAmountPaise: 10000,
+      });
+      expect(engineCn.reasonCode).toBe("01_SALES_RETURN");
     });
   });
 });
