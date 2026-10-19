@@ -54,7 +54,7 @@ jobs:
 
       - name: Deploy to Cloudflare Pages via Wrangler
         run: |
-          npx wrangler pages deploy orderking-customers/dist --project-name=orderking-customers --branch=main --commit-dirty=true
+          npx wrangler pages deploy orderking-customers/dist --project-name=orderking-customers --branch=main --commit-dirty=true --no-bundle
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || 'fc53b6fd613df944a3a46606cfbf21d0' }}

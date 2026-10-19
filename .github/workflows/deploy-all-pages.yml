@@ -39,7 +39,7 @@ jobs:
       - name: Build & Deploy Customer App
         run: |
           pnpm --filter orderking-customers run build
-          npx wrangler pages deploy orderking-customers/dist --project-name=orderking-customers --branch=main --commit-dirty=true
+          npx wrangler pages deploy orderking-customers/dist --project-name=orderking-customers --branch=main --commit-dirty=true --no-bundle
         env:
           NODE_ENV: production
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -54,7 +54,7 @@ jobs:
       - name: Build & Deploy Rider App
         run: |
           pnpm --filter orderking-riders run build
-          npx wrangler pages deploy orderking-riders/dist --project-name=orderking-riders --branch=main --commit-dirty=true
+          npx wrangler pages deploy orderking-riders/dist --project-name=orderking-riders --branch=main --commit-dirty=true --no-bundle
         env:
           NODE_ENV: production
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -67,7 +67,7 @@ jobs:
       - name: Build & Deploy Restaurant Partner App
         run: |
           pnpm --filter orderking-partners run build
-          npx wrangler pages deploy orderking-partners/dist --project-name=orderking-partners --branch=main --commit-dirty=true
+          npx wrangler pages deploy orderking-partners/dist --project-name=orderking-partners --branch=main --commit-dirty=true --no-bundle
         env:
           NODE_ENV: production
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -80,7 +80,7 @@ jobs:
       - name: Build & Deploy Central Admin (HDmaster)
         run: |
           pnpm --filter orderking-hdmaster run build
-          npx wrangler pages deploy HDmaster/dist --project-name=orderking-hdmaster --branch=main --commit-dirty=true
+          npx wrangler pages deploy HDmaster/dist --project-name=orderking-hdmaster --branch=main --commit-dirty=true --no-bundle
         env:
           NODE_ENV: production
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
