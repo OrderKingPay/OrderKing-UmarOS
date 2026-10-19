@@ -100,13 +100,21 @@ export default async function grokPwaMiddleware(
   if (!isDocumentPath(path)) return next();
 
   const result = await next();
-  if (
-    result instanceof Response &&
-    result.body &&
-    String(result.headers.get("content-type") ?? "").includes("text/html") &&
-    !result.headers.get("content-encoding")
-  ) {
-    return injectHeadStreaming(result, requestHost(event));
+  if (result instanceof Response) {
+    const isHtml = String(result.headers.get("content-type") ?? "").includes("text/html") || isDocumentPath(path);
+    if (isHtml) {
+      if (result.body && !result.headers.get("content-encoding") && String(result.headers.get("content-type") ?? "").includes("text/html")) {
+        return injectHeadStreaming(result, requestHost(event));
+      }
+      const newHeaders = new Headers(result.headers);
+      newHeaders.delete("content-length");
+      newHeaders.set("cache-control", "no-cache, no-store, must-revalidate");
+      return new Response(result.body, {
+        status: result.status,
+        statusText: result.statusText,
+        headers: newHeaders,
+      });
+    }
   }
   return result;
 }

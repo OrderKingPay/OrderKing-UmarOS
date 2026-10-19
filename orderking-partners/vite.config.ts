@@ -215,6 +215,18 @@ export default defineConfig(({ command, isPreview }) => ({
             // false, so removing this silently unwires /?install=1 on deploys.
             serverDir: "./server",
             minify: false,
+            routeRules: {
+              "/**": {
+                headers: {
+                  "cache-control": "no-cache, no-store, must-revalidate",
+                },
+              },
+              "/assets/**": {
+                headers: {
+                  "cache-control": "public, max-age=31536000, immutable",
+                },
+              },
+            },
           }),
         ]
       : []),
