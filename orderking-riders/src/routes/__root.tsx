@@ -120,6 +120,15 @@ export const Route = createRootRoute({
                   });
                 });
               }
+              if ('caches' in window) {
+                caches.keys().then(keys => {
+                  keys.forEach(k => {
+                    if (k !== 'orderking-rider-v4') {
+                      caches.delete(k);
+                    }
+                  });
+                }).catch(() => {});
+              }
             `,
           }}
         />
