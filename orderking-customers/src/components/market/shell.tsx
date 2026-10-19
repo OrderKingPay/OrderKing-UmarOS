@@ -301,7 +301,7 @@ export function CustomerShell({
             <div className="flex items-center gap-1.5 sm:gap-2">
               <button type="button" onClick={() => setConciergeOpen(true)}
                 className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-amber-400/80 bg-stone-950 text-amber-300 shadow-sm hover:bg-stone-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500 sm:size-10"
-                aria-label="Open AI assistant" title="AI assistant"><Mic className="size-4" aria-hidden="true" /></button>
+                aria-label="Open AI assistant" title="AI assistant"><Sparkles className="size-4" aria-hidden="true" /></button>
 
               {/* Luxury Center Search (Glassmorphism, golden focus ring) */}
               <button
