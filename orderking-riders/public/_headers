@@ -65,6 +65,18 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=86400
   X-Content-Type-Options: nosniff
 
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/login
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+
 # 4. Global Security Headers (inherited by all requests)
 /*
   X-Content-Type-Options: nosniff

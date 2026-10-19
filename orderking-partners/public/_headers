@@ -43,9 +43,17 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
   X-Content-Type-Options: nosniff
 
-# 3. Critical Dynamic Metadata & Offline Pages
+# 3. Critical Dynamic Metadata & HTML Entry Points (NEVER cached aggressively)
 /sw.js
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
   X-Content-Type-Options: nosniff
 
 /manifest.json
@@ -65,8 +73,9 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=86400
   X-Content-Type-Options: nosniff
 
-# 4. Global Security Headers (inherited by all requests)
+# 4. Global Security & Navigation Fallback Headers (inherited by all requests)
 /*
+  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
@@ -76,4 +85,3 @@
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   Cross-Origin-Resource-Policy: same-origin
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https: wss:; frame-src 'self' https://checkout.razorpay.com https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self' https:;
-

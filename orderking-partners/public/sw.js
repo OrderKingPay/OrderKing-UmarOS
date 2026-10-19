@@ -5,12 +5,13 @@
  * Zero external dependencies: uses native IndexedDB directly.
  */
 
-const CACHE_NAME = "orderking-partner-v2";
+const SW_VERSION = "orderking-partner-v3-live-truth";
+const CACHE_NAME = `ok-partner-${SW_VERSION}`;
 const STATIC_ASSETS = [
-  "/",
   "/offline.html",
-  "/favicon.svg",
+  "/favicon.ico",
   "/icon-192.png",
+  "/manifest.json",
   "/__grok/manifest.webmanifest",
 ];
 
@@ -91,11 +92,34 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+self.addEventListener("message", (event) => {
+  if (event.data && (event.data.type === "SKIP_WAITING" || event.data === "skipWaiting")) {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // HTML Navigation requests: network-first with cache and offline.html fallback
-  if (event.request.mode === "navigate") {
+  // Bypass payments, telemetry, and event-streams
+  if (
+    url.hostname.includes("razorpay.com") ||
+    url.pathname.startsWith("/api/webhooks/") ||
+    url.pathname.startsWith("/api/sync/") ||
+    (event.request.headers && event.request.headers.get("Accept")?.includes("text/event-stream"))
+  ) {
+    return;
+  }
+
+  // HTML Entry Points & Navigation requests: NETWORK-FIRST to guarantee live truth and zero stale bundle traps
+  const isHtmlRequest =
+    event.request.mode === "navigate" ||
+    url.pathname === "/" ||
+    url.pathname === "/index.html" ||
+    url.pathname.endsWith(".html") ||
+    (event.request.method === "GET" && (event.request.headers?.get("Accept") || "").includes("text/html"));
+
+  if (isHtmlRequest) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
@@ -106,11 +130,11 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(async () => {
-          const cached = await caches.match(event.request);
-          if (cached) return cached;
           const offlinePage = await caches.match("/offline.html");
           if (offlinePage) return offlinePage;
-          return caches.match("/");
+          const cached = await caches.match(event.request);
+          if (cached) return cached;
+          return caches.match("/offline.html");
         })
     );
     return;
@@ -195,7 +219,14 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Static assets (CSS, JS, WebAssembly, fonts, icons): cache-first with background revalidation.
-  if (event.request.method === "GET") {
+  if (
+    event.request.method === "GET" &&
+    (url.pathname.startsWith("/assets/") ||
+      url.pathname.startsWith("/food/") ||
+      url.pathname.startsWith("/brand/") ||
+      url.pathname.startsWith("/__grok/") ||
+      /\.(?:png|jpg|jpeg|webp|avif|svg|ico|woff2|css|js)$/i.test(url.pathname))
+  ) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
         const refresh = fetch(event.request)

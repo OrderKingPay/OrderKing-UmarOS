@@ -48,6 +48,10 @@
   Cache-Control: no-cache, no-store, must-revalidate
   X-Content-Type-Options: nosniff
 
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+
 /index.html
   Cache-Control: no-cache, no-store, must-revalidate
   X-Content-Type-Options: nosniff

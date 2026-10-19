@@ -4,7 +4,7 @@
  * Includes IndexedDB caching, 2200ms slow-network timeout racing, and instant skeleton shell fallback.
  */
 
-const CACHE_NAME = "hdmaster-command-v1";
+const CACHE_NAME = "hdmaster-command-v2";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
@@ -64,6 +64,12 @@ self.addEventListener("activate", (event) => {
     )
   );
   self.clients.claim();
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && (event.data.type === "SKIP_WAITING" || event.data === "skipWaiting")) {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("fetch", (event) => {

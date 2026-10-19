@@ -5,7 +5,7 @@
  * Zero external dependencies: uses native IndexedDB directly.
  */
 
-const CACHE_NAME = "orderking-rider-v3";
+const CACHE_NAME = "orderking-rider-v4";
 const STATIC_ASSETS = [
   "/",
   "/offline.html",
@@ -91,11 +91,25 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+self.addEventListener("message", (event) => {
+  if (event.data && (event.data.type === "SKIP_WAITING" || event.data === "skipWaiting")) {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // HTML Navigation requests: network-first with cache and offline.html fallback
-  if (event.request.mode === "navigate") {
+  // HTML Entry Points & Navigation requests: NETWORK-FIRST to guarantee live truth and zero stale bundle traps
+  const isHtmlRequest =
+    event.request.mode === "navigate" ||
+    url.pathname === "/" ||
+    url.pathname === "/login" ||
+    url.pathname === "/index.html" ||
+    url.pathname.endsWith(".html") ||
+    (event.request.method === "GET" && (event.request.headers?.get("Accept") || "").includes("text/html"));
+
+  if (isHtmlRequest) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
@@ -106,10 +120,10 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(async () => {
-          const cached = await caches.match(event.request);
-          if (cached) return cached;
           const offlinePage = await caches.match("/offline.html");
           if (offlinePage) return offlinePage;
+          const cached = await caches.match(event.request);
+          if (cached) return cached;
           return caches.match("/");
         })
     );
