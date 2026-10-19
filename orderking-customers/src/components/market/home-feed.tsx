@@ -579,7 +579,7 @@ export function HomeFeed({
                   : "No restaurants are available for this address right now."}
               </p>
               <p className="mt-1 text-xs text-stone-600">
-                Select another address above, or explore Travel, AI Tutor and Jobs in the header.
+                Choose another delivery address or open KingPay in the bottom navigation. Only verified additional services are shown when available.
               </p>
             </div>
           </div>
