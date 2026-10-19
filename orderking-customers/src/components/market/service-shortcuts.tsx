@@ -7,7 +7,7 @@ import { useLocationStore } from "@/lib/stores/location";
 /**
  * Existing routes only; no invented bookability, providers, or demand.
  * Ranking uses the customer's actual service clicks in the selected zone.
- * Explicitly disabled features are hidden. Providers determine eligibility.
+ * Every service remains hidden unless the administrator explicitly verifies it\n * and enables nationwide access or an exact supported zone. Provider eligibility\n * is still rechecked at the destination; clicks are preferences, not demand.
  */
 const OPTIONS = [
   { key: "travel", label: "Travel", detail: "Explore travel options", to: "/travel", Icon: Plane },
@@ -40,7 +40,14 @@ export function ServiceShortcuts({
   }, [storageKey]);
 
   const sorted = OPTIONS
-    .filter((item) => flags[item.key] !== false && flags["service_" + item.key] !== false)
+    .filter((item) => {
+      const configuredZones = flags["zones_" + item.key];
+      const inConfiguredZone = zone !== "unselected" &&
+        Array.isArray(configuredZones) && configuredZones.includes(zone);
+      return flags["service_" + item.key] === true &&
+        flags["verified_" + item.key] === true &&
+        (flags["nationwide_" + item.key] === true || inConfiguredZone);
+    })
     .sort((a, b) => Math.max(0, Number(counts[b.key]) || 0) - Math.max(0, Number(counts[a.key]) || 0));
 
   const recordOpen = (key: string) => {
@@ -52,6 +59,14 @@ export function ServiceShortcuts({
       // Storage can be unavailable. Navigation continues normally.
     }
   };
+
+  if (sorted.length === 0) {
+    return variant === "tiles" ? (
+      <p role="status" className="rounded-xl border border-stone-200 bg-white px-4 py-3 text-xs text-stone-600">
+        No additional services have been verified for this area yet.
+      </p>
+    ) : null;
+  }
 
   return (
     <nav aria-label="Explore OrderKing services" className={emphasizeAlternatives ? "rounded-xl ring-1 ring-amber-400/60" : undefined}>
@@ -80,7 +95,7 @@ export function ServiceShortcuts({
       </ul>
       {variant === "tiles" && (
         <p className="mt-3 text-xs text-stone-500">
-          Suggestions use your previous choices in this selected area. Booking, job and payment availability is checked within each service.
+          Only services explicitly enabled and verified for your selected area appear here. Final availability is confirmed by the provider.
         </p>
       )}
     </nav>

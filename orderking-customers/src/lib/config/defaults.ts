@@ -12,7 +12,7 @@ export const DEFAULT_CONFIG: PublicAppConfig = {
     logoUrl: "/logo.jpg", logoLightUrl: "", logoDarkUrl: "", faviconUrl: "/logo.jpg", appIconUrl: "/logo.jpg", splashIconUrl: "/logo.jpg",
     primaryColor: "#0D3B2E", secondaryColor: "#FAF8F5", accentColor: "#EA580C", backgroundColor: "#FAF8F5", surfaceColor: "#FFFFFF", textColor: "#111827", mutedColor: "#57534E",
     displayFont: "Fraunces", bodyFont: "Figtree", radiusPx: 16, density: "comfortable", themeMode: "light",
-    seoTitle: "OrderKing — Food Delivery & KingPay", seoDescription: "Order food from top kitchens with 0% markup and pay seamlessly with KingPay.", ogImageUrl: "https://orderkingpay.com/icon-512.png", promotionalHeadline: "From local master kitchens to your doorstep.",
+    seoTitle: "OrderKing — Food Delivery & KingPay", seoDescription: "Discover restaurants and available services near you. Payment features depend on supported providers.", ogImageUrl: "https://orderkingpay.com/icon-512.png", promotionalHeadline: "From local master kitchens to your doorstep.",
   },
   domain: { primaryDomain: "", webUrl: "/", supportUrl: "/support", privacyUrl: "/legal/privacy", termsUrl: "/legal/terms", refundsUrl: "/legal/refunds", restaurantPortalUrl: "/restaurant", riderPortalUrl: "/rider", adminUrl: "/admin" },
   store: { appStoreName: "OrderKing", playStoreName: "OrderKing", shortDescription: "Order food and pay with KingPay", longDescription: "OrderKing is your all-in-one local food marketplace and payments hub. Browse verified kitchens, enjoy fair pricing, and pay with 1-tap KingPay.", publisherName: "OrderKing India Private Limited", supportUrl: "/support", privacyUrl: "/legal/privacy" },

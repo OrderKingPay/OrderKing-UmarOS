@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Wallet, ReceiptText, Plane } from "lucide-react";
+import { ArrowRight, Wallet, ReceiptText } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { ServiceShortcuts } from "@/components/market/service-shortcuts";
 import { AppErrorComponent } from "@/lib/error-component";
-import { RemittanceDesk } from "@/components/kingpay/remittance-desk";
 
 export const Route = createFileRoute("/kingpay/")({
   component: KingPayHub,
@@ -27,12 +26,12 @@ function KingPayHub() {
                 <Wallet className="size-6" aria-hidden="true" />
               </span>
               <div>
-                <h2 className="text-lg font-extrabold text-amber-100">Payment tools</h2>
-                <p className="text-xs leading-snug text-stone-300">Choose methods supported by your payment provider.</p>
+                <h2 className="text-lg font-extrabold text-amber-100">KingPay utilities</h2>
+                <p className="text-xs leading-snug text-stone-300">Review recorded activity or calculate a shared bill. Transfers require a supported payment provider.</p>
               </div>
             </div>
             <Link to="/king-pay" className="mt-4 flex min-h-12 items-center justify-between rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 px-4 text-sm font-extrabold text-stone-950 no-underline transition hover:brightness-105">
-              Open KingPay <ArrowRight className="size-4" aria-hidden="true" />
+              Split a bill · Calculator <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
             <Link to="/kingpay/passbook" className="mt-2 flex min-h-11 items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-white/10 text-sm font-bold text-amber-100 no-underline hover:bg-white/15">
               <ReceiptText className="size-4" aria-hidden="true" /> HISTORY · Receipts
@@ -44,21 +43,10 @@ function KingPayHub() {
             <ServiceShortcuts variant="tiles" />
           </section>
 
-          <section aria-label="Your trips" className="mt-5">
-            <Link to="/travel/trips" className="flex items-center justify-between rounded-2xl border border-stone-200 bg-white p-4 text-sm font-extrabold text-stone-900 no-underline shadow-sm hover:border-amber-400">
-              <span className="flex items-center gap-2"><Plane className="size-5 text-amber-700" aria-hidden="true" /> My tickets & trips</span>
-              <ArrowRight className="size-4 text-amber-700" aria-hidden="true" />
-            </Link>
-          </section>
-
-          <details className="mt-5 rounded-2xl border border-stone-200 bg-white p-4">
-            <summary className="cursor-pointer text-sm font-extrabold text-stone-900">Remittance information</summary>
-            <p className="my-3 text-xs text-stone-600">
-              Rates, fees and eligibility require verification with the supported provider.
-              An estimate is not a completed transfer.
-            </p>
-            <RemittanceDesk />
-          </details>
+          <p className="mt-5 text-xs leading-relaxed text-stone-500">
+            A bill split is a calculation only. No payment is sent or confirmed here.
+            Confirm any transfer and charges in your bank or payment provider.
+          </p>
         </div>
       </div>
     </CustomerShell>
