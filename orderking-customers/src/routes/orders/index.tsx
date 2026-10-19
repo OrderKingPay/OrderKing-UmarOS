@@ -108,10 +108,10 @@ function OrdersPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
-              Orders &amp; Passes
+              ORDERS
             </h1>
             <p className="mt-0.5 text-xs font-medium text-stone-500">
-              Track food orders, tickets and your activity
+              Food order tracking, cart, past orders and reordering.
             </p>
           </div>
           <span className="inline-flex items-center gap-1 rounded-full bg-stone-100 border border-stone-200 px-3 py-1 text-xs font-bold text-stone-700">
@@ -119,15 +119,15 @@ function OrdersPage() {
           </span>
         </div>
 
-        <nav aria-label="Tickets and activity" className="mt-4 grid grid-cols-3 gap-2">
-          <Link to="/travel/trips" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
-            <span className="text-xl" aria-hidden="true">🎫</span><span className="text-[11px] font-extrabold">Travel passes</span>
+        <nav aria-label="OrderKing food and cart shortcuts" className="mt-4 grid grid-cols-3 gap-2">
+          <Link to="/cart" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
+            <span className="text-xl" aria-hidden="true">🛒</span><span className="text-[11px] font-extrabold">My cart</span>
           </Link>
-          <Link to="/tutor-jobs/history" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
-            <span className="text-xl" aria-hidden="true">💼</span><span className="text-[11px] font-extrabold">Jobs & learning</span>
+          <Link to="/" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
+            <span className="text-xl" aria-hidden="true">🍽️</span><span className="text-[11px] font-extrabold">Explore food</span>
           </Link>
-          <Link to="/kingpay/passbook" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
-            <span className="text-xl" aria-hidden="true">🧾</span><span className="text-[11px] font-extrabold">Passbook</span>
+          <Link to="/offers" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
+            <span className="text-xl" aria-hidden="true">🎁</span><span className="text-[11px] font-extrabold">Food offers</span>
           </Link>
         </nav>
 

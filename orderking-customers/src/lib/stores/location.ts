@@ -43,39 +43,8 @@ const DEFAULT_LOCATION: SelectedLocation = {
   lng: 77.2167,
 };
 
-export const DEFAULT_SAVED_ADDRESSES: SavedAddress[] = [
-  {
-    id: "addr-home",
-    tag: "HOME",
-    title: "Home",
-    houseNo: "Flat 4B, Silver Oak Heights",
-    area: "Park Street",
-    landmark: "Near St. Xavier's College",
-    line1: "Flat 4B, Silver Oak Heights, Park Street",
-    cityName: "Kolkata",
-    cityId: "kolkata",
-    zoneName: "Park Street",
-    zoneId: "kol-park",
-    lat: 22.55,
-    lng: 88.35,
-    isDefault: true,
-  },
-  {
-    id: "addr-work",
-    tag: "WORK",
-    title: "Office",
-    houseNo: "Tower 2, 7th Floor, Ecospace IT Park",
-    area: "New Town",
-    landmark: "Opposite Convention Center",
-    line1: "Tower 2, 7th Floor, Ecospace IT Park, New Town",
-    cityName: "Kolkata",
-    cityId: "kolkata",
-    zoneName: "New Town",
-    zoneId: "kol-newtown",
-    lat: 22.58,
-    lng: 88.47,
-  },
-];
+// New users start with no fictional Home or Office addresses.
+export const DEFAULT_SAVED_ADDRESSES: SavedAddress[] = [];
 
 type State = {
   location: SelectedLocation;

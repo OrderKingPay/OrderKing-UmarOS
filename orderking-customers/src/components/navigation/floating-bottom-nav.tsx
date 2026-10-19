@@ -165,50 +165,56 @@ export interface FloatingBottomNavProps {
  * [1: OrderKing | 2: Tutor & Jobs | 3: KingPay | 4: Travel | 5: Dynamic History]
  * Tab 5 automatically shifts its label, destination route, and badge according to the active vertical.
  */
-/** Exactly three visible customer navigation destinations. */
+/** Three bottom destinations. The right-hand tab follows the active ecosystem. */
 export const THREE_TAB_CUSTOMER_NAV = [
-  { id: "food", label: "Food", to: "/", icon: UtensilsCrossed },
+  { id: "food", label: "OrderKing", to: "/", icon: UtensilsCrossed },
   { id: "kingpay", label: "KingPay", to: "/kingpay", icon: Wallet },
-  { id: "orders", label: "Orders & Passes", to: "/orders", icon: ShoppingBag },
 ] as const;
 
 export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps) {
   const pathname = useRouterState({ select: (s) => s?.location?.pathname ?? "/" });
-  const food = pathname === "/" ||
-    ["/delivery", "/r/", "/restaurants", "/menu", "/dining", "/search", "/cart", "/checkout", "/offers", "/rewards"].some((p) => pathname.startsWith(p));
-  const orders = pathname.startsWith("/orders");
-  const services = ["/kingpay", "/king-pay", "/travel", "/tutor", "/earn", "/news"].some((p) => pathname.startsWith(p));
-  const active = orders ? "orders" : food ? "food" : services ? "kingpay" : null;
+  const inKingPay = /^\/(?:kingpay|king-pay)(?:\/|$)/.test(pathname);
+  const inActivity = pathname.startsWith("/orders") || pathname.startsWith("/kingpay/passbook");
+  const inFood = pathname === "/" || ["/delivery", "/r/", "/restaurants", "/menu", "/dining", "/search", "/cart", "/checkout", "/offers", "/rewards"].some((p) => pathname.startsWith(p));
+  const activeId = inActivity ? "activity" : inKingPay ? "kingpay" : inFood ? "food" : null;
+  const rightTab = inKingPay
+    ? { id: "activity", label: "HISTORY", to: "/kingpay/passbook", icon: Receipt }
+    : { id: "activity", label: "ORDERS", to: "/orders", icon: ShoppingBag };
+  const tabs = [...THREE_TAB_CUSTOMER_NAV, rightTab] as const;
 
   return (
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-lg px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden",
+        "pointer-events-none fixed inset-x-0 bottom-0 z-[70] mx-auto w-full max-w-lg px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:max-w-[680px] md:pb-4",
         className
       )}
     >
       <ul role="list" data-testid="customer-bottom-nav"
-        className="grid grid-cols-3 gap-1.5 rounded-2xl border border-amber-400/40 bg-[#141414]/95 p-1.5 shadow-2xl backdrop-blur-xl">
-        {THREE_TAB_CUSTOMER_NAV.map(({ id, label, to, icon: Icon }) => (
-          <li key={id} className="min-w-0">
-            <Link
-              to={to as any}
-              preload="intent"
-              aria-label={label}
-              aria-current={id === active ? "page" : undefined}
-              className={cn(
-                "flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 py-1 text-xs font-bold no-underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300",
-                id === active ? "bg-amber-400 text-slate-950" :
-                id === "kingpay" ? "-translate-y-2 scale-[1.04] border border-amber-300/60 bg-gradient-to-b from-amber-500/25 to-amber-400/10 text-amber-200 shadow-[0_0_22px_rgba(245,158,11,0.25)] hover:bg-amber-400/25" :
-                "text-stone-200 hover:bg-white/10 hover:text-white"
-              )}
-            >
-              <Icon className="size-5 shrink-0" aria-hidden="true" />
-              <span className="block w-full truncate text-center leading-tight">{label}</span>
-            </Link>
-          </li>
-        ))}
+        className="pointer-events-auto grid grid-cols-3 gap-1.5 rounded-[24px] border border-amber-300/70 bg-gradient-to-br from-[#0d111b] via-[#201b18] to-[#181312] p-2 shadow-[0_18px_50px_rgba(15,12,10,0.46),0_0_0_1px_rgba(245,158,11,0.18)] backdrop-blur-2xl">
+        {tabs.map(({ id, label, to, icon: Icon }) => {
+          const selected = id === activeId;
+          return (
+            <li key={id} className="min-w-0">
+              <Link
+                to={to as any}
+                preload="intent"
+                aria-label={label}
+                aria-current={selected ? "page" : undefined}
+                className={cn(
+                  "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-1.5 py-1.5 text-[11px] font-extrabold tracking-tight no-underline transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 sm:min-h-[62px] sm:text-xs",
+                  selected ? "bg-gradient-to-br from-[#ffedaf] via-amber-400 to-amber-500 text-slate-950 shadow-[0_4px_20px_rgba(245,158,11,0.32)]" :
+                  id === "kingpay" ? "border border-amber-400/50 bg-gradient-to-b from-amber-400/20 to-amber-500/10 text-amber-100 hover:bg-amber-400/25" :
+                  "text-stone-200 hover:bg-white/10 hover:text-white",
+                  id === "kingpay" && "-translate-y-1 ring-1 ring-amber-400/35"
+                )}
+              >
+                <Icon className="size-5 shrink-0" aria-hidden="true" />
+                <span className="block w-full truncate text-center leading-tight">{label}</span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
