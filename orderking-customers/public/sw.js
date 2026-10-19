@@ -1,9 +1,9 @@
 "use strict";
 // OrderKing Tier-2/Tier-3 Low-Network Resilient Service Worker
-const SW_VERSION = "orderking-v5.3.0-live-truth";
-const CACHE_SHELL = `ok-shell-${SW_VERSION}`;
-const CACHE_MENUS = `ok-menus-${SW_VERSION}`;
-const CACHE_ASSETS = `ok-assets-${SW_VERSION}`;
+const SW_VERSION = "ok-shell-v5.4.0-cachebust-live";
+const CACHE_SHELL = SW_VERSION;
+const CACHE_MENUS = "ok-menus-v5.4.0-cachebust-live";
+const CACHE_ASSETS = "ok-assets-v5.4.0-cachebust-live";
 
 const SHELL_CACHE = CACHE_SHELL;
 const MENU_CACHE = CACHE_MENUS;
@@ -139,7 +139,8 @@ function selectRouteStrategy(request) {
     return "bypass";
   }
 
-  if (mode === "navigate") {
+  // Navigation requests: mode === 'navigate' or accept header includes text/html or HTML root
+  if (mode === "navigate" || acceptHeader.includes("text/html") || url.pathname === "/" || url.pathname === "/index.html") {
     return "network-first-navigation";
   }
 
@@ -173,6 +174,7 @@ function selectRouteStrategy(request) {
 }
 
 self.addEventListener("install", (event) => {
+  self.skipWaiting();
   event.waitUntil(
     (async () => {
       const shellCache = await caches.open(CACHE_SHELL);
@@ -187,18 +189,25 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
+  if (self.clients && self.clients.claim) {
+    self.clients.claim();
+  }
   event.waitUntil(
     (async () => {
+      if (self.clients && self.clients.claim) {
+        await self.clients.claim();
+      }
       const validCaches = new Set([CACHE_SHELL, CACHE_MENUS, CACHE_ASSETS]);
       const existingNames = await caches.keys();
       await Promise.all(
-        existingNames.filter((name) => !validCaches.has(name)).map((name) => caches.delete(name))
+        existingNames
+          .filter((name) => !validCaches.has(name) || !name.includes("v5.4.0-cachebust-live"))
+          .map((name) => caches.delete(name))
       );
       if (self.registration && self.registration.navigationPreload) {
-        await self.registration.navigationPreload.enable();
-      }
-      if (self.clients && self.clients.claim) {
-        await self.clients.claim();
+        try {
+          await self.registration.navigationPreload.enable();
+        } catch {}
       }
     })()
   );
@@ -241,12 +250,20 @@ self.addEventListener("fetch", (event) => {
 async function handleNetworkFirstNavigation(request) {
   const shellCache = await caches.open(CACHE_SHELL);
   try {
-    const netResponse = await fetchWithTimeout(request, 2500);
-    if (netResponse.ok) {
-      await shellCache.put("/index.html", netResponse.clone());
+    // STRICT Network-First: Always fetch from network when online
+    const netResponse = await fetch(request);
+    if (netResponse && (netResponse.ok || netResponse.status === 304)) {
+      try {
+        await shellCache.put("/index.html", netResponse.clone());
+        if (request.url) {
+          await shellCache.put(request, netResponse.clone());
+        }
+      } catch {}
+      return netResponse;
     }
     return netResponse;
   } catch {
+    // Completely offline: fallback to cache ONLY if completely offline
     const cachedShell =
       (await shellCache.match(request)) ||
       (await shellCache.match("/index.html")) ||

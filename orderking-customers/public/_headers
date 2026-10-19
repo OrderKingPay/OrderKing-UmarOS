@@ -1,81 +1,8 @@
-# Cloudflare Pages & Netlify Global Edge Caching & Security Headers
+# Cloudflare Pages Global Edge Caching & Security Headers
 # OrderKing Platform: orderking-customers
 
-# 1. Immutable Long-Term Static Assets (1 year)
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-  X-Content-Type-Options: nosniff
-
-# 2. Food & Media Assets (30 days with SWR)
-/food/*
-  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-/brand/*
-  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-/__grok/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
-  X-Content-Type-Options: nosniff
-
-/favicon.ico
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-/apple-touch-icon.png
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-/icon-192.png
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-/icon-512.png
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-/logo.jpg
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-/og.jpg
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-# 3. Critical Dynamic Metadata & Offline Pages
-/sw.js
-  Cache-Control: no-cache, no-store, must-revalidate
-  X-Content-Type-Options: nosniff
-
-/
-  Cache-Control: no-cache, no-store, must-revalidate
-  X-Content-Type-Options: nosniff
-
-/index.html
-  Cache-Control: no-cache, no-store, must-revalidate
-  X-Content-Type-Options: nosniff
-
-/manifest.json
-  Cache-Control: public, max-age=3600, must-revalidate
-  Content-Type: application/manifest+json; charset=utf-8
-  X-Content-Type-Options: nosniff
-
-/offline.html
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  X-Content-Type-Options: nosniff
-
-/robots.txt
-  Cache-Control: public, max-age=86400, stale-while-revalidate=86400
-  X-Content-Type-Options: nosniff
-
-/sitemap.xml
-  Cache-Control: public, max-age=86400, stale-while-revalidate=86400
-  X-Content-Type-Options: nosniff
-
-# 4. Global Security Headers (inherited by all requests)
+# 1. Global Security Headers (Universal)
 /*
-  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
@@ -86,3 +13,57 @@
   Cross-Origin-Resource-Policy: same-origin
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https: wss:; frame-src 'self' https://checkout.razorpay.com https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self' https:;
 
+# 2. Critical Dynamic Metadata & Uncached HTML Shells
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/manifest.json
+  Cache-Control: public, max-age=3600, must-revalidate
+  Content-Type: application/manifest+json; charset=utf-8
+
+# 3. Immutable Long-Term Static Assets (Hashed bundles)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 4. Media & Static Assets
+/food/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+
+/brand/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+
+/__grok/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/favicon.ico
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/icon-192.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/icon-512.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/logo.jpg
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/og.jpg
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/offline.html
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/robots.txt
+  Cache-Control: public, max-age=86400, stale-while-revalidate=86400
+
+/sitemap.xml
+  Cache-Control: public, max-age=86400, stale-while-revalidate=86400
