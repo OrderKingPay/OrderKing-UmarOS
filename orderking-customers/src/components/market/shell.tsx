@@ -18,6 +18,7 @@ import { resilientLazy, ModalErrorBoundary } from "@/components/common/resilient
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OneTapCheckoutDrawer } from "@/components/market/one-tap-checkout-drawer";
 import { ContextualCrossSellBar } from "@/components/market/contextual-cross-sell-bar";
+import { ServiceShortcuts } from "@/components/market/service-shortcuts";
 
 const LazyLocationDialog = resilientLazy(
   () => import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog })),
@@ -92,7 +93,7 @@ export function CustomerShell({
   const [oneTapDrawerOpen, setOneTapDrawerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchPlaceholderIndex, setSearchPlaceholderIndex] = useState(0);
-  const { dietFilter, toggleVeg } = useDietStore();
+  const { dietFilter, setDietFilter } = useDietStore();
 
   useEffect(() => {
     let isMounted = true;
@@ -132,9 +133,11 @@ export function CustomerShell({
 
   const currentPlaceholder =
     SEARCH_PLACEHOLDERS[searchPlaceholderIndex % SEARCH_PLACEHOLDERS.length] || "What are you hungry for?";
+  const hasSearchRow = path === "/" ||
+    ["/restaurants", "/menu", "/r/", "/dining", "/cart"].some((prefix) => path.startsWith(prefix));
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-[#FCFAF7] text-gray-900 pb-20 md:max-w-5xl">
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-[#FCFAF7] text-gray-900 pb-28 md:max-w-5xl">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:text-black focus:shadow-md"
@@ -191,6 +194,7 @@ export function CustomerShell({
             </button>
           </div>
 
+          {path === "/" && <div className="hidden min-w-0 flex-1 items-center justify-center px-2 lg:flex"><ServiceShortcuts variant="header" /></div>}
           {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* 1-Tap Language selector (English, Hindi, Bengali, etc.) */}
@@ -207,7 +211,7 @@ export function CustomerShell({
               </span>
             </button>
 
-            {/* 1-Tap AI Support button */}
+            {!hasSearchRow && (
             <div className="relative shrink-0">
               <span className="absolute -inset-0.5 rounded-xl bg-amber-400/40 animate-ping pointer-events-none" />
               <button
@@ -223,6 +227,7 @@ export function CustomerShell({
                 </span>
               </button>
             </div>
+            )}
 
             {/* Cart icon with badge counter (redirecting to /cart or opening drawer) */}
             <Link
@@ -266,7 +271,7 @@ export function CustomerShell({
         </div>
 
         {/* ROW 1.5: Sovereign Ecosystem Horizontal Tabs (Food, KingPay, Travel, AI Tutor, VIP Dining) */}
-        <div className="hidden md:flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none select-none">
+        <div className="hidden">
           {SOVEREIGN_ECOSYSTEM_TABS.map((tab) => {
             const isActive = tab.match(path);
             const Icon = tab.icon;
@@ -291,9 +296,13 @@ export function CustomerShell({
         </div>
 
         {/* ROW 2: Luxury search bar (glassmorphism, golden focus ring) + Pure Veg/All toggle */}
-        {(path === "/" || ["/restaurants", "/menu", "/r/", "/dining", "/cart"].some((prefix) => path.startsWith(prefix))) && (
+        {hasSearchRow && (
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5 sm:gap-2">
+              <button type="button" onClick={() => setConciergeOpen(true)}
+                className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-amber-400/80 bg-stone-950 text-amber-300 shadow-sm hover:bg-stone-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500 sm:size-10"
+                aria-label="Open AI assistant" title="AI assistant"><Mic className="size-4" aria-hidden="true" /></button>
+
               {/* Luxury Center Search (Glassmorphism, golden focus ring) */}
               <button
                 type="button"
@@ -311,56 +320,22 @@ export function CustomerShell({
                 </div>
               </button>
 
-              {/* Pure Veg / All Switch */}
-              <button
-                type="button"
-                onClick={toggleVeg}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border text-xs font-black transition-all shadow-2xs shrink-0 select-none active:scale-95 cursor-pointer",
-                  dietFilter === "veg"
-                    ? "bg-emerald-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
-                    : "bg-white/80 hover:bg-white text-gray-700 border-amber-200/80 hover:border-emerald-300"
-                )}
-                title={dietFilter === "veg" ? "Pure Veg Only is ACTIVE" : "Show All Restaurants"}
-              >
-                <span className={cn(
-                  "size-3 rounded-xs border flex items-center justify-center p-0.5 transition-colors",
-                  dietFilter === "veg" ? "border-white bg-white" : "border-emerald-600 bg-white"
-                )}>
-                  <span className="size-1.5 rounded-full bg-emerald-600" />
-                </span>
-                <span className="text-[11px] font-black tracking-tight">
-                  {dietFilter === "veg" ? "Pure Veg" : "All"}
-                </span>
-              </button>
+              <div role="group" aria-label="Food preference" className="flex shrink-0 items-center gap-1">
+                <button type="button" onClick={() => setDietFilter("veg")} aria-pressed={dietFilter === "veg"}
+                  title="Vegetarian restaurants only" className={cn("flex min-h-9 items-center justify-center rounded-xl border px-2 text-[11px] font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-500 sm:min-h-10",dietFilter === "veg" ? "border-emerald-700 bg-emerald-700 text-white" : "border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-50")}>Veg</button>
+                <button type="button" onClick={() => setDietFilter("all")} aria-pressed={dietFilter === "all"}
+                  title="All restaurants" className={cn("flex min-h-9 items-center justify-center rounded-xl border px-2 text-[11px] font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500 sm:min-h-10",dietFilter === "all" ? "border-amber-500 bg-stone-950 text-amber-200" : "border-amber-200 bg-white text-stone-700 hover:bg-amber-50")}>All</button>
+              </div>
             </div>
 
-            {/* ROW 3: Zero-Typing Smart Autocorrect Quick Dish Chips */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pt-0.5 pb-0.5 scrollbar-none select-none">
-              <span className="text-[9.5px] font-black uppercase tracking-wider text-amber-900/70 shrink-0 flex items-center gap-0.5 pr-0.5">
-                <Sparkles className="size-2.5 text-amber-600" />
-                <span>Instant:</span>
-              </span>
-              {POPULAR_INDIAN_DISH_CHIPS.map((chip) => (
-                <button
-                  key={chip.name}
-                  type="button"
-                  onClick={() => void navigate({ to: "/search", search: { q: chip.query } as any })}
-                  className="inline-flex items-center gap-1 rounded-full bg-white/90 hover:bg-amber-50/90 border border-amber-200/80 hover:border-amber-400 px-2 py-0.5 text-[10.5px] font-bold text-gray-800 shadow-2xs shrink-0 transition-all active:scale-95 cursor-pointer group"
-                  title={`Zero-Typing Search: ${chip.name} (${chip.hindi} / ${chip.bengali})`}
-                >
-                  <span className="text-[11px] group-hover:scale-110 transition-transform">{chip.emoji}</span>
-                  <span className="font-black text-gray-950">{chip.name}</span>
-                  <span className="text-[9px] text-amber-800/80 font-medium hidden sm:inline">· {chip.hindi}</span>
-                </button>
-              ))}
-            </div>
+
           </div>
         )}
+        {path === "/" && <div className="lg:hidden"><ServiceShortcuts variant="compact" /></div>}
       </header>
 
       {/* Contextual Geographic Intelligence & Cross-Ecosystem Recommendation Bar */}
-      <ContextualCrossSellBar />
+      {path !== "/" && <ContextualCrossSellBar />}
 
       {/* Main Content Area */}
       <main id="main" className="flex-1 w-full">

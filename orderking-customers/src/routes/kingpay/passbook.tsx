@@ -34,10 +34,10 @@ function KingPayPassbookPage() {
                 <span>UPI &amp; Remit Passbook</span>
               </div>
               <h1 className="text-2xl font-black text-stone-950 tracking-tight sm:text-3xl">
-                KingPay Passbook
+                HISTORY
               </h1>
               <p className="text-xs text-stone-600 mt-1 font-medium">
-                Live double-entry ledger of all your UPI payments, merchant settlements, cashback, and peer transfers with 256-bit bank verification.
+                Your recorded KingPay transactions, receipts, and payment activity. Payment completion must be confirmed by your provider.
               </p>
             </div>
 
@@ -61,7 +61,7 @@ function KingPayPassbookPage() {
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-amber-900">
-                  Total Active UPI &amp; Wallet Balance
+                  Balance returned by the connected account
                 </p>
                 <p className="text-2xl font-black font-mono text-stone-900">
                   {formatPaise(walletBalancePaise)}
@@ -72,7 +72,7 @@ function KingPayPassbookPage() {
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-800 border border-emerald-300">
                 <ShieldCheck className="size-3.5 text-emerald-600" />
-                256-Bit Escrow Secured
+                Verify status with your payment provider
               </span>
             </div>
           </div>
