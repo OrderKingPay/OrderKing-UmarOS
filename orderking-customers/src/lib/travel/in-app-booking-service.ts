@@ -441,6 +441,9 @@ export function searchTrainQuotes(
   quota: "GENERAL (GN)" | "TATKAL (TQ)" | "LADIES (LD)" = "GENERAL (GN)",
   trainClass: "1A" | "2A" | "3A" | "CC" | "EC" | "SL" = "3A"
 ): TrainQuote[] {
+  // No licensed live train inventory provider is configured in this module.
+  // Never expose the example schedule, seat counts, fares, or quotas as live inventory.
+  return [];
   const classBaseMap: Record<string, number> = {
     "1A": 325000,
     "2A": 195000,
@@ -909,6 +912,14 @@ export function issueSovereignETicket(params: {
   supplierState?: SupplierApiState;
   region?: string;
 }): SovereignETicket {
+  // Train booking cannot be confirmed with a locally generated PNR or a payment token.
+  // Only a server-side authorized IRCTC/PSP response can establish a confirmed rail ticket.
+  // Until that integration is verified, fail closed before any ticket record is issued.
+  if (params.quote.mode === "train") {
+    throw new SupplierUnavailableError(
+      "Train booking is not active in OrderKing. Please complete booking with an authorized IRCTC provider. No ticket or payment confirmation was created."
+    );
+  }
   // Fail-Closed Supplier Gating: if carrier or supplier APIs are unauthenticated,
   // offline, or rate-limited, fail closed with truthful unavailable message.
   if (
