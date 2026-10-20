@@ -82,53 +82,9 @@ const VERIFIED_TRAIN_CORRIDORS = [
   { id: "sbc-mys", from: "Bengaluru City", fromCode: "SBC", to: "Mysuru Jn", toCode: "MYS", name: "Vande Bharat Express", duration: "1h 45m", fare: 550, class: "High Frequency Daily" },
 ];
 
-// Verified mentor network tracks & booking categories
-const VERIFIED_MENTOR_TRACKS = [
-  {
-    id: "track-board-stem",
-    name: "Secondary & Higher Secondary STEM",
-    qualification: "Verified M.Sc / B.Tech Educators",
-    experience: "Credential Verified",
-    specialty: "CBSE & State Board Class 9–12: NCERT physics derivations, calculus & chemistry mechanisms",
-    languages: "English, Hindi, Regional",
-    badge: "Board & Foundation",
-    subjects: ["Physics", "Mathematics", "Chemistry"],
-    description: "Connect 1-on-1 with a verified educator for step-marking guidance and exam derivations.",
-  },
-  {
-    id: "track-competitive-neet-jee",
-    name: "Competitive Exam Problem-Solving",
-    qualification: "Qualified Subject Specialists",
-    experience: "Credential Verified",
-    specialty: "High-yield NEET Biology mnemonics, JEE mechanics problem intuition, and formula proofs",
-    languages: "English, Hindi",
-    badge: "JEE / NEET Foundation",
-    subjects: ["Mechanics", "Organic Mechanisms", "NCERT Biology"],
-    description: "Targeted problem sessions focusing on concept clarity and previous-year exam patterns.",
-  },
-  {
-    id: "track-commerce-economics",
-    name: "Commerce, Accounts & Economics",
-    qualification: "Postgraduate & Professional Mentors",
-    experience: "Credential Verified",
-    specialty: "Class 11–12 double-entry bookkeeping, partnership accounts, macro/microeconomics & cash flows",
-    languages: "English, Hindi",
-    badge: "Commerce Specialist",
-    subjects: ["Accountancy", "Macroeconomics", "Business Studies"],
-    description: "Zero-rote conceptual understanding of ledger entries, balance sheet adjustments, and board formats.",
-  },
-  {
-    id: "track-language-placement",
-    name: "Communication & Campus Placement Prep",
-    qualification: "Language & Interview Coaches",
-    experience: "Credential Verified",
-    specialty: "Spoken English fluency, interview communication drills, and technical aptitude review",
-    languages: "English, Hindi",
-    badge: "Career & Communication",
-    subjects: ["Spoken English", "HR & Technical Mock", "Resume Review"],
-    description: "Confidence-building 1-on-1 mock interviews and professional articulation practice.",
-  },
-];
+type VerifiedMentorProfile = { id: string; name: string; qualification: string; experience: string; specialty: string; languages: string; badge: string; subjects: string[]; description: string; };
+// Only real verified mentors are eligible for display.
+const VERIFIED_MENTOR_TRACKS: VerifiedMentorProfile[] = [];
 
 // Verified high-trust job openings & fleet onboarding
 const VERIFIED_JOBS = [
@@ -141,58 +97,23 @@ const VERIFIED_JOBS = [
     type: "Full-Time / Flexible 4h Shifts · Pan-India",
     location: "Hyperlocal Nationwide (Direct Onboarding)",
     badge: "Direct Fleet Role",
-    perks: ["Daily UPI Settlement", "Flexible Shift Roster", "Accident Coverage as per Social Security Code 2020", "Zero Onboarding Fee"],
+    perks: ["Payouts under accepted rider contract", "Flexible Shift Roster", "Rider protections under contract and applicable law", "Zero Onboarding Fee"],
     isFleet: true,
   },
   {
     id: "job-kitchen-partner",
-    title: "OrderKing Verified Restaurant & Cloud Kitchen Partner",
+    title: "OrderKing Restaurant & Cloud Kitchen Partner Application",
     company: "OrderKing Partner Merchant Network",
     category: "Restaurant & Culinary",
-    payout: "Direct daily payouts to merchant bank account",
+    payout: "Merchant settlements according to signed contract",
     type: "Dine-In & Cloud Kitchen Onboarding · Pan-India",
-    location: "Hyperlocal Nationwide (Direct Activation)",
+    location: "Available after city/operator approval",
     badge: "Direct Merchant Desk",
     perks: ["Zero Onboarding Fee", "Real-Time KDS App", "Direct Customer Reach", "Transparent GST Invoicing"],
     isFleet: false,
     isKitchen: true,
   },
-  {
-    id: "job-catalog-audit",
-    title: "Merchant Catalog & Menu Verification Specialist",
-    company: "OrderKing Partner Operations",
-    category: "Operations & Catalog",
-    payout: "Fixed honorarium per verified merchant menu audit",
-    type: "Task-Based · Flexible Hours",
-    location: "Local City Markets (Pan-India)",
-    badge: "Direct Partner Desk",
-    perks: ["Mobile Friendly", "Direct Bank Settlement", "Zero Deposit Policy", "Official Verification Checklist"],
-    isFleet: false,
-  },
-  {
-    id: "job-tutor-mentor",
-    title: "Verified Community Academic Mentor & Doubt Solver",
-    company: "OrderKing Academic Network",
-    category: "Teaching & Tutoring",
-    payout: "Direct student honorarium (Zero platform commission)",
-    type: "Online 1-on-1 · Flexible Evening Slots",
-    location: "Work from Home / Remote",
-    badge: "Educator Application",
-    perks: ["Set Your Own Schedule", "Direct UPI Remittance", "Transparent Verification Onboarding", "Zero Intermediary Fees"],
-    isFleet: false,
-  },
-  {
-    id: "job-campus-ambassador",
-    title: "Campus Ambassador & Youth Community Lead",
-    company: "OrderKing Community Outreach",
-    category: "Campus & Outreach",
-    payout: "Monthly performance stipend + certificate",
-    type: "Part-Time Student Role (2–3 hrs/wk)",
-    location: "Colleges & Universities Pan-India",
-    badge: "Student Community",
-    perks: ["Flexible Student Hours", "Leadership Experience", "Direct Team Mentorship", "Zero Registration Fee"],
-    isFleet: false,
-  },
+
 ];
 
 export function SupremeKingPayExperience() {
@@ -639,7 +560,7 @@ export function SupremeKingPayExperience() {
       {/* ─── LIVE WALLET BALANCE & IMMEDIATE 1-TAP FINTECH CONTROLS ─── */}
       <section aria-label="KingPay Wallet and Fast Controls" className="rounded-3xl border border-amber-400/60 bg-gradient-to-br from-[#0c0f17] via-[#1a1410] to-[#0c0f17] p-5 sm:p-6 shadow-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 size-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        
+
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div>
             <div className="flex items-center gap-2 text-amber-300 mb-1">
@@ -1487,13 +1408,13 @@ export function SupremeKingPayExperience() {
                       const dNext = new Date(checkIn);
                       dNext.setDate(dNext.getDate() + hotelNights);
                       const checkOut = dNext.toISOString().split("T")[0];
-                      const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?cid=1890000&city=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${hotelRooms}&adults=${hotelRooms * 2}`;
-                      toast.success(`Handoff to official wholesale inventory for ${cleanCity} (${hotelNights} nights)...`);
+                      const agodaUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${hotelRooms}&adults=${hotelRooms * 2}`;
+                      toast.success(`Open booking provider search for ${cleanCity} (${hotelNights} nights)...`);
                       window.open(agodaUrl, "_blank", "noopener,noreferrer");
                     }}
                     className="w-full h-10 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:brightness-105 active:scale-95 transition cursor-pointer"
                   >
-                    <span>Search Wholesale Hotels</span>
+                    <span>Find Hotels on Booking.com</span>
                     <ExternalLink className="size-3.5" />
                   </button>
                 </div>
@@ -1504,26 +1425,26 @@ export function SupremeKingPayExperience() {
                 {[
                   {
                     tier: "Luxury 5-Star & Resorts",
-                    tag: "5-Star Verified",
-                    tariff: "₹6,499",
+                    tag: "Luxury search",
+
                     desc: "Heritage palaces, beachfront resorts & club suites with breakfast",
                   },
                   {
-                    tier: "Verified Business Hotels",
-                    tag: "B2B GST Ready",
-                    tariff: "₹2,899",
+                    tier: "Business Hotels",
+                    tag: "Check provider invoice",
+
                     desc: "Airport & IT corridors with input tax credit and fast Wi-Fi",
                   },
                   {
                     tier: "Family Homestays & Villas",
                     tag: "Entire Property",
-                    tariff: "₹3,499",
+
                     desc: "Private pool villas, hill cottages & full kitchen access",
                   },
                   {
-                    tier: "Budget Stays Under ₹1,999",
-                    tag: "Zero-Markup Tariff",
-                    tariff: "₹1,299",
+                    tier: "Budget Stays",
+                    tag: "Check provider fees",
+
                     desc: "Clean AC rooms near major railway junctions & metro stations",
                   },
                 ].map((tierItem) => (
@@ -1536,7 +1457,7 @@ export function SupremeKingPayExperience() {
                         <span className="text-[9.5px] font-black uppercase text-amber-400 px-2 py-0.5 rounded bg-amber-400/10 border border-amber-400/20">
                           {tierItem.tag}
                         </span>
-                        <span className="text-xs font-mono font-black text-white">from {tierItem.tariff}</span>
+                        <span className="text-xs font-mono font-black text-white">See provider rates</span>
                       </div>
                       <h4 className="text-xs font-black text-white">{tierItem.tier}</h4>
                       <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{tierItem.desc}</p>
@@ -1545,7 +1466,7 @@ export function SupremeKingPayExperience() {
                       type="button"
                       onClick={() => {
                         const cleanCity = hotelCity.replace(/\,.*$/, "").trim();
-                        const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?cid=1890000&city=${encodeURIComponent(cleanCity)}&rooms=${hotelRooms}`;
+                        const agodaUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(cleanCity)}&rooms=${hotelRooms}`;
                         toast.success(`Handoff to ${tierItem.tier} inventory in ${cleanCity}...`);
                         window.open(agodaUrl, "_blank", "noopener,noreferrer");
                       }}
@@ -1562,7 +1483,7 @@ export function SupremeKingPayExperience() {
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3 text-[11px] text-slate-300 flex items-start gap-2">
                 <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
                 <p>
-                  <strong>Why OrderKing Beats OTAs:</strong> Major OTAs add up to 18% convenience and payment gateway fees at checkout. OrderKing routes you directly to partner wholesale rates with ₹0 platform surcharge and direct B2B GST invoicing.
+                  <strong>Booking provider disclosure:</strong> OrderKing opens an external hotel provider. The provider determines room availability, taxes, cancellation policy, payment and GST invoices.
                 </p>
               </div>
             </div>
@@ -1575,12 +1496,12 @@ export function SupremeKingPayExperience() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">
-                  Verified Airport Cabs &amp; Outstation Rentals
+                  Airport Cabs &amp; Outstation Search
                 </h3>
-                <p className="text-[11px] text-slate-400">Zero surge pricing lock, sanitized fleet, terminal toll included</p>
+                <p className="text-[11px] text-slate-400">Final vehicle, fare, pickup time and provider terms are confirmed outside OrderKing.</p>
               </div>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                Fixed Fare Lock
+                Confirm with provider
               </span>
             </div>
 
@@ -1658,7 +1579,7 @@ export function SupremeKingPayExperience() {
               <GraduationCap className="size-5 text-amber-400" /> AI Academic Tutor &amp; Verified Mentors
             </h2>
             <p className="text-xs text-slate-400">
-              Verified Academic Mentor Network, live 1-on-1 study sessions, and step-by-step NCERT &amp; State Board exam derivations
+              AI-assisted study explanations. Human academic mentors are onboarding; no verified live sessions are promised.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">

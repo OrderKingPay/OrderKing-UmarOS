@@ -10,7 +10,6 @@ import {
   type SovereignETicket,
   getStoredETickets,
 } from "@/lib/travel/in-app-booking-service";
-import { SovereignTravelConcierge } from "@/components/fintech/sovereign-travel-concierge";
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
 import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
 import { buildOfficialAirlineDeepLink } from "@/lib/travel/airline-deep-links";
@@ -892,12 +891,7 @@ export function TravelPage() {
           </div>
         </div>
 
-        {/* TRAVEL ENGINE CONCIERGE (0% FEE GUARANTEE & DIRECT TICKETING) */}
-        <SovereignTravelConcierge
-          onSaveTrip={(trip) => {
-            persistTrips([trip, ...savedTrips]);
-          }}
-        />
+        {/* Unsupported rebate and hypothetical fare calculator withheld from customers. */}
 
         {/* =====================================================================
             CATEGORY 1: FLIGHTS

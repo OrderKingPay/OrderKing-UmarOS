@@ -155,120 +155,8 @@ const SUBJECTS_BY_CLASS: Record<ClassGrade, string[]> = {
 const VERIFIED_TUTORS: TutorProfile[] = [];
 
 // Curated verified openings & remote opportunities
-const VERIFIED_JOB_LISTINGS: JobOpening[] = [
-  {
-    id: "job-fleet-rider",
-    title: "OrderKing Hyperlocal Fleet Delivery Partner",
-    company: "OrderKing Logistics Fleet",
-    category: "Local Direct Jobs",
-    payout: "Earnings per completed delivery + incentives",
-    payoutFrequency: "Per Month",
-    payoutBadge: "Daily UPI",
-    location: "Hyperlocal Nationwide (Pan-India)",
-    workType: "Full-Time",
-    skills: ["Two-Wheeler / EV / Cycle", "Smartphone & GPS", "Punctuality"],
-    description: "Deliver orders from partner kitchens to local customers. Flexible 4-hour or 8-hour shifts with instant daily UPI settlements. Zero onboarding fee.",
-    directHrContact: "fleet-onboarding@orderking.in",
-    verifiedDepositZero: true,
-    postedAgo: "Active Onboarding",
-  },
-  {
-    id: "job-task-1",
-    title: "Hyperlocal Merchant QR & Menu Auditor",
-    company: "OrderKing City Desk",
-    category: "Paid Micro-Tasks",
-    payout: "₹200 – ₹300",
-    payoutFrequency: "Per Task",
-    payoutBadge: "Direct Bank / UPI",
-    location: "Your Local Market / City",
-    workType: "Gig / Task",
-    skills: ["Smartphone Camera", "Store Verification", "Menu Audit"],
-    description: "Visit partner restaurants in your area, photograph the live paper menu, verify the OrderKing table QR code, and upload via app.",
-    directHrContact: "ops-fleet@orderking.in",
-    verifiedDepositZero: true,
-    postedAgo: "Active",
-  },
-  {
-    id: "job-task-2",
-    title: "Assamese & Regional Audio Transcription",
-    company: "OrderKing Localization Desk",
-    category: "Paid Micro-Tasks",
-    payout: "₹250 – ₹400",
-    payoutFrequency: "Per Task",
-    payoutBadge: "Instant Payout",
-    location: "Work from Mobile / PC",
-    workType: "Gig / Task",
-    skills: ["Regional Listening", "Accurate Typing", "Grammar"],
-    description: "Transcribe regional voice prompts and merchant dish catalogs into clean regional script. Direct credit to your verified balance upon approval.",
-    directHrContact: "localization@orderking.in",
-    verifiedDepositZero: true,
-    postedAgo: "Active",
-  },
-  {
-    id: "job-tutor-mentor",
-    title: "Verified Community Academic Mentor & Doubt Solver",
-    company: "OrderKing Academic Network",
-    category: "Work From Home (WFH)",
-    payout: "Direct Student Honorarium",
-    payoutFrequency: "Hourly",
-    payoutBadge: "Zero Commission",
-    location: "Remote / Work From Home",
-    workType: "Flexible",
-    skills: ["Subject Expertise", "Clear Step Derivations", "Empathetic Pedagogy"],
-    description: "Conduct 1-on-1 problem-solving sessions and clarify academic doubts for Class 6–12 students. Zero commission deducted by OrderKing.",
-    directHrContact: "tutors@orderking.in",
-    verifiedDepositZero: true,
-    postedAgo: "Active Network",
-  },
-  {
-    id: "job-loc-2",
-    title: "Fast-Mile EV Fleet Hub Coordinator",
-    company: "OrderKing Express Logistics",
-    category: "Local Direct Jobs",
-    payout: "₹22,000 – ₹28,000",
-    payoutFrequency: "Per Month",
-    payoutBadge: "+ Performance Bonus",
-    location: "Guwahati / Silchar / Jorhat",
-    workType: "Full-Time",
-    skills: ["EV Battery Swapping", "Rider Dispatching", "Punctuality"],
-    description: "Oversee rider check-ins, battery swap health stations, and dispatch peak delivery cohorts during dinner rushes.",
-    directHrContact: "logistics-hub@orderking.in",
-    verifiedDepositZero: true,
-    postedAgo: "Today",
-  },
-  {
-    id: "job-stu-1",
-    title: "Campus Brand Ambassador & Event Lead",
-    company: "OrderKing Youth Community",
-    category: "Part-Time Student",
-    payout: "Performance Stipend + Certificate",
-    payoutFrequency: "Per Month",
-    payoutBadge: "Flexible Hours",
-    location: "Colleges across Assam & NE",
-    workType: "Part-Time",
-    skills: ["Campus Networking", "Event Coordination", "Social Media"],
-    description: "Represent OrderKing on campus, organize student discount codes, food fest kiosks, and gain practical startup operations experience.",
-    directHrContact: "campus@orderking.in",
-    verifiedDepositZero: true,
-    postedAgo: "Active",
-  },
-  {
-    id: "job-stu-2",
-    title: "Evening Doubt Clearing Student Tutor",
-    company: "OrderKing Scholar Network",
-    category: "Part-Time Student",
-    payout: "₹350 – ₹500",
-    payoutFrequency: "Hourly",
-    payoutBadge: "Flexible Hours",
-    location: "Online / Remote",
-    workType: "Part-Time",
-    skills: ["Class 9-10 Math/Science", "Doubt Resolution", "Patience"],
-    description: "Help junior school students clear homework hurdles and NCERT textbook questions in evening slots (7 PM - 9 PM).",
-    directHrContact: "scholars@orderking.in",
-    verifiedDepositZero: true,
-    postedAgo: "Active",
-  },
-];
+// Only independently confirmed jobs may be displayed; no invented posts.
+const VERIFIED_JOB_LISTINGS: JobOpening[] = [];
 
 // Transparent Platform Fee constants
 export const TUTOR_BOOKING_PLATFORM_FEE_INR = 49;
@@ -422,7 +310,7 @@ export function TutorJobsHub() {
       setAppliedJobsCount((prev) => prev + 1);
       const appRef = `JOB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
       toast.success(
-        `Application Dispatched! Ref #${appRef}. Sent directly to ${applyingJob?.company} HR. Platform fee ₹${JOB_APPLICATION_PLATFORM_FEE_INR} verified.`,
+        `Application Submitted for Review. Ref #${appRef}. Sent directly to ${applyingJob?.company} HR. Platform fee ₹${JOB_APPLICATION_PLATFORM_FEE_INR} verified.`,
         { duration: 6000 }
       );
       setApplyingJob(null);
@@ -455,7 +343,7 @@ export function TutorJobsHub() {
               Tutors, Academics &amp; <span className="text-amber-400">Career Network</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Book verified State &amp; Central Board academic tutors (Class 1–12), or explore curated Remote, WFH, Content QA &amp; Hyperlocal Operations roles.
+              Find available State &amp; Central Board academic tutors (Class 1–12), or explore curated Remote, WFH, Content QA &amp; Hyperlocal Operations roles.
             </p>
           </div>
 

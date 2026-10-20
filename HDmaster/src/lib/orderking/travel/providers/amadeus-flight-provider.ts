@@ -40,6 +40,8 @@ export class AmadeusFlightProvider implements TravelProvider {
   supportedModes: TravelMode[] = ["FLIGHT"];
 
   isAvailable(): boolean {
+    // Sandbox offers cannot be sold or confirmed as production tickets.
+    if (process.env.NODE_ENV === "production") return false;
     return Boolean(
       process.env.AMADEUS_CLIENT_ID?.trim() &&
       process.env.AMADEUS_CLIENT_SECRET?.trim(),
@@ -101,45 +103,15 @@ export class AmadeusFlightProvider implements TravelProvider {
     });
   }
 
-  async book(request: TravelBookingRequest): Promise<TravelBookingResponse> {
-    if (!this.isAvailable()) {
-      return {
-        success: false,
-        status: "BLOCKED_BY_EXTERNAL_PROVIDER",
-        error: "Amadeus OAuth credentials are not configured.",
-      };
-    }
-
-    const token = await getAccessToken();
-    const res = await resilientFetch("https://test.api.amadeus.com/v1/booking/flight-orders", {
-      method: "POST",
-      timeoutMs: 15_000,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data: {
-          type: "flight-order",
-          flightOffers: [request.rawProviderData],
-          travelers: request.passengerDetails,
-        },
-      }),
-    });
-
-    if (!res.ok) {
-      const body = await res.text();
-      return { success: false, status: "FAILED", error: `Amadeus booking failed with status ${res.status}: ${body.slice(0, 500)}` };
-    }
-
-    const data = await res.json() as { data?: { id?: string; associatedRecords?: Array<{ reference?: string }> } };
+  async book(_request: TravelBookingRequest): Promise<TravelBookingResponse> {
+    // The configured host is test.api.amadeus.com, not an authorized ticket issuer.
     return {
-      success: true,
-      status: "CONFIRMED",
-      bookingId: data.data?.id,
-      pnr: data.data?.associatedRecords?.[0]?.reference,
+      success: false,
+      status: "BLOCKED_BY_EXTERNAL_PROVIDER",
+      error: "Amadeus sandbox cannot issue real passenger tickets. Production contracts, credentials, e-ticketing and provider verification are required.",
     };
   }
+
 }
 
 

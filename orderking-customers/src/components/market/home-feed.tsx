@@ -581,9 +581,9 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* 0% Aggregator Markup Guarantee Banner vs Zomato/Swiggy */}
+      {/* Restaurant menu transparency banner */}
       {!q && list.data?.deliveryAvailable !== false && (
-        <section aria-label="0% Aggregator Markup Guarantee" className="pt-0.5">
+        <section aria-label="Restaurant menu transparency" className="pt-0.5">
           <div className="rounded-2xl border border-emerald-200/90 bg-gradient-to-r from-emerald-50/90 via-teal-50/50 to-emerald-50/90 p-3 sm:p-3.5 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white shadow-xs">
@@ -592,21 +592,21 @@ export function HomeFeed({
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-black text-xs sm:text-sm text-emerald-950 tracking-tight">
-                    0% Aggregator Markup Guarantee
+                    Explore local restaurant menus
                   </span>
                   <span className="inline-flex items-center rounded-full bg-emerald-200/80 text-emerald-950 font-black text-[10px] px-2 py-0.5 border border-emerald-300/60">
-                    Save ₹100–₹150 Per Order
+                    Compare final checkout prices
                   </span>
                 </div>
                 <p className="text-[11px] text-emerald-800/90 font-medium leading-tight">
-                  Genuine dine-in menu prices with 0% aggregator markups vs Zomato &amp; Swiggy. Direct from local kitchens.
+                  Menus and delivery availability depend on participating restaurants. Review all fees and the final total before paying.
                 </p>
               </div>
             </div>
             <div className="shrink-0 self-end sm:self-auto">
               <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-white/90 border border-emerald-200 px-2.5 py-1 rounded-lg shadow-2xs">
                 <Sparkles className="size-3 text-emerald-600" />
-                Dine-In Rates
+                See Menu Prices
               </span>
             </div>
           </div>
