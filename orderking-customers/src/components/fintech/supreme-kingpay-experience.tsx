@@ -1255,101 +1255,7 @@ export function SupremeKingPayExperience() {
           </div>
         </div>
 
-        {/* 4 Verified Mentor Network Tracks Showcase */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-              <Star className="size-3.5 fill-amber-400 text-amber-400" /> Representative Academic Profiles (Demonstration)
-            </span>
-            <span className="text-[11px] text-slate-400">Demonstration Faculty Profiles · Zero Platform Commission</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {VERIFIED_MENTOR_TRACKS.map((m) => (
-              <div
-                key={m.id}
-                className="rounded-2xl border border-slate-800 bg-slate-950 p-4 space-y-3 flex flex-col justify-between hover:border-amber-400/50 transition group"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-400/30 text-amber-300">
-                      Representative Academic Profile
-                    </span>
-                    <span className="text-[10px] font-bold text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-md">
-                      {m.badge}
-                    </span>
-                  </div>
-
-                  <h3 className="text-sm font-black text-white mt-2 group-hover:text-amber-300 transition-colors">
-                    {m.name}
-                  </h3>
-                  <p className="text-[11px] text-slate-400 font-medium">{m.qualification}</p>
-                  <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">
-                    {m.specialty}
-                  </p>
-
-                  <div className="flex flex-wrap gap-1 mt-2.5">
-                    {m.subjects.map((sub) => (
-                      <span key={sub} className="text-[9.5px] px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">
-                        {sub}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-800/80 pt-3 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-black font-mono text-emerald-400">Direct Session</span>
-                    <span className="block text-[9px] text-slate-400">{m.languages}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedMentor(m);
-                      setIsMentorModalOpen(true);
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black transition cursor-pointer"
-                  >
-                    Request 1-on-1
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 4 Structured Test Prep Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-          <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-1">
-            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
-              <BookOpen className="size-3.5" /> CBSE &amp; 28 State Boards
-            </span>
-            <p className="text-[11px] text-slate-400">Class 9–12 step-marking schemes &amp; NCERT solutions</p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-1">
-            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
-              <Zap className="size-3.5" /> JEE &amp; NEET Foundation
-            </span>
-            <p className="text-[11px] text-slate-400">Physics formulas, chemistry mechanisms, biology vaults</p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-1">
-            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
-              <ShieldCheck className="size-3.5" /> UPSC &amp; State PSC
-            </span>
-            <p className="text-[11px] text-slate-400">Prelims CSAT, general studies notes, daily editorials</p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-1">
-            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
-              <Users className="size-3.5" /> Placement &amp; Spoken English
-            </span>
-            <p className="text-[11px] text-slate-400">Mock corporate interviews, technical coding &amp; grammar</p>
-          </div>
-        </div>
-
-        {/* Live Interactive Learning Console */}
+        {/* Live Interactive Learning Console - AI Derivation Engine */}
         <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
@@ -1443,6 +1349,102 @@ export function SupremeKingPayExperience() {
             </div>
           )}
         </div>
+
+        {/* 4 Verified Mentor Network Curriculum Tracks */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <BookOpen className="size-3.5 fill-amber-400 text-amber-400" /> Academic &amp; Skill Tracks
+            </span>
+            <span className="text-[11px] text-slate-400">Zero Commission · Direct Student-Educator Connect</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {VERIFIED_MENTOR_TRACKS.map((m) => (
+              <div
+                key={m.id}
+                className="rounded-2xl border border-slate-800 bg-slate-950 p-4 space-y-3 flex flex-col justify-between hover:border-amber-400/50 transition group"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-400/30 text-amber-300">
+                      Curriculum Track
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-md">
+                      {m.badge}
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm font-black text-white mt-2 group-hover:text-amber-300 transition-colors">
+                    {m.name}
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-medium">{m.qualification}</p>
+                  <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">
+                    {m.specialty}
+                  </p>
+
+                  <div className="flex flex-wrap gap-1 mt-2.5">
+                    {m.subjects.map((sub) => (
+                      <span key={sub} className="text-[9.5px] px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">
+                        {sub}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-800/80 pt-3 flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-black font-mono text-emerald-400">1-on-1 Guidance</span>
+                    <span className="block text-[9px] text-slate-400">{m.languages}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedMentor(m);
+                      setIsMentorModalOpen(true);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black transition cursor-pointer"
+                  >
+                    Request 1-on-1
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 4 Structured Test Prep Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+          <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-1">
+            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
+              <BookOpen className="size-3.5" /> CBSE &amp; 28 State Boards
+            </span>
+            <p className="text-[11px] text-slate-400">Class 9–12 step-marking schemes &amp; NCERT solutions</p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-1">
+            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
+              <Zap className="size-3.5" /> JEE &amp; NEET Foundation
+            </span>
+            <p className="text-[11px] text-slate-400">Physics formulas, chemistry mechanisms, biology vaults</p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-1">
+            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
+              <ShieldCheck className="size-3.5" /> UPSC &amp; State PSC
+            </span>
+            <p className="text-[11px] text-slate-400">Prelims CSAT, general studies notes, daily editorials</p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-1">
+            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
+              <Users className="size-3.5" /> Placement &amp; Spoken English
+            </span>
+            <p className="text-[11px] text-slate-400">Mock corporate interviews, technical coding &amp; grammar</p>
+          </div>
+        </div>
+
+
       </section>
 
       {/* ─── DEDICATED PILLAR 3: VERIFIED JOBS (HIGH-TRUST ZERO-FEE DIRECT APPLICATIONS) ─── */}

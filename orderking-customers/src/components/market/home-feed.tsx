@@ -16,6 +16,9 @@ import {
   Utensils,
   ChevronRight,
   CloudRain,
+  Sparkles,
+  Store,
+  ExternalLink,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { CuratedCollections } from "@/components/market/curated-collections";
@@ -107,6 +110,74 @@ const CURATED_FOOD_CATEGORIES = [
 
 export const VERIFIED_AVAILABLE_KITCHENS: RestaurantCard[] = [];
 
+export const ACTIVE_FLAGSHIP_HUBS = [
+  {
+    id: "delhi-cp",
+    name: "Connaught Place Central",
+    flagshipLabel: "Delhi NCR Flagship",
+    description: "Iconic North Indian, Mughlai and Street Heritage",
+    cityId: "del",
+    cityName: "New Delhi",
+    zoneId: "del-cp",
+    zoneName: "Connaught Place",
+    label: "Connaught Place Central, New Delhi",
+    line1: "Inner Circle, Connaught Place, New Delhi",
+    lat: 28.6315,
+    lng: 77.2167,
+    highlight: "Saravanaa Bhavan, Karim's, Wenger's and more",
+    gradient: "from-amber-500 to-orange-500",
+  },
+  {
+    id: "sribhumi-core",
+    name: "Sribhumi Core",
+    flagshipLabel: "Karimganj / Assam Flagship",
+    description: "Launch Flagship: Authentic Sylheti and Assamese Kitchens",
+    cityId: "karimganj",
+    cityName: "Sribhumi / Karimganj",
+    zoneId: "karimganj_core",
+    zoneName: "Sribhumi Core",
+    label: "Station Road, Sribhumi Core",
+    line1: "Station Road, Karimganj, Assam",
+    lat: 24.8688,
+    lng: 92.3511,
+    highlight: "Sovereign Assam Core 15km Zone",
+    gradient: "from-emerald-500 to-teal-600",
+  },
+  {
+    id: "mumbai-metro",
+    name: "Mumbai Metropolitan",
+    flagshipLabel: "Bandra / BKC Flagship",
+    description: "Coastal Seafood, Artisanal Cafes and Late Night Dining",
+    cityId: "mum",
+    cityName: "Mumbai",
+    zoneId: "mum-bandra",
+    zoneName: "Bandra / BKC",
+    label: "Bandra West / BKC, Mumbai",
+    line1: "Linking Road, Bandra West, Mumbai",
+    lat: 19.0600,
+    lng: 72.8336,
+    highlight: "Bandra and BKC Gourmet Kitchens",
+    gradient: "from-blue-500 to-indigo-600",
+  },
+  {
+    id: "bengaluru-hub",
+    name: "Bengaluru Tech Hub",
+    flagshipLabel: "Indiranagar Flagship",
+    description: "Craft Burgers, Artisanal Bakeries and Pan-Asian Delights",
+    cityId: "blr",
+    cityName: "Bengaluru",
+    zoneId: "blr-ind",
+    zoneName: "Indiranagar",
+    label: "Indiranagar Tech Hub, Bengaluru",
+    line1: "100ft Road, Indiranagar, Bengaluru",
+    lat: 12.9784,
+    lng: 77.6408,
+    highlight: "Indiranagar and Koramangala Kitchens",
+    gradient: "from-purple-500 to-violet-600",
+  },
+];
+
+
 export function HomeFeed({
   q,
   veg,
@@ -122,6 +193,7 @@ export function HomeFeed({
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const { marketplace } = useBrand();
   const location = useLocationStore((s) => s.location);
+  const setLocation = useLocationStore((s) => s.setLocation);
   const cart = useCartStore();
   const navigate = useNavigate();
 
@@ -570,16 +642,146 @@ export function HomeFeed({
                 </Button>
               </div>
             )}
-            <div role="status" data-testid="food-availability-note"
-              className="rounded-2xl border border-stone-200 bg-white px-4 py-4 text-left shadow-sm">
-              <p className="text-sm font-extrabold text-stone-900">
-                {!isDeliveryActive || list.data?.deliveryAvailable === false
-                  ? "Food delivery is not currently available at this address."
-                  : "No restaurants are available for this address right now."}
-              </p>
-              <p className="mt-1 text-xs text-stone-600">
-                Choose another delivery address or open KingPay in the bottom navigation. Only verified additional services are shown when available.
-              </p>
+            {/* Active Hyperlocal Discovery & Flagship Hub Switcher (Zero Blank Dead-Ends) */}
+            <div
+              role="status"
+              data-testid="food-availability-note"
+              className="rounded-3xl border border-amber-200/90 bg-gradient-to-b from-white via-amber-50/25 to-white p-5 sm:p-6 text-left shadow-sm space-y-5"
+            >
+              {/* Header and status notice */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-extrabold text-amber-900">
+                      <Sparkles className="size-3 text-amber-600" />
+                      Active Hub Discovery
+                    </span>
+                    {!isDeliveryActive && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-bold text-stone-600">
+                        Outside Delivery Radius
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
+                    {!isDeliveryActive || list.data?.deliveryAvailable === false
+                      ? "Food delivery is not currently available at this address."
+                      : "No restaurants match your criteria at this address."}
+                  </h3>
+                  <p className="text-xs text-stone-600 max-w-xl">
+                    Browse live restaurants, authentic menus, and real-time ordering by switching to one of our active flagship culinary hubs below:
+                  </p>
+                </div>
+              </div>
+
+              {/* 1-Click Active Flagship Hubs */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-black uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
+                    <MapPin className="size-3.5 text-red-500" />
+                    1-Click Active Flagship Hubs
+                  </p>
+                  <span className="text-[10px] text-stone-500 font-medium">Instant Menu Reload</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {ACTIVE_FLAGSHIP_HUBS.map((hub) => {
+                    const isSelected =
+                      location?.zoneId === hub.zoneId ||
+                      (location?.cityId === hub.cityId && Math.abs(location.lat - hub.lat) < 0.05);
+
+                    return (
+                      <button
+                        key={hub.id}
+                        type="button"
+                        onClick={() => {
+                          setLocation({
+                            cityId: hub.cityId,
+                            cityName: hub.cityName,
+                            zoneId: hub.zoneId,
+                            zoneName: hub.zoneName,
+                            label: hub.label,
+                            line1: hub.line1,
+                            lat: hub.lat,
+                            lng: hub.lng,
+                          });
+                          toast.success(`Switched to ${hub.name} (${hub.flagshipLabel})`);
+                        }}
+                        className={cn(
+                          "group relative flex items-start justify-between gap-3 rounded-2xl border p-3.5 text-left transition-all duration-200 active:scale-[0.98] cursor-pointer",
+                          isSelected
+                            ? "border-[#E23744] bg-red-50/50 shadow-sm ring-1 ring-[#E23744]/20"
+                            : "border-stone-200 bg-white hover:border-amber-400 hover:bg-amber-50/40 hover:shadow-sm"
+                        )}
+                      >
+                        <div className="flex items-start gap-3 min-w-0">
+                          <div
+                            className={cn(
+                              "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr text-white shadow-xs transition-transform group-hover:scale-105",
+                              hub.gradient
+                            )}
+                          >
+                            <MapPin className="size-4" />
+                          </div>
+                          <div className="min-w-0 space-y-0.5">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-extrabold text-xs sm:text-sm text-gray-950 truncate">
+                                {hub.name}
+                              </span>
+                              <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold text-stone-700">
+                                {hub.flagshipLabel}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-stone-500 font-medium truncate">
+                              {hub.description}
+                            </p>
+                            <p className="text-[10px] text-amber-700 font-bold truncate">
+                              ⭐ {hub.highlight}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="shrink-0 pt-1">
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-extrabold transition-colors",
+                              isSelected
+                                ? "bg-[#E23744] text-white"
+                                : "bg-stone-100 text-stone-700 group-hover:bg-amber-100 group-hover:text-amber-900"
+                            )}
+                          >
+                            {isSelected ? "Active" : "Switch"}
+                            <ChevronRight className="size-3" />
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Prominent Restaurant Owner Onboarding Banner (0% Commission) */}
+              <div className="rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-500 via-amber-500 to-amber-600 p-4 sm:p-5 text-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="space-y-1 min-w-0">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-black/20 backdrop-blur-xs px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-200">
+                    <Store className="size-3" />
+                    Direct Merchant Network
+                  </div>
+                  <h4 className="text-sm sm:text-base font-black tracking-tight text-white">
+                    Restaurant Owner? Onboard your kitchen in 60 seconds (0% commission)
+                  </h4>
+                  <p className="text-xs text-white/90 max-w-lg leading-relaxed">
+                    Expand your reach with OrderKing's zero-commission hyperlocal food network. Instant digital KYC, live catalog listing, and automated delivery dispatch.
+                  </p>
+                </div>
+                <a
+                  href="https://partners.orderkingpay.com/onboarding"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 shrink-0 rounded-xl bg-white hover:bg-stone-100 text-gray-950 px-4 py-2.5 text-xs font-black transition-all shadow-sm hover:shadow active:scale-95 no-underline"
+                >
+                  <span>Onboard Kitchen in 60s</span>
+                  <ExternalLink className="size-3.5" />
+                </a>
+              </div>
             </div>
           </div>
         ) : (

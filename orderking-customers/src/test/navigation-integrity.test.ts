@@ -335,5 +335,78 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
       ]);
     });
   });
-});
+  describe("8. Hyperlocal Food Delivery and Active Flagship Hub Switching Invariants", { timeout: 60_000 }, () => {
+    it("exports all 4 active flagship hubs matching gold-standard specifications", async () => {
+      const { ACTIVE_FLAGSHIP_HUBS } = await import("@/components/market/home-feed");
+      expect(ACTIVE_FLAGSHIP_HUBS).toHaveLength(4);
 
+      const hubNames = ACTIVE_FLAGSHIP_HUBS.map((h: any) => h.name);
+      expect(hubNames).toContain("Connaught Place Central");
+      expect(hubNames).toContain("Sribhumi Core");
+      expect(hubNames).toContain("Mumbai Metropolitan");
+      expect(hubNames).toContain("Bengaluru Tech Hub");
+
+      const flagshipLabels = ACTIVE_FLAGSHIP_HUBS.map((h: any) => h.flagshipLabel);
+      expect(flagshipLabels).toContain("Delhi NCR Flagship");
+      expect(flagshipLabels).toContain("Karimganj / Assam Flagship");
+      expect(flagshipLabels).toContain("Bandra / BKC Flagship");
+      expect(flagshipLabels).toContain("Indiranagar Flagship");
+    });
+
+    it("ensures each flagship hub coordinates pass geofence guard with deliveryActive = true", async () => {
+      const { ACTIVE_FLAGSHIP_HUBS } = await import("@/components/market/home-feed");
+      const { isDeliveryActiveInLocation } = await import("@/lib/geo/geofence-guard");
+
+      for (const hub of ACTIVE_FLAGSHIP_HUBS) {
+        const active = isDeliveryActiveInLocation(hub.lat, hub.lng, hub.cityId);
+        expect(active).toBe(true);
+      }
+    });
+
+    it("updates useLocationStore instantly upon switching to any flagship hub", async () => {
+      const { ACTIVE_FLAGSHIP_HUBS } = await import("@/components/market/home-feed");
+      const { useLocationStore } = await import("@/lib/stores/location");
+
+      const cp = ACTIVE_FLAGSHIP_HUBS.find((h: any) => h.id === "delhi-cp");
+      expect(cp).toBeDefined();
+
+      useLocationStore.getState().setLocation({
+        cityId: cp.cityId,
+        cityName: cp.cityName,
+        zoneId: cp.zoneId,
+        zoneName: cp.zoneName,
+        label: cp.label,
+        line1: cp.line1,
+        lat: cp.lat,
+        lng: cp.lng,
+      });
+
+      const state = useLocationStore.getState().location;
+      expect(state.zoneId).toBe("del-cp");
+      expect(state.cityName).toBe("New Delhi");
+      expect(state.lat).toBe(28.6315);
+      expect(state.lng).toBe(77.2167);
+
+      // Switch to Sribhumi Core
+      const sribhumi = ACTIVE_FLAGSHIP_HUBS.find((h: any) => h.id === "sribhumi-core");
+      expect(sribhumi).toBeDefined();
+
+      useLocationStore.getState().setLocation({
+        cityId: sribhumi.cityId,
+        cityName: sribhumi.cityName,
+        zoneId: sribhumi.zoneId,
+        zoneName: sribhumi.zoneName,
+        label: sribhumi.label,
+        line1: sribhumi.line1,
+        lat: sribhumi.lat,
+        lng: sribhumi.lng,
+      });
+
+      const sribhumiState = useLocationStore.getState().location;
+      expect(sribhumiState.zoneId).toBe("karimganj_core");
+      expect(sribhumiState.cityId).toBe("karimganj");
+      expect(sribhumiState.lat).toBe(24.8688);
+      expect(sribhumiState.lng).toBe(92.3511);
+    });
+  });
+});
