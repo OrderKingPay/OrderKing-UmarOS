@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 /**
  * IRCTC & Indian Railways Fintech Reconciliation Engine
  *
@@ -139,6 +140,51 @@ export function assertTrainQuoteAuthentic(quote: { id?: string; mode?: string; [
  * 2. Requires verified provider credentials from secure environment/backend (e.g. IRCTC_PSP_MERCHANT_KEY).
  * 3. Key must strictly match certified CRIS PSP key pattern.
  */
+/**
+ * Genuine cryptographic digital signature verification for Indian Railways CRIS PRS payloads.
+ *
+ * Statutory Compliance Mandates:
+ * 1. Signature prefixes such as CRIS_SIG_ or CRIS-DSC- are NOT cryptographic proof.
+ *    Any signature starting with such mock prefixes is strictly rejected.
+ * 2. Real verification requires RSA-SHA256 / ECDSA digital signature verification against
+ *    the authentic public certificate registered for CRIS PRS or an authorized B2C partner.
+ * 3. Client-controlled boolean flags (e.g. verifiedByCrisServer: true) are strictly ignored.
+ */
+export function verifyCrisCryptographicSignature(params: {
+  payload: string | Buffer;
+  signature: string;
+  publicKeyPem?: string;
+}): boolean {
+  if (!params.payload || !params.signature) {
+    return false;
+  }
+  const rawSig = params.signature.trim();
+  // Strictly reject pseudo-cryptographic string prefixes
+  if (rawSig.startsWith("CRIS_SIG_") || rawSig.startsWith("CRIS-DSC-")) {
+    return false;
+  }
+  const effectiveKey =
+    params.publicKeyPem ||
+    (typeof process !== "undefined" && process?.env
+      ? process.env.CRIS_PRS_PUBLIC_KEY || process.env.IRCTC_PSP_PUBLIC_KEY
+      : undefined);
+
+  if (!effectiveKey) {
+    return false; // Fails closed if no authentic public key is provisioned
+  }
+
+  try {
+    const isHex = /^[0-9a-fA-F]+$/.test(rawSig);
+    const sigBuffer = isHex ? Buffer.from(rawSig, "hex") : Buffer.from(rawSig, "base64");
+    const verifier = crypto.createVerify("SHA256");
+    verifier.update(params.payload);
+    verifier.end();
+    return verifier.verify(effectiveKey, sigBuffer);
+  } catch {
+    return false;
+  }
+}
+
 export function isIrctcPspAuthenticated(
   optionsOrToken?: string | IrctcPspVerificationOptions,
   responseContext?: CrisCryptographicResponse | string

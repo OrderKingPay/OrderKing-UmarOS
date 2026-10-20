@@ -1,6 +1,8 @@
+import crypto from "node:crypto";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   isIrctcPspAuthenticated,
+  verifyCrisCryptographicSignature,
   assertTrainPaymentPermitted,
   verifyConfirmedRailwayBooking,
   calculateRailwayCancellationRefund,
