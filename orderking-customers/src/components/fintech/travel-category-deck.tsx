@@ -129,7 +129,7 @@ export function TravelCategoryDeck({
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Compare live tariffs across airlines, Indian Railways, intercity buses and stays.
+            Choose your journey, then check current fares and seat availability directly with the booking provider.
           </p>
         </div>
         {onOpenTrips ? (

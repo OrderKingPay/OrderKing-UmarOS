@@ -975,7 +975,7 @@ export function TravelPage() {
                     </h2>
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    Direct airline GDS fare integration with zero platform surcharge. Compare live airline tariffs.
+                    Open an official airline checkout to verify current fares, taxes and availability. OrderKing does not issue airline tickets here.
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-black text-emerald-700">
