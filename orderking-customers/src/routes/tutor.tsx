@@ -1545,7 +1545,16 @@ function IntelligencePage() {
               </div>
 
               <div className="space-y-3">
-                {filteredJobs.map((job) => {
+                {filteredJobs.length === 0 ? (
+                  <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-8 text-center space-y-2">
+                    <Briefcase className="size-8 text-zinc-500 mx-auto" />
+                    <p className="text-sm font-bold text-white">Verified opportunities onboarding in your district</p>
+                    <p className="text-xs text-zinc-400">
+                      Partner employers and verified local businesses are currently onboarding roles in this category.
+                    </p>
+                  </div>
+                ) : (
+                  filteredJobs.map((job) => {
                   const existingApp = submittedApplications.find((a) => a.jobId === job.id);
                   const skillMatch = candidateSkillsInput.trim()
                     ? computeDeterministicSkillMatch(candidateSkillsInput, job.requirements)
@@ -1637,7 +1646,8 @@ function IntelligencePage() {
                       </div>
                     </div>
                   );
-                })}
+                })
+              )}
               </div>
             </div>
           </div>

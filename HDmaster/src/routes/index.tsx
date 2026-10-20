@@ -1724,16 +1724,7 @@ function UmarOSDashboard() {
         if (raw) return JSON.parse(raw);
       } catch (_e) {}
     }
-    return [
-      {
-        id: "trip-demo-1",
-        mode: "✈️ Flight",
-        pnr: "6E-2849",
-        passenger: "Umar (Founder)",
-        date: "Tomorrow",
-        route: "Bengaluru (BLR) → Silchar (IXS)",
-      },
-    ];
+    return [];
   });
   const [newTripMode, setNewTripMode] = useState("✈️ Flight");
   const [newTripPnr, setNewTripPnr] = useState("");
@@ -1757,24 +1748,7 @@ function UmarOSDashboard() {
         if (raw) return JSON.parse(raw);
       } catch (_e) {}
     }
-    return [
-      {
-        id: "job-1",
-        title: "OrderKing Delivery Fleet Rider",
-        salary: "₹18,000–₹24,000/mo (Base ₹30 + Rain Bonus)",
-        city: "Sribhumi / Karimganj",
-        vacancies: 15,
-        postedDate: "Today",
-      },
-      {
-        id: "job-2",
-        title: "Cloud Kitchen Line Chef & Helper",
-        salary: "₹16,000–₹22,000/mo",
-        city: "Bengaluru",
-        vacancies: 4,
-        postedDate: "Yesterday",
-      },
-    ];
+    return [];
   });
   const [newJobTitle, setNewJobTitle] = useState("");
   const [newJobSalary, setNewJobSalary] = useState("");
@@ -3884,8 +3858,8 @@ function UmarOSDashboard() {
             {/* Saved Trips List */}
             {savedTrips.length === 0 ? (
               <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                <p className="text-xs text-slate-500">
-                  No trips saved yet. Add a customer booking reference or flight PNR above to track live status.
+                <p className="text-xs text-slate-500 font-medium">
+                  Awaiting live store telemetry · No customer travel itineraries or PNR bookings saved yet.
                 </p>
               </div>
             ) : (
@@ -4181,53 +4155,61 @@ function UmarOSDashboard() {
             </form>
 
             {/* Active Jobs List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {localJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-500 transition-all space-y-2.5 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <h3 className="text-sm font-black text-slate-900">
-                        {job.title}
-                      </h3>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                        {job.vacancies} Openings
-                      </span>
+            {localJobs.length === 0 ? (
+              <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-xs text-slate-500 font-medium">
+                  Awaiting live store telemetry · No active local job postings currently recorded.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {localJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-500 transition-all space-y-2.5 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm font-black text-slate-900">
+                          {job.title}
+                        </h3>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                          {job.vacancies} Openings
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-emerald-700 mt-1">
+                        {job.salary}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        <span>{job.city} · Posted {job.postedDate}</span>
+                      </p>
                     </div>
-                    <p className="text-xs font-bold text-emerald-700 mt-1">
-                      {job.salary}
-                    </p>
-                    <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      <span>{job.city} · Posted {job.postedDate}</span>
-                    </p>
-                  </div>
 
-                  <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
-                    <a
-                      href={`https://wa.me/?text=Hi%2C%20I%20am%20interested%20in%20the%20${encodeURIComponent(
-                        job.title
-                      )}%20opening%20in%20${encodeURIComponent(job.city)}.`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
-                    >
-                      <span>Apply via WhatsApp</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteJob(job.id)}
-                      className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
-                    >
-                      Remove
-                    </button>
+                    <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
+                      <a
+                        href={`https://wa.me/?text=Hi%2C%20I%20am%20interested%20in%20the%20${encodeURIComponent(
+                          job.title
+                        )}%20opening%20in%20${encodeURIComponent(job.city)}.`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+                      >
+                        <span>Apply via WhatsApp</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteJob(job.id)}
+                        className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 

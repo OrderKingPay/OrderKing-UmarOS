@@ -6,6 +6,11 @@ import { generateOtp, newOtpSecret } from "@/lib/rider/otp";
 import { PgStore } from "@/lib/rider/pg-store";
 import { ensureLiveRiderAssigned, transitionLiveOrder, fetchLiveOffers, respondLiveOffer } from "./hdmaster-order-transition";
 import {
+  dispatchOtpSms,
+  sanitizeIndianPhone,
+  isValidIndianPhone,
+} from "./sms-gateway";
+import {
   RiderError,
   type AvailabilityStatus,
   type LocaleCode,
@@ -683,8 +688,8 @@ const riderOtpStore = globalOtpRef.__riderOtpStore__;
 export const sendRiderOtpFn = createServerFn({ method: "POST" })
   .validator((input: { phone: string; channel?: "sms" | "whatsapp" }) => input)
   .handler(async ({ data }) => {
-    const cleanPhone = (data.phone || "").replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+    const cleanPhone = sanitizeIndianPhone(data.phone || "");
+    if (!isValidIndianPhone(cleanPhone)) {
       throw new RiderError(
         "INVALID_PHONE",
         "Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.",
@@ -698,8 +703,16 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
 
     riderOtpStore.set(cleanPhone, { otp, expiresAt, channel });
 
+    // Execute real telecom gateway dispatch engine
+    const dispatchResult = await dispatchOtpSms({
+      phone: cleanPhone,
+      otp,
+      channel,
+      appName: "OrderKing Rider",
+    });
+
     console.log(
-      `[OrderKing OTP] Dispatched ${channel.toUpperCase()} OTP [${otp}] to +91-${cleanPhone}`,
+      `[OrderKing OTP] Dispatched ${channel.toUpperCase()} OTP [${otp}] to +91-${cleanPhone} via ${dispatchResult.provider.toUpperCase()} (MessageId: ${dispatchResult.messageId || "N/A"})`,
     );
 
     return {
@@ -707,17 +720,23 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
       phone: cleanPhone,
       debugOtp: otp,
       channel,
-      message: `OTP sent successfully to +91 ${cleanPhone}`,
+      message: dispatchResult.providerNotice
+        ? `OTP generated for +91 ${cleanPhone}. ${dispatchResult.providerNotice}`
+        : `OTP sent successfully to +91 ${cleanPhone}`,
+      provider: dispatchResult.provider,
+      messageId: dispatchResult.messageId,
+      pendingConfig: dispatchResult.pendingConfig,
+      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
     };
   });
 
 export const verifyRiderOtpFn = createServerFn({ method: "POST" })
   .validator((input: { phone: string; otp: string }) => input)
   .handler(async ({ data }) => {
-    const cleanPhone = (data.phone || "").replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
+    const cleanPhone = sanitizeIndianPhone(data.phone || "");
     const cleanOtp = (data.otp || "").replace(/\D/g, "").trim();
 
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+    if (!isValidIndianPhone(cleanPhone)) {
       throw new RiderError("INVALID_PHONE", "Please enter a valid 10-digit mobile number.", 400);
     }
     if (cleanOtp.length !== 6) {

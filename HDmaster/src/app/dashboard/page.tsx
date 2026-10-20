@@ -9,7 +9,7 @@ async function getDashboardData() {
   const ordersRes = await sql<{ count: number }>`SELECT COUNT(*) as count FROM orders WHERE status NOT IN ('DELIVERED', 'CANCELLED')`;
   const customersRes = await sql<{ count: number }>`SELECT COUNT(*) as count FROM customers`;
   
-  const revenue = revenueRes[0]?.total ? `$${(revenueRes[0].total / 100).toLocaleString()}` : "$0";
+  const revenue = revenueRes[0]?.total ? `₹${(revenueRes[0].total / 100).toLocaleString('en-IN')}` : "₹0";
   const activeOrders = ordersRes[0]?.count || 0;
   const totalCustomers = customersRes[0]?.count || 0;
 
@@ -32,21 +32,21 @@ export default async function DashboardPage() {
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Founder Revenue</h2>
           <p className="text-2xl font-black text-slate-900 mt-2">
-            {data.founderRevenue !== "$0" ? data.founderRevenue : "Awaiting Live Operations"}
+            {data.founderRevenue !== "₹0" ? data.founderRevenue : "Awaiting live store telemetry"}
           </p>
         </div>
         
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Active Orders</h2>
           <p className="text-2xl font-black text-slate-900 mt-2">
-            {data.activeOrders > 0 ? data.activeOrders : "Awaiting Live Operations"}
+            {data.activeOrders > 0 ? data.activeOrders : "Awaiting live store telemetry"}
           </p>
         </div>
         
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Total Customers</h2>
           <p className="text-2xl font-black text-slate-900 mt-2">
-            {data.totalCustomers > 0 ? data.totalCustomers : "Awaiting Live Operations"}
+            {data.totalCustomers > 0 ? data.totalCustomers : "Awaiting live store telemetry"}
           </p>
         </div>
       </div>

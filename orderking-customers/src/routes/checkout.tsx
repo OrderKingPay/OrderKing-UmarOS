@@ -1465,7 +1465,16 @@ function CheckoutPage() {
                           storeName: restaurantName || "OrderKing Kitchen",
                           customerName: (user as any)?.name || "Royal Customer",
                           customerPhone: (user as any)?.phone || "",
-                          items: items.map((i, idx) => ({ name: `Item #${idx + 1}`, quantity: i.quantity || 1 })),
+                          items:
+                            quote.data?.pricedLines && quote.data.pricedLines.length > 0
+                              ? quote.data.pricedLines.map((l) => ({
+                                  name: l.name,
+                                  quantity: l.quantity,
+                                }))
+                              : items.map((i, idx) => ({
+                                  name: `Cart Line #${idx + 1}`,
+                                  quantity: i.quantity || 1,
+                                })),
                           totalPaise: totalPayable,
                           deliveryAddress: location.line1 || "Customer Delivery Location",
                           deliveryInstructions: notes,

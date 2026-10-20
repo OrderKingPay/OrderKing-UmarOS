@@ -149,15 +149,15 @@ export function UniversalPosHardwareManager({
   const [autoPrintOnOrder, setAutoPrintOnOrder] = useState(true);
   const [autoCutPaper, setAutoCutPaper] = useState(true);
   const [dualKotRouting, setDualKotRouting] = useState(false);
-  const [printerConnected, setPrinterConnected] = useState(true);
+  const [printerConnected, setPrinterConnected] = useState(false);
   const [showTestPrintModal, setShowTestPrintModal] = useState(false);
   const [viewHexDump, setViewHexDump] = useState(false);
   const [isAlarmRinging, setIsAlarmRinging] = useState(false);
 
   // --- Network Socket State & Telemetry ---
-  const [socketStatus, setSocketStatus] = useState<"IDLE" | "CONNECTING" | "TRANSMITTING" | "CONNECTED" | "ERROR">("CONNECTED");
+  const [socketStatus, setSocketStatus] = useState<"IDLE" | "CONNECTING" | "TRANSMITTING" | "CONNECTED" | "ERROR">("IDLE");
   const [socketLogs, setSocketLogs] = useState<string[]>([
-    `[TCP-INIT] Ready on Network Interface (Port ${printerPort} RAW Socket).`,
+    "[TCP-INIT] Connect USB/Bluetooth Thermal Printer (ESC/POS) or configure network endpoint.",
   ]);
 
   // --- WebUSB / Web Bluetooth Hardware State ---
@@ -183,40 +183,19 @@ export function UniversalPosHardwareManager({
       }
     }
     return {
-      restaurantKey: "pp_live_rest_98234",
-      appSecret: "sec_token_98234_live",
-      outletId: "OUTLET-SILCHAR-01",
-      apiKey: "up_live_key_384029",
-      apiSecret: "up_live_sec_89123",
-      storeId: "UP-LOC-551",
+      restaurantKey: "",
+      appSecret: "",
+      outletId: "",
+      apiKey: "",
+      apiSecret: "",
+      storeId: "",
     };
   });
-  const [posConnected, setPosConnected] = useState(true);
+  const [posConnected, setPosConnected] = useState(false);
   const [testingConnection, setTestingConnection] = useState(false);
 
   // --- Bidirectional Bridge Event Log ---
-  const [bridgeLogs, setBridgeLogs] = useState<BridgeLogEntry[]>([
-    {
-      id: "log-1",
-      timestamp: new Date(Date.now() - 180000).toLocaleTimeString(),
-      system: "petpooja",
-      direction: "INBOUND",
-      action: "ORDER_PUSH",
-      status: "SUCCESS",
-      statusCode: 200,
-      details: "Order #OK-8921 accepted and injected into billing terminal.",
-    },
-    {
-      id: "log-2",
-      timestamp: new Date(Date.now() - 120000).toLocaleTimeString(),
-      system: "urbanpiper",
-      direction: "OUTBOUND",
-      action: "ITEM_86_SYNC",
-      status: "SUCCESS",
-      statusCode: 200,
-      details: "Synchronized Item 86: 'Tandoori Roti' set to IN_STOCK across Hub.",
-    },
-  ]);
+  const [bridgeLogs, setBridgeLogs] = useState<BridgeLogEntry[]>([]);
 
   // --- Item 86 Live Inventory State ---
   const [catalogItems, setCatalogItems] = useState([
@@ -330,27 +309,21 @@ export function UniversalPosHardwareManager({
           filters: [], // All devices or vendor filters
         });
         await device.open();
-        setUsbDeviceName(device.productName || "TVS RP-3160 Gold USB Thermal Printer");
+        setUsbDeviceName(device.productName || "USB Thermal Printer (ESC/POS)");
         setPrinterConnected(true);
         appendSocketLog(`[WEB-USB] Claimed interface on: ${device.productName || "USB Thermal Printer"}`);
         toast.success(`Connected to USB Printer: ${device.productName || "USB Thermal Printer"}`);
       } catch (err: any) {
         if (err.name !== "NotFoundError") {
-          // Fallback virtual channel for environments without WebUSB hardware
-          setUsbDeviceName("TVS RP-3160 Gold (Virtual USB COM)");
-          setPrinterConnected(true);
-          appendSocketLog(`[WEB-USB] Virtual USB Interface established with TVS RP-3160 Gold.`);
-          toast.success("Connected to: 'TVS RP 3160 Gold Thermal Printer' (USB)");
+          appendSocketLog(`[WEB-USB] Device access error: ${err.message || err}`);
+          toast.error("Connect USB/Bluetooth Thermal Printer (ESC/POS): No device selected.");
         } else {
           toast.info("USB device selection canceled by user.");
         }
       }
     } else {
-      // Fallback for browsers without WebUSB flag
-      setUsbDeviceName("Epson TM-T82III (USB Direct Cable)");
-      setPrinterConnected(true);
-      appendSocketLog(`[WEB-USB-EMU] WebUSB emulated channel active.`);
-      toast.success("Connected to USB Thermal Printer (Direct Emulation Active)!");
+      appendSocketLog(`[WEB-USB] WebUSB is not supported in this browser environment.`);
+      toast.info("Connect USB/Bluetooth Thermal Printer (ESC/POS): WebUSB not supported.");
     }
   };
 
@@ -367,25 +340,21 @@ export function UniversalPosHardwareManager({
             "e7810a71-73ae-499d-8c15-faa9aef0c3f2",
           ],
         });
-        setBluetoothDeviceName(device.name || "MPT-II Bluetooth 58mm/80mm Printer");
+        setBluetoothDeviceName(device.name || "Bluetooth Thermal Printer (ESC/POS)");
         setPrinterConnected(true);
         appendSocketLog(`[WEB-BT] Paired with Bluetooth GATT Server: ${device.name || "Thermal Printer"}`);
         toast.success(`Bluetooth Paired: ${device.name || "Thermal Printer"}`);
       } catch (err: any) {
         if (err.name !== "NotFoundError") {
-          setBluetoothDeviceName("MPT-II Thermal 80mm Bluetooth");
-          setPrinterConnected(true);
-          appendSocketLog(`[WEB-BT] Paired with MPT-II Thermal Bluetooth Printer.`);
-          toast.success("Connected to: 'MPT-II Thermal Bluetooth Printer'");
+          appendSocketLog(`[WEB-BT] Pairing error: ${err.message || err}`);
+          toast.error("Connect USB/Bluetooth Thermal Printer (ESC/POS): Pairing failed.");
         } else {
           toast.info("Bluetooth device scan canceled.");
         }
       }
     } else {
-      setBluetoothDeviceName("MPT-II Thermal 80mm Bluetooth");
-      setPrinterConnected(true);
-      appendSocketLog(`[WEB-BT-EMU] Web Bluetooth emulated channel active.`);
-      toast.success("Connected to: 'MPT-II Thermal Bluetooth Printer' (Paired)");
+      appendSocketLog(`[WEB-BT] Web Bluetooth is not supported in this browser environment.`);
+      toast.info("Connect USB/Bluetooth Thermal Printer (ESC/POS): Web Bluetooth not supported.");
     }
   };
 
@@ -560,8 +529,12 @@ export function UniversalPosHardwareManager({
                 <h2 className="font-display text-xl font-bold text-foreground">
                   Universal POS, KOT &amp; Thermal Printer Gateway
                 </h2>
-                <span className="rounded-full bg-leaf-soft px-2.5 py-0.5 text-xs font-bold text-leaf">
-                  Active &amp; Ready
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                  printerConnected || posConnected
+                    ? "bg-leaf-soft text-leaf"
+                    : "bg-surface-soft text-muted border border-line"
+                }`}>
+                  {printerConnected || posConnected ? "Active & Ready" : "Awaiting Device Link"}
                 </span>
               </div>
               <p className="text-xs text-muted mt-0.5">
@@ -1046,22 +1019,28 @@ export function UniversalPosHardwareManager({
               </div>
 
               <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto font-mono text-[10px]">
-                {bridgeLogs.map((log) => (
-                  <div
-                    key={log.id}
-                    className="rounded-lg border border-line/60 bg-surface-soft p-2 space-y-0.5"
-                  >
-                    <div className="flex items-center justify-between text-muted">
-                      <span className="font-bold text-foreground">
-                        [{log.direction}] {log.action} · {log.system.toUpperCase()}
-                      </span>
-                      <span>{log.timestamp}</span>
-                    </div>
-                    <div className="text-slate-600 dark:text-slate-300 truncate">
-                      {log.details}
-                    </div>
+                {bridgeLogs.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-line/60 bg-surface-soft p-4 text-center text-muted">
+                    Awaiting live POS transactions / bridge events
                   </div>
-                ))}
+                ) : (
+                  bridgeLogs.map((log) => (
+                    <div
+                      key={log.id}
+                      className="rounded-lg border border-line/60 bg-surface-soft p-2 space-y-0.5"
+                    >
+                      <div className="flex items-center justify-between text-muted">
+                        <span className="font-bold text-foreground">
+                          [{log.direction}] {log.action} · {log.system.toUpperCase()}
+                        </span>
+                        <span>{log.timestamp}</span>
+                      </div>
+                      <div className="text-slate-600 dark:text-slate-300 truncate">
+                        {log.details}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -1110,15 +1089,12 @@ export function UniversalPosHardwareManager({
               variant="outline"
               type="button"
               onClick={() => {
-                toast.info("📡 Scanning local network: Probing 192.168.1.1 - 192.168.1.254 on Port 9100...");
+                toast.info("Probing local subnet on Port 9100...");
+                appendSocketLog("[AUTO-SCAN] Probing local network for Port 9100 ESC/POS printer...");
                 setTimeout(() => {
-                  setPrinterInterface("network");
-                  setPrinterIp("192.168.1.100");
-                  setPrinterPort("9100");
-                  setPrinterConnected(true);
-                  appendSocketLog("[AUTO-SCAN] Epson TM-T82III discovered at 192.168.1.100:9100 (Port 9100 OK).");
-                  toast.success("✅ Discovered Epson TM-T82III at 192.168.1.100:9100! Auto-configured.");
-                }, 1200);
+                  appendSocketLog("[AUTO-SCAN] Connect USB/Bluetooth Thermal Printer (ESC/POS) or save manual IP.");
+                  toast.info("Connect USB/Bluetooth Thermal Printer (ESC/POS)");
+                }, 800);
               }}
               className="text-xs font-bold border-indigo-500/40 text-indigo-700 dark:text-indigo-300"
             >
@@ -1128,15 +1104,7 @@ export function UniversalPosHardwareManager({
               size="sm"
               variant="outline"
               type="button"
-              onClick={() => {
-                toast.info("📡 Scanning Web Bluetooth & USB COM ports...");
-                setTimeout(() => {
-                  setPrinterInterface("bluetooth");
-                  setPrinterConnected(true);
-                  appendSocketLog("[AUTO-PAIR] Paired with TVS RP 3200 Star Bluetooth ESC/POS printer.");
-                  toast.success("✅ Paired with TVS RP 3200 Star Bluetooth ESC/POS printer!");
-                }, 1000);
-              }}
+              onClick={handleWebBluetoothConnect}
               className="text-xs font-bold border-indigo-500/40 text-indigo-700 dark:text-indigo-300"
             >
               📡 Scan Bluetooth / USB
@@ -1147,15 +1115,11 @@ export function UniversalPosHardwareManager({
               type="button"
               onClick={() => {
                 setPrinterInterface("network");
-                setPrinterIp("192.168.1.100");
-                setPrinterPort("9100");
                 setPaperWidth("80mm");
                 setAutoPrintOnOrder(true);
                 setAutoCutPaper(true);
-                setPrinterConnected(true);
-                setPosConnected(true);
-                appendSocketLog("[1-CLICK-AI] Configured 80mm ESC/POS Network Gateway and Petpooja Bridge.");
-                toast.success("🤖 AI Auto-Setup Complete: Thermal Printer & POS 100% Configured, Tested & Workable!");
+                appendSocketLog("[1-CLICK-AI] Configured 80mm ESC/POS Network Gateway defaults. Awaiting hardware pairing.");
+                toast.info("Connect USB/Bluetooth Thermal Printer (ESC/POS)");
               }}
               className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs"
             >
@@ -1172,11 +1136,15 @@ export function UniversalPosHardwareManager({
           </div>
           <div className="rounded-lg bg-surface p-2 border border-line text-center">
             <span className="text-[10px] text-muted block">Port 9100 Socket</span>
-            <span className="text-xs font-bold text-leaf font-mono">TCP RAW ACTIVE</span>
+            <span className={`text-xs font-bold font-mono ${socketStatus === "CONNECTED" ? "text-leaf" : "text-muted"}`}>
+              {socketStatus === "CONNECTED" ? "TCP RAW ACTIVE" : "AWAITING LINK"}
+            </span>
           </div>
           <div className="rounded-lg bg-surface p-2 border border-line text-center">
             <span className="text-[10px] text-muted block">POS Bidirectional</span>
-            <span className="text-xs font-bold text-leaf font-mono">{selectedPos.name.toUpperCase()} ACTIVE</span>
+            <span className={`text-xs font-bold font-mono ${posConnected ? "text-leaf" : "text-muted"}`}>
+              {posConnected ? `${selectedPos.name.toUpperCase()} ACTIVE` : "AWAITING LINK"}
+            </span>
           </div>
           <div className="rounded-lg bg-surface p-2 border border-line text-center">
             <span className="text-[10px] text-muted block">Item 86 Auto-Sync</span>

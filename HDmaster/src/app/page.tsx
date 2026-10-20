@@ -101,83 +101,24 @@ export default function Home() {
         <div>
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-2xl font-serif text-zinc-100">Verified Premium Selections</h3>
-            <button className="text-amber-500 hover:text-amber-400 text-sm font-medium">View All</button>
+            <span className="text-xs text-zinc-400">Pincode: {pincode}</span>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <div className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-amber-500/50 transition-all duration-300">
-              <div className="h-64 bg-zinc-800 relative overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=800&auto=format&fit=crop" alt="Restaurant" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full border border-amber-500/30">
-                  <span className="text-amber-500 text-xs font-bold tracking-wider">VERIFIED</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-xl font-serif text-white group-hover:text-amber-400 transition-colors">Le Bernardin</h4>
-                  <span className="text-sm bg-zinc-800 px-2 py-1 rounded text-zinc-300">$$$$</span>
-                </div>
-                <p className="text-zinc-400 text-sm mb-4">French • Seafood</p>
-                <div className="flex items-center justify-between border-t border-zinc-800 pt-4">
-                  <div className="flex items-center text-sm">
-                    <span className="text-yellow-500 mr-1">★</span>
-                    <span className="text-white font-medium">4.9</span>
-                    <span className="text-zinc-500 ml-1">(Premium)</span>
-                  </div>
-                  <button className="text-sm font-medium text-amber-500 hover:text-amber-400">View Menu & Prices</button>
-                </div>
-              </div>
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-12 text-center max-w-2xl mx-auto space-y-4">
+            <div className="size-16 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center mx-auto text-2xl">
+              📍
             </div>
-
-            {/* Card 2 */}
-            <div className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-amber-500/50 transition-all duration-300">
-              <div className="h-64 bg-zinc-800 relative overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=800&auto=format&fit=crop" alt="Restaurant" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full border border-amber-500/30">
-                  <span className="text-amber-500 text-xs font-bold tracking-wider">VERIFIED</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-xl font-serif text-white group-hover:text-amber-400 transition-colors">The French Laundry</h4>
-                  <span className="text-sm bg-zinc-800 px-2 py-1 rounded text-zinc-300">$$$$</span>
-                </div>
-                <p className="text-zinc-400 text-sm mb-4">French • Contemporary</p>
-                <div className="flex items-center justify-between border-t border-zinc-800 pt-4">
-                  <div className="flex items-center text-sm">
-                    <span className="text-yellow-500 mr-1">★</span>
-                    <span className="text-white font-medium">4.9</span>
-                    <span className="text-zinc-500 ml-1">(Premium)</span>
-                  </div>
-                  <button className="text-sm font-medium text-amber-500 hover:text-amber-400">View Menu & Prices</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-amber-500/50 transition-all duration-300">
-              <div className="h-64 bg-zinc-800 relative overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=800&auto=format&fit=crop" alt="Restaurant" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full border border-amber-500/30">
-                  <span className="text-amber-500 text-xs font-bold tracking-wider">VERIFIED</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-xl font-serif text-white group-hover:text-amber-400 transition-colors">Alinea</h4>
-                  <span className="text-sm bg-zinc-800 px-2 py-1 rounded text-zinc-300">$$$$</span>
-                </div>
-                <p className="text-zinc-400 text-sm mb-4">Molecular Gastronomy</p>
-                <div className="flex items-center justify-between border-t border-zinc-800 pt-4">
-                  <div className="flex items-center text-sm">
-                    <span className="text-yellow-500 mr-1">★</span>
-                    <span className="text-white font-medium">4.8</span>
-                    <span className="text-zinc-500 ml-1">(Premium)</span>
-                  </div>
-                  <button className="text-sm font-medium text-amber-500 hover:text-amber-400">View Menu & Prices</button>
-                </div>
-              </div>
+            <h4 className="text-xl font-serif text-white">
+              Awaiting live store telemetry: Verified kitchens onboarding in your district
+            </h4>
+            <p className="text-sm text-zinc-400 leading-relaxed">
+              Partner kitchens and premium verified dining venues in pincode <span className="text-amber-400 font-mono font-bold">{pincode}</span> are currently undergoing menu validation and KYC verification. Zero mock entries are displayed.
+            </p>
+            <div className="pt-2">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-xs text-zinc-300">
+                <span className="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Direct POS / Live Telemetry Active
+              </span>
             </div>
           </div>
         </div>

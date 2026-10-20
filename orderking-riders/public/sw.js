@@ -5,7 +5,7 @@
  * Zero external dependencies: uses native IndexedDB directly.
  */
 
-const CACHE_NAME = "orderking-rider-v4";
+const CACHE_NAME = "orderking-rider-v5-live";
 const STATIC_ASSETS = [
   "/",
   "/offline.html",

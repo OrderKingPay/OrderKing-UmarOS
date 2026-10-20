@@ -4,7 +4,7 @@
  * Includes IndexedDB caching, 2200ms slow-network timeout racing, and instant skeleton shell fallback.
  */
 
-const CACHE_NAME = "hdmaster-command-v2";
+const CACHE_NAME = "hdmaster-command-v3-live";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
