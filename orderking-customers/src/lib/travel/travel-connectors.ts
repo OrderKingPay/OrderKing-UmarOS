@@ -2,7 +2,7 @@
  * 👑 OrderKing B2B Travel Partner Connectors
  * Real-world aggregation engines for Flights (Kiwi Tequila / Travelpayouts),
  * Trains (IRCTC / ConfirmTkt / CRIS), Buses (RedBus B2B), and Hotels (Agoda / Booking.com).
- * Zero Mock Disclaimers, Production-Ready, 100% Typed SafeInteger Paise.
+ * Live supplier inventory only; unavailable suppliers return empty results.
  */
 
 import {
@@ -146,7 +146,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
             const depIso = item.local_departure || `${departureDate}T06:00:00`;
             const arrIso = item.local_arrival || `${departureDate}T08:15:00`;
             const durationMins = item.duration?.total ? Math.round(item.duration.total / 60) : 135;
-            const pricePaise = Math.round(Number(item.price || 4200) * 100);
+            const pricePaise = Math.round(Number(item.price) * 100);
             const stops = Math.max(0, (item.route?.length || 1) - 1);
 
             return {
@@ -160,7 +160,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
               pricePaise,
               directStops: stops,
               cabinClass,
-              seatsAvailable: item.availability?.seats ?? 9,
+              seatsAvailable: item.availability?.seats,
               bookingUrl: item.deep_link || buildOfficialAirlineDeepLink({
                 carrierCode: primaryAirline,
                 from: origin,
@@ -169,8 +169,8 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
                 passengers,
                 cabinClass,
               }).bookingUrl,
-              baggageAllowance: cabinClass === "BUSINESS" ? "35 kg Check-in · 10 kg Cabin" : "15 kg Check-in · 7 kg Cabin",
-              aircraftType: "Airbus A320neo",
+              baggageAllowance: undefined,
+              aircraftType: undefined,
             };
           });
 
@@ -214,7 +214,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
           const flights: FlightOption[] = json.data.map((item: any, idx: number) => {
             const airline = item.airline || "6E";
             const carrierName = AIRLINE_NAMES[airline] || "Direct Airline";
-            const pricePaise = Math.round(Number(item.price || 4000) * 100);
+            const pricePaise = Math.round(Number(item.price) * 100);
             return {
               id: `fl-tp-${airline}-${idx}`,
               carrierName,
@@ -226,7 +226,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
               pricePaise,
               directStops: item.transfers || 0,
               cabinClass,
-              seatsAvailable: 7,
+              seatsAvailable: undefined,
               bookingUrl: item.link ? `https://tp.media/r?marker=orderking&p=4114&u=${encodeURIComponent(item.link)}` : buildOfficialAirlineDeepLink({
                 carrierCode: airline,
                 from: origin,
@@ -235,8 +235,8 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
                 passengers,
                 cabinClass,
               }).bookingUrl,
-              baggageAllowance: "15 kg Check-in · 7 kg Cabin",
-              aircraftType: "Boeing 737 / Airbus A320",
+              baggageAllowance: undefined,
+              aircraftType: undefined,
             };
           });
 
@@ -256,120 +256,19 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
     }
   }
 
-  // 3. Authentic Direct Carrier GDS Corridor Aggregation (IndiGo, Air India, Akasa, SpiceJet)
-  const isBusiness = cabinClass === "BUSINESS";
-  const multiplier = isBusiness ? 2.8 : 1.0;
-  const baggage = isBusiness ? "35 kg Check-in · 10 kg Cabin" : "15 kg Check-in · 7 kg Cabin";
-
-  const scheduledCarriers: Array<{
-    code: string;
-    name: string;
-    flightNo: string;
-    depTime: string;
-    arrTime: string;
-    durationMins: number;
-    baseFareInr: number;
-    aircraft: string;
-    seats: number;
-  }> = [
-    {
-      code: "6E",
-      name: "IndiGo Airlines",
-      flightNo: "6E-2054",
-      depTime: "06:00",
-      arrTime: "08:15",
-      durationMins: 135,
-      baseFareInr: 4199,
-      aircraft: "Airbus A321neo",
-      seats: 9,
-    },
-    {
-      code: "AI",
-      name: "Air India",
-      flightNo: "AI-867",
-      depTime: "08:30",
-      arrTime: "10:45",
-      durationMins: 135,
-      baseFareInr: 4850,
-      aircraft: "Boeing 777-300ER",
-      seats: 5,
-    },
-    {
-      code: "QP",
-      name: "Akasa Air",
-      flightNo: "QP-1302",
-      depTime: "11:45",
-      arrTime: "14:05",
-      durationMins: 140,
-      baseFareInr: 3950,
-      aircraft: "Boeing 737 MAX 8",
-      seats: 12,
-    },
-    {
-      code: "SG",
-      name: "SpiceJet",
-      flightNo: "SG-8169",
-      depTime: "16:20",
-      arrTime: "18:35",
-      durationMins: 135,
-      baseFareInr: 4100,
-      aircraft: "Boeing 737-800",
-      seats: 6,
-    },
-    {
-      code: "6E",
-      name: "IndiGo Airlines",
-      flightNo: "6E-5342",
-      depTime: "19:10",
-      arrTime: "21:25",
-      durationMins: 135,
-      baseFareInr: 4450,
-      aircraft: "Airbus A320neo",
-      seats: 8,
-    },
-  ];
-
-  const flights: FlightOption[] = scheduledCarriers.map((sc, idx) => {
-    const pricePaise = Math.round(sc.baseFareInr * multiplier * 100);
-    const deepLink = buildOfficialAirlineDeepLink({
-      carrierCode: sc.code,
-      from: origin,
-      to: destination,
-      departureDate,
-      passengers,
-      cabinClass,
-    });
-
-    return {
-      id: `fl-${sc.code.toLowerCase()}-${origin.toLowerCase()}-${destination.toLowerCase()}-${idx + 1}`,
-      carrierName: sc.name,
-      carrierCode: sc.code,
-      flightNumber: sc.flightNo,
-      departureTime: `${departureDate}T${sc.depTime}:00`,
-      arrivalTime: `${departureDate}T${sc.arrTime}:00`,
-      durationMinutes: sc.durationMins,
-      pricePaise,
-      directStops: 0,
-      cabinClass,
-      seatsAvailable: sc.seats,
-      bookingUrl: deepLink.bookingUrl,
-      affiliateToken: "orderking_partner_b2b",
-      baggageAllowance: baggage,
-      aircraftType: sc.aircraft,
-    };
-  });
-
+  // Never invent airline flight numbers, seats, dates or fares when live providers fail.
   return {
-    success: true,
-    data: flights,
+    success: false,
+    data: [],
     source: "carrier_direct_gds",
-    count: flights.length,
+    count: 0,
     origin,
     destination,
     departureDate,
   };
 }
 
+// ============================================================================
 // ============================================================================
 // 2. LIVE TRAIN SEARCH (IRCTC / ConfirmTkt / CRIS)
 // ============================================================================
@@ -380,76 +279,9 @@ export async function searchLiveTrains(req: TrainSearchRequest): Promise<TrainSe
   const travelDate = req.travelDate || new Date().toISOString().split("T")[0];
   const quota = req.quota || "GN";
 
-  const confirmTktKey = process.env.CONFIRMTKT_API_KEY;
-  const rapidApiKey = process.env.RAPIDAPI_KEY || process.env.IRCTC_API_KEY;
-
-  // 1. Try RapidAPI IRCTC live endpoint if key is configured
-  if (rapidApiKey) {
-    try {
-      const url = new URL("https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations");
-      url.searchParams.set("fromStationCode", fromStation);
-      url.searchParams.set("toStationCode", toStation);
-      url.searchParams.set("dateOfJourney", travelDate);
-
-      const res = await fetch(url.toString(), {
-        headers: {
-          "X-RapidAPI-Key": rapidApiKey,
-          "X-RapidAPI-Host": "irctc1.p.rapidapi.com",
-          Accept: "application/json",
-        },
-        signal: AbortSignal.timeout(8000),
-      });
-
-      if (res.ok) {
-        const json = await res.json();
-        if (json && json.status && Array.isArray(json.data) && json.data.length > 0) {
-          const trains: TrainOption[] = json.data.map((item: any) => {
-            const classList: TrainClassAvailability[] = (item.class_type || ["3A", "2A", "SL"]).map((c: string) => {
-              const classCode = c as any;
-              return {
-                classCode,
-                className: `${classCode} Class`,
-                farePaise: classCode === "1A" ? 325000 : classCode === "2A" ? 195000 : classCode === "3A" ? 142000 : 49000,
-                status: "AVAILABLE" as TrainSeatStatus,
-                statusDetails: "AVAILABLE-24",
-                availableSeats: 24,
-              };
-            });
-
-            return {
-              id: `tr-${item.train_number}`,
-              trainNumber: item.train_number,
-              trainName: item.train_name,
-              departureTime: item.from_std || "06:00",
-              arrivalTime: item.to_sta || "14:15",
-              durationMinutes: item.duration ? parseInt(item.duration, 10) * 60 : 495,
-              fromStation: item.from_station_name || fromStation,
-              toStation: item.to_station_name || toStation,
-              classes: classList,
-              quota,
-              pantryAvailable: true,
-              bookingUrl: `https://www.irctc.co.in/nget/train-search?from=${fromStation}&to=${toStation}&date=${travelDate}`,
-              source: "confirmtkt" as const,
-            };
-          });
-
-          return {
-            success: true,
-            data: trains,
-            source: "confirmtkt",
-            count: trains.length,
-            fromStation,
-            toStation,
-            travelDate,
-            quota,
-          };
-        }
-      }
-    } catch (err) {
-      console.warn("[TravelConnectors] IRCTC RapidAPI query failed:", err);
-    }
-  }
-
+  // Rail schedule aggregators are not a substitute for authenticated IRCTC
+  // availability and ticketing. Until an approved provider API is contracted,
+  // return no bookable seats, no synthetic fare, no artificial booking status.
   // 2. Strict Rail Compliance: Zero fabricated train inventory.
   // In accordance with CRIS/IRCTC regulations, synthetic train options, simulated fares, or mock seat
   // allocations are strictly prohibited. In unauthenticated state, fail closed with empty data
@@ -532,131 +364,20 @@ export async function searchLiveBuses(req: BusSearchRequest): Promise<BusSearchR
     }
   }
 
-  // Authentic Indian Interstate Operators (VRL, IntrCity SmartBus, Zingbus, SRS, Orange)
-  const operatorFeeds: Array<{
-    operator: string;
-    busType: string;
-    depTime: string;
-    arrTime: string;
-    durationMins: number;
-    rating: number;
-    ratingsCount: number;
-    fareInr: number;
-    totalSeats: number;
-    availSeats: number;
-    amenities: string[];
-    boardings: string[];
-    droppings: string[];
-  }> = [
-    {
-      operator: "VRL Travels",
-      busType: "I-Shift Multi-Axle Volvo AC Sleeper (2+1)",
-      depTime: "20:30",
-      arrTime: "07:00 (+1)",
-      durationMins: 630,
-      rating: 4.8,
-      ratingsCount: 1420,
-      fareInr: 1450,
-      totalSeats: 36,
-      availSeats: 12,
-      amenities: ["Live GPS", "USB Charging", "Snack Pack", "Emergency SOS", "Blanket", "Reading Light"],
-      boardings: ["Majestic (Kempegowda)", "Yeshwantpur Toll", "Navrang Circle"],
-      droppings: ["Panaji Bus Stand", "Mapusa Junction", "Margao KSRTC"],
-    },
-    {
-      operator: "IntrCity SmartBus",
-      busType: "BharatBenz AC Sleeper with Smart Lounge Access",
-      depTime: "21:15",
-      arrTime: "07:30 (+1)",
-      durationMins: 615,
-      rating: 4.7,
-      ratingsCount: 980,
-      fareInr: 1399,
-      totalSeats: 32,
-      availSeats: 8,
-      amenities: ["Bus Captain Onboard", "Live GPS Tracking", "Clean Bedding", "Mineral Water", "CCTV"],
-      boardings: ["Anand Rao Circle", "Rajajinagar Metro", "Goraguntepalya"],
-      droppings: ["Panaji Old Bus Stand", "Porvorim", "Calangute Circle"],
-    },
-    {
-      operator: "Zingbus Plus",
-      busType: "Scania Multi-Axle Luxury AC Seater/Sleeper",
-      depTime: "22:00",
-      arrTime: "08:15 (+1)",
-      durationMins: 615,
-      rating: 4.6,
-      ratingsCount: 650,
-      fareInr: 1250,
-      totalSeats: 40,
-      availSeats: 16,
-      amenities: ["Free Wi-Fi", "Zero Cancellation Protection", "Clean Restrooms Stops", "Charging Port"],
-      boardings: ["Madiwala Total Mall", "Shantinagar Bus Station", "Jalahalli Cross"],
-      droppings: ["Panaji KTC", "Vasco Da Gama"],
-    },
-    {
-      operator: "SRS Travels",
-      busType: "Mercedes-Benz Super High-Deck AC Sleeper (2+1)",
-      depTime: "22:45",
-      arrTime: "09:00 (+1)",
-      durationMins: 615,
-      rating: 4.5,
-      ratingsCount: 2100,
-      fareInr: 1199,
-      totalSeats: 38,
-      availSeats: 22,
-      amenities: ["Air Suspension", "Emergency Hammer", "Fire Extinguisher", "Water Bottle"],
-      boardings: ["Electronic City Toll", "Kalpalli", "Majestic"],
-      droppings: ["Madgaon Railway Station", "Panaji"],
-    },
-    {
-      operator: "Orange Tours and Travels",
-      busType: "Volvo B11R Multi-Axle Semi-Sleeper",
-      depTime: "19:00",
-      arrTime: "05:30 (+1)",
-      durationMins: 630,
-      rating: 4.6,
-      ratingsCount: 840,
-      fareInr: 1099,
-      totalSeats: 44,
-      availSeats: 19,
-      amenities: ["Pushback Seats", "Individual AC Vents", "Movie Screen", "USB Port"],
-      boardings: ["Silk Board", "Corporation", "Peenya Metro"],
-      droppings: ["Panaji Bus Terminal", "Mapusa"],
-    },
-  ];
-
-  const buses: BusOption[] = operatorFeeds.map((op, idx) => ({
-    id: `bs-${op.operator.toLowerCase().replace(/\s+/g, "-")}-${idx + 1}`,
-    operatorName: op.operator,
-    busType: op.busType,
-    departureTime: op.depTime,
-    arrivalTime: op.arrTime,
-    durationMinutes: op.durationMins,
-    sourceCity,
-    destinationCity,
-    boardingPoints: op.boardings,
-    droppingPoints: op.droppings,
-    rating: op.rating,
-    ratingsCount: op.ratingsCount,
-    totalSeats: op.totalSeats,
-    availableSeats: op.availSeats,
-    farePaise: op.fareInr * 100,
-    startingFarePaise: op.fareInr * 100,
-    amenities: op.amenities,
-    bookingUrl: `https://www.redbus.in/bus-tickets/${encodeURIComponent(sourceCity.toLowerCase())}-to-${encodeURIComponent(destinationCity.toLowerCase())}`,
-  }));
-
+  // Do not fabricate operator timetables, seat counts, ratings or fare quotes
+  // for routes that the ticket provider did not return.
   return {
-    success: true,
-    data: buses,
+    success: false,
+    data: [],
     source: "partner_catalog",
-    count: buses.length,
+    count: 0,
     sourceCity,
     destinationCity,
     journeyDate,
   };
 }
 
+// ============================================================================
 // ============================================================================
 // 4. LIVE HOTEL SEARCH (Agoda / Booking.com Wholesale Partner)
 // ============================================================================
@@ -667,68 +388,15 @@ export async function searchLiveHotels(req: HotelSearchRequest): Promise<HotelSe
   const dNext = new Date();
   dNext.setDate(dNext.getDate() + 1);
   const checkOutDate = req.checkOutDate || dNext.toISOString().split("T")[0];
-  const guests = Math.max(1, req.guests || 2);
-  const rooms = Math.max(1, req.rooms || 1);
-
-  const hotels: HotelOption[] = [
-    {
-      id: `ht-${city.toLowerCase()}-1`,
-      hotelName: `The Heritage Grand Palace & Spa, ${city}`,
-      starRating: 5,
-      userRating: 4.9,
-      reviewCount: 1240,
-      city,
-      address: `Vagator Beachfront Road, ${city}`,
-      thumbnailUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
-      nightlyRatePaise: 850000,
-      totalFarePaise: 850000 * rooms,
-      roomType: "Royal Sea View Suite",
-      freeCancellation: true,
-      breakfastIncluded: true,
-      bookingUrl: `https://www.agoda.com/partners/partnersearch.aspx?cid=1890000&city=${encodeURIComponent(city)}&checkin=${checkInDate}&checkout=${checkOutDate}`,
-      provider: "agoda",
-    },
-    {
-      id: `ht-${city.toLowerCase()}-2`,
-      hotelName: `Marriott Executive Resort, ${city}`,
-      starRating: 5,
-      userRating: 4.8,
-      reviewCount: 2180,
-      city,
-      address: `Miramar Bay Road, ${city}`,
-      thumbnailUrl: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80",
-      nightlyRatePaise: 720000,
-      totalFarePaise: 720000 * rooms,
-      roomType: "Deluxe King Bay View",
-      freeCancellation: true,
-      breakfastIncluded: true,
-      bookingUrl: `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(city)}&checkin=${checkInDate}&checkout=${checkOutDate}`,
-      provider: "booking_com",
-    },
-    {
-      id: `ht-${city.toLowerCase()}-3`,
-      hotelName: `Lemon Tree Premier, ${city}`,
-      starRating: 4,
-      userRating: 4.5,
-      reviewCount: 1540,
-      city,
-      address: `City Center Business Corridor, ${city}`,
-      thumbnailUrl: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80",
-      nightlyRatePaise: 380000,
-      totalFarePaise: 380000 * rooms,
-      roomType: "Superior Premier Room",
-      freeCancellation: true,
-      breakfastIncluded: false,
-      bookingUrl: `https://www.agoda.com/partners/partnersearch.aspx?cid=1890000&city=${encodeURIComponent(city)}`,
-      provider: "agoda",
-    },
-  ];
-
+  // No contracted hotel-inventory API is currently configured.
+  // Display no fictitious properties, ratings, rooms or payable totals.
+  void req.guests;
+  void req.rooms;
   return {
-    success: true,
-    data: hotels,
+    success: false,
+    data: [],
     source: "partner_wholesale",
-    count: hotels.length,
+    count: 0,
     cityOrLocation: city,
     checkInDate,
     checkOutDate,
