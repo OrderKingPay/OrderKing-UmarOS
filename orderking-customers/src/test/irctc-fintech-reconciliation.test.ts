@@ -65,7 +65,7 @@ describe("Travel Fintech Reconciliation & Payment Audit Engine", () => {
       expect(() => assertTrainPaymentPermitted({ authToken: validKey })).toThrowError(/IRCTC_PAYMENT_BLOCKED/);
     });
 
-    it("authenticates only when verified provider credentials AND authenticated cryptographic booking response are present", () => {
+    it("rejects forged-looking CRIS response until a real authorized provider is integrated", () => {
       const validKey = "CRIS_PSP_KEY_SECURE_9876543210";
       const validCrisResponse = {
         crisSignature: "CRIS_SIG_HEX_8a9b2c3d4e5f60718293a4b5c6d7e8f9",
@@ -78,14 +78,14 @@ describe("Travel Fintech Reconciliation & Payment Audit Engine", () => {
           authToken: validKey,
           cryptographicBookingResponse: validCrisResponse,
         })
-      ).toBe(true);
+      ).toBe(false);
 
       expect(() =>
         assertTrainPaymentPermitted({
           authToken: validKey,
           cryptographicBookingResponse: validCrisResponse,
         })
-      ).not.toThrow();
+      ).toThrowError(/IRCTC_PAYMENT_BLOCKED/);
     });
 
     it("strictly blocks synthetic Indian Railways PNR generation under CRIS regulations", () => {
@@ -142,14 +142,14 @@ describe("Travel Fintech Reconciliation & Payment Audit Engine", () => {
         pnr: "2841950284",
         crisSignature: "CRIS_SIG_HEX_8a9b2c3d4e5f60718293a4b5c6d7e8f9",
       });
-      expect(verifiedWithSig.verified).toBe(true);
+      expect(verifiedWithSig.verified).toBe(false);
 
       // Verified with external IRCTC provider transaction ID
       const verifiedWithTxn = verifyConfirmedRailwayBooking({
         pnr: "2841950284",
         providerTransactionId: "IRCTC-TXN-20261020-89102",
       });
-      expect(verifiedWithTxn.verified).toBe(true);
+      expect(verifiedWithTxn.verified).toBe(false);
     });
 
     it("keeps in-app OrderKing train ticket issuance completely locked requiring official IRCTC portal handoff", () => {

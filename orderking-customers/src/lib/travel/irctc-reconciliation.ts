@@ -185,72 +185,19 @@ export function verifyCrisCryptographicSignature(params: {
   }
 }
 
+/**
+ * Authenticated PSP booking must be established by a trusted server integration.
+ * This product currently has only an official IRCTC handoff, not PSP issuance.
+ * Never accept client-supplied credentials, signature prefixes or Boolean flags
+ * as provider authorization. Implement a separate contract-backed server adapter
+ * when official PSP specifications and credentials are available.
+ */
 export function isIrctcPspAuthenticated(
   optionsOrToken?: string | IrctcPspVerificationOptions,
   responseContext?: CrisCryptographicResponse | string
 ): boolean {
-  if (!optionsOrToken && !responseContext) {
-    return false;
-  }
-
-  const opts: IrctcPspVerificationOptions =
-    typeof optionsOrToken === "string"
-      ? { authToken: optionsOrToken }
-      : (optionsOrToken || {});
-
-  const cryptoResponse = responseContext || opts.cryptographicBookingResponse;
-
-  // 1. Verify secure backend/environment provider credentials
-  const envKey =
-    typeof process !== "undefined" && process?.env
-      ? process.env.IRCTC_PSP_MERCHANT_KEY || process.env.IRCTC_CRIS_PSP_KEY || process.env.VITE_IRCTC_MERCHANT_KEY
-      : undefined;
-
-  const effectiveKey = (opts.serverSecret || opts.authToken || envKey || "").trim();
-
-  // Insecure token-length PSP auth checks are strictly rejected:
-  // Random 16-char strings or synthetic mock tokens fail.
-  // Must match certified CRIS PSP key pattern.
-  if (!CERTIFIED_CRIS_PSP_KEY_PATTERN.test(effectiveKey)) {
-    return false;
-  }
-
-  // 2. Strict Requirement: Authentic server-side verified provider status check
-  // Must have an authentic server-verified CRIS PRS response, signature, or provider transaction.
-  // Token length alone must NEVER pass authentication.
-  if (!cryptoResponse && !opts.crisSignature && !opts.providerTransactionId) {
-    return false;
-  }
-
-  if (typeof cryptoResponse === "string") {
-    const cleanSig = cryptoResponse.trim();
-    return cleanSig.startsWith("CRIS_SIG_") || cleanSig.startsWith("CRIS-DSC-");
-  }
-
-  if (typeof cryptoResponse === "object" && cryptoResponse !== null) {
-    if (cryptoResponse.verifiedByCrisServer === false) {
-      return false;
-    }
-    const sig = (cryptoResponse.crisSignature || "").trim();
-    const txn = (cryptoResponse.providerTransactionId || "").trim();
-    if (!sig || !txn) {
-      return false;
-    }
-    const isSigValid = sig.startsWith("CRIS_SIG_") || sig.startsWith("CRIS-DSC-");
-    const isTxnValid = txn.startsWith("IRCTC-") || txn.startsWith("CRIS-");
-    return isSigValid && isTxnValid;
-  }
-
-  if (opts.crisSignature) {
-    const sig = opts.crisSignature.trim();
-    return sig.startsWith("CRIS_SIG_") || sig.startsWith("CRIS-DSC-");
-  }
-
-  if (opts.providerTransactionId) {
-    const txn = opts.providerTransactionId.trim();
-    return txn.startsWith("IRCTC-") || txn.startsWith("CRIS-");
-  }
-
+  void optionsOrToken;
+  void responseContext;
   return false;
 }
 
@@ -318,51 +265,27 @@ export interface RailwayBookingVerificationParams {
  * It must be accompanied by a cryptographically signed CRIS PRS response
  * or a verified external IRCTC provider transaction ID.
  */
+/**
+ * Only a verified server-side PSP/PRS booking record may establish a ticket.
+ * The currently public customer module has no such authenticated provider.
+ */
 export function verifyConfirmedRailwayBooking(params: RailwayBookingVerificationParams): {
   verified: boolean;
   reason?: string;
 } {
   const cleanPnr = (params.pnr || "").replace(/\D/g, "");
-  if (cleanPnr.length !== 10) {
+  if (!/^\d{10}$/.test(cleanPnr)) {
     return {
       verified: false,
       reason: "INVALID_PNR: Indian Railways PNR must contain exactly 10 numeric digits.",
     };
   }
-
-  // A 10-digit number alone or prefixed payment token alone is NOT proof.
-  const hasCrisSignature = Boolean(
-    (params.crisSignature && (params.crisSignature.startsWith("CRIS_SIG_") || params.crisSignature.startsWith("CRIS-DSC-"))) ||
-    (typeof params.cryptographicBookingResponse === "object" &&
-      Boolean(params.cryptographicBookingResponse?.crisSignature) &&
-      (params.cryptographicBookingResponse.crisSignature.startsWith("CRIS_SIG_") || params.cryptographicBookingResponse.crisSignature.startsWith("CRIS-DSC-"))) ||
-    (typeof params.cryptographicBookingResponse === "string" &&
-      (params.cryptographicBookingResponse.startsWith("CRIS_SIG_") || params.cryptographicBookingResponse.startsWith("CRIS-DSC-")))
-  );
-
-  const hasProviderTxnId = Boolean(
-    (params.providerTransactionId && (params.providerTransactionId.startsWith("IRCTC-") || params.providerTransactionId.startsWith("CRIS-"))) ||
-    (typeof params.cryptographicBookingResponse === "object" &&
-      Boolean(params.cryptographicBookingResponse?.providerTransactionId) &&
-      (params.cryptographicBookingResponse.providerTransactionId.startsWith("IRCTC-") || params.cryptographicBookingResponse.providerTransactionId.startsWith("CRIS-")))
-  );
-
-  if (!hasCrisSignature && !hasProviderTxnId) {
-    return {
-      verified: false,
-      reason:
-        "UNVERIFIED_BOOKING: A 10-digit PNR or payment token alone is not evidence of a confirmed booking. " +
-        "Indian Railways CRIS standards strictly require a cryptographically signed CRIS PRS response or verified external IRCTC provider transaction ID.",
-    };
-  }
-
-  return { verified: true };
+  return {
+    verified: false,
+    reason: "UNVERIFIED_BOOKING: OrderKing has not verified this booking with an authorized railway service provider. Use the official IRCTC PNR enquiry service.",
+  };
 }
 
-/**
- * Indian Railways Statutory Clerkage & Cancellation Calculator
- * Computes exact integer-paise refund deductions.
- */
 export function calculateRailwayCancellationRefund(params: {
   trainClass: TrainClass;
   bookingStatus: BookingStatus;
