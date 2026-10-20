@@ -65,8 +65,9 @@ export async function appendAudit(input: {
   await sql.query(
     `insert into audit_logs (
       id, org_id, employee_id, user_id, role_key, action, target_type, target_id,
-      previous_json, new_json, reason, ip, user_agent, lat, lng, h3_index, gps_accuracy
-    ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
+      previous_json, new_json, reason, ip, user_agent, lat, lng, h3_index, gps_accuracy,
+      entity, entity_id, actor_user_id, actor_role, metadata
+    ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
     [
       nid("aud"),
       input.orgId,
@@ -85,6 +86,11 @@ export async function appendAudit(input: {
       input.lng ?? null,
       input.h3Index ?? null,
       input.gpsAccuracy ?? null,
+      input.targetType ?? "system",
+      input.targetId ?? null,
+      input.userId ?? null,
+      input.roleKey ?? null,
+      JSON.stringify({ previous: input.previous, next: input.next, reason: input.reason }),
     ],
   );
 }

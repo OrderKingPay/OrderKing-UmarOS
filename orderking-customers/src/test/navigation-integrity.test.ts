@@ -369,6 +369,7 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
 
       const cp = ACTIVE_FLAGSHIP_HUBS.find((h: any) => h.id === "delhi-cp");
       expect(cp).toBeDefined();
+      if (!cp) throw new Error("Flagship hub delhi-cp not found");
 
       useLocationStore.getState().setLocation({
         cityId: cp.cityId,
@@ -390,6 +391,7 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
       // Switch to Sribhumi Core
       const sribhumi = ACTIVE_FLAGSHIP_HUBS.find((h: any) => h.id === "sribhumi-core");
       expect(sribhumi).toBeDefined();
+      if (!sribhumi) throw new Error("Flagship hub sribhumi-core not found");
 
       useLocationStore.getState().setLocation({
         cityId: sribhumi.cityId,

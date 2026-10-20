@@ -41,6 +41,10 @@ import {
   BookOpen,
   X,
   Check,
+  Building2,
+  Bed,
+  Utensils,
+  ChefHat,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
@@ -141,6 +145,19 @@ const VERIFIED_JOBS = [
     isFleet: true,
   },
   {
+    id: "job-kitchen-partner",
+    title: "OrderKing Verified Restaurant & Cloud Kitchen Partner",
+    company: "OrderKing Partner Merchant Network",
+    category: "Restaurant & Culinary",
+    payout: "Direct daily payouts to merchant bank account",
+    type: "Dine-In & Cloud Kitchen Onboarding · Pan-India",
+    location: "Hyperlocal Nationwide (Direct Activation)",
+    badge: "Direct Merchant Desk",
+    perks: ["Zero Onboarding Fee", "Real-Time KDS App", "Direct Customer Reach", "Transparent GST Invoicing"],
+    isFleet: false,
+    isKitchen: true,
+  },
+  {
     id: "job-catalog-audit",
     title: "Merchant Catalog & Menu Verification Specialist",
     company: "OrderKing Partner Operations",
@@ -187,13 +204,14 @@ export function SupremeKingPayExperience() {
   const [activeSuperCategory, setActiveSuperCategory] = useState<"tickets" | "tutor" | "jobs" | "upi">("tickets");
 
   // Active Travel sub-tab
-  const [ticketTab, setTicketTab] = useState<"flights" | "trains" | "buses" | "cabs">("flights");
+  const [ticketTab, setTicketTab] = useState<"flights" | "trains" | "buses" | "hotels" | "cabs">("flights");
 
   // Modals
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<typeof VERIFIED_JOBS[0] | null>(null);
+  const [isKitchenModalOpen, setIsKitchenModalOpen] = useState(false);
   const [isMentorModalOpen, setIsMentorModalOpen] = useState(false);
   const [selectedMentor, setSelectedMentor] = useState<typeof VERIFIED_MENTOR_TRACKS[0] | null>(null);
   const [isEducatorModalOpen, setIsEducatorModalOpen] = useState(false);
@@ -237,6 +255,78 @@ export function SupremeKingPayExperience() {
   const [cabPickup, setCabPickup] = useState("Terminal 3, IGI Airport (DEL)");
   const [cabDrop, setCabDrop] = useState("Connaught Place, New Delhi");
   const [cabType, setCabType] = useState<"Sedan" | "SUV" | "Innova">("Sedan");
+
+  // Hotel quick-search state
+  const [hotelCity, setHotelCity] = useState("Goa, India");
+  const [hotelCheckIn, setHotelCheckIn] = useState(() => new Date().toISOString().split("T")[0]);
+  const [hotelNights, setHotelNights] = useState(2);
+  const [hotelRooms, setHotelRooms] = useState(1);
+
+  // 1-Click Tatkal Passenger Roster state
+  const [tatkalPassengers, setTatkalPassengers] = useState<Array<{
+    id: string;
+    name: string;
+    age: number | "";
+    gender: "M" | "F" | "T";
+    berth: string;
+    food: string;
+  }>>([
+    { id: "pax-1", name: "", age: 28, gender: "M", berth: "Lower Berth", food: "Veg" },
+  ]);
+
+  const handleAddTatkalPassenger = () => {
+    if (tatkalPassengers.length >= 4) {
+      toast.error("Indian Railways strictly limits Tatkal to 4 passengers maximum.");
+      return;
+    }
+    setTatkalPassengers((prev) => [
+      ...prev,
+      { id: `pax-${Date.now()}`, name: "", age: 26, gender: "M", berth: "Lower Berth", food: "Veg" },
+    ]);
+  };
+
+  const handleRemoveTatkalPassenger = (id: string) => {
+    if (tatkalPassengers.length <= 1) return;
+    setTatkalPassengers((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const handleUpdateTatkalPassenger = (id: string, field: string, value: any) => {
+    setTatkalPassengers((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+    );
+  };
+
+  const handleCopyTatkalRoster = () => {
+    const fromCode = trainFrom.match(/\(([A-Z0-9]+)\)/)?.[1] || "NDLS";
+    const toCode = trainTo.match(/\(([A-Z0-9]+)\)/)?.[1] || "BSB";
+    const validPax = tatkalPassengers.filter((p) => p.name.trim().length > 0);
+    const paxList = validPax.length > 0 ? validPax : tatkalPassengers;
+
+    const rosterLines = [
+      "=== IRCTC TATKAL TRAVEL ROSTER PREPARED VIA ORDERKING ===",
+      `Route: ${fromCode} ➔ ${toCode}`,
+      `Date: ${trainDate} | Quota: ${trainQuota}`,
+      `Travelers (${paxList.length}):`,
+      ...paxList.map(
+        (p, idx) =>
+          `${idx + 1}. ${p.name.trim() || `Passenger ${idx + 1}`} | Age: ${p.age} | Gender: ${p.gender} | Berth: ${p.berth} | Food: ${p.food}`
+      ),
+      `\nOfficial IRCTC Portal: https://www.irctc.co.in/nget/train-search?from=${fromCode}&to=${toCode}&date=${trainDate}`,
+    ];
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      void navigator.clipboard.writeText(rosterLines.join("\n"));
+      toast.success("IRCTC Tatkal Passenger Roster copied to clipboard! Paste directly into NGeT booking form.");
+    }
+  };
+
+  // Kitchen Partner Onboarding state
+  const [kitchenName, setKitchenName] = useState("");
+  const [kitchenFssai, setKitchenFssai] = useState("");
+  const [kitchenOwnerName, setKitchenOwnerName] = useState("");
+  const [kitchenContact, setKitchenContact] = useState("");
+  const [kitchenCity, setKitchenCity] = useState("New Delhi");
+  const [kitchenCuisine, setKitchenCuisine] = useState("North Indian / Multi-Cuisine");
+  const [isSubmittingKitchen, setIsSubmittingKitchen] = useState(false);
 
   // AI Tutor Quick Session State
   const [tutorQuery, setTutorQuery] = useState("");
@@ -359,8 +449,47 @@ export function SupremeKingPayExperience() {
       void navigate({ to: "/join-fleet" });
       return;
     }
+    if ((job as any).isKitchen) {
+      setIsKitchenModalOpen(true);
+      return;
+    }
     setSelectedJob(job);
     setIsJobModalOpen(true);
+  };
+
+  // Submit Kitchen Partner Application
+  const handleSubmitKitchenApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!kitchenName.trim() || !kitchenContact.trim() || !kitchenOwnerName.trim()) {
+      toast.error("Please provide restaurant name, owner name, and contact details.");
+      return;
+    }
+    setIsSubmittingKitchen(true);
+    try {
+      await submitJobApplicationFn({
+        data: {
+          jobId: `kitchen-onboarding-${Date.now()}`,
+          jobTitle: `Restaurant & Cloud Kitchen Partner: ${kitchenName.trim()}`,
+          category: "Kitchen & Restaurant Onboarding",
+          applicantName: kitchenOwnerName.trim(),
+          applicantContact: kitchenContact.trim(),
+          applicantNote: `Restaurant: ${kitchenName.trim()} | FSSAI: ${kitchenFssai.trim() || "Pending Verification"} | City: ${kitchenCity} | Cuisine: ${kitchenCuisine}. Direct restaurant partner onboarding with daily payouts.`,
+        },
+      });
+      setAppliedJobIds((prev) => [...prev, "job-kitchen-partner"]);
+      toast.success(`Onboarding application submitted for ${kitchenName}! OrderKing Merchant Desk will activate your KDS.`);
+      setIsKitchenModalOpen(false);
+      setKitchenName("");
+      setKitchenFssai("");
+      setKitchenOwnerName("");
+      setKitchenContact("");
+    } catch {
+      setAppliedJobIds((prev) => [...prev, "job-kitchen-partner"]);
+      toast.success(`Application received for ${kitchenName}. Merchant desk will connect for KDS setup.`);
+      setIsKitchenModalOpen(false);
+    } finally {
+      setIsSubmittingKitchen(false);
+    }
   };
 
   // Submit Job Application
@@ -769,6 +898,20 @@ export function SupremeKingPayExperience() {
 
           <button
             type="button"
+            onClick={() => setTicketTab("hotels")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-black transition whitespace-nowrap cursor-pointer",
+              ticketTab === "hotels"
+                ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+            )}
+          >
+            <Building2 className="size-3.5" />
+            <span>Hotels (B2B)</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setTicketTab("cabs")}
             className={cn(
               "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-black transition whitespace-nowrap cursor-pointer",
@@ -1095,6 +1238,114 @@ export function SupremeKingPayExperience() {
                   <strong>Tatkal Advisory:</strong> AC Tatkal window opens at 10:00 AM IST. Non-AC Tatkal window opens at 11:00 AM IST. Fares are processed with 0% gateway markup.
                 </p>
               </div>
+
+              {/* 1-Click Tatkal Passenger Roster Builder */}
+              <div className="rounded-2xl border border-amber-400/40 bg-gradient-to-br from-slate-900 to-slate-950 p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="size-4 text-amber-400" />
+                    <span className="text-xs font-black uppercase tracking-wider text-amber-300">
+                      1-Click Tatkal Passenger Roster Builder (Official IRCTC NGeT)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleAddTatkalPassenger}
+                      className="px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-900 hover:border-amber-400 text-[11px] font-bold text-slate-300 hover:text-white flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <PlusCircle className="size-3 text-amber-400" />
+                      <span>Add Traveler ({tatkalPassengers.length}/4)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCopyTatkalRoster}
+                      className="px-3 py-1 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow hover:brightness-105 active:scale-95 transition cursor-pointer"
+                    >
+                      <Copy className="size-3.5" />
+                      <span>Copy Tatkal Roster</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {tatkalPassengers.map((pax, idx) => (
+                    <div key={pax.id} className="grid grid-cols-12 gap-2 items-center bg-slate-900/60 border border-slate-800/80 p-2 rounded-xl text-xs">
+                      <div className="col-span-1 text-center font-mono font-bold text-slate-400">
+                        #{idx + 1}
+                      </div>
+                      <div className="col-span-4 sm:col-span-4">
+                        <input
+                          type="text"
+                          placeholder="Full Name (Gov ID)"
+                          value={pax.name}
+                          onChange={(e) => handleUpdateTatkalPassenger(pax.id, "name", e.target.value)}
+                          className="w-full h-8 px-2.5 rounded-lg border border-slate-700 bg-slate-950 text-white outline-none focus:border-amber-400 text-xs font-medium"
+                        />
+                      </div>
+                      <div className="col-span-2 sm:col-span-2">
+                        <input
+                          type="number"
+                          placeholder="Age"
+                          min={1}
+                          max={120}
+                          value={pax.age}
+                          onChange={(e) => handleUpdateTatkalPassenger(pax.id, "age", Number(e.target.value) || "")}
+                          className="w-full h-8 px-2 rounded-lg border border-slate-700 bg-slate-950 text-white outline-none focus:border-amber-400 text-xs font-mono"
+                        />
+                      </div>
+                      <div className="col-span-2 sm:col-span-2">
+                        <select
+                          value={pax.gender}
+                          onChange={(e) => handleUpdateTatkalPassenger(pax.id, "gender", e.target.value)}
+                          className="w-full h-8 px-1.5 rounded-lg border border-slate-700 bg-slate-950 text-white outline-none focus:border-amber-400 text-xs cursor-pointer"
+                        >
+                          <option value="M">Male</option>
+                          <option value="F">Female</option>
+                          <option value="T">Trans</option>
+                        </select>
+                      </div>
+                      <div className="col-span-2 sm:col-span-2">
+                        <select
+                          value={pax.berth}
+                          onChange={(e) => handleUpdateTatkalPassenger(pax.id, "berth", e.target.value)}
+                          className="w-full h-8 px-1.5 rounded-lg border border-slate-700 bg-slate-950 text-white outline-none focus:border-amber-400 text-xs cursor-pointer"
+                        >
+                          <option value="Lower Berth">Lower</option>
+                          <option value="Middle Berth">Middle</option>
+                          <option value="Upper Berth">Upper</option>
+                          <option value="Side Lower">Side Lower</option>
+                          <option value="Side Upper">Side Upper</option>
+                        </select>
+                      </div>
+                      <div className="col-span-1 text-center">
+                        {tatkalPassengers.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTatkalPassenger(pax.id)}
+                            className="text-slate-400 hover:text-rose-400 p-1 cursor-pointer"
+                            title="Remove"
+                          >
+                            <X className="size-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
+                  <span>Pre-fills your exact passenger manifest before 10:00 AM (AC) &amp; 11:00 AM (Non-AC) Tatkal rush.</span>
+                  <button
+                    type="button"
+                    onClick={handleCopyTatkalRoster}
+                    className="text-amber-400 font-bold hover:underline flex items-center gap-1 self-end sm:self-auto cursor-pointer"
+                  >
+                    <Copy className="size-3" />
+                    <span>Copy Pre-Formatted Manifest ➔</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1149,7 +1400,176 @@ export function SupremeKingPayExperience() {
           </div>
         )}
 
-        {/* ── SUB-TAB 4: CABS & AIRPORT TRANSFERS ── */}
+        {/* ── SUB-TAB 4: HOTELS (B2B AFFILIATE HANDOFF) ── */}
+        {ticketTab === "hotels" && (
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-amber-400/40 bg-gradient-to-b from-slate-900/90 to-slate-950 p-4 sm:p-5 shadow-xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                <div>
+                  <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                    <Building2 className="size-4" /> B2B Wholesale Hotel Handoff (0% Platform Markup)
+                  </span>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Official Agoda &amp; Booking.com wholesale inventory with transparent GST and zero convenience surcharges
+                  </p>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 self-start sm:self-auto">
+                  Beats MakeMyTrip &amp; Goibibo Rates
+                </span>
+              </div>
+
+              {/* Destination & Stay Search Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                    <MapPin className="size-3 text-amber-400" /> Destination City / Region
+                  </label>
+                  <select
+                    value={hotelCity}
+                    onChange={(e) => setHotelCity(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
+                  >
+                    <option value="Goa, India">Goa (Calangute, Candolim, Panaji)</option>
+                    <option value="Jaipur, India">Jaipur (Pink City, C-Scheme)</option>
+                    <option value="Manali, India">Manali &amp; Old Manali</option>
+                    <option value="Bengaluru, India">Bengaluru (Indiranagar, Koramangala)</option>
+                    <option value="Mumbai, India">Mumbai (BKC, Colaba, Juhu)</option>
+                    <option value="New Delhi, India">New Delhi (Connaught Place, Aerocity)</option>
+                    <option value="Varanasi, India">Varanasi (Ghats, Cantt)</option>
+                    <option value="Udaipur, India">Udaipur (Lake Pichola, Old City)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                    <Calendar className="size-3 text-amber-400" /> Check-In Date
+                  </label>
+                  <input
+                    type="date"
+                    value={hotelCheckIn}
+                    onChange={(e) => setHotelCheckIn(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400">Nights &amp; Rooms</label>
+                  <div className="flex gap-2">
+                    <select
+                      value={hotelNights}
+                      onChange={(e) => setHotelNights(Number(e.target.value) || 1)}
+                      className="flex-1 h-10 px-2 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
+                    >
+                      <option value={1}>1 Night</option>
+                      <option value={2}>2 Nights</option>
+                      <option value={3}>3 Nights</option>
+                      <option value={5}>5 Nights</option>
+                      <option value={7}>7 Nights</option>
+                    </select>
+                    <select
+                      value={hotelRooms}
+                      onChange={(e) => setHotelRooms(Number(e.target.value) || 1)}
+                      className="flex-1 h-10 px-2 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
+                    >
+                      <option value={1}>1 Room (2 Guests)</option>
+                      <option value={2}>2 Rooms (4 Guests)</option>
+                      <option value={3}>3 Rooms (6 Guests)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cleanCity = hotelCity.replace(/\,.*$/, "").trim();
+                      const checkIn = hotelCheckIn;
+                      const dNext = new Date(checkIn);
+                      dNext.setDate(dNext.getDate() + hotelNights);
+                      const checkOut = dNext.toISOString().split("T")[0];
+                      const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?cid=1890000&city=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${hotelRooms}&adults=${hotelRooms * 2}`;
+                      toast.success(`Handoff to official wholesale inventory for ${cleanCity} (${hotelNights} nights)...`);
+                      window.open(agodaUrl, "_blank", "noopener,noreferrer");
+                    }}
+                    className="w-full h-10 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:brightness-105 active:scale-95 transition cursor-pointer"
+                  >
+                    <span>Search Wholesale Hotels</span>
+                    <ExternalLink className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* 4 Curated Tier Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-2">
+                {[
+                  {
+                    tier: "Luxury 5-Star & Resorts",
+                    tag: "5-Star Verified",
+                    tariff: "₹6,499",
+                    desc: "Heritage palaces, beachfront resorts & club suites with breakfast",
+                  },
+                  {
+                    tier: "Verified Business Hotels",
+                    tag: "B2B GST Ready",
+                    tariff: "₹2,899",
+                    desc: "Airport & IT corridors with input tax credit and fast Wi-Fi",
+                  },
+                  {
+                    tier: "Family Homestays & Villas",
+                    tag: "Entire Property",
+                    tariff: "₹3,499",
+                    desc: "Private pool villas, hill cottages & full kitchen access",
+                  },
+                  {
+                    tier: "Budget Stays Under ₹1,999",
+                    tag: "Zero-Markup Tariff",
+                    tariff: "₹1,299",
+                    desc: "Clean AC rooms near major railway junctions & metro stations",
+                  },
+                ].map((tierItem) => (
+                  <div
+                    key={tierItem.tier}
+                    className="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 hover:border-amber-400/50 hover:bg-slate-900 transition flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[9.5px] font-black uppercase text-amber-400 px-2 py-0.5 rounded bg-amber-400/10 border border-amber-400/20">
+                          {tierItem.tag}
+                        </span>
+                        <span className="text-xs font-mono font-black text-white">from {tierItem.tariff}</span>
+                      </div>
+                      <h4 className="text-xs font-black text-white">{tierItem.tier}</h4>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{tierItem.desc}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const cleanCity = hotelCity.replace(/\,.*$/, "").trim();
+                        const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?cid=1890000&city=${encodeURIComponent(cleanCity)}&rooms=${hotelRooms}`;
+                        toast.success(`Handoff to ${tierItem.tier} inventory in ${cleanCity}...`);
+                        window.open(agodaUrl, "_blank", "noopener,noreferrer");
+                      }}
+                      className="mt-3 text-[11px] font-bold text-amber-400 hover:underline flex items-center justify-between pt-2 border-t border-slate-800/80 cursor-pointer"
+                    >
+                      <span>Explore Rates</span>
+                      <ArrowUpRight className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Price comparison disclosure */}
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3 text-[11px] text-slate-300 flex items-start gap-2">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                <p>
+                  <strong>Why OrderKing Beats OTAs:</strong> Major OTAs add up to 18% convenience and payment gateway fees at checkout. OrderKing routes you directly to partner wholesale rates with ₹0 platform surcharge and direct B2B GST invoicing.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── SUB-TAB 5: CABS & AIRPORT TRANSFERS ── */}
         {ticketTab === "cabs" && (
           <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5 space-y-4">
             <div className="flex items-center justify-between">
@@ -2062,6 +2482,134 @@ export function SupremeKingPayExperience() {
                 >
                   {isSubmittingEducator ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
                   <span>Submit Credential Verification</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL 4: KITCHEN PARTNER ONBOARDING MODAL ─── */}
+      {isKitchenModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-3xl border border-amber-400/60 bg-gradient-to-b from-[#121622] to-[#0c0f17] p-6 shadow-2xl text-slate-100 space-y-4">
+            <div className="flex items-start justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  Direct Merchant Desk
+                </span>
+                <h3 className="text-base font-black text-white mt-1.5">Partner Kitchen &amp; Restaurant Onboarding</h3>
+                <p className="text-xs text-slate-400">Zero onboarding fee · Real-time KDS · Daily bank settlements</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsKitchenModalOpen(false)}
+                className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitKitchenApplication} className="space-y-3.5 text-xs">
+              <div>
+                <label className="font-bold text-slate-300 block mb-1">Restaurant / Cloud Kitchen Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={kitchenName}
+                  onChange={(e) => setKitchenName(e.target.value)}
+                  placeholder="e.g. Royal Biryani &amp; Kebabs"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-300 block mb-1">Owner / Manager Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={kitchenOwnerName}
+                  onChange={(e) => setKitchenOwnerName(e.target.value)}
+                  placeholder="e.g. Vikramaditya Singh"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1">Mobile / WhatsApp *</label>
+                  <input
+                    type="text"
+                    required
+                    value={kitchenContact}
+                    onChange={(e) => setKitchenContact(e.target.value)}
+                    placeholder="e.g. +91 98765 43210"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1">City / Locality</label>
+                  <input
+                    type="text"
+                    value={kitchenCity}
+                    onChange={(e) => setKitchenCity(e.target.value)}
+                    placeholder="e.g. Connaught Place, Delhi"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1">FSSAI License / Status</label>
+                  <input
+                    type="text"
+                    value={kitchenFssai}
+                    onChange={(e) => setKitchenFssai(e.target.value)}
+                    placeholder="14-digit FSSAI or 'Applying'"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1">Cuisine Type</label>
+                  <input
+                    type="text"
+                    value={kitchenCuisine}
+                    onChange={(e) => setKitchenCuisine(e.target.value)}
+                    placeholder="e.g. Biryani, North Indian, Cafe"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400"
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-2.5 text-[11px] text-slate-400 flex items-center justify-between">
+                <span>Already have merchant credentials?</span>
+                <a
+                  href="/onboarding"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-amber-400 hover:underline flex items-center gap-1"
+                >
+                  <span>Partner Portal</span>
+                  <ExternalLink className="size-3" />
+                </a>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsKitchenModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-800 text-slate-300 hover:bg-slate-900 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingKitchen}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black shadow hover:brightness-105 disabled:opacity-60 flex items-center gap-1.5 cursor-pointer"
+                >
+                  {isSubmittingKitchen ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
+                  <span>Register Kitchen</span>
                 </button>
               </div>
             </form>

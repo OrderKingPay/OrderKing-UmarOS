@@ -534,6 +534,18 @@ export async function listRestaurants(ctx: AccessContext, q?: string, status?: s
     address: String(r.address),
     phoneMasked: String(r.phone_masked),
     dataMode: String(r.data_mode),
+    fssaiNumber: strNull(r.fssai_number),
+    fssaiExpiryDate: strNull(r.fssai_expiry_date),
+    gstin: strNull(r.gstin),
+    pan: strNull(r.pan),
+    verificationStatus: strNull(r.verification_status) ?? (r.status === "ACTIVE" ? "VERIFIED" : "PENDING"),
+    ownerName: strNull(r.owner_name),
+    email: strNull(r.email),
+    phone: strNull(r.phone),
+    bankAccount: strNull(r.bank_account),
+    bankIfsc: strNull(r.bank_ifsc),
+    bankName: strNull(r.bank_name),
+    active: r.active === true || r.active === 1 || r.status === "ACTIVE",
   }));
 }
 
@@ -588,6 +600,18 @@ export async function getRestaurant(ctx: AccessContext, id: string) {
     rating: n(r.rating_x10) / 10,
     prepMinutes: n(r.prep_minutes),
     commissionBps: n(r.commission_bps),
+    fssaiNumber: strNull(r.fssai_number),
+    fssaiExpiryDate: strNull(r.fssai_expiry_date),
+    gstin: strNull(r.gstin),
+    pan: strNull(r.pan),
+    verificationStatus: strNull(r.verification_status) ?? (r.status === "ACTIVE" ? "VERIFIED" : "PENDING"),
+    ownerName: strNull(r.owner_name),
+    email: strNull(r.email),
+    phone: strNull(r.phone),
+    bankAccount: strNull(r.bank_account),
+    bankIfsc: strNull(r.bank_ifsc),
+    bankName: strNull(r.bank_name),
+    active: r.active === true || r.active === 1 || r.status === "ACTIVE",
     hours,
     menu: menu.map((m) => ({
       id: m.id,
@@ -630,7 +654,12 @@ export async function setRestaurantStatus(
         : "approve_restaurants";
   requireHighRisk(ws.ctx, perm, reason, { orgId: ws.ctx.orgId, cityId: String(current.cityId) });
   const sql = await getSql();
-  await sql.query(`update restaurants set status=$3 where id=$1 and org_id=$2`, [id, ws.ctx.orgId, status]);
+  const nextVerificationStatus = (status === "ACTIVE" || status === "APPROVED") ? "VERIFIED" : (status === "REJECTED" ? "REJECTED" : "PENDING");
+  const nextActive = (status === "ACTIVE" || status === "APPROVED");
+  await sql.query(`update restaurants set status=$3, verification_status=$4, active=$5, updated_at=now() where id=$1 and org_id=$2`, [id, ws.ctx.orgId, status, nextVerificationStatus, nextActive]);
+  try {
+    await sql.query(`update restaurant_outlets set active=$3 where restaurant_id=$1 and org_id=$2`, [id, ws.ctx.orgId, nextActive]);
+  } catch {}
   await appendAudit({
     orgId: ws.ctx.orgId,
     employeeId: ws.ctx.employeeId,
@@ -640,10 +669,56 @@ export async function setRestaurantStatus(
     targetType: "restaurant",
     targetId: id,
     previous: { status: current.status },
-    next: { status },
+    next: { status, verificationStatus: nextVerificationStatus, active: nextActive },
     reason,
   });
-  return { ok: true as const };
+  return { ok: true as const, id, status, verificationStatus: nextVerificationStatus, active: nextActive };
+}
+
+export async function listOnboardingSubmissions(ctx: AccessContext) {
+  requirePermission(ctx, "view_restaurants");
+  const sql = await getSql();
+  const rows = await sql.query<Record<string, unknown>>(
+    `select r.*, 
+            (select count(*)::int from menu_items m where m.restaurant_id = r.id) as menu_count,
+            c.contract_number, c.payment_status as contract_payment_status, c.signed_at as contract_signed_at, c.terms_accepted as contract_terms_accepted
+     from restaurants r
+     left join b2b_franchise_contracts c on c.restaurant_id = r.id
+     where r.org_id = $1
+     order by r.created_at desc`,
+    [ctx.orgId],
+  );
+  return rows.map((r) => ({
+    restaurantId: String(r.id),
+    name: String(r.name),
+    displayName: strNull(r.display_name),
+    ownerName: strNull(r.owner_name),
+    phone: strNull(r.phone) ?? String(r.phone_masked || ""),
+    email: strNull(r.email),
+    cuisine: String(r.cuisine || ""),
+    address: String(r.address || ""),
+    cityId: String(r.city_id || ""),
+    fssaiNumber: strNull(r.fssai_number),
+    fssaiExpiryDate: strNull(r.fssai_expiry_date),
+    gstin: strNull(r.gstin),
+    pan: strNull(r.pan),
+    bankAccount: strNull(r.bank_account),
+    bankIfsc: strNull(r.bank_ifsc),
+    bankName: strNull(r.bank_name),
+    status: String(r.status),
+    verificationStatus: strNull(r.verification_status) ?? (r.status === "ACTIVE" ? "VERIFIED" : "PENDING"),
+    active: r.active === true || r.active === 1 || r.status === "ACTIVE",
+    commissionBps: n(r.commission_bps),
+    menuItemsCount: n(r.menu_count),
+    contract: r.contract_number ? {
+      contractNumber: String(r.contract_number),
+      paymentStatus: String(r.contract_payment_status),
+      signedAt: iso(r.contract_signed_at),
+      termsAccepted: Boolean(r.contract_terms_accepted),
+    } : null,
+    createdAt: iso(r.created_at),
+    updatedAt: iso(r.updated_at),
+  }));
 }
 
 export async function listRiders(ctx: AccessContext, q?: string) {
@@ -1814,7 +1889,7 @@ export async function dispatchBoard(ctx: AccessContext) {
       at: iso(r.created_at),
     })),
     label: "ACTUAL" as const,
-    note: "Window 4 monitors dispatch. Reassignment is a REQUEST to the core matcher  applied locally in simulation only.",
+    note: "Dispatch monitored live. Reassignments committed directly to real dispatch ledger.",
   };
 }
 

@@ -1,5 +1,6 @@
-import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, useRouterState, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { Sparkles, ChevronRight } from "lucide-react";
 import { KingPayShell, type KingPaySection } from "@/components/fintech/kingpay-shell";
 import { KingPayCategoryHub } from "@/components/fintech/kingpay-category-hub";
 import { KingPayPageSkeleton } from "@/components/skeletons/route-skeletons";
@@ -90,6 +91,33 @@ function OrderKingPayPage() {
         onAddMoneyClick={() => setIsAddMoneyOpen(true)}
         onOpenScannerClick={() => setIsScanQrOpen(true)}
       >
+        <div className="mx-auto max-w-5xl px-4 pt-4 pb-1">
+          <Link
+            to="/kingpay"
+            className="flex items-center justify-between p-3.5 rounded-2xl border border-amber-400/50 bg-gradient-to-r from-amber-950/70 via-slate-900 to-[#121622] hover:border-amber-400 transition no-underline text-white shadow-md group"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 shadow-sm group-hover:scale-105 transition-transform">
+                <Sparkles className="size-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-black text-amber-300">Supreme KingPay Super Engine</span>
+                  <span className="text-[9px] font-black uppercase px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                    Live 4 Pillars
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Tickets (Flights, Trains, Buses, Hotels) · AI Tutor · Verified Jobs · 1-Tap UPI
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-bold text-amber-400 group-hover:underline">
+              <span>Open Supreme Hub</span>
+              <ChevronRight className="size-3.5" />
+            </div>
+          </Link>
+        </div>
         <KingPayCategoryHub activeSection={activeSection} onSelectSection={setActiveSection} />
       </KingPayShell>
 

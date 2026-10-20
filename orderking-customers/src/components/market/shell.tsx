@@ -6,7 +6,6 @@ import {
   ChevronDown,
   Crown,
   Languages,
-  Mic,
   UtensilsCrossed,
   Plane,
   GraduationCap,
@@ -248,23 +247,18 @@ export function CustomerShell({
               </span>
             </button>
 
-            {!hasSearchRow && (
-            <div className="relative shrink-0">
-              <span className="absolute -inset-0.5 rounded-xl bg-amber-400/40 animate-ping pointer-events-none" />
-              <button
-                type="button"
-                onClick={() => setConciergeOpen(true)}
-                className="relative flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-xl bg-gradient-to-r from-slate-950 via-slate-900 to-black text-amber-300 border border-amber-400/80 shadow-[0_2px_8px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:shadow-[0_2px_12px_rgba(245,158,11,0.35)] transition-all active:scale-95 cursor-pointer"
-                title="1-Tap AI Support Concierge"
-                aria-label="Open 24x7 AI Support"
-              >
-                <Mic className="size-3 text-amber-300 animate-pulse" />
-                <span className="text-[10px] sm:text-[10.5px] font-black uppercase tracking-tight text-amber-200 hidden xs:inline">
-                  AI Support
-                </span>
-              </button>
-            </div>
-            )}
+            {/* Crowns Wallet Luxury Pill (Replaces Mic / AI Support button) - Direct link to KingPay */}
+            <Link
+              to="/kingpay"
+              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-950 bg-gradient-to-r from-amber-500/20 to-yellow-500/10 border border-amber-400/60 text-amber-300 hover:border-amber-300 shadow-2xs hover:shadow-xs transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
+              title="OrderKing Crowns Wallet & KingPay"
+              aria-label="Crowns Wallet"
+            >
+              <Crown className="size-3.5 text-amber-300 fill-amber-400/30" />
+              <span className="text-[10.5px] font-black uppercase tracking-tight text-amber-300 hidden xs:inline">
+                Crowns
+              </span>
+            </Link>
 
             {/* Cart icon with badge counter (redirecting to /cart or opening drawer) */}
             <Link

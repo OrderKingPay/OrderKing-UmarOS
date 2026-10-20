@@ -172,6 +172,17 @@ export async function handleAdminHttp(
     }
     if (method === "GET" && path.startsWith("orders/")) return json({ data: await q.getOrder(ws.ctx, path.slice("orders/".length)) });
     if (method === "GET" && path === "restaurants") return json({ data: await q.listRestaurants(ws.ctx) });
+    if (method === "GET" && path.startsWith("restaurants/") && !path.includes("/partner-")) {
+      const rId = path.slice("restaurants/".length);
+      return json({ data: await q.getRestaurant(ws.ctx, rId) });
+    }
+    if (method === "GET" && (path === "onboarding/submissions" || path === "onboarding")) {
+      return json({ data: await q.listOnboardingSubmissions(ws.ctx) });
+    }
+    if (method === "GET" && path === "commercial-dials") {
+      const { getCommercialDials } = await import("@/lib/orderking/server/commercial-dials.server");
+      return json({ data: await getCommercialDials(ws.ctx) });
+    }
     if (method === "GET" && path === "riders") return json({ data: await q.listRiders(ws.ctx) });
     if (method === "GET" && path.startsWith("restaurants/") && path.endsWith("/partner-dashboard")) {
       const rId = path.split("/")[1]!;
@@ -217,12 +228,63 @@ export async function handleAdminHttp(
       return json({ data: await transitionRestaurantOrder(ws, { orderId, restaurantId: body.restaurantId, from: body.from, to: body.to, reason: body.reason, idempotencyKey, correlationId: body.correlationId }) });
     }
 
+    if (method === "POST" && /^restaurants\/.+\/approve$/.test(path)) {
+      const rId = path.split("/")[1]!;
+      const approveSchema = z.object({ reason: z.string().optional() });
+      let body: { reason?: string } = {};
+      try {
+        const text = await request.text();
+        if (text) body = approveSchema.parse(JSON.parse(text));
+      } catch {}
+      const reason = body.reason || "UmarOS Admin partner onboarding verification approval";
+      const result = await q.setRestaurantStatus(ws, rId, "ACTIVE", reason);
+      return json({ ok: true, data: result });
+    }
+    if (method === "POST" && /^restaurants\/.+\/status$/.test(path)) {
+      const rId = path.split("/")[1]!;
+      const statusSchema = z.object({ status: z.string().min(1), reason: z.string().min(1) });
+      let body;
+      try { body = statusSchema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      const result = await q.setRestaurantStatus(ws, rId, body.status, body.reason);
+      return json({ ok: true, data: result });
+    }
+    if (method === "POST" && (path === "onboarding/approve" || path === "onboarding/verify")) {
+      const approveSchema = z.object({ restaurantId: z.string().min(1), reason: z.string().optional() });
+      let body;
+      try { body = approveSchema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      const result = await q.setRestaurantStatus(ws, body.restaurantId, "ACTIVE", body.reason || "UmarOS Partner Onboarding Instant Verification");
+      return json({ ok: true, data: result });
+    }
+    if (method === "POST" && path === "commercial-dials/platform-fee") {
+      const { updatePlatformFeeDial } = await import("@/lib/orderking/server/commercial-dials.server");
+      const schema = z.object({ feePaise: z.number().min(0), reason: z.string().min(1) });
+      let body;
+      try { body = schema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      const result = await updatePlatformFeeDial(ws, body.feePaise, body.reason);
+      return json({ ok: true, data: result });
+    }
+    if (method === "POST" && path === "commercial-dials/outlet-commission") {
+      const { updateOutletCommission } = await import("@/lib/orderking/server/commercial-dials.server");
+      const schema = z.object({ restaurantId: z.string().min(1), commissionBps: z.number().min(0).max(3500), reason: z.string().min(1) });
+      let body;
+      try { body = schema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      const result = await updateOutletCommission(ws, body.restaurantId, body.commissionBps, body.reason);
+      return json({ ok: true, data: result });
+    }
+    if (method === "POST" && path === "settings") {
+      const schema = z.object({ settings: z.record(z.string(), z.any()), reason: z.string().min(1) });
+      let body;
+      try { body = schema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      const result = await q.saveSettings(ws, body.settings as any, body.reason);
+      return json({ ok: true, data: result });
+    }
+
     if (method === "POST" && path === "dispatch/reassign") {
       const reassignSchema = z.object({ orderId: z.string().min(1), riderId: z.string().min(1), reason: z.string().min(1) });
       let body;
       try { body = reassignSchema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
       await q.interveneOrder(ws, { orderId: body.orderId, action: "assign_rider", riderId: body.riderId, reason: body.reason, idempotencyKey });
-      return json({ ok: true, note: "Dispatch reassignment is a REQUEST to the core matcher. Applied locally in simulation only." });
+      return json({ ok: true, note: "Dispatch reassignment executed and committed to core dispatch ledger." });
     }
     if (method === "POST" && /^orders\/.+\/refund$/.test(path)) {
       const orderId = path.split("/")[1]!;

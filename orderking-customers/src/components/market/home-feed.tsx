@@ -470,6 +470,22 @@ export function HomeFeed({
       {/* 2. SECONDARY QUICK FILTER PILLS (Distinct Color Background when active) & RESULT COUNT */}
       {(list.data?.restaurants?.length ?? 0) > 0 && <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
         <div className="flex items-center gap-2 shrink-0">
+          {/* Pure Veg Filter: Zomato standard green dot & badge */}
+          <button
+            type="button"
+            onClick={() => setDietFilter(dietFilter === "veg" ? "all" : "veg")}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              dietFilter === "veg"
+                ? "bg-gradient-to-r from-emerald-600 to-green-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
+                : "bg-white hover:bg-emerald-50/60 text-gray-700 border-gray-200 hover:border-emerald-300"
+            )}
+          >
+            <span className="size-2.5 rounded-[2px] border border-emerald-500 flex items-center justify-center bg-white shrink-0">
+              <span className="size-1.5 rounded-full bg-emerald-600" />
+            </span>
+            <span>Pure Veg</span>
+          </button>
           {/* Fast Delivery: Amber / Orange */}
           <button
             type="button"
@@ -561,6 +577,38 @@ export function HomeFeed({
             >
               Track Order
             </Link>
+          </div>
+        </section>
+      )}
+
+      {/* 0% Aggregator Markup Guarantee Banner vs Zomato/Swiggy */}
+      {!q && list.data?.deliveryAvailable !== false && (
+        <section aria-label="0% Aggregator Markup Guarantee" className="pt-0.5">
+          <div className="rounded-2xl border border-emerald-200/90 bg-gradient-to-r from-emerald-50/90 via-teal-50/50 to-emerald-50/90 p-3 sm:p-3.5 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white shadow-xs">
+                <Percent className="size-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-black text-xs sm:text-sm text-emerald-950 tracking-tight">
+                    0% Aggregator Markup Guarantee
+                  </span>
+                  <span className="inline-flex items-center rounded-full bg-emerald-200/80 text-emerald-950 font-black text-[10px] px-2 py-0.5 border border-emerald-300/60">
+                    Save ₹100–₹150 Per Order
+                  </span>
+                </div>
+                <p className="text-[11px] text-emerald-800/90 font-medium leading-tight">
+                  Genuine dine-in menu prices with 0% aggregator markups vs Zomato &amp; Swiggy. Direct from local kitchens.
+                </p>
+              </div>
+            </div>
+            <div className="shrink-0 self-end sm:self-auto">
+              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-white/90 border border-emerald-200 px-2.5 py-1 rounded-lg shadow-2xs">
+                <Sparkles className="size-3 text-emerald-600" />
+                Dine-In Rates
+              </span>
+            </div>
           </div>
         </section>
       )}
