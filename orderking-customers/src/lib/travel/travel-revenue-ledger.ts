@@ -86,8 +86,13 @@ export async function recordTravelCommissionLedger(
   };
 
   try {
-    // Attempt persist to Supabase if connected
-    if (supabase) {
+    // Attempt persist to Supabase only if legitimately configured and not in test sandbox
+    const isConfiguredSupabase =
+      typeof process !== "undefined" && process.env.NODE_ENV === "test"
+        ? false
+        : Boolean(import.meta.env.VITE_SUPABASE_URL && !import.meta.env.VITE_SUPABASE_URL.includes("unconfigured"));
+
+    if (isConfiguredSupabase && supabase) {
       await supabase.from("kingpay_ledger_entries").insert([
         {
           entry_id: debitEntry.entry_id,
