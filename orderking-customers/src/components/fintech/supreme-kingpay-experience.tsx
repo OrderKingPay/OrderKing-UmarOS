@@ -707,7 +707,7 @@ export function SupremeKingPayExperience() {
             </h2>
           </div>
           <span className="text-[11px] text-slate-400 hidden sm:inline">
-            Matches top navigation · Direct verified booking
+            Matches top navigation · Official booking provider handoffs
           </span>
         </div>
 
@@ -736,7 +736,7 @@ export function SupremeKingPayExperience() {
             <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Flights, Trains, Buses, Cabs</span>
             {activeSuperCategory === "tickets" && (
               <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
-                <span>Active Booking Engine</span>
+                <span>Provider Booking Links</span>
                 <ChevronRight className="size-3" />
               </div>
             )}
@@ -836,10 +836,10 @@ export function SupremeKingPayExperience() {
         <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
           <div>
             <h2 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <Plane className="size-5 text-amber-400" /> Goibibo/MakeMyTrip Grade Ticket Booking
+              <Plane className="size-5 text-amber-400" /> Tickets & Travel · Real provider checkout
             </h2>
             <p className="text-xs text-slate-400">
-              Official airline deep-links, IRCTC rail search, verified intercity bus corridors, and airport cabs
+              Flight, train, bus and cab booking provider links
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -1055,7 +1055,7 @@ export function SupremeKingPayExperience() {
             {/* Popular Verified Flight Corridors */}
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-slate-400 block">
-                Popular Domestic Corridors (Official Carrier Fares)
+                Suggested flight routes · Check actual carrier prices
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -1076,13 +1076,13 @@ export function SupremeKingPayExperience() {
                         <p className="text-[11px] text-slate-400 mt-0.5">{route.from} to {route.to}</p>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-sm font-black font-mono text-amber-300">from ₹{route.fare}</span>
-                        <span className="block text-[9.5px] font-bold text-emerald-400">{route.highlight}</span>
+                        <span className="text-sm font-black font-mono text-amber-300">Check fare</span>
+                        <span className="block text-[9.5px] font-bold text-emerald-400">Provider checkout</span>
                       </div>
                     </div>
 
                     <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
-                      <span>{route.duration} · {route.frequency}</span>
+                      <span>Confirm actual schedule at carrier</span>
                       <span className="text-amber-400 font-bold group-hover:underline flex items-center gap-0.5">
                         Book IndiGo / Air India <ArrowUpRight className="size-3" />
                       </span>
@@ -1221,11 +1221,11 @@ export function SupremeKingPayExperience() {
                       className="p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:border-amber-400/50 hover:bg-slate-900 transition no-underline text-white group"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-black text-amber-300">{tc.name}</span>
-                        <span className="text-xs font-black font-mono text-white">₹{tc.fare}</span>
+                        <span className="text-xs font-black text-amber-300">Rail route</span>
+                        <span className="text-xs font-black font-mono text-white">IRCTC fare ↗</span>
                       </div>
                       <p className="text-[11px] text-slate-300 mt-1 font-bold">{tc.from} ➔ {tc.to}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{tc.duration} · {tc.class}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Check availability on IRCTC</p>
                     </Link>
                   ))}
                 </div>
@@ -1235,7 +1235,7 @@ export function SupremeKingPayExperience() {
               <div className="rounded-xl border border-amber-400/30 bg-amber-950/20 p-3 text-[11px] text-slate-300 flex items-start gap-2">
                 <Clock className="size-4 text-amber-400 shrink-0 mt-0.5" />
                 <p>
-                  <strong>Tatkal Advisory:</strong> AC Tatkal window opens at 10:00 AM IST. Non-AC Tatkal window opens at 11:00 AM IST. Fares are processed with 0% gateway markup.
+                  <strong>Tatkal Advisory:</strong> AC Tatkal window opens at 10:00 AM IST. Non-AC Tatkal window opens at 11:00 AM IST. Final fare and applicable charges appear on IRCTC.
                 </p>
               </div>
 
@@ -1359,7 +1359,7 @@ export function SupremeKingPayExperience() {
                   <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">
                     Verified Intercity AC Sleeper &amp; Volvo Corridors
                   </h3>
-                  <p className="text-[11px] text-slate-400">Direct carrier booking with RedBus / AbhiBus partner verification</p>
+                  <p className="text-[11px] text-slate-400">Book with the provider after checking actual bus seats and fare</p>
                 </div>
                 <Link to="/travel" hash="buses" className="text-xs font-bold text-amber-400 hover:underline">
                   Search All ➔
@@ -1380,18 +1380,18 @@ export function SupremeKingPayExperience() {
                         <ArrowRight className="size-3 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
                         <span>{route.to}</span>
                       </div>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{route.type} · {route.duration}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Confirm schedule with bus provider</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="text-xs font-black font-mono text-amber-300">from ₹{route.fare}</span>
-                      <span className="block text-[9px] text-emerald-400 font-bold">✓ Daily Service</span>
+                      <span className="text-xs font-black font-mono text-amber-300">Check fare</span>
+                      <span className="block text-[9px] text-emerald-400 font-bold">Check schedule</span>
                     </div>
                   </Link>
                 ))}
               </div>
 
               <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-                <span>Verified Operators: KSRTC, UPSRTC, Zingbus, Intrcity SmartBus</span>
+                <span>Confirm operators and seats at provider checkout</span>
                 <Link to="/travel" hash="buses" className="font-bold text-amber-400 hover:underline">
                   Open Bus Booking Engine ➔
                 </Link>

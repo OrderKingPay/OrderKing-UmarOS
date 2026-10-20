@@ -775,176 +775,19 @@ export function TravelPage() {
           )}
         </div>
 
-        {/* =====================================================================
-            PRICE COMPARISON ENGINE: "YOU SAVE ₹399 VS COMMERCIAL OTAs" (REAL MATH)
-            Commercial OTA Convenience Fee: ₹399/pax/sector vs OrderKing Platform Desk Fee: ₹0
-           ===================================================================== */}
-        {(() => {
-          const OTA_CONVENIENCE_FEE_PAISE = 39900; // ₹399.00 per passenger per sector
-          const ORDERKING_CONVENIENCE_FEE_PAISE = 0; // ₹0.00
-          const TYPICAL_BASE_PLUS_TAX_PAISE = 505000; // ₹5,050.00
-          const comparisonSectors = comparisonIsRoundTrip ? 2 : 1;
-          const totalPaxSectors = comparisonPassengers * comparisonSectors;
-          const totalSavingsPaise = OTA_CONVENIENCE_FEE_PAISE * totalPaxSectors;
-          const otaTotalCostPaise = (TYPICAL_BASE_PLUS_TAX_PAISE + OTA_CONVENIENCE_FEE_PAISE) * totalPaxSectors;
-          const orderKingTotalCostPaise = (TYPICAL_BASE_PLUS_TAX_PAISE + ORDERKING_CONVENIENCE_FEE_PAISE) * totalPaxSectors;
-
-          return (
-            <div className="relative overflow-hidden rounded-3xl border border-sky-400/40 bg-gradient-to-br from-[#06102A] via-[#0B1A40] to-[#120E33] p-5 sm:p-7 text-white shadow-2xl">
-              <div className="absolute top-0 right-0 w-72 h-72 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
-
-              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
-                <div>
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/40 px-3 py-1 text-xs font-black text-emerald-300 mb-2">
-                    <TrendingDown className="size-3.5" />
-                    <span>Real Math · Pure Passenger Savings</span>
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    You Save {formatPaise(totalSavingsPaise)} vs Legacy Travel Portals
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
-                    Commercial OTAs quietly charge ₹399 to ₹599 convenience fees per passenger per sector. OrderKing has a strict 0% platform desk fee policy.
-                  </p>
-                </div>
-
-                {/* Interactive Passenger & Trip Slabs */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center bg-slate-900/90 border border-white/15 p-1 rounded-xl">
-                    <span className="text-[10px] font-bold uppercase text-slate-400 px-2">Passengers:</span>
-                    {([1, 2, 4] as const).map((count) => (
-                      <button
-                        key={count}
-                        type="button"
-                        onClick={() => setComparisonPassengers(count)}
-                        className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                          comparisonPassengers === count
-                            ? "bg-sky-400 text-slate-950 font-black shadow-xs"
-                            : "text-slate-300 hover:text-white"
-                        }`}
-                      >
-                        {count === 4 ? "4 (Family)" : `${count} Pax`}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center bg-slate-900/90 border border-white/15 p-1 rounded-xl">
-                    <button
-                      type="button"
-                      onClick={() => setComparisonIsRoundTrip(false)}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                        !comparisonIsRoundTrip
-                          ? "bg-sky-400 text-slate-950 font-black shadow-xs"
-                          : "text-slate-300 hover:text-white"
-                      }`}
-                    >
-                      One-Way
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setComparisonIsRoundTrip(true)}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
-                        comparisonIsRoundTrip
-                          ? "bg-sky-400 text-slate-950 font-black shadow-xs"
-                          : "text-slate-300 hover:text-white"
-                      }`}
-                    >
-                      Round-Trip (2 Sectors)
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Side-by-side Comparative Ledger Cards */}
-              <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Competitor OTA Card */}
-                <div className="rounded-2xl border border-rose-500/30 bg-rose-950/20 p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-rose-400 block">
-                        Commercial OTAs &amp; Legacy Portals
-                      </span>
-                      <h3 className="text-sm font-black text-white">Standard Online Booking</h3>
-                    </div>
-                    <span className="text-xs font-black text-rose-400 bg-rose-500/20 border border-rose-500/30 px-2.5 py-1 rounded-lg">
-                      +₹399 / pax fee
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5 text-xs text-slate-300 pt-1 border-t border-rose-500/20">
-                    <div className="flex justify-between">
-                      <span>Carrier Base Fare + Airport Tax ({totalPaxSectors} tickets)</span>
-                      <span className="font-mono">{formatPaise(TYPICAL_BASE_PLUS_TAX_PAISE * totalPaxSectors)}</span>
-                    </div>
-                    <div className="flex justify-between text-rose-300 font-bold">
-                      <span>OTA "Convenience Fee" (₹399 × {totalPaxSectors})</span>
-                      <span className="font-mono">+{formatPaise(OTA_CONVENIENCE_FEE_PAISE * totalPaxSectors)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm font-black text-white pt-2 border-t border-rose-500/30">
-                      <span>Total Billed at Checkout</span>
-                      <span className="font-mono text-rose-300">{formatPaise(otaTotalCostPaise)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* OrderKing Direct Travel Card */}
-                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-950/25 p-4 space-y-3 shadow-lg shadow-emerald-500/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">
-                        OrderKing TravelStation
-                      </span>
-                      <h3 className="text-sm font-black text-white">Direct Partner Handoff</h3>
-                    </div>
-                    <span className="text-xs font-black text-emerald-300 bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-1 rounded-lg">
-                      ₹0 Desk Markup
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5 text-xs text-slate-300 pt-1 border-t border-emerald-500/20">
-                    <div className="flex justify-between">
-                      <span>Carrier Base Fare + Airport Tax ({totalPaxSectors} tickets)</span>
-                      <span className="font-mono">{formatPaise(TYPICAL_BASE_PLUS_TAX_PAISE * totalPaxSectors)}</span>
-                    </div>
-                    <div className="flex justify-between text-emerald-300 font-bold">
-                      <span>OrderKing Platform Convenience Markup</span>
-                      <span className="font-mono font-black text-emerald-300">₹0.00 (Zero Fee)</span>
-                    </div>
-                    <div className="flex justify-between text-sm font-black text-white pt-2 border-t border-emerald-500/30">
-                      <span>Total Billed at Checkout</span>
-                      <span className="font-mono text-emerald-300">{formatPaise(orderKingTotalCostPaise)}</span>
-                    </div>
-
-                    <div className="pt-2 border-t border-emerald-500/20 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-                      <span className="text-[11px] text-emerald-200">
-                        Direct airline booking link with 0% platform fee.
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const deepLink = buildOfficialAirlineDeepLink({
-                            carrierCode: "6E",
-                            from: flightFrom || "DEL",
-                            to: flightTo || "BOM",
-                            departureDate: flightDate,
-                            passengers: comparisonPassengers,
-                            cabinClass: "Economy",
-                          });
-                          toast.success(`Handoff to official ${deepLink.portalName} with zero convenience markup.`);
-                          window.open(deepLink.bookingUrl, "_blank", "noopener,noreferrer");
-                        }}
-                        className="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs transition shadow-xs whitespace-nowrap"
-                      >
-                        <span>Book Direct on Airline (₹0 Fee)</span>
-                        <ArrowUpRight className="size-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
-
+        {/* Real checkout paths: never invent fares or issue unverified tickets. */}
+        <section className="rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 border border-sky-400/30 p-5 sm:p-7 text-white shadow-xl">
+          <p className="text-xs uppercase tracking-wider font-black text-sky-300">Genuine provider checkout</p>
+          <h2 className="text-xl sm:text-2xl font-black mt-2">Find your journey. Book with the actual ticket issuer.</h2>
+          <p className="text-sm text-slate-300 mt-2">Fares, seat availability, payment and ticket confirmation are provided at external checkout. OrderKing does not yet issue railway tickets or collect railway payments.</p>
+          <div className="flex flex-wrap gap-2 mt-5">
+            <a href="https://www.irctc.co.in/nget/train-search" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-sky-400 px-4 py-3 text-slate-950 font-black text-sm no-underline hover:bg-sky-300">Train tickets · IRCTC ↗</a>
+            <a href="https://www.goindigo.in/" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline">Flights · IndiGo ↗</a>
+            <a href="https://www.redbus.in/" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline">Bus tickets · redBus ↗</a>
+            <a href="https://www.booking.com/" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline">Hotels · Booking.com ↗</a>
+          </div>
+          <p className="text-[11px] text-slate-400 mt-3">Final fare, fees, refunds and PNR or booking confirmation are controlled by the selected provider.</p>
+        </section>
         {/* =====================================================================
             POPULAR HIGH-FREQUENCY INDIAN ROUTES CAROUSEL
             Delhi ⇄ Mumbai · Kolkata ⇄ Bengaluru · Mumbai ⇄ Goa · etc.
@@ -956,11 +799,11 @@ export function TravelPage() {
                 <Compass className="size-3.5" /> High-Density Indian Corridors
               </span>
               <h2 className="text-lg font-black text-slate-900 mt-0.5">
-                Popular Domestic Routes · Compare Live Fares
+                Suggested routes · Check live fares on provider
               </h2>
             </div>
             <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start sm:self-auto">
-              Live Carrier Tariff Benchmarking
+              Provider checkout required
             </span>
           </div>
 
@@ -979,7 +822,7 @@ export function TravelPage() {
                       {route.tag}
                     </span>
                     <span className="text-[10px] font-mono font-bold text-slate-500">
-                      {route.duration}
+                      Choose journey date
                     </span>
                   </div>
 
@@ -987,15 +830,15 @@ export function TravelPage() {
                     {route.fromCity} ({route.fromCode}) ➔ {route.toCity} ({route.toCode})
                   </h3>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    {route.frequency}
+                    Schedules confirmed by provider
                   </p>
                 </div>
 
                 <div className="border-t border-slate-200/80 pt-2.5 space-y-2">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase">Starting From</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Fare</span>
                     <span className="text-sm font-black font-mono text-slate-900">
-                      {formatPaise(route.farePaise)}
+                      Check with provider
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -1496,46 +1339,10 @@ export function TravelPage() {
                 </div>
               </div>
 
-              {/* Real-time Train Fare Benchmark & 0% Agent Markup Guarantee */}
-              <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50/50 via-slate-50/70 to-emerald-50/40 p-4 sm:p-5 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-200/60 pb-3">
-                  <span className="text-xs font-black uppercase tracking-wider text-indigo-900 flex items-center gap-1.5">
-                    <TrendingDown className="size-4 text-emerald-600" />
-                    Indian Railways Fare Tariff Benchmark ({trainPassengers} Pax · Class {trainClass})
-                  </span>
-                  <span className="text-xs font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300">
-                    Instant Savings: ₹{trainAgentSurcharge} vs Agent Portals
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div className="bg-white p-3 rounded-xl border border-slate-200">
-                    <span className="text-slate-500 block text-[11px] font-medium">IRCTC Base Ticket</span>
-                    <span className="text-sm font-black text-slate-900 font-mono">₹{trainTotalBase.toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">₹{trainBaseUnit} × {trainPassengers}</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200">
-                    <span className="text-slate-500 block text-[11px] font-medium">Superfast + GST (5%)</span>
-                    <span className="text-sm font-black text-slate-900 font-mono">₹{(trainIrctcLevy + trainGst).toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">Official Railway Levy</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-emerald-200 bg-emerald-50/30">
-                    <span className="text-emerald-700 block text-[11px] font-bold">OrderKing Agent Markup</span>
-                    <span className="text-sm font-black text-emerald-600 font-mono">₹0 (FREE)</span>
-                    <span className="text-[10px] text-emerald-700/80 block mt-0.5">Zero Agent Fee</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-indigo-300 bg-indigo-50/50">
-                    <span className="text-indigo-900 block text-[11px] font-bold">Total Railway Fare</span>
-                    <span className="text-base font-black text-indigo-900 font-mono">₹{trainOrderKingTotal.toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-500 line-through block mt-0.5">₹{trainAgentTotal.toLocaleString("en-IN")} on 3rd-Party</span>
-                  </div>
-                </div>
-
-                <p className="text-[11px] text-slate-500 leading-relaxed pt-1">
-                  <strong className="text-slate-700">Official Compliance Notice:</strong> Real-time seat inventory, dynamic Tatkal charges, and confirmed reservations are managed exclusively by Indian Railways PRS on the official IRCTC portal. OrderKing provides zero-markup preparation and immediate handoff.
-                </p>
+              <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
+                <p className="text-sm font-black text-indigo-900">Railway fares and seat availability</p>
+                <p className="text-xs text-indigo-800 mt-1">Check actual class-wise fares, Tatkal eligibility and current seats on IRCTC. No fare, seat, payment or ticket is confirmed inside OrderKing.</p>
               </div>
-
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   onClick={() => {
