@@ -81,9 +81,13 @@ const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
 const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
 const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
 
-/** True when federated sign-in is active (real auth is enforced). */
+
+
+const databaseUrl = env("DATABASE_URL");
+
+/** True when federated sign-in is active (real auth is enforced). Requires both credentials and databaseUrl. */
 export const authConfigured =
-  !authDisabled && Boolean(grokClientId && grokClientSecret);
+  !authDisabled && Boolean(grokClientId && grokClientSecret && databaseUrl);
 
 // This app's own Better Auth origin. When deployed the deployer injects the
 // public URL. In the sandbox live preview there's no fixed URL (each preview gets
@@ -175,7 +179,7 @@ const trustedOrigins: string[] = [
   "https://*.netlify.app",
 ];
 
-const databaseUrl = env("DATABASE_URL");
+
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
@@ -189,14 +193,23 @@ const grokUserInfoUrl = `${issuerBase}/api/auth/oauth2/userinfo`;
 
 
 
-// Real Postgres when `DATABASE_URL` is set (deployed apps), else the app's
-// embedded PGLite (preview) via a Kysely dialect — so Better Auth persists to the
-// SAME DB as app data, including email/password users. Both use the Better Auth
-// schema from `migrations/auth/0001_auth.sql`, copied into `migrations/` when
-// the app turns sign-in on.
-let pool = new Pool({ connectionString: databaseUrl });
+// Real Postgres when `DATABASE_URL` is set (deployed apps), else clean fallback
+// adapter so Better Auth never attempts to invoke tree-shaken memory/kysely adapters.
+const fallbackNoopAdapter = () => ({
+  id: "noop",
+  create: async () => null,
+  findOne: async () => null,
+  findMany: async () => [],
+  update: async () => null,
+  delete: async () => null,
+  deleteMany: async () => 0,
+  updateMany: async () => 0,
+  count: async () => 0,
+});
 
-let database = pool;
+let pool = databaseUrl ? new Pool({ connectionString: databaseUrl }) : undefined;
+
+let database: any = pool || fallbackNoopAdapter;
 
 /** Session token cookie name — also read by the live-preview popup completion page. */
 export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";
