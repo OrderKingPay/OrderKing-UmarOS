@@ -269,57 +269,19 @@ export function TutorJobsHub() {
     });
   }, [selectedJobCategory, jobSearchQuery]);
 
-  // Handle Tutor Booking Submit
+  // Do not produce fake local confirmations or claim paid external dispatches.
   const handleConfirmTutorBooking = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!studentName.trim() || !studentPhone.trim()) {
-      toast.error("Please enter student name and mobile number");
-      return;
-    }
-    if (studentPhone.trim().replace(/\D/g, "").length < 10) {
-      toast.error("Please enter a valid 10-digit Indian phone number");
-      return;
-    }
-
-    setIsSubmittingBooking(true);
-    setTimeout(() => {
-      setIsSubmittingBooking(false);
-      const bookingRef = `TUT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-      toast.success(
-        `Session Confirmed! Ref #${bookingRef}. ${bookingTutor?.name} will contact you on WhatsApp/Call shortly. Platform fee ₹${TUTOR_BOOKING_PLATFORM_FEE_INR} charged transparently.`,
-        { duration: 6000 }
-      );
-      setBookingTutor(null);
-      setStudentName("");
-      setStudentPhone("");
-      setStudentNotes("");
-    }, 800);
+    toast.error("No verified tutor is available for booking. Nothing was booked or charged.");
+    setBookingTutor(null);
+    setIsSubmittingBooking(false);
   };
-
-  // Handle Job Application Submit
   const handleConfirmJobApply = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!applicantName.trim() || !applicantContact.trim()) {
-      toast.error("Please provide your name and contact info (phone/email)");
-      return;
-    }
-
-    setIsSubmittingJob(true);
-    setTimeout(() => {
-      setIsSubmittingJob(false);
-      setAppliedJobsCount((prev) => prev + 1);
-      const appRef = `JOB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-      toast.success(
-        `Application Submitted for Review. Ref #${appRef}. Sent directly to ${applyingJob?.company} HR. Platform fee ₹${JOB_APPLICATION_PLATFORM_FEE_INR} verified.`,
-        { duration: 6000 }
-      );
-      setApplyingJob(null);
-      setApplicantName("");
-      setApplicantContact("");
-      setApplicantPitch("");
-    }, 800);
+    toast.error("No verified employer is connected. No application was sent or charged.");
+    setApplyingJob(null);
+    setIsSubmittingJob(false);
   };
-
   return (
     <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 font-sans space-y-6">
       {/* ========================================================= */}
@@ -387,21 +349,21 @@ export function TutorJobsHub() {
         <div className="mt-6 pt-4 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div className="flex items-center gap-2.5 bg-black/40 border border-amber-400/20 rounded-xl px-3.5 py-2.5">
             <div className="size-7 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0 font-bold">
-              ₹49
+              ₹0
             </div>
             <div>
-              <p className="font-bold text-white">Transparent Tutor Matching Fee</p>
-              <p className="text-[11px] text-slate-400">Direct tutor connection • 100% money back if first 20 mins unsatisfactory</p>
+              <p className="font-bold text-white">Tutor matching · Not accepting payments</p>
+              <p className="text-[11px] text-slate-400">No verified educators currently available; no matching fees collected.</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2.5 bg-black/40 border border-emerald-400/20 rounded-xl px-3.5 py-2.5">
             <div className="size-7 rounded-lg bg-emerald-400/20 text-emerald-300 flex items-center justify-center shrink-0 font-bold">
-              ₹29
+              ₹0
             </div>
             <div>
-              <p className="font-bold text-white">Direct Employer Application Dispatch</p>
-              <p className="text-[11px] text-slate-400">Direct employer HR dispatch • Zero intermediary commission deductions</p>
+              <p className="font-bold text-white">Verified employer postings only</p>
+              <p className="text-[11px] text-slate-400">No external applications sent until approved employer connections are live.</p>
             </div>
           </div>
         </div>

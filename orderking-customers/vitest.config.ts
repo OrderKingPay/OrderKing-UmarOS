@@ -32,6 +32,7 @@ export default defineConfig({
       "src/test/live-search-catalog.test.ts",
       "src/test/irctc-fintech-reconciliation.test.ts",
       "src/test/travel-provider-truth-gates.test.ts",
+      "src/test/commercial-claims-real-only.test.ts",
     ],
     environment: "node",
   },

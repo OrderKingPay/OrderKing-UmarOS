@@ -56,6 +56,24 @@ import { AddMoneyModal } from "@/components/fintech/add-money-modal";
 import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
 import { askIntelligenceFn, submitJobApplicationFn } from "@/routes/tutor";
 import { cn } from "@/lib/utils";
+import airportCatalog from "./airports.json";
+import stationCatalog from "./stations.json";
+
+// Local name/code suggestions are NOT real availability or ticket quotes.
+const searchAirportOptions = (raw: string) => {
+  const q = raw.replace(/\s*\([A-Z]{3}\).*$/, "").trim().toLowerCase();
+  return airportCatalog.filter((a) => a.code && (a.code.toLowerCase().includes(q) || a.city.toLowerCase().includes(q) || a.name.toLowerCase().includes(q))).slice(0, 20);
+};
+const searchStationOptions = (raw: string) => {
+  const q = raw.replace(/\s*\([A-Z0-9]{2,5}\).*$/, "").trim().toLowerCase();
+  return stationCatalog.filter((a) => a.code.toLowerCase().includes(q) || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q)).slice(0, 20);
+};
+export const extractStationCode = (value: string): string | null => {
+  const v = value.trim().toUpperCase();
+  const code = v.match(/\(([A-Z0-9]{2,5})\)\s*$/)?.[1] ?? (/^[A-Z0-9]{2,5}$/.test(v) ? v : null);
+  return code && /^[A-Z0-9]{2,5}$/.test(code) ? code : null;
+};
+
 
 // Verified popular intercity bus corridors across India with standard fares
 const VERIFIED_BUS_CORRIDORS = [
@@ -218,10 +236,17 @@ export function SupremeKingPayExperience() {
   };
 
   const handleCopyTatkalRoster = () => {
-    const fromCode = trainFrom.match(/\(([A-Z0-9]+)\)/)?.[1] || "NDLS";
-    const toCode = trainTo.match(/\(([A-Z0-9]+)\)/)?.[1] || "BSB";
-    const validPax = tatkalPassengers.filter((p) => p.name.trim().length > 0);
-    const paxList = validPax.length > 0 ? validPax : tatkalPassengers;
+    const fromCode = extractStationCode(trainFrom);
+    const toCode = extractStationCode(trainTo);
+    if (!fromCode || !toCode || fromCode === toCode) {
+      toast.error("Enter two different valid station codes before copying the roster.");
+      return;
+    }
+    if (tatkalPassengers.some((p) => !p.name.trim() || !Number.isInteger(p.age) || p.age < 1 || p.age > 120)) {
+      toast.error("Enter a name and valid age for every passenger before copying.");
+      return;
+    }
+    const paxList = tatkalPassengers;
 
     const rosterLines = [
       "=== IRCTC TATKAL TRAVEL ROSTER PREPARED VIA ORDERKING ===",
@@ -232,11 +257,11 @@ export function SupremeKingPayExperience() {
         (p, idx) =>
           `${idx + 1}. ${p.name.trim() || `Passenger ${idx + 1}`} | Age: ${p.age} | Gender: ${p.gender} | Berth: ${p.berth} | Food: ${p.food}`
       ),
-      `\nOfficial IRCTC Portal: https://www.irctc.co.in/nget/train-search?from=${fromCode}&to=${toCode}&date=${trainDate}`,
+      "Official IRCTC Portal: https://www.irctc.co.in/nget/train-search",
     ];
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       void navigator.clipboard.writeText(rosterLines.join("\n"));
-      toast.success("IRCTC Tatkal Passenger Roster copied to clipboard! Paste directly into NGeT booking form.");
+      toast.success("Passenger checklist copied. Complete and verify each passenger field manually on the official IRCTC site.");
     }
   };
 
@@ -887,20 +912,8 @@ export function SupremeKingPayExperience() {
                   <label className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
                     <MapPin className="size-3 text-amber-400" /> From City / Airport
                   </label>
-                  <select
-                    value={flightFrom}
-                    onChange={(e) => setFlightFrom(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
-                  >
-                    <option value="New Delhi (DEL)">New Delhi (DEL) - Indira Gandhi</option>
-                    <option value="Mumbai (BOM)">Mumbai (BOM) - Chhatrapati Shivaji</option>
-                    <option value="Bengaluru (BLR)">Bengaluru (BLR) - Kempegowda</option>
-                    <option value="Kolkata (CCU)">Kolkata (CCU) - Netaji Subhash</option>
-                    <option value="Hyderabad (HYD)">Hyderabad (HYD) - Rajiv Gandhi</option>
-                    <option value="Chennai (MAA)">Chennai (MAA) - Chennai Intl</option>
-                    <option value="Guwahati (GAU)">Guwahati (GAU) - Lokpriya Gopinath</option>
-                    <option value="Goa (GOI)">Goa (GOI) - Dabolim</option>
-                  </select>
+                  <input type="text" aria-label="Search any airport by city or IATA code" placeholder="Search any airport by city or IATA code" autoComplete="off" list="flightFrom-suggestions" value={flightFrom} onChange={(e) => setFlightFrom(e.target.value)} className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none " />
+                    <datalist id="flightFrom-suggestions">{searchAirportOptions(flightFrom).map((a) => <option key={a.code + a.name} value={a.city + " (" + a.code + ")"}>{a.name}</option>)}</datalist>
                 </div>
 
                 {/* To Airport with Swap */}
@@ -918,19 +931,8 @@ export function SupremeKingPayExperience() {
                       <ArrowLeftRight className="size-3" /> Swap
                     </button>
                   </div>
-                  <select
-                    value={flightTo}
-                    onChange={(e) => setFlightTo(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
-                  >
-                    <option value="Mumbai (BOM)">Mumbai (BOM) - Chhatrapati Shivaji</option>
-                    <option value="New Delhi (DEL)">New Delhi (DEL) - Indira Gandhi</option>
-                    <option value="Bengaluru (BLR)">Bengaluru (BLR) - Kempegowda</option>
-                    <option value="Goa (GOI)">Goa (GOI) - Dabolim / Mopa</option>
-                    <option value="Kolkata (CCU)">Kolkata (CCU) - Netaji Subhash</option>
-                    <option value="Hyderabad (HYD)">Hyderabad (HYD) - Rajiv Gandhi</option>
-                    <option value="Chennai (MAA)">Chennai (MAA) - Chennai Intl</option>
-                  </select>
+                  <input type="text" aria-label="Search any airport by city or IATA code" placeholder="Search any airport by city or IATA code" autoComplete="off" list="flightTo-suggestions" value={flightTo} onChange={(e) => setFlightTo(e.target.value)} className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none " />
+                    <datalist id="flightTo-suggestions">{searchAirportOptions(flightTo).map((a) => <option key={a.code + a.name} value={a.city + " (" + a.code + ")"}>{a.name}</option>)}</datalist>
                 </div>
 
                 {/* Departure Date */}
@@ -1026,11 +1028,11 @@ export function SupremeKingPayExperience() {
                     <Train className="size-4" /> Live IRCTC 10-Digit PNR Status
                   </span>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    Real chart status, coach &amp; berth allotment, and Tatkal waitlist confirmation
+                    Live PNR information appears only when supplied by the provider.
                   </p>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                  Official Indian Railways Standard
+                  Official IRCTC enquiry
                 </span>
               </div>
               <LivePnrStatusBar className="bg-transparent border-0 p-0 text-white" />
@@ -1045,17 +1047,8 @@ export function SupremeKingPayExperience() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-400">From Station</label>
-                  <select
-                    value={trainFrom}
-                    onChange={(e) => setTrainFrom(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
-                  >
-                    <option value="New Delhi (NDLS)">New Delhi (NDLS)</option>
-                    <option value="Mumbai Central (MMCT)">Mumbai Central (MMCT)</option>
-                    <option value="Howrah Jn (HWH)">Kolkata Howrah (HWH)</option>
-                    <option value="Chennai Central (MAS)">Chennai Central (MAS)</option>
-                    <option value="Bengaluru City (SBC)">Bengaluru City (SBC)</option>
-                  </select>
+                  <input type="text" aria-label="Search station or type station code" placeholder="Search station or type station code" autoComplete="off" list="trainFrom-suggestions" value={trainFrom} onChange={(e) => setTrainFrom(e.target.value)} className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none " />
+                    <datalist id="trainFrom-suggestions">{searchStationOptions(trainFrom).map((a) => <option key={a.code} value={a.name + " (" + a.code + ")"}>{a.city}</option>)}</datalist>
                 </div>
 
                 <div className="space-y-1">
@@ -1069,17 +1062,8 @@ export function SupremeKingPayExperience() {
                       <ArrowLeftRight className="size-3" /> Swap
                     </button>
                   </div>
-                  <select
-                    value={trainTo}
-                    onChange={(e) => setTrainTo(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
-                  >
-                    <option value="Varanasi Jn (BSB)">Varanasi Jn (BSB)</option>
-                    <option value="Ahmedabad Jn (ADI)">Ahmedabad Jn (ADI)</option>
-                    <option value="Mysuru Jn (MYS)">Mysuru Jn (MYS)</option>
-                    <option value="Kanpur Central (CNB)">Kanpur Central (CNB)</option>
-                    <option value="Patna Jn (PNBE)">Patna Jn (PNBE)</option>
-                  </select>
+                  <input type="text" aria-label="Search station or type station code" placeholder="Search station or type station code" autoComplete="off" list="trainTo-suggestions" value={trainTo} onChange={(e) => setTrainTo(e.target.value)} className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none " />
+                    <datalist id="trainTo-suggestions">{searchStationOptions(trainTo).map((a) => <option key={a.code} value={a.name + " (" + a.code + ")"}>{a.city}</option>)}</datalist>
                 </div>
 
                 <div className="space-y-1">
@@ -1105,13 +1089,18 @@ export function SupremeKingPayExperience() {
 
                 <div className="flex items-center gap-2">
                   <a
-                    href={`https://www.irctc.co.in/nget/train-search?from=${encodeURIComponent(trainFrom.match(/\(([A-Z0-9]+)\)/)?.[1] || "NDLS")}&to=${encodeURIComponent(trainTo.match(/\(([A-Z0-9]+)\)/)?.[1] || "BSB")}&date=${encodeURIComponent(trainDate)}`}
+                    href="https://www.irctc.co.in/nget/train-search"
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => {
-                      const fromC = trainFrom.match(/\(([A-Z0-9]+)\)/)?.[1] || "NDLS";
-                      const toC = trainTo.match(/\(([A-Z0-9]+)\)/)?.[1] || "BSB";
-                      toast.success(`Redirecting to official IRCTC portal for ${fromC} ➔ ${toC}...`);
+                    onClick={(event) => {
+                      const fromC = extractStationCode(trainFrom);
+                      const toC = extractStationCode(trainTo);
+                      if (!fromC || !toC || fromC === toC) {
+                        event.preventDefault();
+                        toast.error("Enter two different station codes or choose from suggestions.");
+                        return;
+                      }
+                      toast.info("Opening official IRCTC for " + fromC + " to " + toC + ". Verify stations/date on IRCTC.");
                     }}
                     className="flex-1 h-10 px-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:brightness-105 active:scale-95 transition no-underline cursor-pointer"
                   >
