@@ -206,53 +206,12 @@ export function TrainBookingEngine({
     window.open(officialPnrUrl, "_blank", "noopener,noreferrer");
   };
 
-  // Genuine trunk corridor schedules connecting major trunk sectors
-  const trunkCorridors = [
-    {
-      trainNumber: "20608",
-      trainName: "VANDE BHARAT EXPRESS",
-      type: "Semi-High Speed",
-      depTime: "06:00",
-      arrTime: "11:45",
-      duration: "5h 45m",
-      classes: ["CC", "EC"],
-      pantry: true,
-      serviceDays: "Daily except Wednesday",
-    },
-    {
-      trainNumber: "12952",
-      trainName: "MUMBAI TEJAS RAJDHANI",
-      type: "Superfast Rajdhani",
-      depTime: "16:55",
-      arrTime: "08:35 (+1)",
-      duration: "15h 40m",
-      classes: ["1A", "2A", "3A"],
-      pantry: true,
-      serviceDays: "Daily",
-    },
-    {
-      trainNumber: "12002",
-      trainName: "NEW DELHI SHATABDI",
-      type: "Superfast Shatabdi",
-      depTime: "06:15",
-      arrTime: "14:20",
-      duration: "8h 05m",
-      classes: ["CC", "EC"],
-      pantry: true,
-      serviceDays: "Daily",
-    },
-    {
-      trainNumber: "12628",
-      trainName: "KARNATAKA EXPRESS",
-      type: "Superfast Express",
-      depTime: "20:20",
-      arrTime: "13:40 (+1)",
-      duration: "17h 20m",
-      classes: ["1A", "2A", "3A", "SL"],
-      pantry: true,
-      serviceDays: "Daily",
-    },
-  ];
+  const irctcDirectSearchUrl = `${IRCTC_OFFICIAL_SEARCH_URL}?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&date=${encodeURIComponent(journeyDate)}`;
+
+  const handleCopySearchLink = () => {
+    navigator.clipboard.writeText(irctcDirectSearchUrl);
+    toast.success("Direct official IRCTC search link copied to clipboard!");
+  };
 
   return (
     <div className="space-y-6 text-slate-900">
@@ -388,9 +347,21 @@ export function TrainBookingEngine({
               Select Stations, Quota &amp; Journey Date
             </h3>
           </div>
-          <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start">
-            Authentic CRIS PRS Station Codes
-          </span>
+          <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+              Authentic CRIS PRS Station Codes
+            </span>
+            <a
+              href={irctcDirectSearchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => toast.success(`Redirecting to official IRCTC portal for ${fromCode} ➔ ${toCode}...`)}
+              className="h-8 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs inline-flex items-center gap-1.5 transition no-underline shadow-sm"
+            >
+              <span>Search on IRCTC</span>
+              <ExternalLink className="size-3" />
+            </a>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
@@ -577,6 +548,101 @@ export function TrainBookingEngine({
               <span>Tatkal Timings: 10:00 AM IST (AC) / 11:00 AM IST (Non-AC) on day prior</span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Primary Frictionless Action: Prominent Official IRCTC Handoff Card */}
+      <div className="rounded-3xl border-2 border-indigo-500/40 bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 p-6 sm:p-8 text-white shadow-xl space-y-6 relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                <ShieldCheck className="size-3.5" />
+                Primary Action: Official IRCTC Direct Handoff
+              </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                <Tag className="size-3" />
+                ₹0 OrderKing Booking Markup
+              </span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              <Train className="size-6 text-indigo-400" />
+              <span>Real-Time PRS Reservation ({fromCode} ➔ {toCode})</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              Real-time seat inventory, dynamic Tatkal quotas, waitlist status, and confirmed reservations are managed exclusively by Indian Railways PRS on the official IRCTC portal. OrderKing provides zero-friction direct handoff with ₹0 platform markup.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
+            <a
+              href={irctcDirectSearchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => toast.success(`Redirecting to official IRCTC NGeT portal for ${fromCode} ➔ ${toCode}...`)}
+              className="h-13 px-6 rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-black text-sm shadow-lg shadow-indigo-600/30 inline-flex items-center justify-center gap-2 transition no-underline"
+            >
+              <span>Search &amp; Book on Official IRCTC</span>
+              <ArrowRight className="size-4" />
+            </a>
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleCopySearchLink}
+                className="flex-1 rounded-xl border-white/20 bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold"
+              >
+                <ExternalLink className="size-3.5 mr-1 text-sky-300" /> Copy Search URL
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleCopyPassengerRoster}
+                className="flex-1 rounded-xl border-white/20 bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold"
+              >
+                <Copy className="size-3.5 mr-1 text-emerald-300" /> Copy Roster
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Query Parameters Strip */}
+        <div className="p-4 rounded-2xl bg-slate-950/80 border border-indigo-400/20 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <span className="font-mono text-slate-400 text-[11px]">
+              Direct Search Parameters:
+            </span>
+            <span className="font-bold text-amber-300 text-[11px]">
+              Class: {trainClass} · Quota: {quota} · Date: {journeyDate}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-2 bg-slate-900 px-3 py-2 rounded-xl border border-white/10 font-mono text-xs text-indigo-300 overflow-x-auto">
+            <span className="truncate">{irctcDirectSearchUrl}</span>
+            <button
+              type="button"
+              onClick={handleCopySearchLink}
+              className="text-[11px] text-white hover:text-indigo-200 font-sans font-bold underline shrink-0 ml-2"
+            >
+              Copy
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-slate-300 pt-1">
+            <div className="flex items-center gap-2">
+              <Clock className="size-3.5 text-amber-400 shrink-0" />
+              <span><strong>Tatkal AC:</strong> 10:00 AM IST Journey Eve</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="size-3.5 text-amber-400 shrink-0" />
+              <span><strong>Tatkal Non-AC:</strong> 11:00 AM IST Journey Eve</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
+              <span><strong>Charting:</strong> 4h &amp; 30m prior to departure</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -809,110 +875,6 @@ export function TrainBookingEngine({
             </div>
           </div>
         )}
-      </div>
-
-      {/* Authentic Trunk Corridors & Schedule Reference */}
-      <div className="space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-              <span>Trunk Express Corridors ({fromCode} ➔ {toCode})</span>
-              <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-                Authentic Indian Railways Timetable
-              </span>
-            </h3>
-            <p className="text-xs text-slate-500 font-medium">
-              Real-time seat allocation, dynamic fare surcharges, and Tatkal windows are governed exclusively by CRIS PRS servers on IRCTC.
-            </p>
-          </div>
-          <span className="text-xs text-slate-600 font-bold">
-            Zero Platform Convenience Fee
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3.5">
-          {trunkCorridors.map((train) => (
-            <div
-              key={train.trainNumber}
-              className="rounded-3xl border border-slate-200 bg-white p-5 hover:border-indigo-400 hover:shadow-md transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-4"
-            >
-              <div className="flex-1 space-y-2.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-black px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 font-mono">
-                    {train.trainNumber}
-                  </span>
-                  <span className="text-xs font-extrabold text-slate-900">
-                    {train.trainName}
-                  </span>
-                  <span className="text-[11px] text-slate-400">·</span>
-                  <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                    {train.type}
-                  </span>
-                  <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
-                    Classes: {train.classes.join(", ")}
-                  </span>
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                    {train.serviceDays}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-5 text-sm">
-                  <div>
-                    <span className="text-xl font-black font-mono text-slate-900 block">{train.depTime}</span>
-                    <span className="text-xs text-slate-500 font-bold">{fromCode}</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-[10px] text-slate-400 font-bold">{train.duration}</span>
-                    <div className="w-20 h-0.5 bg-slate-200 relative my-1">
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 size-1.5 bg-indigo-500 rounded-full" />
-                    </div>
-                    <span className="text-[10px] font-bold text-indigo-600">Superfast</span>
-                  </div>
-                  <div>
-                    <span className="text-xl font-black font-mono text-slate-900 block">{train.arrTime}</span>
-                    <span className="text-xs text-slate-500 font-bold">{toCode}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 border-t border-slate-100 pt-2">
-                  <span className="flex items-center gap-1">
-                    <Utensils className="size-3.5 text-slate-400" />
-                    {train.pantry ? "Pantry Car & Catering Available" : "Pack Meals en route"}
-                  </span>
-                  <span className="flex items-center gap-1 text-slate-600">
-                    <ShieldCheck className="size-3.5 text-emerald-600" />
-                    Live PRS Seat Availability on Official IRCTC
-                  </span>
-                </div>
-              </div>
-
-              <div className="md:border-l md:border-slate-100 md:pl-6 flex flex-row md:flex-col items-end justify-between md:justify-center gap-2.5 shrink-0">
-                <div className="text-right">
-                  <span className="text-xs font-black text-slate-900 block">
-                    Official IRCTC Tariff
-                  </span>
-                  <span className="text-[11px] text-emerald-700 font-bold block">
-                    ₹0 OrderKing Booking Fee
-                  </span>
-                  <span className="text-[10px] text-slate-400 block">
-                    Save ₹40 Agent Fee vs 3rd Parties
-                  </span>
-                </div>
-
-                <a
-                  href={`${IRCTC_OFFICIAL_SEARCH_URL}?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&date=${encodeURIComponent(journeyDate)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => toast.success(`Handoff to IRCTC NGeT portal for train ${train.trainNumber}...`)}
-                  className="h-10 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md shadow-indigo-600/20 inline-flex items-center gap-1.5 no-underline transition"
-                >
-                  <span>Book on IRCTC</span>
-                  <ExternalLink className="size-3.5" />
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Official Indian Railways PNR Status & CRIS NTES Live Tracking Strip */}

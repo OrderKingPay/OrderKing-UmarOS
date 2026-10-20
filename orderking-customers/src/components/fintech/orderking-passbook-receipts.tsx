@@ -47,7 +47,15 @@ export function OrderKingPassbookReceipts({
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
-            setEntries(parsed);
+            // Strict Fintech Audit: Sanitize any synthetic train receipts, fake refund credits, or fabricated records
+            const sanitized = parsed.filter((e: LedgerEntry) => {
+              const memo = (e.memo || "").toLowerCase();
+              if (memo.includes("mock") || memo.includes("synthetic") || memo.includes("fake") || memo.includes("ok-tr-")) {
+                return false;
+              }
+              return true;
+            });
+            setEntries(sanitized);
           }
         }
       }

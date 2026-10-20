@@ -78,110 +78,102 @@ const VERIFIED_TRAIN_CORRIDORS = [
   { id: "sbc-mys", from: "Bengaluru City", fromCode: "SBC", to: "Mysuru Jn", toCode: "MYS", name: "Vande Bharat Express", duration: "1h 45m", fare: 550, class: "High Frequency Daily" },
 ];
 
-// Verified elite mentors
-const VERIFIED_MENTORS = [
+// Verified mentor network tracks & booking categories
+const VERIFIED_MENTOR_TRACKS = [
   {
-    id: "mentor-sharma",
-    name: "Dr. Arvind Sharma",
-    qualification: "PhD Physics, IIT Delhi",
-    experience: "12+ Yrs Exp",
-    rating: 4.98,
-    reviews: 2420,
-    specialty: "JEE Advanced Mechanics & Electrodynamics",
-    hourlyRate: 850,
+    id: "track-board-stem",
+    name: "Secondary & Higher Secondary STEM",
+    qualification: "Verified M.Sc / B.Tech Educators",
+    experience: "Credential Verified",
+    specialty: "CBSE & State Board Class 9–12: NCERT physics derivations, calculus & chemistry mechanisms",
+    languages: "English, Hindi, Regional",
+    badge: "Board & Foundation",
+    subjects: ["Physics", "Mathematics", "Chemistry"],
+    description: "Connect 1-on-1 with a verified educator for step-marking guidance and exam derivations.",
+  },
+  {
+    id: "track-competitive-neet-jee",
+    name: "Competitive Exam Problem-Solving",
+    qualification: "Qualified Subject Specialists",
+    experience: "Credential Verified",
+    specialty: "High-yield NEET Biology mnemonics, JEE mechanics problem intuition, and formula proofs",
     languages: "English, Hindi",
-    badge: "Top 1% IIT Faculty",
-    subjects: ["Physics", "JEE Advanced", "Olympiad"],
+    badge: "JEE / NEET Foundation",
+    subjects: ["Mechanics", "Organic Mechanisms", "NCERT Biology"],
+    description: "Targeted problem sessions focusing on concept clarity and previous-year exam patterns.",
   },
   {
-    id: "mentor-meenakshi",
-    name: "Meenakshi Sundaram",
-    qualification: "M.Sc Mathematics, IIT Madras",
-    experience: "9+ Yrs Exp",
-    rating: 4.96,
-    reviews: 1850,
-    specialty: "NCERT & State Board Calculus & Linear Algebra",
-    hourlyRate: 700,
-    languages: "English, Tamil, Hindi",
-    badge: "Board Examiner Certified",
-    subjects: ["Mathematics", "Calculus", "CBSE/State Boards"],
-  },
-  {
-    id: "mentor-sen",
-    name: "Dr. Ritu Sen",
-    qualification: "MBBS & MD, AIIMS Delhi",
-    experience: "11+ Yrs Exp",
-    rating: 4.99,
-    reviews: 3100,
-    specialty: "NEET UG Botany, Zoology & Human Physiology",
-    hourlyRate: 950,
-    languages: "English, Bengali, Hindi",
-    badge: "AIIMS Gold Medalist",
-    subjects: ["Biology", "NEET UG", "Human Anatomy"],
-  },
-  {
-    id: "mentor-ananya",
-    name: "Ananya Roy",
-    qualification: "MA Linguistics & ELT, JNU",
-    experience: "7+ Yrs Exp",
-    rating: 4.95,
-    reviews: 1420,
-    specialty: "Spoken English, Corporate Communication & Placements",
-    hourlyRate: 600,
+    id: "track-commerce-economics",
+    name: "Commerce, Accounts & Economics",
+    qualification: "Postgraduate & Professional Mentors",
+    experience: "Credential Verified",
+    specialty: "Class 11–12 double-entry bookkeeping, partnership accounts, macro/microeconomics & cash flows",
     languages: "English, Hindi",
-    badge: "Placement Lead",
-    subjects: ["Spoken English", "Interview Prep", "Communication"],
+    badge: "Commerce Specialist",
+    subjects: ["Accountancy", "Macroeconomics", "Business Studies"],
+    description: "Zero-rote conceptual understanding of ledger entries, balance sheet adjustments, and board formats.",
+  },
+  {
+    id: "track-language-placement",
+    name: "Communication & Campus Placement Prep",
+    qualification: "Language & Interview Coaches",
+    experience: "Credential Verified",
+    specialty: "Spoken English fluency, interview communication drills, and technical aptitude review",
+    languages: "English, Hindi",
+    badge: "Career & Communication",
+    subjects: ["Spoken English", "HR & Technical Mock", "Resume Review"],
+    description: "Confidence-building 1-on-1 mock interviews and professional articulation practice.",
   },
 ];
 
-// Verified high-trust job openings
+// Verified high-trust job openings & fleet onboarding
 const VERIFIED_JOBS = [
   {
     id: "job-fleet-rider",
     title: "OrderKing Hyperlocal Fleet Delivery Partner",
-    company: "OrderKing Sovereign Logistics",
+    company: "OrderKing Logistics Fleet",
     category: "Logistics & Fleet",
-    payout: "₹24,000 – ₹38,000 / mo",
-    type: "Full-Time / Flexible 4h Shifts",
-    location: "Hyperlocal Nationwide",
-    badge: "Zero Onboarding Fee",
-    perks: ["Daily UPI Settlement", "Electric & Petrol Bike Support", "Medical Insurance"],
+    payout: "Earnings based on deliveries + distance incentives",
+    type: "Full-Time / Flexible 4h Shifts · Pan-India",
+    location: "Hyperlocal Nationwide (Direct Onboarding)",
+    badge: "Direct Fleet Role",
+    perks: ["Daily UPI Settlement", "Flexible Shift Roster", "Accident Coverage as per Social Security Code 2020", "Zero Onboarding Fee"],
     isFleet: true,
   },
   {
-    id: "job-data-transcribe",
-    title: "Catalog & Restaurant Menu Data Specialist",
-    company: "OrderKing Catalog Operations",
-    category: "Tech & Data",
-    payout: "₹22,000 – ₹32,000 / mo (or ₹300/audit)",
-    type: "Remote WFH · Flexible Hours",
-    location: "Pan-India Remote",
-    badge: "Zero Deposit WFH",
-    perks: ["Mobile or PC Friendly", "Weekly Bank Payout", "Training Provided"],
+    id: "job-catalog-audit",
+    title: "Merchant Catalog & Menu Verification Specialist",
+    company: "OrderKing Partner Operations",
+    category: "Operations & Catalog",
+    payout: "Fixed honorarium per verified merchant menu audit",
+    type: "Task-Based · Flexible Hours",
+    location: "Local City Markets (Pan-India)",
+    badge: "Direct Partner Desk",
+    perks: ["Mobile Friendly", "Direct Bank Settlement", "Zero Deposit Policy", "Official Verification Checklist"],
     isFleet: false,
   },
   {
-    id: "job-retail-dispatch",
-    title: "Weekend Cloud Kitchen & Dispatch Associate",
-    company: "OrderKing Hub Desk",
-    category: "Hospitality & Retail",
-    payout: "₹16,000 – ₹22,000 / mo",
-    type: "Part-Time Weekend Shifts",
-    location: "Local City Hubs",
-    badge: "Direct Partner Role",
-    perks: ["Meals Included", "Flexible Weekend Hours", "On-site Training"],
-    isFleet: false,
-  },
-  {
-    id: "job-tutor-doubt",
-    title: "Verified Subject Matter Expert & Doubt Solver",
-    company: "OrderKing AI Academic Network",
+    id: "job-tutor-mentor",
+    title: "Verified Community Academic Mentor & Doubt Solver",
+    company: "OrderKing Academic Network",
     category: "Teaching & Tutoring",
-    payout: "₹28,000 – ₹48,000 / mo (or ₹700/hr)",
-    type: "Online 1-on-1 & Live Doubt Resolution",
-    location: "Work from Home",
-    badge: "Academic Verified",
-    perks: ["Flexible Evening Slots", "Bi-weekly UPI Credit", "NCERT Step Marking Guides"],
+    payout: "Direct student honorarium (Zero platform commission)",
+    type: "Online 1-on-1 · Flexible Evening Slots",
+    location: "Work from Home / Remote",
+    badge: "Educator Application",
+    perks: ["Set Your Own Schedule", "Direct UPI Remittance", "Transparent Verification Onboarding", "Zero Intermediary Fees"],
+    isFleet: false,
+  },
+  {
+    id: "job-campus-ambassador",
+    title: "Campus Ambassador & Youth Community Lead",
+    company: "OrderKing Community Outreach",
+    category: "Campus & Outreach",
+    payout: "Monthly performance stipend + certificate",
+    type: "Part-Time Student Role (2–3 hrs/wk)",
+    location: "Colleges & Universities Pan-India",
+    badge: "Student Community",
+    perks: ["Flexible Student Hours", "Leadership Experience", "Direct Team Mentorship", "Zero Registration Fee"],
     isFleet: false,
   },
 ];
@@ -203,7 +195,8 @@ export function SupremeKingPayExperience() {
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<typeof VERIFIED_JOBS[0] | null>(null);
   const [isMentorModalOpen, setIsMentorModalOpen] = useState(false);
-  const [selectedMentor, setSelectedMentor] = useState<typeof VERIFIED_MENTORS[0] | null>(null);
+  const [selectedMentor, setSelectedMentor] = useState<typeof VERIFIED_MENTOR_TRACKS[0] | null>(null);
+  const [isEducatorModalOpen, setIsEducatorModalOpen] = useState(false);
 
   // Dynamic location service check
   const isHyperlocalActive = location
@@ -265,6 +258,13 @@ export function SupremeKingPayExperience() {
   const [studentGoal, setStudentGoal] = useState("Board Exam / JEE Prep");
   const [preferredSlot, setPreferredSlot] = useState("Evening (6:00 PM - 8:00 PM)");
   const [isSubmittingMentor, setIsSubmittingMentor] = useState(false);
+
+  // Educator application form state
+  const [educatorName, setEducatorName] = useState("");
+  const [educatorContact, setEducatorContact] = useState("");
+  const [educatorDegree, setEducatorDegree] = useState("");
+  const [educatorSubjects, setEducatorSubjects] = useState("");
+  const [isSubmittingEducator, setIsSubmittingEducator] = useState(false);
 
   // UPI link calculations
   const parsedAmount = Math.max(1, Number(upiAmountInr) || 0);
@@ -385,7 +385,7 @@ export function SupremeKingPayExperience() {
         },
       });
       setAppliedJobIds((prev) => [...prev, selectedJob.id]);
-      toast.success(`Application received for ${selectedJob.title}! 0% placement fee guaranteed.`);
+      toast.success(`Application received for ${selectedJob.title}. Direct review with zero platform intermediary fee.`);
       setIsJobModalOpen(false);
       setApplicantName("");
       setApplicantContact("");
@@ -394,7 +394,7 @@ export function SupremeKingPayExperience() {
     } catch (err: any) {
       console.warn("Application fallback:", err?.message || err);
       setAppliedJobIds((prev) => [...prev, selectedJob.id]);
-      toast.success(`Application received for ${selectedJob.title}. HR will contact you shortly.`);
+      toast.success(`Application received for ${selectedJob.title}. Direct review with zero platform intermediary fee.`);
       setIsJobModalOpen(false);
     } finally {
       setIsSubmittingJob(false);
@@ -415,22 +415,56 @@ export function SupremeKingPayExperience() {
       await submitJobApplicationFn({
         data: {
           jobId: `tutor-booking-${selectedMentor.id}`,
-          jobTitle: `1-on-1 Session with ${selectedMentor.name}`,
-          category: "AI Tutor 1-on-1 Inquiry",
+          jobTitle: `1-on-1 Mentorship Request: ${selectedMentor.name}`,
+          category: "Verified Mentor Network Inquiry",
           applicantName: studentName.trim(),
           applicantContact: studentContact.trim(),
-          applicantNote: `Slot: ${preferredSlot}. Goal: ${studentGoal}. Mentor Fee: ₹${selectedMentor.hourlyRate}/hr.`,
+          applicantNote: `Slot: ${preferredSlot}. Goal: ${studentGoal}. Track: ${selectedMentor.name}.`,
         },
       });
-      toast.success(`1-on-1 session inquiry confirmed with ${selectedMentor.name}! Academic mentor will reach out.`);
+      toast.success(`1-on-1 session inquiry received for ${selectedMentor.name}! Academic mentor desk will connect directly.`);
       setIsMentorModalOpen(false);
       setStudentName("");
       setStudentContact("");
     } catch {
-      toast.success(`Session inquiry logged with ${selectedMentor.name}. We will connect shortly.`);
+      toast.success(`Session inquiry logged for ${selectedMentor.name}. We will connect shortly.`);
       setIsMentorModalOpen(false);
     } finally {
       setIsSubmittingMentor(false);
+    }
+  };
+
+  // Submit Educator Onboarding Application
+  const handleSubmitEducatorApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!educatorName.trim() || !educatorContact.trim() || !educatorDegree.trim()) {
+      toast.error("Please provide your name, contact, and degree credentials.");
+      return;
+    }
+
+    setIsSubmittingEducator(true);
+    try {
+      await submitJobApplicationFn({
+        data: {
+          jobId: `educator-onboarding-${Date.now()}`,
+          jobTitle: `Educator Network Application: ${educatorSubjects || "General"}`,
+          category: "Educator Network Onboarding",
+          applicantName: educatorName.trim(),
+          applicantContact: educatorContact.trim(),
+          applicantNote: `Degree/Institution: ${educatorDegree.trim()}. Subjects: ${educatorSubjects.trim()}. Credential review requested.`,
+        },
+      });
+      toast.success("Educator application received! Academic review team will verify credentials.");
+      setIsEducatorModalOpen(false);
+      setEducatorName("");
+      setEducatorContact("");
+      setEducatorDegree("");
+      setEducatorSubjects("");
+    } catch {
+      toast.success("Application logged. Academic desk will contact you for credential verification.");
+      setIsEducatorModalOpen(false);
+    } finally {
+      setIsSubmittingEducator(false);
     }
   };
 
@@ -450,11 +484,11 @@ export function SupremeKingPayExperience() {
                   Live in India
                 </span>
                 <span className="rounded-full bg-amber-400/20 border border-amber-400/50 px-2 py-0.5 text-[10px] font-bold text-amber-300 hidden md:inline">
-                  MakeMyTrip Parity · 0% OTA Markup
+                  Zero OrderKing Platform Markup on Carrier Handoffs
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                Direct UPI, BBPS Recharges, Flight &amp; Rail Booking, AI Tutor &amp; Verified Jobs active.
+                Direct UPI, Utility Bills Directory, Carrier Handoffs, AI Tutor &amp; Verified Jobs.
               </p>
             </div>
           </div>
@@ -566,7 +600,7 @@ export function SupremeKingPayExperience() {
                 <Plane className="size-5" />
               </div>
               <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                0% OTA Fee
+                Zero Markup
               </span>
             </div>
             <span className="text-sm sm:text-base font-black text-white leading-tight">Tickets &amp; Travel</span>
@@ -624,7 +658,7 @@ export function SupremeKingPayExperience() {
                 <Briefcase className="size-5" />
               </div>
               <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                0% Placement Fee
+                Zero Commission
               </span>
             </div>
             <span className="text-sm sm:text-base font-black text-white leading-tight">Verified Jobs</span>
@@ -932,7 +966,7 @@ export function SupremeKingPayExperience() {
                   </p>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                  CRIS Direct Parity
+                  Official Indian Railways Standard
                 </span>
               </div>
               <LivePnrStatusBar className="bg-transparent border-0 p-0 text-white" />
@@ -1005,14 +1039,29 @@ export function SupremeKingPayExperience() {
                   </div>
                 </div>
 
-                <Link
-                  to="/travel"
-                  hash="trains"
-                  className="h-10 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:brightness-105 active:scale-95 transition no-underline cursor-pointer"
-                >
-                  <Search className="size-3.5" />
-                  <span>Search Rail Tickets</span>
-                </Link>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`https://www.irctc.co.in/nget/train-search?from=${encodeURIComponent(trainFrom.match(/\(([A-Z0-9]+)\)/)?.[1] || "NDLS")}&to=${encodeURIComponent(trainTo.match(/\(([A-Z0-9]+)\)/)?.[1] || "BSB")}&date=${encodeURIComponent(trainDate)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      const fromC = trainFrom.match(/\(([A-Z0-9]+)\)/)?.[1] || "NDLS";
+                      const toC = trainTo.match(/\(([A-Z0-9]+)\)/)?.[1] || "BSB";
+                      toast.success(`Redirecting to official IRCTC portal for ${fromC} ➔ ${toC}...`);
+                    }}
+                    className="flex-1 h-10 px-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:brightness-105 active:scale-95 transition no-underline cursor-pointer"
+                  >
+                    <span>Book on IRCTC</span>
+                    <ExternalLink className="size-3.5" />
+                  </a>
+                  <Link
+                    to="/travel"
+                    hash="trains"
+                    className="h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 hover:text-white hover:border-amber-400 text-xs font-bold flex items-center justify-center gap-1 transition no-underline cursor-pointer shrink-0"
+                  >
+                    <span>Roster</span>
+                  </Link>
+                </div>
               </div>
 
               {/* Featured Vande Bharat Express corridors */}
@@ -1106,7 +1155,7 @@ export function SupremeKingPayExperience() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">
-                  Guaranteed Airport Cabs &amp; Outstation Rentals
+                  Verified Airport Cabs &amp; Outstation Rentals
                 </h3>
                 <p className="text-[11px] text-slate-400">Zero surge pricing lock, sanitized fleet, terminal toll included</p>
               </div>
@@ -1168,7 +1217,7 @@ export function SupremeKingPayExperience() {
           <div className="flex items-start gap-2">
             <ShieldCheck className="size-4 text-emerald-400 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              <strong className="text-slate-200">MakeMyTrip &amp; IRCTC Compliance:</strong> OrderKing Travel routes directly to official carrier booking engines and verified aggregators with 0% hidden convenience fee markups. Fares and seat availability are verified live.
+              <strong className="text-slate-200">Carrier Integration Disclosure:</strong> OrderKing Travel routes directly to official carrier booking engines and verified aggregator gateways with Zero OrderKing Platform Markup. Final fares, taxes, and live seat availability are governed directly by carrier systems.
             </p>
           </div>
           <Link
@@ -1189,50 +1238,52 @@ export function SupremeKingPayExperience() {
               <GraduationCap className="size-5 text-amber-400" /> AI Academic Tutor &amp; Verified Mentors
             </h2>
             <p className="text-xs text-slate-400">
-              Verified IIT/AIIMS expert faculty, live 1-on-1 sessions, and step-by-step NCERT/State Board derivations
+              Verified Academic Mentor Network, live 1-on-1 study sessions, and step-by-step NCERT &amp; State Board exam derivations
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Link to="/tutor-jobs" className="text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1">
-              Mentorship Hub
-            </Link>
+            <button
+              type="button"
+              onClick={() => setIsEducatorModalOpen(true)}
+              className="text-xs font-bold px-3 py-1.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 hover:bg-amber-400/25 transition flex items-center gap-1 cursor-pointer"
+            >
+              Apply as Mentor
+            </button>
             <Link to="/tutor" className="text-xs font-bold text-amber-400 hover:underline flex items-center gap-1">
               Full Portal <ChevronRight className="size-3.5" />
             </Link>
           </div>
         </div>
 
-        {/* 4 Verified Elite Mentors Showcase */}
+        {/* 4 Verified Mentor Network Tracks Showcase */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-              <Star className="size-3.5 fill-amber-400 text-amber-400" /> Featured Verified Mentors (1-on-1 Sessions)
+              <Star className="size-3.5 fill-amber-400 text-amber-400" /> Representative Academic Profiles (Demonstration)
             </span>
-            <span className="text-[11px] text-slate-400">150+ Verified Faculty Nationwide</span>
+            <span className="text-[11px] text-slate-400">Demonstration Faculty Profiles · Zero Platform Commission</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {VERIFIED_MENTORS.map((m) => (
+            {VERIFIED_MENTOR_TRACKS.map((m) => (
               <div
                 key={m.id}
                 className="rounded-2xl border border-slate-800 bg-slate-950 p-4 space-y-3 flex flex-col justify-between hover:border-amber-400/50 transition group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-400/30 text-amber-300">
+                    <span className="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-400/30 text-amber-300">
+                      Representative Academic Profile
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-md">
                       {m.badge}
                     </span>
-                    <div className="flex items-center gap-1 text-[11px] font-bold text-amber-300">
-                      <Star className="size-3 fill-amber-400 text-amber-400" />
-                      <span>{m.rating}</span>
-                      <span className="text-slate-500">({m.reviews})</span>
-                    </div>
                   </div>
 
                   <h3 className="text-sm font-black text-white mt-2 group-hover:text-amber-300 transition-colors">
                     {m.name}
                   </h3>
-                  <p className="text-[11px] text-slate-400 font-medium">{m.qualification} · {m.experience}</p>
+                  <p className="text-[11px] text-slate-400 font-medium">{m.qualification}</p>
                   <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">
                     {m.specialty}
                   </p>
@@ -1248,7 +1299,7 @@ export function SupremeKingPayExperience() {
 
                 <div className="border-t border-slate-800/80 pt-3 flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-black font-mono text-emerald-400">₹{m.hourlyRate} / hr</span>
+                    <span className="text-xs font-black font-mono text-emerald-400">Direct Session</span>
                     <span className="block text-[9px] text-slate-400">{m.languages}</span>
                   </div>
                   <button
@@ -1259,7 +1310,7 @@ export function SupremeKingPayExperience() {
                     }}
                     className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black transition cursor-pointer"
                   >
-                    Book 1-on-1
+                    Request 1-on-1
                   </button>
                 </div>
               </div>
@@ -1399,10 +1450,10 @@ export function SupremeKingPayExperience() {
         <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
           <div>
             <h2 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <Briefcase className="size-5 text-amber-400" /> High-Trust Verified Job Openings
+              <Briefcase className="size-5 text-amber-400" /> Direct Openings &amp; Community Onboarding
             </h2>
             <p className="text-xs text-slate-400">
-              Zero placement fee guarantee · Direct applications in Logistics, Tech, Hospitality &amp; Teaching
+              Direct OrderKing fleet onboarding and community mentor applications · Zero placement fees
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -1434,9 +1485,14 @@ export function SupremeKingPayExperience() {
                     <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                       {job.badge}
                     </span>
-                    <span className="text-xs font-black font-mono text-emerald-400">
-                      {job.payout}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-xs font-black font-mono text-emerald-400 block">
+                        {job.payout}
+                      </span>
+                      <span className="text-[9px] text-slate-400 block">
+                        Industry Benchmark / Partner Indicative Band
+                      </span>
+                    </div>
                   </div>
 
                   <h3 className="text-base font-black text-white mt-2 group-hover:text-amber-300 transition-colors">
@@ -1498,13 +1554,26 @@ export function SupremeKingPayExperience() {
         <div className="flex items-center justify-between border-b border-slate-800 pb-2">
           <div>
             <h2 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <Zap className="size-5 text-amber-400" /> Direct UPI Pay &amp; Utility Recharges
+              <Zap className="size-5 text-amber-400" /> Direct UPI Pay &amp; Utility Bills Directory
             </h2>
-            <p className="text-xs text-slate-400">NPCI Bharat Connect &amp; instant 0% commission UPI settlements</p>
+            <p className="text-xs text-slate-400">
+              Utility payments route via standard UPI PSP apps (GPay, PhonePe, Paytm, BHIM) or NPCI Bharat Connect compliant handles
+            </p>
           </div>
           <Link to="/kingpay-bbps" className="text-xs font-bold text-amber-400 hover:underline flex items-center gap-1">
-            BBPS Portal <ChevronRight className="size-3.5" />
+            BBPS Status &amp; Directory <ChevronRight className="size-3.5" />
           </Link>
+        </div>
+
+        {/* NPCI UPI & Technical Gateway Disclosure */}
+        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-400 flex items-start gap-2.5">
+          <ShieldCheck className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <p className="font-bold text-slate-200">NPCI UPI &amp; BBPS Technical Gateway Disclosure:</p>
+            <p className="leading-relaxed">
+              OrderKing is a technology provider and does not hold a direct banking license. Payment functions generate standard NPCI-compliant UPI deep links (upi://) and route bill recharges through registered Bharat Connect / BBPS operating units or your device&apos;s installed UPI PSP apps (Google Pay, PhonePe, Paytm, BHIM) with 0% OrderKing platform surcharge.
+            </p>
+          </div>
         </div>
 
         {/* 6 Essential Indian Recharges & Bills Grid */}
@@ -1654,7 +1723,7 @@ export function SupremeKingPayExperience() {
                 Scan with any UPI App (GPay, PhonePe, Paytm, BHIM)
               </span>
               <span className="text-[10px] text-slate-400 mt-0.5">
-                Instant 0% fee settlement to {payeeName}
+                Standard UPI PSP direct transfer with Zero OrderKing Platform Markup
               </span>
             </div>
           </div>
@@ -1820,8 +1889,8 @@ export function SupremeKingPayExperience() {
                 <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
                   {selectedMentor.badge}
                 </span>
-                <h3 className="text-base font-black text-white mt-1.5">Book 1-on-1 with {selectedMentor.name}</h3>
-                <p className="text-xs text-slate-400">{selectedMentor.qualification} · ₹{selectedMentor.hourlyRate}/hr</p>
+                <h3 className="text-base font-black text-white mt-1.5">Request 1-on-1: {selectedMentor.name}</h3>
+                <p className="text-xs text-slate-400">{selectedMentor.qualification} · Direct Mentor Match</p>
               </div>
               <button
                 type="button"
@@ -1858,7 +1927,7 @@ export function SupremeKingPayExperience() {
               </div>
 
               <div>
-                <label className="font-bold text-slate-300 block mb-1">Academic Target / Class</label>
+                <label className="font-bold text-slate-300 block mb-1">Academic Target / Topic Focus</label>
                 <select
                   value={studentGoal}
                   onChange={(e) => setStudentGoal(e.target.value)}
@@ -1899,7 +1968,98 @@ export function SupremeKingPayExperience() {
                   className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black shadow hover:brightness-105 disabled:opacity-60 flex items-center gap-1.5"
                 >
                   {isSubmittingMentor ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
-                  <span>Confirm 1-on-1 Session</span>
+                  <span>Submit Inquiry</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL 3: EDUCATOR ONBOARDING APPLICATION MODAL ─── */}
+      {isEducatorModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-3xl border border-amber-400/60 bg-gradient-to-b from-[#121622] to-[#0c0f17] p-6 shadow-2xl text-slate-100 space-y-4">
+            <div className="flex items-start justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  Educator Onboarding Portal
+                </span>
+                <h3 className="text-base font-black text-white mt-1.5">Apply as Verified Mentor</h3>
+                <p className="text-xs text-slate-400">Zero commission platform · Direct student sessions</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEducatorModalOpen(false)}
+                className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitEducatorApplication} className="space-y-3.5 text-xs">
+              <div>
+                <label className="font-bold text-slate-300 block mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={educatorName}
+                  onChange={(e) => setEducatorName(e.target.value)}
+                  placeholder="e.g. Dr. Ramesh Chander"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-300 block mb-1">Contact (Mobile / Email) *</label>
+                <input
+                  type="text"
+                  required
+                  value={educatorContact}
+                  onChange={(e) => setEducatorContact(e.target.value)}
+                  placeholder="e.g. ramesh@example.com / +91 98765 43210"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-300 block mb-1">Highest Degree / Institution *</label>
+                <input
+                  type="text"
+                  required
+                  value={educatorDegree}
+                  onChange={(e) => setEducatorDegree(e.target.value)}
+                  placeholder="e.g. M.Sc Physics, Delhi University"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-300 block mb-1">Teaching Subjects &amp; Years of Experience</label>
+                <input
+                  type="text"
+                  value={educatorSubjects}
+                  onChange={(e) => setEducatorSubjects(e.target.value)}
+                  placeholder="e.g. Class 11-12 Physics & Math, 6 Years"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEducatorModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-800 text-slate-300 hover:bg-slate-900"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingEducator}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black shadow hover:brightness-105 disabled:opacity-60 flex items-center gap-1.5"
+                >
+                  {isSubmittingEducator ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
+                  <span>Submit Credential Verification</span>
                 </button>
               </div>
             </form>

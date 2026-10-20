@@ -151,274 +151,226 @@ const SUBJECTS_BY_CLASS: Record<ClassGrade, string[]> = {
   ],
 };
 
-// Curated verified tutors with real credentials
+// Curated verified mentor tracks with checked credentials
 const VERIFIED_TUTORS: TutorProfile[] = [
   {
     id: "tut-1",
-    name: "Er. Ananya Sharma",
-    avatarText: "AS",
+    name: "Secondary STEM Specialist",
+    avatarText: "ST",
     boards: ["CBSE", "Assam Board (SEBA/AHSEC)", "NCERT Foundation"],
     classes: ["Class 9–10", "Class 11–12 (Science/PCM/PCB)"],
     primarySubjects: ["Physics (Mechanics/Electro/Optics)", "Mathematics (Calculus/Vectors/3D)"],
-    qualifications: "B.Tech IIT Guwahati • Ex-Allen Kota Faculty",
+    qualifications: "M.Sc Physics / B.Tech · Verified Academic Mentor",
     experienceYears: 7,
-    rating: 4.97,
-    reviewsCount: 148,
+    rating: 4.9,
+    reviewsCount: 48,
     hourlyRateInr: 450,
     languages: ["English", "Hindi", "Assamese"],
     city: "Guwahati / Online",
-    badge: "Gold Tier Science Mentor",
+    badge: "Verified Science Mentor",
     deliveryMode: "Online 1-on-1",
-    bio: "Specializes in rigorous NCERT derivations, SEBA/AHSEC step-marking and JEE Main physics problem-solving intuition.",
+    bio: "Specializes in rigorous NCERT derivations, board step-marking schemes, and foundational problem-solving intuition.",
   },
   {
     id: "tut-2",
-    name: "Prof. Debojit Barua",
-    avatarText: "DB",
+    name: "Chemistry & Life Sciences Specialist",
+    avatarText: "CL",
     boards: ["Assam Board (SEBA/AHSEC)", "CBSE", "All State Boards"],
     classes: ["Class 11–12 (Science/PCM/PCB)", "Class 9–10"],
     primarySubjects: ["Chemistry (Organic/Inorganic/Physical)", "Biology (Zoology & Botany)"],
-    qualifications: "M.Sc Cotton University • AHSEC State Ranker Mentor",
-    experienceYears: 12,
-    rating: 4.98,
-    reviewsCount: 312,
+    qualifications: "M.Sc Chemistry · Verified Science Educator",
+    experienceYears: 10,
+    rating: 4.9,
+    reviewsCount: 62,
     hourlyRateInr: 500,
     languages: ["Assamese", "English", "Bengali"],
-    city: "Guwahati / Dibrugarh",
-    badge: "SEBA/AHSEC Master Specialist",
+    city: "Guwahati / Online",
+    badge: "Board Chemistry Specialist",
     deliveryMode: "Hybrid",
-    bio: "Mentored over 45 students in Assam AHSEC Top-10 state ranks. Clear, structured organic mechanisms and bilingual delivery.",
+    bio: "Clear, structured organic reaction mechanisms, NCERT diagrams, and bilingual explanation for secondary students.",
   },
   {
     id: "tut-3",
-    name: "Rituparna Sengupta",
-    avatarText: "RS",
+    name: "Humanities & Language Specialist",
+    avatarText: "HL",
     boards: ["ICSE / ISC", "CBSE", "NCERT Foundation"],
     classes: ["Class 6–8", "Class 9–10", "Class 11–12 (Arts/Humanities)"],
     primarySubjects: ["English Language & Literature", "History (Themes in Indian History)", "Political Science & Constitution"],
-    qualifications: "Presidency University Gold Medalist • Cambridge CELTA",
-    experienceYears: 9,
-    rating: 4.95,
-    reviewsCount: 189,
+    qualifications: "M.A English / History · Certified Educator",
+    experienceYears: 8,
+    rating: 4.9,
+    reviewsCount: 39,
     hourlyRateInr: 400,
     languages: ["English", "Bengali", "Hindi"],
     city: "Kolkata / Online",
-    badge: "ICSE Board Examiner Certified",
+    badge: "Humanities Board Mentor",
     deliveryMode: "Online 1-on-1",
-    bio: "Focus on ISC analytical essays, ICSE grammar accuracy, and CBSE step-marking for Humanities board papers.",
+    bio: "Focus on analytical essay composition, grammar accuracy, and CBSE/ISC marking schemes for Humanities board papers.",
   },
   {
     id: "tut-4",
-    name: "CA Rahul Singhania",
-    avatarText: "RS",
+    name: "Commerce & Accountancy Specialist",
+    avatarText: "CA",
     boards: ["CBSE", "ICSE / ISC", "All State Boards"],
     classes: ["Class 11–12 (Commerce)"],
     primarySubjects: ["Accountancy (Company & Partnership)", "Economics (Macro & Micro)", "Business Studies (Principles & Mgt)"],
-    qualifications: "Chartered Accountant (AIR 18) • B.Com (Hons) SRCC Delhi",
+    qualifications: "M.Com / Professional Educator",
     experienceYears: 6,
-    rating: 4.96,
-    reviewsCount: 164,
-    hourlyRateInr: 600,
+    rating: 4.9,
+    reviewsCount: 34,
+    hourlyRateInr: 550,
     languages: ["English", "Hindi"],
     city: "New Delhi / Online",
-    badge: "Commerce Rankers Mentor",
+    badge: "Commerce Specialist",
     deliveryMode: "Online 1-on-1",
-    bio: "Zero-memorization accounting logic. Learn ledger balance adjustments, cash flow statements, and CBSE board scoring tactics.",
+    bio: "Zero-memorization accounting logic. Learn ledger balance adjustments, cash flow statements, and board exam tactics.",
   },
   {
     id: "tut-5",
-    name: "Dr. Meenakshi Sundaram",
-    avatarText: "MS",
+    name: "NEET & Pre-Medical Biology Mentor",
+    avatarText: "BM",
     boards: ["CBSE", "All State Boards", "NCERT Foundation"],
     classes: ["Class 11–12 (Science/PCM/PCB)"],
     primarySubjects: ["Biology (Zoology & Botany)", "JEE Main/Advanced & NEET Focus"],
-    qualifications: "MBBS AIIMS New Delhi • NEET Top 100 Mentor",
+    qualifications: "M.Sc Life Sciences · Verified NEET Educator",
     experienceYears: 8,
-    rating: 4.99,
-    reviewsCount: 242,
+    rating: 4.9,
+    reviewsCount: 52,
     hourlyRateInr: 550,
     languages: ["English", "Tamil", "Hindi"],
-    city: "Chennai / Online",
-    badge: "NEET Top 1% Specialist",
+    city: "Online / Pan-India",
+    badge: "Pre-Medical Specialist",
     deliveryMode: "Online 1-on-1",
-    bio: "Deep line-by-line NCERT Biology mastery with 3,000+ diagram mnemonics and high-yield question patterns.",
+    bio: "Deep line-by-line NCERT Biology mastery with diagram mnemonics and high-yield question patterns.",
   },
   {
     id: "tut-6",
-    name: "Smt. Priyanka Das",
-    avatarText: "PD",
+    name: "Foundational Pedagogy Specialist",
+    avatarText: "FP",
     boards: ["Assam Board (SEBA/AHSEC)", "NCERT Foundation", "All State Boards"],
     classes: ["Class 1–5", "Class 6–8"],
     primarySubjects: ["Mathematics (Foundations)", "General Science Basics", "Environmental Studies (EVS)"],
-    qualifications: "B.Ed & M.Sc Gauhati University • Primary Pedagogy Specialist",
+    qualifications: "B.Ed & M.Sc · Primary Pedagogy Specialist",
     experienceYears: 11,
-    rating: 4.94,
-    reviewsCount: 205,
+    rating: 4.9,
+    reviewsCount: 45,
     hourlyRateInr: 350,
     languages: ["Assamese", "English", "Hindi"],
     city: "Guwahati / In-Person",
-    badge: "Primary Child Psychology Verified",
+    badge: "Child Pedagogy Verified",
     deliveryMode: "In-Person Home",
     bio: "Gentle, interactive foundational pedagogy for Class 1-8 students. Removes math anxiety through visual models.",
   },
   {
     id: "tut-7",
-    name: "Mohammad Tariq",
-    avatarText: "MT",
+    name: "Olympiad & Mental Mathematics Guide",
+    avatarText: "OM",
     boards: ["CBSE", "ICSE / ISC", "All State Boards"],
     classes: ["Class 6–8", "Class 9–10"],
     primarySubjects: ["Mathematics (NCERT/Standard)", "Physics & Chemistry"],
-    qualifications: "M.Sc Mathematics AMU • National Math Olympiad Trainer",
+    qualifications: "M.Sc Mathematics · Quantitative Aptitude Trainer",
     experienceYears: 8,
-    rating: 4.93,
-    reviewsCount: 172,
+    rating: 4.8,
+    reviewsCount: 38,
     hourlyRateInr: 380,
-    languages: ["Hindi", "English", "Urdu"],
+    languages: ["Hindi", "English"],
     city: "Lucknow / Online",
-    badge: "Olympiad & Mental Math Lead",
+    badge: "Quantitative Aptitude Lead",
     deliveryMode: "Online 1-on-1",
     bio: "Simplifies polynomial proofs, quadratic roots, and Euclidean geometry with fast mental tricks for high scores.",
   },
   {
     id: "tut-8",
-    name: "Tanmoy Bhattacharya",
-    avatarText: "TB",
+    name: "Social Sciences & Map Work Mentor",
+    avatarText: "SS",
     boards: ["All State Boards", "CBSE", "NCERT Foundation"],
     classes: ["Class 11–12 (Arts/Humanities)", "Class 9–10"],
     primarySubjects: ["Geography (Human & Physical)", "Economics & Public Policy", "Social Science (Board Prep)"],
-    qualifications: "M.A JNU New Delhi • UPSC CSE Mains Qualified Educator",
-    experienceYears: 10,
-    rating: 4.96,
-    reviewsCount: 198,
+    qualifications: "M.A Geography · Academic Reviewer",
+    experienceYears: 9,
+    rating: 4.9,
+    reviewsCount: 41,
     hourlyRateInr: 450,
     languages: ["English", "Bengali", "Hindi"],
     city: "Silchar / Online",
-    badge: "UPSC & Board Humanities Expert",
+    badge: "Humanities & Geography",
     deliveryMode: "Online 1-on-1",
     bio: "Connects school curriculum with real-world public policy and map work. Highly rated for conceptual clarity.",
   },
 ];
 
-// Curated verified jobs & remote opportunities
+// Curated verified openings & remote opportunities
 const VERIFIED_JOB_LISTINGS: JobOpening[] = [
   {
-    id: "job-wfh-1",
-    title: "Bilingual Academic Support Executive",
-    company: "EduKing Learning Systems",
-    category: "Work From Home (WFH)",
-    payout: "₹24,000 – ₹32,000",
+    id: "job-fleet-rider",
+    title: "OrderKing Hyperlocal Fleet Delivery Partner",
+    company: "OrderKing Logistics Fleet",
+    category: "Local Direct Jobs",
+    payout: "Earnings per completed delivery + incentives",
     payoutFrequency: "Per Month",
-    payoutBadge: "Direct Salary",
-    location: "WFH (India)",
+    payoutBadge: "Daily UPI",
+    location: "Hyperlocal Nationwide (Pan-India)",
     workType: "Full-Time",
-    skills: ["Assamese / Hindi / English Fluency", "Parent Calling", "CRM Basics"],
-    description: "Support parents and students regarding course schedules, exam doubts, and technical orientation. Laptop allowance provided.",
-    directHrContact: "+91-98640-XXXXX (Direct HR Despatch)",
+    skills: ["Two-Wheeler / EV / Cycle", "Smartphone & GPS", "Punctuality"],
+    description: "Deliver orders from partner kitchens to local customers. Flexible 4-hour or 8-hour shifts with instant daily UPI settlements. Zero onboarding fee.",
+    directHrContact: "fleet-onboarding@orderking.in",
     verifiedDepositZero: true,
-    postedAgo: "2 hours ago",
-  },
-  {
-    id: "job-wfh-2",
-    title: "K-12 Board Curriculum Content Reviewer",
-    company: "Sovereign Academic Press",
-    category: "Work From Home (WFH)",
-    payout: "₹28,000 – ₹42,000",
-    payoutFrequency: "Per Month",
-    payoutBadge: "Direct Salary",
-    location: "WFH (Pan-India)",
-    workType: "Full-Time",
-    skills: ["NCERT / CBSE Syllabus", "Proofreading", "Step Marking Check"],
-    description: "Audit sample question papers, NCERT answer keys, and ensure step-by-step marking guidelines are strictly followed.",
-    directHrContact: "careers@sovereignacademics.in",
-    verifiedDepositZero: true,
-    postedAgo: "Today",
-  },
-  {
-    id: "job-rem-1",
-    title: "Global AI Annotation & Prompt Evaluator",
-    company: "Cognitive Frontier Labs",
-    category: "Remote Global",
-    payout: "$18 – $28",
-    payoutFrequency: "Hourly",
-    payoutBadge: "USD Payout",
-    location: "Worldwide Remote",
-    workType: "Flexible",
-    skills: ["Logical Reasoning", "English Writing", "LLM Evaluation"],
-    description: "Score multi-turn AI responses on factuality, safety, and instructional following. Payout directly through KingPay Remittance desk.",
-    directHrContact: "talent@frontierai.global",
-    verifiedDepositZero: true,
-    postedAgo: "Just now",
-  },
-  {
-    id: "job-rem-2",
-    title: "International Customer Success Specialist",
-    company: "CloudScale SaaS UK",
-    category: "Remote Global",
-    payout: "$1,800 – $2,600",
-    payoutFrequency: "Per Month",
-    payoutBadge: "USD Payout",
-    location: "Remote (India / Global)",
-    workType: "Full-Time",
-    skills: ["Zendesk / Intercom", "Written English", "Problem Resolution"],
-    description: "Handle incoming enterprise client tickets during EMEA/US overlap shifts. 100% remote with international perks.",
-    directHrContact: "hr@cloudscalesaas.co.uk",
-    verifiedDepositZero: true,
-    postedAgo: "1 day ago",
+    postedAgo: "Active Onboarding",
   },
   {
     id: "job-task-1",
     title: "Hyperlocal Merchant QR & Menu Auditor",
     company: "OrderKing City Desk",
     category: "Paid Micro-Tasks",
-    payout: "₹180 – ₹250",
+    payout: "₹200 – ₹300",
     payoutFrequency: "Per Task",
-    payoutBadge: "Instant Payout",
-    location: "Your Local Town / Market",
+    payoutBadge: "Direct Bank / UPI",
+    location: "Your Local Market / City",
     workType: "Gig / Task",
-    skills: ["Smartphone Camera", "Hyperlocal Navigation", "Photo Verification"],
+    skills: ["Smartphone Camera", "Store Verification", "Menu Audit"],
     description: "Visit partner restaurants in your area, photograph the live paper menu, verify the OrderKing table QR code, and upload via app.",
     directHrContact: "ops-fleet@orderking.in",
     verifiedDepositZero: true,
-    postedAgo: "Active Now",
+    postedAgo: "Active",
   },
   {
     id: "job-task-2",
     title: "Assamese & Regional Audio Transcription",
-    company: "Indic Voice AI Initiative",
+    company: "OrderKing Localization Desk",
     category: "Paid Micro-Tasks",
-    payout: "₹300 – ₹450",
+    payout: "₹250 – ₹400",
     payoutFrequency: "Per Task",
     payoutBadge: "Instant Payout",
     location: "Work from Mobile / PC",
     workType: "Gig / Task",
     skills: ["Regional Listening", "Accurate Typing", "Grammar"],
-    description: "Transcribe 15-minute voice recordings into clean regional script. Instant credit to your KingPay balance upon approval.",
-    directHrContact: "voice-ai@indiccorpus.org",
+    description: "Transcribe regional voice prompts and merchant dish catalogs into clean regional script. Direct credit to your verified balance upon approval.",
+    directHrContact: "localization@orderking.in",
     verifiedDepositZero: true,
-    postedAgo: "3 hours ago",
+    postedAgo: "Active",
   },
   {
-    id: "job-loc-1",
-    title: "Cloud Kitchen Operations Shift Lead",
-    company: "Royal Feast Kitchens",
-    category: "Local Direct Jobs",
-    payout: "₹22,000 – ₹28,000",
-    payoutFrequency: "Per Month",
-    payoutBadge: "+ PF & ESI",
-    location: "Guwahati (GS Road / Zoo Road)",
-    workType: "Full-Time",
-    skills: ["FSSAI Food Hygiene", "Inventory Management", "Staff Roster"],
-    description: "Supervise line cooks, ensure food safety compliance, manage dispatch station for OrderKing orders, and audit stock.",
-    directHrContact: "+91-94350-XXXXX (Direct Kitchen Manager)",
+    id: "job-tutor-mentor",
+    title: "Verified Community Academic Mentor & Doubt Solver",
+    company: "OrderKing Academic Network",
+    category: "Work From Home (WFH)",
+    payout: "Direct Student Honorarium",
+    payoutFrequency: "Hourly",
+    payoutBadge: "Zero Commission",
+    location: "Remote / Work From Home",
+    workType: "Flexible",
+    skills: ["Subject Expertise", "Clear Step Derivations", "Empathetic Pedagogy"],
+    description: "Conduct 1-on-1 problem-solving sessions and clarify academic doubts for Class 6–12 students. Zero commission deducted by OrderKing.",
+    directHrContact: "tutors@orderking.in",
     verifiedDepositZero: true,
-    postedAgo: "1 day ago",
+    postedAgo: "Active Network",
   },
   {
     id: "job-loc-2",
     title: "Fast-Mile EV Fleet Hub Coordinator",
     company: "OrderKing Express Logistics",
     category: "Local Direct Jobs",
-    payout: "₹24,000 – ₹32,000",
+    payout: "₹22,000 – ₹28,000",
     payoutFrequency: "Per Month",
     payoutBadge: "+ Performance Bonus",
     location: "Guwahati / Silchar / Jorhat",
@@ -434,13 +386,13 @@ const VERIFIED_JOB_LISTINGS: JobOpening[] = [
     title: "Campus Brand Ambassador & Event Lead",
     company: "OrderKing Youth Community",
     category: "Part-Time Student",
-    payout: "₹8,000 – ₹14,000",
+    payout: "Performance Stipend + Certificate",
     payoutFrequency: "Per Month",
-    payoutBadge: "Flexible 3 hrs/day",
+    payoutBadge: "Flexible Hours",
     location: "Colleges across Assam & NE",
     workType: "Part-Time",
-    skills: ["College Networking", "Fest Coordination", "Social Media"],
-    description: "Represent OrderKing on campus, organize student discount codes, food fest kiosks, and earn monthly performance stipends.",
+    skills: ["Campus Networking", "Event Coordination", "Social Media"],
+    description: "Represent OrderKing on campus, organize student discount codes, food fest kiosks, and gain practical startup operations experience.",
     directHrContact: "campus@orderking.in",
     verifiedDepositZero: true,
     postedAgo: "Active",
@@ -453,13 +405,13 @@ const VERIFIED_JOB_LISTINGS: JobOpening[] = [
     payout: "₹350 – ₹500",
     payoutFrequency: "Hourly",
     payoutBadge: "Flexible Hours",
-    location: "Online / From Hostel Room",
+    location: "Online / Remote",
     workType: "Part-Time",
-    skills: ["Class 9-10 Maths / Science", "Patience", "Whiteboard Tools"],
-    description: "Open to college students (Engineering/B.Sc/Medical). Solve homework doubts for junior students in evening 1-hour slots.",
+    skills: ["Class 9-10 Math/Science", "Doubt Resolution", "Patience"],
+    description: "Help junior school students clear homework hurdles and NCERT textbook questions in evening slots (7 PM - 9 PM).",
     directHrContact: "scholars@orderking.in",
     verifiedDepositZero: true,
-    postedAgo: "Yesterday",
+    postedAgo: "Active",
   },
 ];
 
@@ -878,13 +830,13 @@ export function TutorJobsHub() {
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
-                <span>Verified Educators</span>
+                <span>Academic Mentors &amp; Educators</span>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                  {filteredTutors.length} Found
+                  {filteredTutors.length} Available
                 </span>
               </h3>
               <p className="text-xs text-slate-400">
-                100% Identity, qualification &amp; police verified educators
+                Representative Academic Profiles · Educators undergo identity, academic qualification &amp; onboarding verification prior to session confirmation
               </p>
             </div>
 
@@ -924,7 +876,12 @@ export function TutorJobsHub() {
                             <h4 className="text-sm font-black text-white group-hover:text-amber-300 transition-colors">
                               {tutor.name}
                             </h4>
-                            <p className="text-[11px] text-amber-400 font-bold">{tutor.badge}</p>
+                            <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                              <span className="text-[9.5px] uppercase font-bold text-amber-400 bg-amber-400/10 border border-amber-400/30 px-1.5 py-0.5 rounded">
+                                Representative Academic Profile
+                              </span>
+                              <span className="text-[11px] text-slate-400 font-bold">{tutor.badge}</span>
+                            </div>
                           </div>
                         </div>
 
@@ -1008,7 +965,7 @@ export function TutorJobsHub() {
                   Explore Opportunities &amp; Verified Tasks
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Zero security deposit guaranteed • Direct dispatch to verified employer hiring desks
+                  Zero Security Deposit Policy • Direct dispatch to verified hiring desks
                 </p>
               </div>
 
@@ -1126,6 +1083,7 @@ export function TutorJobsHub() {
                         <span className="text-xs sm:text-sm font-black text-emerald-400 block font-mono">
                           {job.payout}
                         </span>
+                        <span className="text-[9px] text-slate-400 block font-normal">Industry Benchmark / Partner Indicative Band</span>
                         <span className="text-[10px] text-slate-400 block">{job.payoutBadge}</span>
                       </div>
                     </div>
@@ -1160,7 +1118,7 @@ export function TutorJobsHub() {
                   <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
                     <div className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
                       <ShieldCheck className="size-3.5" />
-                      Zero Bond Guarantee
+                      Zero Security Bond Policy
                     </div>
 
                     <button
@@ -1221,7 +1179,7 @@ export function TutorJobsHub() {
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 italic">
-                * 100% money back guarantee if you are not fully satisfied in the first 20 minutes of the session.
+                * Direct student-mentor alignment: review course roadmap and pedagogical fit in your opening session.
               </p>
             </div>
 
@@ -1311,12 +1269,12 @@ export function TutorJobsHub() {
               </button>
             </div>
 
-            {/* Direct HR guarantee badge */}
+            {/* Direct HR dispatch badge */}
             <div className="bg-emerald-950/40 border border-emerald-400/30 rounded-2xl p-4 space-y-2 text-xs">
               <div className="flex justify-between items-center text-emerald-300 font-bold">
                 <span className="flex items-center gap-1.5">
                   <ShieldCheck className="size-4 text-emerald-400" />
-                  Anti-Scam Direct Dispatch Guarantee
+                  Anti-Scam Verified Direct Dispatch
                 </span>
                 <span className="bg-emerald-400/20 text-emerald-300 px-2 py-0.5 rounded text-[10px]">
                   Zero Bond

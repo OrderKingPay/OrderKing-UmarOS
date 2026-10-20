@@ -161,21 +161,18 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       });
     });
 
-    it("retrieves train quotes with Vande Bharat, Rajdhani, Shatabdi, and Superfast express", () => {
-      const quotes = searchTrainQuotes("New Delhi (NDLS)", "Mumbai Central (MMCT)", undefined, "GENERAL (GN)", "3A");
-      expect(quotes.length).toBeGreaterThanOrEqual(4);
-
-      const services = quotes.map((q) => q.serviceNumber);
-      expect(services.some((s) => s.includes("VANDE BHARAT"))).toBe(true);
-      expect(services.some((s) => s.includes("RAJDHANI"))).toBe(true);
-      expect(services.some((s) => s.includes("SHATABDI"))).toBe(true);
-      expect(services.some((s) => s.includes("KARNATAKA EXPRESS"))).toBe(true);
-
-      quotes.forEach((q) => {
-        expect(q.orderKingDeskFeePaise).toBe(0);
-        expect(q.platform).toBeDefined();
-        expect(q.availabilityStatus).toBeDefined();
-      });
+    it("strictly forbids fabricated train inventory and provides genuine official IRCTC direct search parameters", () => {
+      const result = searchTrainQuotes("New Delhi (NDLS)", "Mumbai Central (MMCT)", "2026-10-25", "GENERAL (GN)", "3A");
+      // Zero fabricated inventory
+      expect(result.length).toBe(0);
+      expect(result.quotes.length).toBe(0);
+      expect(result.realTimePrsManaged).toBe(true);
+      expect(result.authenticated).toBe(false);
+      expect(result.status).toBe("unauthenticated");
+      expect(result.officialSearchUrl).toBe("https://www.irctc.co.in/nget/train-search?from=NDLS&to=MMCT&date=2026-10-25");
+      expect(result.fromCode).toBe("NDLS");
+      expect(result.toCode).toBe("MMCT");
+      expect(result.inventoryNotice).toContain("Indian Railways PRS");
     });
 
     it("retrieves bus quotes with multi-axle luxury sleepers and interactive berth layouts", () => {
@@ -282,10 +279,26 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       expect(trainCheck.status).toBe("offline");
       expect(trainCheck.message).toBe(SUPPLIER_UNAVAILABLE_MESSAGE);
 
-      const quote = searchTrainQuotes()[0];
+      const mockTrainQuote: any = {
+        id: "tr-test-offline",
+        mode: "train",
+        carrierCode: "IRCTC",
+        carrierName: "Indian Railways",
+        serviceNumber: "12952",
+        title: "Tejas Rajdhani",
+        fromCity: "New Delhi",
+        toCity: "Mumbai",
+        baseFarePaise: 150000,
+        carrierTaxesPaise: 5000,
+        orderKingDeskFeePaise: 0,
+        otaBenchmarkFeePaise: 4000,
+        partnerRebateBps: 100,
+        seatsAvailable: 0,
+      };
+
       expect(() =>
         issueSovereignETicket({
-          quote,
+          quote: mockTrainQuote,
           passengers: [{ id: "p2", fullName: "Priya Nair", age: 28, gender: "female", seatPreference: "Lower" }],
           contact: { phone: "9876543210", email: "priya@example.com" },
           paymentMethod: "razorpay_upi",

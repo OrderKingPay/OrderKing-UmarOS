@@ -9,7 +9,7 @@ export const Route = createFileRoute("/kingpay/")({
   head: () => ({
     meta: [
       { property: "og:title", content: "KingPay — Direct UPI, Bills, Travel & Jobs" },
-      { property: "og:description", content: "Instant 0% fee UPI pay, BBPS utility recharges, real train PNR status, bus routes, verified jobs, and AI Tutor." },
+      { property: "og:description", content: "Direct UPI pay, utility bills directory via standard UPI PSPs, train PNR status, bus routes, verified fleet & mentor jobs, and AI Tutor." },
     ],
   }),
 });

@@ -38,17 +38,17 @@ describe("Sovereign Travel Engine - Mathematical Zero-Mock Fares", () => {
   });
 
   it("calculates multiple passengers without floating-point drift", () => {
-    const trainQuote = LIVE_BENCHMARK_QUOTES.find((q) => q.mode === "train")!;
-    expect(trainQuote).toBeDefined();
+    const busQuote = LIVE_BENCHMARK_QUOTES.find((q) => q.mode === "bus")!;
+    expect(busQuote).toBeDefined();
 
     const passengers = 4;
-    const breakdown = calculateSovereignFareBreakdown(trainQuote, passengers, "food_wallet");
+    const breakdown = calculateSovereignFareBreakdown(busQuote, passengers, "food_wallet");
 
     expect(breakdown.passengers).toBe(4);
-    expect(breakdown.baseFarePaiseTotal).toBe(trainQuote.baseFarePaise * 4);
-    expect(breakdown.taxesPaiseTotal).toBe(trainQuote.carrierTaxesPaise * 4);
+    expect(breakdown.baseFarePaiseTotal).toBe(busQuote.baseFarePaise * 4);
+    expect(breakdown.taxesPaiseTotal).toBe(busQuote.carrierTaxesPaise * 4);
     expect(breakdown.orderKingDeskFeePaise).toBe(0);
-    expect(breakdown.instantCashSavingsPaise).toBe(trainQuote.otaBenchmarkFeePaise * 4);
+    expect(breakdown.instantCashSavingsPaise).toBe(busQuote.otaBenchmarkFeePaise * 4);
     expect(breakdown.foodWalletPaiseAccrued).toBe(breakdown.partnerRebatePaiseTotal);
   });
 

@@ -41,26 +41,7 @@ interface BookedClassSession {
   mode: "1-on-1 Online" | "Home Tutoring";
 }
 
-const DEFAULT_BOOKED_SESSIONS: BookedClassSession[] = [
-  {
-    id: "cls-101",
-    tutorName: "Prof. R. Banerjee",
-    subject: "CBSE Class 12 Advanced Physics & Mechanics",
-    grade: "Class 12",
-    scheduledTime: "Tomorrow, 05:00 PM - 06:30 PM",
-    status: "Confirmed",
-    mode: "1-on-1 Online",
-  },
-  {
-    id: "cls-102",
-    tutorName: "Er. S. Sen",
-    subject: "Full-Stack React & Next-Gen AI Integration",
-    grade: "Professional",
-    scheduledTime: "Saturday, 11:00 AM - 01:00 PM",
-    status: "Confirmed",
-    mode: "1-on-1 Online",
-  },
-];
+const TUTOR_SESSIONS_STORAGE_KEY = "orderking_tutor_sessions_v1";
 
 export const Route = (createFileRoute as any)("/tutor-jobs/history")({
   component: TutorJobsHistoryPage,
@@ -70,16 +51,23 @@ export const Route = (createFileRoute as any)("/tutor-jobs/history")({
 function TutorJobsHistoryPage() {
   const [activeTab, setActiveTab] = useState<"classes" | "jobs">("classes");
   const [applications, setApplications] = useState<SubmittedJobApplication[]>([]);
-  const [classes] = useState<BookedClassSession[]>(DEFAULT_BOOKED_SESSIONS);
+  const [classes, setClasses] = useState<BookedClassSession[]>([]);
 
   useEffect(() => {
     try {
       if (typeof window !== "undefined") {
-        const raw = window.localStorage.getItem(JOB_APPLICATIONS_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
+        const rawApps = window.localStorage.getItem(JOB_APPLICATIONS_STORAGE_KEY);
+        if (rawApps) {
+          const parsed = JSON.parse(rawApps);
           if (Array.isArray(parsed)) {
             setApplications(parsed);
+          }
+        }
+        const rawSessions = window.localStorage.getItem(TUTOR_SESSIONS_STORAGE_KEY);
+        if (rawSessions) {
+          const parsedSessions = JSON.parse(rawSessions);
+          if (Array.isArray(parsedSessions)) {
+            setClasses(parsedSessions);
           }
         }
       }
@@ -148,51 +136,70 @@ function TutorJobsHistoryPage() {
           {/* Classes View */}
           {activeTab === "classes" && (
             <div className="space-y-4">
-              {classes.map((cls) => (
-                <div
-                  key={cls.id}
-                  className="rounded-2xl border border-purple-200/90 bg-white p-5 shadow-xs transition-all hover:border-purple-400"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-900 border border-purple-200">
-                          {cls.grade}
-                        </span>
-                        <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-900 border border-emerald-200 flex items-center gap-1">
-                          <CheckCircle2 className="size-3 text-emerald-600" />
-                          {cls.status}
-                        </span>
-                      </div>
-                      <h3 className="text-base font-extrabold text-stone-900 pt-1">
-                        {cls.subject}
-                      </h3>
-                      <p className="text-xs text-stone-600 font-medium">
-                        Instructor: <strong className="text-stone-900">{cls.tutorName}</strong> · {cls.mode}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-purple-900 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-xl shrink-0">
-                      <Clock className="size-3.5 text-purple-700" />
-                      <span>{cls.scheduledTime}</span>
-                    </div>
+              {classes.length === 0 ? (
+                <div className="rounded-2xl border border-stone-200 bg-white p-8 text-center space-y-3">
+                  <div className="size-12 rounded-2xl bg-purple-100 text-purple-800 flex items-center justify-center mx-auto">
+                    <GraduationCap className="size-6" />
                   </div>
-
-                  <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
-                    <span className="text-[11px] text-stone-500 flex items-center gap-1">
-                      <ShieldCheck className="size-3.5 text-emerald-600" />
-                      Verified OrderKing Academic Mentor
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 rounded-xl text-xs font-bold border-purple-300 text-purple-900 hover:bg-purple-50"
-                    >
-                      Class Classroom Link
-                    </Button>
-                  </div>
+                  <h3 className="text-base font-bold text-stone-900">No Booked Mentorship Sessions Yet</h3>
+                  <p className="text-xs text-stone-600 max-w-md mx-auto">
+                    Request a verified 1-on-1 session with an academic mentor or practice with our interactive AI Tutor.
+                  </p>
+                  <Link
+                    to="/tutor"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-purple-700 text-white text-xs font-bold px-4 py-2 mt-2 no-underline hover:bg-purple-800 transition"
+                  >
+                    <span>Explore Mentors &amp; AI Tutor</span>
+                    <ArrowRight className="size-3.5" />
+                  </Link>
                 </div>
-              ))}
+              ) : (
+                classes.map((cls) => (
+                  <div
+                    key={cls.id}
+                    className="rounded-2xl border border-purple-200/90 bg-white p-5 shadow-xs transition-all hover:border-purple-400"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-900 border border-purple-200">
+                            {cls.grade}
+                          </span>
+                          <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-900 border border-emerald-200 flex items-center gap-1">
+                            <CheckCircle2 className="size-3 text-emerald-600" />
+                            {cls.status}
+                          </span>
+                        </div>
+                        <h3 className="text-base font-extrabold text-stone-900 pt-1">
+                          {cls.subject}
+                        </h3>
+                        <p className="text-xs text-stone-600 font-medium">
+                          Instructor: <strong className="text-stone-900">{cls.tutorName}</strong> · {cls.mode}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-purple-900 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-xl shrink-0">
+                        <Clock className="size-3.5 text-purple-700" />
+                        <span>{cls.scheduledTime}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
+                      <span className="text-[11px] text-stone-500 flex items-center gap-1">
+                        <ShieldCheck className="size-3.5 text-emerald-600" />
+                        Verified OrderKing Academic Mentor
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 rounded-xl text-xs font-bold border-purple-300 text-purple-900 hover:bg-purple-50"
+                      >
+                        Class Classroom Link
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
 

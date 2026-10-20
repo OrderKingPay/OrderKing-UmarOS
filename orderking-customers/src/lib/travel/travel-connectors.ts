@@ -446,123 +446,19 @@ export async function searchLiveTrains(req: TrainSearchRequest): Promise<TrainSe
         }
       }
     } catch (err) {
-      console.warn("[TravelConnectors] IRCTC RapidAPI query failed, falling through to CRIS live schedule:", err);
+      console.warn("[TravelConnectors] IRCTC RapidAPI query failed:", err);
     }
   }
 
-  // 2. Genuine Indian Railways CRIS-scheduled trains connecting sectors
-  const isTatkal = quota === "TQ";
-  const tatkalExtra = isTatkal ? 35000 : 0;
-
-  const scheduledTrains: Array<{
-    trainNumber: string;
-    trainName: string;
-    depTime: string;
-    arrTime: string;
-    durationMins: number;
-    pantry: boolean;
-    classes: Array<{ code: any; name: string; fare: number; seats: number; status: TrainSeatStatus }>;
-  }> = [
-    {
-      trainNumber: "20608",
-      trainName: "VANDE BHARAT EXPRESS",
-      depTime: "06:00",
-      arrTime: "11:45",
-      durationMins: 345,
-      pantry: true,
-      classes: [
-        { code: "CC", name: "AC Chair Car", fare: 115000, seats: 48, status: "AVAILABLE" },
-        { code: "EC", name: "Executive Chair Car", fare: 210000, seats: 14, status: "AVAILABLE" },
-      ],
-    },
-    {
-      trainNumber: "12952",
-      trainName: "MUMBAI TEJAS RAJDHANI",
-      depTime: "16:55",
-      arrTime: "08:35 (+1)",
-      durationMins: 940,
-      pantry: true,
-      classes: [
-        { code: "1A", name: "First AC", fare: 325000, seats: 4, status: "AVAILABLE" },
-        { code: "2A", name: "AC 2 Tier", fare: 195000, seats: 18, status: "AVAILABLE" },
-        { code: "3A", name: "AC 3 Tier", fare: 142000, seats: 32, status: "AVAILABLE" },
-      ],
-    },
-    {
-      trainNumber: "12002",
-      trainName: "NEW DELHI SHATABDI",
-      depTime: "06:15",
-      arrTime: "14:20",
-      durationMins: 485,
-      pantry: true,
-      classes: [
-        { code: "CC", name: "AC Chair Car", fare: 125000, seats: 26, status: "AVAILABLE" },
-        { code: "EC", name: "Executive Chair Car", fare: 220000, seats: 8, status: "AVAILABLE" },
-      ],
-    },
-    {
-      trainNumber: "12424",
-      trainName: "DIBRUGARH RAJDHANI",
-      depTime: "16:20",
-      arrTime: "04:30 (+1)",
-      durationMins: 730,
-      pantry: true,
-      classes: [
-        { code: "2A", name: "AC 2 Tier", fare: 205000, seats: 12, status: "AVAILABLE" },
-        { code: "3A", name: "AC 3 Tier", fare: 148000, seats: 42, status: "AVAILABLE" },
-      ],
-    },
-    {
-      trainNumber: "12560",
-      trainName: "SHIV GANGA EXPRESS",
-      depTime: "20:05",
-      arrTime: "07:10 (+1)",
-      durationMins: 665,
-      pantry: false,
-      classes: [
-        { code: "1A", name: "First AC", fare: 295000, seats: 2, status: "AVAILABLE" },
-        { code: "2A", name: "AC 2 Tier", fare: 175000, seats: 15, status: "AVAILABLE" },
-        { code: "3A", name: "AC 3 Tier", fare: 125000, seats: 28, status: "AVAILABLE" },
-        { code: "SL", name: "Sleeper Class", fare: 48500, seats: 64, status: "RAC" },
-      ],
-    },
-  ];
-
-  const fromCityName = STATION_NAMES[fromStation] || fromStation;
-  const toCityName = STATION_NAMES[toStation] || toStation;
-
-  const trains: TrainOption[] = scheduledTrains.map((st) => {
-    const classList: TrainClassAvailability[] = st.classes.map((c) => ({
-      classCode: c.code,
-      className: c.name,
-      farePaise: c.fare + tatkalExtra,
-      status: isTatkal ? ("AVAILABLE" as TrainSeatStatus) : c.status,
-      statusDetails: isTatkal ? `TATKAL AVL-${Math.max(2, Math.floor(c.seats / 2))}` : `${c.status}-${c.seats}`,
-      availableSeats: c.seats,
-    }));
-
-    return {
-      id: `tr-${st.trainNumber}`,
-      trainNumber: st.trainNumber,
-      trainName: st.trainName,
-      departureTime: st.depTime,
-      arrivalTime: st.arrTime,
-      durationMinutes: st.durationMins,
-      fromStation: `${fromCityName} (${fromStation})`,
-      toStation: `${toCityName} (${toStation})`,
-      classes: classList,
-      quota,
-      pantryAvailable: st.pantry,
-      bookingUrl: `https://www.irctc.co.in/nget/train-search?from=${fromStation}&to=${toStation}&date=${travelDate}`,
-      source: "cris_realtime",
-    };
-  });
-
+  // 2. Strict Rail Compliance: Zero fabricated train inventory.
+  // In accordance with CRIS/IRCTC regulations, synthetic train options, simulated fares, or mock seat
+  // allocations are strictly prohibited. In unauthenticated state, fail closed with empty data
+  // directing users to the official IRCTC portal.
   return {
-    success: true,
-    data: trains,
-    source: "cris_realtime",
-    count: trains.length,
+    success: false,
+    data: [],
+    source: "irctc_direct",
+    count: 0,
     fromStation,
     toStation,
     travelDate,

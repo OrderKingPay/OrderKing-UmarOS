@@ -2,8 +2,13 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   isIrctcPspAuthenticated,
   assertTrainPaymentPermitted,
+  verifyConfirmedRailwayBooking,
   calculateRailwayCancellationRefund,
   validateIrctcTdrFiling,
+  validateCrisPnr,
+  isHardcodedTrainQuote,
+  validateTrainQuote,
+  assertTrainQuoteAuthentic,
   reconcileGatewayRefundWebhook,
   type GatewayRefundWebhookPayload,
 } from "../lib/travel/irctc-reconciliation";
@@ -34,10 +39,51 @@ describe("Travel Fintech Reconciliation & Payment Audit Engine", () => {
       expect(() => assertTrainPaymentPermitted()).toThrowError(/IRCTC_PAYMENT_BLOCKED/);
     });
 
-    it("verifies authentic IRCTC PSP key allows transaction validation", () => {
+    it("strictly rejects token length alone as proof of authentication", () => {
+      // Arbitrary 16+ char token without backend credentials or cryptographic signature MUST fail
+      expect(isIrctcPspAuthenticated("1234567890123456")).toBe(false);
+      expect(isIrctcPspAuthenticated("RANDOM_TOKEN_GREATER_THAN_16")).toBe(false);
+    });
+
+    it("insecure token-length PSP auth checks are rejected", () => {
+      // Tokens that satisfy arbitrary length checks (>=16, >=24, >=32) but lack certified CRIS format fail closed
+      expect(isIrctcPspAuthenticated("1234567890abcdef")).toBe(false);
+      expect(isIrctcPspAuthenticated("arbitrary_sixteen_char_token")).toBe(false);
+      expect(isIrctcPspAuthenticated("mock_token_with_length_greater_than_16")).toBe(false);
+      expect(isIrctcPspAuthenticated("IRCTC-PSP-fake-token-bypass")).toBe(false);
+      expect(isIrctcPspAuthenticated("a".repeat(32))).toBe(false);
+      expect(isIrctcPspAuthenticated("a".repeat(64))).toBe(false);
+      expect(() => assertTrainPaymentPermitted({ authToken: "1234567890abcdef" })).toThrowError(/IRCTC_PAYMENT_BLOCKED/);
+    });
+
+    it("fails closed when provider credentials are present but CRIS cryptographic response is absent", () => {
       const validKey = "CRIS_PSP_KEY_SECURE_9876543210";
-      expect(isIrctcPspAuthenticated(validKey)).toBe(true);
-      expect(() => assertTrainPaymentPermitted({ authToken: validKey })).not.toThrow();
+      // Absence of authenticated CRIS/IRCTC B2B response MUST return false
+      expect(isIrctcPspAuthenticated(validKey)).toBe(false);
+      expect(() => assertTrainPaymentPermitted({ authToken: validKey })).toThrowError(/IRCTC_PAYMENT_BLOCKED/);
+    });
+
+    it("authenticates only when verified provider credentials AND authenticated cryptographic booking response are present", () => {
+      const validKey = "CRIS_PSP_KEY_SECURE_9876543210";
+      const validCrisResponse = {
+        crisSignature: "CRIS_SIG_HEX_8a9b2c3d4e5f60718293a4b5c6d7e8f9",
+        providerTransactionId: "IRCTC-TXN-20261020-001",
+        verifiedByCrisServer: true,
+      };
+
+      expect(
+        isIrctcPspAuthenticated({
+          authToken: validKey,
+          cryptographicBookingResponse: validCrisResponse,
+        })
+      ).toBe(true);
+
+      expect(() =>
+        assertTrainPaymentPermitted({
+          authToken: validKey,
+          cryptographicBookingResponse: validCrisResponse,
+        })
+      ).not.toThrow();
     });
 
     it("strictly blocks synthetic Indian Railways PNR generation under CRIS regulations", () => {
@@ -48,22 +94,133 @@ describe("Travel Fintech Reconciliation & Payment Audit Engine", () => {
       expect(generateSovereignPnr("cab")).toMatch(/^OK-CB-[A-Z0-9]{6}\d{4}$/);
     });
 
-    it("strictly blocks train ticket issuance and payment capture when IRCTC PSP gateway is unauthenticated", () => {
-      delete process.env.IRCTC_PSP_MERCHANT_KEY;
-      delete process.env.VITE_IRCTC_MERCHANT_KEY;
+    it("does NOT accept a 10-digit PNR or prefixed payment token alone as evidence of confirmed booking", () => {
+      // 10-digit PNR alone rejected by verifyConfirmedRailwayBooking
+      const pnrOnlyResult = verifyConfirmedRailwayBooking({ pnr: "2841950284" });
+      expect(pnrOnlyResult.verified).toBe(false);
+      expect(pnrOnlyResult.reason).toContain("UNVERIFIED_BOOKING");
 
-      const trainQuote = searchTrainQuotes()[0];
+      // Payment token alone rejected by verifyConfirmedRailwayBooking
+      const tokenOnlyResult = verifyConfirmedRailwayBooking({
+        pnr: "2841950284",
+        paymentToken: "IRCTC-PSP-291029301",
+      });
+      expect(tokenOnlyResult.verified).toBe(false);
+      expect(tokenOnlyResult.reason).toContain("UNVERIFIED_BOOKING");
+
+      // 10-digit PNR alone strictly rejected by assertTrainPaymentPermitted
+      expect(() => assertTrainPaymentPermitted({ pnr: "2841950284" })).toThrowError(
+        /A 10-digit PNR string or prefixed payment token alone is NOT accepted as evidence of a confirmed booking/
+      );
+
+      // Prefixed payment token alone strictly rejected by assertTrainPaymentPermitted
+      expect(() =>
+        assertTrainPaymentPermitted({ verifiedPaymentToken: "IRCTC-PSP-TOKEN-123456" })
+      ).toThrowError(
+        /A 10-digit PNR string or prefixed payment token alone is NOT accepted as evidence of a confirmed booking/
+      );
+
+      // Both PNR and prefixed payment token together rejected without server-verified CRIS response
+      expect(() =>
+        assertTrainPaymentPermitted({
+          pnr: "2841950284",
+          verifiedPaymentToken: "IRCTC-PSP-TOKEN-123456",
+        })
+      ).toThrowError(
+        /A 10-digit PNR string or prefixed payment token alone is NOT accepted as evidence of a confirmed booking/
+      );
+
+      // Arbitrary 32+ char token string rejected when lacking certified CRIS signature format
+      expect(
+        isIrctcPspAuthenticated("CRIS_PSP_KEY_SECURE_9876543210", "a".repeat(32))
+      ).toBe(false);
+
+      // Verified with cryptographic CRIS PRS signature
+      const verifiedWithSig = verifyConfirmedRailwayBooking({
+        pnr: "2841950284",
+        crisSignature: "CRIS_SIG_HEX_8a9b2c3d4e5f60718293a4b5c6d7e8f9",
+      });
+      expect(verifiedWithSig.verified).toBe(true);
+
+      // Verified with external IRCTC provider transaction ID
+      const verifiedWithTxn = verifyConfirmedRailwayBooking({
+        pnr: "2841950284",
+        providerTransactionId: "IRCTC-TXN-20261020-89102",
+      });
+      expect(verifiedWithTxn.verified).toBe(true);
+    });
+
+    it("keeps in-app OrderKing train ticket issuance completely locked requiring official IRCTC portal handoff", () => {
+      const mockTrainQuote: any = {
+        id: "tr-locked-test",
+        mode: "train",
+        carrierCode: "IRCTC",
+        carrierName: "Indian Railways",
+        serviceNumber: "12952",
+        title: "Tejas Rajdhani",
+        fromCity: "New Delhi (NDLS)",
+        toCity: "Mumbai Central (MMCT)",
+        baseFarePaise: 142000,
+        carrierTaxesPaise: 6500,
+        orderKingDeskFeePaise: 0,
+        otaBenchmarkFeePaise: 4000,
+        partnerRebateBps: 100,
+        seatsAvailable: 0,
+      };
+
+      // Even with 10-digit PNR and prefixed payment token, in-app train issuance is completely locked
       expect(() =>
         issueSovereignETicket({
-          quote: trainQuote,
+          quote: mockTrainQuote,
           passengers: [{ id: "pax-1", fullName: "Amitabh Verma", age: 38, gender: "male", seatPreference: "Lower Berth" }],
           contact: { phone: "9876543210", email: "amitabh@example.com" },
           paymentMethod: "kingpay_wallet",
           rebateDestination: "24k_gold",
           isConfirmedSupplier: true,
           supplierState: "online",
+          supplierReservationId: "2841950284",
+          verifiedPaymentToken: "IRCTC-PSP-TOKEN-123456",
         })
-      ).toThrow();
+      ).toThrowError(/IN_APP_TRAIN_BOOKING_LOCKED.*official IRCTC portal handoff/i);
+    });
+
+    it("hardcoded train quotes are rejected", () => {
+      // 1. Live search strictly forbids fabricated train quotes
+      const liveSearchResults = searchTrainQuotes();
+      expect(liveSearchResults.length).toBe(0);
+      expect(liveSearchResults.quotes.length).toBe(0);
+      expect(liveSearchResults.authenticated).toBe(false);
+      expect(liveSearchResults.status).toBe("unauthenticated");
+      expect(liveSearchResults.officialSearchUrl).toContain("https://www.irctc.co.in/nget/train-search");
+
+      // 2. Synthetic/static benchmark train quotes (e.g. tr-20608-vb, tr-12952-rajdhani) are detected and rejected
+      const hardcodedQuotes = [
+        { id: "tr-20608-vb", mode: "train" as const, serviceNumber: "20608" },
+        { id: "tr-12952-rajdhani", mode: "train" as const, serviceNumber: "12952" },
+        { id: "tr-12002-shatabdi", mode: "train" as const, serviceNumber: "12002" },
+        { id: "tr-12628-superfast", mode: "train" as const, serviceNumber: "12628" },
+      ];
+
+      for (const hq of hardcodedQuotes) {
+        expect(isHardcodedTrainQuote(hq)).toBe(true);
+        expect(validateTrainQuote(hq)).toBe(false);
+        expect(() => assertTrainQuoteAuthentic(hq)).toThrowError(
+          /Hardcoded train quotes are rejected|IRCTC_PAYMENT_BLOCKED/
+        );
+
+        // In-app booking attempt with hardcoded quote fails closed
+        expect(() =>
+          issueSovereignETicket({
+            quote: hq as any,
+            passengers: [{ id: "pax-1", fullName: "Amitabh Verma", age: 38, gender: "male", seatPreference: "Lower Berth" }],
+            contact: { phone: "9876543210", email: "amitabh@example.com" },
+            paymentMethod: "kingpay_wallet",
+            rebateDestination: "24k_gold",
+            isConfirmedSupplier: true,
+            supplierState: "online",
+          })
+        ).toThrowError(/Hardcoded train quotes are rejected|IRCTC_PAYMENT_BLOCKED/);
+      }
     });
   });
 
@@ -191,6 +348,48 @@ describe("Travel Fintech Reconciliation & Payment Audit Engine", () => {
           departureTime: new Date().toISOString(),
         })
       ).toThrowError(/strictly 10-digit numeric reference/);
+    });
+
+    it("arbitrary 10-digit PNR without CRIS provider validation is rejected", () => {
+      // Repetitive 10-digit synthetic PNRs
+      expect(validateCrisPnr("0000000000").valid).toBe(false);
+      expect(validateCrisPnr("1111111111").valid).toBe(false);
+      expect(() =>
+        validateIrctcTdrFiling({
+          pnr: "0000000000",
+          reason: "TRAIN_DELAYED_OVER_3_HOURS",
+          chartStatus: "CHART_PREPARED",
+          departureTime: new Date().toISOString(),
+        })
+      ).toThrowError(/CRIS_VALIDATION_REJECTED/);
+
+      // Sequential 10-digit synthetic PNRs
+      expect(validateCrisPnr("1234567890").valid).toBe(false);
+      expect(validateCrisPnr("0123456789").valid).toBe(false);
+      expect(() =>
+        validateIrctcTdrFiling({
+          pnr: "1234567890",
+          reason: "TRAIN_DELAYED_OVER_3_HOURS",
+          chartStatus: "CHART_PREPARED",
+          departureTime: new Date().toISOString(),
+        })
+      ).toThrowError(/CRIS_VALIDATION_REJECTED/);
+
+      // Invalid PRS Zone prefix (< 2 or > 9)
+      expect(validateCrisPnr("1928374650").valid).toBe(false);
+      expect(() =>
+        validateIrctcTdrFiling({
+          pnr: "1928374650",
+          reason: "TRAIN_DELAYED_OVER_3_HOURS",
+          chartStatus: "CHART_PREPARED",
+          departureTime: new Date().toISOString(),
+        })
+      ).toThrowError(/CRIS_VALIDATION_REJECTED.*PRS Zone/);
+
+      // Valid CRIS PNR from authentic PRS centre (2xx-9xx)
+      const validCris = validateCrisPnr("2841950284");
+      expect(validCris.valid).toBe(true);
+      expect(validCris.prsZone).toContain("Northern PRS");
     });
   });
 

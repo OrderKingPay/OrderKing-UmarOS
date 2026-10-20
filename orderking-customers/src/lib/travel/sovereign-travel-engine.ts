@@ -256,44 +256,6 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     partnerRebateBps: 200,             // 2.0%
   },
   {
-    id: "tr-12952-rajdhani",
-    mode: "train",
-    carrierCode: "IRCTC",
-    carrierName: "Indian Railways",
-    serviceNumber: "12952 / TEJAS RAJDHANI",
-    routeDisplay: "New Delhi (NDLS) ➔ Mumbai Central (MMCT)",
-    originCode: "NDLS",
-    destinationCode: "MMCT",
-    departureTime: "16:55",
-    arrivalTime: "08:35 (+1)",
-    duration: "15h 40m",
-    classOrTier: "AC 1st Class / Executive",
-    seatsAvailable: 12,
-    baseFarePaise: 415_000,           // ₹4,150.00
-    carrierTaxesPaise: 20_750,         // ₹207.50
-    otaBenchmarkFeePaise: 4_720,       // ₹47.20
-    partnerRebateBps: 100,             // 1.0%
-  },
-  {
-    id: "tr-20608-vandebharat",
-    mode: "train",
-    carrierCode: "IRCTC",
-    carrierName: "Indian Railways",
-    serviceNumber: "20608 / VANDE BHARAT",
-    routeDisplay: "KSR Bengaluru (SBC) ➔ Chennai Central (MAS)",
-    originCode: "SBC",
-    destinationCode: "MAS",
-    departureTime: "05:45",
-    arrivalTime: "10:10",
-    duration: "4h 25m",
-    classOrTier: "Executive Chair Car (EC)",
-    seatsAvailable: 16,
-    baseFarePaise: 189_500,           // ₹1,895.00
-    carrierTaxesPaise: 9_475,          // ₹94.75
-    otaBenchmarkFeePaise: 3_500,       // ₹35.00
-    partnerRebateBps: 100,             // 1.0%
-  },
-  {
     id: "ht-taj-westend",
     mode: "hotel",
     carrierCode: "TAJ",

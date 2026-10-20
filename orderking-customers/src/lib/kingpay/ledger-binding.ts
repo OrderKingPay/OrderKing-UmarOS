@@ -51,7 +51,19 @@ function getLocalLedgerEntries(): KingPayLedgerEntry[] {
     const raw = localStorage.getItem(LOCAL_LEDGER_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    // Strict Fintech Audit: Zero synthetic train receipts, fake refund credits, or fabricated records
+    const sanitized = parsed.filter((e: KingPayLedgerEntry) => {
+      const memo = (e.memo || "").toLowerCase();
+      if (memo.includes("mock") || memo.includes("synthetic") || memo.includes("fake") || memo.includes("ok-tr-")) {
+        return false;
+      }
+      return true;
+    });
+    if (sanitized.length !== parsed.length) {
+      localStorage.setItem(LOCAL_LEDGER_STORAGE_KEY, JSON.stringify(sanitized));
+    }
+    return sanitized;
   } catch {
     return [];
   }
@@ -214,6 +226,24 @@ export async function recordAuthenticPayment(params: {
   }
 
   const currentBalance = await fetchAuthenticKingPayBalance(params.userId);
+
+  // Audit Guard: Ensure zero payment can be captured for train tickets anywhere in the customer app.
+  // Fail closed with explicit IRCTC_PAYMENT_BLOCKED before any card, wallet, or UPI transaction can be created.
+  const isTrainPayment =
+    params.memo?.toLowerCase().includes("train") ||
+    params.memo?.toLowerCase().includes("irctc") ||
+    params.recipientId?.toLowerCase().includes("irctc") ||
+    params.recipientId?.toLowerCase().includes("train");
+
+  if (isTrainPayment) {
+    return {
+      success: false,
+      newBalancePaise: currentBalance,
+      error:
+        "IRCTC_PAYMENT_BLOCKED: Train ticket payment capture is restricted by Indian Railways CRIS guidelines. Certified IRCTC PSP API is not verified. No customer account, card, or wallet has been charged.",
+    };
+  }
+
   if (currentBalance < params.amountPaise) {
     return {
       success: false,

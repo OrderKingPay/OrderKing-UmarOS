@@ -960,7 +960,7 @@ export function TravelPage() {
               </h2>
             </div>
             <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start sm:self-auto">
-              Live Partner Tariff Guaranteed
+              Live Carrier Tariff Benchmarking
             </span>
           </div>
 
@@ -1324,7 +1324,7 @@ export function TravelPage() {
                   <div className="bg-white p-3 rounded-xl border border-emerald-200 bg-emerald-50/30">
                     <span className="text-emerald-700 block text-[11px] font-bold">OrderKing Convenience Fee</span>
                     <span className="text-sm font-black text-emerald-600 font-mono">₹0 (FREE)</span>
-                    <span className="text-[10px] text-emerald-700/80 block mt-0.5">0% Markup Guaranteed</span>
+                    <span className="text-[10px] text-emerald-700/80 block mt-0.5">Zero Platform Markup</span>
                   </div>
                   <div className="bg-white p-3 rounded-xl border border-sky-300 bg-sky-50/50">
                     <span className="text-sky-900 block text-[11px] font-bold">OrderKing Direct Fare</span>
@@ -1496,12 +1496,12 @@ export function TravelPage() {
                 </div>
               </div>
 
-              {/* Real-time Train Fare Breakdown & 0% Agent Markup Guarantee */}
+              {/* Real-time Train Fare Benchmark & 0% Agent Markup Guarantee */}
               <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50/50 via-slate-50/70 to-emerald-50/40 p-4 sm:p-5 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-200/60 pb-3">
                   <span className="text-xs font-black uppercase tracking-wider text-indigo-900 flex items-center gap-1.5">
                     <TrendingDown className="size-4 text-emerald-600" />
-                    Official IRCTC Fare Audit ({trainPassengers} Pax · Class {trainClass})
+                    Indian Railways Fare Tariff Benchmark ({trainPassengers} Pax · Class {trainClass})
                   </span>
                   <span className="text-xs font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300">
                     Instant Savings: ₹{trainAgentSurcharge} vs Agent Portals
@@ -1530,6 +1530,10 @@ export function TravelPage() {
                     <span className="text-[10px] text-slate-500 line-through block mt-0.5">₹{trainAgentTotal.toLocaleString("en-IN")} on 3rd-Party</span>
                   </div>
                 </div>
+
+                <p className="text-[11px] text-slate-500 leading-relaxed pt-1">
+                  <strong className="text-slate-700">Official Compliance Notice:</strong> Real-time seat inventory, dynamic Tatkal charges, and confirmed reservations are managed exclusively by Indian Railways PRS on the official IRCTC portal. OrderKing provides zero-markup preparation and immediate handoff.
+                </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
@@ -1543,7 +1547,7 @@ export function TravelPage() {
                   }}
                   className="flex-1 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm transition shadow-md shadow-indigo-600/20 flex items-center justify-center gap-1.5"
                 >
-                  <span>Book on Official IRCTC Portal (0% Markup)</span>
+                  <span>Search &amp; Book on Official IRCTC Portal (0% Markup)</span>
                   <ArrowUpRight className="size-4" />
                 </Button>
                 <Button
@@ -1879,7 +1883,7 @@ export function TravelPage() {
                   <div className="bg-white p-3 rounded-xl border border-emerald-200 bg-emerald-50/30">
                     <span className="text-emerald-700 block text-[11px] font-bold">OrderKing Convenience Fee</span>
                     <span className="text-sm font-black text-emerald-600 font-mono">₹0 (FREE)</span>
-                    <span className="text-[10px] text-emerald-700/80 block mt-0.5">0% Markup Guaranteed</span>
+                    <span className="text-[10px] text-emerald-700/80 block mt-0.5">Zero Platform Markup</span>
                   </div>
                   <div className="bg-white p-3 rounded-xl border border-orange-300 bg-orange-50/50">
                     <span className="text-orange-900 block text-[11px] font-bold">Direct Seat Fare</span>
@@ -2381,7 +2385,7 @@ export function TravelPage() {
                   Direct Chauffeur Metered Calculation ({cabDistanceKm} km · {cabVehicleClass.toUpperCase()})
                 </span>
                 <span className="text-xs font-black text-emerald-900 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300">
-                  0% Surge Guarantee · ₹{cabSurgeSaved} Surge Saved vs Ride-Hailing Apps
+                  Zero Platform Surge Markup · Estimated ₹{cabSurgeSaved} savings vs surge apps
                 </span>
               </div>
 

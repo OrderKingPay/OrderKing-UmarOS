@@ -1580,6 +1580,9 @@ function IntelligencePage() {
                           <span className="text-xs font-black font-mono text-emerald-300 block">
                             {job.compensationBand}
                           </span>
+                          <span className="text-[9px] text-zinc-500 block font-normal">
+                            Industry Benchmark / Partner Indicative Band
+                          </span>
                           <span className="text-[10px] text-zinc-500 block">
                             Subject to Employer Onboarding &amp; KYC
                           </span>
