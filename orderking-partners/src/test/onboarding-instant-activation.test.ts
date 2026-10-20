@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   ORDERKING_ONBOARDING_DRAFT_KEY,
@@ -33,6 +34,12 @@ describe("Restaurant Onboarding Revolution - Instant 60s Activation (Zomato Equi
     vi.unstubAllGlobals();
   });
 
+  it("never fabricates an FSSAI expiry date for an unknown certificate", () => {
+    const source = readFileSync(new URL("../routes/onboarding.tsx", import.meta.url), "utf8");
+    expect(source).not.toContain("Auto-defaults to 1 year");
+    expect(source).not.toContain("fssaiExpiry = defaultExpiryStr");
+    expect(source).toContain("Enter the actual FSSAI certificate expiry before submitting for review.");
+  });
   describe("Zero SMS OTP Dependency & Frictionless Station 5 Activation", () => {
     it("satisfies Station 5 commercial contract completely via 1-click legal agreement without any SMS OTP", () => {
       // Simulating user clicking the single 1-click legal checkbox:

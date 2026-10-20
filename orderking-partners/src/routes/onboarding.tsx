@@ -382,13 +382,7 @@ function OnboardingPage() {
     const effectiveDescription = (form.description || String(r?.description ?? "")).trim();
 
     const fssai = (form.fssaiNumber || String(r?.fssai_number ?? "")).trim();
-    const defaultExp = new Date();
-    defaultExp.setFullYear(defaultExp.getFullYear() + 1);
-    const defaultExpiryStr = defaultExp.toISOString().slice(0, 10);
-    let fssaiExpiry = (form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")).trim();
-    if (!fssaiExpiry && fssai) {
-      fssaiExpiry = defaultExpiryStr;
-    }
+    const fssaiExpiry = (form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")).trim();
     const pan = (form.pan || String(r?.pan ?? "")).trim().toUpperCase();
     const ifsc = (form.bankIfsc || String(r?.bank_ifsc ?? "")).trim().toUpperCase();
     const gstin = exemptFromGst ? "" : (form.gstin || String(r?.gstin ?? "")).trim().toUpperCase();
@@ -454,6 +448,10 @@ function OnboardingPage() {
     }
 
     if (submitReviewAfterSave) {
+      if (!fssaiExpiry) {
+        setError("Enter the actual FSSAI certificate expiry before submitting for review.");
+        return;
+      }
       if (!validateFssai(fssai)) {
         setError("Partner Verification: A valid 14-digit FSSAI registration number is required to receive online orders.");
         return;
@@ -1134,22 +1132,12 @@ function OnboardingPage() {
               value={form.fssaiNumber || String(r?.fssai_number ?? "")}
               onChange={(v) => {
                 const cleaned = v.replace(/\D/g, "").slice(0, 14);
-                if (cleaned.length === 14 && !form.fssaiExpiryDate && !r?.fssai_expiry_date) {
-                  const oneYearLater = new Date();
-                  oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
-                  setForm({ ...form, fssaiNumber: cleaned, fssaiExpiryDate: oneYearLater.toISOString().slice(0, 10) });
-                } else {
-                  setForm({ ...form, fssaiNumber: cleaned });
-                }
+                setForm({ ...form, fssaiNumber: cleaned });
               }}
             />
             <Field
               label="FSSAI License Expiry Date"
-              placeholder={`e.g. ${(() => {
-                const d = new Date();
-                d.setFullYear(d.getFullYear() + 1);
-                return d.toISOString().slice(0, 10);
-              })()} (Auto-defaults to 1 year)`}
+              placeholder="Expiry on actual FSSAI certificate (YYYY-MM-DD)"
               value={form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")}
               onChange={(v) => setForm({ ...form, fssaiExpiryDate: v })}
             />

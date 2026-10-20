@@ -19,10 +19,9 @@ export class IrctcTrainProvider implements TravelProvider {
   private circuitBreakUntil = 0;
 
   isAvailable(): boolean {
-    return Boolean(
-      process.env.IRCTC_B2B_PARTNER_KEY?.trim() &&
-      process.env.IRCTC_B2B_API_URL?.trim(),
-    );
+    // An API key alone is not proof of IRCTC authorization or implemented issuance.
+    // This adapter currently blocks all searches and bookings.
+    return false;
   }
 
   private checkCircuit() {

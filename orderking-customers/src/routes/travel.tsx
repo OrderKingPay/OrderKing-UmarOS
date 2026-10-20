@@ -71,11 +71,7 @@ export interface PopularRoute {
   toCity: string;
   toCode: string;
   tag: string;
-  duration: string;
-  frequency: string;
-  farePaise: number;
   partnerUrl: string;
-  highlight: string;
 }
 
 export function getRoutePartnerHandoff(
@@ -134,11 +130,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Mumbai",
     toCode: "BOM",
     tag: "Aviation Corridor",
-    duration: "2h 15m",
-    frequency: "48 Flights Daily",
-    farePaise: 419900,
     partnerUrl: "/travel#flights",
-    highlight: "Save ₹399 convenience fee vs Commercial OTAs",
   },
   {
     id: "route-ccu-blr",
@@ -148,11 +140,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Bengaluru",
     toCode: "BLR",
     tag: "Business Sector",
-    duration: "2h 45m",
-    frequency: "22 Flights Daily",
-    farePaise: 545000,
     partnerUrl: "/travel#flights",
-    highlight: "0% OrderKing Platform Markup",
   },
   {
     id: "route-bom-goi",
@@ -162,11 +150,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Goa (Dabolim/Mopa)",
     toCode: "GOI",
     tag: "Holiday Gateway",
-    duration: "1h 15m",
-    frequency: "32 Flights Daily",
-    farePaise: 289000,
     partnerUrl: "/travel#flights",
-    highlight: "Direct Boarding Pass Web Check-In",
   },
   {
     id: "route-blr-del",
@@ -176,11 +160,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "New Delhi",
     toCode: "DEL",
     tag: "Metro Express",
-    duration: "2h 40m",
-    frequency: "40 Flights Daily",
-    farePaise: 480000,
     partnerUrl: "/travel#flights",
-    highlight: "Save ₹399 convenience fee vs OTAs",
   },
   {
     id: "route-maa-hyd",
@@ -190,11 +170,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Hyderabad",
     toCode: "HYD",
     tag: "Fast Hopper",
-    duration: "1h 10m",
-    frequency: "26 Flights Daily",
-    farePaise: 249900,
     partnerUrl: "/travel#flights",
-    highlight: "Student & Armed Forces Fares",
   },
   {
     id: "route-ndls-bsb-vb",
@@ -204,11 +180,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Varanasi Jn",
     toCode: "BSB",
     tag: "Vande Bharat Express",
-    duration: "8h 00m",
-    frequency: "Daily (ex. Thu)",
-    farePaise: 175000,
     partnerUrl: "/travel#trains",
-    highlight: "Official IRCTC Booking Handoff",
   },
   {
     id: "route-sbc-mys-vb",
@@ -218,11 +190,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Mysuru",
     toCode: "MYS",
     tag: "Superfast Rail",
-    duration: "1h 45m",
-    frequency: "18 Trains Daily",
-    farePaise: 36000,
     partnerUrl: "/travel#trains",
-    highlight: "Live Charting & Seat Availability",
   },
   {
     id: "route-blr-goa-bus",
@@ -232,11 +200,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Goa (Panaji)",
     toCode: "Kadamba",
     tag: "KSRTC Airavat AC",
-    duration: "10h 30m",
-    frequency: "Overnight Sleeper",
-    farePaise: 125000,
     partnerUrl: "/travel#buses",
-    highlight: "Clean AC Sleeper 2+1 Berths",
   },
 ];
 
@@ -244,7 +208,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
     id: "vip_concierge",
     label: "VIP Concierge & Charters",
-    badge: "Verified VIP",
+    badge: "Luxury Travel Enquiries",
     keywords: "private jet aviation helicopter charter taj oberoi heritage stay executive chauffeur vip concierge luxury",
     subCategories: [
       "Private Aviation & Jet Charters",
@@ -297,7 +261,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
     keywords: "rooms resorts accommodation luxury 5-star business homestays villas budget stays",
     subCategories: [
       "Luxury 5-Star & Resorts",
-      "Verified Business Hotels",
+      "Business Hotels",
       "Family Homestays & Villas",
       "Budget Stays Under ₹1,999",
     ],
@@ -577,49 +541,7 @@ export function TravelPage() {
     highwayDistanceKm * (vehicleAxleClass === "car" ? 2.15 : vehicleAxleClass === "lcv" ? 3.45 : 7.2)
   );
 
-  // Real-time Flight Fare Calculations
-  const flightBaseUnit = flightClass === "Business" ? 14500 : flightClass === "Premium Economy" ? 7200 : 4199;
-  const flightTotalBase = flightBaseUnit * flightPassengers;
-  const flightTaxes = Math.round(flightTotalBase * (flightClass === "Business" ? 0.12 : 0.05)) + (450 * flightPassengers);
-  const flightOrderKingTotal = flightTotalBase + flightTaxes;
-  const flightOtaConvenienceFee = 399 * flightPassengers;
-  const flightOtaTotal = flightOrderKingTotal + flightOtaConvenienceFee;
-
-  // Real-time Train Fare Calculations
-  const trainBaseUnit = trainClass === "1A" ? 2950 : trainClass === "2A" ? 1780 : trainClass === "3A" ? 1240 : trainClass === "CC" ? 980 : trainClass === "EC" ? 1850 : 465;
-  const trainTotalBase = trainBaseUnit * trainPassengers;
-  const trainGst = trainClass === "SL" ? 0 : Math.round(trainTotalBase * 0.05);
-  const trainIrctcLevy = 40 * trainPassengers;
-  const trainOrderKingTotal = trainTotalBase + trainGst + trainIrctcLevy;
-  const trainAgentSurcharge = 40 * trainPassengers;
-  const trainAgentTotal = trainOrderKingTotal + trainAgentSurcharge;
-
-  // Real-time Bus Fare Calculations
-  const busBaseUnit = busClass === "BharatBenz Premium Sleeper" ? 1650 : busClass === "Multi-Axle Volvo AC" ? 1400 : busClass === "Non-AC Seater / Sleeper" ? 650 : 1250;
-  const busTotalBase = busBaseUnit * busPassengers;
-  const busGst = Math.round(busTotalBase * 0.05);
-  const busOrderKingTotal = busTotalBase + busGst;
-  const busOtaFee = 45 * busPassengers;
-  const busOtaTotal = busOrderKingTotal + busOtaFee;
-
-  // Real-time Hotel Tariff & Direct Partner Discount Calculations
-  const hotelTariffPerNight =
-    currentSub === "Luxury 5-Star & Resorts" ? 8500 :
-    currentSub === "Family Homestays & Villas" ? 5500 :
-    currentSub === "Budget Stays Under ₹1,999" ? 1499 : 3200;
-  const hotelTotalBase = hotelTariffPerNight * hotelNights * hotelRooms;
-  const hotelGstRate = hotelTariffPerNight > 7500 ? 0.18 : 0.12;
-  const hotelGst = Math.round(hotelTotalBase * hotelGstRate);
-  const hotelTotalBilled = hotelTotalBase + hotelGst;
-  const hotelPartnerDiscount = Math.round(hotelTotalBase * 0.06);
-  const hotelEffectiveCost = hotelTotalBilled - hotelPartnerDiscount;
-
-  // Real-time Cab Metered & Surge Calculations
-  const cabPerKmRate = cabVehicleClass === "mini" ? 11 : cabVehicleClass === "suv" ? 19 : 14;
-  const cabMeteredBase = cabPerKmRate * cabDistanceKm;
-  const cabAirportFee = (cabPickup.toLowerCase().includes("airport") || cabDrop.toLowerCase().includes("airport") || cabPackageHours === "Airport Point-to-Point") ? 150 : 0;
-  const cabOrderKingFare = cabMeteredBase + cabAirportFee;
-  const cabSurgeSaved = Math.round(cabMeteredBase * 0.35);
+  // Live fares and booking status are available only at authenticated providers.
 
   return (
     <CustomerShell>
@@ -1049,7 +971,7 @@ export function TravelPage() {
                       <Plane className="size-4" />
                     </span>
                     <h2 className="text-lg font-black text-slate-900 tracking-tight">
-                      Search Flights &amp; Calculate Instant 0% Convenience Fee Savings
+                      Search Flights at Official Carrier
                     </h2>
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
@@ -1135,42 +1057,10 @@ export function TravelPage() {
                 </div>
               </div>
 
-              {/* Real-time Flight Fare Breakdown & Instant Savings Comparison */}
-              <div className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50/60 via-slate-50/70 to-indigo-50/40 p-4 sm:p-5 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sky-200/60 pb-3">
-                  <span className="text-xs font-black uppercase tracking-wider text-sky-900 flex items-center gap-1.5">
-                    <TrendingDown className="size-4 text-emerald-600" />
-                    Direct Airline Fare Audit ({flightPassengers} Pax · {flightClass})
-                  </span>
-                  <span className="text-xs font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300">
-                    Instant Savings: ₹{flightOtaConvenienceFee} vs Major OTAs
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div className="bg-white p-3 rounded-xl border border-slate-200">
-                    <span className="text-slate-500 block text-[11px] font-medium">Airline Base Fare</span>
-                    <span className="text-sm font-black text-slate-900 font-mono">₹{flightTotalBase.toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">₹{flightBaseUnit} × {flightPassengers}</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200">
-                    <span className="text-slate-500 block text-[11px] font-medium">UDF + PSF + Aviation GST</span>
-                    <span className="text-sm font-black text-slate-900 font-mono">₹{flightTaxes.toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">Govt Mandated Dues</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-emerald-200 bg-emerald-50/30">
-                    <span className="text-emerald-700 block text-[11px] font-bold">OrderKing Convenience Fee</span>
-                    <span className="text-sm font-black text-emerald-600 font-mono">₹0 (FREE)</span>
-                    <span className="text-[10px] text-emerald-700/80 block mt-0.5">Zero Platform Markup</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-sky-300 bg-sky-50/50">
-                    <span className="text-sky-900 block text-[11px] font-bold">OrderKing Direct Fare</span>
-                    <span className="text-base font-black text-sky-900 font-mono">₹{flightOrderKingTotal.toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-500 line-through block mt-0.5">₹{flightOtaTotal.toLocaleString("en-IN")} on OTAs</span>
-                  </div>
-                </div>
+              <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:p-5">
+                <p className="text-sm font-black text-sky-950">Flight price and availability</p>
+                <p className="text-xs text-sky-800 mt-1">Actual fares, taxes, fees, seats and confirmation are available from the booking provider. OrderKing has no authenticated live quote or reservation for this search. Complete the transaction on the provider website.</p>
               </div>
-
               {/* Search Live Flights CTA */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
@@ -1201,10 +1091,10 @@ export function TravelPage() {
                       id: `trip-${Date.now()}`,
                       bookingType: "Flight",
                       providerName: `${airlineCheckInCode.split("(")[0]?.trim() || "Flight"} (${flightClass})`,
-                      bookingRef: flightPnrInput || "PENDING-SEARCH",
+                      bookingRef: flightPnrInput || "PLANNED-NOT-BOOKED",
                       travelDate: flightDate,
                       routeOrLocation: `${flightFrom} ➔ ${flightTo}`,
-                      notes: `${flightPassengers} Pax · Fare: ₹${flightOrderKingTotal}`,
+                      notes: `${flightPassengers} Pax · Price not quoted — no flight booked`,
                       createdAt: new Date().toISOString(),
                     };
                     persistTrips([newTrip, ...savedTrips]);
@@ -1348,7 +1238,7 @@ export function TravelPage() {
                   }}
                   className="flex-1 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm transition shadow-md shadow-indigo-600/20 flex items-center justify-center gap-1.5"
                 >
-                  <span>Search &amp; Book on Official IRCTC Portal (0% Markup)</span>
+                  <span>Book Train on Official IRCTC</span>
                   <ArrowUpRight className="size-4" />
                 </Button>
                 <Button
@@ -1358,10 +1248,10 @@ export function TravelPage() {
                       id: `trip-${Date.now()}`,
                       bookingType: "Train",
                       providerName: `Indian Railways (${trainClass})`,
-                      bookingRef: "IRCTC-DIRECT",
+                      bookingRef: "PLANNED-NOT-BOOKED",
                       travelDate: trainDate,
                       routeOrLocation: `${trainFrom} ➔ ${trainTo}`,
-                      notes: `${trainPassengers} Pax · Quota: ${trainQuota} · Fare: ₹${trainOrderKingTotal}`,
+                      notes: `${trainPassengers} Pax · Quota: ${trainQuota} · Price not quoted — no rail ticket booked`,
                       createdAt: new Date().toISOString(),
                     };
                     persistTrips([newTrip, ...savedTrips]);
@@ -1580,7 +1470,7 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-orange-800 bg-orange-100 px-3 py-1 rounded-full self-start sm:self-auto">
-                  Verified AC Sleeper Operators
+                  Check Bus Operators at Provider
                 </span>
               </div>
 
@@ -1658,42 +1548,10 @@ export function TravelPage() {
                 </div>
               </div>
 
-              {/* Real-time Bus Fare Breakdown & 0% Platform Markup Guarantee */}
-              <div className="rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50/50 via-slate-50/70 to-amber-50/40 p-4 sm:p-5 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-orange-200/60 pb-3">
-                  <span className="text-xs font-black uppercase tracking-wider text-orange-900 flex items-center gap-1.5">
-                    <TrendingDown className="size-4 text-emerald-600" />
-                    Intercity Road Mobility Breakdown ({busPassengers} Pax · {busClass})
-                  </span>
-                  <span className="text-xs font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300">
-                    Instant Savings: ₹{busOtaFee} vs RedBus Service Charges
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div className="bg-white p-3 rounded-xl border border-slate-200">
-                    <span className="text-slate-500 block text-[11px] font-medium">Operator Base Fare</span>
-                    <span className="text-sm font-black text-slate-900 font-mono">₹{busTotalBase.toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">₹{busBaseUnit} × {busPassengers}</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200">
-                    <span className="text-slate-500 block text-[11px] font-medium">Road GST (5%)</span>
-                    <span className="text-sm font-black text-slate-900 font-mono">₹{busGst.toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">Statutory Transport Levy</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-emerald-200 bg-emerald-50/30">
-                    <span className="text-emerald-700 block text-[11px] font-bold">OrderKing Convenience Fee</span>
-                    <span className="text-sm font-black text-emerald-600 font-mono">₹0 (FREE)</span>
-                    <span className="text-[10px] text-emerald-700/80 block mt-0.5">Zero Platform Markup</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-orange-300 bg-orange-50/50">
-                    <span className="text-orange-900 block text-[11px] font-bold">Direct Seat Fare</span>
-                    <span className="text-base font-black text-orange-900 font-mono">₹{busOrderKingTotal.toLocaleString("en-IN")}</span>
-                    <span className="text-[10px] text-slate-500 line-through block mt-0.5">₹{busOtaTotal.toLocaleString("en-IN")} on Other Portals</span>
-                  </div>
-                </div>
+              <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:p-5">
+                <p className="text-sm font-black text-sky-950">Bus price and availability</p>
+                <p className="text-xs text-sky-800 mt-1">Actual fares, taxes, fees, seats and confirmation are available from the booking provider. OrderKing has no authenticated live quote or reservation for this search. Complete the transaction on the provider website.</p>
               </div>
-
               {/* Operator & RTC Filter */}
               <div className="flex flex-wrap items-center gap-2 pt-2">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">
@@ -1744,7 +1602,7 @@ export function TravelPage() {
                   }}
                   className="h-12 rounded-xl border-slate-200 text-slate-800 font-bold text-sm"
                 >
-                  State RTC Verified Schedule
+                  View State RTC Booking
                 </Button>
                 <Button
                   type="button"
@@ -1757,7 +1615,7 @@ export function TravelPage() {
                       bookingRef: "BUS-OPERATOR-DIRECT",
                       travelDate: busDate,
                       routeOrLocation: `${busFrom} ➔ ${busTo}`,
-                      notes: `${busPassengers} Passengers · Fare: ₹${busOrderKingTotal}`,
+                      notes: `${busPassengers} Passengers · Price not quoted — no bus ticket booked`,
                       createdAt: new Date().toISOString(),
                     };
                     persistTrips([newTrip, ...savedTrips]);
@@ -1933,49 +1791,17 @@ export function TravelPage() {
               </div>
             </div>
 
-            {/* Real-time Hotel Tariff & Transparent Savings Breakdown */}
-            <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50/50 via-slate-50/70 to-purple-50/40 p-4 sm:p-5 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/60 pb-3">
-                <span className="text-xs font-black uppercase tracking-wider text-amber-950 flex items-center gap-1.5">
-                  <TrendingDown className="size-4 text-emerald-600" />
-                  Live Tariff Calculation &amp; Price Comparison ({hotelNights} Night{hotelNights > 1 ? "s" : ""} · {hotelRooms} Room{hotelRooms > 1 ? "s" : ""})
-                </span>
-                <span className="text-xs font-black text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300 flex items-center gap-1">
-                  <Coins className="size-3 text-amber-700" /> 6% Direct Partner Discount: ₹{hotelPartnerDiscount.toLocaleString("en-IN")}
-                </span>
+              <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:p-5">
+                <p className="text-sm font-black text-sky-950">Hotel price and availability</p>
+                <p className="text-xs text-sky-800 mt-1">Actual fares, taxes, fees, seats and confirmation are available from the booking provider. OrderKing has no authenticated live quote or reservation for this search. Complete the transaction on the provider website.</p>
               </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="bg-white p-3 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 block text-[11px] font-medium">Room Base Tariff</span>
-                  <span className="text-sm font-black text-slate-900 font-mono">₹{hotelTotalBase.toLocaleString("en-IN")}</span>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">₹{hotelTariffPerNight.toLocaleString("en-IN")}/night</span>
-                </div>
-                <div className="bg-white p-3 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 block text-[11px] font-medium">Hospitality GST ({(hotelGstRate * 100).toFixed(0)}%)</span>
-                  <span className="text-sm font-black text-slate-900 font-mono">₹{hotelGst.toLocaleString("en-IN")}</span>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">B2B GST Invoicing</span>
-                </div>
-                <div className="bg-white p-3 rounded-xl border border-emerald-200 bg-emerald-50/30">
-                  <span className="text-emerald-700 block text-[11px] font-bold">OrderKing Booking Fee</span>
-                  <span className="text-sm font-black text-emerald-600 font-mono">₹0 (FREE)</span>
-                  <span className="text-[10px] text-emerald-700/80 block mt-0.5">Zero Platform Markup</span>
-                </div>
-                <div className="bg-white p-3 rounded-xl border border-amber-300 bg-amber-50/50">
-                  <span className="text-amber-950 block text-[11px] font-bold">Effective Net Cost</span>
-                  <span className="text-base font-black text-amber-950 font-mono">₹{hotelEffectiveCost.toLocaleString("en-IN")}</span>
-                  <span className="text-[10px] text-emerald-700 font-bold block mt-0.5">After ₹{hotelPartnerDiscount} Partner Discount</span>
-                </div>
-              </div>
-            </div>
-
             {/* Sub-category Curated Tier Matrix */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 {
                   tier: "Luxury 5-Star & Resorts",
                   desc: "Heritage palaces, beachfront resorts & club suites",
-                  tag: "5-Star Verified",
+                  tag: "5-Star Category",
                 },
                 {
                   tier: "Verified Business Hotels",
@@ -2044,13 +1870,13 @@ export function TravelPage() {
                   dNext.setDate(dNext.getDate() + hotelNights);
                   const checkOut = dNext.toISOString().split("T")[0];
                   const cleanCity = hotelCity.replace(/\,.*$/, "").trim();
-                  const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?cid=1890000&city=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${hotelRooms}&adults=${hotelRooms * 2}`;
+                  const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?city=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${hotelRooms}&adults=${hotelRooms * 2}`;
                   toast.success(`Handoff to hotel partner for ${cleanCity} (${hotelNights} nights)...`);
                   window.open(agodaUrl, "_blank", "noopener,noreferrer");
                 }}
                 className="flex-1 h-12 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5"
               >
-                <span>Reserve {currentSub} on Hotel Partner (0% Markup)</span>
+                <span>Check {currentSub} at Hotel Provider</span>
                 <ArrowUpRight className="size-4" />
               </Button>
               <Button
@@ -2061,10 +1887,10 @@ export function TravelPage() {
                     id: `trip-${Date.now()}`,
                     bookingType: "Hotel",
                     providerName: `${currentSub} (${hotelCity})`,
-                    bookingRef: `OK-HT-${Date.now().toString().slice(-6)}`,
+                    bookingRef: "PLANNED-NOT-BOOKED",
                     travelDate: hotelCheckIn,
                     routeOrLocation: hotelCity,
-                    notes: `${hotelNights} Nights · ${hotelRooms} Rooms · Tariff: ₹${hotelTotalBilled}`,
+                    notes: `${hotelNights} Nights · ${hotelRooms} Rooms · Price not quoted — no hotel reserved`,
                     createdAt: new Date().toISOString(),
                   };
                   persistTrips([newTrip, ...savedTrips]);
@@ -2164,7 +1990,7 @@ export function TravelPage() {
                   Estimated Trip Distance: <strong className="text-emerald-700 font-mono text-sm">{cabDistanceKm} km</strong>
                 </label>
                 <span className="text-[11px] text-slate-500">
-                  Rate: ₹{cabPerKmRate}/km ({cabVehicleClass.toUpperCase()})
+                  Fare: check with cab provider
                 </span>
               </div>
               <input
@@ -2178,42 +2004,10 @@ export function TravelPage() {
               />
             </div>
 
-            {/* Real-time Cab Metered Calculation & 0% Surge Guarantee */}
-            <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/50 via-slate-50/70 to-teal-50/40 p-4 sm:p-5 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-200/60 pb-3">
-                <span className="text-xs font-black uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
-                  <TrendingDown className="size-4 text-emerald-600" />
-                  Direct Chauffeur Metered Calculation ({cabDistanceKm} km · {cabVehicleClass.toUpperCase()})
-                </span>
-                <span className="text-xs font-black text-emerald-900 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300">
-                  Zero Platform Surge Markup · Estimated ₹{cabSurgeSaved} savings vs surge apps
-                </span>
+              <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:p-5">
+                <p className="text-sm font-black text-sky-950">Cab price and availability</p>
+                <p className="text-xs text-sky-800 mt-1">Actual fares, taxes, fees, seats and confirmation are available from the booking provider. OrderKing has no authenticated live quote or reservation for this search. Complete the transaction on the provider website.</p>
               </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="bg-white p-3 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 block text-[11px] font-medium">Metered Base Fare</span>
-                  <span className="text-sm font-black text-slate-900 font-mono">₹{cabMeteredBase.toLocaleString("en-IN")}</span>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">₹{cabPerKmRate}/km × {cabDistanceKm} km</span>
-                </div>
-                <div className="bg-white p-3 rounded-xl border border-slate-200">
-                  <span className="text-slate-500 block text-[11px] font-medium">Airport Parking &amp; Tolls</span>
-                  <span className="text-sm font-black text-slate-900 font-mono">₹{cabAirportFee}</span>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">{cabAirportFee > 0 ? "Terminal Toll Surcharge" : "No Toll Incurred"}</span>
-                </div>
-                <div className="bg-white p-3 rounded-xl border border-emerald-200 bg-emerald-50/30">
-                  <span className="text-emerald-700 block text-[11px] font-bold">Platform Commission</span>
-                  <span className="text-sm font-black text-emerald-600 font-mono">₹0 (FREE)</span>
-                  <span className="text-[10px] text-emerald-700/80 block mt-0.5">100% to Driver Chauffeur</span>
-                </div>
-                <div className="bg-white p-3 rounded-xl border border-emerald-300 bg-emerald-50/50">
-                  <span className="text-emerald-950 block text-[11px] font-bold">Direct Cab Total</span>
-                  <span className="text-base font-black text-emerald-950 font-mono">₹{cabOrderKingFare.toLocaleString("en-IN")}</span>
-                  <span className="text-[10px] text-slate-500 line-through block mt-0.5">₹{(cabOrderKingFare + cabSurgeSaved).toLocaleString("en-IN")} on Surge</span>
-                </div>
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-2xl border border-gray-200 p-4 bg-gray-50/50 hover:border-emerald-500 transition">
                 <span className="text-2xl mb-2 block">✈️</span>
@@ -2241,12 +2035,12 @@ export function TravelPage() {
               <Button
                 onClick={() => {
                   const uberUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(cabDrop)}`;
-                  toast.success(`Opening mobility dispatcher for ${cabPickup} ➔ ${cabDrop}...`);
+                  toast.success(`Opening provider booking options for ${cabPickup} ➔ ${cabDrop}...`);
                   window.open(uberUrl, "_blank", "noopener,noreferrer");
                 }}
                 className="flex-1 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5"
               >
-                <span>Dispatch via Mobility Partner (Tracked Fare)</span>
+                <span>Check Fare & Book with Provider</span>
                 <ArrowUpRight className="size-4" />
               </Button>
               <Button
@@ -2257,10 +2051,10 @@ export function TravelPage() {
                     id: `trip-${Date.now()}`,
                     bookingType: "Cab",
                     providerName: `Chauffeur (${cabVehicleClass.toUpperCase()})`,
-                    bookingRef: "CAB-DISPATCH-DIRECT",
+                    bookingRef: "PLANNED-NOT-DISPATCHED",
                     travelDate: new Date().toISOString().split("T")[0],
                     routeOrLocation: `${cabPickup} ➔ ${cabDrop}`,
-                    notes: `${cabDistanceKm} km · Mode: ${cabPackageHours} · Fare: ₹${cabOrderKingFare}`,
+                    notes: `${cabDistanceKm} km · Mode: ${cabPackageHours} · Price not quoted — no cab dispatched`,
                     createdAt: new Date().toISOString(),
                   };
                   persistTrips([newTrip, ...savedTrips]);
@@ -2296,7 +2090,7 @@ export function TravelPage() {
                   NETC FASTag Bank Directory &amp; NHAI Highway Toll Estimator
                 </h2>
                 <p className="text-xs text-gray-500 font-medium">
-                  Connect directly to your RBI-authorized NETC issuing bank portal or estimate NHAI national highway toll outlay. No unverified wallet debit is made here.
+                  Connect directly to your RBI-authorized NETC issuing bank portal or estimate NHAI national highway toll outlay. No wallet debit is made here.
                 </p>
               </div>
             </div>

@@ -59,27 +59,27 @@ import { cn } from "@/lib/utils";
 
 // Verified popular intercity bus corridors across India with standard fares
 const VERIFIED_BUS_CORRIDORS = [
-  { id: "del-jpr", from: "Delhi", to: "Jaipur", type: "Volvo AC Multi-Axle", duration: "5h 15m", fare: 480 },
-  { id: "blr-chn", from: "Bengaluru", to: "Chennai", type: "AC Sleeper (2+1)", duration: "6h 30m", fare: 650 },
-  { id: "bom-pun", from: "Mumbai", to: "Pune", type: "Shivneri AC Express", duration: "3h 45m", fare: 380 },
-  { id: "hyd-vja", from: "Hyderabad", to: "Vijayawada", type: "Super Luxury AC", duration: "5h 30m", fare: 520 },
-  { id: "kol-slg", from: "Kolkata", to: "Siliguri", type: "Luxury AC Sleeper", duration: "11h 00m", fare: 780 },
+  { id: "del-jpr", from: "Delhi", to: "Jaipur" },
+  { id: "blr-chn", from: "Bengaluru", to: "Chennai" },
+  { id: "bom-pun", from: "Mumbai", to: "Pune" },
+  { id: "hyd-vja", from: "Hyderabad", to: "Vijayawada" },
+  { id: "kol-slg", from: "Kolkata", to: "Siliguri" },
 ];
 
 // Verified popular domestic flight corridors with standard frequencies
 const VERIFIED_FLIGHT_CORRIDORS = [
-  { id: "del-bom", from: "New Delhi", fromCode: "DEL", to: "Mumbai", toCode: "BOM", duration: "2h 15m", frequency: "48 Flights Daily", fare: 4199, highlight: "Save ₹399 OTA fee" },
-  { id: "blr-del", from: "Bengaluru", fromCode: "BLR", to: "New Delhi", toCode: "DEL", duration: "2h 40m", frequency: "40 Flights Daily", fare: 4800, highlight: "0% Convenience Fee" },
-  { id: "ccu-blr", from: "Kolkata", fromCode: "CCU", to: "Bengaluru", toCode: "BLR", duration: "2h 45m", frequency: "22 Flights Daily", fare: 5450, highlight: "Business Sector" },
-  { id: "bom-goi", from: "Mumbai", fromCode: "BOM", to: "Goa (Dabolim/Mopa)", toCode: "GOI", duration: "1h 15m", frequency: "32 Flights Daily", fare: 2890, highlight: "Direct Web Check-In" },
-  { id: "maa-hyd", from: "Chennai", fromCode: "MAA", to: "Hyderabad", toCode: "HYD", duration: "1h 10m", frequency: "26 Flights Daily", fare: 2499, highlight: "Student & Armed Forces Fares" },
+  { id: "del-bom", from: "New Delhi", fromCode: "DEL", to: "Mumbai", toCode: "BOM" },
+  { id: "blr-del", from: "Bengaluru", fromCode: "BLR", to: "New Delhi", toCode: "DEL" },
+  { id: "ccu-blr", from: "Kolkata", fromCode: "CCU", to: "Bengaluru", toCode: "BLR" },
+  { id: "bom-goi", from: "Mumbai", fromCode: "BOM", to: "Goa (Dabolim/Mopa)", toCode: "GOI" },
+  { id: "maa-hyd", from: "Chennai", fromCode: "MAA", to: "Hyderabad", toCode: "HYD" },
 ];
 
 // Verified high-speed rail corridors
 const VERIFIED_TRAIN_CORRIDORS = [
-  { id: "ndls-bsb", from: "New Delhi", fromCode: "NDLS", to: "Varanasi Jn", toCode: "BSB", name: "Vande Bharat Express", duration: "8h 00m", fare: 1750, class: "Chair Car & Executive" },
-  { id: "csmt-adi", from: "Mumbai CSMT", fromCode: "CSMT", to: "Ahmedabad Jn", toCode: "ADI", name: "Tejas Express", duration: "6h 15m", fare: 1380, class: "Smart Dynamic Fares" },
-  { id: "sbc-mys", from: "Bengaluru City", fromCode: "SBC", to: "Mysuru Jn", toCode: "MYS", name: "Vande Bharat Express", duration: "1h 45m", fare: 550, class: "High Frequency Daily" },
+  { id: "ndls-bsb", from: "New Delhi", fromCode: "NDLS", to: "Varanasi Jn", toCode: "BSB" },
+  { id: "csmt-adi", from: "Mumbai CSMT", fromCode: "CSMT", to: "Ahmedabad Jn", toCode: "ADI" },
+  { id: "sbc-mys", from: "Bengaluru City", fromCode: "SBC", to: "Mysuru Jn", toCode: "MYS" },
 ];
 
 type VerifiedMentorProfile = { id: string; name: string; qualification: string; experience: string; specialty: string; languages: string; badge: string; subjects: string[]; description: string; };
@@ -538,7 +538,7 @@ export function SupremeKingPayExperience() {
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                Direct UPI, Utility Bills Directory, Carrier Handoffs, AI Tutor &amp; Verified Jobs.
+                Direct UPI, Utility Bills Directory, Carrier Handoffs, AI Tutor &amp; Jobs &amp; Applications.
               </p>
             </div>
           </div>
@@ -683,7 +683,7 @@ export function SupremeKingPayExperience() {
               </span>
             </div>
             <span className="text-sm sm:text-base font-black text-white leading-tight">AI Tutor</span>
-            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Verified Mentors &amp; Test Prep</span>
+            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Available Mentors &amp; AI Study Help</span>
             {activeSuperCategory === "tutor" && (
               <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
                 <span>Active Learning Portal</span>
@@ -711,7 +711,7 @@ export function SupremeKingPayExperience() {
                 Zero Commission
               </span>
             </div>
-            <span className="text-sm sm:text-base font-black text-white leading-tight">Verified Jobs</span>
+            <span className="text-sm sm:text-base font-black text-white leading-tight">Jobs &amp; Applications</span>
             <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Tech, Fleet, Retail &amp; Teaching</span>
             {activeSuperCategory === "jobs" && (
               <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
@@ -1278,7 +1278,7 @@ export function SupremeKingPayExperience() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">
-                    Verified Intercity AC Sleeper &amp; Volvo Corridors
+                    Suggested Bus Routes · Check Provider
                   </h3>
                   <p className="text-[11px] text-slate-400">Book with the provider after checking actual bus seats and fare</p>
                 </div>
@@ -1328,10 +1328,10 @@ export function SupremeKingPayExperience() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
                   <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                    <Building2 className="size-4" /> B2B Wholesale Hotel Handoff (0% Platform Markup)
+                    <Building2 className="size-4" /> Hotel Booking Provider Search
                   </span>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    Official Agoda &amp; Booking.com wholesale inventory with transparent GST and zero convenience surcharges
+                    Check actual hotel rooms, price, tax and cancellation at provider checkout
                   </p>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 self-start sm:self-auto">
@@ -1533,9 +1533,9 @@ export function SupremeKingPayExperience() {
                   onChange={(e) => setCabType(e.target.value as any)}
                   className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
                 >
-                  <option value="Sedan">Prime Sedan (Dzire / Etios) - ₹750</option>
-                  <option value="SUV">Electric SUV (Nexon EV) - ₹920</option>
-                  <option value="Innova">Innova Crysta MPV - ₹1,450</option>
+                  <option value="Sedan">Sedan - Check Provider Fare</option>
+                  <option value="SUV">SUV - Check Provider Fare</option>
+                  <option value="Innova">Innova MPV - Check Provider Fare</option>
                 </select>
               </div>
             </div>
