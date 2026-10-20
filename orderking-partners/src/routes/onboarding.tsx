@@ -249,6 +249,10 @@ function OnboardingPage() {
         }
         if (d.ownerName) {
           setClickwrapSignatoryName((prev) => prev || d.ownerName);
+        } else if (d.holder) {
+          setClickwrapSignatoryName((prev) => prev || d.holder);
+        } else if (d.name) {
+          setClickwrapSignatoryName((prev) => prev || d.name);
         }
         if (d.clickwrapDesignation) {
           setClickwrapDesignation(d.clickwrapDesignation);
@@ -259,9 +263,8 @@ function OnboardingPage() {
         if (d.amortizedConsent !== undefined) {
           setAmortizedConsent(Boolean(d.amortizedConsent));
         }
-        if (d.executionMethod) {
-          setExecutionMethod(d.executionMethod);
-        }
+        // Default executionMethod to "CLICKWRAP" unconditionally (Zomato-equivalent instant onboarding)
+        setExecutionMethod("CLICKWRAP");
         if (d.clickwrapConsent !== undefined) {
           setClickwrapConsent(Boolean(d.clickwrapConsent));
         }
@@ -283,7 +286,7 @@ function OnboardingPage() {
     }
   }, [vendor.restaurantId]);
 
-  // Station 5: Commercial Contract & Digital Execution State
+  // Station 5: Commercial Contract & Digital Execution State (100% Paperless Clickwrap Default)
   const [onboardingFeeOption, setOnboardingFeeOption] = useState<OnboardingFeeOption>("AMORTIZED");
   const [amortizedConsent, setAmortizedConsent] = useState(false);
   const [executionMethod, setExecutionMethod] = useState<"CLICKWRAP" | "AADHAAR_ESIGN">("CLICKWRAP");
@@ -295,13 +298,8 @@ function OnboardingPage() {
   const [clientIp] = useState("103.216.201.45"); // Client ISP Node IP
   const [executionTimestamp, setExecutionTimestamp] = useState(() => new Date().toISOString());
 
-  // Aadhaar e-Sign State
+  // Aadhaar State (Optional Secondary Identity Record - No SMS OTP Required)
   const [aadhaarNumber, setAadhaarNumber] = useState("");
-  const [aadhaarOtp, setAadhaarOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [aadhaarSignatoryName, setAadhaarSignatoryName] = useState("");
-  const [aadhaarTxnId, setAadhaarTxnId] = useState("");
 
   // Binding Covenants & Undertakings
   const [covenantsAccepted, setCovenantsAccepted] = useState(false);
@@ -314,9 +312,37 @@ function OnboardingPage() {
   const uploadedDocs = restQ.data?.documents ?? [];
 
   const effectiveOwner = (form.ownerName || form.holder || String(r?.owner_name ?? "")).trim();
-  const effectiveSignatory = (clickwrapSignatoryName || effectiveOwner).trim();
+  const effectiveSignatory = (clickwrapSignatoryName || effectiveOwner || form.displayName || form.name || "Authorized Signatory").trim();
 
-  // Validate Station 5 state in real time
+  // Auto-fill clickwrapSignatoryName whenever owner or contact details are entered
+  useEffect(() => {
+    const ownerOrContact = form.ownerName || form.holder || form.displayName || form.name || "";
+    if (ownerOrContact && !clickwrapSignatoryName) {
+      setClickwrapSignatoryName(ownerOrContact);
+    }
+  }, [form.ownerName, form.holder, form.displayName, form.name, clickwrapSignatoryName]);
+
+  // Check whether all underlying Station 5 covenants are satisfied
+  const allCovenantsSatisfied =
+    covenantsAccepted &&
+    foodSafetyUndertakingAccepted &&
+    privacyAndTaxAccepted &&
+    clickwrapConsent;
+
+  // 1-Click Clean Legal Agreement Toggle (Zomato-Equivalent Frictionless Activation)
+  const handleToggleUnifiedAgreement = (checked: boolean) => {
+    setCovenantsAccepted(checked);
+    setFoodSafetyUndertakingAccepted(checked);
+    setPrivacyAndTaxAccepted(checked);
+    setClickwrapConsent(checked);
+    setAmortizedConsent(checked);
+    setExecutionMethod("CLICKWRAP");
+    if (checked && !clickwrapSignatoryName) {
+      setClickwrapSignatoryName(effectiveSignatory);
+    }
+  };
+
+  // Validate Station 5 state in real time via Clickwrap digital execution
   const station5Validation = validateStation5CommercialContract({
     covenantViewerAccepted: covenantsAccepted,
     foodSafetyUndertakingAccepted: foodSafetyUndertakingAccepted,
@@ -326,54 +352,17 @@ function OnboardingPage() {
       option: onboardingFeeOption,
       amortizedConsent,
     },
-    digitalExecution:
-      executionMethod === "CLICKWRAP"
-        ? {
-            method: "CLICKWRAP",
-            signatoryName: effectiveSignatory,
-            signatoryDesignation: clickwrapDesignation,
-            timestamp: executionTimestamp,
-            ipAddress: clientIp,
-            covenantsAccepted: clickwrapConsent,
-          }
-        : {
-            method: "AADHAAR_ESIGN",
-            aadhaarNumber,
-            otp: aadhaarOtp,
-            otpVerified,
-            signatoryName: aadhaarSignatoryName || effectiveOwner,
-            timestamp: executionTimestamp,
-            transactionId: aadhaarTxnId,
-            covenantsAccepted: covenantsAccepted,
-          },
+    digitalExecution: {
+      method: "CLICKWRAP",
+      signatoryName: effectiveSignatory,
+      signatoryDesignation: clickwrapDesignation,
+      timestamp: executionTimestamp,
+      ipAddress: clientIp,
+      covenantsAccepted: clickwrapConsent,
+    },
   });
 
   const allTermsAccepted = station5Validation.isValid;
-
-  async function handleSendAadhaarOtp() {
-    setError(null);
-    if (!validateAadhaar(aadhaarNumber)) {
-      setError("Please enter a valid 12-digit Indian Aadhaar number.");
-      return;
-    }
-    setOtpSent(true);
-    setOtpVerified(false);
-    setSuccessMsg("UIDAI e-Sign OTP sent to registered mobile linked with Aadhaar ending in " + aadhaarNumber.slice(-4));
-  }
-
-  async function handleVerifyAadhaarOtp() {
-    setError(null);
-    if (!validateAadhaarOtp(aadhaarOtp)) {
-      setError("Please enter the 6-digit OTP sent to your Aadhaar-registered mobile number.");
-      return;
-    }
-    const clean = aadhaarNumber.replace(/[\s-]/g, "");
-    setOtpVerified(true);
-    const txn = `UIDAI-ESIGN-${Math.floor(100000 + Math.random() * 900000)}-TXN`;
-    setAadhaarTxnId(txn);
-    setAadhaarSignatoryName(effectiveOwner || "Authorized Signatory");
-    setSuccessMsg(`Aadhaar e-Sign verified via UIDAI / CDAC ESP Gateway (Ref: ${txn}, Masked: XXXX-XXXX-${clean.slice(8, 12)}).`);
-  }
 
   async function handleSaveAndRegister(submitReviewAfterSave: boolean, bypassAgreementCheck = false) {
     setError(null);
@@ -1038,7 +1027,7 @@ function OnboardingPage() {
               value={form.ownerName || String(r?.owner_name ?? "")}
               onChange={(v) => {
                 setForm({ ...form, ownerName: v });
-                if (!clickwrapSignatoryName) setClickwrapSignatoryName(v);
+                setClickwrapSignatoryName(v);
               }}
             />
             <Field
@@ -1226,7 +1215,12 @@ function OnboardingPage() {
               label="Account Holder / Beneficiary Name *"
               placeholder="e.g. Royal Biryani House Pvt Ltd"
               value={form.holder || form.bankName || String(r?.bank_name ?? "")}
-              onChange={(v) => setForm({ ...form, holder: v, bankName: v })}
+              onChange={(v) => {
+                setForm({ ...form, holder: v, bankName: v });
+                if (!clickwrapSignatoryName && !form.ownerName) {
+                  setClickwrapSignatoryName(v);
+                }
+              }}
             />
             <Field
               label="Bank Account Number *"
@@ -1344,258 +1338,200 @@ function OnboardingPage() {
 
         {/* STATION 5: COMMERCIAL AGREEMENT & DIGITAL EXECUTION */}
         <Card className="border-emerald-500/30 bg-slate-900/90 p-6 space-y-5 shadow-lg">
-          {/* Quick 1-Click Partner Agreement (Zomato-Identical Frictionless Activation) */}
-          <div className="rounded-2xl border border-emerald-500/60 bg-gradient-to-r from-emerald-950/60 to-slate-900 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="size-4 text-emerald-400" /> Instant 1-Click Partner Agreement (Zomato Equivalent)
-              </span>
-              <span className="text-[10px] text-emerald-300 font-mono bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/40">
-                60-Second Onboarding
-              </span>
-            </div>
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={allTermsAccepted}
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  setCovenantsAccepted(checked);
-                  setFoodSafetyUndertakingAccepted(checked);
-                  setPrivacyAndTaxAccepted(checked);
-                  setClickwrapConsent(checked);
-                  setAmortizedConsent(checked);
-                  setExecutionMethod("CLICKWRAP");
-                  if (checked && !clickwrapSignatoryName) {
-                    setClickwrapSignatoryName(form.ownerName || form.name || "Authorized Signatory");
-                  }
-                }}
-                className="mt-0.5 size-5 rounded border-emerald-500 bg-slate-950 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
-              />
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-white leading-snug">
-                  I confirm all restaurant details are accurate and agree to the OrderKing Merchant Agreement, FSSAI Food Safety Standards, and Automated Payout Settlement.
-                </p>
-                <p className="text-[11px] text-slate-400">
-                  Electronic execution under IT Act 2000 §10A · 0% platform commission · Direct automated weekly bank payouts.
-                </p>
-              </div>
-            </label>
-          </div>
-          {/* Quick 1-Click Partner Agreement (Zomato-Identical Frictionless Activation) */}
-          <div className="rounded-2xl border border-emerald-500/60 bg-gradient-to-r from-emerald-950/60 to-slate-900 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="size-4 text-emerald-400" /> Instant 1-Click Partner Agreement (Zomato Equivalent)
-              </span>
-              <span className="text-[10px] text-emerald-300 font-mono bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/40">
-                60-Second Onboarding
-              </span>
-            </div>
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={allTermsAccepted}
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  setCovenantsAccepted(checked);
-                  setFoodSafetyUndertakingAccepted(checked);
-                  setPrivacyAndTaxAccepted(checked);
-                  setClickwrapConsent(checked);
-                  setAmortizedConsent(checked);
-                  setExecutionMethod("CLICKWRAP");
-                  if (checked && !clickwrapSignatoryName) {
-                    setClickwrapSignatoryName(form.ownerName || form.name || "Authorized Signatory");
-                  }
-                }}
-                className="mt-0.5 size-5 rounded border-emerald-500 bg-slate-950 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
-              />
-              <div className="space-y-1">
-                <p className="text-xs font-bold text-white leading-snug">
-                  I confirm all restaurant details are accurate and agree to the OrderKing Merchant Agreement, FSSAI Food Safety Standards, and Automated Payout Settlement.
-                </p>
-                <p className="text-[11px] text-slate-400">
-                  Electronic execution under IT Act 2000 §10A · 0% platform commission · Direct automated weekly bank payouts.
-                </p>
-              </div>
-            </label>
-          </div>
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <Scale className="size-5 text-emerald-400" />
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="font-display text-base font-bold text-white">
-                    5. Partner Agreement &amp; Commercial Terms
+                    5. Partner Agreement &amp; Instant Activation
                   </h2>
                   <span className="rounded bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
-                    FINAL STEP
+                    FINAL STEP · 60s ONBOARDING
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Review partner covenants, choose an onboarding plan, and confirm electronically under the IT Act 2000.
+                  Instant paperless digital execution under Section 10A of the IT Act, 2000. No physical paperwork or SMS OTP delays.
                 </p>
               </div>
             </div>
             <span className="text-[11px] font-mono text-emerald-400 font-semibold">STATION 5 OF 5</span>
           </div>
 
-          {/* 1. RESTAURANT PARTNER AGREEMENT COVENANT VIEWER */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                <FileText className="size-3.5 text-emerald-400" />
-                Restaurant Partner Agreement
-              </Label>
+          {/* 1. KEY TERMS SUMMARY & EXPANDABLE COVENANTS */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
+                <div className="flex items-center gap-1.5 font-semibold text-xs text-emerald-400">
+                  <BadgeCheck className="size-4" />
+                  <span>0% Dine-In Commission</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  100% of customer spend retained for table orders &amp; dining room. Honest 28% delivery fulfillment.
+                </p>
+              </div>
+              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
+                <div className="flex items-center gap-1.5 font-semibold text-xs text-emerald-400">
+                  <Banknote className="size-4" />
+                  <span>Weekly Direct Settlement</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Direct automated payouts via NEFT/IMPS with integer paise precision and zero floating-point drift.
+                </p>
+              </div>
+              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
+                <div className="flex items-center gap-1.5 font-semibold text-xs text-emerald-400">
+                  <ShieldCheck className="size-4" />
+                  <span>FSSAI &amp; CGST §9(5) Tax</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  5% restaurant GST remitted by OrderKing. Pure Veg / Non-Veg kitchen segregation &amp; sealed packaging.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-xs text-slate-400">
+                Statutory covenants compliant with DPDP Act 2023, FSSAI Act 2006, and IT Act 2000.
+              </span>
               <button
                 type="button"
                 onClick={() => setCovenantViewerExpanded(!covenantViewerExpanded)}
                 className="text-[11px] text-emerald-400 hover:text-emerald-300 font-mono flex items-center gap-1"
               >
                 {covenantViewerExpanded ? (
-                  <>Collapse Viewer <ChevronUp className="size-3" /></>
+                  <>Collapse Legal Clauses <ChevronUp className="size-3" /></>
                 ) : (
-                  <>Expand Full Agreement <ChevronDown className="size-3" /></>
+                  <>View Full Legal Agreement <ChevronDown className="size-3" /></>
                 )}
               </button>
             </div>
 
-            {/* Covenant Viewer Body */}
-            <div className="rounded-lg border border-slate-800 bg-slate-950/90 p-4 text-xs text-slate-300 space-y-3">
-              <div className="flex flex-wrap gap-1.5 border-b border-slate-800/80 pb-2.5">
-                {[
-                  { id: "ALL", label: "All Clauses" },
-                  { id: "SETTLEMENT", label: "1. Integer Settlement" },
-                  { id: "TAX", label: "2. CGST §9(5) Tax" },
-                  { id: "COMMISSION", label: "3. 0% Commission" },
-                  { id: "SAFETY", label: "4. FSSAI Food Safety" },
-                  { id: "PRIVACY", label: "5. DPDP Privacy" },
-                  { id: "SLAS", label: "6. SLAs & Disputes" },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setActiveCovenantTab(t.id)}
-                    className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                      activeCovenantTab === t.id
-                        ? "bg-emerald-600 text-white font-medium"
-                        : "bg-slate-800 text-slate-400 hover:text-slate-200"
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
+            {/* Expandable Covenant Viewer Body */}
+            {covenantViewerExpanded && (
+              <div className="rounded-lg border border-slate-800 bg-slate-950/90 p-4 text-xs text-slate-300 space-y-3">
+                <div className="flex flex-wrap gap-1.5 border-b border-slate-800/80 pb-2.5">
+                  {[
+                    { id: "ALL", label: "All Clauses" },
+                    { id: "SETTLEMENT", label: "1. Integer Settlement" },
+                    { id: "TAX", label: "2. CGST §9(5) Tax" },
+                    { id: "COMMISSION", label: "3. 0% Commission" },
+                    { id: "SAFETY", label: "4. FSSAI Food Safety" },
+                    { id: "PRIVACY", label: "5. DPDP Privacy" },
+                    { id: "SLAS", label: "6. SLAs & Disputes" },
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setActiveCovenantTab(t.id)}
+                      className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+                        activeCovenantTab === t.id
+                          ? "bg-emerald-600 text-white font-medium"
+                          : "bg-slate-800 text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+                  {(activeCovenantTab === "ALL" || activeCovenantTab === "SETTLEMENT") && (
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                        <span className="size-1.5 rounded-full bg-emerald-400" />
+                        Clause 1: Commercial Formula &amp; Integer-Paise Precision
+                      </h4>
+                      <p className="text-slate-400 leading-relaxed pl-3">
+                        Net Restaurant Payable (NRP) is calculated in exact integer paise:{" "}
+                        <code className="text-emerald-300 font-mono text-[11px]">
+                          NRP = Gross Food Sales + Packaging − Restaurant Discounts − Platform Commission + Promos − Standard Taxes − Deductions ± Refunds
+                        </code>
+                        . All financial transactions are rounded half-away-from-zero with absolute mathematical protection against floating-point drift. Settlements are disbursed weekly via NEFT/IMPS.
+                      </p>
+                    </div>
+                  )}
+
+                  {(activeCovenantTab === "ALL" || activeCovenantTab === "TAX") && (
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                        <span className="size-1.5 rounded-full bg-emerald-400" />
+                        Clause 2: Tax Handling &amp; Government Remittance (CGST Act §9(5))
+                      </h4>
+                      <p className="text-slate-400 leading-relaxed pl-3">
+                        Order King complies strictly with applicable Indian tax provisions: <strong>5% GST on Restaurant Services</strong> under Section 9(5) of the CGST Act 2017 is remitted directly by Order King to the Government of India and is strictly <em>NOT</em> debited from your restaurant payable. Order King remits <strong>1% TCS under Section 52</strong> and <strong>1% TDS under Section 194-O</strong> of the Income Tax Act 1961 on gross sales as required by law.
+                      </p>
+                    </div>
+                  )}
+
+                  {(activeCovenantTab === "ALL" || activeCovenantTab === "COMMISSION") && (
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                        <span className="size-1.5 rounded-full bg-emerald-400" />
+                        Clause 3: Delivery Fulfillment Commission &amp; 0% Dine-In Commission
+                      </h4>
+                      <p className="text-slate-400 leading-relaxed pl-3">
+                        Order King applies an honest standard 28% delivery fulfillment commission (customizable per outlet down to negotiated partner rates) that directly funds delivery fleet payouts, dispatch logistics, and customer support. Additionally, Order King guarantees 0% commission on all Dine-In and Table Reservations, ensuring restaurants retain 100% of customer dining room spend.
+                      </p>
+                    </div>
+                  )}
+
+                  {(activeCovenantTab === "ALL" || activeCovenantTab === "SAFETY") && (
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                        <span className="size-1.5 rounded-full bg-emerald-400" />
+                        Clause 4: Food Safety, Hygiene &amp; Allergen Undertaking (FSSAI 2006)
+                      </h4>
+                      <p className="text-slate-400 leading-relaxed pl-3">
+                        The Restaurant Partner undertakes to maintain an active 14-digit FSSAI license, seal parcels with tamper-evident tape, physically segregate Veg (Green Dot) and Non-Veg (Red Dot) cooking surfaces and utensils, and maintain accurate allergen and calorie disclosures.
+                      </p>
+                    </div>
+                  )}
+
+                  {(activeCovenantTab === "ALL" || activeCovenantTab === "PRIVACY") && (
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                        <span className="size-1.5 rounded-full bg-emerald-400" />
+                        Clause 5: Data Privacy &amp; Consumer Protection (DPDP Act, 2023)
+                      </h4>
+                      <p className="text-slate-400 leading-relaxed pl-3">
+                        Customer delivery address coordinates and telephone numbers are transmitted exclusively for real-time order delivery fulfillment and must not be retained, stored, or utilized for unauthorized direct marketing.
+                      </p>
+                    </div>
+                  )}
+
+                  {(activeCovenantTab === "ALL" || activeCovenantTab === "SLAS") && (
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                        <span className="size-1.5 rounded-full bg-emerald-400" />
+                        Clause 6: Kitchen SLAs &amp; Transparent Dispute Arbitration
+                      </h4>
+                      <p className="text-slate-400 leading-relaxed pl-3">
+                        Partner commits to kitchen preparation SLAs (standard 15–35 min). Customer spill or transit damage disputes are arbitrated to logistics fleet liability, protecting merchant payouts from delivery mishandling.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-
-              <div className={`space-y-3 overflow-y-auto pr-1 ${covenantViewerExpanded ? "max-h-96" : "max-h-48"}`}>
-                {(activeCovenantTab === "ALL" || activeCovenantTab === "SETTLEMENT") && (
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-emerald-400" />
-                      Clause 1: Commercial Formula &amp; Integer-Paise Precision
-                    </h4>
-                    <p className="text-slate-400 leading-relaxed pl-3">
-                      Net Restaurant Payable (NRP) is calculated in exact integer paise:{" "}
-                      <code className="text-emerald-300 font-mono text-[11px]">
-                        NRP = Gross Food Sales + Packaging − Restaurant Discounts − Platform Commission + Promos − Standard Taxes − Deductions ± Refunds
-                      </code>
-                      . All financial transactions are rounded half-away-from-zero with absolute mathematical protection against floating-point drift. Settlements are disbursed weekly via NEFT/IMPS.
-                    </p>
-                  </div>
-                )}
-
-                {(activeCovenantTab === "ALL" || activeCovenantTab === "TAX") && (
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-emerald-400" />
-                      Clause 2: Tax Handling &amp; Government Remittance (CGST Act §9(5))
-                    </h4>
-                    <p className="text-slate-400 leading-relaxed pl-3">
-                      Order King complies strictly with applicable Indian tax provisions: <strong>5% GST on Restaurant Services</strong> under Section 9(5) of the CGST Act 2017 is remitted directly by Order King to the Government of India and is strictly <em>NOT</em> debited from your restaurant payable. Order King remits <strong>1% TCS under Section 52</strong> and <strong>1% TDS under Section 194-O</strong> of the Income Tax Act 1961 on gross sales as required by law.
-                    </p>
-                  </div>
-                )}
-
-                {(activeCovenantTab === "ALL" || activeCovenantTab === "COMMISSION") && (
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-emerald-400" />
-                      Clause 3: Delivery Fulfillment Commission (28% Standard / Negotiated) &amp; 0% Dine-In Commission
-                    </h4>
-                    <p className="text-slate-400 leading-relaxed pl-3">
-                      Order King applies an honest standard 28% delivery fulfillment commission (customizable per outlet down to negotiated partner rates) that directly funds delivery fleet payouts, dispatch logistics, and customer support. Additionally, Order King guarantees 0% commission on all Dine-In and Table Reservations, ensuring restaurants retain 100% of customer dining room spend.
-                    </p>
-                  </div>
-                )}
-
-                {(activeCovenantTab === "ALL" || activeCovenantTab === "SAFETY") && (
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-emerald-400" />
-                      Clause 4: Food Safety, Hygiene &amp; Allergen Undertaking (FSSAI 2006)
-                    </h4>
-                    <p className="text-slate-400 leading-relaxed pl-3">
-                      The Restaurant Partner undertakes to maintain an active 14-digit FSSAI license, seal parcels with tamper-evident tape, physically segregate Veg (Green Dot) and Non-Veg (Red Dot) cooking surfaces and utensils, and maintain accurate allergen and calorie disclosures.
-                    </p>
-                  </div>
-                )}
-
-                {(activeCovenantTab === "ALL" || activeCovenantTab === "PRIVACY") && (
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-emerald-400" />
-                      Clause 5: Data Privacy &amp; Consumer Protection (DPDP Act, 2023)
-                    </h4>
-                    <p className="text-slate-400 leading-relaxed pl-3">
-                      Customer delivery address coordinates and telephone numbers are transmitted exclusively for real-time order delivery fulfillment and must not be retained, stored, or utilized for unauthorized direct marketing.
-                    </p>
-                  </div>
-                )}
-
-                {(activeCovenantTab === "ALL" || activeCovenantTab === "SLAS") && (
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
-                      <span className="size-1.5 rounded-full bg-emerald-400" />
-                      Clause 6: Kitchen SLAs &amp; Transparent Dispute Arbitration
-                    </h4>
-                    <p className="text-slate-400 leading-relaxed pl-3">
-                      Partner commits to kitchen preparation SLAs (standard 15–35 min). Customer spill or transit damage disputes are arbitrated to logistics fleet liability, protecting merchant payouts from delivery mishandling.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <label className="flex items-start gap-2.5 cursor-pointer pt-1 text-xs text-slate-200">
-              <input
-                type="checkbox"
-                checked={covenantsAccepted}
-                onChange={(e) => setCovenantsAccepted(e.target.checked)}
-                className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
-              />
-              <span>
-                I have read, understood, and accept the <strong>Order King Restaurant Partner Agreement Covenants</strong>, including the commercial settlement formula, delivery fulfillment schedule, and food safety standards. *
-              </span>
-            </label>
+            )}
           </div>
 
-          {/* 2. ONBOARDING FEE PAYMENT OPTIONS */}
-          <div className="space-y-3 pt-2 border-t border-slate-800">
+          {/* 2. ONBOARDING FEE SETUP */}
+          <div className="space-y-2 pt-2 border-t border-slate-800">
             <div>
               <Label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
                 <Banknote className="size-3.5 text-emerald-400" />
-                Platform Onboarding Fee Setup (Select Option)
+                Platform Onboarding Plan
               </Label>
               <p className="text-xs text-slate-400 mt-0.5">
-                Select your preferred onboarding fee payment plan. Order King offers a Zero Upfront Barrier amortized monthly option so you can start taking orders immediately.
+                Start with Zero Upfront barrier or settle in a single discounted batch.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {/* Option A Card */}
               <div
                 onClick={() => setOnboardingFeeOption("AMORTIZED")}
-                className={`cursor-pointer rounded-lg border p-4 space-y-2 transition-all ${
+                className={`cursor-pointer rounded-lg border p-3.5 space-y-1.5 transition-all ${
                   onboardingFeeOption === "AMORTIZED"
                     ? "border-emerald-500 bg-emerald-950/20 ring-1 ring-emerald-500/50"
                     : "border-slate-800 bg-slate-950/60 hover:border-slate-700"
@@ -1610,29 +1546,20 @@ function OnboardingPage() {
                       onChange={() => setOnboardingFeeOption("AMORTIZED")}
                       className="text-emerald-500 focus:ring-emerald-500"
                     />
-                    <span className="font-semibold text-xs text-white">Option A: Amortized Monthly Plan</span>
+                    <span className="font-semibold text-xs text-white">Option A: Amortized Plan</span>
                   </div>
                   <span className="rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono px-2 py-0.5">
-                    ZERO UPFRONT
+                    ₹0 UPFRONT
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-300 leading-snug">
-                  Amortized Monthly Deduction of <strong>₹99/month for 6 months</strong> (Deducted automatically from weekly payout batches).
+                  ₹99/month for 6 months, deducted automatically from weekly payout batches. No initial cash barrier.
                 </p>
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-slate-400">Upfront Due Today:</span>
-                  <span className="text-emerald-400 font-bold">₹0.00</span>
-                </div>
-                <div className="flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-slate-400">Total Contract Value:</span>
-                  <span className="text-slate-200">₹594.00 (6 × ₹99)</span>
-                </div>
               </div>
 
-              {/* Option B Card */}
               <div
                 onClick={() => setOnboardingFeeOption("ONE_TIME")}
-                className={`cursor-pointer rounded-lg border p-4 space-y-2 transition-all ${
+                className={`cursor-pointer rounded-lg border p-3.5 space-y-1.5 transition-all ${
                   onboardingFeeOption === "ONE_TIME"
                     ? "border-emerald-500 bg-emerald-950/20 ring-1 ring-emerald-500/50"
                     : "border-slate-800 bg-slate-950/60 hover:border-slate-700"
@@ -1654,259 +1581,104 @@ function OnboardingPage() {
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-300 leading-snug">
-                  One-Time Direct Settlement of <strong>₹499</strong> (Deducted directly from initial settlement disbursement batch).
+                  ₹499 one-time direct settlement deducted from initial disbursement. Zero ongoing monthly fees.
                 </p>
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-slate-400">One-Time Settlement:</span>
-                  <span className="text-amber-300 font-bold">₹499.00</span>
-                </div>
-                <div className="flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-slate-400">Ongoing Monthly Deduction:</span>
-                  <span className="text-slate-200">₹0.00 (None)</span>
-                </div>
               </div>
-            </div>
-
-            {/* Option A Amortized Deduction Consent Checkbox */}
-            {onboardingFeeOption === "AMORTIZED" && (
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3 space-y-1.5">
-                <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-200">
-                  <input
-                    type="checkbox"
-                    checked={amortizedConsent}
-                    onChange={(e) => setAmortizedConsent(e.target.checked)}
-                    className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
-                  />
-                  <span>
-                    <strong>Amortized Deduction Authorization:</strong> I authorize Order King to deduct an onboarding fee of <strong>₹99.00/month for 6 consecutive monthly payout cycles (total ₹594.00)</strong> automatically from weekly payout batches. *
-                  </span>
-                </label>
-              </div>
-            )}
-          </div>
-
-          {/* 3. FOOD SAFETY, HYGIENE & ALLERGEN UNDERTAKING */}
-          <div className="space-y-2 pt-2 border-t border-slate-800">
-            <div className="rounded-lg border border-amber-500/30 bg-amber-950/10 p-4 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-amber-400" />
-                  <span className="font-semibold text-xs text-amber-300">
-                    Food Safety, Hygiene &amp; Allergen Undertaking (FSSAI Standards)
-                  </span>
-                </div>
-                <span className="rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono px-2 py-0.5">
-                  FSSAI ACT 2006
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-300 leading-relaxed">
-                Under Section 31 of the Food Safety and Standards Act 2006, the restaurant partner affirms that:
-              </p>
-              <ul className="text-[11px] text-slate-300 space-y-1 pl-4 list-disc marker:text-amber-400">
-                <li>
-                  Active 14-Digit FSSAI License: <span className="font-mono text-amber-300 font-semibold">{form.fssaiNumber || String(r?.fssai_number ?? "") || "[Required in Station 2]"}</span>.
-                </li>
-                <li>
-                  100% of dispatched customer orders are secured in food-grade tamper-evident packaging with seal intact.
-                </li>
-                <li>
-                  Strict kitchen segregation is maintained between Pure Vegetarian (Green Dot) and Non-Vegetarian (Red Dot) preparation surfaces, cookware, and fryers.
-                </li>
-                <li>
-                  All standard allergens (Dairy, Gluten, Nuts, Soy, Fish, Eggs) and nutritional details are transparently declared.
-                </li>
-              </ul>
-              <label className="flex items-start gap-2.5 cursor-pointer pt-1 text-xs text-slate-200">
-                <input
-                  type="checkbox"
-                  checked={foodSafetyUndertakingAccepted}
-                  onChange={(e) => setFoodSafetyUndertakingAccepted(e.target.checked)}
-                  className="mt-0.5 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500"
-                />
-                <span>
-                  I confirm the <strong>FSSAI Food Safety, Hygiene &amp; Allergen Undertaking</strong> and affirm that our 14-digit FSSAI registration is valid, active, and strictly observed in kitchen operations under the Food Safety and Standards Act, 2006. *
-                </span>
-              </label>
             </div>
           </div>
 
-          {/* 4. DIGITAL EXECUTION OPTIONS (IT ACT 2000 SECTION 10A) */}
+          {/* 3. DIGITAL EXECUTION (CLICKWRAP) & OPTIONAL AADHAAR */}
           <div className="space-y-3 pt-2 border-t border-slate-800">
             <div>
               <Label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                <Fingerprint className="size-3.5 text-emerald-400" />
-                Digital Contract Execution (Select e-Sign Method)
+                <FileCheck className="size-3.5 text-emerald-400" />
+                Paperless Digital Execution (IT Act 2000 §10A)
               </Label>
               <p className="text-xs text-slate-400 mt-0.5">
-                Legally binding electronic signature under Section 10A of the Information Technology Act, 2000.
+                Legally binding electronic signature under Indian law. Pre-filled from your restaurant profile.
               </p>
             </div>
 
-            {/* Method Tabs */}
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setExecutionMethod("CLICKWRAP")}
-                className={`flex-1 py-2 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all ${
-                  executionMethod === "CLICKWRAP"
-                    ? "border-emerald-500 bg-emerald-950/30 text-emerald-300 font-semibold"
-                    : "border-slate-800 bg-slate-950/60 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <FileCheck className="size-3.5" />
-                Fast Clickwrap e-Sign (Instant)
-              </button>
-              <button
-                type="button"
-                onClick={() => setExecutionMethod("AADHAAR_ESIGN")}
-                className={`flex-1 py-2 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all ${
-                  executionMethod === "AADHAAR_ESIGN"
-                    ? "border-emerald-500 bg-emerald-950/30 text-emerald-300 font-semibold"
-                    : "border-slate-800 bg-slate-950/60 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Fingerprint className="size-3.5" />
-                Aadhaar e-Sign with OTP
-              </button>
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-4 space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Field
+                  label="Authorized Signatory Full Name *"
+                  placeholder="e.g. Rajesh Kumar"
+                  value={clickwrapSignatoryName || effectiveSignatory}
+                  onChange={(v) => setClickwrapSignatoryName(v)}
+                />
+                <Field
+                  label="Signatory Capacity / Designation"
+                  placeholder="e.g. Sole Proprietor / Director"
+                  value={clickwrapDesignation}
+                  onChange={(v) => setClickwrapDesignation(v)}
+                />
+              </div>
+
+              <div className="rounded border border-slate-800/80 bg-slate-900/50 p-2.5 text-[11px] text-slate-400 flex flex-wrap items-center justify-between gap-2 font-mono">
+                <span className="flex items-center gap-1.5 text-emerald-400">
+                  <BadgeCheck className="size-3.5" />
+                  IT Act 2000 §10A Electronic Contract
+                </span>
+                <span className="text-slate-300">
+                  Audit IP: {clientIp}
+                </span>
+                <span className="text-slate-400">
+                  {executionTimestamp.slice(0, 19).replace("T", " ")} UTC
+                </span>
+              </div>
             </div>
 
-            {/* Mode 1: Fast Clickwrap e-Sign */}
-            {executionMethod === "CLICKWRAP" && (
-              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-4 space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <Field
-                    label="Authorized Signatory Full Name *"
-                    placeholder="e.g. Rajesh Kumar"
-                    value={clickwrapSignatoryName || effectiveOwner}
-                    onChange={(v) => setClickwrapSignatoryName(v)}
-                  />
-                  <Field
-                    label="Signatory Capacity / Designation"
-                    placeholder="e.g. Sole Proprietor / Director"
-                    value={clickwrapDesignation}
-                    onChange={(v) => setClickwrapDesignation(v)}
-                  />
-                </div>
-
-                <div className="rounded border border-slate-800/80 bg-slate-900/50 p-3 text-[11px] text-slate-400 space-y-1 font-mono">
-                  <div className="flex justify-between items-center">
-                    <span>Audit Trail Timestamp:</span>
-                    <span className="text-slate-200 flex items-center gap-1.5">
-                      {executionTimestamp}
-                      <button
-                        type="button"
-                        onClick={() => setExecutionTimestamp(new Date().toISOString())}
-                        title="Refresh Timestamp"
-                        className="text-slate-400 hover:text-emerald-400"
-                      >
-                        <RefreshCw className="size-3" />
-                      </button>
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Signatory IP Address:</span>
-                    <span className="text-slate-200">{clientIp}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Legal Framework:</span>
-                    <span className="text-emerald-400">IT Act 2000 §10A (Electronic Contracts)</span>
-                  </div>
-                </div>
-
-                <label className="flex items-start gap-2.5 cursor-pointer pt-1 text-xs text-slate-200">
-                  <input
-                    type="checkbox"
-                    checked={clickwrapConsent}
-                    onChange={(e) => setClickwrapConsent(e.target.checked)}
-                    className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
-                  />
-                  <span>
-                    I, <strong>{effectiveSignatory || "Authorized Signatory"}</strong>, in my capacity as <strong>{clickwrapDesignation}</strong>, hereby digitally execute this Agreement via Fast Clickwrap e-Sign with legal binding effect under Section 10A of the Information Technology Act, 2000. *
-                  </span>
-                </label>
+            {/* Optional Aadhaar Number (Secondary, Non-Blocking, No SMS OTP required!) */}
+            <div className="rounded-lg border border-slate-800/80 bg-slate-950/40 p-3 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                  <Fingerprint className="size-3.5 text-slate-400" />
+                  Aadhaar Number (Optional Identity Document)
+                </span>
+                <span className="text-[10px] font-mono text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded">
+                  OPTIONAL · NO SMS REQUIRED
+                </span>
               </div>
-            )}
-
-            {/* Mode 2: Aadhaar e-Sign with OTP */}
-            {executionMethod === "AADHAAR_ESIGN" && (
-              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-4 space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                  <div className="md:col-span-2">
-                    <Field
-                      label="12-Digit Indian Aadhaar Number *"
-                      placeholder="e.g. 5432 1098 7652"
-                      value={aadhaarNumber}
-                      onChange={(v) => {
-                        const clean = v.replace(/\D/g, "").slice(0, 12);
-                        setAadhaarNumber(clean);
-                        setOtpSent(false);
-                        setOtpVerified(false);
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      disabled={aadhaarNumber.length !== 12 || otpVerified}
-                      onClick={() => void handleSendAadhaarOtp()}
-                      className="w-full text-xs h-9 border-slate-700 bg-slate-800 hover:bg-slate-700"
-                    >
-                      {otpSent ? "Resend OTP" : "Send UIDAI OTP"}
-                    </Button>
-                  </div>
-                </div>
-
-                {otpSent && !otpVerified && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end pt-2 border-t border-slate-800/80">
-                    <div className="md:col-span-2">
-                      <Field
-                        label="6-Digit Aadhaar e-Sign OTP *"
-                        placeholder="Enter 6-digit OTP received on mobile"
-                        value={aadhaarOtp}
-                        onChange={(v) => setAadhaarOtp(v.replace(/\D/g, "").slice(0, 6))}
-                      />
-                    </div>
-                    <div>
-                      <Button
-                        type="button"
-                        disabled={aadhaarOtp.length !== 6}
-                        onClick={() => void handleVerifyAadhaarOtp()}
-                        className="w-full text-xs h-9 bg-emerald-600 hover:bg-emerald-500 text-white font-medium"
-                      >
-                        Verify OTP &amp; Sign
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {otpVerified && (
-                  <div className="rounded border border-emerald-500/40 bg-emerald-950/20 p-3 text-xs text-emerald-300 space-y-1">
-                    <div className="flex items-center gap-1.5 font-semibold">
-                      <BadgeCheck className="size-4 text-emerald-400" />
-                      Aadhaar e-Sign Verified via UIDAI / CDAC ESP Gateway
-                    </div>
-                    <div className="font-mono text-[11px] text-slate-300">
-                      Signatory: {aadhaarSignatoryName || effectiveOwner} | Ref: {aadhaarTxnId} | Masked: XXXX-XXXX-{aadhaarNumber.slice(-4)}
-                    </div>
-                  </div>
-                )}
+              <p className="text-[11px] text-slate-400">
+                OrderKing uses instant Clickwrap execution. You do not need to wait for any SMS OTP.
+              </p>
+              <div className="max-w-xs">
+                <Input
+                  value={aadhaarNumber}
+                  placeholder="12-digit Aadhaar (Optional)"
+                  onChange={(e) => {
+                    const clean = e.target.value.replace(/\D/g, "").slice(0, 12);
+                    setAadhaarNumber(clean);
+                  }}
+                  className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 text-xs h-8 font-mono"
+                />
               </div>
-            )}
+              {aadhaarNumber.length === 12 && (
+                <p className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
+                  <Check className="size-3" /> Aadhaar ending in {aadhaarNumber.slice(-4)} recorded for merchant KYC file.
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* 5. PRIVACY POLICY & TAX REMITTANCE CONFIRMATION */}
-          <div className="pt-2 border-t border-slate-800">
-            <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-200">
+          {/* 4. CLEAN 1-CLICK LEGAL CHECKBOX (ZOMATO EQUIVALENT) */}
+          <div className="rounded-xl border border-emerald-500/50 bg-gradient-to-r from-emerald-950/40 via-slate-900 to-emerald-950/20 p-4 shadow-sm space-y-2">
+            <label className="flex items-start gap-3 cursor-pointer select-none">
               <input
                 type="checkbox"
-                checked={privacyAndTaxAccepted}
-                onChange={(e) => setPrivacyAndTaxAccepted(e.target.checked)}
-                className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
+                checked={allCovenantsSatisfied}
+                onChange={(e) => handleToggleUnifiedAgreement(e.target.checked)}
+                className="mt-0.5 size-5 rounded border-emerald-500 bg-slate-950 text-emerald-500 focus:ring-emerald-500 shrink-0 cursor-pointer"
               />
-              <span>
-                I agree to the <strong>Partner Privacy Policy (DPDP Act, 2023)</strong> and authorize standard tax remittances under <strong>CGST Act §9(5), TCS §52, and Income Tax Act §194-O</strong>. *
-              </span>
+              <div className="space-y-1">
+                <span className="text-xs sm:text-sm font-bold text-white block leading-snug">
+                  I agree to the OrderKing Partner Terms, FSSAI Food Safety Declaration, and Merchant Agreement *
+                </span>
+                <p className="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                  By checking this box, I (in my capacity as {clickwrapDesignation || "Authorized Signatory"}) affirm that our 14-digit FSSAI registration is valid and active under the Food Safety and Standards Act 2006, accept the weekly commercial settlement terms, agree to the Partner Privacy Policy (DPDP Act 2023) and statutory tax remittances (CGST §9(5)), and digitally execute this agreement under Section 10A of the Information Technology Act, 2000.
+                </p>
+              </div>
             </label>
           </div>
 
@@ -1915,8 +1687,8 @@ function OnboardingPage() {
             <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
               <CheckCircle2 className={`size-4 ${allTermsAccepted ? "text-emerald-400" : "text-slate-600"}`} />
               {allTermsAccepted
-                ? "Partner agreement & digital execution completed."
-                : "Please review the agreement, select an onboarding option, and complete digital signature."}
+                ? "Partner agreement & digital execution completed. Ready to submit!"
+                : "Check the partner agreement declaration above to activate your restaurant in under 60 seconds."}
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5">
@@ -1931,7 +1703,7 @@ function OnboardingPage() {
               <Button
                 disabled={busy || !allTermsAccepted}
                 onClick={() => void handleSaveAndRegister(true)}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 shadow-lg shadow-emerald-900/30"
               >
                 {busy ? "Submitting..." : "Submit Partner Application"}
                 <ArrowRight className="ml-1.5 size-4" />
