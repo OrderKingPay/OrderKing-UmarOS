@@ -961,8 +961,14 @@ export function SupremeKingPayExperience() {
                   <label className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
                     <MapPin className="size-3 text-amber-400" /> From City / Airport
                   </label>
-                  <input type="text" aria-label="Search any airport by city or IATA code" placeholder="Search any airport by city or IATA code" autoComplete="off" list="flightFrom-suggestions" value={flightFrom} onChange={(e) => setFlightFrom(e.target.value)} className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none " />
-                    <datalist id="flightFrom-suggestions">{searchAirportOptions(flightFrom).map((a) => <option key={a.code + a.name} value={a.city + " (" + a.code + ")"}>{a.name}</option>)}</datalist>
+                  <AirportAutoSuggest
+                    value={flightFrom}
+                    onChange={setFlightFrom}
+                    theme="dark"
+                    placeholder="Search 7,900+ airports by city or code (e.g. Del, Gau)..."
+                    ariaLabel="From City / Airport"
+                    className="w-full"
+                  />
                 </div>
 
                 {/* To Airport with Swap */}
@@ -980,8 +986,14 @@ export function SupremeKingPayExperience() {
                       <ArrowLeftRight className="size-3" /> Swap
                     </button>
                   </div>
-                  <input type="text" aria-label="Search any airport by city or IATA code" placeholder="Search any airport by city or IATA code" autoComplete="off" list="flightTo-suggestions" value={flightTo} onChange={(e) => setFlightTo(e.target.value)} className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none " />
-                    <datalist id="flightTo-suggestions">{searchAirportOptions(flightTo).map((a) => <option key={a.code + a.name} value={a.city + " (" + a.code + ")"}>{a.name}</option>)}</datalist>
+                  <AirportAutoSuggest
+                    value={flightTo}
+                    onChange={setFlightTo}
+                    theme="dark"
+                    placeholder="Search 7,900+ airports by city or code (e.g. Bom, Cal)..."
+                    ariaLabel="To City / Airport"
+                    className="w-full"
+                  />
                 </div>
 
                 {/* Departure Date */}
@@ -1096,8 +1108,14 @@ export function SupremeKingPayExperience() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-400">From Station</label>
-                  <input type="text" aria-label="Search station or type station code" placeholder="Search station or type station code" autoComplete="off" list="trainFrom-suggestions" value={trainFrom} onChange={(e) => setTrainFrom(e.target.value)} className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none " />
-                    <datalist id="trainFrom-suggestions">{searchStationOptions(trainFrom).map((a) => <option key={a.code} value={a.name + " (" + a.code + ")"}>{a.city}</option>)}</datalist>
+                  <StationAutoSuggest
+                    value={trainFrom}
+                    onChange={setTrainFrom}
+                    theme="dark"
+                    placeholder="Search 8,000+ stations by city or code (e.g. Ndls, Sil)..."
+                    ariaLabel="From Station"
+                    className="w-full"
+                  />
                 </div>
 
                 <div className="space-y-1">
@@ -1111,8 +1129,14 @@ export function SupremeKingPayExperience() {
                       <ArrowLeftRight className="size-3" /> Swap
                     </button>
                   </div>
-                  <input type="text" aria-label="Search station or type station code" placeholder="Search station or type station code" autoComplete="off" list="trainTo-suggestions" value={trainTo} onChange={(e) => setTrainTo(e.target.value)} className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none " />
-                    <datalist id="trainTo-suggestions">{searchStationOptions(trainTo).map((a) => <option key={a.code} value={a.name + " (" + a.code + ")"}>{a.city}</option>)}</datalist>
+                  <StationAutoSuggest
+                    value={trainTo}
+                    onChange={setTrainTo}
+                    theme="dark"
+                    placeholder="Search 8,000+ stations by city or code (e.g. Hwh, Ghy)..."
+                    ariaLabel="To Station"
+                    className="w-full"
+                  />
                 </div>
 
                 <div className="space-y-1">
