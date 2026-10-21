@@ -123,7 +123,7 @@ export function FoodUpiCheckoutCard({
             className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-500/25 transition active:scale-95 no-underline"
           >
             <Zap className="size-4 fill-zinc-950" />
-            <span>Open in UPI App (GPay / PhonePe / Paytm)</span>
+            <span>Open in UPI App (PhonePe / Paytm / Cred / BHIM / Amazon Pay)</span>
           </a>
 
           <div className="grid grid-cols-2 gap-2">

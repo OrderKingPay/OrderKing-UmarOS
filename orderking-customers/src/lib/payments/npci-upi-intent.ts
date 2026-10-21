@@ -14,10 +14,26 @@
  *    - Paytm:    paytmmp://pay?...
  *    - CRED:     cred://pay?...
  *    - BHIM:     bhim://pay?...
+ *    - Amazon Pay: amazonpay://pay?...
  *    - Universal: upi://pay?... (OS native app chooser)
  */
 
-export type SupportedUPIApp = "phonepe" | "gpay" | "paytm" | "cred" | "bhim" | "universal";
+export type SupportedUPIApp = "phonepe" | "gpay" | "paytm" | "cred" | "bhim" | "amazonpay" | "universal";
+
+/**
+ * Founder's Verified Zero-Mock UPI VPAs across all supported apps
+ */
+export const FOUNDER_UPI_VPAS = {
+  phonepe: "9395065587@ybl",
+  paytm: "9395065587@pthdfc",
+  cred: "9395065587@yescred",
+  bhim: "9395065587@upi",
+  amazonpay: "9395065587@apl",
+  gpay: "9395065587@ybl",
+  universal: "9395065587@ybl",
+} as const;
+
+export const DEFAULT_FOUNDER_PAYEE_NAME = "OrderKingPay";
 
 export interface UPIIntentParams {
   /** Payee Virtual Payment Address (UPI ID), e.g. merchant@icici */
@@ -199,6 +215,8 @@ export function getAppPrefix(app: SupportedUPIApp): string {
       return "cred://pay?";
     case "bhim":
       return "bhim://pay?";
+    case "amazonpay":
+      return "amazonpay://pay?";
     case "universal":
     default:
       return "upi://pay?";
@@ -225,8 +243,90 @@ export function generateAllUPIAppLinks(params: UPIIntentParams): Record<Supporte
     paytm: `paytmmp://pay?${query}`,
     cred: `cred://pay?${query}`,
     bhim: `bhim://pay?${query}`,
+    amazonpay: `amazonpay://pay?${query}`,
     universal: `upi://pay?${query}`,
   };
+}
+
+export interface FounderUPIIntentOptions {
+  amountInRupees?: number;
+  amountPaise?: number;
+  transactionRef: string;
+  transactionNote?: string;
+  payeeName?: string;
+  merchantCategoryCode?: string;
+  mode?: string;
+}
+
+export interface FounderUPIIntentResult {
+  app: SupportedUPIApp;
+  vpa: string;
+  payeeName: string;
+  amountInRupees?: number;
+  /** Genuine NPCI UPI Intent link: `upi://pay?pa=...&pn=OrderKingPay&am=...&cu=INR` */
+  intentUrl: string;
+  /** App-specific scheme link (e.g. `phonepe://pay?...`, `amazonpay://pay?...`) */
+  appDeepLink: string;
+}
+
+/**
+ * Builds genuine 1-Tap NPCI UPI intent link for a given app:
+ * `upi://pay?pa=<app_verified_vpa>&pn=OrderKingPay&am=...&cu=INR`
+ */
+export function buildFounderUpiIntentUrl(
+  app: SupportedUPIApp,
+  options: FounderUPIIntentOptions
+): string {
+  const vpa = (FOUNDER_UPI_VPAS as Record<string, string>)[app] || FOUNDER_UPI_VPAS.universal;
+  const payeeName = options.payeeName?.trim() || DEFAULT_FOUNDER_PAYEE_NAME;
+  return buildNPCIUpiIntentUrl({
+    vpa,
+    payeeName,
+    amountInRupees: options.amountInRupees,
+    amountPaise: options.amountPaise,
+    currency: "INR",
+    transactionRef: options.transactionRef,
+    transactionNote: options.transactionNote || "OrderKing Direct Settlement",
+    merchantCategoryCode: options.merchantCategoryCode || "5812",
+    mode: options.mode || "02",
+  });
+}
+
+/**
+ * Generates genuine 1-Tap UPI pay intent records for PhonePe, Paytm, Cred, BHIM, Amazon Pay, GPay, Universal.
+ */
+export function generateAllFounderUPIIntents(
+  options: FounderUPIIntentOptions
+): Record<SupportedUPIApp, FounderUPIIntentResult> {
+  const apps: SupportedUPIApp[] = ["phonepe", "paytm", "cred", "bhim", "amazonpay", "gpay", "universal"];
+  const result = {} as Record<SupportedUPIApp, FounderUPIIntentResult>;
+
+  for (const app of apps) {
+    const vpa = (FOUNDER_UPI_VPAS as Record<string, string>)[app] || FOUNDER_UPI_VPAS.universal;
+    const payeeName = options.payeeName?.trim() || DEFAULT_FOUNDER_PAYEE_NAME;
+    const params: UPIIntentParams = {
+      vpa,
+      payeeName,
+      amountInRupees: options.amountInRupees,
+      amountPaise: options.amountPaise,
+      currency: "INR",
+      transactionRef: options.transactionRef,
+      transactionNote: options.transactionNote || "OrderKing Direct Settlement",
+      merchantCategoryCode: options.merchantCategoryCode || "5812",
+      mode: options.mode || "02",
+    };
+    const intentUrl = buildNPCIUpiIntentUrl(params);
+    const appDeepLink = generateAppDeepLink(app, params);
+    result[app] = {
+      app,
+      vpa,
+      payeeName,
+      amountInRupees: options.amountInRupees ?? (options.amountPaise ? options.amountPaise / 100 : undefined),
+      intentUrl,
+      appDeepLink,
+    };
+  }
+  return result;
 }
 
 /**

@@ -92,15 +92,8 @@ async function prepareParcelRazorpayOrderHandler({
     }
   }
 
-  // Zero-crash fallback when keys are not configured or sandbox
-  const mockOrderId = `order_sim_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  return {
-    orderId: mockOrderId,
-    amountPaise: fare.totalPaise,
-    currency: "INR",
-    keyId: config.keyId || "rzp_test_orderking_courier",
-    isSandbox: true,
-  };
+  // Fail closed: a locally generated order ID is not a Razorpay order.
+  throw new Error("Secure online parcel payment is currently unavailable. Choose Cash on Delivery.");
 }
 
 export const prepareParcelRazorpayOrder = createServerFn({ method: "POST" })
@@ -161,29 +154,9 @@ async function submitParcelOrderHandler({
   }
 
   if (method === "RAZORPAY_ONLINE") {
-    const rzp = data.razorpayPayment;
-    if (!rzp?.razorpayOrderId?.trim()) {
-      throw new Error("Online checkout requires a valid Razorpay payment.");
-    }
-
-    // If Razorpay live signature is present and not mock, cryptographically verify it
-    const getRazorpayConfig = () => ({ hasCredentials: false });
-    const config = getRazorpayConfig();
-    if (
-      config.hasCredentials &&
-      config.keySecret &&
-      rzp.razorpaySignature &&
-      !rzp.razorpayOrderId.startsWith("order_sim_")
-    ) {
-      const isValid = verifyRazorpaySignature({
-        razorpayOrderId: rzp.razorpayOrderId,
-        razorpayPaymentId: rzp.razorpayPaymentId,
-        razorpaySignature: rzp.razorpaySignature,
-      });
-      if (!isValid) {
-        throw new Error("Cryptographic payment signature verification failed. Tampered payment rejected.");
-      }
-    }
+    // No verified gateway order, signature or captured payment may be inferred from client data.
+    // Refuse the request until server-side Razorpay order/payment verification is implemented.
+    throw new Error("Secure online parcel payment is unavailable. Please choose Cash on Delivery.");
   }
 
   console.log("[submitParcelOrderHandler] Step 4 - resolving user");

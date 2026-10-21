@@ -19,6 +19,7 @@ import {
   buildNPCIUpiIntentUrl,
   generateAllUPIAppLinks,
   type SupportedUPIApp,
+  FOUNDER_UPI_VPAS,
 } from "@/lib/payments/npci-upi-intent";
 import { FOUNDER_UPI_VPA, FOUNDER_MERCHANT_NAME } from "@/lib/dispatch/whatsapp-gps-bridge";
 
@@ -112,10 +113,20 @@ export function DirectUpiIntentModal({
   };
 
   const handleOpenApp = (app: SupportedUPIApp) => {
-    const targetUrl = appLinks[app] || universalIntentUrl;
+    const appVpa = (FOUNDER_UPI_VPAS as Record<string, string>)[app] || founderVpa;
+    const directIntent = buildNPCIUpiIntentUrl({
+      vpa: appVpa,
+      payeeName: founderPayeeName || "OrderKingPay",
+      amountInRupees: amountRupees,
+      currency: "INR",
+      transactionRef,
+      transactionNote: `${orderPublicId} ${orderNotes}`.slice(0, 50),
+      merchantCategoryCode: "5812",
+      mode: "02",
+    });
     if (typeof window !== "undefined") {
-      window.location.href = targetUrl;
-      toast.info(`Opening ${app.toUpperCase()}... Please complete payment.`);
+      window.location.href = directIntent;
+      toast.info(`Opening ${app.toUpperCase()} with VPA ${appVpa}... Please complete payment.`);
     }
   };
 
@@ -195,35 +206,65 @@ export function DirectUpiIntentModal({
               <span className="text-[10px] text-emerald-400 font-bold">Android &amp; iOS</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleOpenApp("gpay")}
-                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm"
-              >
-                <span className="text-xl">⚡</span>
-                <span className="text-xs font-bold text-white mt-1">Google Pay</span>
-                <span className="text-[9px] text-zinc-400">tez://upi/pay</span>
-              </button>
-
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleOpenApp("phonepe")}
-                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm"
+                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
               >
                 <span className="text-xl">🟣</span>
                 <span className="text-xs font-bold text-white mt-1">PhonePe</span>
-                <span className="text-[9px] text-zinc-400">phonepe://pay</span>
+                <span className="text-[9px] text-zinc-400 font-mono">9395065587@ybl</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleOpenApp("paytm")}
-                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm"
+                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
               >
                 <span className="text-xl">🔵</span>
                 <span className="text-xs font-bold text-white mt-1">Paytm</span>
-                <span className="text-[9px] text-zinc-400">paytmmp://pay</span>
+                <span className="text-[9px] text-zinc-400 font-mono">9395065587@pthdfc</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleOpenApp("cred")}
+                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
+              >
+                <span className="text-xl">💎</span>
+                <span className="text-xs font-bold text-white mt-1">CRED</span>
+                <span className="text-[9px] text-zinc-400 font-mono">9395065587@yescred</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleOpenApp("bhim")}
+                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
+              >
+                <span className="text-xl">🇮🇳</span>
+                <span className="text-xs font-bold text-white mt-1">BHIM</span>
+                <span className="text-[9px] text-zinc-400 font-mono">9395065587@upi</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleOpenApp("amazonpay")}
+                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
+              >
+                <span className="text-xl">📦</span>
+                <span className="text-xs font-bold text-white mt-1">Amazon Pay</span>
+                <span className="text-[9px] text-zinc-400 font-mono">9395065587@apl</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleOpenApp("gpay")}
+                className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
+              >
+                <span className="text-xl">⚡</span>
+                <span className="text-xs font-bold text-white mt-1">Google Pay</span>
+                <span className="text-[9px] text-zinc-400 font-mono">9395065587@ybl</span>
               </button>
             </div>
 

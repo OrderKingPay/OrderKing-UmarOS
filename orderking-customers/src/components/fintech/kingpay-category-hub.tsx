@@ -47,7 +47,7 @@ type ActiveTab = "food_checkout" | "remittance" | "qr_generator" | "split_bill" 
 // 1. 1-TAP UPI QR GENERATOR
 // ==========================================
 function UpiQrGeneratorTool() {
-  const [vpa, setVpa] = useState("orderking@okhdfcbank");
+  const [vpa, setVpa] = useState("9395065587@ybl");
   const [payeeName, setPayeeName] = useState("OrderKing Sovereign Desk");
   const [amountInr, setAmountInr] = useState<number>(500);
   const [note, setNote] = useState("OrderKing Instant Settlement");
@@ -112,20 +112,20 @@ function UpiQrGeneratorTool() {
               type="text"
               value={vpa}
               onChange={(e) => setVpa(e.target.value)}
-              placeholder="e.g. orderking@icici or yourname@okhdfcbank"
+              placeholder="e.g. 9395065587@ybl"
               className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono text-sm focus:border-amber-400 outline-none"
             />
             <div className="flex gap-2 mt-1.5">
               <button
                 type="button"
-                onClick={() => setVpa("orderking@icici")}
+                onClick={() => setVpa("9395065587@ybl")}
                 className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg border transition ${
-                  vpa === "orderking@icici"
+                  vpa === "9395065587@ybl"
                     ? "bg-amber-400/20 border-amber-400 text-amber-300"
                     : "bg-slate-900 border-slate-700 text-slate-400 hover:text-white"
                 }`}
               >
-                orderking@icici
+                9395065587@ybl
               </button>
               <button
                 type="button"
@@ -268,7 +268,7 @@ function SplitBillCalculatorTool() {
   const [totalInr, setTotalInr] = useState<number>(1800);
   const [splitCount, setSplitCount] = useState<number>(4);
   const [tipPercent, setTipPercent] = useState<number>(0);
-  const [payeeVpa, setPayeeVpa] = useState("orderking@okhdfcbank");
+  const [payeeVpa, setPayeeVpa] = useState("9395065587@ybl");
 
   const baseBillPaise = Math.max(100, Math.round((Number.isFinite(totalInr) ? totalInr : 1800) * 100));
   const count = Math.max(2, Math.min(20, Math.floor(splitCount)));
@@ -391,7 +391,7 @@ function SplitBillCalculatorTool() {
               type="text"
               value={payeeVpa}
               onChange={(e) => setPayeeVpa(e.target.value)}
-              placeholder="e.g. you@okhdfcbank"
+              placeholder="e.g. 9395065587@ybl"
               className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono text-sm focus:border-amber-400 outline-none"
             />
           </div>

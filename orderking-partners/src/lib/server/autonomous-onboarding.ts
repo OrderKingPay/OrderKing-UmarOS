@@ -7,9 +7,9 @@
  *    - Takes image text / extracted OCR and parses dishes, descriptions,
  *      categories (Starters, Main, Breads, Desserts, Beverages),
  *      veg/non-veg tags (VEG, NONVEG, EGG, VEGAN), and integer paise prices.
- * 2. FSSAI & GST Automated Verification:
- *    - Format validator and authoritative statutory registry verification ensuring
- *      14-digit FSSAI and 15-character GSTIN compliance.
+ * 2. FSSAI & GST format checks:
+ *    - Validate input syntax only. Official registration and expiry require
+ *      a real authority response or authorized manual compliance review.
  */
 
 import type { DietFlag } from "@/lib/contracts";
@@ -17,7 +17,7 @@ import type { DietFlag } from "@/lib/contracts";
 export interface FSSAIValidationResult {
   isValid: boolean;
   licenseNumber: string;
-  status: "ACTIVE" | "EXPIRED" | "SUSPENDED" | "INVALID";
+  status: "ACTIVE" | "EXPIRED" | "SUSPENDED" | "INVALID" | "PENDING_VERIFICATION";
   stateCode?: string;
   registrationType?: "CENTRAL_LICENSE" | "STATE_LICENSE" | "REGISTRATION";
   tradeName?: string;
@@ -29,7 +29,7 @@ export interface FSSAIValidationResult {
 export interface GSTINValidationResult {
   isValid: boolean;
   gstin: string;
-  status: "ACTIVE" | "CANCELLED" | "INVALID";
+  status: "ACTIVE" | "CANCELLED" | "INVALID" | "PENDING_VERIFICATION";
   stateCode?: string;
   stateName?: string;
   pan?: string;
@@ -83,7 +83,7 @@ export interface MerchantOnboardingInput {
 
 export interface MerchantOnboardingResult {
   merchantId: string;
-  status: "ONBOARDED_ACTIVE" | "REJECTED_COMPLIANCE";
+  status: "ONBOARDED_ACTIVE" | "REJECTED_COMPLIANCE" | "PENDING_VERIFICATION";
   compliancePassed: boolean;
   zeroHumanOnboarded: boolean;
   verification: {
@@ -134,53 +134,14 @@ export const INDIAN_STATE_CODES: Record<string, string> = {
   "37": "Andhra Pradesh",
 };
 
-// Authoritative statutory registry verification cache for local verification & offline resilience
-const STATUTORY_FSSAI_REGISTRY: Record<string, Partial<FSSAIValidationResult>> = {
-  "10020011000123": {
-    tradeName: "Royal Biryani House",
-    status: "ACTIVE",
-    expiryDate: "2029-12-31",
-  },
-  "20021018000456": {
-    tradeName: "Assam Flavors Kitchen",
-    status: "ACTIVE",
-    expiryDate: "2028-06-30",
-  },
-  "10019011000999": {
-    tradeName: "Expired Dhaba Foods",
-    status: "EXPIRED",
-    expiryDate: "2023-01-01",
-    failureReason: "FSSAI license has expired and not been renewed",
-  },
-};
-
-const STATUTORY_GSTIN_REGISTRY: Record<string, Partial<GSTINValidationResult>> = {
-  "18AABCR1234F1Z5": {
-    legalName: "ROYAL BIRYANI PRIVATE LIMITED",
-    tradeName: "Royal Biryani House",
-    status: "ACTIVE",
-    taxpayerType: "Regular",
-  },
-  "07AAAAA0000A1Z5": {
-    legalName: "DELHI RESTAURANT CORP",
-    tradeName: "Capital Curries",
-    status: "ACTIVE",
-    taxpayerType: "Regular",
-  },
-  "27AABCT9999P1Z8": {
-    legalName: "CANCELLED HOSPITALITY LLP",
-    tradeName: "Bombay Bites",
-    status: "CANCELLED",
-    failureReason: "GSTIN registration has been cancelled by authorities",
-  },
-};
+// No local statutory registry: format validation cannot establish official compliance.
 
 // ============================================================================
 // 2. FSSAI & GST AUTOMATED VERIFICATION
 // ============================================================================
 
 /**
- * Validates 14-digit FSSAI format and performs authoritative registry verification.
+ * Checks FSSAI format only. Never assert active registration without official evidence.
  */
 export async function verifyFSSAI(fssaiNumber: string): Promise<FSSAIValidationResult> {
   const verifiedAt = new Date().toISOString();
@@ -203,39 +164,21 @@ export async function verifyFSSAI(fssaiNumber: string): Promise<FSSAIValidationR
   const registrationType: FSSAIValidationResult["registrationType"] =
     regDigit === "1" ? "STATE_LICENSE" : regDigit === "2" ? "REGISTRATION" : "CENTRAL_LICENSE";
 
-  // 3. Authoritative registry lookup
-  if (STATUTORY_FSSAI_REGISTRY[cleaned]) {
-    const entry = STATUTORY_FSSAI_REGISTRY[cleaned];
-    const isRegistryValid = entry.status === "ACTIVE";
-    return {
-      isValid: isRegistryValid,
-      licenseNumber: cleaned,
-      status: entry.status || "ACTIVE",
-      stateCode,
-      registrationType,
-      tradeName: entry.tradeName,
-      expiryDate: entry.expiryDate,
-      failureReason: isRegistryValid ? undefined : entry.failureReason || "FSSAI registry validation failed",
-      verifiedAt,
-    };
-  }
-
-  // 4. Algorithmic verification for standard compliant 14-digit numbers
-  // First digit 1 or 2, followed by valid 2-digit state code or standard region
+  // Format is not proof of active licensing. Never claim registry verification
+  // without an authorized FSSAI response or reviewed documentary evidence.
   return {
-    isValid: true,
+    isValid: false,
     licenseNumber: cleaned,
-    status: "ACTIVE",
+    status: "PENDING_VERIFICATION",
     stateCode,
     registrationType,
-    tradeName: "Verified Food Business Operator",
-    expiryDate: "2030-01-01",
+    failureReason: "FSSAI format accepted; official status has not been verified. Manual compliance review required.",
     verifiedAt,
   };
 }
 
 /**
- * Validates 15-character GSTIN format and performs authoritative registry verification.
+ * Checks GSTIN format only. Never assert current tax registration without official evidence.
  */
 export async function verifyGSTIN(gstin: string): Promise<GSTINValidationResult> {
   const verifiedAt = new Date().toISOString();
@@ -259,36 +202,16 @@ export async function verifyGSTIN(gstin: string): Promise<GSTINValidationResult>
   const pan = cleaned.substring(2, 12);
   const stateName = INDIAN_STATE_CODES[stateCode] || "Other / Union Territory";
 
-  // 2. Authoritative registry lookup
-  if (STATUTORY_GSTIN_REGISTRY[cleaned]) {
-    const entry = STATUTORY_GSTIN_REGISTRY[cleaned];
-    const isRegistryValid = entry.status === "ACTIVE";
-    return {
-      isValid: isRegistryValid,
-      gstin: cleaned,
-      status: entry.status || "ACTIVE",
-      stateCode,
-      stateName,
-      pan,
-      legalName: entry.legalName,
-      tradeName: entry.tradeName,
-      taxpayerType: entry.taxpayerType,
-      failureReason: isRegistryValid ? undefined : entry.failureReason || "GSTIN cancelled or inactive",
-      verifiedAt,
-    };
-  }
-
-  // 3. Algorithmic verification for standard GSTIN
+  // A valid GSTIN pattern does not establish registration or current status.
+  // Only an authorized registry response or verified manual review can approve it.
   return {
-    isValid: true,
+    isValid: false,
     gstin: cleaned,
-    status: "ACTIVE",
+    status: "PENDING_VERIFICATION",
     stateCode,
     stateName,
     pan,
-    legalName: `ENTERPRISE-${pan}`,
-    tradeName: `Commerce Entity (${stateName})`,
-    taxpayerType: "Regular",
+    failureReason: "GSTIN format accepted; official registration status has not been verified. Manual compliance review required.",
     verifiedAt,
   };
 }
@@ -637,10 +560,10 @@ export function inferDiet(text: string): DietFlag {
 // ============================================================================
 
 /**
- * End-to-end Autonomous Merchant Onboarding:
- * 1. Verifies FSSAI & GSTIN compliance with authoritative statutory registry.
- * 2. Parses OCR/text menu into structured dishes with integer paise and diet tags.
- * 3. Returns production-ready merchant onboarding result with zero human operators.
+ * Merchant onboarding validation:
+ * 1. Checks FSSAI/GSTIN syntax without inventing registry status.
+ * 2. Leaves unverified applications pending external/manual review.
+ * 3. Processes menus only after actual compliance approval becomes available.
  */
 export async function autonomousMerchantOnboard(
   input: MerchantOnboardingInput
@@ -648,39 +571,43 @@ export async function autonomousMerchantOnboard(
   const auditTrail: MerchantOnboardingResult["auditTrail"] = [];
   const startTime = new Date().toISOString();
 
-  // Step 1: Automated FSSAI Verification
+  // Step 1: FSSAI syntax only; no unverified statutory approval
   const fssaiVerification = await verifyFSSAI(input.fssaiNumber);
   auditTrail.push({
     step: "FSSAI_COMPLIANCE_VERIFICATION",
     timestamp: new Date().toISOString(),
-    status: fssaiVerification.isValid ? "PASSED" : "FAILED",
+    status: fssaiVerification.isValid ? "PASSED" : fssaiVerification.status === "PENDING_VERIFICATION" ? "PENDING" : "FAILED",
     details: { fssai: input.fssaiNumber, status: fssaiVerification.status },
   });
 
-  // Step 2: Automated GSTIN Verification
+  // Step 2: GSTIN syntax only; no unverified tax-registry approval
   const gstinVerification = await verifyGSTIN(input.gstin);
   auditTrail.push({
     step: "GSTIN_COMPLIANCE_VERIFICATION",
     timestamp: new Date().toISOString(),
-    status: gstinVerification.isValid ? "PASSED" : "FAILED",
+    status: gstinVerification.isValid ? "PASSED" : gstinVerification.status === "PENDING_VERIFICATION" ? "PENDING" : "FAILED",
     details: { gstin: input.gstin, status: gstinVerification.status },
   });
 
   const rejectionReasons: string[] = [];
   if (!fssaiVerification.isValid) {
-    rejectionReasons.push(`FSSAI Verification Failed: ${fssaiVerification.failureReason}`);
+    rejectionReasons.push(`FSSAI ${fssaiVerification.status === "PENDING_VERIFICATION" ? "Pending" : "Failed"}: ${fssaiVerification.failureReason}`);
   }
   if (!gstinVerification.isValid) {
-    rejectionReasons.push(`GSTIN Verification Failed: ${gstinVerification.failureReason}`);
+    rejectionReasons.push(`GSTIN ${gstinVerification.status === "PENDING_VERIFICATION" ? "Pending" : "Failed"}: ${gstinVerification.failureReason}`);
   }
 
-  // If compliance fails, return immediate rejection with audit
+  // A format-valid document awaits real verification; malformed documents are rejected.
   if (rejectionReasons.length > 0) {
+    const hasInvalidDocument = [fssaiVerification, gstinVerification].some(
+      (result) => !result.isValid && result.status !== "PENDING_VERIFICATION"
+    );
+    const pending = !hasInvalidDocument;
     return {
-      merchantId: `rst_rejected_${Date.now()}`,
-      status: "REJECTED_COMPLIANCE",
+      merchantId: pending ? `rst_pending_${Date.now()}` : `rst_rejected_${Date.now()}`,
+      status: pending ? "PENDING_VERIFICATION" : "REJECTED_COMPLIANCE",
       compliancePassed: false,
-      zeroHumanOnboarded: true,
+      zeroHumanOnboarded: false,
       verification: {
         fssai: fssaiVerification,
         gstin: gstinVerification,

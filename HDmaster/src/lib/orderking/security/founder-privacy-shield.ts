@@ -16,7 +16,7 @@ export const DEFAULT_PUBLIC_IDENTITY: MaskedIdentityConfig = {
   publicLegalEntity: "King Pay Network Technologies (Section 79 IT Act Compliant Intermediary)",
   publicSupportEmail: "support@orderking.in",
   publicNodalPhone: "+91 1800-KING-PAY",
-  publicUpiVpa: "orderking@okhdfcbank",
+  publicUpiVpa: (typeof process !== "undefined" && (process.env?.FOUNDER_UPI_VPA || process.env?.FOUNDER_UPI_ID)) || "9395065587@ybl",
   intermediaryStatus: "SECTION_79_INTERMEDIARY_SHIELD_ACTIVE",
 };
 

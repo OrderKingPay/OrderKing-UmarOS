@@ -105,7 +105,7 @@ export const INITIAL_MEMORY_ENTRIES: MemoryEntry[] = [
     id: "MEM-002",
     layer: "FOUNDER_PREFERENCES",
     key: "settlement_upi_vpa",
-    value: "orderking@okhdfcbank (Direct HDFC Escrow)",
+    value: "9395065587@ybl (Direct HDFC Escrow)",
     tags: ["payments", "upi", "banking"],
     updatedAt: new Date().toISOString(),
   },

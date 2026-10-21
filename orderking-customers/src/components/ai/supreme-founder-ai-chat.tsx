@@ -109,7 +109,7 @@ const DEFAULT_CREDENTIALS: FounderCredentials = {
   anthropicKey: "",
   stripeKey: "",
   razorpayKey: "",
-  founderUpiVpa: "orderking@okhdfcbank",
+  founderUpiVpa: "9395065587@ybl",
 };
 
 // 3D Glowing Radial Orb Canvas Visualizer (Gemini Live & Grok Voice style)
@@ -1426,7 +1426,7 @@ function InChatCredentialCard({ onSave }: { onSave?: (keys: FounderCredentials) 
           <Input
             value={keys.founderUpiVpa}
             onChange={(e) => setKeys({ ...keys, founderUpiVpa: e.target.value })}
-            placeholder="e.g. orderking@okhdfcbank"
+            placeholder="e.g. 9395065587@ybl"
             className="h-7 text-xs bg-surface-2"
           />
         </div>
@@ -1450,7 +1450,7 @@ function ExecutionStepsViewer({ steps }: { steps: AgentExecutionStep[] }) {
 }
 
 export function EnterpriseFounderAiChat({
-  founderUpiVpa = "orderking@okhdfcbank",
+  founderUpiVpa = "9395065587@ybl",
   onSelectAction,
   defaultCallMode = false,
 }: EnterpriseFounderAiChatProps) {

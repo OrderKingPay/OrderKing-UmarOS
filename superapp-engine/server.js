@@ -10,6 +10,12 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && (err.status === 400 || err.statusCode === 400)) {
+    return res.status(400).json({ error: "Invalid JSON payload format" });
+  }
+  next(err);
+});
 app.use(express.static('public'));
 
 const ai = process.env.GEMINI_API_KEY
@@ -26,7 +32,12 @@ const initialData = {
     systemVersion: "UMAR OS v5.0 — Supreme Autonomous Core",
     activeGateway: process.env.DEFAULT_PAYMENT_GATEWAY || "direct_upi",
     razorpayKeyId: process.env.RAZORPAY_KEY_ID || "rzp_live_test",
-    founderUpiId: process.env.FOUNDER_UPI_ID || "orderkingpay@upi",
+    founderUpiId: process.env.FOUNDER_UPI_ID || process.env.FOUNDER_UPI_PHONEPE || "9395065587@ybl",
+    founderUpiPhonePe: process.env.FOUNDER_UPI_PHONEPE || "9395065587@ybl",
+    founderUpiPaytm: process.env.FOUNDER_UPI_PAYTM || "9395065587@pthdfc",
+    founderUpiCred: process.env.FOUNDER_UPI_CRED || "9395065587@yescred",
+    founderUpiBhim: process.env.FOUNDER_UPI_BHIM || "9395065587@upi",
+    founderUpiAmazonPay: process.env.FOUNDER_UPI_AMAZONPAY || "9395065587@apl",
     founderWhatsapp: process.env.FOUNDER_WHATSAPP_NUMBER || "919864000000",
     travelpayoutsMarker: process.env.TRAVELPAYOUTS_MARKER || "500000",
     flightEngineMode: "HYBRID_DIRECT_AND_AFFILIATE",
@@ -409,6 +420,20 @@ app.post('/api/kingpay/ai-assistant', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Catch-all Express Error Handler
+app.use((err, req, res, next) => {
+  console.error("Express Error Handler caught:", err.message);
+  res.status(err.status || 500).json({ error: err.message || "Internal server error" });
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('CRITICAL: Uncaught Exception caught (process alive):', err.message);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('CRITICAL: Unhandled Rejection caught (process alive):', reason);
 });
 
 const PORT = process.env.PORT || 3000;

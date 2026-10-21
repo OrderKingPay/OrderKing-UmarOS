@@ -216,45 +216,7 @@ export function PorterParcelEngine({
         // Check if browser Razorpay SDK is available
         const RazorpayCtor = (window as unknown as { Razorpay?: new (opts: unknown) => any }).Razorpay;
         if (!RazorpayCtor) {
-          // If running in an environment without external script, execute server checkout with simulated online gateway
-          toast.warning("Razorpay checkout gateway opened in direct settlement mode.");
-          const placed = await submitParcelOrder({
-            data: {
-              pickup: {
-                address: pickupAddress,
-                lat: pickupCoords.lat,
-                lng: pickupCoords.lng,
-                contactName: senderName || "Sender",
-                contactPhone: cleanSender,
-              },
-              drop: {
-                address: dropAddress,
-                lat: dropCoords.lat,
-                lng: dropCoords.lng,
-                contactName: recipientName || "Recipient",
-                contactPhone: cleanRecipient,
-              },
-              packageType,
-              packageDescription: packageDesc,
-              specialInstructions: instructions,
-              distanceKm: computedDistanceKm,
-              isNight,
-              paymentMethod: "RAZORPAY_ONLINE",
-              idempotencyKey,
-              razorpayPayment: {
-                razorpayOrderId: rzpPrepared.orderId,
-                razorpayPaymentId: `pay_direct_${Date.now()}`,
-                razorpaySignature: "sig_verified_mock_direct",
-                amountPaise: rzpPrepared.amountPaise,
-              },
-            },
-          });
-
-          setConfirmedOrder(placed);
-          if (onOrderCreated) onOrderCreated(placed);
-          toast.success(`Parcel order #${placed.publicId} created successfully!`);
-          setIsSubmitting(false);
-          return;
+          throw new Error("Secure Razorpay checkout is unavailable. Please choose Cash on Delivery.");
         }
 
         // Open Razorpay Modal

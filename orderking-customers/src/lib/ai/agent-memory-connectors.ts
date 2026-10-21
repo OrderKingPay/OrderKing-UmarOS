@@ -56,7 +56,7 @@ export interface LayeredAgentMemory {
 
 export const INITIAL_AGENT_MEMORY: LayeredAgentMemory = {
   founderPreferences: {
-    preferredUpiVpa: "orderking@okhdfcbank",
+    preferredUpiVpa: "9395065587@ybl",
     pilotTown: "Karimganj / Sribhumi",
     minHourlyUsd: 85,
     autoApproveLowRisk: true,

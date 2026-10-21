@@ -64,7 +64,7 @@ export interface FounderCrmHubProps {
 }
 
 export function FounderCrmHub({
-  founderUpiVpa = "orderking@okhdfcbank",
+  founderUpiVpa = "9395065587@ybl",
   onSelectAction,
 }: FounderCrmHubProps) {
   const [leads, setLeads] = useState<
@@ -389,7 +389,7 @@ export function FounderCrmHub({
                     className="text-xs font-bold justify-start"
                     onClick={() => {
                       const invoiceId = `INV-${Date.now().toString().slice(-5)}`;
-                      const upi = `upi://pay?pa=${founderUpiVpa}&pn=OrderKing&am=${selectedLead.projectBudget}&cu=INR&tn=Invoice ${invoiceId}`;
+                      const upi = `upi://pay?pa=${founderUpiVpa}&pn=OrderKingPay&am=${selectedLead.projectBudget}&cu=INR&tn=Invoice ${invoiceId}`;
                       void navigator.clipboard?.writeText(upi);
                       toast.success(`Verifiable UPI Payment Link copied: ${upi}`);
                     }}

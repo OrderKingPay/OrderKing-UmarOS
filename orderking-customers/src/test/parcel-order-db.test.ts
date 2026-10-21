@@ -23,22 +23,15 @@ import {
 } from "../lib/server/parcel-order";
 
 describe("Parcel Order Database Storage & Server RPC Integration", () => {
-  it("prepares a verified Razorpay order with server-calculated paise", async () => {
-    const res = await prepareParcelRazorpayOrder({
+  it("refuses Razorpay order creation without verified provider integration", async () => {
+    await expect(prepareParcelRazorpayOrder({
       data: {
         distanceKm: 5.0,
         packageType: "DOCUMENTS",
         isNight: false,
         receipt: `rcpt_test_${Date.now()}`,
       },
-    });
-
-    expect(res).toBeDefined();
-    expect(res.orderId).toBeTruthy();
-    // 5 km * ₹10/km = ₹50 + ₹30 Base = ₹80.00 (8,000 paise)
-    expect(res.amountPaise).toBe(8000);
-    expect(res.currency).toBe("INR");
-    expect(res.keyId).toBeTruthy();
+    })).rejects.toThrow("Secure online parcel payment");
   });
 
   it(
@@ -126,7 +119,7 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
   );
 
   it(
-    "stores a Razorpay online parcel order with category 'PARCEL' and verified status",
+    "rejects fake simulated online parcel payment safely and transparently",
     async () => {
       const testKey = `test_idk_rzp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       const submission = {
@@ -157,40 +150,9 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
         },
       };
 
-      const result = await submitParcelOrder({ data: submission });
-
-      expect(result.success).toBe(true);
-      expect(result.paymentMethod).toBe("RAZORPAY_ONLINE");
-      expect(result.paymentStatus).toBe("paid");
-
-      // Expected Fare:
-      // Base: ₹30
-      // Distance: 4.2 km * ₹10 = ₹42
-      // Night surcharge: ₹15
-      // Total: ₹87.00 (8,700 paise)
-      expect(result.totalPaise).toBe(8700);
-
-      const sql = await getSql();
-      const rows = await sql<{
-        id: string;
-        category: string;
-        payment_method: string;
-        payment_status: string;
-        total_paise: number;
-      }>`
-        SELECT id, category, payment_method, payment_status, total_paise
-        FROM orders
-        WHERE id = ${result.orderId}
-        LIMIT 1
-      `;
-
-      expect(rows).toHaveLength(1);
-      expect(rows[0]!.category).toBe("PARCEL");
-      expect(rows[0]!.payment_status).toBe("paid");
-      expect(rows[0]!.total_paise).toBe(8700);
-
-      // Cleanup test record
-      await sql`DELETE FROM orders WHERE id = ${result.orderId}`;
+      await expect(submitParcelOrder({ data: submission })).rejects.toThrow(
+        "Secure online parcel payment is unavailable. Please choose Cash on Delivery."
+      );
     },
     30000
   );

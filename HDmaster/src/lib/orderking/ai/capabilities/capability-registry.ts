@@ -260,12 +260,12 @@ export class UniversalCapabilityRegistry {
       availability: "AVAILABLE",
       async execute(input) {
         const amount = Number(input.amountInr || 50000);
-        const upiLink = `upi://pay?pa=orderking@okhdfcbank&pn=OrderKing&am=${amount}&cu=INR&tn=Software%20Milestone`;
+        const upiLink = `upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=${amount}&cu=INR&tn=Software%20Milestone`;
         return {
           success: true,
           data: {
             amountInr: amount,
-            payeeVpa: "orderking@okhdfcbank",
+            payeeVpa: "9395065587@ybl",
             upiLink,
             qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`,
             statutorySafeHarbor: "IT Act 2000 Section 79 Compliant",

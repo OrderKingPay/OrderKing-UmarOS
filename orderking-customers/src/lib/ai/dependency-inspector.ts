@@ -116,7 +116,7 @@ export const SYSTEM_DEPENDENCIES: SystemDependency[] = [
       "Go to Settings > API Keys > Generate Key.",
       "Add `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` to environment.",
     ],
-    fallbackModeDescription: "Running via Sovereign Direct UPI VPA (`orderking@okhdfcbank`) and manual UTR entry.",
+    fallbackModeDescription: "Running via Sovereign Direct UPI VPA (`9395065587@ybl`) and manual UTR entry.",
   },
   {
     id: "DEP-STRIPE",

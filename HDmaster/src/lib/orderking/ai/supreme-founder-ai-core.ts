@@ -284,10 +284,10 @@ export function generateFounderClientInvoice(params: {
   description: string;
   founderUpiVpa?: string;
 }): ClientInvoice {
-  const vpa = params.founderUpiVpa || "orderking@okhdfcbank";
+  const vpa = params.founderUpiVpa || "9395065587@ybl";
   const invNum = `INV-${Date.now().toString().slice(-6)}`;
   const advance = Math.round(params.amountInr * 0.5);
-  const upiLink = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKingSovereign&am=${advance}&tn=${encodeURIComponent(
+  const upiLink = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKingPay&am=${advance}&tn=${encodeURIComponent(
     `Advance-${invNum}`
   )}&cu=INR`;
   const qrPayload = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
@@ -333,7 +333,7 @@ export async function getEnterpriseBlueprints(): Promise<Record<string, Enterpri
   const mod = await import('../server/supreme-founder-data.server');
   return mod.getEnterpriseBlueprintsFromDb();
 }
-export async function parseFounderQuery(query: string, founderUpiVpa: string = "orderking@okhdfcbank"): Promise<{
+export async function parseFounderQuery(query: string, founderUpiVpa: string = "9395065587@ybl"): Promise<{
   intent:
     | "client_sales"
     | "remote_jobs"

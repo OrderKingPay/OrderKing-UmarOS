@@ -25,7 +25,7 @@ import {
 } from "@/lib/ai/service-productizer";
 
 export function ServiceProductizerHub({
-  founderUpiVpa = "orderking@okhdfcbank",
+  founderUpiVpa = "9395065587@ybl",
 }: {
   founderUpiVpa?: string;
 }) {
@@ -175,7 +175,7 @@ export function ServiceProductizerHub({
                 className="text-xs font-bold justify-start"
                 onClick={() => {
                   const invoiceId = `INV-${Date.now().toString().slice(-5)}`;
-                  const upi = `upi://pay?pa=${founderUpiVpa}&pn=OrderKing&am=${selectedService.priceRangeInr.min}&cu=INR&tn=${selectedService.name.slice(0, 20)}`;
+                  const upi = `upi://pay?pa=${founderUpiVpa}&pn=OrderKingPay&am=${selectedService.priceRangeInr.min}&cu=INR&tn=${selectedService.name.slice(0, 20)}`;
                   void navigator.clipboard?.writeText(upi);
                   toast.success(`Direct UPI Invoice link copied: ₹${selectedService.priceRangeInr.min.toLocaleString("en-IN")}`);
                 }}

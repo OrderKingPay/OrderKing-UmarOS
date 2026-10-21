@@ -17,7 +17,7 @@ export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", P
     legalEntity: "OrderKing Sovereign Operations Private Limited",
     supportEmail: "ops@orderking.in",
     publicPhone: "+91 8000 123 456",
-    publicUpiVpa: "orderking@okhdfcbank",
+    publicUpiVpa: "9395065587@ybl",
     regulatoryJurisdiction: "Sribhumi Jurisdiction, Section 79 IT Act 2000",
   },
   KINGPAY: {
@@ -25,7 +25,7 @@ export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", P
     legalEntity: "King Pay Technologies Private Limited",
     supportEmail: "compliance@kingpay.in",
     publicPhone: "+91 8000 987 654",
-    publicUpiVpa: "orderking@okhdfcbank",
+    publicUpiVpa: "9395065587@ybl",
     regulatoryJurisdiction: "Reserve Bank of India Master Directions & IT Act 2000",
   },
   SYSTEM: {
@@ -33,7 +33,7 @@ export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", P
     legalEntity: "Umar Sovereign Infrastructure Group",
     supportEmail: "executive@umaros.internal",
     publicPhone: "+91 8000 000 000",
-    publicUpiVpa: "orderking@okhdfcbank",
+    publicUpiVpa: "9395065587@ybl",
     regulatoryJurisdiction: "Autonomous Founder Protected Architecture",
   },
 };

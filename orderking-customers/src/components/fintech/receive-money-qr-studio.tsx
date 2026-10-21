@@ -126,7 +126,7 @@ const NOTE_PRESETS = [
 const QUICK_AMOUNTS = ["100", "250", "500", "1000", "2100", "5000"];
 
 export function ReceiveMoneyQrStudio({
-  defaultUpiId = "orderking.pay@okaxis",
+  defaultUpiId = "9395065587@ybl",
   defaultName = "OrderKing Merchant",
   onClose,
   isModal = false,

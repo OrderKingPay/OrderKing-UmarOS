@@ -30,7 +30,7 @@ import {
 } from "@/lib/ai/opportunity-hunter";
 
 export function MoneyEngineDashboard({
-  founderUpiVpa = "orderking@okhdfcbank",
+  founderUpiVpa = "9395065587@ybl",
 }: {
   founderUpiVpa?: string;
 }) {

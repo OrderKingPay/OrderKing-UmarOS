@@ -47,10 +47,10 @@ export class UniversalConnectorRegistry {
       },
       async execute(action, input: any) {
         if (action === "create_payment_link") {
-          const vpa = input.founderVpa || "orderking@okhdfcbank";
+          const vpa = input.founderVpa || "9395065587@ybl";
           return {
-            upiLink: `upi://pay?pa=${vpa}&pn=OrderKing&am=${input.amountInr}&cu=INR&tn=${encodeURIComponent(input.description || "")}`,
-            qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${vpa}&pn=OrderKing&am=${input.amountInr}&cu=INR`)}`,
+            upiLink: `upi://pay?pa=${vpa}&pn=OrderKingPay&am=${input.amountInr}&cu=INR&tn=${encodeURIComponent(input.description || "")}`,
+            qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${vpa}&pn=OrderKingPay&am=${input.amountInr}&cu=INR`)}`,
             providerFee: 0,
           };
         }

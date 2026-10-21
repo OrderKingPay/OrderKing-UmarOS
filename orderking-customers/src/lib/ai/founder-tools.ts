@@ -173,7 +173,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
       description: { type: "string", description: "Services rendered", required: true },
     },
     execute: async (input, context) => {
-      const vpa = context.founderUpiVpa || "orderking@okhdfcbank";
+      const vpa = context.founderUpiVpa || "9395065587@ybl";
       const invoiceNum = `INV-${Date.now().toString().slice(-6)}`;
       const upiLink = `upi://pay?pa=${vpa}&pn=OrderKing%20Technologies&am=${input.amountInr}&cu=INR&tn=Invoice%20${invoiceNum}`;
       return {
@@ -249,7 +249,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
 export function buildApprovalRequest(
   tool: FounderTool,
   input: Record<string, any>,
-  founderUpiVpa: string = "orderking@okhdfcbank"
+  founderUpiVpa: string = "9395065587@ybl"
 ): FounderApprovalRequest {
   const reqId = `APR-${Date.now().toString().slice(-6)}`;
   let cost = "₹0 (Zero financial outlay)";

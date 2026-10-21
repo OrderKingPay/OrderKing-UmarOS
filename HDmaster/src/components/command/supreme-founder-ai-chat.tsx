@@ -2517,7 +2517,7 @@ function FounderWorkHub({
       title: "💳 Task 4: King Pay Direct Settlement & Instant UPI Billing",
       objective: "Issue verifiable ₹75,000 milestone invoice with zero intermediary fees and direct bank deposit.",
       deliverables: [
-        "Generates compliant NPCI UPI deep link (upi://pay?pa=orderking@okhdfcbank).",
+        "Generates compliant NPCI UPI deep link (upi://pay?pa=9395065587@ybl).",
         "Includes high-resolution dynamic QR code and PDF printable statement.",
         "100% compliant with Section 79 IT Act and RBI master directions.",
       ],
@@ -3226,7 +3226,7 @@ function FounderWorkHub({
 }
 
 export function PremiumFounderAiChat({
-  founderUpiVpa = "orderking@okhdfcbank",
+  founderUpiVpa = "9395065587@ybl",
   onSelectAction,
   defaultCallMode = false,
 }: PremiumFounderAiChatProps) {

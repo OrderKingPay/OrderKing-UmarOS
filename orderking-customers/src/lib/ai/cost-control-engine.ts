@@ -50,7 +50,7 @@ export const INITIAL_EXPENSE_ITEMS: ExpenseItem[] = [
       projectedMonthlyCostInr: 0,
       monthlySavingsInr: 18000,
       qualityImpact: "NONE",
-      implementationSteps: "Route all domestic transactions through direct UPI VPA (orderking@okhdfcbank). Instant bank settlement, zero gateway cut.",
+      implementationSteps: "Route all domestic transactions through direct UPI VPA (9395065587@ybl). Instant bank settlement, zero gateway cut.",
     },
   },
   {

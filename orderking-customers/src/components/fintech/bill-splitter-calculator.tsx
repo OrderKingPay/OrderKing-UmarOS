@@ -13,7 +13,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
   const [totalInr, setTotalInr] = useState<number>(1800);
   const [splitCount, setSplitCount] = useState<number>(4);
   const [tipPercent, setTipPercent] = useState<number>(0);
-  const [payeeVpa, setPayeeVpa] = useState("orderking@okhdfcbank");
+  const [payeeVpa, setPayeeVpa] = useState("9395065587@ybl");
 
   const baseBillPaise = Math.max(100, Math.round((Number.isFinite(totalInr) ? totalInr : 1800) * 100));
   const count = Math.max(2, Math.min(20, Math.floor(splitCount)));
@@ -158,7 +158,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
               type="text"
               value={payeeVpa}
               onChange={(e) => setPayeeVpa(e.target.value)}
-              placeholder="e.g. you@okhdfcbank"
+              placeholder="e.g. 9395065587@ybl"
               className={`w-full h-11 px-3.5 rounded-xl border font-mono text-sm outline-none transition ${
                 isDark
                   ? "border-slate-700 bg-slate-950 text-white focus:border-amber-400"

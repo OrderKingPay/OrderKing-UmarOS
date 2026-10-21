@@ -166,7 +166,7 @@ export const DEFAULT_RIDER_DISCIPLINE_SETTINGS: RiderDisciplineSettings = {
   cooling_off_consecutive_rejections: 3,
   cooling_off_acceptance_rate_threshold_pct: 70,
   cooling_off_duration_minutes: 15,
-  upi_deposit_vpa: "orderking.treasury@okaxis",
+  upi_deposit_vpa: "9395065587@ybl",
   enable_instant_deposit_qr: true,
   emergency_override_enabled: true,
 };

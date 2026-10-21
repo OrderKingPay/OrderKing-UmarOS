@@ -803,7 +803,7 @@ export function generateFounderClientInvoice(params: {
   description: string;
   founderUpiVpa?: string;
 }): ClientInvoice {
-  const vpa = params.founderUpiVpa || "orderking@okhdfcbank";
+  const vpa = params.founderUpiVpa || "9395065587@ybl";
   const invNum = `INV-${Date.now().toString().slice(-6)}`;
   const advance = Math.round(params.amountInr * 0.5);
   const upiLink = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKingSovereign&am=${advance}&tn=${encodeURIComponent(
@@ -831,7 +831,7 @@ export function generateFounderClientInvoice(params: {
   };
 }
 
-export function parseFounderQuery(query: string, founderUpiVpa: string = "orderking@okhdfcbank"): {
+export function parseFounderQuery(query: string, founderUpiVpa: string = "9395065587@ybl"): {
   intent:
     | "client_sales"
     | "remote_jobs"

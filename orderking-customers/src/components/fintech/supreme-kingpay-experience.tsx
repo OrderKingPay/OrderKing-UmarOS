@@ -67,19 +67,11 @@ import {
 } from "@/routes/tutor";
 import { cn } from "@/lib/utils";
 import { UtilitiesBillEngine } from "@/components/fintech/utilities-bill-engine";
-import { AirportAutoSuggest, StationAutoSuggest } from "./travel-autosuggest";
-import airportCatalog from "./airports.json";
-import stationCatalog from "./stations.json";
+import { AirportAutoSuggest, StationAutoSuggest, queryAirports, queryStations } from "./travel-autosuggest";
 
 // Local name/code suggestions are NOT real availability or ticket quotes.
-const searchAirportOptions = (raw: string) => {
-  const q = raw.replace(/\s*\([A-Z]{3}\).*$/, "").trim().toLowerCase();
-  return airportCatalog.filter((a) => a.code && (a.code.toLowerCase().includes(q) || a.city.toLowerCase().includes(q) || a.name.toLowerCase().includes(q))).slice(0, 20);
-};
-const searchStationOptions = (raw: string) => {
-  const q = raw.replace(/\s*\([A-Z0-9]{2,5}\).*$/, "").trim().toLowerCase();
-  return stationCatalog.filter((a) => a.code.toLowerCase().includes(q) || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q)).slice(0, 20);
-};
+const searchAirportOptions = (raw: string) => queryAirports(raw, 20);
+const searchStationOptions = (raw: string) => queryStations(raw, 20);
 export const extractStationCode = (value: string): string | null => {
   const v = value.trim().toUpperCase();
   const code = v.match(/\(([A-Z0-9]{2,5})\)\s*$/)?.[1] ?? (/^[A-Z0-9]{2,5}$/.test(v) ? v : null);
@@ -175,7 +167,7 @@ export function SupremeKingPayExperience() {
   const currentZone = location?.zoneName || "Connaught Place";
 
   // 1-Tap UPI Intent tool state
-  const [payeeVpa, setPayeeVpa] = useState("orderking@okhdfcbank");
+  const [payeeVpa, setPayeeVpa] = useState("9395065587@ybl");
   const [payeeName, setPayeeName] = useState("OrderKing Desk");
   const [upiAmountInr, setUpiAmountInr] = useState<number>(250);
   const [upiNote, setUpiNote] = useState("Instant Settlement");
@@ -1995,7 +1987,7 @@ export function SupremeKingPayExperience() {
                   type="text"
                   value={payeeVpa}
                   onChange={(e) => setPayeeVpa(e.target.value)}
-                  placeholder="e.g. orderking@okhdfcbank"
+                  placeholder="e.g. 9395065587@ybl"
                   className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-xs focus:border-amber-400 outline-none"
                 />
               </div>

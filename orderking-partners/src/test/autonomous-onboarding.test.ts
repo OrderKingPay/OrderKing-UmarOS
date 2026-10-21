@@ -11,23 +11,24 @@ import {
 
 describe("Autonomous Merchant Onboarding & Menu Digitizer", () => {
   describe("FSSAI 14-Digit Automated Verification", () => {
-    it("validates compliant 14-digit FSSAI numbers successfully", async () => {
+    it("keeps format-valid FSSAI numbers pending until independently verified", async () => {
       // Test known active mock registry license
       const resActive = await verifyFSSAI("10020011000123");
-      expect(resActive.isValid).toBe(true);
-      expect(resActive.status).toBe("ACTIVE");
+      expect(resActive.isValid).toBe(false);
+      expect(resActive.status).toBe("PENDING_VERIFICATION");
       expect(resActive.licenseNumber).toBe("10020011000123");
-      expect(resActive.tradeName).toBe("Royal Biryani House");
+      expect(resActive.tradeName).toBeUndefined();
 
-      // Test standard valid 14-digit state registration
+      // Format is plausible but official licensing is not independently confirmed.
       const resAssam = await verifyFSSAI("20021018000456");
-      expect(resAssam.isValid).toBe(true);
+      expect(resAssam.isValid).toBe(false);
+      expect(resAssam.status).toBe("PENDING_VERIFICATION");
       expect(resAssam.registrationType).toBe("REGISTRATION");
 
       // Test algorithmic verification for any arbitrary compliant 14-digit number
       const resGen = await verifyFSSAI("11223344556677");
-      expect(resGen.isValid).toBe(true);
-      expect(resGen.status).toBe("ACTIVE");
+      expect(resGen.isValid).toBe(false);
+      expect(resGen.status).toBe("PENDING_VERIFICATION");
     });
 
     it("rejects non-compliant FSSAI numbers with bad format or length", async () => {
@@ -52,11 +53,11 @@ describe("Autonomous Merchant Onboarding & Menu Digitizer", () => {
       expect(resEmpty.isValid).toBe(false);
     });
 
-    it("catches expired FSSAI licenses from mock registry", async () => {
+    it("does not invent expiration status from offline mock licenses", async () => {
       const resExpired = await verifyFSSAI("10019011000999");
       expect(resExpired.isValid).toBe(false);
-      expect(resExpired.status).toBe("EXPIRED");
-      expect(resExpired.failureReason).toContain("expired");
+      expect(resExpired.status).toBe("PENDING_VERIFICATION");
+      expect(resExpired.expiryDate).toBeUndefined();
     });
   });
 
@@ -64,16 +65,17 @@ describe("Autonomous Merchant Onboarding & Menu Digitizer", () => {
     it("validates standard 15-character GSTIN format and extracts state and PAN", async () => {
       // Known active mock registry GSTIN
       const resAssam = await verifyGSTIN("18AABCR1234F1Z5");
-      expect(resAssam.isValid).toBe(true);
-      expect(resAssam.status).toBe("ACTIVE");
+      expect(resAssam.isValid).toBe(false);
+      expect(resAssam.status).toBe("PENDING_VERIFICATION");
       expect(resAssam.stateCode).toBe("18");
       expect(resAssam.stateName).toBe("Assam");
       expect(resAssam.pan).toBe("AABCR1234F");
-      expect(resAssam.tradeName).toBe("Royal Biryani House");
+      expect(resAssam.tradeName).toBeUndefined();
 
       // Delhi GSTIN
       const resDelhi = await verifyGSTIN("07AAAAA0000A1Z5");
-      expect(resDelhi.isValid).toBe(true);
+      expect(resDelhi.isValid).toBe(false);
+      expect(resDelhi.status).toBe("PENDING_VERIFICATION");
       expect(resDelhi.stateCode).toBe("07");
       expect(resDelhi.stateName).toBe("Delhi");
     });
@@ -94,11 +96,11 @@ describe("Autonomous Merchant Onboarding & Menu Digitizer", () => {
       expect(resRandom.isValid).toBe(false);
     });
 
-    it("detects cancelled GSTIN registrations from registry", async () => {
+    it("does not invent GSTIN cancellation status from offline examples", async () => {
       const resCancelled = await verifyGSTIN("27AABCT9999P1Z8");
       expect(resCancelled.isValid).toBe(false);
-      expect(resCancelled.status).toBe("CANCELLED");
-      expect(resCancelled.failureReason).toContain("cancelled");
+      expect(resCancelled.status).toBe("PENDING_VERIFICATION");
+      expect(resCancelled.legalName).toBeUndefined();
     });
   });
 
@@ -203,7 +205,7 @@ Sweet Lassi 60
   });
 
   describe("End-to-End Autonomous Merchant Onboarding", () => {
-    it("successfully onboards compliant merchant with zero human operators", async () => {
+    it("holds a format-valid merchant pending official compliance review", async () => {
       const input = {
         merchantName: "Royal Biryani House",
         tradeName: "Royal Biryani House",
@@ -222,14 +224,14 @@ Mirchi Ka Salan 90
       };
 
       const onboardResult = await autonomousMerchantOnboard(input);
-      expect(onboardResult.status).toBe("ONBOARDED_ACTIVE");
-      expect(onboardResult.compliancePassed).toBe(true);
-      expect(onboardResult.zeroHumanOnboarded).toBe(true);
-      expect(onboardResult.verification.fssai.isValid).toBe(true);
-      expect(onboardResult.verification.gstin.isValid).toBe(true);
-      expect(onboardResult.digitizedMenu).toBeDefined();
-      expect(onboardResult.digitizedMenu?.totalDishesCount).toBe(3);
-      expect(onboardResult.auditTrail.length).toBe(4);
+      expect(onboardResult.status).toBe("PENDING_VERIFICATION");
+      expect(onboardResult.compliancePassed).toBe(false);
+      expect(onboardResult.zeroHumanOnboarded).toBe(false);
+      expect(onboardResult.verification.fssai.status).toBe("PENDING_VERIFICATION");
+      expect(onboardResult.verification.gstin.status).toBe("PENDING_VERIFICATION");
+      expect(onboardResult.digitizedMenu).toBeUndefined();
+      expect(onboardResult.auditTrail.length).toBe(2);
+      expect(onboardResult.auditTrail.every((a) => a.status === "PENDING")).toBe(true);
     });
 
     it("rejects non-compliant merchant when FSSAI or GSTIN is invalid", async () => {

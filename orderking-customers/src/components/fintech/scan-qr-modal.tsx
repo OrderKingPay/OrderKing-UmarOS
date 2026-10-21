@@ -29,7 +29,7 @@ interface Props {
   walletBalancePaise: number;
   onDeductWallet?: (amountPaise: number, description: string) => boolean;
   orderAmountPaise?: number;
-  merchantVpa?: "orderking@icici" | "orderking@yesbank" | string;
+  merchantVpa?: "9395065587@ybl" | "9395065587@yescred" | string;
   merchantName?: string;
 }
 
@@ -39,7 +39,7 @@ export function ScanQrModal({
   walletBalancePaise,
   onDeductWallet,
   orderAmountPaise,
-  merchantVpa = "orderking@icici",
+  merchantVpa = "9395065587@ybl",
   merchantName = "OrderKing Payments",
 }: Props) {
   const [activeTab, setActiveTab] = useState<"scan" | "merchant_qr">("scan");
@@ -267,7 +267,7 @@ export function ScanQrModal({
 
               {/* VPA Selector Switch */}
               <div className="flex gap-2 mb-4 w-full max-w-xs">
-                {(["orderking@icici", "orderking@yesbank"] as const).map((vpaOpt) => (
+                {(["9395065587@ybl", "9395065587@yescred"] as const).map((vpaOpt) => (
                   <button
                     key={vpaOpt}
                     type="button"

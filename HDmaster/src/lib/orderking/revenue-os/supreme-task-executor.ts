@@ -106,7 +106,7 @@ export class PremiumTaskExecutor {
         humanActionRequired: {
           actionNeeded: "Provide Founder Bank Account VPA or Razorpay/Stripe API Keys",
           whyNeeded: "Direct peer-to-merchant settlements require the founder's verified banking VPA to receive legitimate deposits.",
-          credentialOrSignatureType: "Bank Account VPA / UPI ID (e.g. orderking@okhdfcbank)",
+          credentialOrSignatureType: "Bank Account VPA / UPI ID (e.g. 9395065587@ybl)",
         },
         outputSummary: "Payment handler compiled. Paused awaiting founder banking VPA configuration.",
       },

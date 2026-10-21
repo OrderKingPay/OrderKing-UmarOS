@@ -9,6 +9,9 @@ import {
   verifyBharatQRChecksum,
   calculateCRC16CCITT,
   parseUPIIntentUrl,
+  FOUNDER_UPI_VPAS,
+  buildFounderUpiIntentUrl,
+  generateAllFounderUPIIntents,
   type UPIIntentParams,
   type BharatQRParams,
 } from "../lib/payments/npci-upi-intent";
@@ -146,6 +149,12 @@ describe("NPCI UPI Intent & Dynamic BharatQR Engine", () => {
       expect(link).toContain("pa=merchant%40icici");
     });
 
+    it("generates correct scheme for Amazon Pay", () => {
+      const link = generateAppDeepLink("amazonpay", params);
+      expect(link.startsWith("amazonpay://pay?")).toBe(true);
+      expect(link).toContain("pa=merchant%40icici");
+    });
+
     it("generates correct Universal Intent fallback", () => {
       const link = generateAppDeepLink("universal", params);
       expect(link.startsWith("upi://pay?")).toBe(true);
@@ -158,7 +167,79 @@ describe("NPCI UPI Intent & Dynamic BharatQR Engine", () => {
       expect(links.paytm.startsWith("paytmmp://pay?")).toBe(true);
       expect(links.cred.startsWith("cred://pay?")).toBe(true);
       expect(links.bhim.startsWith("bhim://pay?")).toBe(true);
+      expect(links.amazonpay.startsWith("amazonpay://pay?")).toBe(true);
       expect(links.universal.startsWith("upi://pay?")).toBe(true);
+    });
+  });
+
+  describe("Founder's Verified UPI Injection & Zero-Mock Payment Routing", () => {
+    it("has all 5 verified founder UPI IDs correctly configured", () => {
+      expect(FOUNDER_UPI_VPAS.phonepe).toBe("9395065587@ybl");
+      expect(FOUNDER_UPI_VPAS.paytm).toBe("9395065587@pthdfc");
+      expect(FOUNDER_UPI_VPAS.cred).toBe("9395065587@yescred");
+      expect(FOUNDER_UPI_VPAS.bhim).toBe("9395065587@upi");
+      expect(FOUNDER_UPI_VPAS.amazonpay).toBe("9395065587@apl");
+
+      // All verified VPAs must pass strict NPCI format validation
+      expect(isValidVPA(FOUNDER_UPI_VPAS.phonepe)).toBe(true);
+      expect(isValidVPA(FOUNDER_UPI_VPAS.paytm)).toBe(true);
+      expect(isValidVPA(FOUNDER_UPI_VPAS.cred)).toBe(true);
+      expect(isValidVPA(FOUNDER_UPI_VPAS.bhim)).toBe(true);
+      expect(isValidVPA(FOUNDER_UPI_VPAS.amazonpay)).toBe(true);
+    });
+
+    it("generates genuine 1-Tap upi://pay intent links for all 5 apps with pn=OrderKingPay", () => {
+      const intents = generateAllFounderUPIIntents({
+        amountInRupees: 499.0,
+        transactionRef: "ORDK-TEST-001",
+        transactionNote: "Feast Order",
+      });
+
+      // PhonePe
+      expect(intents.phonepe.vpa).toBe("9395065587@ybl");
+      expect(intents.phonepe.intentUrl).toBe(
+        "upi://pay?pa=9395065587%40ybl&pn=OrderKingPay&am=499.00&cu=INR&tn=Feast%20Order&tr=ORDK-TEST-001&mc=5812&mode=02"
+      );
+      expect(intents.phonepe.appDeepLink).toContain("phonepe://pay?");
+
+      // Paytm
+      expect(intents.paytm.vpa).toBe("9395065587@pthdfc");
+      expect(intents.paytm.intentUrl).toBe(
+        "upi://pay?pa=9395065587%40pthdfc&pn=OrderKingPay&am=499.00&cu=INR&tn=Feast%20Order&tr=ORDK-TEST-001&mc=5812&mode=02"
+      );
+      expect(intents.paytm.appDeepLink).toContain("paytmmp://pay?");
+
+      // Cred
+      expect(intents.cred.vpa).toBe("9395065587@yescred");
+      expect(intents.cred.intentUrl).toBe(
+        "upi://pay?pa=9395065587%40yescred&pn=OrderKingPay&am=499.00&cu=INR&tn=Feast%20Order&tr=ORDK-TEST-001&mc=5812&mode=02"
+      );
+      expect(intents.cred.appDeepLink).toContain("cred://pay?");
+
+      // BHIM
+      expect(intents.bhim.vpa).toBe("9395065587@upi");
+      expect(intents.bhim.intentUrl).toBe(
+        "upi://pay?pa=9395065587%40upi&pn=OrderKingPay&am=499.00&cu=INR&tn=Feast%20Order&tr=ORDK-TEST-001&mc=5812&mode=02"
+      );
+      expect(intents.bhim.appDeepLink).toContain("bhim://pay?");
+
+      // Amazon Pay
+      expect(intents.amazonpay.vpa).toBe("9395065587@apl");
+      expect(intents.amazonpay.intentUrl).toBe(
+        "upi://pay?pa=9395065587%40apl&pn=OrderKingPay&am=499.00&cu=INR&tn=Feast%20Order&tr=ORDK-TEST-001&mc=5812&mode=02"
+      );
+      expect(intents.amazonpay.appDeepLink).toContain("amazonpay://pay?");
+    });
+
+    it("buildFounderUpiIntentUrl creates genuine upi://pay URI per app", () => {
+      const amazonPayUri = buildFounderUpiIntentUrl("amazonpay", {
+        amountInRupees: 1200,
+        transactionRef: "TXN-AP-99",
+      });
+      expect(amazonPayUri).toContain("pa=9395065587%40apl");
+      expect(amazonPayUri).toContain("pn=OrderKingPay");
+      expect(amazonPayUri).toContain("am=1200.00");
+      expect(amazonPayUri).toContain("cu=INR");
     });
   });
 

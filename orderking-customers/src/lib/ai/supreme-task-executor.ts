@@ -190,7 +190,7 @@ export function decomposeFounderGoal(goal: string): PremiumExecutionPlan {
         type: "BANKING_CREDENTIALS",
         title: "Bank Account & UPI Merchant Verification",
         description: "Configure your live bank account or verified merchant UPI VPA to receive real payments.",
-        requiredAction: "Provide or confirm merchant UPI VPA (Default: orderking@okhdfcbank).",
+        requiredAction: "Provide or confirm merchant UPI VPA (Default: 9395065587@ybl).",
         estimatedTimeMinutes: 2,
         satisfied: false,
       },

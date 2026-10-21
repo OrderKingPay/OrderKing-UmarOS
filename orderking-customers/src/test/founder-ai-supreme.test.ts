@@ -304,7 +304,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
 
   describe("12. Premium Founder AI Chat Core & Async Query Engine", () => {
     it("should resolve client sales intent and return qualified lead pitch card", async () => {
-      const res = await parseFounderQuery("find clients to sell our food delivery software", "orderking@okhdfcbank");
+      const res = await parseFounderQuery("find clients to sell our food delivery software", "9395065587@ybl");
       assert.strictEqual(res!.intent, "client_sales");
       assert.ok(res!.actionCard);
       assert.strictEqual(res!.actionCard.type, "lead_pitch");
@@ -315,7 +315,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
     });
 
     it("should resolve high-paid remote jobs and return contract gig proposal card", async () => {
-      const res = await parseFounderQuery("find high paid remote contracts and freelance jobs", "orderking@okhdfcbank");
+      const res = await parseFounderQuery("find high paid remote contracts and freelance jobs", "9395065587@ybl");
       assert.strictEqual(res!.intent, "remote_jobs");
       assert.ok(res!.actionCard);
       assert.strictEqual(res!.actionCard.type, "remote_gig_bid");
@@ -325,7 +325,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
     });
 
     it("should execute capability benchmark suite and return verified report card", async () => {
-      const res = await parseFounderQuery("run capability benchmark suite", "orderking@okhdfcbank");
+      const res = await parseFounderQuery("run capability benchmark suite", "9395065587@ybl");
       assert.strictEqual(res!.intent, "capability_benchmarks");
       assert.ok(res!.actionCard);
       assert.strictEqual(res!.actionCard.type, "benchmark_results");
@@ -335,7 +335,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
     });
 
     it("should scaffold heavy enterprise application and return multi-file blueprint", async () => {
-      const res = await parseFounderQuery("scaffold heavy enterprise hospital erp web app", "orderking@okhdfcbank");
+      const res = await parseFounderQuery("scaffold heavy enterprise hospital erp web app", "9395065587@ybl");
       assert.strictEqual(res!.intent, "enterprise_blueprint");
       assert.ok(res!.actionCard);
       assert.strictEqual(res!.actionCard.type, "enterprise_blueprint");
@@ -346,17 +346,17 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
     });
 
     it("should generate 0% fee direct KingPay UPI invoice card", async () => {
-      const res = await parseFounderQuery("generate invoice for client ₹250000", "orderking@okhdfcbank");
+      const res = await parseFounderQuery("generate invoice for client ₹250000", "9395065587@ybl");
       assert.strictEqual(res!.intent, "invoice_pay");
       assert.ok(res!.actionCard);
       assert.strictEqual(res!.actionCard.type, "invoice_pay");
       assert.strictEqual(res!.actionCard.data.amountInr, 250000);
       assert.ok(res!.actionCard.data.upiPaymentLink.includes("upi://pay"));
-      assert.ok(res!.actionCard.data.upiPaymentLink.includes("pa=orderking%40okhdfcbank"));
+      assert.ok(res!.actionCard.data.upiPaymentLink.includes("pa=9395065587%40ybl"));
     });
 
     it("should decompose founder goals into 14-stage delivery graph", async () => {
-      const res = await parseFounderQuery("create delivery graph for marketplace business", "orderking@okhdfcbank");
+      const res = await parseFounderQuery("create delivery graph for marketplace business", "9395065587@ybl");
       assert.strictEqual(res!.intent, "delivery_graph");
       assert.ok(res!.actionCard);
       assert.strictEqual(res!.actionCard.type, "delivery_graph");
@@ -365,7 +365,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
     });
 
     it("should generate authentic Bengali / Sylheti voice responses when queried in Bengali", async () => {
-      const res = await parseFounderQuery("apnar sathe client dhundte chai", "orderking@okhdfcbank");
+      const res = await parseFounderQuery("apnar sathe client dhundte chai", "9395065587@ybl");
       assert.strictEqual(res!.detectedLanguage, "bn-IN");
       assert.ok(
         res!.voiceSpokenText.includes("Ami") ||

@@ -33,7 +33,7 @@ import {
 } from "@/lib/ai/financial-truth-engine";
 
 export function OpportunityRadarHub({
-  founderUpiVpa = "orderking@okhdfcbank",
+  founderUpiVpa = "9395065587@ybl",
   onSelectAction,
 }: {
   founderUpiVpa?: string;

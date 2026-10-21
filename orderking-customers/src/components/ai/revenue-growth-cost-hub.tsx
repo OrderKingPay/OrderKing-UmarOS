@@ -49,7 +49,7 @@ import {
 import { VERIFIED_OPPORTUNITIES, type Opportunity } from "@/lib/ai/opportunity-hunter";
 import { toast } from "sonner";
 
-export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }: { founderUpiVpa?: string }) {
+export function RevenueGrowthCostHub({ founderUpiVpa = "9395065587@ybl" }: { founderUpiVpa?: string }) {
   const [activeSubTab, setActiveSubTab] = useState<"APPLICATIONS" | "PAYMENTS" | "REPEAT_BIZ" | "COST_CONTROL">(
     "APPLICATIONS"
   );

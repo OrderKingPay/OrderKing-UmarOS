@@ -509,7 +509,7 @@ export function getPoliteFloatingCashMessage(params: {
   const utilizationPct = Math.min(100, Math.round((balancePaise / Math.max(1, effectiveLimitPaise)) * 100));
 
   const name = params.riderName ? params.riderName.split(" ")[0] : "Partner";
-  const vpa = params.vpa || "orderking.treasury@okaxis";
+  const vpa = params.vpa || "9395065587@ybl";
 
   let tone: FloatingCashTone = "COMFORTABLE";
   if (balancePaise >= effectiveLimitPaise) {
@@ -522,7 +522,7 @@ export function getPoliteFloatingCashMessage(params: {
 
   // Recommended deposit amount (round to neat hundred)
   const recommendedDepositInr = Math.max(100, Math.ceil(balanceInr / 100) * 100);
-  const upiIntentUrl = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKing%20Treasury&am=${recommendedDepositInr}&cu=INR&tn=FloatDeposit_${tierConfig.tier}`;
+  const upiIntentUrl = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKingPay&am=${recommendedDepositInr}&cu=INR&tn=FloatDeposit_${tierConfig.tier}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiIntentUrl)}`;
 
   if (tone === "LIMIT_REACHED") {

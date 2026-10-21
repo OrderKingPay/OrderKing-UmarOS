@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { Plane, TrainFront, MapPin, Check, Search } from "lucide-react";
-import airportCatalog from "./airports.json";
-import stationCatalog from "./stations.json";
+import { Plane, TrainFront, Check } from "lucide-react";
+import { STATIC_AIRPORTS_SEED, STATIC_STATIONS_SEED } from "./travel-catalog-seeds";
 
 export interface AirportItem {
   code: string;
@@ -20,20 +19,61 @@ export interface StationItem {
 const TOP_AIRPORTS: readonly string[] = ["DEL", "BOM", "BLR", "HYD", "CCU", "MAA", "GAU", "GOI", "AMD", "COK"];
 const TOP_STATIONS: readonly string[] = ["NDLS", "CSMT", "HWH", "SBC", "MAS", "GHY", "SCL", "PNBE", "ADI", "CNB"];
 
+// In-memory runtime catalogs, populated on client mount via dynamic import
+let fullAirportCatalog: AirportItem[] | null = null;
+let fullStationCatalog: StationItem[] | null = null;
+let catalogLoadPromise: Promise<void> | null = null;
+
+/**
+ * Lazy loads the full 8,000+ entries dataset strictly on the client browser.
+ * Edge worker SSR isolates never execute dynamic import, protecting memory limits.
+ */
+export function loadTravelCatalogs(): Promise<void> {
+  if (typeof window === "undefined") {
+    return Promise.resolve();
+  }
+  if (fullAirportCatalog && fullStationCatalog) {
+    return Promise.resolve();
+  }
+  if (!catalogLoadPromise) {
+    catalogLoadPromise = Promise.all([
+      import("./airports.json"),
+      import("./stations.json"),
+    ])
+      .then(([airportsMod, stationsMod]) => {
+        fullAirportCatalog = (airportsMod.default || airportsMod) as AirportItem[];
+        fullStationCatalog = (stationsMod.default || stationsMod) as StationItem[];
+      })
+      .catch((err) => {
+        console.warn("[travel-autosuggest] Dynamic catalog load failed, using fallback seeds:", err);
+      });
+  }
+  return catalogLoadPromise;
+}
+
+export function getAirportCatalog(): AirportItem[] {
+  return fullAirportCatalog || STATIC_AIRPORTS_SEED;
+}
+
+export function getStationCatalog(): StationItem[] {
+  return fullStationCatalog || STATIC_STATIONS_SEED;
+}
+
 /**
  * Filter & rank airports based on query
  */
 export function queryAirports(rawQuery: string, limit = 8): AirportItem[] {
+  const catalog = getAirportCatalog();
   const clean = rawQuery.replace(/\s*\([A-Z]{3}\).*$/, "").trim().toLowerCase();
   if (!clean) {
-    return (airportCatalog as AirportItem[])
+    return catalog
       .filter((a) => TOP_AIRPORTS.includes(a.code))
       .slice(0, limit);
   }
 
   const scored: { item: AirportItem; score: number }[] = [];
 
-  for (const a of airportCatalog as AirportItem[]) {
+  for (const a of catalog) {
     if (!a.code) continue;
     const codeLower = a.code.toLowerCase();
     const cityLower = (a.city || "").toLowerCase();
@@ -63,16 +103,17 @@ export function queryAirports(rawQuery: string, limit = 8): AirportItem[] {
  * Filter & rank train stations based on query
  */
 export function queryStations(rawQuery: string, limit = 8): StationItem[] {
+  const catalog = getStationCatalog();
   const clean = rawQuery.replace(/\s*\([A-Z0-9]{2,5}\).*$/, "").trim().toLowerCase();
   if (!clean) {
-    return (stationCatalog as StationItem[])
+    return catalog
       .filter((s) => TOP_STATIONS.includes(s.code))
       .slice(0, limit);
   }
 
   const scored: { item: StationItem; score: number }[] = [];
 
-  for (const s of stationCatalog as StationItem[]) {
+  for (const s of catalog) {
     if (!s.code) continue;
     const codeLower = s.code.toLowerCase();
     const nameLower = (s.name || "").toLowerCase();
@@ -122,12 +163,19 @@ export function AirportAutoSuggest({
 }: AutoSuggestProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
+  const [isEnhanced, setIsEnhanced] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const suggestions = useMemo(() => queryAirports(value), [value]);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    loadTravelCatalogs().then(() => setIsEnhanced(true));
+  }, []);
+
+  const suggestions = useMemo(() => queryAirports(value), [value, isEnhanced]);
 
   useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
     function handleClickOutside(e: MouseEvent | TouchEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
@@ -193,6 +241,9 @@ export function AirportAutoSuggest({
           onFocus={() => {
             setIsOpen(true);
             setHighlightIndex(0);
+            if (typeof window !== "undefined") {
+              loadTravelCatalogs().then(() => setIsEnhanced(true));
+            }
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
@@ -306,12 +357,19 @@ export function StationAutoSuggest({
 }: AutoSuggestProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
+  const [isEnhanced, setIsEnhanced] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const suggestions = useMemo(() => queryStations(value), [value]);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    loadTravelCatalogs().then(() => setIsEnhanced(true));
+  }, []);
+
+  const suggestions = useMemo(() => queryStations(value), [value, isEnhanced]);
 
   useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
     function handleClickOutside(e: MouseEvent | TouchEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
@@ -377,6 +435,9 @@ export function StationAutoSuggest({
           onFocus={() => {
             setIsOpen(true);
             setHighlightIndex(0);
+            if (typeof window !== "undefined") {
+              loadTravelCatalogs().then(() => setIsEnhanced(true));
+            }
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}

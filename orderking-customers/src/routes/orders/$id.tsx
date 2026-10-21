@@ -868,7 +868,7 @@ function OrderDetailPage() {
             variant="secondary"
             className="w-full text-xs font-medium"
             onClick={() => {
-              const text = `Hey! Here's your ₹${((order.summary.totalPaise / splitCount) / 100).toFixed(2)} share for our food order from ${order.summary.restaurantName}: upi://pay?pa=orderking@icici&pn=OrderKing&am=${((order.summary.totalPaise / splitCount) / 100).toFixed(2)}&cu=INR&tn=Bill Split for ${order.summary.publicId}`;
+              const text = `Hey! Here's your ₹${((order.summary.totalPaise / splitCount) / 100).toFixed(2)} share for our food order from ${order.summary.restaurantName}: upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=${((order.summary.totalPaise / splitCount) / 100).toFixed(2)}&cu=INR&tn=Bill Split for ${order.summary.publicId}`;
               if (typeof navigator !== "undefined" && navigator.share) {
                 void navigator.share({ title: "Split Bill on OrderKing", text });
               } else if (typeof navigator !== "undefined") {

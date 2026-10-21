@@ -177,7 +177,7 @@ export class PremiumRevenueOperatingSystem {
       toStage: "VERIFIED_REVENUE",
       actor: "BANK_WEBHOOK",
       evidence: ["Bank settlement UTR 908234710293 verified into founder account"],
-      metadata: { amountInr: 74999, vpa: "orderking@okhdfcbank" },
+      metadata: { amountInr: 74999, vpa: "9395065587@ybl" },
     });
   }
 

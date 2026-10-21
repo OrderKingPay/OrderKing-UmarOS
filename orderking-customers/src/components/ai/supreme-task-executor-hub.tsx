@@ -194,7 +194,7 @@ export function EnterpriseTaskExecutorHub() {
             onClick={() => handleApproveHumanGate("GATE-PAYMENT-AUTH")}
             className="bg-amber-600 hover:bg-amber-500 text-fg font-semibold text-xs"
           >
-            Confirm Bank VPA (orderking@okhdfcbank)
+            Confirm Bank VPA (9395065587@ybl)
           </Button>
         </div>
       )}

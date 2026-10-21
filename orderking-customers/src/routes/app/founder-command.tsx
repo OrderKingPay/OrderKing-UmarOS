@@ -104,7 +104,7 @@ export function FounderCommandPage() {
   // Practical Business Launch & Field Ops State (Zero-initialized until live telemetry is connected)
   const [launchTown, setLaunchTown] = useState("Karimganj / Sribhumi");
   const [geofenceRadiusKm, setGeofenceRadiusKm] = useState(6);
-  const [merchantUpiVpa, setMerchantUpiVpa] = useState("orderking@okhdfcbank");
+  const [merchantUpiVpa, setMerchantUpiVpa] = useState("9395065587@ybl");
   const [launchVoucherCode, setLaunchVoucherCode] = useState("LAUNCH100");
   const [launchVoucherDiscount, setLaunchVoucherDiscount] = useState(100);
   const [activeRidersCount] = useState(0);
@@ -729,7 +729,7 @@ export function FounderCommandPage() {
                     <Input
                       value={merchantUpiVpa}
                       onChange={(e) => setMerchantUpiVpa(e.target.value)}
-                      placeholder="e.g. orderking@okhdfcbank or yourname@icici"
+                      placeholder="e.g. 9395065587@ybl or yourname@icici"
                       className="bg-surface-2 border-border text-xs text-fg flex-1 font-mono"
                     />
                     <Button

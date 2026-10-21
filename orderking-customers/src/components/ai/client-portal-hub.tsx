@@ -30,7 +30,7 @@ export interface ProjectMilestone {
 }
 
 export function ClientPortalHub({
-  founderUpiVpa = "orderking@okhdfcbank",
+  founderUpiVpa = "9395065587@ybl",
 }: {
   founderUpiVpa?: string;
 }) {
@@ -73,7 +73,7 @@ export function ClientPortalHub({
 
   const handlePayMilestone = (m: ProjectMilestone) => {
     const invoiceNum = `INV-${m.id}-${Date.now().toString().slice(-4)}`;
-    const upiLink = `upi://pay?pa=${founderUpiVpa}&pn=OrderKing%20Technologies&am=${m.amountInr}&cu=INR&tn=Milestone%20${m.id}%20Invoice`;
+    const upiLink = `upi://pay?pa=${founderUpiVpa}&pn=OrderKingPay&am=${m.amountInr}&cu=INR&tn=Milestone%20${m.id}%20Invoice`;
     void navigator.clipboard?.writeText(upiLink);
     toast.success(`Milestone UPI Payment link copied: ₹${m.amountInr.toLocaleString("en-IN")}`);
     

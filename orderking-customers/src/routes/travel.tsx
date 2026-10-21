@@ -46,25 +46,11 @@ import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
 import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
 import { AppErrorComponent } from "@/lib/error-component";
-import airportCatalog from "@/components/fintech/airports.json";
-import stationCatalog from "@/components/fintech/stations.json";
+import { queryAirports, queryStations } from "@/components/fintech/travel-autosuggest";
 import { AirportAutoSuggest, StationAutoSuggest } from "@/components/fintech/travel-autosuggest";
 
-const searchAirportOptions = (raw: string) => {
-  const q = raw.replace(/\s*\([A-Z]{3}\).*$/, "").trim().toLowerCase();
-  if (!q) return airportCatalog.slice(0, 20);
-  return airportCatalog
-    .filter((a) => a.code && (a.code.toLowerCase().includes(q) || a.city.toLowerCase().includes(q) || a.name.toLowerCase().includes(q)))
-    .slice(0, 20);
-};
-
-const searchStationOptions = (raw: string) => {
-  const q = raw.replace(/\s*\([A-Z0-9]{2,5}\).*$/, "").trim().toLowerCase();
-  if (!q) return stationCatalog.slice(0, 20);
-  return stationCatalog
-    .filter((a) => a.code.toLowerCase().includes(q) || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q))
-    .slice(0, 20);
-};
+const searchAirportOptions = (raw: string) => queryAirports(raw, 20);
+const searchStationOptions = (raw: string) => queryStations(raw, 20);
 
 export const Route = createFileRoute("/travel")({
   component: TravelPage,

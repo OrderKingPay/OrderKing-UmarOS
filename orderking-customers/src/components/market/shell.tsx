@@ -11,6 +11,11 @@ import {
   GraduationCap,
   Briefcase,
   Sparkles,
+  User,
+  Package,
+  CreditCard,
+  Settings,
+  LogOut,
 } from "lucide-react";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { OrderKingMark } from "@/components/brand/wordmark";

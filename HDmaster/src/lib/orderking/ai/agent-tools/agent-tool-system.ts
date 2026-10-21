@@ -231,7 +231,7 @@ agentTools.register({
       amountInr: { type: "number" },
       advancePercent: { type: "number", default: 50 },
       description: { type: "string" },
-      founderUpiVpa: { type: "string", default: "orderking@okhdfcbank" },
+      founderUpiVpa: { type: "string", default: "9395065587@ybl" },
     },
     required: ["clientName", "amountInr", "description"],
   },
@@ -247,7 +247,7 @@ agentTools.register({
     const advancePercent = Number(input.advancePercent || 50);
     const advanceAmount = Math.round((amount * advancePercent) / 100);
     const invoiceNumber = `INV-${Date.now().toString().slice(-6)}`;
-    const vpa = String(input.founderUpiVpa || "orderking@okhdfcbank");
+    const vpa = String(input.founderUpiVpa || "9395065587@ybl");
 
     const upiLink = `upi://pay?pa=${vpa}&pn=OrderKing&am=${advanceAmount}&cu=INR&tn=${encodeURIComponent(
       `Invoice ${invoiceNumber} Advance`

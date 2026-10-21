@@ -469,7 +469,7 @@ export function UtilitiesBillEngine() {
   const txnRef = `UTIL-${selectedBiller.code}-${Date.now().toString().slice(-6)}`;
   const upiIntentUri = useMemo(() => {
     return buildNPCIUpiIntentUrl({
-      vpa: "orderking@okhdfcbank",
+      vpa: "9395065587@ybl",
       payeeName: "OrderKing Utilities",
       amountInRupees: cleanAmount,
       currency: "INR",
@@ -839,7 +839,7 @@ export function UtilitiesBillEngine() {
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <a
                     href={generateAppDeepLink("gpay", {
-                      vpa: "orderking@okhdfcbank",
+                      vpa: "9395065587@ybl",
                       payeeName: "OrderKing Utilities",
                       amountInRupees: cleanAmount,
                       transactionRef: activeTxnRef || txnRef,
@@ -850,7 +850,7 @@ export function UtilitiesBillEngine() {
                   </a>
                   <a
                     href={generateAppDeepLink("phonepe", {
-                      vpa: "orderking@okhdfcbank",
+                      vpa: "9395065587@ybl",
                       payeeName: "OrderKing Utilities",
                       amountInRupees: cleanAmount,
                       transactionRef: activeTxnRef || txnRef,
@@ -861,7 +861,7 @@ export function UtilitiesBillEngine() {
                   </a>
                   <a
                     href={generateAppDeepLink("paytm", {
-                      vpa: "orderking@okhdfcbank",
+                      vpa: "9395065587@ybl",
                       payeeName: "OrderKing Utilities",
                       amountInRupees: cleanAmount,
                       transactionRef: activeTxnRef || txnRef,
@@ -872,7 +872,7 @@ export function UtilitiesBillEngine() {
                   </a>
                   <a
                     href={generateAppDeepLink("bhim", {
-                      vpa: "orderking@okhdfcbank",
+                      vpa: "9395065587@ybl",
                       payeeName: "OrderKing Utilities",
                       amountInRupees: cleanAmount,
                       transactionRef: activeTxnRef || txnRef,

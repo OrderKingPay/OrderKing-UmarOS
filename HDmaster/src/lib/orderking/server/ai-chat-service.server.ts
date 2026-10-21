@@ -484,7 +484,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
 export function executeLocalSovereignCognitivePass(
   _query: string,
   _messages: ChatMessage[],
-  _founderUpiVpa: string = "orderking@okhdfcbank"
+  _founderUpiVpa: string = "9395065587@ybl"
 ): {
   text: string;
   executionSteps: AgentExecutionStep[];

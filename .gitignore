@@ -11,6 +11,8 @@ node_modules/
 dist/
 build/
 .output/
+.next/
+**/.next/
 
 # Vercel & Netlify
 .vercel/
@@ -28,6 +30,8 @@ build/
 # Secrets files - NEVER commit
 secrets.json
 secrets-*.json
+**/secrets.json
+**/secrets-*.json
 add_envs.cjs
 **/add_envs.cjs
 *.pem
@@ -52,3 +56,5 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 apply_keys_oneshot.ps1
+GEMINI_API_KEY.txt
+RAZORPAY_KEY.txt

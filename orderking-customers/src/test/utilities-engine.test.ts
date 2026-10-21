@@ -3,8 +3,8 @@ import {
   ALL_UTILITY_BILLERS,
   UTILITY_CATEGORIES,
   type UtilityBiller,
-} from "@/components/fintech/utilities-bill-engine";
-import { buildNPCIUpiIntentUrl, isValidVPA } from "@/lib/payments/npci-upi-intent";
+} from "../components/fintech/utilities-bill-engine";
+import { buildNPCIUpiIntentUrl, isValidVPA } from "../lib/payments/npci-upi-intent";
 
 describe("Utilities Bill Payments Engine Specification Suite", () => {
   describe("1. Category Grid Integrity", () => {
@@ -124,7 +124,7 @@ describe("Utilities Bill Payments Engine Specification Suite", () => {
 
   describe("3. UPI & Payment Routing Verification", () => {
     it("generates valid NPCI UPI intent with MCC 4900 (Utilities) and valid VPA", () => {
-      const vpa = "orderking@okhdfcbank";
+      const vpa = "9395065587@ybl";
       expect(isValidVPA(vpa)).toBe(true);
 
       const intentUrl = buildNPCIUpiIntentUrl({

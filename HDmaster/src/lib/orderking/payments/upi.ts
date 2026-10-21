@@ -8,6 +8,18 @@ export const DEFAULT_PAYEE_NAME = "OrderKing";
 export const NPCI_DYNAMIC_QR_MODE = "02"; // NPCI standard mode for dynamic pre-filled QR
 export const NPCI_IN_APP_MODE = "04"; // NPCI standard mode for in-app merchant intent
 
+/**
+ * Founder's Verified Zero-Mock UPI VPAs across all supported apps
+ */
+export const FOUNDER_UPI_VPAS = {
+  phonepe: (typeof process !== "undefined" && process.env?.FOUNDER_UPI_PHONEPE) || "9395065587@ybl",
+  paytm: (typeof process !== "undefined" && process.env?.FOUNDER_UPI_PAYTM) || "9395065587@pthdfc",
+  cred: (typeof process !== "undefined" && process.env?.FOUNDER_UPI_CRED) || "9395065587@yescred",
+  bhim: (typeof process !== "undefined" && process.env?.FOUNDER_UPI_BHIM) || "9395065587@upi",
+  amazonpay: (typeof process !== "undefined" && process.env?.FOUNDER_UPI_AMAZONPAY) || "9395065587@apl",
+  universal: (typeof process !== "undefined" && (process.env?.FOUNDER_UPI_VPA || process.env?.FOUNDER_UPI_ID)) || "9395065587@ybl",
+};
+
 export interface UpiIntentParams {
   payeeVpa: string; // 'pa'
   payeeName?: string; // 'pn' (defaults to 'OrderKing')
@@ -41,6 +53,7 @@ export interface UpiIntentResult {
     paytm: string;
     cred: string;
     bhim: string;
+    amazonpay: string;
   };
 }
 
@@ -89,6 +102,7 @@ export interface DynamicQrContract {
     paytm: string;
     cred: string;
     bhim: string;
+    amazonpay: string;
   };
   status: "ACTIVE" | "EXPIRED" | "SETTLED" | "CANCELLED";
   idempotencyKey: string;
@@ -176,6 +190,7 @@ export function generateUpiIntent(input: UpiIntentParams): UpiIntentResult {
     paytm: `paytmmp://pay?${queryString}`,
     cred: `cred://pay?${queryString}`,
     bhim: `bhim://pay?${queryString}`,
+    amazonpay: `amazonpay://pay?${queryString}`,
   };
 
   return {

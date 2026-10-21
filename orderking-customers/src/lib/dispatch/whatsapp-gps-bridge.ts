@@ -35,8 +35,17 @@ export interface GeolocationResult {
  * Default Dispatch Coordinator phone numbers in India (+91)
  */
 export const DEFAULT_DISPATCH_PHONE = "919876543210";
-export const FOUNDER_UPI_VPA = "orderking@icici";
-export const FOUNDER_MERCHANT_NAME = "OrderKing Technologies";
+export const FOUNDER_UPI_VPA = "9395065587@ybl";
+export const FOUNDER_MERCHANT_NAME = "OrderKingPay";
+
+export const FOUNDER_UPI_VPAS = {
+  phonepe: "9395065587@ybl",
+  paytm: "9395065587@pthdfc",
+  cred: "9395065587@yescred",
+  bhim: "9395065587@upi",
+  amazonpay: "9395065587@apl",
+  universal: "9395065587@ybl",
+} as const;
 
 /**
  * Obtains live browser GPS coordinates with a 5000ms safety timeout.
