@@ -17,6 +17,7 @@ import {
   ArrowRight,
   ShieldCheck,
   Share2,
+  Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -489,65 +490,9 @@ export function UtilitiesBillEngine() {
   }, [upiIntentUri]);
 
   const handleProceedToPay = () => {
-    if (!accountNumber.trim()) {
-      toast.error(`Please enter your ${selectedBiller.accountLabel}`);
-      return;
-    }
-    if (cleanAmount < 1) {
-      toast.error("Please enter a valid bill amount");
-      return;
-    }
-
-    const currentTxn = `UTIL-${selectedBiller.code}-${Date.now().toString().slice(-6)}`;
-    setActiveTxnRef(currentTxn);
-
-    setBankUtr("");
-    setUtrSubmitted(false);
-
-    if (paymentMethod === "upi") {
-      // Open UPI checkout modal and attempt direct deep link
-      setIsCheckoutModalOpen(true);
-      if (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
-        window.location.href = upiIntentUri;
-      }
-    } else {
-      // Gateway checkout routing with real environment key resolution
-      const liveKey =
-        (typeof process !== "undefined" && process.env?.RAZORPAY_KEY_ID) ||
-        (typeof window !== "undefined" && (window as any).__ENV__?.RAZORPAY_KEY_ID) ||
-        "";
-
-      if (typeof window !== "undefined" && (window as any).Razorpay && liveKey) {
-        try {
-          const rzp = new (window as any).Razorpay({
-            key: liveKey,
-            amount: cleanAmount * 100,
-            currency: "INR",
-            name: "OrderKing Utilities",
-            description: `${selectedBiller.name} - ${accountNumber.trim()}`,
-            handler: function (resp: { razorpay_payment_id?: string }) {
-              const paymentId = resp.razorpay_payment_id || `RZP-${Date.now().toString().slice(-6)}`;
-              setBankUtr(paymentId);
-              setUtrSubmitted(true);
-              toast.info(
-                `Payment ID ${paymentId} registered. Transmitting to ${selectedBiller.name} BBPS switchboard for settlement confirmation.`
-              );
-            },
-            prefill: {
-              contact: "9395065587",
-            },
-            theme: {
-              color: "#F59E0B",
-            },
-          });
-          rzp.open();
-          return;
-        } catch {
-          // Fallback to interactive modal
-        }
-      }
-      setIsCheckoutModalOpen(true);
-    }
+    toast.info(
+      "Direct online bill settlement is temporarily suspended pending authorized BBPS switchboard integration. No customer accounts will be debited."
+    );
   };
 
   const handleCopyUpi = () => {
@@ -794,15 +739,23 @@ export function UtilitiesBillEngine() {
               </div>
             </div>
 
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1.5">
+              <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                <ShieldCheck className="size-4" /> Settlement Hold: Direct BBPS Gateway Pending
+              </div>
+              <p className="text-[11px] leading-relaxed text-slate-400">
+                Online utility debits and manual UTR confirmations are suspended until official Bharat BillPay (BBPS) banking switchboard verification is completed. No customer accounts will be debited prematurely.
+              </p>
+            </div>
+
             <button
               type="button"
+              disabled={true}
               onClick={handleProceedToPay}
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:brightness-105 active:scale-[0.98] text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition cursor-pointer"
+              className="w-full h-11 rounded-xl bg-slate-800 text-slate-400 border border-slate-700/60 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed opacity-75"
             >
-              <span>
-                Pay ₹{cleanAmount} via {paymentMethod === "upi" ? "UPI" : "Razorpay"}
-              </span>
-              <ArrowRight className="size-4" />
+              <span>Settlement Suspended — Pending BBPS Authorization</span>
+              <Lock className="size-3.5" />
             </button>
           </div>
         </div>
@@ -916,108 +869,53 @@ export function UtilitiesBillEngine() {
                   </button>
                 </div>
 
-                {/* Real Provider Verification Workflow */}
-                <div className="pt-2 border-t border-slate-800 space-y-2.5 text-left">
-                  <label className="text-[11px] font-bold text-slate-300 block">
-                    Verify Bank Reference (UTR)
-                  </label>
-                  {utrSubmitted ? (
-                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1">
-                      <div className="font-bold text-amber-300 flex items-center gap-1.5">
-                        <CheckCircle2 className="size-3.5" /> Bank Reference Logged: {bankUtr}
-                      </div>
-                      <p className="text-[11px] text-slate-400">
-                        Transmitted for provider settlement reconciliation with {selectedBiller.name}. Official credit reflects via Bharat Connect / BBPS within 2 hours.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setIsCheckoutModalOpen(false)}
-                        className="mt-2 w-full h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer"
-                      >
-                        Done
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <input
-                        type="text"
-                        value={bankUtr}
-                        onChange={(e) => setBankUtr(e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 22))}
-                        placeholder="12-digit UTR from your UPI app (e.g. 429182390192)"
-                        className="w-full h-9 rounded-lg bg-slate-900 border border-slate-800 px-3 text-xs text-white placeholder-slate-500 font-mono focus:border-amber-400 focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (bankUtr.trim().length < 6) {
-                            toast.error("Please enter a valid 12-digit Bank UTR or Transaction Reference number");
-                            return;
-                          }
-                          setUtrSubmitted(true);
-                          toast.info(`UTR ${bankUtr.trim()} logged. Verification transmitted to ${selectedBiller.name} switchboard.`);
-                        }}
-                        className="w-full h-9 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider transition cursor-pointer"
-                      >
-                        Submit UTR for Provider Verification
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2">
-                  <CreditCard className="size-8 text-amber-400 mx-auto" />
-                  <h4 className="text-sm font-bold text-white">Payment Gateway Checkout</h4>
-                  <p className="text-xs text-slate-400">
-                    Routing settlement for {selectedBiller.name} (₹{cleanAmount.toFixed(2)})
-                  </p>
-                  <div className="text-[11px] font-mono text-slate-500 pt-1">
-                    Gateway Reference: {activeTxnRef || txnRef}
-                  </div>
-                </div>
-
-                {utrSubmitted ? (
+                {/* Transparent Regulatory Notice */}
+                <div className="pt-2 border-t border-slate-800 space-y-2 text-left">
                   <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1">
                     <div className="font-bold text-amber-300 flex items-center gap-1.5">
-                      <CheckCircle2 className="size-3.5" /> Gateway Transaction Registered: {bankUtr}
+                      <ShieldCheck className="size-3.5" /> BBPS Direct Authorization Pending
                     </div>
-                    <p className="text-[11px] text-slate-400">
-                      Payment signature received. Transmitted to {selectedBiller.name} for BBPS switchboard settlement.
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      To prevent uncredited transactions, automated receipt logging and manual UTR confirmations are suspended until live Bharat Connect / BBPS provider API switchboards are integrated.
                     </p>
                     <button
                       type="button"
                       onClick={() => setIsCheckoutModalOpen(false)}
                       className="mt-2 w-full h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer"
                     >
-                      Done
+                      Close
                     </button>
                   </div>
-                ) : (
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      value={bankUtr}
-                      onChange={(e) => setBankUtr(e.target.value.trim())}
-                      placeholder="Enter Gateway Payment ID (e.g. pay_P2K...)"
-                      className="w-full h-9 rounded-lg bg-slate-900 border border-slate-800 px-3 text-xs text-white placeholder-slate-500 font-mono focus:border-amber-400 focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (bankUtr.trim().length < 6) {
-                          toast.error("Please enter a valid Payment ID or Gateway reference");
-                          return;
-                        }
-                        setUtrSubmitted(true);
-                        toast.info(`Payment ID ${bankUtr.trim()} recorded for ${selectedBiller.name} provider settlement.`);
-                      }}
-                      className="w-full h-11 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider transition cursor-pointer"
-                    >
-                      Submit Payment ID for Verification
-                    </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2">
+                  <CreditCard className="size-8 text-amber-400 mx-auto" />
+                  <h4 className="text-sm font-bold text-white">Payment Gateway Status</h4>
+                  <p className="text-xs text-slate-400">
+                    Biller: {selectedBiller.name} (₹{cleanAmount.toFixed(2)})
+                  </p>
+                  <div className="text-[11px] font-mono text-slate-500 pt-1">
+                    Settlement Status: Direct Provider Handshake Pending
                   </div>
-                )}
+                </div>
+
+                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1">
+                  <div className="font-bold text-amber-300 flex items-center gap-1.5">
+                    <ShieldCheck className="size-3.5" /> Collection Suspended
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Gateway settlement is held until authorized BBPS banking credentials are live. No funds will be charged.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsCheckoutModalOpen(false)}
+                    className="mt-2 w-full h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             )}
           </div>
