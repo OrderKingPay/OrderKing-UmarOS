@@ -150,24 +150,17 @@ export function ScanQrModal({
     }
 
     const recipient = payeeName || cleanUpi;
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      if (onDeductWallet) {
-        onDeductWallet(amountPaise, `UPI Pay: ${recipient}`);
+    if (validUpiIntentUri) {
+      if (typeof window !== "undefined") {
+        window.location.href = validUpiIntentUri;
       }
+      toast.info(`Redirecting to UPI application to authorize payment to ${recipient}...`);
+      onClose();
+      return;
+    }
+    toast.error("Unable to generate verified NPCI intent for this address.");
+    return;
 
-      // Legitimate internal KingPay transaction reference - zero fabricated bank UTR
-      const txnId = `KP-TXN-${Date.now()}`;
-      setPaymentSuccess({
-        txnId,
-        amountPaise,
-        payee: recipient,
-        upiId: cleanUpi,
-      });
-      setIsProcessing(false);
-      toast.success(`Payment of ${formatPaise(amountPaise)} successful!`);
-    }, 700);
   };
 
   const handleReset = () => {

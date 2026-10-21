@@ -24,6 +24,7 @@ import {
   HelpCircle,
   Share2,
   Copy,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -183,7 +184,7 @@ export function RemittanceDesk() {
     setTimeout(() => {
       setSecondsRemaining(900);
       setIsRefreshingRate(false);
-      toast.success("Live Interbank FX Rate refreshed from NPCI & SWIFT nodal feeds!");
+      toast.info("Indicative rates aligned with daily interbank reference benchmarks.");
     }, 600);
   };
 
@@ -246,34 +247,10 @@ export function RemittanceDesk() {
       }
     }
 
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      const receipt: RemittanceReceipt = {
-        id: `REM-${destinationCountry === "India" ? "IN" : "BD"}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-        sourceAmount: validSendAmount,
-        sourceCurrency,
-        destinationCountry,
-        targetCurrency: targetCurrencyCode,
-        interbankRate,
-        founderMarkupPercent: FOUNDER_FX_MARKUP_PERCENT,
-        effectiveRate,
-        netPayoutAmount,
-        beneficiaryName: beneficiaryName.trim(),
-        payoutTarget: payoutTargetIdentifier,
-        payoutMethod: destinationCountry === "India" ? payoutMethodIndia : payoutMethodBangladesh,
-        purpose: remittancePurpose,
-        status: "PA_CB_CLEARED",
-        createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        estimatedDeliverySeconds: destinationCountry === "India" && payoutMethodIndia === "UPI" ? 45 : 90,
-      };
-
-      setActiveReceipt(receipt);
-      toast.success(
-        `Remittance Dispatched! Ref #${receipt.id}. Net payout ${targetCurrencySymbol}${receipt.netPayoutAmount.toLocaleString()} locked under PA-CB compliance.`,
-        { duration: 7000 }
-      );
-    }, 900);
+    setIsSubmitting(false);
+    toast.info(
+      "Live cross-border remittance settlements require an RBI Authorized Dealer Category-I (AD-Cat-I) banking license or licensed PA-CB partner. Direct in-app booking is suspended. Use authorized partner bank portals below."
+    );
   };
 
   return (
@@ -719,15 +696,52 @@ export function RemittanceDesk() {
                 </select>
               </div>
 
-              {/* SUBMIT BUTTON */}
+              {/* Transparent Regulatory Status & External Bank Handoff */}
+              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1.5 mt-2">
+                <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                  <ShieldCheck className="size-4" /> Informational FX Estimator Tool
+                </div>
+                <p className="text-[11px] leading-relaxed text-slate-400">
+                  This calculator provides indicative benchmark currency conversions. Direct cross-border debit/credit execution requires an RBI Authorized Dealer Category-I (AD-Cat-I) banking partnership. To execute outward or inward remittances, please use our authorized partner banking portals below.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                <a
+                  href="https://www.onlinesbi.sbi/sbijava/osbi_global_remittance.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
+                >
+                  <span>SBI Global Remit</span>
+                  <ExternalLink className="size-3 text-amber-400" />
+                </a>
+                <a
+                  href="https://www.westernunion.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
+                >
+                  <span>Western Union</span>
+                  <ExternalLink className="size-3 text-amber-400" />
+                </a>
+                <a
+                  href="https://wise.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
+                >
+                  <span>Wise Global</span>
+                  <ExternalLink className="size-3 text-amber-400" />
+                </a>
+              </div>
+
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full mt-2 py-3 bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 hover:brightness-105 active:scale-98 text-slate-950 font-black rounded-xl text-sm transition shadow-md shadow-amber-500/20 disabled:opacity-50"
+                className="w-full mt-2 py-3 bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold rounded-xl text-xs transition border border-slate-700/60 flex items-center justify-center gap-2"
               >
-                {isSubmitting
-                  ? "Clearing PA-CB AML Gateways..."
-                  : `Dispatch Remittance (${targetCurrencySymbol}${netPayoutAmount.toLocaleString()})`}
+                <Lock className="size-3.5" />
+                <span>Direct In-App Booking Suspended — Use Authorized Bank Portals Above</span>
               </button>
             </form>
           </div>
@@ -747,91 +761,6 @@ export function RemittanceDesk() {
         </p>
       </footer>
 
-      {/* ========================================================= */}
-      {/* 4. RECEIPT / SETTLEMENT MODAL */}
-      {/* ========================================================= */}
-      {activeReceipt && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-950 border border-emerald-400/50 rounded-3xl max-w-md w-full p-6 text-white shadow-2xl space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="flex items-start justify-between border-b border-slate-800 pb-3">
-              <div>
-                <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider flex items-center gap-1">
-                  <CheckCircle2 className="size-3.5" /> PA-CB Cleared &amp; Dispatched
-                </span>
-                <h3 className="text-lg font-black text-white">Remittance Settlement Receipt</h3>
-                <p className="text-xs text-slate-400 font-mono">Txn Ref: {activeReceipt.id}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveReceipt(null)}
-                className="size-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-
-            {/* Receipt Summary */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2 text-xs">
-              <div className="flex justify-between text-slate-400">
-                <span>Sender Debited:</span>
-                <span className="font-mono font-bold text-white">
-                  {activeReceipt.sourceAmount.toLocaleString()} {activeReceipt.sourceCurrency}
-                </span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Beneficiary Credited:</span>
-                <span className="font-mono font-black text-emerald-400 text-sm">
-                  {activeReceipt.destinationCountry === "India" ? "₹" : "৳"}
-                  {activeReceipt.netPayoutAmount.toLocaleString()} {activeReceipt.targetCurrency}
-                </span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Beneficiary:</span>
-                <span className="font-bold text-slate-200">{activeReceipt.beneficiaryName}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Channel:</span>
-                <span className="font-mono text-slate-300">{activeReceipt.payoutTarget}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Purpose:</span>
-                <span className="text-slate-300">{activeReceipt.purpose}</span>
-              </div>
-              <div className="border-t border-slate-800 pt-2 flex justify-between text-slate-400">
-                <span>Founder FX Markup:</span>
-                <span className="font-mono text-amber-300">+{activeReceipt.founderMarkupPercent}% (Transparent)</span>
-              </div>
-            </div>
-
-            {/* Status Timeline */}
-            <div className="bg-emerald-950/30 border border-emerald-400/30 rounded-xl p-3 flex items-center gap-3">
-              <Zap className="size-5 text-emerald-400 shrink-0" />
-              <div className="text-xs">
-                <p className="font-bold text-emerald-300">Nodal Dispatch in Progress</p>
-                <p className="text-[10px] text-slate-300">
-                  Beneficiary bank/wallet ping initiated. Settlement estimated within {activeReceipt.estimatedDeliverySeconds} seconds.
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof navigator !== "undefined" && navigator.clipboard) {
-                  void navigator.clipboard.writeText(
-                    `OrderKing KingPay Remittance Ref: ${activeReceipt.id}\nSent: ${activeReceipt.sourceAmount} ${activeReceipt.sourceCurrency}\nReceived: ${activeReceipt.netPayoutAmount} ${activeReceipt.targetCurrency}\nTo: ${activeReceipt.beneficiaryName}`
-                  );
-                  toast.success("Receipt details copied to clipboard!");
-                }
-                setActiveReceipt(null);
-              }}
-              className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition"
-            >
-              Copy Receipt &amp; Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

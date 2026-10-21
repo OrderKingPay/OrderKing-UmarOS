@@ -1149,13 +1149,13 @@ function IntelligencePage() {
       });
 
       if (serverRes?.success) {
-        toast.success("Application persisted to OrderKing ATS database! Employer review initiated.");
+        toast.success("Application submitted successfully to employer database.");
       } else {
-        toast.info("Application saved locally in secure ATS offline storage.");
+        toast.error("Application could not be saved to the database. Please try again.");
       }
     } catch (serverErr) {
       console.warn("Database sync error, preserved in client fallback:", serverErr);
-      toast.info("Application recorded in local ATS storage. Employer sync scheduled.");
+      toast.error("Network error: Application submission failed. Please verify your connection and retry.");
     }
   };
 

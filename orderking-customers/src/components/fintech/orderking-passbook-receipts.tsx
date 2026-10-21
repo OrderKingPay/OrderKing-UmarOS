@@ -66,10 +66,10 @@ export function OrderKingPassbookReceipts({
 
   const handleDownloadStatement = () => {
     try {
-      const header = "OrderKing KingPay Official Passbook Statement\n";
-      const userLine = `Account ID: ${user?.id || "dev-user"} | Generated: ${new Date().toISOString()}\n`;
-      const balanceLine = `Available Prepaid Balance: ₹${(walletBalancePaise / 100).toFixed(2)}\n\n`;
-      const colHeader = "Timestamp,Transaction ID / UTR,Direction,Amount (INR),Account,Memo\n";
+      const header = "OrderKing In-App Transaction History Statement\n";
+      const userLine = `Account ID: ${user?.id || "user"} | Generated: ${new Date().toISOString()}\n`;
+      const balanceLine = `Available App Balance: ₹${(walletBalancePaise / 100).toFixed(2)}\n\n`;
+      const colHeader = "Timestamp,Transaction Ref,Direction,Amount (INR),Account,Memo\n";
       const rows = entries
         .map(
           (e) =>
@@ -84,11 +84,11 @@ export function OrderKingPassbookReceipts({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `OrderKing_Passbook_Statement_${Date.now()}.csv`);
+      link.setAttribute("download", `OrderKing_Transaction_Statement_${Date.now()}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success("Authentic passbook statement downloaded.");
+      toast.success("Transaction history exported.");
     } catch {
       toast.error("Failed to generate statement file.");
     }
@@ -126,17 +126,17 @@ export function OrderKingPassbookReceipts({
               }`}
             >
               <Receipt className="size-3.5" />
-              <span>Official Passbook &amp; UTR Desk</span>
+              <span>In-App Transaction Desk</span>
             </span>
-            <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-600 dark:text-emerald-300 px-2 py-0.5 text-[9px] font-black">
-              RBI DOUBLE-ENTRY
+            <span className="rounded-full bg-slate-800 border border-slate-700 text-slate-300 px-2 py-0.5 text-[9px] font-black">
+              APP WALLET LOG
             </span>
           </div>
           <h2 className={`text-xl font-black tracking-tight ${isDark ? "text-white" : "text-stone-900"}`}>
-            Authentic Transaction Ledger &amp; Receipts
+            In-App Transaction Ledger &amp; Receipts
           </h2>
           <p className={`text-xs mt-0.5 ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-            100% verified settlement records. Every debit strictly matches an authenticated double-entry credit.
+            App profile transaction history and payment receipts. Note: This is an application-level ledger, not an official bank passbook issued by an RBI-regulated bank.
           </p>
         </div>
 
@@ -164,13 +164,13 @@ export function OrderKingPassbookReceipts({
           }`}
         >
           <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
-            Prepaid Wallet Balance
+            Prepaid App Balance
           </span>
           <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? "text-white" : "text-stone-900"}`}>
             {formatPaise(walletBalancePaise)}
           </span>
-          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block mt-1">
-            ● RBI PA/PPI Compliant Balance
+          <span className="text-[10px] text-amber-500 dark:text-amber-400 font-bold block mt-1">
+            ● In-App Profile Balance
           </span>
         </div>
         <div
@@ -319,12 +319,12 @@ export function OrderKingPassbookReceipts({
             </div>
             <div>
               <h4 className={`text-sm font-black ${isDark ? "text-white" : "text-stone-900"}`}>
-                Double-Entry Ledger Verified
+                In-App Activity Log
               </h4>
               <p className={`text-xs max-w-md mx-auto mt-1 leading-relaxed ${
                 isDark ? "text-slate-400" : "text-stone-500"
               }`}>
-                Your passbook ledger maintains cryptographic double-entry integrity with real-time fee transparency and direct settlement reconciliation.
+                Your transaction ledger reflects your local in-app payment records and order credits. This is an application-level ledger, not an official bank passbook issued by a banking institution or RBI.
               </p>
             </div>
           </div>

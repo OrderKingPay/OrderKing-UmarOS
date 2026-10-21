@@ -31,7 +31,7 @@ function KingPayPassbookPage() {
             <div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-300 px-3 py-0.5 text-xs font-bold text-amber-900 mb-2">
                 <Sparkles className="size-3 text-amber-600" />
-                <span>UPI &amp; Remit Passbook</span>
+                <span>UPI &amp; Payment History</span>
               </div>
               <h1 className="text-2xl font-black text-stone-950 tracking-tight sm:text-3xl">
                 HISTORY

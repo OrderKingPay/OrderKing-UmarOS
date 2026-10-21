@@ -23,7 +23,7 @@ function KingPayRemittancePage() {
               KingPay
             </Link>
             <span>/</span>
-            <span className="text-amber-400 font-bold">International Remittance</span>
+            <span className="text-amber-400 font-bold">FX &amp; Remittance Calculator</span>
           </div>
 
           <div className="flex items-center gap-2">

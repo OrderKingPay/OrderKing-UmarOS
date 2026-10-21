@@ -59,16 +59,50 @@ export function AddMoneyModal({
       return;
     }
 
-    setIsProcessing(true);
-    setTimeout(() => {
-      const addedPaise = amountRupees * 100;
-      onSuccess(addedPaise);
-      setIsProcessing(false);
-      toast.success(
-        `🎉 Successfully added ${formatPaise(addedPaise)} to your KingPay Sovereign Wallet! (₹0 fee charged)`
-      );
+    const liveKey =
+      (typeof process !== "undefined" && process.env?.RAZORPAY_KEY_ID) ||
+      (typeof window !== "undefined" && (window as any).__ENV__?.RAZORPAY_KEY_ID) ||
+      "";
+
+    if (typeof window !== "undefined" && (window as any).Razorpay && liveKey) {
+      try {
+        const rzp = new (window as any).Razorpay({
+          key: liveKey,
+          amount: amountRupees * 100,
+          currency: "INR",
+          name: "OrderKing Wallet Top-up",
+          description: `Add ₹${amountRupees} to KingPay Balance`,
+          handler: function (resp: { razorpay_payment_id?: string }) {
+            const addedPaise = amountRupees * 100;
+            onSuccess(addedPaise);
+            toast.success(`Payment verified! ID: ${resp.razorpay_payment_id || "Live"}`);
+            onClose();
+          },
+          prefill: {
+            contact: "9395065587",
+          },
+          theme: {
+            color: "#F59E0B",
+          },
+        });
+        rzp.open();
+        return;
+      } catch {
+        // fallback
+      }
+    }
+
+    const upiUri = `upi://pay?pa=9395065587@ybl&pn=OrderKing%20Wallet&am=${amountRupees}&cu=INR&tn=Wallet%20Topup`;
+    if (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      window.location.href = upiUri;
+      toast.info("Opening UPI application to authorize wallet top-up...");
       onClose();
-    }, 600);
+      return;
+    }
+
+    toast.info(`Please complete top-up to UPI ID 9395065587@ybl in your banking app.`);
+    onClose();
+    return;
   };
 
   return (
