@@ -254,7 +254,7 @@ function MyTripsPage() {
                 <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
                   {isPending ? "Checking account..." : !user
                     ? "Sign in to prepare your private trip centre."
-                    : "You have no active bookings in this view. Compare flights, trains, stays, and buses directly with 0% markup."}
+                    : "You have no active bookings in this view. Compare flights, trains, stays, and buses directly."}
                 </p>
                 <Link to="/travel"
                   className="mt-4 inline-flex rounded-xl bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white no-underline">

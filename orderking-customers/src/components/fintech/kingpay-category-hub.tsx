@@ -1117,7 +1117,7 @@ function PassbookLedgerTool() {
             ₹0.00
           </span>
           <span className="text-[10px] text-slate-400 block mt-1">
-            0% Commission on KingPay UPI
+            Standard UPI Transfer
           </span>
         </div>
       </div>

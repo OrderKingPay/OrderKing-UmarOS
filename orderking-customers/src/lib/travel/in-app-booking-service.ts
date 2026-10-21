@@ -987,7 +987,7 @@ export function issueSovereignETicket(params: {
     destination: params.quote.toCity,
     date: dateStr,
     totalPaise: fareCalc.totalCheckoutPaise,
-    sovereignGuarantee: "0% Convenience Fee",
+    sovereignGuarantee: "Direct Carrier Fare",
   });
 
   const ticket: SovereignETicket = {

@@ -201,6 +201,9 @@ export async function handleAdminHttp(
     if (method === "GET" && path === "settlements") return json({ data: await q.listSettlementBatches(ws.ctx, url.searchParams.get("party") === "RIDER" ? "RIDER" : "RESTAURANT") });
     if (method === "GET" && path === "audit") return json({ data: await q.listAudit(ws.ctx, url.searchParams.get("q") ?? undefined) });
     if (method === "GET" && path === "settings") return json({ data: await q.getSettings(ws.ctx) });
+    if (method === "GET" && path === "governance") return json({ data: await q.getPlatformGovernance(ws.ctx) });
+    if (method === "GET" && path === "configurations") return json({ data: await q.listAppConfigurations(ws.ctx, url.searchParams.get("category") ?? undefined) });
+    if (method === "GET" && path.startsWith("configurations/")) return json({ data: await q.getAppConfiguration(ws.ctx, path.slice("configurations/".length)) });
     if (method === "GET" && path === "feature-flags") return json({ data: await q.listFlags(ws.ctx) });
     if (method === "GET" && path === "branding") return json({ data: await q.getBranding(ws.ctx) });
     if (method === "GET" && path === "health") return json({ data: await q.systemHealth(ws.ctx) });
@@ -272,10 +275,44 @@ export async function handleAdminHttp(
       return json({ ok: true, data: result });
     }
     if (method === "POST" && path === "settings") {
-      const schema = z.object({ settings: z.record(z.string(), z.any()), reason: z.string().min(1) });
+      const schema = z.object({
+        settings: z.record(z.string(), z.any()),
+        reason: z.string().optional().default("Updated via UmarOS Central Governance Engine")
+      });
       let body;
       try { body = schema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
       const result = await q.saveSettings(ws, body.settings as any, body.reason);
+      return json({ ok: true, data: result });
+    }
+    if (method === "POST" && path === "governance") {
+      const schema = z.object({
+        modules: z.record(z.string(), z.any()).optional(),
+        pricingDeliveryRules: z.record(z.string(), z.any()).optional(),
+        dynamicBranding: z.record(z.string(), z.any()).optional(),
+        settings: z.record(z.string(), z.any()).optional(),
+        reason: z.string().optional().default("Updated via UmarOS Central Governance Engine")
+      });
+      let body;
+      try { body = schema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      const result = await q.savePlatformGovernance(ws, {
+        modules: body.modules,
+        pricingDeliveryRules: body.pricingDeliveryRules,
+        dynamicBranding: body.dynamicBranding,
+        settings: body.settings,
+        reason: body.reason,
+      });
+      return json({ ok: true, data: result });
+    }
+    if (method === "POST" && path === "configurations") {
+      const schema = z.object({
+        key: z.string().min(1),
+        value: z.any(),
+        category: z.string().optional().default("general"),
+        reason: z.string().optional().default("Updated via UmarOS Configurations Engine")
+      });
+      let body;
+      try { body = schema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      const result = await q.setAppConfiguration(ws, body.key, body.value, body.category, body.reason);
       return json({ ok: true, data: result });
     }
 

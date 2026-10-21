@@ -45,7 +45,10 @@ import {
   Bed,
   Utensils,
   ChefHat,
+  Package,
+  Truck,
 } from "lucide-react";
+import { PorterParcelEngine } from "@/components/courier/porter-parcel-engine";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
 import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
@@ -54,8 +57,17 @@ import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 import { ScanQrModal } from "@/components/fintech/scan-qr-modal";
 import { AddMoneyModal } from "@/components/fintech/add-money-modal";
 import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
-import { askIntelligenceFn, submitJobApplicationFn } from "@/routes/tutor";
+import { 
+  askIntelligenceFn, 
+  submitJobApplicationFn, 
+  ALL_INDIAN_BOARDS, 
+  CORE_SUBJECTS, 
+  CLASS_LEVELS, 
+  AcademicSolutionCard 
+} from "@/routes/tutor";
 import { cn } from "@/lib/utils";
+import { UtilitiesBillEngine } from "@/components/fintech/utilities-bill-engine";
+import { AirportAutoSuggest, StationAutoSuggest } from "./travel-autosuggest";
 import airportCatalog from "./airports.json";
 import stationCatalog from "./stations.json";
 
@@ -115,7 +127,7 @@ const VERIFIED_JOBS = [
     type: "Full-Time / Flexible 4h Shifts · Pan-India",
     location: "Hyperlocal Nationwide (Direct Onboarding)",
     badge: "Direct Fleet Role",
-    perks: ["Payouts under accepted rider contract", "Flexible Shift Roster", "Rider protections under contract and applicable law", "Zero Onboarding Fee"],
+    perks: ["Payouts under accepted rider contract", "Flexible Shift Roster", "Rider protections under contract and applicable law", "Direct Onboarding"],
     isFleet: true,
   },
   {
@@ -127,7 +139,7 @@ const VERIFIED_JOBS = [
     type: "Dine-In & Cloud Kitchen Onboarding · Pan-India",
     location: "Available after city/operator approval",
     badge: "Direct Merchant Desk",
-    perks: ["Zero Onboarding Fee", "Real-Time KDS App", "Direct Customer Reach", "Transparent GST Invoicing"],
+    perks: ["Direct Merchant Desk", "Real-Time KDS App", "Direct Customer Reach", "Transparent GST Invoicing"],
     isFleet: false,
     isKitchen: true,
   },
@@ -140,7 +152,7 @@ export function SupremeKingPayExperience() {
   const { walletBalancePaise, deductMoney } = useRealKingPayWallet();
 
   // Active Super Category in KingPay Hub
-  const [activeSuperCategory, setActiveSuperCategory] = useState<"tickets" | "tutor" | "jobs" | "upi">("tickets");
+  const [activeSuperCategory, setActiveSuperCategory] = useState<"tickets" | "courier" | "tutor" | "jobs" | "upi">("tickets");
 
   // Active Travel sub-tab
   const [ticketTab, setTicketTab] = useState<"flights" | "trains" | "buses" | "hotels" | "cabs">("flights");
@@ -242,7 +254,7 @@ export function SupremeKingPayExperience() {
       toast.error("Enter two different valid station codes before copying the roster.");
       return;
     }
-    if (tatkalPassengers.some((p) => !p.name.trim() || !Number.isInteger(p.age) || p.age < 1 || p.age > 120)) {
+    if (tatkalPassengers.some((p) => !p.name.trim() || !Number.isInteger(Number(p.age)) || Number(p.age) < 1 || Number(p.age) > 120)) {
       toast.error("Enter a name and valid age for every passenger before copying.");
       return;
     }
@@ -276,7 +288,9 @@ export function SupremeKingPayExperience() {
 
   // AI Tutor Quick Session State
   const [tutorQuery, setTutorQuery] = useState("");
-  const [tutorSubject, setTutorSubject] = useState("NCERT Mathematics");
+  const [tutorBoard, setTutorBoard] = useState<string>("CBSE (Central Board)");
+  const [tutorClass, setTutorClass] = useState<string>("Class 10");
+  const [tutorSubject, setTutorSubject] = useState<string>("Mathematics");
   const [tutorAnswer, setTutorAnswer] = useState<string | null>(null);
   const [isTutorLoading, setIsTutorLoading] = useState(false);
 
@@ -339,11 +353,11 @@ export function SupremeKingPayExperience() {
     }
   };
 
-  // Ask AI Tutor
+  // Ask Academic Tutor
   const handleAskTutor = async (queryText?: string) => {
     const q = (queryText || tutorQuery).trim();
     if (!q) {
-      toast.error("Please enter a question or topic");
+      toast.error("Please enter an academic question or problem");
       return;
     }
     setIsTutorLoading(true);
@@ -352,24 +366,24 @@ export function SupremeKingPayExperience() {
       const res = await askIntelligenceFn({
         data: {
           message: q,
-          board: "CBSE / State Boards",
-          stdClass: "Class 10-12 / Foundation",
+          board: tutorBoard,
+          stdClass: tutorClass,
           subject: tutorSubject,
-          language: "English / Hinglish",
+          language: "Auto (Detect Native Language)",
           difficulty: "Standard Exam",
-          tone: "Educational & Clear",
-          goal: "Exam Step-Marking & Derivation",
+          tone: "Direct Academic Solution",
+          goal: "Concept Mastery",
           history: [],
         },
       });
       if (res && res.text) {
         setTutorAnswer(res.text);
       } else {
-        setTutorAnswer("Response received. Review prescribed syllabus for full derivation.");
+        setTutorAnswer("Could not generate a response. Please check your query and try again.");
       }
     } catch {
       setTutorAnswer(
-        "Exam Derivation Step-by-Step:\n1. Given data noted with standard SI units.\n2. Apply canonical governing theorem.\n3. Substitute numerical values and solve intermediate steps.\n4. Box the final answer with units."
+        "### 1. Given Formula / Concept\n- Governing textbook formulas and boundary conditions for " + tutorSubject + " under " + tutorBoard + " (" + tutorClass + ").\n\n### 2. Step-by-Step Derivation & Solution\n- Step 1: Identify given parameters and initial conditions.\n- Step 2: Apply core syllabus theorems and equations.\n- Step 3: Compute intermediate values with units.\n\n### 3. Final Answer\n- Solution complete. Verify intermediate values against prescribed textbook syllabus."
       );
     } finally {
       setIsTutorLoading(false);
@@ -460,7 +474,7 @@ export function SupremeKingPayExperience() {
         },
       });
       setAppliedJobIds((prev) => [...prev, selectedJob.id]);
-      toast.success(`Application received for ${selectedJob.title}. Direct review with zero platform intermediary fee.`);
+      toast.success(`Application received for ${selectedJob.title}. Direct review with employer hiring desk.`);
       setIsJobModalOpen(false);
       setApplicantName("");
       setApplicantContact("");
@@ -469,7 +483,7 @@ export function SupremeKingPayExperience() {
     } catch (err: any) {
       console.warn("Application fallback:", err?.message || err);
       setAppliedJobIds((prev) => [...prev, selectedJob.id]);
-      toast.success(`Application received for ${selectedJob.title}. Direct review with zero platform intermediary fee.`);
+      toast.success(`Application received for ${selectedJob.title}. Direct review with employer hiring desk.`);
       setIsJobModalOpen(false);
     } finally {
       setIsSubmittingJob(false);
@@ -559,11 +573,11 @@ export function SupremeKingPayExperience() {
                   Live in India
                 </span>
                 <span className="rounded-full bg-amber-400/20 border border-amber-400/50 px-2 py-0.5 text-[10px] font-bold text-amber-300 hidden md:inline">
-                  Zero OrderKing Platform Markup on Carrier Handoffs
+                  Verified Directory
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                Direct UPI, Utility Bills Directory, Carrier Handoffs, AI Tutor &amp; Jobs &amp; Applications.
+                Utilities, Carrier Bookings, AI Tutoring &amp; Career Opportunities.
               </p>
             </div>
           </div>
@@ -599,7 +613,7 @@ export function SupremeKingPayExperience() {
               <span className="text-xs text-slate-400 font-mono">SafeInteger Paise Precision</span>
             </div>
             <p className="text-xs text-slate-300 mt-1">
-              Zero platform surcharge on UPI. Immediate double-entry ledger reconciliation.
+              Immediate double-entry ledger reconciliation.
             </p>
           </div>
 
@@ -624,12 +638,12 @@ export function SupremeKingPayExperience() {
             </button>
 
             <a
-              href="#upi-tools"
+              href="#utilities"
               onClick={() => setActiveSuperCategory("upi")}
               className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2.5 text-xs font-bold text-slate-200 hover:border-slate-500 no-underline transition cursor-pointer"
             >
-              <CreditCard className="size-4 text-slate-400" />
-              <span>Direct UPI</span>
+              <Zap className="size-4 text-slate-400" />
+              <span>Utilities</span>
             </a>
 
             <Link
@@ -658,7 +672,7 @@ export function SupremeKingPayExperience() {
         </div>
 
         {/* 4 Interactive Luxury Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
           {/* 1. TICKETS (TRAVEL) */}
           <button
             type="button"
@@ -675,7 +689,7 @@ export function SupremeKingPayExperience() {
                 <Plane className="size-5" />
               </div>
               <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                Zero Markup
+                Air &amp; Rail
               </span>
             </div>
             <span className="text-sm sm:text-base font-black text-white leading-tight">Tickets &amp; Travel</span>
@@ -683,6 +697,39 @@ export function SupremeKingPayExperience() {
             {activeSuperCategory === "tickets" && (
               <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
                 <span>Provider Booking Links</span>
+                <ChevronRight className="size-3" />
+              </div>
+            )}
+          </button>
+
+          {/* 2. LOCAL PARCEL & COURIER */}
+          <button
+            type="button"
+            onClick={() => {
+              setActiveSuperCategory("courier");
+              const el = document.getElementById("courier");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+            className={cn(
+              "flex flex-col text-left p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group",
+              activeSuperCategory === "courier"
+                ? "border-amber-400 bg-gradient-to-b from-amber-950/40 via-slate-900 to-[#121622] ring-1 ring-amber-400/60 shadow-[0_4px_20px_rgba(245,158,11,0.2)]"
+                : "border-slate-800 bg-slate-900/70 hover:border-amber-400/40 hover:bg-slate-900"
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
+                <Truck className="size-5" />
+              </div>
+              <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                ₹30 Base
+              </span>
+            </div>
+            <span className="text-sm sm:text-base font-black text-white leading-tight">Local Courier</span>
+            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Documents, Food, Keys, Boxes</span>
+            {activeSuperCategory === "courier" && (
+              <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
+                <span>Active Dispatch Engine</span>
                 <ChevronRight className="size-3" />
               </div>
             )}
@@ -707,7 +754,7 @@ export function SupremeKingPayExperience() {
                 Live 1-on-1
               </span>
             </div>
-            <span className="text-sm sm:text-base font-black text-white leading-tight">AI Tutor</span>
+            <span className="text-sm sm:text-base font-black text-white leading-tight">Academic Tutor</span>
             <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Available Mentors &amp; AI Study Help</span>
             {activeSuperCategory === "tutor" && (
               <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
@@ -733,7 +780,7 @@ export function SupremeKingPayExperience() {
                 <Briefcase className="size-5" />
               </div>
               <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                Zero Commission
+                Verified Careers
               </span>
             </div>
             <span className="text-sm sm:text-base font-black text-white leading-tight">Jobs &amp; Applications</span>
@@ -746,7 +793,7 @@ export function SupremeKingPayExperience() {
             )}
           </button>
 
-          {/* 4. DIRECT UPI & BBPS */}
+          {/* 4. UTILITIES & DIRECT UPI */}
           <button
             type="button"
             onClick={() => setActiveSuperCategory("upi")}
@@ -758,23 +805,25 @@ export function SupremeKingPayExperience() {
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
+              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
                 <Zap className="size-5" />
               </div>
-              <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                NPCI Bharat
-              </span>
             </div>
-            <span className="text-sm sm:text-base font-black text-white leading-tight">Direct UPI &amp; Bills</span>
-            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Recharge, FASTag, Bill Split</span>
+            <span className="text-sm sm:text-base font-black text-white leading-tight">Utilities</span>
+            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Bills, FASTag &amp; UPI Transfer</span>
             {activeSuperCategory === "upi" && (
               <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
-                <span>Active UPI Gateway</span>
+                <span>Active Section</span>
                 <ChevronRight className="size-3" />
               </div>
             )}
           </button>
         </div>
+      </section>
+
+      {/* ─── DEDICATED PILLAR: LOCAL PARCEL & COURIER DISPATCH ENGINE (PORTER GRADE) ─── */}
+      <section id="courier" aria-label="Point-to-Point Local Courier & Parcel Dispatch" className="space-y-4 pt-2">
+        <PorterParcelEngine />
       </section>
 
       {/* ─── DEDICATED PILLAR 1: TICKETS & TRAVEL (MAKEMYTRIP / GOIBIBO GRADE) ─── */}
@@ -882,7 +931,7 @@ export function SupremeKingPayExperience() {
                     Domestic Flight Search
                   </span>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                    Zero OTA Markup
+                    Air Travel
                   </span>
                 </div>
                 {/* Special Fares filter chips */}
@@ -1334,20 +1383,21 @@ export function SupremeKingPayExperience() {
                   <label className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
                     <MapPin className="size-3 text-amber-400" /> Destination City / Region
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={hotelCity}
                     onChange={(e) => setHotelCity(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none cursor-pointer"
-                  >
-                    <option value="Goa, India">Goa (Calangute, Candolim, Panaji)</option>
-                    <option value="Jaipur, India">Jaipur (Pink City, C-Scheme)</option>
-                    <option value="Manali, India">Manali &amp; Old Manali</option>
-                    <option value="Bengaluru, India">Bengaluru (Indiranagar, Koramangala)</option>
-                    <option value="Mumbai, India">Mumbai (BKC, Colaba, Juhu)</option>
-                    <option value="New Delhi, India">New Delhi (Connaught Place, Aerocity)</option>
-                    <option value="Varanasi, India">Varanasi (Ghats, Cantt)</option>
-                    <option value="Udaipur, India">Udaipur (Lake Pichola, Old City)</option>
-                  </select>
+                    list="hotelCity-suggestions"
+                    placeholder="Search any destination city or region..."
+                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none"
+                  />
+                  <datalist id="hotelCity-suggestions">
+                    {searchStationOptions(hotelCity).map((s) => (
+                      <option key={s.code} value={`${s.city}, India`}>
+                        {s.name} ({s.code}) · {s.city}
+                      </option>
+                    ))}
+                  </datalist>
                 </div>
 
                 <div className="space-y-1">
@@ -1547,7 +1597,7 @@ export function SupremeKingPayExperience() {
           <div className="flex items-start gap-2">
             <ShieldCheck className="size-4 text-emerald-400 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              <strong className="text-slate-200">Carrier Integration Disclosure:</strong> OrderKing Travel routes directly to official carrier booking engines and verified aggregator gateways with Zero OrderKing Platform Markup. Final fares, taxes, and live seat availability are governed directly by carrier systems.
+              <strong className="text-slate-200">Carrier Integration Disclosure:</strong> OrderKing Travel routes directly to official carrier booking engines and verified aggregator gateways. Final fares, taxes, and live seat availability are governed directly by carrier systems.
             </p>
           </div>
           <Link
@@ -1565,7 +1615,7 @@ export function SupremeKingPayExperience() {
         <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
           <div>
             <h2 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <GraduationCap className="size-5 text-amber-400" /> AI Academic Tutor &amp; Verified Mentors
+              <GraduationCap className="size-5 text-amber-400" /> Academic Tutor
             </h2>
             <p className="text-xs text-slate-400">
               AI-assisted study explanations. Human academic mentors are onboarding; no verified live sessions are promised.
@@ -1585,70 +1635,101 @@ export function SupremeKingPayExperience() {
           </div>
         </div>
 
-        {/* Live Interactive Learning Console - AI Derivation Engine */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5 space-y-4">
-          <div className="flex items-center justify-between">
+        {/* Academic Tutor - All India Central & 28 State Boards */}
+        <div className="rounded-3xl border border-amber-400/40 bg-gradient-to-b from-[#141824] via-[#0f131c] to-[#0a0d14] p-5 sm:p-6 shadow-2xl space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-              <Sparkles className="size-3.5" /> Interactive AI Academic Derivation Console
+              <Sparkles className="size-3.5" /> Academic Tutor
             </span>
-            <span className="text-[10px] text-slate-400">Live 24x7 Exam Marking Assistant</span>
+            <span className="text-[10px] text-slate-400 font-medium">All India Central &amp; 28 State Boards</span>
           </div>
 
-          {/* Subject Pills */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
-            {[
-              "NCERT Mathematics",
-              "Physics Derivations",
-              "Chemistry Equations",
-              "Polity & General Studies",
-              "Interview & Spoken English",
-            ].map((sub) => (
-              <button
-                key={sub}
-                type="button"
-                onClick={() => setTutorSubject(sub)}
-                className={cn(
-                  "px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition border cursor-pointer",
-                  tutorSubject === sub
-                    ? "bg-amber-400/20 border-amber-400 text-amber-300"
-                    : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
-                )}
+          {/* Board & Class Selectors */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <label className="text-[11px] font-bold text-slate-300 block mb-1">State / Central Board</label>
+              <select
+                value={tutorBoard}
+                onChange={(e) => setTutorBoard(e.target.value)}
+                className="w-full h-10 rounded-xl border border-slate-700 bg-slate-900 px-3 text-white text-xs focus:border-amber-400 outline-none transition-colors"
               >
-                {sub}
-              </button>
-            ))}
+                {ALL_INDIAN_BOARDS.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-300 block mb-1">Class Level</label>
+              <select
+                value={tutorClass}
+                onChange={(e) => setTutorClass(e.target.value)}
+                className="w-full h-10 rounded-xl border border-slate-700 bg-slate-900 px-3 text-white text-xs focus:border-amber-400 outline-none transition-colors"
+              >
+                {CLASS_LEVELS.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* Input Box */}
+          {/* Core Subjects Selection Pills */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[11px] font-bold text-slate-300">Core Subject</label>
+              <span className="text-[10px] text-slate-500 font-medium">Selected: <strong className="text-amber-400">{tutorSubject}</strong></span>
+            </div>
+            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+              {CORE_SUBJECTS.map((sub) => (
+                <button
+                  key={sub}
+                  type="button"
+                  onClick={() => setTutorSubject(sub)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition border cursor-pointer",
+                    tutorSubject === sub
+                      ? "bg-amber-400 text-slate-950 border-amber-300 font-black shadow-md"
+                      : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
+                  )}
+                >
+                  {sub}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Clean Question / Problem Input Box */}
           <div className="relative">
-            <input
-              type="text"
+            <textarea
+              rows={2}
               value={tutorQuery}
               onChange={(e) => setTutorQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") void handleAskTutor();
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void handleAskTutor();
+                }
               }}
-              placeholder={`Ask any ${tutorSubject} question (e.g. Solve quadratic formula derivation with step-marking)...`}
-              className="w-full h-11 pl-3.5 pr-24 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs focus:border-amber-400 outline-none"
+              placeholder={"Enter your " + tutorSubject + " problem (e.g. Derive Bernoulli equation with SI units, solve integration of sin^2(x), or solve quadratic formula)..."}
+              className="w-full p-3 pr-28 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs focus:border-amber-400 outline-none resize-none"
             />
             <button
               type="button"
-              disabled={isTutorLoading}
+              disabled={isTutorLoading || !tutorQuery.trim()}
               onClick={() => void handleAskTutor()}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-8 px-3 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs font-black flex items-center gap-1 hover:brightness-105 disabled:opacity-60 cursor-pointer"
+              className="absolute right-2 bottom-3.5 h-8 px-3 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs font-black flex items-center gap-1.5 hover:brightness-105 disabled:opacity-50 cursor-pointer shadow-md transition-all active:scale-95"
             >
-              {isTutorLoading ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" />}
-              <span>Ask AI</span>
+              {isTutorLoading ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+              <span>{isTutorLoading ? "Solving..." : "Solve"}</span>
             </button>
           </div>
 
           {/* Quick sample chips */}
           <div className="flex flex-wrap gap-1.5 text-[11px]">
-            <span className="text-slate-500 font-bold self-center">Try asking:</span>
+            <span className="text-slate-500 font-bold self-center">Quick problem:</span>
             {[
               "Derive Bernoulli equation with SI units",
               "Step-by-step integration of sin^2(x)",
-              "Common fleet delivery partner interview questions",
+              "Solve quadratic equation by completing square",
             ].map((promptText) => (
               <button
                 key={promptText}
@@ -1657,26 +1738,16 @@ export function SupremeKingPayExperience() {
                   setTutorQuery(promptText);
                   void handleAskTutor(promptText);
                 }}
-                className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-600 transition cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-amber-400/50 hover:text-white transition cursor-pointer"
               >
                 {promptText}
               </button>
             ))}
           </div>
 
-          {/* AI Tutor Response Display */}
+          {/* Structured Solution Display */}
           {tutorAnswer && (
-            <div className="rounded-xl border border-amber-400/30 bg-gradient-to-b from-slate-900 to-slate-950 p-4 text-xs space-y-2">
-              <div className="flex items-center justify-between text-amber-300 font-bold border-b border-slate-800 pb-2">
-                <span className="flex items-center gap-1.5">
-                  <Sparkles className="size-3.5" /> Exam Scoring Step-Marking Response
-                </span>
-                <span className="text-[10px] text-slate-400 font-mono">Pedagogical Derivation</span>
-              </div>
-              <div className="text-slate-200 whitespace-pre-wrap leading-relaxed font-sans">
-                {tutorAnswer}
-              </div>
-            </div>
+            <AcademicSolutionCard solutionText={tutorAnswer} />
           )}
         </div>
 
@@ -1686,7 +1757,7 @@ export function SupremeKingPayExperience() {
             <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
               <BookOpen className="size-3.5 fill-amber-400 text-amber-400" /> Academic &amp; Skill Tracks
             </span>
-            <span className="text-[11px] text-slate-400">Zero Commission · Direct Student-Educator Connect</span>
+            <span className="text-[11px] text-slate-400">Academic Tutor · Direct Student-Educator Connect</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1777,7 +1848,7 @@ export function SupremeKingPayExperience() {
 
       </section>
 
-      {/* ─── DEDICATED PILLAR 3: VERIFIED JOBS (HIGH-TRUST ZERO-FEE DIRECT APPLICATIONS) ─── */}
+      {/* ─── DEDICATED PILLAR 3: VERIFIED JOBS (DIRECT APPLICATIONS) ─── */}
       <section id="jobs" aria-label="Verified Job Openings" className="space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
           <div>
@@ -1785,7 +1856,7 @@ export function SupremeKingPayExperience() {
               <Briefcase className="size-5 text-amber-400" /> Direct Openings &amp; Community Onboarding
             </h2>
             <p className="text-xs text-slate-400">
-              Direct OrderKing fleet onboarding and community mentor applications · Zero placement fees
+              Direct OrderKing fleet onboarding and verified career applications
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -1843,7 +1914,7 @@ export function SupremeKingPayExperience() {
                 </div>
 
                 <div className="border-t border-slate-800/80 pt-3 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400">0% Deductions · Direct Contract</span>
+                  <span className="text-[10px] text-slate-400">Verified Careers · Direct Contract</span>
                   {job.isFleet ? (
                     <Link
                       to="/join-fleet"
@@ -1881,101 +1952,10 @@ export function SupremeKingPayExperience() {
         </div>
       </section>
 
-      {/* ─── DEDICATED PILLAR 4: DIRECT UPI PAY & BHARAT CONNECT (BBPS) ─── */}
-      <section id="upi-tools" aria-label="Direct UPI and Utility Bills" className="space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-          <div>
-            <h2 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <Zap className="size-5 text-amber-400" /> Direct UPI Pay &amp; Utility Bills Directory
-            </h2>
-            <p className="text-xs text-slate-400">
-              Utility payments route via standard UPI PSP apps (GPay, PhonePe, Paytm, BHIM) or NPCI Bharat Connect compliant handles
-            </p>
-          </div>
-          <Link to="/kingpay-bbps" className="text-xs font-bold text-amber-400 hover:underline flex items-center gap-1">
-            BBPS Status &amp; Directory <ChevronRight className="size-3.5" />
-          </Link>
-        </div>
-
-        {/* NPCI UPI & Technical Gateway Disclosure */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-400 flex items-start gap-2.5">
-          <ShieldCheck className="size-4 text-emerald-400 shrink-0 mt-0.5" />
-          <div className="space-y-0.5">
-            <p className="font-bold text-slate-200">NPCI UPI &amp; BBPS Technical Gateway Disclosure:</p>
-            <p className="leading-relaxed">
-              OrderKing is a technology provider and does not hold a direct banking license. Payment functions generate standard NPCI-compliant UPI deep links (upi://) and route bill recharges through registered Bharat Connect / BBPS operating units or your device&apos;s installed UPI PSP apps (Google Pay, PhonePe, Paytm, BHIM) with 0% OrderKing platform surcharge.
-            </p>
-          </div>
-        </div>
-
-        {/* 6 Essential Indian Recharges & Bills Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
-          <Link
-            to="/kingpay-bbps"
-            className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl border border-slate-800 bg-slate-900/70 hover:border-amber-400/50 hover:bg-slate-900 transition no-underline text-center group"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500/15 border border-blue-400/30 text-blue-400 group-hover:scale-105 transition-transform">
-              <Smartphone className="size-5" />
-            </div>
-            <span className="text-xs font-bold text-slate-200">Mobile Prepaid</span>
-            <span className="text-[10px] text-slate-400">Jio, Airtel, Vi</span>
-          </Link>
-
-          <Link
-            to="/kingpay-bbps"
-            className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl border border-slate-800 bg-slate-900/70 hover:border-amber-400/50 hover:bg-slate-900 transition no-underline text-center group"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-400 group-hover:scale-105 transition-transform">
-              <Lightbulb className="size-5" />
-            </div>
-            <span className="text-xs font-bold text-slate-200">Electricity Bill</span>
-            <span className="text-[10px] text-slate-400">All State Discoms</span>
-          </Link>
-
-          <Link
-            to="/kingpay-bbps"
-            className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl border border-slate-800 bg-slate-900/70 hover:border-amber-400/50 hover:bg-slate-900 transition no-underline text-center group"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-purple-500/15 border border-purple-400/30 text-purple-400 group-hover:scale-105 transition-transform">
-              <Tv className="size-5" />
-            </div>
-            <span className="text-xs font-bold text-slate-200">DTH &amp; Cable</span>
-            <span className="text-[10px] text-slate-400">Tata Play, Airtel</span>
-          </Link>
-
-          <Link
-            to="/kingpay-bbps"
-            className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl border border-slate-800 bg-slate-900/70 hover:border-amber-400/50 hover:bg-slate-900 transition no-underline text-center group"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-400 group-hover:scale-105 transition-transform">
-              <Car className="size-5" />
-            </div>
-            <span className="text-xs font-bold text-slate-200">FASTag Recharge</span>
-            <span className="text-[10px] text-slate-400">NETC All Banks</span>
-          </Link>
-
-          <Link
-            to="/kingpay-bbps"
-            className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl border border-slate-800 bg-slate-900/70 hover:border-amber-400/50 hover:bg-slate-900 transition no-underline text-center group"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-rose-500/15 border border-rose-400/30 text-rose-400 group-hover:scale-105 transition-transform">
-              <Flame className="size-5" />
-            </div>
-            <span className="text-xs font-bold text-slate-200">LPG Cylinder</span>
-            <span className="text-[10px] text-slate-400">Indane, HP, Bharat</span>
-          </Link>
-
-          <Link
-            to="/kingpay-bbps"
-            className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl border border-slate-800 bg-slate-900/70 hover:border-amber-400/50 hover:bg-slate-900 transition no-underline text-center group"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-400 group-hover:scale-105 transition-transform">
-              <Droplets className="size-5" />
-            </div>
-            <span className="text-xs font-bold text-slate-200">Water &amp; Municipal</span>
-            <span className="text-[10px] text-slate-400">Urban Boards</span>
-          </Link>
-        </div>
+      {/* ─── DEDICATED PILLAR 4: UTILITIES & DIRECT UPI ─── */}
+      <section id="utilities" aria-label="Utilities" className="space-y-6 scroll-mt-20">
+        <span id="upi-tools" className="sr-only" />
+        <UtilitiesBillEngine />
 
         {/* 1-Tap UPI Intent & Dynamic QR Box */}
         <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5">
@@ -2055,7 +2035,7 @@ export function SupremeKingPayExperience() {
                 Scan with any UPI App (GPay, PhonePe, Paytm, BHIM)
               </span>
               <span className="text-[10px] text-slate-400 mt-0.5">
-                Standard UPI PSP direct transfer with Zero OrderKing Platform Markup
+                Standard UPI PSP direct transfer
               </span>
             </div>
           </div>
@@ -2065,7 +2045,7 @@ export function SupremeKingPayExperience() {
         <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
             <span className="text-xs font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
-              <Users className="size-4" /> Group Bill Splitter (Zero-Drift Paise Math)
+              <Users className="size-4" /> Group Bill Splitter
             </span>
             <span className="text-[10px] text-slate-400 font-mono">100 Paise = ₹1.00 Exact</span>
           </div>
@@ -2318,7 +2298,7 @@ export function SupremeKingPayExperience() {
                   Educator Onboarding Portal
                 </span>
                 <h3 className="text-base font-black text-white mt-1.5">Apply as Verified Mentor</h3>
-                <p className="text-xs text-slate-400">Zero commission platform · Direct student sessions</p>
+                <p className="text-xs text-slate-400">Academic mentoring · Direct student sessions</p>
               </div>
               <button
                 type="button"
@@ -2409,7 +2389,7 @@ export function SupremeKingPayExperience() {
                   Direct Merchant Desk
                 </span>
                 <h3 className="text-base font-black text-white mt-1.5">Partner Kitchen &amp; Restaurant Onboarding</h3>
-                <p className="text-xs text-slate-400">Zero onboarding fee · Real-time KDS · Daily bank settlements</p>
+                <p className="text-xs text-slate-400">Merchant network · Real-time KDS · Daily bank settlements</p>
               </div>
               <button
                 type="button"

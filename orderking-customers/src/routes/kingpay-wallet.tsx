@@ -143,10 +143,10 @@ function KingPayWallet() {
       <div className="px-6 mt-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold text-gray-100 flex items-center gap-2">
-            Utility Bill Categories (BBPS)
+            Utilities
           </h2>
           <Link to="/kingpay-bbps" className="text-xs text-yellow-500 font-semibold flex items-center">
-            Integration Status <ChevronRight className="w-3 h-3" />
+            View All <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
         

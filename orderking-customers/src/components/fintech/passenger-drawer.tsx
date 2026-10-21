@@ -264,7 +264,7 @@ export function PassengerDrawer({
                 Direct In-App Booking
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/40 text-[10px] font-extrabold uppercase">
-                0% Convenience Fee
+                Verified Fare
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white">

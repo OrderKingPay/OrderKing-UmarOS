@@ -20,6 +20,16 @@ import {
   Zap,
   ShieldCheck,
   Camera,
+  Navigation,
+  Layers,
+  Megaphone,
+  Briefcase,
+  GraduationCap,
+  Building,
+  Truck,
+  Check,
+  Flame,
+  Palette,
 } from "lucide-react";
 import { saveSettingsFn } from "@/lib/orderking/actions";
 import { DEFAULT_SETTINGS } from "@/lib/orderking/types";
@@ -106,6 +116,80 @@ export function MasterCustomizationHub({
     Boolean(initialConfig.feature_affiliate_travel ?? initialConfig.affiliate_travel_enabled ?? false)
   );
 
+  // -------------------------------------------------------------
+  // e) Unified Platform Module Toggles (UmarOS Governance Engine)
+  // -------------------------------------------------------------
+  const [moduleTravel, setModuleTravel] = useState<boolean>(
+    Boolean(initialConfig.modules?.travel ?? true)
+  );
+  const [moduleUtilities, setModuleUtilities] = useState<boolean>(
+    Boolean(initialConfig.modules?.utilities ?? true)
+  );
+  const [moduleAiTutor, setModuleAiTutor] = useState<boolean>(
+    Boolean(initialConfig.modules?.aiTutor ?? true)
+  );
+  const [moduleJobs, setModuleJobs] = useState<boolean>(
+    Boolean(initialConfig.modules?.jobs ?? true)
+  );
+  const [moduleCourier, setModuleCourier] = useState<boolean>(
+    Boolean(initialConfig.modules?.courier ?? true)
+  );
+  const [moduleFoodDelivery, setModuleFoodDelivery] = useState<boolean>(
+    Boolean(initialConfig.modules?.foodDelivery ?? true)
+  );
+
+  // -------------------------------------------------------------
+  // f) Pricing & Delivery Rules (Courier, Night Fee, Commissions)
+  // -------------------------------------------------------------
+  const [courierBaseFareInr, setCourierBaseFareInr] = useState<number>(
+    Number(initialConfig.pricing_delivery_rules?.courierBaseFareInr ?? initialConfig.pricingDeliveryRules?.courierBaseFareInr ?? 30)
+  );
+  const [courierPerKmRateInr, setCourierPerKmRateInr] = useState<number>(
+    Number(initialConfig.pricing_delivery_rules?.courierPerKmRateInr ?? initialConfig.pricingDeliveryRules?.courierPerKmRateInr ?? 10)
+  );
+  const [nightFeeInr, setNightFeeInr] = useState<number>(
+    Number(initialConfig.pricing_delivery_rules?.nightFeeInr ?? initialConfig.pricingDeliveryRules?.nightFeeInr ?? 15)
+  );
+  const [nightFeeActive, setNightFeeActive] = useState<boolean>(
+    Boolean(initialConfig.pricing_delivery_rules?.nightFeeActive ?? initialConfig.pricingDeliveryRules?.nightFeeActive ?? false)
+  );
+  const [townCommissionPct, setTownCommissionPct] = useState<number>(
+    Number((initialConfig.pricing_delivery_rules?.townCommissionBps ?? 2200) / 100)
+  );
+  const [longDistanceCommissionPct, setLongDistanceCommissionPct] = useState<number>(
+    Number((initialConfig.pricing_delivery_rules?.longDistanceCommissionBps ?? 2800) / 100)
+  );
+
+  // -------------------------------------------------------------
+  // g) Dynamic Branding, Accents & Announcement Promo Banners
+  // -------------------------------------------------------------
+  const [customAccentColor, setCustomAccentColor] = useState<string>(
+    initialConfig.dynamic_branding?.customAccentColor ?? initialConfig.dynamicBranding?.customAccentColor ?? "#D97706"
+  );
+  const [announcementEnabled, setAnnouncementEnabled] = useState<boolean>(
+    Boolean(initialConfig.dynamic_branding?.announcementBanner?.enabled ?? initialConfig.dynamicBranding?.announcementBanner?.enabled ?? true)
+  );
+  const [announcementText, setAnnouncementText] = useState<string>(
+    initialConfig.dynamic_branding?.announcementBanner?.text ?? initialConfig.dynamicBranding?.announcementBanner?.text ?? "⚡ FESTIVE FEAST: Flat 20% OFF on all orders above ₹299! Code: UMAR20"
+  );
+  const [announcementLink, setAnnouncementLink] = useState<string>(
+    initialConfig.dynamic_branding?.announcementBanner?.linkUrl ?? initialConfig.dynamicBranding?.announcementBanner?.linkUrl ?? "/offers"
+  );
+  const [announcementBadge, setAnnouncementBadge] = useState<string>(
+    initialConfig.dynamic_branding?.announcementBanner?.badgeText ?? initialConfig.dynamicBranding?.announcementBanner?.badgeText ?? "LIMITED TIME"
+  );
+  const [featuredHubs, setFeaturedHubs] = useState<Array<{ id: string; name: string; active: boolean; tier: string }>>(
+    initialConfig.dynamic_branding?.featuredCityHubs ?? initialConfig.dynamicBranding?.featuredCityHubs ?? [
+      { id: "city_cp", name: "Connaught Place, New Delhi", active: true, tier: "TIER_1" },
+      { id: "city_karimganj", name: "Karimganj Core Hub", active: true, tier: "TIER_3" },
+      { id: "city_silchar", name: "Silchar Valley Hub", active: true, tier: "TIER_2" },
+      { id: "city_guwahati", name: "Guwahati Gateway", active: true, tier: "TIER_2" },
+      { id: "city_bengaluru", name: "Bengaluru Tech Corridor", active: true, tier: "TIER_1" },
+      { id: "city_mumbai", name: "Mumbai Metropolitan", active: true, tier: "TIER_1" },
+      { id: "city_kolkata", name: "Kolkata Cultural Hub", active: true, tier: "TIER_1" },
+    ]
+  );
+
   // UI status state
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
@@ -129,6 +213,34 @@ export function MasterCustomizationHub({
     }
     if (initialConfig.auto_refund_ai_threshold_inr !== undefined) {
       setAiArbitratorSpillThresholdInr(Number(initialConfig.auto_refund_ai_threshold_inr));
+    }
+    if (initialConfig.modules) {
+      if (initialConfig.modules.travel !== undefined) setModuleTravel(Boolean(initialConfig.modules.travel));
+      if (initialConfig.modules.utilities !== undefined) setModuleUtilities(Boolean(initialConfig.modules.utilities));
+      if (initialConfig.modules.aiTutor !== undefined) setModuleAiTutor(Boolean(initialConfig.modules.aiTutor));
+      if (initialConfig.modules.jobs !== undefined) setModuleJobs(Boolean(initialConfig.modules.jobs));
+      if (initialConfig.modules.courier !== undefined) setModuleCourier(Boolean(initialConfig.modules.courier));
+      if (initialConfig.modules.foodDelivery !== undefined) setModuleFoodDelivery(Boolean(initialConfig.modules.foodDelivery));
+    }
+    const prRules = initialConfig.pricing_delivery_rules || initialConfig.pricingDeliveryRules;
+    if (prRules) {
+      if (prRules.courierBaseFareInr !== undefined) setCourierBaseFareInr(Number(prRules.courierBaseFareInr));
+      if (prRules.courierPerKmRateInr !== undefined) setCourierPerKmRateInr(Number(prRules.courierPerKmRateInr));
+      if (prRules.nightFeeInr !== undefined) setNightFeeInr(Number(prRules.nightFeeInr));
+      if (prRules.nightFeeActive !== undefined) setNightFeeActive(Boolean(prRules.nightFeeActive));
+      if (prRules.townCommissionBps !== undefined) setTownCommissionPct(Number(prRules.townCommissionBps) / 100);
+      if (prRules.longDistanceCommissionBps !== undefined) setLongDistanceCommissionPct(Number(prRules.longDistanceCommissionBps) / 100);
+    }
+    const dynBrand = initialConfig.dynamic_branding || initialConfig.dynamicBranding;
+    if (dynBrand) {
+      if (dynBrand.customAccentColor) setCustomAccentColor(dynBrand.customAccentColor);
+      if (dynBrand.announcementBanner) {
+        if (dynBrand.announcementBanner.enabled !== undefined) setAnnouncementEnabled(Boolean(dynBrand.announcementBanner.enabled));
+        if (dynBrand.announcementBanner.text !== undefined) setAnnouncementText(dynBrand.announcementBanner.text);
+        if (dynBrand.announcementBanner.linkUrl !== undefined) setAnnouncementLink(dynBrand.announcementBanner.linkUrl);
+        if (dynBrand.announcementBanner.badgeText !== undefined) setAnnouncementBadge(dynBrand.announcementBanner.badgeText);
+      }
+      if (dynBrand.featuredCityHubs) setFeaturedHubs(dynBrand.featuredCityHubs);
     }
   }, [initialConfig]);
 
@@ -171,6 +283,37 @@ export function MasterCustomizationHub({
           kitchenPrepBufferMinutes: kitchenSlaPrepBufferMins,
           kingAiAutonomousResolution: aiArbitratorEnabled,
         },
+        modules: {
+          travel: moduleTravel,
+          utilities: moduleUtilities,
+          aiTutor: moduleAiTutor,
+          jobs: moduleJobs,
+          courier: moduleCourier,
+          foodDelivery: moduleFoodDelivery,
+        },
+        pricingDeliveryRules: {
+          courierBaseFareInr: courierBaseFareInr,
+          courierPerKmRateInr: courierPerKmRateInr,
+          courierBasePaise: Math.round(courierBaseFareInr * 100),
+          courierPerKmPaise: Math.round(courierPerKmRateInr * 100),
+          nightFeeInr: nightFeeInr,
+          nightFeePaise: Math.round(nightFeeInr * 100),
+          nightFeeActive: nightFeeActive,
+          platformCommissionBps: Math.round(deliveryCommissionPct * 100),
+          townCommissionBps: Math.round(townCommissionPct * 100),
+          longDistanceCommissionBps: Math.round(longDistanceCommissionPct * 100),
+        },
+        dynamicBranding: {
+          customAccentColor: customAccentColor,
+          announcementBanner: {
+            enabled: announcementEnabled,
+            text: announcementText,
+            linkUrl: announcementLink,
+            bgGradient: "from-amber-600 via-orange-600 to-amber-700",
+            badgeText: announcementBadge,
+          },
+          featuredCityHubs: featuredHubs,
+        },
       };
 
       // 1. Post to API endpoint
@@ -186,11 +329,43 @@ export function MasterCustomizationHub({
           settings: {
             ...DEFAULT_SETTINGS,
             commissionBps: Math.round(deliveryCommissionPct * 100),
-            townCommissionBps: Math.round(deliveryCommissionPct * 100),
+            townCommissionBps: Math.round(townCommissionPct * 100),
+            longDistanceCommissionBps: Math.round(longDistanceCommissionPct * 100),
             dayModeRadiusKm: maxDeliveryRadiusKm,
             paymentFeeBps: Math.round(paymentGatewayFeePct * 100),
             refundLimitPaise: Math.round(aiArbitratorSpillThresholdInr * 100),
             offerTimeoutSeconds: riderTimeoutSeconds,
+            modules: {
+              travel: moduleTravel,
+              utilities: moduleUtilities,
+              aiTutor: moduleAiTutor,
+              jobs: moduleJobs,
+              courier: moduleCourier,
+              foodDelivery: moduleFoodDelivery,
+            },
+            pricingDeliveryRules: {
+              courierBaseFareInr,
+              courierPerKmRateInr,
+              courierBasePaise: Math.round(courierBaseFareInr * 100),
+              courierPerKmPaise: Math.round(courierPerKmRateInr * 100),
+              nightFeeInr,
+              nightFeePaise: Math.round(nightFeeInr * 100),
+              nightFeeActive,
+              platformCommissionBps: Math.round(deliveryCommissionPct * 100),
+              townCommissionBps: Math.round(townCommissionPct * 100),
+              longDistanceCommissionBps: Math.round(longDistanceCommissionPct * 100),
+            },
+            dynamicBranding: {
+              customAccentColor,
+              announcementBanner: {
+                enabled: announcementEnabled,
+                text: announcementText,
+                linkUrl: announcementLink,
+                bgGradient: "from-amber-600 via-orange-600 to-amber-700",
+                badgeText: announcementBadge,
+              },
+              featuredCityHubs: featuredHubs,
+            },
           },
           reason: "Updated via UmarOS Centralized Master Customization & Autonomous Ecosystem Hub",
         },
@@ -798,6 +973,295 @@ export function MasterCustomizationHub({
               <p className="text-[10.5px] text-slate-400 leading-snug">
                 External affiliate hospitality &amp; travel links.
               </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* =========================================================
+          PANEL E, F, G: UMAROS CENTRAL GOVERNANCE & CUSTOMIZATION
+         ========================================================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+        {/* PANEL E: Unified Module Toggles */}
+        <div className="rounded-2xl border border-amber-500/30 bg-slate-950/80 p-5 space-y-4 shadow-lg shadow-amber-950/20">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <Layers className="size-4.5 text-amber-400" />
+              <h3 className="text-sm font-black text-slate-100 uppercase tracking-wide">
+                1. Platform Module Toggles
+              </h3>
+            </div>
+            <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30 font-bold">
+              6 Modules
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { id: "food", label: "Food Delivery", state: moduleFoodDelivery, set: setModuleFoodDelivery, desc: "Dominant restaurant food aggregator", icon: UtensilsCrossed, color: "text-amber-400" },
+              { id: "courier", label: "Courier & Parcel", state: moduleCourier, set: setModuleCourier, desc: "Hyperlocal direct parcel pick & drop", icon: Truck, color: "text-emerald-400" },
+              { id: "travel", label: "Travel & Transit", state: moduleTravel, set: setModuleTravel, desc: "IRCTC trains, flights, bus & cabs", icon: Plane, color: "text-sky-400" },
+              { id: "utilities", label: "Utilities & BBPS", state: moduleUtilities, set: setModuleUtilities, desc: "Electricity, DTH, water & FASTag", icon: Zap, color: "text-yellow-400" },
+              { id: "tutor", label: "AI Voice Tutor", state: moduleAiTutor, set: setModuleAiTutor, desc: "Multilingual CBSE/SEBA syllabus AI", icon: GraduationCap, color: "text-purple-400" },
+              { id: "jobs", label: "Jobs Marketplace", state: moduleJobs, set: setModuleJobs, desc: "Local gig, delivery & tutoring hiring", icon: Briefcase, color: "text-blue-400" },
+            ].map((m) => (
+              <div key={m.id} className="flex items-center justify-between p-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <m.icon className={`size-4 ${m.color} shrink-0`} />
+                  <div className="truncate">
+                    <span className="text-xs font-bold text-slate-200 block truncate">{m.label}</span>
+                    <span className="text-[10px] text-slate-400 block truncate">{m.desc}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => m.set((v: boolean) => !v)}
+                  className={`relative inline-flex h-5 w-10 shrink-0 items-center rounded-full transition-colors ${
+                    m.state ? "bg-amber-500" : "bg-slate-700"
+                  }`}
+                >
+                  <span className={`inline-block size-3.5 transform rounded-full bg-white transition-transform ${
+                    m.state ? "translate-x-5" : "translate-x-1"
+                  }`} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* PANEL F: Pricing & Delivery Rules */}
+        <div className="rounded-2xl border border-emerald-500/30 bg-slate-950/80 p-5 space-y-4 shadow-lg shadow-emerald-950/20">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <Landmark className="size-4.5 text-emerald-400" />
+              <h3 className="text-sm font-black text-slate-100 uppercase tracking-wide">
+                2. Pricing &amp; Delivery Rules
+              </h3>
+            </div>
+            <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 font-bold">
+              Real DB Persistence
+            </span>
+          </div>
+
+          <div className="space-y-3.5 text-xs">
+            {/* Courier Base Fare */}
+            <div className="space-y-1">
+              <div className="flex justify-between text-slate-300 font-semibold">
+                <span>Courier Base Fare:</span>
+                <span className="font-mono text-emerald-400 font-extrabold">₹{courierBaseFareInr}</span>
+              </div>
+              <input
+                type="number"
+                min={10}
+                max={150}
+                value={courierBaseFareInr}
+                onChange={(e) => setCourierBaseFareInr(Number(e.target.value))}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-mono text-xs focus:border-emerald-500"
+              />
+              <span className="text-[10px] text-slate-500">Default base fare for first 2 km (default ₹30)</span>
+            </div>
+
+            {/* Courier Per-Km Rate */}
+            <div className="space-y-1">
+              <div className="flex justify-between text-slate-300 font-semibold">
+                <span>Courier Per-Km Rate:</span>
+                <span className="font-mono text-emerald-400 font-extrabold">₹{courierPerKmRateInr}/km</span>
+              </div>
+              <input
+                type="number"
+                min={5}
+                max={50}
+                value={courierPerKmRateInr}
+                onChange={(e) => setCourierPerKmRateInr(Number(e.target.value))}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-mono text-xs focus:border-emerald-500"
+              />
+              <span className="text-[10px] text-slate-500">Distance rate beyond 2 km (default ₹10/km)</span>
+            </div>
+
+            {/* Night Fee */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-slate-300 font-semibold">
+                <span>Late Night Surcharge:</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-emerald-400 font-extrabold">₹{nightFeeInr}</span>
+                  <button
+                    type="button"
+                    onClick={() => setNightFeeActive((v) => !v)}
+                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
+                      nightFeeActive ? "bg-emerald-500" : "bg-slate-700"
+                    }`}
+                  >
+                    <span className={`inline-block size-3 transform rounded-full bg-white transition-transform ${
+                      nightFeeActive ? "translate-x-4" : "translate-x-1"
+                    }`} />
+                  </button>
+                </div>
+              </div>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={nightFeeInr}
+                onChange={(e) => setNightFeeInr(Number(e.target.value))}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-mono text-xs focus:border-emerald-500"
+              />
+              <span className="text-[10px] text-slate-500">Applied 11:00 PM – 4:00 AM (Status: {nightFeeActive ? "Active" : "Inactive"})</span>
+            </div>
+
+            {/* Platform Commissions */}
+            <div className="pt-2 border-t border-slate-800 space-y-2">
+              <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wide block">Tiered Commission Rates</span>
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                  <span className="text-slate-400 block text-[10px]">Town Outlets</span>
+                  <input
+                    type="number"
+                    step={0.5}
+                    value={townCommissionPct}
+                    onChange={(e) => setTownCommissionPct(Number(e.target.value))}
+                    className="w-full bg-transparent text-slate-100 font-mono font-bold"
+                  />
+                  <span className="text-[9px] text-slate-500">% Commission</span>
+                </div>
+                <div className="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                  <span className="text-slate-400 block text-[10px]">Highway/Suburban</span>
+                  <input
+                    type="number"
+                    step={0.5}
+                    value={longDistanceCommissionPct}
+                    onChange={(e) => setLongDistanceCommissionPct(Number(e.target.value))}
+                    className="w-full bg-transparent text-slate-100 font-mono font-bold"
+                  />
+                  <span className="text-[9px] text-slate-500">% Commission</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* PANEL G: Dynamic Branding & Announcement Promo Banners */}
+        <div className="rounded-2xl border border-rose-500/30 bg-slate-950/80 p-5 space-y-4 shadow-lg shadow-rose-950/20">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <Palette className="size-4.5 text-rose-400" />
+              <h3 className="text-sm font-black text-slate-100 uppercase tracking-wide">
+                3. Dynamic Branding &amp; Promo
+              </h3>
+            </div>
+            <span className="text-[10px] font-mono text-rose-300 bg-rose-950/60 px-2 py-0.5 rounded border border-rose-500/30 font-bold">
+              Founder Broadcast
+            </span>
+          </div>
+
+          <div className="space-y-3.5 text-xs">
+            {/* Custom Accent Color */}
+            <div className="space-y-1.5">
+              <span className="text-slate-300 font-semibold block">Brand Accent Color:</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={customAccentColor}
+                  onChange={(e) => setCustomAccentColor(e.target.value)}
+                  className="size-8 rounded-lg border border-slate-700 bg-transparent cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={customAccentColor}
+                  onChange={(e) => setCustomAccentColor(e.target.value)}
+                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 font-mono text-slate-200 text-xs uppercase"
+                />
+              </div>
+              <div className="flex gap-1.5">
+                {["#D97706", "#059669", "#4F46E5", "#E11D48", "#0F172A"].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCustomAccentColor(c)}
+                    style={{ backgroundColor: c }}
+                    className="size-5 rounded-md border border-white/20 transition hover:scale-110"
+                    title={c}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Founder Announcement Banner */}
+            <div className="pt-2 border-t border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Megaphone className="size-4 text-amber-400" />
+                  <span className="text-slate-200 font-bold">Founder Promo Banner</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setAnnouncementEnabled((v) => !v)}
+                  className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${
+                    announcementEnabled ? "bg-rose-500" : "bg-slate-700"
+                  }`}
+                >
+                  <span className={`inline-block size-3.5 transform rounded-full bg-white transition-transform ${
+                    announcementEnabled ? "translate-x-5" : "translate-x-1"
+                  }`} />
+                </button>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Announcement headline (e.g. ⚡ FESTIVE OFFER: Flat 20% OFF...)"
+                value={announcementText}
+                onChange={(e) => setAnnouncementText(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs"
+              />
+
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  placeholder="Link URL (/offers)"
+                  value={announcementLink}
+                  onChange={(e) => setAnnouncementLink(e.target.value)}
+                  className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-200 text-[11px]"
+                />
+                <input
+                  type="text"
+                  placeholder="Badge text (PROMO)"
+                  value={announcementBadge}
+                  onChange={(e) => setAnnouncementBadge(e.target.value)}
+                  className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-200 text-[11px] uppercase font-bold"
+                />
+              </div>
+            </div>
+
+            {/* Featured City Hubs */}
+            <div className="pt-2 border-t border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-200 font-bold">Featured City Hubs</span>
+                <span className="text-[10px] text-slate-400">{featuredHubs.filter((h) => h.active).length} Active</span>
+              </div>
+              <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1">
+                {featuredHubs.map((hub, idx) => (
+                  <div key={hub.id} className="flex items-center justify-between p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px]">
+                    <div className="flex items-center gap-1.5 truncate">
+                      <MapPin className="size-3 text-amber-500 shrink-0" />
+                      <span className="truncate text-slate-300 font-medium">{hub.name}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const copy = [...featuredHubs];
+                        copy[idx] = { ...copy[idx], active: !copy[idx].active };
+                        setFeaturedHubs(copy);
+                      }}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold border transition ${
+                        hub.active
+                          ? "bg-emerald-950 text-emerald-300 border-emerald-500/40"
+                          : "bg-slate-800 text-slate-500 border-slate-700"
+                      }`}
+                    >
+                      {hub.active ? "LIVE" : "PAUSED"}
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

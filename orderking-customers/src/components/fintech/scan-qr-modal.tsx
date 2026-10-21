@@ -260,8 +260,8 @@ export function ScanQrModal({
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                   NPCI VPA COMPLIANT
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                  0% Surcharge
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                  Direct Pay
                 </span>
               </div>
 
@@ -360,7 +360,7 @@ export function ScanQrModal({
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Convenience Fee:</span>
-                <span className="text-emerald-400 font-bold">₹0.00 (Zero Surcharge)</span>
+                <span className="text-emerald-400 font-bold">₹0.00</span>
               </div>
             </div>
 

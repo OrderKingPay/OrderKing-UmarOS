@@ -12,7 +12,7 @@ import {
   Briefcase,
   Sparkles,
 } from "lucide-react";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { OrderKingMark } from "@/components/brand/wordmark";
 import { resilientLazy, ModalErrorBoundary } from "@/components/common/resilient-lazy";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -91,6 +91,20 @@ export function CustomerShell({
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchPlaceholderIndex, setSearchPlaceholderIndex] = useState(0);
   const { dietFilter, setDietFilter } = useDietStore();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    if (userMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [userMenuOpen]);
 
   useEffect(() => {
     let isMounted = true;
@@ -275,18 +289,111 @@ export function CustomerShell({
               )}
             </Link>
 
-            {/* User profile avatar / "Sign In" button */}
+            {/* User profile avatar / standard top-right user menu with fallback avatar */}
             {isPending ? (
               <div className="size-7 sm:size-8 animate-pulse rounded-full bg-amber-100 shrink-0" />
             ) : user ? (
-              <Link
-                to="/account"
-                className="flex items-center p-0.5 rounded-full border border-amber-200/90 bg-white/90 hover:bg-amber-50 transition no-underline text-gray-900 shadow-2xs shrink-0"
-                title="Your Profile & Account"
-                aria-label="Account and Profile"
-              >
-                <DeviceAvatar userId={user.id} name={user.displayName} />
-              </Link>
+              <div className="relative shrink-0" ref={userMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen((v) => !v)}
+                  className="flex items-center gap-1 p-0.5 rounded-full border border-amber-300/90 bg-white/95 hover:bg-amber-50 hover:border-amber-400 transition no-underline text-gray-900 shadow-2xs shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                  title="Your Profile & Account Menu"
+                  aria-label="Account and Profile Menu"
+                  aria-expanded={userMenuOpen}
+                >
+                  <DeviceAvatar
+                    userId={user.id}
+                    name={user.displayName}
+                    imageUrl={user.profileImageUrl}
+                    profileImageUrl={user.profileImageUrl}
+                  />
+                  <ChevronDown className={cn("size-3 text-amber-700 transition-transform duration-200 hidden xs:block mr-0.5", userMenuOpen && "rotate-180")} />
+                </button>
+
+                {/* Standard Top-Right User Menu Dropdown */}
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-xl shadow-xl shadow-amber-950/10 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    {/* User Identity Header with Clean Avatar & Fallback */}
+                    <div className="flex items-center gap-3 p-2.5 rounded-xl bg-gradient-to-r from-amber-50/80 to-yellow-50/60 border border-amber-200/60 mb-1.5">
+                      <DeviceAvatar
+                        userId={user.id}
+                        name={user.displayName}
+                        imageUrl={user.profileImageUrl}
+                        profileImageUrl={user.profileImageUrl}
+                      />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs font-black text-gray-950 truncate">
+                          {user.displayName || "Valued Customer"}
+                        </span>
+                        <span className="text-[10px] text-gray-500 truncate">
+                          {user.primaryEmail || "Authenticated Patron"}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-700 mt-0.5">
+                          <Crown className="size-2.5 fill-amber-500 text-amber-600" /> OrderKing VIP
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Menu Navigation Links */}
+                    <div className="space-y-0.5 text-xs font-semibold text-gray-700">
+                      <Link
+                        to="/account"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                      >
+                        <User className="size-4 text-amber-600" />
+                        <span>Profile &amp; Addresses</span>
+                      </Link>
+
+                      <Link
+                        to="/orders"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                      >
+                        <Package className="size-4 text-amber-600" />
+                        <span>My Orders &amp; Passes</span>
+                      </Link>
+
+                      <Link
+                        to="/kingpay"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                      >
+                        <CreditCard className="size-4 text-amber-600" />
+                        <span>KingPay &amp; Crowns</span>
+                      </Link>
+
+                      <Link
+                        to="/travel"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                      >
+                        <Plane className="size-4 text-amber-600" />
+                        <span>Travel &amp; Bookings</span>
+                      </Link>
+
+                      <Link
+                        to="/settings"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline border-b border-gray-100 pb-2 mb-1"
+                      >
+                        <Settings className="size-4 text-amber-600" />
+                        <span>Preferences</span>
+                      </Link>
+
+                      <Link
+                        to="/login"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-700 hover:text-rose-900 transition no-underline font-bold"
+                      >
+                        <LogOut className="size-4 text-rose-500" />
+                        <span>Sign Out</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <SignedOut>
                 <Link

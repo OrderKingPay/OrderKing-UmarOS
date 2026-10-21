@@ -50,6 +50,97 @@ export type PlatformSettings = {
   nightSurchargeActive?: boolean;
   nightSurchargePaise?: number;
   demandSurgeMultiplier?: number;
+  modules?: PlatformModulesConfig;
+  pricingDeliveryRules?: PricingDeliveryRulesConfig;
+  dynamicBranding?: DynamicBrandingConfig;
+};
+
+export type PlatformModulesConfig = {
+  travel: boolean;
+  utilities: boolean;
+  aiTutor: boolean;
+  jobs: boolean;
+  courier: boolean;
+  foodDelivery: boolean;
+};
+
+export type PricingDeliveryRulesConfig = {
+  courierBaseFareInr: number;
+  courierPerKmRateInr: number;
+  courierBasePaise?: number;
+  courierPerKmPaise?: number;
+  nightFeeInr: number;
+  nightFeePaise?: number;
+  nightFeeActive: boolean;
+  platformCommissionBps: number;
+  townCommissionBps?: number;
+  longDistanceCommissionBps?: number;
+};
+
+export type AnnouncementBannerConfig = {
+  enabled: boolean;
+  text: string;
+  linkUrl?: string;
+  bgGradient?: string;
+  badgeText?: string;
+};
+
+export type FeaturedCityHub = {
+  id: string;
+  name: string;
+  state?: string;
+  active: boolean;
+  tier?: string;
+};
+
+export type DynamicBrandingConfig = {
+  customAccentColor: string;
+  announcementBanner: AnnouncementBannerConfig;
+  featuredCityHubs: FeaturedCityHub[];
+};
+
+export const DEFAULT_PLATFORM_MODULES: PlatformModulesConfig = {
+  travel: true,
+  utilities: true,
+  aiTutor: true,
+  jobs: true,
+  courier: true,
+  foodDelivery: true,
+};
+
+export const DEFAULT_PRICING_DELIVERY_RULES: PricingDeliveryRulesConfig = {
+  courierBaseFareInr: 30, // ₹30 default
+  courierPerKmRateInr: 10, // ₹10/km default
+  courierBasePaise: 3000,
+  courierPerKmPaise: 1000,
+  nightFeeInr: 15,
+  nightFeePaise: 1500,
+  nightFeeActive: false,
+  platformCommissionBps: 1800,
+  townCommissionBps: 2200,
+  longDistanceCommissionBps: 2800,
+};
+
+export const DEFAULT_FEATURED_CITY_HUBS: FeaturedCityHub[] = [
+  { id: "city_cp", name: "Connaught Place, New Delhi", state: "Delhi", active: true, tier: "TIER_1" },
+  { id: "city_karimganj", name: "Karimganj Core Hub", state: "Assam", active: true, tier: "TIER_3" },
+  { id: "city_silchar", name: "Silchar Valley Hub", state: "Assam", active: true, tier: "TIER_2" },
+  { id: "city_guwahati", name: "Guwahati Gateway", state: "Assam", active: true, tier: "TIER_2" },
+  { id: "city_bengaluru", name: "Bengaluru Tech Corridor", state: "Karnataka", active: true, tier: "TIER_1" },
+  { id: "city_mumbai", name: "Mumbai Metropolitan", state: "Maharashtra", active: true, tier: "TIER_1" },
+  { id: "city_kolkata", name: "Kolkata Cultural Hub", state: "West Bengal", active: true, tier: "TIER_1" },
+];
+
+export const DEFAULT_DYNAMIC_BRANDING: DynamicBrandingConfig = {
+  customAccentColor: "#D97706",
+  announcementBanner: {
+    enabled: true,
+    text: "⚡ FESTIVE FEAST: Flat 20% OFF on all orders above ₹299! Code: UMAR20",
+    linkUrl: "/offers",
+    bgGradient: "from-amber-600 via-orange-600 to-amber-700",
+    badgeText: "LIMITED TIME",
+  },
+  featuredCityHubs: DEFAULT_FEATURED_CITY_HUBS,
 };
 
 export type RiderDisciplineSettings = {
@@ -118,6 +209,9 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   nightSurchargeActive: false,
   nightSurchargePaise: 1500,
   demandSurgeMultiplier: 1.0,
+  modules: DEFAULT_PLATFORM_MODULES,
+  pricingDeliveryRules: DEFAULT_PRICING_DELIVERY_RULES,
+  dynamicBranding: DEFAULT_DYNAMIC_BRANDING,
 };
 
 export type BrandingConfig = {

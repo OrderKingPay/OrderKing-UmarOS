@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CourierRouteImport } from './routes/courier'
 import { Route as DiningRouteImport } from './routes/dining'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as JoinFleetRouteImport } from './routes/join-fleet'
@@ -22,6 +23,7 @@ import { Route as KingpayWalletRouteImport } from './routes/kingpay-wallet'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as OffersRouteImport } from './routes/offers'
+import { Route as ParcelRouteImport } from './routes/parcel'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as SearchRouteImport } from './routes/search'
@@ -94,6 +96,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CourierRoute = CourierRouteImport.update({
+  id: '/courier',
+  path: '/courier',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiningRoute = DiningRouteImport.update({
   id: '/dining',
   path: '/dining',
@@ -137,6 +144,11 @@ const NewsRoute = NewsRouteImport.update({
 const OffersRoute = OffersRouteImport.update({
   id: '/offers',
   path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParcelRoute = ParcelRouteImport.update({
+  id: '/parcel',
+  path: '/parcel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -402,6 +414,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/courier': typeof CourierRoute
   '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
   '/join-fleet': typeof JoinFleetRoute
@@ -411,6 +424,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
+  '/parcel': typeof ParcelRoute
   '/profile': typeof ProfileRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
@@ -468,6 +482,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/courier': typeof CourierRoute
   '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
   '/join-fleet': typeof JoinFleetRoute
@@ -477,6 +492,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
+  '/parcel': typeof ParcelRoute
   '/profile': typeof ProfileRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
@@ -535,6 +551,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/courier': typeof CourierRoute
   '/dining': typeof DiningRoute
   '/earn': typeof EarnRoute
   '/join-fleet': typeof JoinFleetRoute
@@ -544,6 +561,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
+  '/parcel': typeof ParcelRoute
   '/profile': typeof ProfileRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
@@ -603,6 +621,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/cart'
     | '/checkout'
+    | '/courier'
     | '/dining'
     | '/earn'
     | '/join-fleet'
@@ -612,6 +631,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/news'
     | '/offers'
+    | '/parcel'
     | '/profile'
     | '/rewards'
     | '/search'
@@ -669,6 +689,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/cart'
     | '/checkout'
+    | '/courier'
     | '/dining'
     | '/earn'
     | '/join-fleet'
@@ -678,6 +699,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/news'
     | '/offers'
+    | '/parcel'
     | '/profile'
     | '/rewards'
     | '/search'
@@ -735,6 +757,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/cart'
     | '/checkout'
+    | '/courier'
     | '/dining'
     | '/earn'
     | '/join-fleet'
@@ -744,6 +767,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/news'
     | '/offers'
+    | '/parcel'
     | '/profile'
     | '/rewards'
     | '/search'
@@ -802,6 +826,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  CourierRoute: typeof CourierRoute
   DiningRoute: typeof DiningRoute
   EarnRoute: typeof EarnRoute
   JoinFleetRoute: typeof JoinFleetRoute
@@ -811,6 +836,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NewsRoute: typeof NewsRoute
   OffersRoute: typeof OffersRoute
+  ParcelRoute: typeof ParcelRoute
   ProfileRoute: typeof ProfileRoute
   RewardsRoute: typeof RewardsRoute
   SearchRoute: typeof SearchRoute
@@ -891,6 +917,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/courier': {
+      id: '/courier'
+      path: '/courier'
+      fullPath: '/courier'
+      preLoaderRoute: typeof CourierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dining': {
       id: '/dining'
       path: '/dining'
@@ -952,6 +985,13 @@ declare module '@tanstack/react-router' {
       path: '/offers'
       fullPath: '/offers'
       preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parcel': {
+      id: '/parcel'
+      path: '/parcel'
+      fullPath: '/parcel'
+      preLoaderRoute: typeof ParcelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -1354,6 +1394,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  CourierRoute: CourierRoute,
   DiningRoute: DiningRoute,
   EarnRoute: EarnRoute,
   JoinFleetRoute: JoinFleetRoute,
@@ -1363,6 +1404,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NewsRoute: NewsRoute,
   OffersRoute: OffersRoute,
+  ParcelRoute: ParcelRoute,
   ProfileRoute: ProfileRoute,
   RewardsRoute: RewardsRoute,
   SearchRoute: SearchRoute,

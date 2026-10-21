@@ -402,6 +402,45 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
                   true,
               },
             },
+            modules: {
+              travel: Boolean(bag.modules?.travel ?? bag.modules?.travel ?? true),
+              utilities: Boolean(bag.modules?.utilities ?? bag.modules?.utilities ?? true),
+              aiTutor: Boolean(bag.modules?.aiTutor ?? bag.modules?.aiTutor ?? true),
+              jobs: Boolean(bag.modules?.jobs ?? bag.modules?.jobs ?? true),
+              courier: Boolean(bag.modules?.courier ?? bag.modules?.courier ?? true),
+              foodDelivery: Boolean(bag.modules?.foodDelivery ?? bag.modules?.foodDelivery ?? true),
+            },
+            pricing_delivery_rules: {
+              courierBaseFareInr: Number(bag.pricingDeliveryRules?.courierBaseFareInr ?? bag.courier_base_fare_inr ?? 30),
+              courierPerKmRateInr: Number(bag.pricingDeliveryRules?.courierPerKmRateInr ?? bag.courier_per_km_rate_inr ?? 10),
+              courierBasePaise: Number(bag.pricingDeliveryRules?.courierBasePaise ?? 3000),
+              courierPerKmPaise: Number(bag.pricingDeliveryRules?.courierPerKmPaise ?? 1000),
+              nightFeeInr: Number(bag.pricingDeliveryRules?.nightFeeInr ?? bag.night_fee_inr ?? 15),
+              nightFeePaise: Number(bag.pricingDeliveryRules?.nightFeePaise ?? 1500),
+              nightFeeActive: Boolean(bag.pricingDeliveryRules?.nightFeeActive ?? bag.night_fee_active ?? false),
+              platformCommissionBps: Number(bag.pricingDeliveryRules?.platformCommissionBps ?? bag.marketplace?.defaultCommissionBps ?? 1800),
+              townCommissionBps: Number(bag.pricingDeliveryRules?.townCommissionBps ?? 2200),
+              longDistanceCommissionBps: Number(bag.pricingDeliveryRules?.longDistanceCommissionBps ?? 2800),
+            },
+            dynamic_branding: {
+              customAccentColor: String(bag.dynamicBranding?.customAccentColor ?? bag.brand?.accentColor ?? "#D97706"),
+              announcementBanner: bag.dynamicBranding?.announcementBanner ?? {
+                enabled: true,
+                text: "⚡ FESTIVE FEAST: Flat 20% OFF on all orders above ₹299! Code: UMAR20",
+                linkUrl: "/offers",
+                bgGradient: "from-amber-600 via-orange-600 to-amber-700",
+                badgeText: "LIMITED TIME",
+              },
+              featuredCityHubs: bag.dynamicBranding?.featuredCityHubs ?? [
+                { id: "city_cp", name: "Connaught Place, New Delhi", state: "Delhi", active: true, tier: "TIER_1" },
+                { id: "city_karimganj", name: "Karimganj Core Hub", state: "Assam", active: true, tier: "TIER_3" },
+                { id: "city_silchar", name: "Silchar Valley Hub", state: "Assam", active: true, tier: "TIER_2" },
+                { id: "city_guwahati", name: "Guwahati Gateway", state: "Assam", active: true, tier: "TIER_2" },
+                { id: "city_bengaluru", name: "Bengaluru Tech Corridor", state: "Karnataka", active: true, tier: "TIER_1" },
+                { id: "city_mumbai", name: "Mumbai Metropolitan", state: "Maharashtra", active: true, tier: "TIER_1" },
+                { id: "city_kolkata", name: "Kolkata Cultural Hub", state: "West Bengal", active: true, tier: "TIER_1" },
+              ],
+            },
           };
 
           return new Response(JSON.stringify(config), {
@@ -593,7 +632,7 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
           };
 
           // Map flat UI state to nested bag
-          const updated = {
+          const updated: Record<string, any> = {
             ...existing,
             paymentFeeBps: Math.round(updatedMdr * 100),
             serviceFeePaise: Math.round(updatedConvenienceFee * 100),
@@ -885,11 +924,97 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
                 : null,
           };
 
+          // Extract and merge modular governance
+          const incomingModules = body.modules ?? body.platform_modules;
+          const incomingPricingRules = body.pricingDeliveryRules ?? body.pricing_delivery_rules;
+          const incomingBranding = body.dynamicBranding ?? body.dynamic_branding;
+
+          if (incomingModules) {
+            updated.modules = {
+              ...(existing.modules || {}),
+              ...incomingModules,
+            };
+          }
+          if (incomingPricingRules) {
+            const baseFare = incomingPricingRules.courierBaseFareInr ?? incomingPricingRules.courier_base_fare_inr ?? 30;
+            const perKm = incomingPricingRules.courierPerKmRateInr ?? incomingPricingRules.courier_per_km_rate_inr ?? 10;
+            const nightFee = incomingPricingRules.nightFeeInr ?? incomingPricingRules.night_fee_inr ?? 15;
+            updated.pricingDeliveryRules = {
+              ...(existing.pricingDeliveryRules || {}),
+              ...incomingPricingRules,
+              courierBaseFareInr: Number(baseFare),
+              courierPerKmRateInr: Number(perKm),
+              courierBasePaise: Math.round(Number(baseFare) * 100),
+              courierPerKmPaise: Math.round(Number(perKm) * 100),
+              nightFeeInr: Number(nightFee),
+              nightFeePaise: Math.round(Number(nightFee) * 100),
+              nightFeeActive: Boolean(incomingPricingRules.nightFeeActive ?? incomingPricingRules.night_fee_active ?? false),
+              platformCommissionBps: Number(incomingPricingRules.platformCommissionBps ?? incomingPricingRules.platform_commission_bps ?? 1800),
+              townCommissionBps: Number(incomingPricingRules.townCommissionBps ?? 2200),
+              longDistanceCommissionBps: Number(incomingPricingRules.longDistanceCommissionBps ?? 2800),
+            };
+          }
+          if (incomingBranding) {
+            updated.dynamicBranding = {
+              ...(existing.dynamicBranding || {}),
+              ...incomingBranding,
+              customAccentColor: incomingBranding.customAccentColor || incomingBranding.custom_accent_color || existing.dynamicBranding?.customAccentColor || "#D97706",
+              announcementBanner: {
+                ...(existing.dynamicBranding?.announcementBanner || {}),
+                ...(incomingBranding.announcementBanner || incomingBranding.announcement_banner || {}),
+              },
+              featuredCityHubs: incomingBranding.featuredCityHubs || incomingBranding.featured_city_hubs || existing.dynamicBranding?.featuredCityHubs || [],
+            };
+          }
+
+          // Real database persistence in PostgreSQL platform_settings table
           await sql`
-            UPDATE platform_settings
-            SET settings_json = ${JSON.stringify(updated)}, updated_at = NOW()
-            WHERE org_id = 'org_orderking'
+            INSERT INTO platform_settings (org_id, settings_json, updated_at)
+            VALUES ('org_orderking', ${JSON.stringify(updated)}, NOW())
+            ON CONFLICT (org_id) DO UPDATE SET settings_json = EXCLUDED.settings_json, updated_at = NOW()
           `;
+
+          // Real database persistence in PostgreSQL app_configurations table
+          try {
+            await sql`
+              CREATE TABLE IF NOT EXISTS app_configurations (
+                key text PRIMARY KEY,
+                value_json jsonb NOT NULL,
+                category text NOT NULL DEFAULT 'general',
+                description text,
+                updated_at timestamptz NOT NULL DEFAULT now(),
+                updated_by text
+              )
+            `;
+            if (updated.modules) {
+              await sql`
+                INSERT INTO app_configurations (key, value_json, category, description, updated_at)
+                VALUES ('platform_modules', ${JSON.stringify(updated.modules)}, 'governance', 'Module Toggles: Travel, Utilities, AI Tutor, Jobs, Courier, Food Delivery', NOW())
+                ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = NOW()
+              `;
+            }
+            if (updated.pricingDeliveryRules) {
+              await sql`
+                INSERT INTO app_configurations (key, value_json, category, description, updated_at)
+                VALUES ('pricing_delivery_rules', ${JSON.stringify(updated.pricingDeliveryRules)}, 'pricing', 'Courier base fare (default ₹30), per-km rate (default ₹10), night fee, platform commission settings', NOW())
+                ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = NOW()
+              `;
+            }
+            if (updated.dynamicBranding) {
+              await sql`
+                INSERT INTO app_configurations (key, value_json, category, description, updated_at)
+                VALUES ('dynamic_branding', ${JSON.stringify(updated.dynamicBranding)}, 'branding', 'Custom accents, announcement banners, and featured city hubs', NOW())
+                ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = NOW()
+              `;
+            }
+            await sql`
+              INSERT INTO app_configurations (key, value_json, category, description, updated_at)
+              VALUES ('global_governance', ${JSON.stringify(updated)}, 'system', 'Complete UmarOS platform configuration state', NOW())
+              ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = NOW()
+            `;
+          } catch (appConfErr) {
+            console.warn('[app_configurations persistence notice]', appConfErr);
+          }
 
           return new Response(JSON.stringify({ success: true, updated }), {
             headers: { "Content-Type": "application/json" },

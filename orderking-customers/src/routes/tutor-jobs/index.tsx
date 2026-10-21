@@ -20,7 +20,7 @@ function TutorJobsIndexPage() {
               Home
             </Link>
             <span>/</span>
-            <span className="text-amber-400 font-bold">Tutors &amp; Jobs Hub</span>
+            <span className="text-amber-400 font-bold">Jobs &amp; Career Hub</span>
           </div>
 
           <Link
@@ -28,13 +28,13 @@ function TutorJobsIndexPage() {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-400/40 text-slate-300 hover:text-amber-300 font-bold text-xs transition"
           >
             <History className="size-3.5" />
-            <span>My Bookings &amp; Applications</span>
+            <span>My Applications</span>
             <ArrowRight className="size-3" />
           </Link>
         </div>
 
         {/* Master Component */}
-        <TutorJobsHub />
+        <TutorJobsHub defaultMode="jobs" />
       </div>
     </CustomerShell>
   );

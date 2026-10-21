@@ -91,7 +91,7 @@ function TutorJobsHistoryPage() {
                 My Classes &amp; Jobs
               </h1>
               <p className="text-xs text-stone-600 mt-1 font-medium">
-                Track your active tutoring sessions, scheduled classes, and employer job applications with zero intermediary delays.
+                Track your active tutoring sessions, scheduled classes, and employer job applications.
               </p>
             </div>
 
@@ -213,7 +213,7 @@ function TutorJobsHistoryPage() {
                   </div>
                   <h3 className="text-base font-bold text-stone-900">No Job Applications Yet</h3>
                   <p className="text-xs text-stone-600 max-w-md mx-auto">
-                    Explore verified local job openings with instant employer ATS submissions and zero intermediary fees.
+                    Explore verified local job openings with direct employer applications.
                   </p>
                   <Link
                     to="/tutor"

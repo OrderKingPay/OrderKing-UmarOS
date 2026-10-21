@@ -75,9 +75,9 @@ const INDIAN_STATES_AND_HUBS = [
 export const Route = createFileRoute("/delivery/")({
   head: () => {
     const pageUrl = "https://orderking.in/delivery";
-    const title = "Food Delivery Directory Across India | 0% Menu Markup | OrderKing";
+    const title = "Food Delivery Directory Across India | OrderKing";
     const desc =
-      "Explore local food delivery across Assam, West Bengal, Karnataka, Delhi, and PAN-India on OrderKing. Genuine kitchen prices, sub-25 min delivery, 0% commission markups.";
+      "Explore local food delivery across Assam, West Bengal, Karnataka, Delhi, and PAN-India on OrderKing. Genuine kitchen menus, reliable local delivery, and fast dispatch.";
     return {
       meta: [
         { title },

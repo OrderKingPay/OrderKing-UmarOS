@@ -1463,16 +1463,67 @@ export async function saveBranding(ws: Workspace, patch: Record<string, string>,
 export async function getSettings(ctx: AccessContext): Promise<PlatformSettings> {
   requirePermission(ctx, "manage_platform_settings");
   const sql = await getSql();
+
+  try {
+    await sql.query(`
+      CREATE TABLE IF NOT EXISTS app_configurations (
+        key text PRIMARY KEY,
+        value_json jsonb NOT NULL,
+        category text NOT NULL DEFAULT 'general',
+        description text,
+        updated_at timestamptz NOT NULL DEFAULT now(),
+        updated_by text
+      );
+    `);
+  } catch {}
+
   const rows = await sql.query<{ settings_json: string }>(
     `select settings_json from platform_settings where org_id=$1`,
     [ctx.orgId],
   );
-  if (!rows[0]) return DEFAULT_SETTINGS;
-  try {
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(rows[0].settings_json) };
-  } catch {
-    return DEFAULT_SETTINGS;
+
+  let merged: PlatformSettings = { ...DEFAULT_SETTINGS };
+
+  if (rows[0]?.settings_json) {
+    try {
+      const parsed = JSON.parse(rows[0].settings_json);
+      merged = {
+        ...DEFAULT_SETTINGS,
+        ...parsed,
+        modules: {
+          ...DEFAULT_SETTINGS.modules,
+          ...(parsed.modules || {}),
+        },
+        pricingDeliveryRules: {
+          ...DEFAULT_SETTINGS.pricingDeliveryRules,
+          ...(parsed.pricingDeliveryRules || {}),
+        },
+        dynamicBranding: {
+          ...DEFAULT_SETTINGS.dynamicBranding,
+          ...(parsed.dynamicBranding || {}),
+        },
+      };
+    } catch {
+      merged = { ...DEFAULT_SETTINGS };
+    }
   }
+
+  try {
+    const configRows = await sql.query<{ key: string; value_json: any }>(
+      `select key, value_json from app_configurations`
+    );
+    for (const c of configRows) {
+      if (c.key === "platform_modules" && c.value_json) {
+        merged.modules = { ...merged.modules, ...c.value_json };
+      } else if (c.key === "pricing_delivery_rules" && c.value_json) {
+        merged.pricingDeliveryRules = { ...merged.pricingDeliveryRules, ...c.value_json };
+      } else if (c.key === "dynamic_branding" && c.value_json) {
+        merged.dynamicBranding = { ...merged.dynamicBranding, ...c.value_json };
+      }
+    }
+  } catch {}
+
+  return merged;
 }
 
 export async function saveSettings(ws: Workspace, settings: PlatformSettings, reason: string) {
@@ -1484,15 +1535,105 @@ export async function saveSettings(ws: Workspace, settings: PlatformSettings, re
   }
   const flags = await loadRuntimeFlags(ws.ctx.orgId);
   if (settings.codEnabled && !prev.codEnabled && !isFlagEnabled(flags, "cod")) {
-    throw new ForbiddenError('Feature flag "cod" is OFF  cannot enable COD');
+    throw new ForbiddenError('Feature flag "cod" is OFF — cannot enable COD');
   }
   if (settings.otpRequired && !prev.otpRequired && !isFlagEnabled(flags, "delivery_otp")) {
-    throw new ForbiddenError('Feature flag "delivery_otp" is OFF  cannot require OTP');
+    throw new ForbiddenError('Feature flag "delivery_otp" is OFF — cannot require OTP');
   }
+
+  const normalizedSettings: PlatformSettings = {
+    ...DEFAULT_SETTINGS,
+    ...prev,
+    ...settings,
+    modules: {
+      travel: Boolean(settings.modules?.travel ?? prev.modules?.travel ?? DEFAULT_SETTINGS.modules?.travel ?? true),
+      utilities: Boolean(settings.modules?.utilities ?? prev.modules?.utilities ?? DEFAULT_SETTINGS.modules?.utilities ?? true),
+      aiTutor: Boolean(settings.modules?.aiTutor ?? prev.modules?.aiTutor ?? DEFAULT_SETTINGS.modules?.aiTutor ?? true),
+      jobs: Boolean(settings.modules?.jobs ?? prev.modules?.jobs ?? DEFAULT_SETTINGS.modules?.jobs ?? true),
+      courier: Boolean(settings.modules?.courier ?? prev.modules?.courier ?? DEFAULT_SETTINGS.modules?.courier ?? true),
+      foodDelivery: Boolean(settings.modules?.foodDelivery ?? prev.modules?.foodDelivery ?? DEFAULT_SETTINGS.modules?.foodDelivery ?? true),
+    },
+    pricingDeliveryRules: {
+      courierBaseFareInr: Number(settings.pricingDeliveryRules?.courierBaseFareInr ?? prev.pricingDeliveryRules?.courierBaseFareInr ?? DEFAULT_SETTINGS.pricingDeliveryRules?.courierBaseFareInr ?? 30),
+      courierPerKmRateInr: Number(settings.pricingDeliveryRules?.courierPerKmRateInr ?? prev.pricingDeliveryRules?.courierPerKmRateInr ?? DEFAULT_SETTINGS.pricingDeliveryRules?.courierPerKmRateInr ?? 10),
+      courierBasePaise: Number(settings.pricingDeliveryRules?.courierBasePaise ?? prev.pricingDeliveryRules?.courierBasePaise ?? 3000),
+      courierPerKmPaise: Number(settings.pricingDeliveryRules?.courierPerKmPaise ?? prev.pricingDeliveryRules?.courierPerKmPaise ?? 1000),
+      nightFeeInr: Number(settings.pricingDeliveryRules?.nightFeeInr ?? prev.pricingDeliveryRules?.nightFeeInr ?? 15),
+      nightFeePaise: Number(settings.pricingDeliveryRules?.nightFeePaise ?? prev.pricingDeliveryRules?.nightFeePaise ?? 1500),
+      nightFeeActive: Boolean(settings.pricingDeliveryRules?.nightFeeActive ?? prev.pricingDeliveryRules?.nightFeeActive ?? false),
+      platformCommissionBps: Number(settings.pricingDeliveryRules?.platformCommissionBps ?? prev.pricingDeliveryRules?.platformCommissionBps ?? 1800),
+      townCommissionBps: Number(settings.pricingDeliveryRules?.townCommissionBps ?? prev.pricingDeliveryRules?.townCommissionBps ?? 2200),
+      longDistanceCommissionBps: Number(settings.pricingDeliveryRules?.longDistanceCommissionBps ?? prev.pricingDeliveryRules?.longDistanceCommissionBps ?? 2800),
+    },
+    dynamicBranding: {
+      customAccentColor: String(settings.dynamicBranding?.customAccentColor ?? prev.dynamicBranding?.customAccentColor ?? "#D97706"),
+      announcementBanner: {
+        enabled: Boolean(settings.dynamicBranding?.announcementBanner?.enabled ?? prev.dynamicBranding?.announcementBanner?.enabled ?? true),
+        text: String(settings.dynamicBranding?.announcementBanner?.text ?? prev.dynamicBranding?.announcementBanner?.text ?? ""),
+        linkUrl: settings.dynamicBranding?.announcementBanner?.linkUrl ?? prev.dynamicBranding?.announcementBanner?.linkUrl,
+        bgGradient: settings.dynamicBranding?.announcementBanner?.bgGradient ?? prev.dynamicBranding?.announcementBanner?.bgGradient,
+        badgeText: settings.dynamicBranding?.announcementBanner?.badgeText ?? prev.dynamicBranding?.announcementBanner?.badgeText,
+      },
+      featuredCityHubs: settings.dynamicBranding?.featuredCityHubs ?? prev.dynamicBranding?.featuredCityHubs ?? DEFAULT_SETTINGS.dynamicBranding?.featuredCityHubs ?? [],
+    },
+  };
+
   await sql.query(
-    `update platform_settings set settings_json=$2, updated_at=now(), updated_by_employee_id=$3 where org_id=$1`,
-    [ws.ctx.orgId, JSON.stringify(settings), ws.ctx.employeeId],
+    `INSERT INTO platform_settings (org_id, settings_json, updated_at, updated_by_employee_id)
+     VALUES ($1, $2, now(), $3)
+     ON CONFLICT (org_id) DO UPDATE SET settings_json = EXCLUDED.settings_json, updated_at = now(), updated_by_employee_id = EXCLUDED.updated_by_employee_id`,
+    [ws.ctx.orgId, JSON.stringify(normalizedSettings), ws.ctx.employeeId],
   );
+
+  try {
+    await sql.query(`
+      CREATE TABLE IF NOT EXISTS app_configurations (
+        key text PRIMARY KEY,
+        value_json jsonb NOT NULL,
+        category text NOT NULL DEFAULT 'general',
+        description text,
+        updated_at timestamptz NOT NULL DEFAULT now(),
+        updated_by text
+      );
+    `);
+
+    if (normalizedSettings.modules) {
+      await sql.query(
+        `INSERT INTO app_configurations (key, value_json, category, description, updated_at, updated_by)
+         VALUES ('platform_modules', $1::jsonb, 'governance', 'Dynamic module toggles: Travel, Utilities, AI Tutor, Jobs, Courier, Food Delivery', now(), $2)
+         ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = now(), updated_by = EXCLUDED.updated_by`,
+        [JSON.stringify(normalizedSettings.modules), ws.ctx.employeeId],
+      );
+    }
+
+    if (normalizedSettings.pricingDeliveryRules) {
+      await sql.query(
+        `INSERT INTO app_configurations (key, value_json, category, description, updated_at, updated_by)
+         VALUES ('pricing_delivery_rules', $1::jsonb, 'pricing', 'Courier base fare (default ₹30), per-km rate (default ₹10), night fee, platform commission settings', now(), $2)
+         ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = now(), updated_by = EXCLUDED.updated_by`,
+        [JSON.stringify(normalizedSettings.pricingDeliveryRules), ws.ctx.employeeId],
+      );
+    }
+
+    if (normalizedSettings.dynamicBranding) {
+      await sql.query(
+        `INSERT INTO app_configurations (key, value_json, category, description, updated_at, updated_by)
+         VALUES ('dynamic_branding', $1::jsonb, 'branding', 'Custom accents, announcement banners, and featured city hubs', now(), $2)
+         ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = now(), updated_by = EXCLUDED.updated_by`,
+        [JSON.stringify(normalizedSettings.dynamicBranding), ws.ctx.employeeId],
+      );
+    }
+
+    await sql.query(
+      `INSERT INTO app_configurations (key, value_json, category, description, updated_at, updated_by)
+       VALUES ('global_governance', $1::jsonb, 'system', 'Complete UmarOS platform configuration state', now(), $2)
+       ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = now(), updated_by = EXCLUDED.updated_by`,
+      [JSON.stringify(normalizedSettings), ws.ctx.employeeId],
+    );
+  } catch (confErr) {
+    console.warn("[app_configurations upsert notice]", confErr);
+  }
+
   await appendAudit({
     orgId: ws.ctx.orgId,
     employeeId: ws.ctx.employeeId,
@@ -1502,10 +1643,136 @@ export async function saveSettings(ws: Workspace, settings: PlatformSettings, re
     targetType: "settings",
     targetId: ws.ctx.orgId,
     previous: prev,
-    next: settings,
+    next: normalizedSettings,
     reason,
   });
-  return { ok: true as const };
+  return { ok: true as const, settings: normalizedSettings };
+}
+
+export async function listAppConfigurations(ctx: AccessContext, category?: string) {
+  requirePermission(ctx, "manage_platform_settings");
+  const sql = await getSql();
+  try {
+    await sql.query(`
+      CREATE TABLE IF NOT EXISTS app_configurations (
+        key text PRIMARY KEY,
+        value_json jsonb NOT NULL,
+        category text NOT NULL DEFAULT 'general',
+        description text,
+        updated_at timestamptz NOT NULL DEFAULT now(),
+        updated_by text
+      );
+    `);
+    const rows = category
+      ? await sql.query(`select * from app_configurations where category = $1 order by key`, [category])
+      : await sql.query(`select * from app_configurations order by category, key`);
+    return rows;
+  } catch {
+    return [];
+  }
+}
+
+export async function getAppConfiguration(ctx: AccessContext, key: string) {
+  requirePermission(ctx, "manage_platform_settings");
+  const sql = await getSql();
+  try {
+    const rows = await sql.query(`select * from app_configurations where key = $1 limit 1`, [key]);
+    return rows[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function setAppConfiguration(ws: Workspace, key: string, value: any, category: string, reason: string) {
+  requireHighRisk(ws.ctx, "manage_platform_settings", reason);
+  const sql = await getSql();
+  await sql.query(`
+    CREATE TABLE IF NOT EXISTS app_configurations (
+      key text PRIMARY KEY,
+      value_json jsonb NOT NULL,
+      category text NOT NULL DEFAULT 'general',
+      description text,
+      updated_at timestamptz NOT NULL DEFAULT now(),
+      updated_by text
+    );
+  `);
+  await sql.query(
+    `INSERT INTO app_configurations (key, value_json, category, updated_at, updated_by)
+     VALUES ($1, $2::jsonb, $3, now(), $4)
+     ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, category = EXCLUDED.category, updated_at = now(), updated_by = EXCLUDED.updated_by`,
+    [key, JSON.stringify(value), category || 'general', ws.ctx.employeeId]
+  );
+  await appendAudit({
+    orgId: ws.ctx.orgId,
+    employeeId: ws.ctx.employeeId,
+    userId: ws.ctx.userId,
+    roleKey: ws.ctx.actingRoleKey,
+    action: "configuration.changed",
+    targetType: "configuration",
+    targetId: key,
+    next: value,
+    reason,
+  });
+  return { ok: true as const, key, value };
+}
+
+export async function getPlatformGovernance(ctx: AccessContext) {
+  const settings = await getSettings(ctx);
+  return {
+    modules: settings.modules ?? DEFAULT_SETTINGS.modules,
+    pricingDeliveryRules: settings.pricingDeliveryRules ?? DEFAULT_SETTINGS.pricingDeliveryRules,
+    dynamicBranding: settings.dynamicBranding ?? DEFAULT_SETTINGS.dynamicBranding,
+    settings,
+  };
+}
+
+export async function savePlatformGovernance(
+  ws: Workspace,
+  patch: {
+    modules?: Partial<PlatformSettings["modules"]>;
+    pricingDeliveryRules?: Partial<PlatformSettings["pricingDeliveryRules"]>;
+    dynamicBranding?: Partial<PlatformSettings["dynamicBranding"]>;
+    settings?: Partial<PlatformSettings>;
+    reason: string;
+  }
+) {
+  const current = await getSettings(ws.ctx);
+  const updated: PlatformSettings = {
+    ...current,
+    ...(patch.settings || {}),
+    modules: {
+      travel: Boolean(patch.modules?.travel ?? current.modules?.travel ?? true),
+      utilities: Boolean(patch.modules?.utilities ?? current.modules?.utilities ?? true),
+      aiTutor: Boolean(patch.modules?.aiTutor ?? current.modules?.aiTutor ?? true),
+      jobs: Boolean(patch.modules?.jobs ?? current.modules?.jobs ?? true),
+      courier: Boolean(patch.modules?.courier ?? current.modules?.courier ?? true),
+      foodDelivery: Boolean(patch.modules?.foodDelivery ?? current.modules?.foodDelivery ?? true),
+    },
+    pricingDeliveryRules: {
+      courierBaseFareInr: Number(patch.pricingDeliveryRules?.courierBaseFareInr ?? current.pricingDeliveryRules?.courierBaseFareInr ?? 30),
+      courierPerKmRateInr: Number(patch.pricingDeliveryRules?.courierPerKmRateInr ?? current.pricingDeliveryRules?.courierPerKmRateInr ?? 10),
+      courierBasePaise: Number(patch.pricingDeliveryRules?.courierBasePaise ?? current.pricingDeliveryRules?.courierBasePaise ?? 3000),
+      courierPerKmPaise: Number(patch.pricingDeliveryRules?.courierPerKmPaise ?? current.pricingDeliveryRules?.courierPerKmPaise ?? 1000),
+      nightFeeInr: Number(patch.pricingDeliveryRules?.nightFeeInr ?? current.pricingDeliveryRules?.nightFeeInr ?? 15),
+      nightFeePaise: Number(patch.pricingDeliveryRules?.nightFeePaise ?? current.pricingDeliveryRules?.nightFeePaise ?? 1500),
+      nightFeeActive: Boolean(patch.pricingDeliveryRules?.nightFeeActive ?? current.pricingDeliveryRules?.nightFeeActive ?? false),
+      platformCommissionBps: Number(patch.pricingDeliveryRules?.platformCommissionBps ?? current.pricingDeliveryRules?.platformCommissionBps ?? 1800),
+      townCommissionBps: Number(patch.pricingDeliveryRules?.townCommissionBps ?? current.pricingDeliveryRules?.townCommissionBps ?? 2200),
+      longDistanceCommissionBps: Number(patch.pricingDeliveryRules?.longDistanceCommissionBps ?? current.pricingDeliveryRules?.longDistanceCommissionBps ?? 2800),
+    },
+    dynamicBranding: {
+      customAccentColor: String(patch.dynamicBranding?.customAccentColor ?? current.dynamicBranding?.customAccentColor ?? "#D97706"),
+      announcementBanner: {
+        enabled: Boolean(patch.dynamicBranding?.announcementBanner?.enabled ?? current.dynamicBranding?.announcementBanner?.enabled ?? true),
+        text: String(patch.dynamicBranding?.announcementBanner?.text ?? current.dynamicBranding?.announcementBanner?.text ?? ""),
+        linkUrl: patch.dynamicBranding?.announcementBanner?.linkUrl ?? current.dynamicBranding?.announcementBanner?.linkUrl,
+        bgGradient: patch.dynamicBranding?.announcementBanner?.bgGradient ?? current.dynamicBranding?.announcementBanner?.bgGradient,
+        badgeText: patch.dynamicBranding?.announcementBanner?.badgeText ?? current.dynamicBranding?.announcementBanner?.badgeText,
+      },
+      featuredCityHubs: patch.dynamicBranding?.featuredCityHubs ?? current.dynamicBranding?.featuredCityHubs ?? [],
+    },
+  };
+  return saveSettings(ws, updated, patch.reason || "Updated via UmarOS Central Governance Engine");
 }
 
 export async function listPromotions(ctx: AccessContext) {

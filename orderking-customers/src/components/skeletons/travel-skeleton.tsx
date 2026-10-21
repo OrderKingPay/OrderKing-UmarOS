@@ -85,7 +85,7 @@ export function TravelSkeleton({ className }: { className?: string }) {
           <div className="h-12 w-full rounded-2xl bg-gradient-to-r from-sky-400/60 via-blue-500/60 to-sky-600/60" />
         </div>
 
-        {/* ─── Zero Markup Live Guarantee Banner Skeleton ─── */}
+        {/* ─── Carrier Live Guarantee Banner Skeleton ─── */}
         <div className="h-14 rounded-2xl border border-emerald-200/60 bg-emerald-50/50 p-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="size-8 rounded-xl bg-emerald-200/80" />

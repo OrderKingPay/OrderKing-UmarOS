@@ -690,7 +690,7 @@ export function HomeFeed({
                 </Button>
               </div>
             )}
-            {/* Active Hyperlocal Discovery & Flagship Hub Switcher (Zero Blank Dead-Ends) */}
+            {/* Active Hyperlocal Discovery & Flagship Hub Switcher */}
             <div
               role="status"
               data-testid="food-availability-note"
@@ -806,18 +806,18 @@ export function HomeFeed({
                 </div>
               </div>
 
-              {/* Prominent Restaurant Owner Onboarding Banner (0% Commission) */}
+              {/* Partner Merchant Onboarding Banner */}
               <div className="rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-500 via-amber-500 to-amber-600 p-4 sm:p-5 text-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1 min-w-0">
                   <div className="inline-flex items-center gap-1.5 rounded-full bg-black/20 backdrop-blur-xs px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-200">
                     <Store className="size-3" />
-                    Direct Merchant Network
+                    Merchant Network
                   </div>
                   <h4 className="text-sm sm:text-base font-black tracking-tight text-white">
-                    Restaurant Owner? Onboard your kitchen in 60 seconds (0% commission)
+                    Restaurant Owner? Partner with OrderKing
                   </h4>
                   <p className="text-xs text-white/90 max-w-lg leading-relaxed">
-                    Expand your reach with OrderKing's zero-commission hyperlocal food network. Instant digital KYC, live catalog listing, and automated delivery dispatch.
+                    Expand your reach with OrderKing's hyperlocal food network. Digital onboarding, live catalog listing, and automated delivery dispatch.
                   </p>
                 </div>
                 <a
@@ -826,7 +826,7 @@ export function HomeFeed({
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-1.5 shrink-0 rounded-xl bg-white hover:bg-stone-100 text-gray-950 px-4 py-2.5 text-xs font-black transition-all shadow-sm hover:shadow active:scale-95 no-underline"
                 >
-                  <span>Onboard Kitchen in 60s</span>
+                  <span>Partner Onboarding</span>
                   <ExternalLink className="size-3.5" />
                 </a>
               </div>

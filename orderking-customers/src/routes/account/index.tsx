@@ -127,7 +127,7 @@ function AccountPage() {
               <div className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-gradient-to-br from-amber-400/25 to-yellow-300/15 blur-2xl" />
               <div className="relative flex items-center gap-4">
                 <div className="relative size-16 shrink-0 rounded-2xl ring-2 ring-amber-400/80 p-0.5 bg-gradient-to-tr from-amber-400 to-yellow-300 shadow-md shadow-amber-400/30 flex items-center justify-center">
-                  <DeviceAvatar userId={user.id} name={user.displayName} />
+                  <DeviceAvatar userId={user.id} name={user.displayName} imageUrl={user.profileImageUrl} profileImageUrl={user.profileImageUrl} />
                   <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-amber-400 text-stone-950 text-[10px] font-black shadow-xs">
                     👑
                   </span>

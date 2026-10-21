@@ -457,8 +457,8 @@ export function KingPayWealthHub() {
               icon="🛡️"
               title="Mutual Funds & Protection"
               partner="Top Index AMCs & IRDAI Insurers"
-              badge="0% Commission Direct"
-              description="Direct index fund SIPs with zero distributor commissions, plus comprehensive term life coverage up to ₹5 Crores with 80C tax benefits."
+              badge="Direct Plans"
+              description="Direct index fund SIPs and comprehensive term life coverage up to ₹5 Crores with 80C tax benefits."
               statLabel="Protection Cover"
               statValue="Up to ₹5 Crores"
               onClick={() => setSelectedCategory("investments")}

@@ -46,6 +46,25 @@ import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
 import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
 import { AppErrorComponent } from "@/lib/error-component";
+import airportCatalog from "@/components/fintech/airports.json";
+import stationCatalog from "@/components/fintech/stations.json";
+import { AirportAutoSuggest, StationAutoSuggest } from "@/components/fintech/travel-autosuggest";
+
+const searchAirportOptions = (raw: string) => {
+  const q = raw.replace(/\s*\([A-Z]{3}\).*$/, "").trim().toLowerCase();
+  if (!q) return airportCatalog.slice(0, 20);
+  return airportCatalog
+    .filter((a) => a.code && (a.code.toLowerCase().includes(q) || a.city.toLowerCase().includes(q) || a.name.toLowerCase().includes(q)))
+    .slice(0, 20);
+};
+
+const searchStationOptions = (raw: string) => {
+  const q = raw.replace(/\s*\([A-Z0-9]{2,5}\).*$/, "").trim().toLowerCase();
+  if (!q) return stationCatalog.slice(0, 20);
+  return stationCatalog
+    .filter((a) => a.code.toLowerCase().includes(q) || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q))
+    .slice(0, 20);
+};
 
 export const Route = createFileRoute("/travel")({
   component: TravelPage,
@@ -221,7 +240,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
     id: "flights",
     label: "Flights",
-    badge: "0% Fee",
+    badge: "Air Travel",
     keywords: "airport air tickets domestic international student armed forces web check-in",
     subCategories: [
       "Domestic Flights",
@@ -570,7 +589,7 @@ export function TravelPage() {
                   <span>TravelStation</span>
                 </span>
                 <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
-                  0% Platform Markup
+                  Verified Booking
                 </span>
               </div>
               <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
@@ -772,7 +791,7 @@ export function TravelPage() {
                           cabinClass: flightClass,
                         });
                         toast.success(
-                          `Handoff to official ${handoff.portalName} for ${route.fromCity} ➔ ${route.toCity} (0% intermediary fee).`
+                          `Connecting to official ${handoff.portalName} for ${route.fromCity} ➔ ${route.toCity}.`
                         );
                         window.open(handoff.url, "_blank", "noopener,noreferrer");
                       }}
@@ -955,14 +974,14 @@ export function TravelPage() {
                       className="rounded-xl border border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-300 p-2.5 text-left transition"
                     >
                       <span className="text-xs font-black text-slate-900 block">{sector.route}</span>
-                      <span className="text-[10px] font-bold text-indigo-600">Select Sector (0% Fee) ➔</span>
+                      <span className="text-[10px] font-bold text-indigo-600">Select Sector ➔</span>
                     </button>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Real-time Flight Search & 0% Fee Guarantee Card */}
+            {/* Real-time Flight Search Card */}
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
@@ -980,7 +999,7 @@ export function TravelPage() {
                 </div>
                 <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-black text-emerald-700">
                   <ShieldCheck className="size-3.5 text-emerald-600" />
-                  <span>0% OrderKing Convenience Fee</span>
+                  <span>Carrier Direct</span>
                 </div>
               </div>
 
@@ -990,26 +1009,14 @@ export function TravelPage() {
                   <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
                     <MapPin className="size-3 text-sky-600" /> Origin City / Code
                   </label>
-                  <input
-                    type="text"
-                    value={flightFrom}
-                    onChange={(e) => setFlightFrom(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
-                    placeholder="e.g. New Delhi (DEL)"
-                  />
+                  <AirportAutoSuggest value={flightFrom} onChange={setFlightFrom} theme="light" placeholder="Search 7,900+ airports or city..." ariaLabel="Origin City / Code" />
                 </div>
 
                 <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-sky-400">
                   <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
                     <MapPin className="size-3 text-sky-600" /> Destination / Code
                   </label>
-                  <input
-                    type="text"
-                    value={flightTo}
-                    onChange={(e) => setFlightTo(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
-                    placeholder="e.g. Mumbai (BOM)"
-                  />
+                  <AirportAutoSuggest value={flightTo} onChange={setFlightTo} theme="light" placeholder="Search 7,900+ airports or city..." ariaLabel="Destination / Code" />
                 </div>
 
                 <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-sky-400">
@@ -1142,25 +1149,13 @@ export function TravelPage() {
                   <label className="text-[10px] font-bold text-gray-500 flex items-center gap-1 uppercase tracking-wider mb-1">
                     <MapPin className="size-3 text-indigo-600" /> Origin Station
                   </label>
-                  <input
-                    type="text"
-                    value={trainFrom}
-                    onChange={(e) => setTrainFrom(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-gray-900 outline-none"
-                    placeholder="Enter Station or Code"
-                  />
+                  <StationAutoSuggest value={trainFrom} onChange={setTrainFrom} theme="light" placeholder="Search 8,000+ stations or code..." ariaLabel="Origin Station" />
                 </div>
                 <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200">
                   <label className="text-[10px] font-bold text-gray-500 flex items-center gap-1 uppercase tracking-wider mb-1">
                     <MapPin className="size-3 text-indigo-600" /> Destination Station
                   </label>
-                  <input
-                    type="text"
-                    value={trainTo}
-                    onChange={(e) => setTrainTo(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-gray-900 outline-none"
-                    placeholder="Enter Station or Code"
-                  />
+                  <StationAutoSuggest value={trainTo} onChange={setTrainTo} theme="light" placeholder="Search 8,000+ stations or code..." ariaLabel="Destination Station" />
                 </div>
                 <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200">
                   <label className="text-[10px] font-bold text-gray-500 flex items-center gap-1 uppercase tracking-wider mb-1">
@@ -1592,13 +1587,13 @@ export function TravelPage() {
                   }}
                   className="flex-1 h-12 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-sm transition shadow-md shadow-orange-600/20 flex items-center justify-center gap-1.5"
                 >
-                  <span>Book on Partner RedBus (0% Desk Fee)</span>
+                  <span>Book on RedBus</span>
                   <ArrowUpRight className="size-4" />
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => {
-                    toast.success(`Verified direct RTC route schedule for ${busOperator} without third-party fees.`);
+                    toast.success(`Verified route schedule for ${busOperator}.`);
                   }}
                   className="h-12 rounded-xl border-slate-200 text-slate-800 font-bold text-sm"
                 >

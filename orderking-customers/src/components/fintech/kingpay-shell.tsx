@@ -162,7 +162,7 @@ export function KingPayShell({
             <Link to={user ? "/account" : "/login"} aria-label={user ? "Open your OrderKing profile" : "Sign in to OrderKing"}
               className="shrink-0 rounded-full border border-amber-400/70 bg-emerald-950 p-1 text-amber-200 no-underline shadow-sm hover:border-amber-200">
               {isPending ? <span className="block size-8 animate-pulse rounded-full bg-slate-700" /> :
-                user ? <DeviceAvatar userId={user.id} name={user.displayName} /> :
+                user ? <DeviceAvatar userId={user.id} name={user.displayName} imageUrl={user.profileImageUrl} profileImageUrl={user.profileImageUrl} /> :
                 <span className="flex size-8 items-center justify-center"><Crown className="size-5" aria-hidden /></span>}
             </Link>
 
