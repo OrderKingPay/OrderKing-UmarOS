@@ -139,7 +139,7 @@ describe("Utilities Bill Payments Engine Specification Suite", () => {
       });
 
       expect(intentUrl.startsWith("upi://pay?")).toBe(true);
-      expect(intentUrl).toContain("pa=orderking%40okhdfcbank");
+      expect(intentUrl).toContain("pa=9395065587%40ybl");
       expect(intentUrl).toContain("pn=OrderKing%20Utilities");
       expect(intentUrl).toContain("am=850.00");
       expect(intentUrl).toContain("cu=INR");
