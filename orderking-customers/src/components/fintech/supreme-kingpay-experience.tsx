@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Wallet,
@@ -60,6 +60,7 @@ import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
 import { 
   askIntelligenceFn, 
   submitJobApplicationFn, 
+  getLiveJobsFn, 
   ALL_INDIAN_BOARDS, 
   CORE_SUBJECTS, 
   CLASS_LEVELS, 
@@ -125,35 +126,8 @@ interface VerifiedJob {
   isKitchen: boolean;
 }
 
-// Verified high-trust job openings & fleet onboarding
-const VERIFIED_JOBS: VerifiedJob[] = [
-  {
-    id: "job-fleet-rider",
-    title: "OrderKing Hyperlocal Fleet Delivery Partner",
-    company: "OrderKing Logistics Fleet",
-    category: "Logistics & Fleet",
-    payout: "Earnings based on deliveries + distance incentives",
-    type: "Full-Time / Flexible 4h Shifts · Pan-India",
-    location: "Hyperlocal Nationwide (Direct Onboarding)",
-    badge: "Direct Fleet Role",
-    perks: ["Payouts under accepted rider contract", "Flexible Shift Roster", "Rider protections under contract and applicable law", "Direct Onboarding"],
-    isFleet: true,
-    isKitchen: false,
-  },
-  {
-    id: "job-kitchen-partner",
-    title: "OrderKing Restaurant & Cloud Kitchen Partner Application",
-    company: "OrderKing Partner Merchant Network",
-    category: "Restaurant & Culinary",
-    payout: "Merchant settlements according to signed contract",
-    type: "Dine-In & Cloud Kitchen Onboarding · Pan-India",
-    location: "Available after city/operator approval",
-    badge: "Direct Merchant Desk",
-    perks: ["Direct Merchant Desk", "Real-Time KDS App", "Direct Customer Reach", "Transparent GST Invoicing"],
-    isFleet: false,
-    isKitchen: true,
-  },
-];
+// Real verified job openings fetched dynamically from Supabase public.jobs
+const VERIFIED_JOBS: VerifiedJob[] = [];
 
 export function SupremeKingPayExperience() {
   const navigate = useNavigate();
@@ -170,7 +144,28 @@ export function SupremeKingPayExperience() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<typeof VERIFIED_JOBS[0] | null>(null);
+  const [liveJobs, setLiveJobs] = useState<VerifiedJob[]>([]);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
+  const [selectedJob, setSelectedJob] = useState<VerifiedJob | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    getLiveJobsFn()
+      .then((res) => {
+        if (mounted && res?.success && Array.isArray(res.jobs)) {
+          setLiveJobs(res.jobs as VerifiedJob[]);
+        }
+      })
+      .catch((err) => {
+        console.warn("[SupremeKingPayExperience] Failed to fetch live jobs from Supabase:", err);
+      })
+      .finally(() => {
+        if (mounted) setIsLoadingJobs(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
   const [isKitchenModalOpen, setIsKitchenModalOpen] = useState(false);
   const [isMentorModalOpen, setIsMentorModalOpen] = useState(false);
   const [selectedMentor, setSelectedMentor] = useState<typeof VERIFIED_MENTOR_TRACKS[0] | null>(null);
@@ -463,7 +458,7 @@ export function SupremeKingPayExperience() {
   };
 
   // Open Application Modal
-  const handleOpenJobModal = (job: typeof VERIFIED_JOBS[0]) => {
+  const handleOpenJobModal = (job: VerifiedJob) => {
     if (job.isFleet) {
       void navigate({ to: "/join-fleet" });
       return;
@@ -618,267 +613,135 @@ export function SupremeKingPayExperience() {
 
   return (
     <div className="mx-auto w-full max-w-5xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 text-slate-100">
-      {/* ─── TOP STATUS & LOCATION AVAILABILITY GUARD ─── */}
-      <section aria-label="Location and Service Status" className="rounded-2xl border border-amber-400/40 bg-gradient-to-r from-[#121622] via-[#1a1713] to-[#121622] p-3.5 sm:p-4 shadow-md">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/40">
-              <MapPin className="size-4 sm:size-5" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-xs font-black text-white truncate">{currentZone}, {currentCity}</span>
-                <span className="rounded-full bg-emerald-500/20 border border-emerald-400/50 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                  Live in India
-                </span>
-                <span className="rounded-full bg-amber-400/20 border border-amber-400/50 px-2 py-0.5 text-[10px] font-bold text-amber-300 hidden md:inline">
-                  Verified Directory
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                Utilities, Carrier Bookings, AI Tutoring &amp; Career Opportunities.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            {isHyperlocalActive ? (
-              <span className="inline-flex items-center gap-1 rounded-xl bg-emerald-950/80 border border-emerald-500/50 px-2.5 py-1 text-[11px] font-bold text-emerald-300">
-                <CheckCircle2 className="size-3.5 text-emerald-400" /> Hyperlocal Fleet Active
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 rounded-xl bg-amber-950/70 border border-amber-500/40 px-2.5 py-1 text-[11px] font-bold text-amber-300">
-                <AlertCircle className="size-3.5 text-amber-400" /> Digital Services Nationwide
-              </span>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── LIVE WALLET BALANCE & IMMEDIATE 1-TAP FINTECH CONTROLS ─── */}
-      <section aria-label="KingPay Wallet and Fast Controls" className="rounded-3xl border border-amber-400/60 bg-gradient-to-br from-[#0c0f17] via-[#1a1410] to-[#0c0f17] p-5 sm:p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 size-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-5">
+      {/* ─── CLEAN HEADER & WALLET BALANCE (APPLE / GOOGLE PAY GRADE) ─── */}
+      <section aria-label="KingPay Wallet" className="rounded-3xl border border-slate-800 bg-[#0d111a] p-5 sm:p-6 shadow-xl space-y-4">
+        <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-center gap-2 text-amber-300 mb-1">
-              <Wallet className="size-4" />
-              <span className="text-xs font-black uppercase tracking-wider">KingPay Authenticated Ledger</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-black font-mono text-white tracking-tight">
-                {formatPaise(walletBalancePaise)}
-              </span>
-              <span className="text-xs text-slate-400 font-mono">SafeInteger Paise Precision</span>
-            </div>
-            <p className="text-xs text-slate-300 mt-1">
-              Immediate double-entry ledger reconciliation.
-            </p>
+            <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+              <Wallet className="size-5 text-amber-400" /> KingPay
+            </h1>
+            <p className="text-xs text-slate-400 mt-0.5">{currentZone}, {currentCity}</p>
+          </div>
+          <Link
+            to="/kingpay/passbook"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900 text-xs font-medium text-slate-300 hover:text-white transition"
+          >
+            <Receipt className="size-3.5 text-slate-400" />
+            <span>Passbook</span>
+          </Link>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 pt-1">
+          <div>
+            <span className="text-xs text-slate-400 font-medium block mb-1">Available Balance</span>
+            <span className="text-3xl sm:text-4xl font-black font-mono text-white tracking-tight">
+              {formatPaise(walletBalancePaise)}
+            </span>
           </div>
 
-          {/* Core Action Buttons */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setIsScannerOpen(true)}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 px-3.5 py-2.5 text-xs font-black text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition cursor-pointer"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2.5 text-xs shadow transition active:scale-95 cursor-pointer"
             >
               <QrCode className="size-4" />
               <span>Scan QR</span>
             </button>
-
             <button
               type="button"
               onClick={() => setIsAddMoneyOpen(true)}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-amber-400/50 bg-amber-400/10 px-3.5 py-2.5 text-xs font-bold text-amber-200 hover:bg-amber-400/20 active:scale-95 transition cursor-pointer"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 text-xs transition active:scale-95 cursor-pointer"
             >
               <PlusCircle className="size-4 text-amber-300" />
               <span>Add Money</span>
             </button>
-
-            <a
-              href="#utilities"
-              onClick={() => setActiveSuperCategory("upi")}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2.5 text-xs font-bold text-slate-200 hover:border-slate-500 no-underline transition cursor-pointer"
-            >
-              <Zap className="size-4 text-slate-400" />
-              <span>Utilities</span>
-            </a>
-
-            <Link
-              to="/kingpay/passbook"
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2.5 text-xs font-bold text-slate-200 hover:border-slate-500 no-underline transition cursor-pointer"
-            >
-              <Receipt className="size-4 text-slate-400" />
-              <span>Passbook</span>
-            </Link>
           </div>
         </div>
       </section>
 
-      {/* ─── LUXURY SUPER-APP DOCK: TICKETS, AI TUTOR, JOBS & UPI (GOIBIBO/MMT GRADE) ─── */}
-      <section aria-label="Ecosystem Quick Action Dock" className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="size-4 text-amber-400" />
-            <h2 className="text-sm font-black uppercase tracking-wider text-amber-300">
-              Sovereign Ecosystem Dock
-            </h2>
+      {/* ─── 4-SERVICE NAVIGATION GRID ─── */}
+      <nav aria-label="Services Navigation" className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <button
+          type="button"
+          onClick={() => setActiveSuperCategory("tickets")}
+          className={cn(
+            "p-4 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between space-y-2",
+            activeSuperCategory === "tickets"
+              ? "border-amber-400 bg-amber-400/10 text-white"
+              : "border-slate-800 bg-slate-900/60 hover:border-slate-700 text-slate-300"
+          )}
+        >
+          <div className="flex items-center justify-between">
+            <Plane className="size-5 text-amber-400" />
+            <span className="text-[10px] text-slate-400 font-medium">Flights &amp; Rail</span>
           </div>
-          <span className="text-[11px] text-slate-400 hidden sm:inline">
-            Matches top navigation · Official booking provider handoffs
-          </span>
-        </div>
+          <div>
+            <span className="text-sm font-bold block text-white">Travel</span>
+            <span className="text-[11px] text-slate-400">Flights, Trains, Buses</span>
+          </div>
+        </button>
 
-        {/* 4 Interactive Luxury Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
-          {/* 1. TICKETS (TRAVEL) */}
-          <button
-            type="button"
-            onClick={() => setActiveSuperCategory("tickets")}
-            className={cn(
-              "flex flex-col text-left p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group",
-              activeSuperCategory === "tickets"
-                ? "border-amber-400 bg-gradient-to-b from-amber-950/40 via-slate-900 to-[#121622] ring-1 ring-amber-400/60 shadow-[0_4px_20px_rgba(245,158,11,0.2)]"
-                : "border-slate-800 bg-slate-900/70 hover:border-amber-400/40 hover:bg-slate-900"
-            )}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
-                <Plane className="size-5" />
-              </div>
-              <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                Air &amp; Rail
-              </span>
-            </div>
-            <span className="text-sm sm:text-base font-black text-white leading-tight">Tickets &amp; Travel</span>
-            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Flights, Trains, Buses, Cabs</span>
-            {activeSuperCategory === "tickets" && (
-              <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
-                <span>Provider Booking Links</span>
-                <ChevronRight className="size-3" />
-              </div>
-            )}
-          </button>
+        <button
+          type="button"
+          onClick={() => setActiveSuperCategory("courier")}
+          className={cn(
+            "p-4 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between space-y-2",
+            activeSuperCategory === "courier"
+              ? "border-amber-400 bg-amber-400/10 text-white"
+              : "border-slate-800 bg-slate-900/60 hover:border-slate-700 text-slate-300"
+          )}
+        >
+          <div className="flex items-center justify-between">
+            <Package className="size-5 text-amber-400" />
+            <span className="text-[10px] text-slate-400 font-medium">Citywide</span>
+          </div>
+          <div>
+            <span className="text-sm font-bold block text-white">Courier</span>
+            <span className="text-[11px] text-slate-400">Point-to-Point Delivery</span>
+          </div>
+        </button>
 
-          {/* 2. LOCAL PARCEL & COURIER */}
-          <button
-            type="button"
-            onClick={() => {
-              setActiveSuperCategory("courier");
-              const el = document.getElementById("courier");
-              if (el) el.scrollIntoView({ behavior: "smooth" });
-            }}
-            className={cn(
-              "flex flex-col text-left p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group",
-              activeSuperCategory === "courier"
-                ? "border-amber-400 bg-gradient-to-b from-amber-950/40 via-slate-900 to-[#121622] ring-1 ring-amber-400/60 shadow-[0_4px_20px_rgba(245,158,11,0.2)]"
-                : "border-slate-800 bg-slate-900/70 hover:border-amber-400/40 hover:bg-slate-900"
-            )}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
-                <Truck className="size-5" />
-              </div>
-              <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                ₹30 Base
-              </span>
-            </div>
-            <span className="text-sm sm:text-base font-black text-white leading-tight">Local Courier</span>
-            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Documents, Food, Keys, Boxes</span>
-            {activeSuperCategory === "courier" && (
-              <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
-                <span>Active Dispatch Engine</span>
-                <ChevronRight className="size-3" />
-              </div>
-            )}
-          </button>
+        <button
+          type="button"
+          onClick={() => setActiveSuperCategory("tutor")}
+          className={cn(
+            "p-4 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between space-y-2",
+            activeSuperCategory === "tutor"
+              ? "border-amber-400 bg-amber-400/10 text-white"
+              : "border-slate-800 bg-slate-900/60 hover:border-slate-700 text-slate-300"
+          )}
+        >
+          <div className="flex items-center justify-between">
+            <GraduationCap className="size-5 text-amber-400" />
+            <span className="text-[10px] text-slate-400 font-medium">All Boards</span>
+          </div>
+          <div>
+            <span className="text-sm font-bold block text-white">AI Tutor</span>
+            <span className="text-[11px] text-slate-400">Classes 1–12 &amp; Prep</span>
+          </div>
+        </button>
 
-          {/* 2. AI TUTOR */}
-          <button
-            type="button"
-            onClick={() => setActiveSuperCategory("tutor")}
-            className={cn(
-              "flex flex-col text-left p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group",
-              activeSuperCategory === "tutor"
-                ? "border-amber-400 bg-gradient-to-b from-amber-950/40 via-slate-900 to-[#121622] ring-1 ring-amber-400/60 shadow-[0_4px_20px_rgba(245,158,11,0.2)]"
-                : "border-slate-800 bg-slate-900/70 hover:border-amber-400/40 hover:bg-slate-900"
-            )}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
-                <GraduationCap className="size-5" />
-              </div>
-              <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                Live 1-on-1
-              </span>
-            </div>
-            <span className="text-sm sm:text-base font-black text-white leading-tight">Academic Tutor</span>
-            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Available Mentors &amp; AI Study Help</span>
-            {activeSuperCategory === "tutor" && (
-              <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
-                <span>Active Learning Portal</span>
-                <ChevronRight className="size-3" />
-              </div>
-            )}
-          </button>
-
-          {/* 3. VERIFIED JOBS */}
-          <button
-            type="button"
-            onClick={() => setActiveSuperCategory("jobs")}
-            className={cn(
-              "flex flex-col text-left p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group",
-              activeSuperCategory === "jobs"
-                ? "border-amber-400 bg-gradient-to-b from-amber-950/40 via-slate-900 to-[#121622] ring-1 ring-amber-400/60 shadow-[0_4px_20px_rgba(245,158,11,0.2)]"
-                : "border-slate-800 bg-slate-900/70 hover:border-amber-400/40 hover:bg-slate-900"
-            )}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
-                <Briefcase className="size-5" />
-              </div>
-              <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                Verified Careers
-              </span>
-            </div>
-            <span className="text-sm sm:text-base font-black text-white leading-tight">Jobs &amp; Applications</span>
-            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Tech, Fleet, Retail &amp; Teaching</span>
-            {activeSuperCategory === "jobs" && (
-              <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
-                <span>Active Openings Hub</span>
-                <ChevronRight className="size-3" />
-              </div>
-            )}
-          </button>
-
-          {/* 4. UTILITIES & DIRECT UPI */}
-          <button
-            type="button"
-            onClick={() => setActiveSuperCategory("upi")}
-            className={cn(
-              "flex flex-col text-left p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group",
-              activeSuperCategory === "upi"
-                ? "border-amber-400 bg-gradient-to-b from-amber-950/40 via-slate-900 to-[#121622] ring-1 ring-amber-400/60 shadow-[0_4px_20px_rgba(245,158,11,0.2)]"
-                : "border-slate-800 bg-slate-900/70 hover:border-amber-400/40 hover:bg-slate-900"
-            )}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
-                <Zap className="size-5" />
-              </div>
-            </div>
-            <span className="text-sm sm:text-base font-black text-white leading-tight">Utilities</span>
-            <span className="text-[11px] text-slate-400 mt-0.5 leading-tight">Bills, FASTag &amp; UPI Transfer</span>
-            {activeSuperCategory === "upi" && (
-              <div className="mt-2 flex items-center gap-1 text-[10px] font-black text-amber-300">
-                <span>Active Section</span>
-                <ChevronRight className="size-3" />
-              </div>
-            )}
-          </button>
-        </div>
-      </section>
+        <button
+          type="button"
+          onClick={() => setActiveSuperCategory("jobs")}
+          className={cn(
+            "p-4 rounded-2xl border text-left transition cursor-pointer flex flex-col justify-between space-y-2",
+            activeSuperCategory === "jobs"
+              ? "border-amber-400 bg-amber-400/10 text-white"
+              : "border-slate-800 bg-slate-900/60 hover:border-slate-700 text-slate-300"
+          )}
+        >
+          <div className="flex items-center justify-between">
+            <Briefcase className="size-5 text-amber-400" />
+            <span className="text-[10px] text-slate-400 font-medium">Verified</span>
+          </div>
+          <div>
+            <span className="text-sm font-bold block text-white">Careers</span>
+            <span className="text-[11px] text-slate-400">Fleet &amp; Partner Roles</span>
+          </div>
+        </button>
+      </nav>
 
       {/* ─── DEDICATED PILLAR: LOCAL PARCEL & COURIER DISPATCH ENGINE (PORTER GRADE) ─── */}
       <section id="courier" aria-label="Point-to-Point Local Courier & Parcel Dispatch" className="space-y-4 pt-2">
@@ -1138,7 +1001,7 @@ export function SupremeKingPayExperience() {
                         </div>
                         <div className="text-right shrink-0">
                           <span className="text-sm font-black font-mono text-amber-300">Live Fares</span>
-                          <span className="block text-[9.5px] font-bold text-emerald-400">Zero Markup</span>
+                          <span className="block text-[9.5px] font-bold text-slate-400">Official Carrier</span>
                         </div>
                       </div>
 
@@ -1324,111 +1187,43 @@ export function SupremeKingPayExperience() {
                 </p>
               </div>
 
-              {/* 1-Click Tatkal Passenger Roster Builder */}
-              <div className="rounded-2xl border border-amber-400/40 bg-gradient-to-br from-slate-900 to-slate-950 p-4 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+              {/* Official IRCTC Rail Gateway & Live PNR Lookup */}
+              <div className="rounded-2xl border border-slate-800 bg-[#0d111a] p-5 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="size-4 text-amber-400" />
-                    <span className="text-xs font-black uppercase tracking-wider text-amber-300">
-                      1-Click Tatkal Passenger Roster Builder (Official IRCTC NGeT)
+                    <Train className="size-4 text-amber-400" />
+                    <span className="text-xs font-bold text-white">
+                      Official IRCTC Rail Booking &amp; Live Tracking
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleAddTatkalPassenger}
-                      className="px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-900 hover:border-amber-400 text-[11px] font-bold text-slate-300 hover:text-white flex items-center gap-1 transition cursor-pointer"
-                    >
-                      <PlusCircle className="size-3 text-amber-400" />
-                      <span>Add Traveler ({tatkalPassengers.length}/4)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCopyTatkalRoster}
-                      className="px-3 py-1 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow hover:brightness-105 active:scale-95 transition cursor-pointer"
-                    >
-                      <Copy className="size-3.5" />
-                      <span>Copy Tatkal Roster</span>
-                    </button>
-                  </div>
+                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
+                    Direct Official Handshake
+                  </span>
                 </div>
 
-                <div className="space-y-2">
-                  {tatkalPassengers.map((pax, idx) => (
-                    <div key={pax.id} className="grid grid-cols-12 gap-2 items-center bg-slate-900/60 border border-slate-800/80 p-2 rounded-xl text-xs">
-                      <div className="col-span-1 text-center font-mono font-bold text-slate-400">
-                        #{idx + 1}
-                      </div>
-                      <div className="col-span-4 sm:col-span-4">
-                        <input
-                          type="text"
-                          placeholder="Full Name (Gov ID)"
-                          value={pax.name}
-                          onChange={(e) => handleUpdateTatkalPassenger(pax.id, "name", e.target.value)}
-                          className="w-full h-8 px-2.5 rounded-lg border border-slate-700 bg-slate-950 text-white outline-none focus:border-amber-400 text-xs font-medium"
-                        />
-                      </div>
-                      <div className="col-span-2 sm:col-span-2">
-                        <input
-                          type="number"
-                          placeholder="Age"
-                          min={1}
-                          max={120}
-                          value={pax.age}
-                          onChange={(e) => handleUpdateTatkalPassenger(pax.id, "age", Number(e.target.value) || "")}
-                          className="w-full h-8 px-2 rounded-lg border border-slate-700 bg-slate-950 text-white outline-none focus:border-amber-400 text-xs font-mono"
-                        />
-                      </div>
-                      <div className="col-span-2 sm:col-span-2">
-                        <select
-                          value={pax.gender}
-                          onChange={(e) => handleUpdateTatkalPassenger(pax.id, "gender", e.target.value)}
-                          className="w-full h-8 px-1.5 rounded-lg border border-slate-700 bg-slate-950 text-white outline-none focus:border-amber-400 text-xs cursor-pointer"
-                        >
-                          <option value="M">Male</option>
-                          <option value="F">Female</option>
-                          <option value="T">Trans</option>
-                        </select>
-                      </div>
-                      <div className="col-span-2 sm:col-span-2">
-                        <select
-                          value={pax.berth}
-                          onChange={(e) => handleUpdateTatkalPassenger(pax.id, "berth", e.target.value)}
-                          className="w-full h-8 px-1.5 rounded-lg border border-slate-700 bg-slate-950 text-white outline-none focus:border-amber-400 text-xs cursor-pointer"
-                        >
-                          <option value="Lower Berth">Lower</option>
-                          <option value="Middle Berth">Middle</option>
-                          <option value="Upper Berth">Upper</option>
-                          <option value="Side Lower">Side Lower</option>
-                          <option value="Side Upper">Side Upper</option>
-                        </select>
-                      </div>
-                      <div className="col-span-1 text-center">
-                        {tatkalPassengers.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveTatkalPassenger(pax.id)}
-                            className="text-slate-400 hover:text-rose-400 p-1 cursor-pointer"
-                            title="Remove"
-                          >
-                            <X className="size-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Indian Railways (IRCTC) requires passenger authorization and OTP verification directly on the official portal. Check live seat availability, Tatkal quotas, and PNR status directly on IRCTC.
+                </p>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
-                  <span>Pre-fills your exact passenger manifest before 10:00 AM (AC) &amp; 11:00 AM (Non-AC) Tatkal rush.</span>
-                  <button
-                    type="button"
-                    onClick={handleCopyTatkalRoster}
-                    className="text-amber-400 font-bold hover:underline flex items-center gap-1 self-end sm:self-auto cursor-pointer"
+                <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                  <a
+                    href="https://www.irctc.co.in/nget/train-search"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer no-underline"
                   >
-                    <Copy className="size-3" />
-                    <span>Copy Pre-Formatted Manifest ➔</span>
-                  </button>
+                    <span>Launch IRCTC Train Search</span>
+                    <ExternalLink className="size-3.5" />
+                  </a>
+                  <a
+                    href="https://www.indianrail.gov.in/enquiry/PNR/PnrEnquiry.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 hover:text-white text-xs font-bold hover:border-slate-500 transition flex items-center gap-1.5 cursor-pointer no-underline"
+                  >
+                    <span>Official PNR Enquiry Portal</span>
+                    <ExternalLink className="size-3.5" />
+                  </a>
                 </div>
               </div>
             </div>
@@ -1499,7 +1294,7 @@ export function SupremeKingPayExperience() {
                   </p>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 self-start sm:self-auto">
-                  Beats MakeMyTrip &amp; Goibibo Rates
+                  Official Provider
                 </span>
               </div>
 
@@ -1997,7 +1792,8 @@ export function SupremeKingPayExperience() {
 
         {/* 4 Core High-Trust Opportunities Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          {VERIFIED_JOBS.map((job) => {
+          {liveJobs.length > 0 ? (
+            liveJobs.map((job) => {
             const isApplied = appliedJobIds.includes(job.id);
             return (
               <div
@@ -2074,7 +1870,36 @@ export function SupremeKingPayExperience() {
                 </div>
               </div>
             );
-          })}
+          })
+          ) : isLoadingJobs ? (
+            <div className="col-span-full rounded-2xl border border-slate-800 bg-slate-950/60 p-8 text-center text-xs text-slate-400">
+              Loading verified contract postings from database...
+            </div>
+          ) : (
+            <div className="col-span-full rounded-2xl border border-slate-800 bg-slate-950/80 p-8 text-center space-y-3">
+              <Briefcase className="size-8 text-amber-400 mx-auto opacity-70" />
+              <h4 className="text-sm font-bold text-white">No Open Contract Postings Right Now</h4>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Verified hyperlocal fleet and cloud kitchen partner roles are populated directly from live employer postings.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <Link
+                  to="/join-fleet"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs font-black shadow hover:brightness-105 no-underline flex items-center gap-1.5"
+                >
+                  <span>Join Delivery Fleet</span>
+                  <ArrowRight className="size-3.5" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setIsKitchenModalOpen(true)}
+                  className="px-4 py-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-200 text-xs font-bold hover:bg-slate-800 transition cursor-pointer"
+                >
+                  Partner Cloud Kitchen
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

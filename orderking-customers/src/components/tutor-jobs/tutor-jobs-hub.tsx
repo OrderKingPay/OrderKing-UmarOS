@@ -542,7 +542,11 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
             <div className="text-xs text-slate-400 flex items-center gap-2">
               <span>Feed Source:</span>
               <span className="font-semibold text-slate-200">
-                {jobsSource === "Adzuna" ? "Adzuna Live Feed" : "Verified Direct Catalog"}
+                {jobsSource === "Adzuna"
+                  ? "Adzuna Live Feed"
+                  : jobsSource === "Remotive"
+                  ? "Remotive Live Feed"
+                  : "Verified Direct Catalog"}
               </span>
             </div>
           </div>
@@ -551,7 +555,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
           {isLoadingJobs ? (
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center text-slate-400 space-y-2">
               <p className="text-sm font-semibold text-white">Loading job listings...</p>
-              <p className="text-xs">Querying Adzuna API and dynamic catalog</p>
+              <p className="text-xs">Querying Adzuna, Remotive, and verified catalog</p>
             </div>
           ) : jobs.length === 0 ? (
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 text-center space-y-3">

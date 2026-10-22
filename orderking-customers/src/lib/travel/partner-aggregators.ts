@@ -174,6 +174,10 @@ export const ALLOWED_PARTNER_HOSTS: readonly string[] = [
   "www.agoda.com",
   "tp.media",
   "travelpayouts.com",
+  "duffel.com",
+  "www.duffel.com",
+  "api.duffel.com",
+  "links.duffel.com",
 ];
 
 // ============================================================================

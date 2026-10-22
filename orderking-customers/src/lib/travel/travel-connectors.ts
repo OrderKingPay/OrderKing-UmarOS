@@ -91,8 +91,17 @@ function toKiwiDateFormat(isoDate: string): string {
 }
 
 // ============================================================================
-// 1. LIVE FLIGHT SEARCH (Kiwi Tequila / Travelpayouts / GDS)
+// 1. LIVE FLIGHT SEARCH (Duffel v2 / Kiwi Tequila / Travelpayouts / GDS)
 // ============================================================================
+
+function parseIsoDurationMinutes(isoDuration?: string): number {
+  if (!isoDuration) return 120;
+  const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+  if (!match) return 120;
+  const hours = parseInt(match[1] || "0", 10);
+  const minutes = parseInt(match[2] || "0", 10);
+  return hours * 60 + minutes;
+}
 
 export async function searchLiveFlights(req: FlightSearchRequest): Promise<FlightSearchResponse> {
   const origin = extractAirportCode(req.origin, "DEL");
@@ -100,6 +109,11 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
   const departureDate = req.departureDate || new Date().toISOString().split("T")[0];
   const passengers = Math.max(1, Math.min(9, Math.floor(req.passengers || 1)));
   const cabinClass = req.cabinClass === "BUSINESS" ? "BUSINESS" : "ECONOMY";
+
+  const duffelToken =
+    process.env.DUFFEL_ACCESS_TOKEN ||
+    process.env.DUFFEL_API_KEY ||
+    process.env.VITE_DUFFEL_ACCESS_TOKEN;
 
   const kiwiApiKey =
     process.env.KIWI_API_KEY ||
@@ -110,7 +124,97 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
     process.env.TRAVELPAYOUTS_TOKEN ||
     process.env.AVIASALES_API_TOKEN;
 
-  // 1. Try Kiwi.com Tequila API if key is available
+  // 1. Try Duffel v2 Flights API if token is configured
+  if (duffelToken) {
+    try {
+      const duffelRes = await fetch("https://api.duffel.com/air/offer_requests?return_offers=true", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${duffelToken}`,
+          "Duffel-Version": "v2",
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          data: {
+            slices: [
+              {
+                origin,
+                destination,
+                departure_date: departureDate,
+              },
+            ],
+            passengers: Array.from({ length: passengers }, () => ({ type: "adult" })),
+            cabin_class: cabinClass === "BUSINESS" ? "business" : "economy",
+          },
+        }),
+        signal: AbortSignal.timeout(8000),
+      });
+
+      if (duffelRes.ok) {
+        const json = await duffelRes.json();
+        const offers = json?.data?.offers;
+        if (Array.isArray(offers) && offers.length > 0) {
+          const flights: FlightOption[] = offers.map((offer: any, idx: number) => {
+            const firstSlice = offer.slices?.[0];
+            const firstSegment = firstSlice?.segments?.[0];
+            const lastSegment = firstSlice?.segments?.[firstSlice.segments.length - 1] || firstSegment;
+            const primaryCarrier = offer.owner?.iata_code || firstSegment?.operating_carrier?.iata_code || "6E";
+            const carrierName = offer.owner?.name || AIRLINE_NAMES[primaryCarrier] || "Scheduled Carrier";
+            const flightNumber = firstSegment?.operating_carrier_flight_number
+              ? `${primaryCarrier} ${String(firstSegment.operating_carrier_flight_number).replace(primaryCarrier, "").trim()}`
+              : `${primaryCarrier}-${idx + 101}`;
+            const depIso = firstSegment?.departing_at || `${departureDate}T06:00:00`;
+            const arrIso = lastSegment?.arriving_at || `${departureDate}T08:15:00`;
+            const durationMins = parseIsoDurationMinutes(firstSlice?.duration);
+            const rawAmount = parseFloat(offer.total_amount);
+            const pricePaise = !isNaN(rawAmount) && rawAmount > 0 ? Math.round(rawAmount * 100) : 450000;
+            const stops = Math.max(0, (firstSlice?.segments?.length || 1) - 1);
+
+            return {
+              id: offer.id || `fl-duffel-${primaryCarrier}-${idx}`,
+              carrierName,
+              carrierCode: primaryCarrier,
+              flightNumber,
+              departureTime: depIso,
+              arrivalTime: arrIso,
+              durationMinutes: durationMins,
+              pricePaise,
+              directStops: stops,
+              cabinClass,
+              seatsAvailable: undefined,
+              bookingUrl: offer.id
+                ? `https://links.duffel.com/air/offers/${offer.id}`
+                : buildOfficialAirlineDeepLink({
+                    carrierCode: primaryCarrier,
+                    from: origin,
+                    to: destination,
+                    departureDate,
+                    passengers,
+                    cabinClass,
+                  }).bookingUrl,
+              baggageAllowance: undefined,
+              aircraftType: firstSegment?.aircraft?.name,
+            };
+          });
+
+          return {
+            success: true,
+            data: flights,
+            source: "duffel_v2",
+            count: flights.length,
+            origin,
+            destination,
+            departureDate,
+          };
+        }
+      }
+    } catch (err) {
+      console.warn("[TravelConnectors] Duffel API query failed, falling through to secondary connector:", err);
+    }
+  }
+
+  // 2. Try Kiwi.com Tequila API if key is available
   if (kiwiApiKey) {
     try {
       const kiwiDate = toKiwiDateFormat(departureDate);
@@ -227,7 +331,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
               directStops: item.transfers || 0,
               cabinClass,
               seatsAvailable: undefined,
-              bookingUrl: item.link ? `https://tp.media/r?marker=orderking&p=4114&u=${encodeURIComponent(item.link)}` : buildOfficialAirlineDeepLink({
+              bookingUrl: item.link ? `https://tp.media/r?marker=${process.env.TRAVELPAYOUTS_MARKER || "500000"}&p=4114&u=${encodeURIComponent(item.link)}` : buildOfficialAirlineDeepLink({
                 carrierCode: airline,
                 from: origin,
                 to: destination,

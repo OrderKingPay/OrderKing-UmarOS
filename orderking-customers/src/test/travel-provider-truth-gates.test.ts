@@ -11,6 +11,7 @@ describe("travel supplier truth gates", () => {
 
   it("never invents flights, railway seats, bus seats, or hotel rooms when providers are not connected", async () => {
     for (const key of [
+      "DUFFEL_ACCESS_TOKEN", "DUFFEL_API_KEY", "VITE_DUFFEL_ACCESS_TOKEN",
       "KIWI_API_KEY", "TEQUILA_API_KEY", "VITE_TRAVEL_API_KEY",
       "TRAVELPAYOUTS_TOKEN", "AVIASALES_API_TOKEN",
       "REDBUS_API_KEY", "REDBUS_AUTH_KEY",

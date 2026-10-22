@@ -60,6 +60,7 @@ import { Route as TutorJobsHistoryRouteImport } from './routes/tutor-jobs/histor
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
 import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
+import { Route as ApiAiSolveRouteImport } from './routes/api/ai/solve'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPushSubscribeRouteImport } from './routes/api/push/subscribe'
 import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
@@ -331,6 +332,11 @@ const ApiAiChatRoute = ApiAiChatRouteImport.update({
   path: '/api/ai/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAiSolveRoute = ApiAiSolveRouteImport.update({
+  id: '/api/ai/solve',
+  path: '/api/ai/solve',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -461,6 +467,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
+  '/api/ai/solve': typeof ApiAiSolveRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
@@ -529,6 +536,7 @@ export interface FileRoutesByTo {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
+  '/api/ai/solve': typeof ApiAiSolveRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
@@ -598,6 +606,7 @@ export interface FileRoutesById {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
+  '/api/ai/solve': typeof ApiAiSolveRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
@@ -668,6 +677,7 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
+    | '/api/ai/solve'
     | '/api/auth/$'
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
@@ -736,6 +746,7 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
+    | '/api/ai/solve'
     | '/api/auth/$'
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
@@ -804,6 +815,7 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
+    | '/api/ai/solve'
     | '/api/auth/$'
     | '/api/push/subscribe'
     | '/api/razorpay/create-order'
@@ -871,6 +883,7 @@ export interface RootRouteChildren {
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminTestConnectionRoute: typeof ApiAdminTestConnectionRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
+  ApiAiSolveRoute: typeof ApiAiSolveRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPushSubscribeRoute: typeof ApiPushSubscribeRoute
   ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
@@ -1246,6 +1259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ai/solve': {
+      id: '/api/ai/solve'
+      path: '/api/ai/solve'
+      fullPath: '/api/ai/solve'
+      preLoaderRoute: typeof ApiAiSolveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -1439,6 +1459,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminTestConnectionRoute: ApiAdminTestConnectionRoute,
   ApiAiChatRoute: ApiAiChatRoute,
+  ApiAiSolveRoute: ApiAiSolveRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPushSubscribeRoute: ApiPushSubscribeRoute,
   ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,

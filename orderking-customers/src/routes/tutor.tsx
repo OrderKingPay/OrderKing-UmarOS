@@ -29,6 +29,7 @@ import { AppErrorComponent } from "@/lib/error-component";
 import { computeDeterministicSkillMatch } from "@/lib/career/skill-matcher";
 import { getSql } from "@/lib/db";
 import { TutorJobsHub } from "@/components/tutor-jobs/tutor-jobs-hub";
+import { solveAcademicProblem } from "@/lib/server/gemini-tutor-solver";
 
 export function generateCurriculumFallback(data: { message: string; board: string; stdClass: string; subject: string; language?: string; difficulty?: string; tone?: string; goal?: string }): string {
   const query = (data.message || "").trim();
@@ -249,6 +250,226 @@ export function generateCurriculumFallback(data: { message: string; board: strin
 - **Energy Stored:** Chemical bonds of glucose and starch reserves.`;
   }
 
+  // Macroeconomics: National Income & GDP
+  if (lower.includes("gdp") || lower.includes("national income") || lower.includes("gross domestic product") || lower.includes("macroeconomic")) {
+    return `### 1. Given Formula / Concept
+- **Expenditure Method Formula for GDP:**
+  \\[\\text{GDP}_{\\text{mp}} = C + I + G + (X - M)\\]
+  Where:
+  - \\(C\\) = Private Final Consumption Expenditure
+  - \\(I\\) = Gross Domestic Private Investment
+  - \\(G\\) = Government Final Consumption Expenditure
+  - \\(X - M\\) = Net Exports (Exports minus Imports)
+- **National Income Conversion Identity (NNP at Factor Cost):**
+  \\[\\text{NNP}_{\\text{fc}} = \\text{GDP}_{\\text{mp}} - \\text{Depreciation} + \\text{NFIA} - \\text{NIT}\\]
+  *(where NFIA = Net Factor Income from Abroad, NIT = Net Indirect Taxes = Indirect Taxes - Subsidies)*.
+- **Curriculum Standard:** NCERT Class 12 Macroeconomics & State Higher Secondary Commerce.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Aggregate Components of Domestic Product):** Compute total domestic output at market price: \\(\\text{GDP}_{\\text{mp}} = C + I + G + (X - M)\\).
+- **Step 2 (Adjust for Capital Consumption):** Deduct Depreciation (Consumption of Fixed Capital) to convert Gross to Net:
+  \\[\\text{NDP}_{\\text{mp}} = \\text{GDP}_{\\text{mp}} - \\text{Depreciation}\\]
+- **Step 3 (Incorporate Foreign Earnings):** Add Net Factor Income from Abroad (NFIA) to transition from domestic territory to national residents:
+  \\[\\text{NNP}_{\\text{mp}} = \\text{NDP}_{\\text{mp}} + \\text{NFIA}\\]
+- **Step 4 (Convert Market Prices to Factor Cost):** Deduct Net Indirect Taxes (NIT = Taxes - Subsidies):
+  \\[\\text{National Income} (\\text{NNP}_{\\text{fc}}) = \\text{NNP}_{\\text{mp}} - (\\text{Indirect Taxes} - \\text{Subsidies})\\]
+
+### 3. Final Answer
+\\[\\text{National Income (NNP}_{\\text{fc}}\\text{)} = C + I + G + (X - M) - \\text{Depreciation} + \\text{NFIA} - \\text{NIT}\\]
+*(Official Indian National Accounting Standard aligned with Central Statistical Office (CSO) / NSO methodologies).* `;
+  }
+
+  // Microeconomics: Law of Demand & Elasticity
+  if (lower.includes("law of demand") || lower.includes("elasticity of demand") || lower.includes("price elasticity")) {
+    return `### 1. Given Formula / Concept
+- **Law of Demand:** Ceteris paribus (all other factors held constant), there exists an inverse relationship between the price of a commodity and the quantity demanded:
+  \\[P \\uparrow \\implies Q_d \\downarrow, \quad P \\downarrow \\implies Q_d \\uparrow\\]
+- **Price Elasticity of Demand (Percentage Method):**
+  \\[E_d = -\\left( \\frac{\\Delta Q / Q}{\\Delta P / P} \\right) = -\\left( \\frac{\\Delta Q}{\\Delta P} \\times \\frac{P}{Q} \\right)\\]
+- **Curriculum Standard:** Prescribed under CBSE Class 11 Microeconomics & ICSE/ISC Board.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Governing Assumptions):** Incomes of consumers, tastes/preferences, prices of substitute goods, and future price expectations remain constant.
+- **Step 2 (Slope of the Demand Curve):** Because price and quantity move in opposite directions, the slope \\(\\frac{dP}{dQ} < 0\\), leading to a downward sloping demand curve from left to right.
+- **Step 3 (Behavioral Causes):**
+  1. Substitution Effect: When the price falls, the commodity becomes relatively cheaper than its substitutes.
+  2. Income Effect: A price decline increases consumer purchasing power (real income).
+  3. Law of Diminishing Marginal Utility: Additional units yield diminishing satisfaction, so consumers only purchase more at lower prices.
+- **Step 4 (Elasticity Bounds):**
+  - \\(|E_d| > 1\\): Elastic demand (luxuries)
+  - \\(|E_d| = 1\\): Unitary elastic (rectangular hyperbola)
+  - \\(|E_d| < 1\\): Inelastic demand (necessities)
+
+### 3. Final Answer
+\\[E_d = -\\left( \\frac{\\Delta Q}{\\Delta P} \\cdot \\frac{P}{Q} \\right)\\]
+- **Result:** Downward-sloping demand curve illustrating negative price elasticity of demand under ceteris paribus. `;
+  }
+
+  // Chemistry: Chemical Kinetics & Rate Law
+  if (lower.includes("chemical kinetics") || lower.includes("rate law") || lower.includes("arrhenius") || lower.includes("first order reaction") || lower.includes("half life")) {
+    return `### 1. Given Formula / Concept
+- **Differential Rate Equation for First-Order Reaction:** \\(-\\frac{d[A]}{dt} = k [A]\\)
+- **Integrated First-Order Rate Law:**
+  \\[k = \\frac{2.303}{t} \\log_{10}\\left(\\frac{[A]_0}{[A]_t}\\right)\\]
+- **Half-Life Period (\\(t_{1/2}\\)):** Independent of initial concentration:
+  \\[t_{1/2} = \\frac{\\ln(2)}{k} = \\frac{0.693}{k}\\]
+- **Arrhenius Temperature Dependence Equation:**
+  \\[k = A e^{-E_a / (RT)} \\implies \\log_{10}\\left(\\frac{k_2}{k_1}\\right) = \\frac{E_a}{2.303 R} \\left( \\frac{T_2 - T_1}{T_1 T_2} \\right)\\]
+- **Curriculum Standard:** NCERT Class 12 Chemistry Chapter 4 & NEET/JEE Chemistry.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Separate Variables):** Starting from \\(-\\frac{d[A]}{dt} = k [A]\\), rearrange:
+  \\[\\frac{d[A]}{[A]} = -k \\, dt\\]
+- **Step 2 (Integrate with Boundary Conditions):** At \\(t = 0, [A] = [A]_0\\); at time \\(t, [A] = [A]_t\\):
+  \\[\\int_{[A]_0}^{[A]_t} \\frac{d[A]}{[A]} = -k \\int_{0}^{t} dt \\implies \\ln\\left(\\frac{[A]_t}{[A]_0}\\right) = -k t\\]
+- **Step 3 (Convert to Base-10 Logarithms):**
+  \\[k t = \\ln\\left(\\frac{[A]_0}{[A]_t}\\right) = 2.303 \\log_{10}\\left(\\frac{[A]_0}{[A]_t}\\right) \\implies k = \\frac{2.303}{t} \\log_{10}\\left(\\frac{[A]_0}{[A]_t}\\right)\\]
+- **Step 4 (Evaluate Half-Life):** Set \\([A]_t = \\frac{[A]_0}{2}\\):
+  \\[t_{1/2} = \\frac{2.303}{k} \\log_{10}(2) = \\frac{2.303 \\times 0.3010}{k} = \\frac{0.693}{k}\\]
+
+### 3. Final Answer
+\\[k = \\frac{2.303}{t} \\log_{10}\\left(\\frac{[A]_0}{[A]_t}\\right), \quad t_{1/2} = \\frac{0.693}{k}\\]
+- **Rate Constant Units:** \\(\\text{s}^{-1}\\text{ or }\\text{min}^{-1}\\text{ (independent of molar concentration)}\\).`;
+  }
+
+  // Chemistry: Chemical Equilibrium & Le Chatelier's Principle
+  if (lower.includes("equilibrium") || lower.includes("le chatelier") || lower.includes("kc") || lower.includes("kp") || lower.includes("buffer") || lower.includes("henderson")) {
+    return `### 1. Given Formula / Concept
+- **Equilibrium Constant Relation (Ideal Gases):**
+  \\[K_p = K_c (RT)^{\\Delta n_g}\\]
+  Where \\(\\Delta n_g = \\sum n_{\\text{products(g)}} - \\sum n_{\\text{reactants(g)}}\\), \\(R = 0.0821 \\, \\text{L}\\cdot\\text{atm}/(\\text{mol}\\cdot\\text{K})\\).
+- **Le Chatelier's Principle:** If a system at dynamic equilibrium is subjected to a change in concentration, temperature, or pressure, the system shifts in the direction that counteracts the applied change.
+- **Henderson-Hasselbalch Equation for Acidic Buffer:**
+  \\[\\text{pH} = \\text{p}K_a + \\log_{10}\\left( \\frac{[\\text{Conjugate Base}]}{[\\text{Weak Acid}]} \\right)\\]
+- **Curriculum Standard:** NCERT Class 11 Chemistry Equilibrium & NEET/JEE syllabus.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Derivation of \\(K_p = K_c(RT)^{\\Delta n_g}\\)):** For generalized reaction \\(aA(g) + bB(g) \\rightleftharpoons cC(g) + dD(g)\\):
+  By Ideal Gas Law \\(P_i = \\frac{n_i}{V} RT = [i] RT\\).
+- **Step 2 (Substitute partial pressures into \\(K_p\\)):**
+  \\[K_p = \\frac{P_C^c P_D^d}{P_A^a P_B^b} = \\frac{([C]RT)^c ([D]RT)^d}{([A]RT)^a ([B]RT)^b} = \\left(\\frac{[C]^c [D]^d}{[A]^a [B]^b}\\right) (RT)^{(c+d) - (a+b)}\\]
+- **Step 3 (Substitute \\(K_c\\)):**
+  \\[K_p = K_c (RT)^{\\Delta n_g}\\]
+- **Step 4 (Application of Le Chatelier):**
+  - Exothermic reactions (\\(\\Delta H < 0\\)): Raising temperature shifts equilibrium towards reactants (left); lowering temperature favors forward yield.
+  - Increasing pressure shifts equilibrium toward side with fewer moles of gas.
+
+### 3. Final Answer
+\\[K_p = K_c (RT)^{\\Delta n_g}, \quad \\text{pH} = \\text{p}K_a + \\log_{10}\\left(\\frac{[\\text{Salt}]}{[\\text{Acid}]}\\right)\\]
+- **Criterion:** Dynamic chemical equilibrium is maintained when forward rate equals reverse rate (\\(r_f = r_b\\)).`;
+  }
+
+  // Biology & Genetics: Mendel's Laws & Inheritance
+  if (lower.includes("mendel") || lower.includes("monohybrid") || lower.includes("dihybrid") || lower.includes("genetics") || lower.includes("punnett") || lower.includes("allele")) {
+    return `### 1. Given Formula / Concept
+- **Mendel's Laws of Inheritance:**
+  1. **Law of Dominance:** In a heterozygote, one trait (dominant allele) will conceal the presence of another trait (recessive allele) for the same characteristic.
+  2. **Law of Segregation:** Allele pairs separate or segregate during gamete formation and randomly unite at fertilization.
+  3. **Law of Independent Assortment:** Alleles of two (or more) different genes get sorted into gametes independently of one another.
+- **Canonical Phenotypic & Genotypic Ratios:**
+  - Monohybrid F2 Phenotypic Ratio: \\(3 : 1\\) (Dominant : Recessive).
+  - Monohybrid F2 Genotypic Ratio: \\(1 : 2 : 1\\) (\\(TT : Tt : tt\\)).
+  - Dihybrid F2 Phenotypic Ratio: \\(9 : 3 : 3 : 1\\).
+- **Curriculum Standard:** NCERT Class 10 & 12 Biology (Principles of Inheritance and Variation) & NEET UG.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Parental Cross - P Generation):** Pure-breeding homozygous tall (\\(TT\\)) crossed with homozygous dwarf (\\(tt\\)):
+  - Gametes: \\(T\\) and \\(t\\).
+  - F1 Progeny: All \\(Tt\\) (100% Tall phenotype due to dominance of \\(T\\)).
+- **Step 2 (Self-Pollination of F1 Generation - \\(Tt \\times Tt\\)):**
+  - Gametes produced: \\(50\\% T\\) and \\(50\\% t\\).
+- **Step 3 (Punnett Square Evaluation):**
+  - \\(T \\times T = TT\\) (Homozygous tall, probability 1/4)
+  - \\(T \\times t = Tt\\) (Heterozygous tall, probability 2/4 = 1/2)
+  - \\(t \\times t = tt\\) (Homozygous dwarf, probability 1/4)
+- **Step 4 (Summary of Ratios):**
+  - Tall plants: \\(TT + 2Tt = 3/4 = 75\\%\\)
+  - Dwarf plants: \\(tt = 1/4 = 25\\%\\)
+
+### 3. Final Answer
+\\[\\text{F2 Phenotypic Ratio} = 3 : 1, \quad \\text{F2 Genotypic Ratio} = 1 : 2 : 1 \\; (TT : Tt : tt)\\]
+- **Conclusion:** Conforms strictly with Mendel's first and second laws of inheritance as benchmarked by Central and State Board biology syllabi.`;
+  }
+
+  // Optics: Snell's Law & Thin Lens Equation
+  if (lower.includes("snell") || lower.includes("refraction") || lower.includes("lens formula") || lower.includes("mirror formula") || lower.includes("focal length")) {
+    return `### 1. Given Formula / Concept
+- **Snell's Law of Refraction:**
+  \\[n_1 \\sin(\\theta_1) = n_2 \\sin(\\theta_2) \\implies \\frac{\\sin(i)}{\\sin(r)} = \\frac{n_2}{n_1} = \\mu_{21}\\]
+- **Thin Lens Formula (Cartesian Sign Convention):**
+  \\[\\frac{1}{f} = \\frac{1}{v} - \\frac{1}{u}\\]
+- **Mirror Formula:**
+  \\[\\frac{1}{f} = \\frac{1}{v} + \\frac{1}{u}\\]
+- **Linear Magnification:** \\(m = \\frac{h_i}{h_o} = \\frac{v}{u}\\text{ (lens)} = -\\frac{v}{u}\\text{ (mirror)}\\).
+- **Curriculum Standard:** NCERT Class 10 Light (Reflection and Refraction) & Class 12 Ray Optics & NEET/JEE.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (New Cartesian Sign Convention):**
+  - Pole/Optical center is the origin \\((0,0)\\).
+  - Incident light propagates from left to right.
+  - Distances measured opposite to incident light are negative (object distance \\(u < 0\\)).
+  - Distances in the direction of light are positive.
+  - Convex lens focal length \\(f > 0\\); Concave lens focal length \\(f < 0\\).
+- **Step 2 (Lens Formula Derivation from Geometric Ray Tracing):**
+  - Consider object \\(AB\\) perpendicular to principal axis of convex lens of focal length \\(f\\).
+  - From similar triangles \\(\\triangle ABO \\sim \\triangle A'B'O\\): \\(\\frac{A'B'}{AB} = \\frac{v}{-u}\\).
+  - From triangles \\(\\triangle OF_2X \\sim \\triangle A'B'F_2\\): \\(\\frac{A'B'}{AB} = \\frac{v - f}{f}\\).
+- **Step 3 (Equate Ratios and Normalize):**
+  \\[\\frac{v}{-u} = \\frac{v - f}{f} \\implies vf = -uv + uf\\text{, divide throughout by } uvf \\implies \\frac{1}{u} = -\\frac{1}{f} + \\frac{1}{v} \\implies \\frac{1}{f} = \\frac{1}{v} - \\frac{1}{u}\\]
+
+### 3. Final Answer
+\\[\\frac{1}{f} = \\frac{1}{v} - \\frac{1}{u}, \quad n_1 \\sin(i) = n_2 \\sin(r), \quad m = \\frac{v}{u}\\]
+- **SI Units:** Focal length \\(f\\), image distance \\(v\\), and object distance \\(u\\) measured in meters (m); power \\(P = \\frac{1}{f}\\text{ in Diopters (D)}\\).`;
+  }
+
+  // Primary & Middle School Math (Classes 1-8): Mensuration, Perimeter & Area
+  if (lower.includes("area") || lower.includes("perimeter") || lower.includes("circumference") || lower.includes("rectangle") || lower.includes("circle") || lower.includes("triangle area")) {
+    return `### 1. Given Formula / Concept
+- **Standard Geometric Mensuration Formulas:**
+  - **Rectangle:** Area \\(A = l \\times w\\), Perimeter \\(P = 2(l + w)\\)
+  - **Square:** Area \\(A = s^2\\), Perimeter \\(P = 4s\\)
+  - **Circle:** Area \\(A = \\pi r^2\\), Circumference \\(C = 2 \\pi r\\) (where \\(\\pi \\approx \\frac{22}{7} \\approx 3.14159\\))
+  - **Triangle:** Area \\(A = \\frac{1}{2} \\times \\text{base} \\times \\text{height}\\)
+  - **Heron's Formula (Triangle with sides \\(a, b, c\\)):** \\(A = \\sqrt{s(s-a)(s-b)(s-c)}\\), where semi-perimeter \\(s = \\frac{a+b+c}{2}\\).
+- **Curriculum Standard:** NCERT Classes 4-8 Mathematics & All State Board Primary/Middle Syllabi.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Identify Given Dimensions):** Extract measured linear dimensions (length, breadth, radius, side length) and verify matching units (cm, m).
+- **Step 2 (Select Formula):** Choose the canonical 2D geometric mensuration relationship prescribed for the polygon or circular boundary.
+- **Step 3 (Substitute Numerical Values):** Substitute dimensions into algebraic expressions, carrying out intermediate arithmetic multiplications with precision.
+- **Step 4 (Unit Tracking):** Linear dimensions are expressed in \\(\\text{cm}\\text{ or }\\text{m}\\); surface areas are expressed in square units (\\(\\text{cm}^2\\text{ or }\\text{m}^2\\)).
+
+### 3. Final Answer
+\\[A_{\\text{circle}} = \\pi r^2, \quad C = 2\\pi r, \quad A_{\\text{rect}} = l \\times w, \quad P_{\\text{rect}} = 2(l+w)\\]
+- **Scoring Note:** Clearly state the governing formula, show direct substitution, and append the appropriate metric unit squared.`;
+  }
+
+  // Primary & Middle School Math: Fractions, Percentages & Unitary Method
+  if (lower.includes("fraction") || lower.includes("percentage") || lower.includes("unitary method") || lower.includes("profit and loss") || lower.includes("simple interest")) {
+    return `### 1. Given Formula / Concept
+- **Foundational Arithmetic Relationships:**
+  - **Percentage:** \\(\\text{Percentage Value} = \\left(\\frac{\\text{Part}}{\\text{Whole}}\\right) \\times 100\\%\\)
+  - **Profit / Loss:**
+    - \\(\\text{Profit} = \\text{SP} - \\text{CP}\\), \\(\\text{Profit } \\% = \\left(\\frac{\\text{Profit}}{\\text{CP}}\\right) \\times 100\\)
+    - \\(\\text{Loss} = \\text{CP} - \\text{SP}\\), \\(\\text{Loss } \\% = \\left(\\frac{\\text{Loss}}{\\text{CP}}\\right) \\times 100\\)
+  - **Simple Interest (SI):**
+    \\[\\text{SI} = \\frac{P \\times R \\times T}{100}, \quad \\text{Total Amount } A = P + \\text{SI}\\]
+  - **Unitary Method:** Find the value of a single unit by division, then find the value of the required multiple by multiplication.
+- **Curriculum Standard:** NCERT Classes 5-8 Mathematics & State Boards.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Identify Principal Variables):** Designate Cost Price (CP), Selling Price (SP), Principal (P), Rate (R%), or Time period (T).
+- **Step 2 (Apply Unitary Method / Formula):**
+  - Calculate unit rate: \\(\\text{Unit Value} = \\frac{\\text{Total Cost}}{\\text{Total Units}}\\).
+  - Multiply unit rate by desired quantity.
+- **Step 3 (Evaluate Numerical Arithmetic):** Simplify rational fractions to their lowest irreducible terms by canceling common factors.
+- **Step 4 (Format Answer):** State the result with appropriate monetary currency (\\(\\text{₹}\\)) or percentage mark (\\(\\%\\)).
+
+### 3. Final Answer
+\\[\\text{SI} = \\frac{P \\times R \\times T}{100}, \quad \\text{Total Amount} = P + \\text{SI}\\]
+- **Resolution:** Methodical arithmetic step verification complete, aligned with Indian elementary school grading standards.`;
+  }
+
   // General Academic Formulation fallback
   return `### 1. Given Formula / Concept
 - **Curriculum Domain:** ${data.board} · ${data.stdClass} · ${data.subject}
@@ -280,102 +501,16 @@ export const askIntelligenceFn = createServerFn({ method: "POST" })
   }) => data)
   .handler(async ({ data }: any) => {
     try {
-      const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-      const openaiKey = process.env.OPENAI_API_KEY;
-
-      const isApiKeyValid = (k?: string) =>
-        Boolean(k && k.trim() && !k.toLowerCase().includes("dummy") && !k.startsWith("sk-dummy") && k.length > 15);
-
-      const systemPrompt = `You are the Academic Tutor for students across India (CBSE, ICSE, and All Central &amp; 28 State Boards including SEBA, AHSEC, UP Board, Bihar Board, Maharashtra State Board, West Bengal Board, etc.).
-Your role is to solve academic problems with syllabus-aligned derivations and clear solutions.
-
-CRITICAL MANDATORY STRUCTURE:
-You MUST structure your response into these exact 3 sections with markdown headings:
-
-### 1. Given Formula / Concept
-List the given parameters, known boundary conditions, core concepts, theorems, or governing textbook formulas from the relevant curriculum (${data.board}, ${data.stdClass}, ${data.subject}).
-
-### 2. Step-by-Step Derivation & Solution
-Provide an orderly, step-by-step mathematical derivation, chemical equation balancing, or logical proof. Every intermediate step must be clearly articulated following standard Indian step-marking criteria.
-
-### 3. Final Answer
-State the final resolved value, formula, or concluding finding with appropriate SI units, boxed expression, or explicit summary sentence.
-
-Guidelines:
-- Board: ${data.board}
-- Class Level: ${data.stdClass}
-- Subject: ${data.subject}
-- Language: ${data.language && data.language !== "Auto (Detect Native Language)" ? data.language : "Auto-detect from question; speak naturally in the student's language"}.
-- Strictly maintain academic accuracy. No slogans, promotional text, or unsolicited advice.`;
-
-      // Tier 1: Google Gemini API (gemini-2.0-flash / gemini-1.5-flash)
-      if (isApiKeyValid(geminiKey)) {
-        try {
-          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
-          const response = await fetch(geminiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              systemInstruction: { parts: [{ text: systemPrompt }] },
-              contents: [
-                ...(data.history || []).map((m: any) => ({
-                  role: m.role === "assistant" ? "model" : "user",
-                  parts: [{ text: m.content }],
-                })),
-                { role: "user", parts: [{ text: data.message }] }
-              ],
-              generationConfig: {
-                temperature: 0.3,
-                maxOutputTokens: 1200,
-              }
-            }),
-            signal: AbortSignal.timeout(10000),
-          });
-
-          if (response.ok) {
-            const result = await response.json();
-            const candidateText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (candidateText) return { text: candidateText };
-          }
-        } catch (e) {
-          console.warn("Gemini API call failed, trying backup", e);
-        }
-      }
-
-      // Tier 2: OpenAI GPT-4o-mini
-      if (isApiKeyValid(openaiKey)) {
-        try {
-          const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${openaiKey}`
-            },
-            body: JSON.stringify({
-              model: "gpt-4o-mini",
-              messages: [
-                { role: "system", content: systemPrompt },
-                ...(data.history || []).map((m: any) => ({ role: m.role, content: m.content })),
-                { role: "user", content: data.message }
-              ],
-              temperature: 0.3,
-              max_tokens: 1200,
-            }),
-            signal: AbortSignal.timeout(10000),
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            const content = result.choices?.[0]?.message?.content;
-            if (content) return { text: content };
-          }
-        } catch (e) {
-          console.warn("OpenAI API call failed or timed out", e);
-        }
-      }
-
-      // Tier 3: Zero Dummy-Key Fallback — Comprehensive Indian Board Curriculum Engine
-      return { text: generateCurriculumFallback(data) };
+      const solution = await solveAcademicProblem(data, generateCurriculumFallback);
+      return { 
+        text: solution.text,
+        modelUsed: solution.modelUsed,
+        isFallback: solution.isFallback,
+        board: solution.board,
+        stdClass: solution.stdClass,
+        subject: solution.subject,
+        language: solution.language,
+      };
     } catch (outerErr: any) {
       console.warn("askIntelligenceFn outer handler caught error, using fallback:", outerErr);
       return { text: generateCurriculumFallback(data) };
@@ -481,6 +616,38 @@ export const getMyJobApplicationsFn = createServerFn({ method: "GET" })
     }
   });
 
+export const getLiveJobsFn = createServerFn({ method: "GET" })
+  .handler(async () => {
+    try {
+      const sql = await getSql();
+      const rows = await sql<any>`
+        SELECT id, title, company, category, payout, type, location, badge, perks, is_fleet, is_kitchen, active
+        FROM public.jobs
+        WHERE active = true
+        ORDER BY created_at ASC
+      `;
+      return {
+        success: true,
+        jobs: rows.map((r: any) => ({
+          id: r.id,
+          title: r.title,
+          company: r.company,
+          category: r.category,
+          payout: r.payout,
+          type: r.type,
+          location: r.location,
+          badge: r.badge,
+          perks: Array.isArray(r.perks) ? r.perks : (typeof r.perks === 'string' ? JSON.parse(r.perks) : []),
+          isFleet: Boolean(r.is_fleet),
+          isKitchen: Boolean(r.is_kitchen),
+        }))
+      };
+    } catch (err: any) {
+      console.warn("[getLiveJobsFn] Database fetch error:", err?.message || err);
+      return { success: false, jobs: [] };
+    }
+  });
+
 export interface AdvancedMathModule {
   id: string;
   name: string;
@@ -540,13 +707,27 @@ export const CORE_SUBJECTS = [
   "Business Studies",
   "Political Science",
   "History",
+  "General Science (Classes 1-8)",
+  "Environmental Studies / EVS",
+  "Computer Science & Informatics",
+  "English Language & Literature",
 ] as const;
 
 export const CLASS_LEVELS = [
+  "Class 1",
+  "Class 2",
+  "Class 3",
+  "Class 4",
+  "Class 5",
+  "Class 6",
+  "Class 7",
+  "Class 8",
   "Class 9",
   "Class 10",
   "Class 11",
   "Class 12",
+  "NEET UG (Medical Entrance)",
+  "JEE Main & Advanced (Engineering)",
   "Degree STEM",
 ] as const;
 

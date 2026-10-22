@@ -493,14 +493,10 @@ export function PorterParcelEngine({
           </p>
         </div>
 
-        {/* Pricing badge */}
+        {/* Pricing tag */}
         <div className="flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-800 bg-[#0F121C] text-slate-300 font-medium">
-            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Riders Active</span>
-          </div>
-          <div className="px-3 py-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300 font-mono font-bold">
-            Base: ₹30 · ₹10/km
+          <div className="px-3 py-1.5 rounded-xl border border-slate-800 bg-[#0F121C] text-slate-300 font-mono">
+            ₹30 base + ₹10/km
           </div>
         </div>
       </div>
@@ -996,13 +992,7 @@ export function PorterParcelEngine({
         )}
       </button>
 
-      {/* Security notice */}
-      <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500 text-center">
-        <ShieldCheck className="size-3.5 text-slate-400" />
-        <span>
-          End-to-end encrypted dispatch · Verified courier fleet · Handover OTP security
-        </span>
-      </div>
+
     </div>
   );
 }

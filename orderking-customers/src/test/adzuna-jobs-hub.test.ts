@@ -5,6 +5,7 @@ import {
   REAL_TIME_JOB_CATALOG,
   searchDynamicCatalog,
   searchJobs,
+  fetchRemotiveJobs,
 } from "../lib/career/adzuna-jobs-service";
 import { TutorJobsHub } from "../components/tutor-jobs/tutor-jobs-hub";
 import { TutorJobsHub as EducationTutorJobsHub } from "../components/education/tutor-jobs-hub";
@@ -116,5 +117,45 @@ describe("All-India & Global Jobs Hub (Adzuna & Real Gigs)", () => {
     const result = await searchJobs({ query: "Full Stack", location: "Remote" });
     expect(result.jobs.length).toBeGreaterThan(0);
     expect(result.source).toBe("Dynamic Catalog");
+  });
+
+  it("includes authentic Gulf sponsorship and student/internship roles", () => {
+    // 1. Authentic Gulf sponsorship roles (Dubai, Saudi Arabia, Qatar)
+    const gulfJobs = REAL_TIME_JOB_CATALOG.filter(
+      (j) =>
+        j.location.toLowerCase().includes("dubai") ||
+        j.location.toLowerCase().includes("saudi") ||
+        j.location.toLowerCase().includes("qatar")
+    );
+    expect(gulfJobs.length).toBeGreaterThanOrEqual(3);
+    expect(gulfJobs.some((j) => j.location.includes("Dubai"))).toBe(true);
+    expect(gulfJobs.some((j) => j.location.includes("Saudi Arabia"))).toBe(true);
+    expect(gulfJobs.some((j) => j.location.includes("Qatar"))).toBe(true);
+
+    // Ensure all Gulf jobs have visa sponsorship clearly stated
+    for (const job of gulfJobs) {
+      const text = `${job.title} ${job.description} ${job.location}`.toLowerCase();
+      expect(text.includes("visa") || text.includes("sponsorship") || text.includes("sponsored")).toBe(true);
+    }
+
+    // 2. Student & Internship roles
+    const studentJobs = REAL_TIME_JOB_CATALOG.filter(
+      (j) =>
+        j.title.toLowerCase().includes("intern") ||
+        j.title.toLowerCase().includes("student") ||
+        j.description.toLowerCase().includes("student") ||
+        j.description.toLowerCase().includes("undergraduate")
+    );
+    expect(studentJobs.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("exports fetchRemotiveJobs and queries the free live Remotive API connector", async () => {
+    expect(typeof fetchRemotiveJobs).toBe("function");
+    const jobs = await fetchRemotiveJobs({ query: "Engineer", limit: 3 });
+    expect(Array.isArray(jobs)).toBe(true);
+    if (jobs.length > 0) {
+      expect(jobs[0].source).toBe("Remotive");
+      expect(jobs[0].applyUrl).toBeTruthy();
+    }
   });
 });

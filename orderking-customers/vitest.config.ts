@@ -39,6 +39,7 @@ export default defineConfig({
       "src/test/utilities-engine.test.ts",
       "src/test/customer-header-avatar.test.ts",
       "src/test/academic-tutor-reality.test.ts",
+      "src/test/gemini-tutor-solver.test.ts",
       "src/test/travel-autosuggest.test.ts",
     ],
     environment: "node",
