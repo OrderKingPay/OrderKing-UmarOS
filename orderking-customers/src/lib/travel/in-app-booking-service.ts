@@ -440,57 +440,16 @@ export interface SupplierGatingResult {
  * Verifies carrier or supplier API connectivity.
  * Fails closed gracefully if supplier is unauthenticated, offline, or rate-limited.
  */
+/** Browser-side tokens and status overrides cannot prove live supplier access. */
 export function checkSupplierGating(
-  mode: TravelMode,
-  carrierCode?: string,
-  options?: {
-    region?: string;
-    authToken?: string;
-    statusOverride?: SupplierApiState;
-  }
+  _mode: TravelMode,
+  _carrierCode?: string,
+  _options?: { region?: string; authToken?: string; statusOverride?: SupplierApiState }
 ): SupplierGatingResult {
-  if (options?.statusOverride) {
-    if (options.statusOverride !== "online") {
-      return {
-        available: false,
-        status: options.statusOverride,
-        message: SUPPLIER_UNAVAILABLE_MESSAGE,
-      };
-    }
-  }
-
-  // Strict IRCTC PSP Compliance Check for Train Bookings
-  if (mode === "train") {
-    // In-app train booking path is strictly locked; official IRCTC portal handoff is required
-    return {
-      available: false,
-      status: "unauthenticated",
-      message:
-        "IRCTC Direct PSP Gateway Handoff Required: In accordance with Indian Railways CRIS statutory guidelines, in-app train ticket issuance is locked. Bookings must be completed directly via the official IRCTC portal (https://www.irctc.co.in/nget/train-search). No payment has been captured.",
-    };
-  }
-
-  // Check if carrier API credentials exist in environment
-  const envKey =
-    typeof process !== "undefined" && process?.env
-      ? process.env.VITE_TRAVEL_API_KEY || process.env.VITE_IRCTC_MERCHANT_KEY
-      : undefined;
-
-  const effectiveToken = options?.authToken || envKey;
-
-  // If unauthenticated: fail-closed gracefully
-  if (!effectiveToken && options?.statusOverride !== "online") {
-    return {
-      available: false,
-      status: "unauthenticated",
-      message: SUPPLIER_UNAVAILABLE_MESSAGE,
-    };
-  }
-
   return {
-    available: true,
-    status: "online",
-    message: "Carrier partner booking online.",
+    available: false,
+    status: "unauthenticated",
+    message: SUPPLIER_UNAVAILABLE_MESSAGE,
   };
 }
 
