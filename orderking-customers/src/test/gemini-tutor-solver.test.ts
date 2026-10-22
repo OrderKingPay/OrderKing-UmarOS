@@ -5,6 +5,10 @@ import {
   type AcademicSolveParams,
 } from "../lib/server/gemini-tutor-solver";
 import {
+  buildAcademicSystemPrompt as buildAiPrompt,
+  solveAcademicProblem as solveAiProblem,
+} from "../lib/ai/gemini-tutor-solver";
+import {
   generateCurriculumFallback,
   parseStructuredAcademicSolution,
   CLASS_LEVELS,
@@ -77,6 +81,49 @@ describe("Universal AI Tutor — Gemini 2.5 Flash & Curriculum Engine", () => {
       });
       expect(primaryPrompt).toContain("Class 5");
       expect(primaryPrompt).toContain("Primary (Classes 1-5)");
+    });
+
+    it("supports Degree STEM curriculum scope", () => {
+      const stemPrompt = buildAcademicSystemPrompt({
+        message: "Solve Navier-Stokes boundary layer or Green's theorem",
+        board: "Degree STEM",
+        stdClass: "Degree STEM",
+        subject: "Mathematics",
+      });
+      expect(stemPrompt).toContain("Degree STEM");
+      expect(stemPrompt).toContain("Multivariable calculus");
+    });
+
+    it("supports multilingual instruction and step marking rules across Indian languages", () => {
+      const tamilPrompt = buildAcademicSystemPrompt({
+        message: "Explain Carnot engine efficiency in Tamil",
+        board: "Tamil Nadu State Board (TNDGE)",
+        stdClass: "Class 12",
+        subject: "Physics",
+        language: "Tamil",
+      });
+      expect(tamilPrompt).toContain("Tamil");
+      expect(tamilPrompt).toContain("MULTILINGUAL DERIVATION & STEP MARKING RULES");
+      expect(tamilPrompt).toContain("Step-by-Step Derivation & Solution");
+    });
+
+    it("exports canonical solver functions identically from src/lib/ai/gemini-tutor-solver", () => {
+      expect(typeof buildAiPrompt).toBe("function");
+      expect(typeof solveAiProblem).toBe("function");
+
+      const promptServer = buildAcademicSystemPrompt({
+        message: "Explain Doppler effect",
+        board: "CBSE (Central Board)",
+        stdClass: "Class 11",
+        subject: "Physics",
+      });
+      const promptAi = buildAiPrompt({
+        message: "Explain Doppler effect",
+        board: "CBSE (Central Board)",
+        stdClass: "Class 11",
+        subject: "Physics",
+      });
+      expect(promptAi).toBe(promptServer);
     });
   });
 

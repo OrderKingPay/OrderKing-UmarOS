@@ -62,10 +62,20 @@ export const CORE_SUBJECTS = [
 ] as const;
 
 export const CLASS_LEVELS = [
+  "Class 1",
+  "Class 2",
+  "Class 3",
+  "Class 4",
+  "Class 5",
+  "Class 6",
+  "Class 7",
+  "Class 8",
   "Class 9",
   "Class 10",
   "Class 11",
   "Class 12",
+  "NEET UG (Medical Entrance)",
+  "JEE Main & Advanced (Engineering)",
   "Degree STEM",
 ] as const;
 

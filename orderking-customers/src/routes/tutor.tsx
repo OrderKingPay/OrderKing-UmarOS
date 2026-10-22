@@ -29,7 +29,7 @@ import { AppErrorComponent } from "@/lib/error-component";
 import { computeDeterministicSkillMatch } from "@/lib/career/skill-matcher";
 import { getSql } from "@/lib/db";
 import { TutorJobsHub } from "@/components/tutor-jobs/tutor-jobs-hub";
-import { solveAcademicProblem } from "@/lib/server/gemini-tutor-solver";
+import { solveAcademicProblem } from "@/lib/ai/gemini-tutor-solver";
 
 export function generateCurriculumFallback(data: { message: string; board: string; stdClass: string; subject: string; language?: string; difficulty?: string; tone?: string; goal?: string }): string {
   const query = (data.message || "").trim();
