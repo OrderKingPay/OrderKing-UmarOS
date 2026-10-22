@@ -262,7 +262,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
     id: "hotels",
     label: "Hotels & Stays",
-    badge: "6% Discount",
+    badge: "Direct Tariffs",
     keywords: "rooms resorts accommodation luxury 5-star business homestays villas budget stays",
     subCategories: [
       "Luxury 5-Star & Resorts",
