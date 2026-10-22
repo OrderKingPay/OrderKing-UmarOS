@@ -202,10 +202,8 @@ export function generateSovereignPnr(_mode: TravelMode): string {
   throw new SupplierUnavailableError("Booking references must be issued by an authorized travel provider.");
 }
 
-export function generateTransactionId(method: PaymentMethod): string {
-  const prefix = method === "kingpay_wallet" ? "KP-WAL" : "RZP-PAY";
-  const num = Math.floor(100000000 + Math.random() * 900000000);
-  return `${prefix}-${num}`;
+export function generateTransactionId(_method: PaymentMethod): string {
+  throw new SupplierUnavailableError("Payment references must be issued by an approved payment provider.");
 }
 
 // ============================================================================
