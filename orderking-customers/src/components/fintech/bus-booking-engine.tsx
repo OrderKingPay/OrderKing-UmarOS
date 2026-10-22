@@ -113,14 +113,14 @@ export function BusBookingEngine({
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-300">
                 <Sparkles className="size-3 text-rose-400" />
-                Volvo Multi-Axle · Scania Diamond · NueGo Electric · 0% OTA Markups
+                Find bus schedules and fares through a booking provider
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
             <ShieldCheck className="size-4" />
-            <span>₹0 Booking Surcharge Guaranteed</span>
+            <span>Check final prices with the provider</span>
           </div>
         </div>
 
@@ -215,9 +215,9 @@ export function BusBookingEngine({
           <div className="size-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center mx-auto">
             <Bus className="size-6" />
           </div>
-          <h4 className="text-base font-bold text-slate-900">No luxury sleeper buses found for this route</h4>
+          <h4 className="text-base font-bold text-slate-900">No verified bus offers available</h4>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            Please check city names or reset to the premier Bengaluru — Goa Volvo line.
+            Check current schedules and seats with the booking provider.
           </p>
           <Button
             type="button"
@@ -227,7 +227,7 @@ export function BusBookingEngine({
             }}
             className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs"
           >
-            <RotateCcw className="size-3.5 mr-1" /> Reset to Bengaluru — Goa Volvo
+            <RotateCcw className="size-3.5 mr-1" /> Reset route
           </Button>
         </div>
       )}
@@ -239,10 +239,10 @@ export function BusBookingEngine({
         <div className="lg:col-span-2 space-y-3.5">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-black text-slate-900">
-              Verified Luxury Buses ({quotes.length})
+              Provider Bus Offers ({quotes.length})
             </h3>
             <span className="text-xs text-emerald-700 font-bold bg-emerald-100 px-2.5 py-0.5 rounded-full">
-              ₹0 RedBus Convenience Fee
+              Final price confirmed by provider
             </span>
           </div>
 
@@ -439,7 +439,7 @@ export function BusBookingEngine({
                 </span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-slate-600">Total Billed (0% Fee):</span>
+                <span className="font-bold text-slate-600">Estimated provider fare:</span>
                 <span className="font-mono font-black text-slate-900 text-sm">
                   {formatPaise((currentQuote.baseFarePaise + currentQuote.carrierTaxesPaise) * selectedSeatIds.length)}
                 </span>
