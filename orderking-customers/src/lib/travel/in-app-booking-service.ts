@@ -329,144 +329,14 @@ export function validateContact(contact: Partial<BookingContact>): { valid: bool
 // LIVE QUOTES PROVIDERS (FLIGHTS, TRAINS, BUSES, CABS)
 // ============================================================================
 
+/** No authenticated supplier inventory is available from this local module. */
 export function searchFlightQuotes(
-  from = "New Delhi (DEL)",
-  to = "Mumbai (BOM)",
-  date = new Date().toISOString().split("T")[0],
-  cabinClass: "Economy" | "Premium Economy" | "Business" = "Economy"
+  _from = "New Delhi (DEL)",
+  _to = "Mumbai (BOM)",
+  _date = new Date().toISOString().split("T")[0],
+  _cabinClass: "Economy" | "Premium Economy" | "Business" = "Economy"
 ): FlightQuote[] {
-  const classMultiplier = cabinClass === "Business" ? 2.8 : cabinClass === "Premium Economy" ? 1.6 : 1.0;
-  const baggage = cabinClass === "Business" ? "35 kg Check-in · 10 kg Cabin" : cabinClass === "Premium Economy" ? "20 kg Check-in · 7 kg Cabin" : "15 kg Check-in · 7 kg Cabin";
-
-  return [
-    {
-      id: "fl-6e-iata-benchmark",
-      mode: "flight",
-      carrierCode: "6E",
-      carrierName: "IndiGo Airlines",
-      serviceNumber: "6E IATA Benchmark (A321neo)",
-      title: "IndiGo Commercial Benchmark (IATA GDS)",
-      fromCity: from,
-      fromCode: from.includes("(") ? from.split("(")[1]?.replace(")", "") : "DEL",
-      toCity: to,
-      toCode: to.includes("(") ? to.split("(")[1]?.replace(")", "") : "BOM",
-      departureTime: "06:00",
-      arrivalTime: "08:15",
-      duration: "2h 15m",
-      cabinClass,
-      stopsDisplay: "Non-Stop · Wholesale Benchmark",
-      aircraftType: "Airbus A321neo",
-      terminal: "Terminal 3 (T3)",
-      baggageAllowance: baggage,
-      seatsAvailable: 9,
-      baseFarePaise: Math.round(419900 * classMultiplier),
-      carrierTaxesPaise: Math.round(65000 * (classMultiplier > 1 ? 1.2 : 1.0)),
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 39900,
-      partnerRebateBps: 200,
-    },
-    {
-      id: "fl-ai-iata-benchmark",
-      mode: "flight",
-      carrierCode: "AI",
-      carrierName: "Air India",
-      serviceNumber: "AI IATA Benchmark (B777/A350)",
-      title: "Air India Sovereign Benchmark (IATA GDS)",
-      fromCity: from,
-      fromCode: from.includes("(") ? from.split("(")[1]?.replace(")", "") : "DEL",
-      toCity: to,
-      toCode: to.includes("(") ? to.split("(")[1]?.replace(")", "") : "BOM",
-      departureTime: "08:30",
-      arrivalTime: "10:45",
-      duration: "2h 15m",
-      cabinClass,
-      stopsDisplay: "Non-Stop (Complimentary Hot Meal) · Wholesale Benchmark",
-      aircraftType: "Boeing 777-300ER",
-      terminal: "Terminal 3 (T3)",
-      baggageAllowance: baggage,
-      seatsAvailable: 5,
-      baseFarePaise: Math.round(485000 * classMultiplier),
-      carrierTaxesPaise: Math.round(72000 * (classMultiplier > 1 ? 1.2 : 1.0)),
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 45000,
-      partnerRebateBps: 250,
-    },
-    {
-      id: "fl-qp-iata-benchmark",
-      mode: "flight",
-      carrierCode: "QP",
-      carrierName: "Akasa Air",
-      serviceNumber: "QP IATA Benchmark (B737 MAX)",
-      title: "Akasa Air Commercial Benchmark (IATA GDS)",
-      fromCity: from,
-      fromCode: from.includes("(") ? from.split("(")[1]?.replace(")", "") : "DEL",
-      toCity: to,
-      toCode: to.includes("(") ? to.split("(")[1]?.replace(")", "") : "BOM",
-      departureTime: "11:45",
-      arrivalTime: "14:05",
-      duration: "2h 20m",
-      cabinClass,
-      stopsDisplay: "Non-Stop · Wholesale Benchmark",
-      aircraftType: "Boeing 737 MAX 8",
-      terminal: "Terminal 2 (T2)",
-      baggageAllowance: baggage,
-      seatsAvailable: 14,
-      baseFarePaise: Math.round(395000 * classMultiplier),
-      carrierTaxesPaise: Math.round(59000 * (classMultiplier > 1 ? 1.2 : 1.0)),
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 39900,
-      partnerRebateBps: 200,
-    },
-    {
-      id: "fl-sg-iata-benchmark",
-      mode: "flight",
-      carrierCode: "SG",
-      carrierName: "SpiceJet",
-      serviceNumber: "SG IATA Benchmark (B737)",
-      title: "SpiceJet Commercial Benchmark (IATA GDS)",
-      fromCity: from,
-      fromCode: from.includes("(") ? from.split("(")[1]?.replace(")", "") : "DEL",
-      toCity: to,
-      toCode: to.includes("(") ? to.split("(")[1]?.replace(")", "") : "BOM",
-      departureTime: "16:20",
-      arrivalTime: "18:35",
-      duration: "2h 15m",
-      cabinClass,
-      stopsDisplay: "Non-Stop · Wholesale Benchmark",
-      aircraftType: "Boeing 737-800",
-      terminal: "Terminal 1D (T1)",
-      baggageAllowance: baggage,
-      seatsAvailable: 6,
-      baseFarePaise: Math.round(410000 * classMultiplier),
-      carrierTaxesPaise: Math.round(62000 * (classMultiplier > 1 ? 1.2 : 1.0)),
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 39900,
-      partnerRebateBps: 200,
-    },
-  ];
-}
-
-export interface TrainQuoteQueryResult {
-  mode: "train";
-  quotes: TrainQuote[];
-  realTimePrsManaged: true;
-  authenticated: boolean;
-  status: "unauthenticated" | "authenticated";
-  inventoryNotice: string;
-  fromCity: string;
-  fromCode: string;
-  toCity: string;
-  toCode: string;
-  journeyDate: string;
-  quota: "GENERAL (GN)" | "TATKAL (TQ)" | "LADIES (LD)";
-  trainClass: "1A" | "2A" | "3A" | "CC" | "EC" | "SL";
-  officialSearchUrl: string;
-}
-
-export function buildOfficialIrctcSearchUrl(fromCode: string, toCode: string, journeyDate: string): string {
-  const cleanFrom = fromCode.replace(/[^A-Za-z]/g, "").toUpperCase();
-  const cleanTo = toCode.replace(/[^A-Za-z]/g, "").toUpperCase();
-  return `https://www.irctc.co.in/nget/train-search?from=${encodeURIComponent(cleanFrom)}&to=${encodeURIComponent(cleanTo)}&date=${encodeURIComponent(journeyDate)}`;
+  return [];
 }
 
 export function searchTrainQuotes(
@@ -514,263 +384,27 @@ export function searchTrainQuotes(
   });
 }
 
-export function generateBusSeats(baseFarePaise: number): BusSeatBerth[] {
-  const seats: BusSeatBerth[] = [];
-  // 12 Lower Berths (L1 to L12)
-  for (let i = 1; i <= 12; i++) {
-    const isWindow = i % 3 === 1 || i % 3 === 0;
-    seats.push({
-      id: `L${i}`,
-      label: `L${i} (${isWindow ? "Window" : "Aisle"})`,
-      deck: "lower",
-      berthType: "sleeper",
-      isWindow,
-      isAvailable: i !== 3 && i !== 7, // deterministic availability
-      pricePaise: baseFarePaise + (isWindow ? 5000 : 0),
-    });
-  }
-  // 12 Upper Berths (U1 to U12)
-  for (let i = 1; i <= 12; i++) {
-    const isWindow = i % 3 === 1 || i % 3 === 0;
-    seats.push({
-      id: `U${i}`,
-      label: `U${i} (${isWindow ? "Window" : "Aisle"})`,
-      deck: "upper",
-      berthType: "sleeper",
-      isWindow,
-      isAvailable: i !== 5 && i !== 10,
-      pricePaise: baseFarePaise + (isWindow ? 5000 : 0),
-    });
-  }
-  return seats;
+/** Seat availability is never guessed. It must come from an authorized operator. */
+export function generateBusSeats(_baseFarePaise: number): BusSeatBerth[] {
+  return [];
 }
 
+/** No fabricated operators, berths, fares or departure schedules. */
 export function searchBusQuotes(
-  from = "Bengaluru (Kempegowda)",
-  to = "Goa (Panaji)",
-  date = new Date().toISOString().split("T")[0]
+  _from = "Bengaluru (Kempegowda)",
+  _to = "Goa (Panaji)",
+  _date = new Date().toISOString().split("T")[0]
 ): BusQuote[] {
-  return [
-    {
-      id: "bs-intrcity-volvo",
-      mode: "bus",
-      carrierCode: "INTR",
-      carrierName: "IntrCity SmartBus",
-      serviceNumber: "KA-01-AK-9021",
-      title: "IntrCity Volvo Multi-Axle AC Sleeper",
-      fromCity: from,
-      toCity: to,
-      departureTime: "20:30",
-      arrivalTime: "06:45 (+1)",
-      duration: "10h 15m",
-      busType: "Volvo Multi-Axle AC Sleeper (2+1)",
-      operatorName: "IntrCity SmartBus",
-      boardingPoint: "Kempegowda Majestic Bus Station, Bay 4",
-      droppingPoint: "Panaji Bus Stand, Platform 1",
-      amenities: ["Free High-Speed WiFi", "Charging Ports at Each Berth", "Sanitized Blanket & Pillow", "Complimentary Water Bottle", "Live GPS Tracking"],
-      seatsAvailable: 19,
-      seats: generateBusSeats(135000),
-      baseFarePaise: 135000,
-      carrierTaxesPaise: 6750,
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 4500,
-      partnerRebateBps: 300,
-    },
-    {
-      id: "bs-vrl-scania",
-      mode: "bus",
-      carrierCode: "VRL",
-      carrierName: "VRL Travels",
-      serviceNumber: "KA-25-AA-5544",
-      title: "VRL I-Shift Multi-Axle Scania Sleeper",
-      fromCity: from,
-      toCity: to,
-      departureTime: "21:15",
-      arrivalTime: "07:30 (+1)",
-      duration: "10h 15m",
-      busType: "Scania Multi-Axle AC Sleeper",
-      operatorName: "VRL Travels",
-      boardingPoint: "Anand Rao Circle / Majestic",
-      droppingPoint: "Mapusa & Panaji Bus Stand",
-      amenities: ["Scania Air Suspension", "USB Fast Chargers", "Individual Reading Light", "Emergency SOS Button"],
-      seatsAvailable: 16,
-      seats: generateBusSeats(145000),
-      baseFarePaise: 145000,
-      carrierTaxesPaise: 7250,
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 4500,
-      partnerRebateBps: 250,
-    },
-    {
-      id: "bs-nuego-electric",
-      mode: "bus",
-      carrierCode: "NUE",
-      carrierName: "NueGo (GreenCell)",
-      serviceNumber: "DL-01-EV-2026",
-      title: "NueGo 100% Electric Luxury AC Coach",
-      fromCity: from,
-      toCity: to,
-      departureTime: "18:00",
-      arrivalTime: "04:30 (+1)",
-      duration: "10h 30m",
-      busType: "Electric Multi-Axle AC Sleeper",
-      operatorName: "NueGo Electric",
-      boardingPoint: "Shantinagar Bus Station",
-      droppingPoint: "Panaji Central Terminal",
-      amenities: ["Zero Tailpipe Emissions", "Whisper Quiet Cabin", "Air-Purified Airflow", "Speed Limiter & CCTV"],
-      seatsAvailable: 22,
-      seats: generateBusSeats(120000),
-      baseFarePaise: 120000,
-      carrierTaxesPaise: 6000,
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 4500,
-      partnerRebateBps: 350,
-    },
-    {
-      id: "bs-zingbus-bharatbenz",
-      mode: "bus",
-      carrierCode: "ZING",
-      carrierName: "Zingbus Premium",
-      serviceNumber: "HR-55-AN-7711",
-      title: "Zingbus Premium BharatBenz AC Sleeper",
-      fromCity: from,
-      toCity: to,
-      departureTime: "22:00",
-      arrivalTime: "08:00 (+1)",
-      duration: "10h 00m",
-      busType: "BharatBenz Luxury AC Sleeper (2+1)",
-      operatorName: "Zingbus",
-      boardingPoint: "Madiwala Silk Board Junction",
-      droppingPoint: "Panaji Kadamba Bus Stand",
-      amenities: ["Zingbus Executive Lounge Access", "Live Location Tracking", "Clean Bedroll Kit", "Water Bottle"],
-      seatsAvailable: 14,
-      seats: generateBusSeats(128000),
-      baseFarePaise: 128000,
-      carrierTaxesPaise: 6400,
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 4500,
-      partnerRebateBps: 300,
-    },
-  ];
+  return [];
 }
 
+/** No locally generated drivers, plates, ETA or cab fares. */
 export function searchCabQuotes(
-  pickup = "Terminal 3, IGI Airport (DEL)",
-  drop = "Connaught Place, New Delhi",
-  category: "City Taxi" | "Airport Transfer" | "Intercity One-Way" | "Hourly Rental" = "Airport Transfer"
+  _pickup = "Terminal 3, IGI Airport (DEL)",
+  _drop = "Connaught Place, New Delhi",
+  _category: "City Taxi" | "Airport Transfer" | "Intercity One-Way" | "Hourly Rental" = "Airport Transfer"
 ): CabQuote[] {
-  const baseRate = category === "Airport Transfer" ? 95000 : category === "Intercity One-Way" ? 285000 : category === "Hourly Rental" ? 165000 : 55000;
-
-  return [
-    {
-      id: "cb-sedan-dzire",
-      mode: "cab",
-      carrierCode: "OK-CAB",
-      carrierName: "OrderKing Chauffeur",
-      serviceNumber: "SEDAN-01",
-      title: "Prime Sedan (Maruti Dzire / Etios)",
-      category,
-      fromCity: pickup,
-      toCity: drop,
-      departureTime: "Instant Dispatch",
-      arrivalTime: "Estimated 45m trip",
-      duration: "45 mins",
-      vehicleModel: "Maruti Suzuki Dzire AC",
-      vehicleType: "Sedan",
-      seatingCapacity: 4,
-      driverName: "Rajesh Kumar Sharma",
-      driverRating: 4.92,
-      vehiclePlate: "DL-1Z-9281",
-      etaMinutes: 4,
-      seatsAvailable: 4,
-      baseFarePaise: baseRate,
-      carrierTaxesPaise: Math.round(baseRate * 0.05),
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 5000,
-      partnerRebateBps: 250,
-    },
-    {
-      id: "cb-suv-innova",
-      mode: "cab",
-      carrierCode: "OK-CAB",
-      carrierName: "OrderKing Chauffeur",
-      serviceNumber: "SUV-02",
-      title: "Prime SUV (Toyota Innova Crysta)",
-      category,
-      fromCity: pickup,
-      toCity: drop,
-      departureTime: "Instant Dispatch",
-      arrivalTime: "Estimated 45m trip",
-      duration: "45 mins",
-      vehicleModel: "Toyota Innova Crysta AC",
-      vehicleType: "SUV",
-      seatingCapacity: 6,
-      driverName: "Gurpreet Singh",
-      driverRating: 4.95,
-      vehiclePlate: "DL-1Z-3849",
-      etaMinutes: 6,
-      seatsAvailable: 6,
-      baseFarePaise: Math.round(baseRate * 1.55),
-      carrierTaxesPaise: Math.round(baseRate * 1.55 * 0.05),
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 7500,
-      partnerRebateBps: 300,
-    },
-    {
-      id: "cb-ev-tigor",
-      mode: "cab",
-      carrierCode: "OK-CAB",
-      carrierName: "OrderKing Green Fleet",
-      serviceNumber: "EV-03",
-      title: "Electric Green Taxi (Tata Tigor EV)",
-      category,
-      fromCity: pickup,
-      toCity: drop,
-      departureTime: "Instant Dispatch",
-      arrivalTime: "Estimated 45m trip",
-      duration: "45 mins",
-      vehicleModel: "Tata Tigor EV Electric",
-      vehicleType: "EV Taxi",
-      seatingCapacity: 4,
-      driverName: "Amitabh Verma",
-      driverRating: 4.88,
-      vehiclePlate: "DL-1Z-EV-8820",
-      etaMinutes: 3,
-      seatsAvailable: 4,
-      baseFarePaise: Math.round(baseRate * 0.95),
-      carrierTaxesPaise: Math.round(baseRate * 0.95 * 0.05),
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 5000,
-      partnerRebateBps: 350,
-    },
-    {
-      id: "cb-mini-wagonr",
-      mode: "cab",
-      carrierCode: "OK-CAB",
-      carrierName: "OrderKing Chauffeur",
-      serviceNumber: "MINI-04",
-      title: "Compact Mini (Maruti WagonR)",
-      category,
-      fromCity: pickup,
-      toCity: drop,
-      departureTime: "Instant Dispatch",
-      arrivalTime: "Estimated 45m trip",
-      duration: "45 mins",
-      vehicleModel: "Maruti WagonR AC",
-      vehicleType: "Mini",
-      seatingCapacity: 4,
-      driverName: "Sunil Yadav",
-      driverRating: 4.82,
-      vehiclePlate: "DL-1Z-4412",
-      etaMinutes: 5,
-      seatsAvailable: 4,
-      baseFarePaise: Math.round(baseRate * 0.8),
-      carrierTaxesPaise: Math.round(baseRate * 0.8 * 0.05),
-      orderKingDeskFeePaise: 0,
-      otaBenchmarkFeePaise: 4000,
-      partnerRebateBps: 200,
-    },
-  ];
+  return [];
 }
 
 // ============================================================================
@@ -856,7 +490,7 @@ export function checkSupplierGating(
   };
 }
 
-export function issueSovereignETicket(params: {
+export function issueSovereignETicket(_params: {
   quote: BaseQuote & Record<string, any>;
   passengers: Passenger[];
   contact: BookingContact;
@@ -870,186 +504,9 @@ export function issueSovereignETicket(params: {
   supplierState?: SupplierApiState;
   region?: string;
 }): SovereignETicket {
-  // Fail-Closed Supplier Gating: if carrier or supplier APIs are unauthenticated,
-  // offline, or rate-limited, fail closed with truthful unavailable message.
-  if (
-    params.supplierState === "unauthenticated" ||
-    params.supplierState === "offline" ||
-    params.supplierState === "rate_limited"
-  ) {
-    throw new SupplierUnavailableError(SUPPLIER_UNAVAILABLE_MESSAGE);
-  }
-
-  if (!params.verifiedPaymentToken && !params.supplierReservationId && !params.isConfirmedSupplier) {
-    throw new Error("Ticket issuance blocked: no confirmed supplier reservation or verified payment. " + SUPPLIER_UNAVAILABLE_MESSAGE);
-  }
-
-  // IRCTC Compliance: Direct in-app OrderKing train ticket issuance is completely locked.
-  // 1. Hardcoded train quotes are rejected.
-  // 2. Arbitrary 10-digit PNR without CRIS provider validation is rejected.
-  // 3. Neither a 10-digit PNR nor prefixed payment tokens are accepted alone as evidence of confirmed booking.
-  // In-app train booking path must explicitly require official IRCTC portal handoff.
-  if (params.quote.mode === "train") {
-    // Audit Guard: Zero payments can be captured without authentic server-verified CRIS provider authorization.
-    // A 10-digit PNR string or prefixed payment token alone is NOT accepted as evidence of a confirmed booking.
-    try {
-      assertTrainPaymentPermitted({
-        authToken: params.verifiedPaymentToken,
-        pnr: params.supplierReservationId,
-        supplierReservationId: params.supplierReservationId,
-        verifiedPaymentToken: params.verifiedPaymentToken,
-        paymentToken: params.verifiedPaymentToken,
-      });
-    } catch (err: any) {
-      throw new SupplierUnavailableError(
-        `IRCTC_PAYMENT_BLOCKED: IN_APP_TRAIN_BOOKING_LOCKED: ${err?.message || "Unverified train booking"}. A 10-digit PNR string or prefixed payment token alone is NOT accepted as evidence of a confirmed booking. Real bookings require server-verified CRIS PRS booking responses. All train reservations must be completed directly via the official IRCTC portal handoff: https://www.irctc.co.in/nget/train-search`
-      );
-    }
-
-    if (isHardcodedTrainQuote(params.quote)) {
-      throw new SupplierUnavailableError(
-        "IRCTC_PAYMENT_BLOCKED: IN_APP_TRAIN_BOOKING_LOCKED: Hardcoded train quotes are rejected under CRIS/IRCTC regulations. All train reservations must be completed directly via the official IRCTC portal handoff: https://www.irctc.co.in/nget/train-search"
-      );
-    }
-
-    if (params.supplierReservationId) {
-      const crisVal = validateCrisPnr(params.supplierReservationId);
-      if (!crisVal.valid) {
-        throw new SupplierUnavailableError(
-          `IRCTC_PAYMENT_BLOCKED: IN_APP_TRAIN_BOOKING_LOCKED: ${crisVal.error} All train reservations must be completed directly via the official IRCTC portal handoff: https://www.irctc.co.in/nget/train-search`
-        );
-      }
-    }
-
-    throw new SupplierUnavailableError(
-      "IRCTC_PAYMENT_BLOCKED: IN_APP_TRAIN_BOOKING_LOCKED: Direct in-app Indian Railways train ticket issuance is strictly disabled under CRIS/IRCTC regulations. " +
-      "Neither a 10-digit PNR nor payment tokens are accepted for in-app ticket generation. " +
-      "All train reservations must be completed directly via the official IRCTC portal handoff: " +
-      "https://www.irctc.co.in/nget/train-search"
-    );
-  }
-
-  const pnr = generateSovereignPnr(params.quote.mode);
-  const bookingId = `BK-${Date.now().toString().slice(-8)}`;
-  const dateStr = params.travelDate || new Date().toISOString().split("T")[0];
-
-  const fareCalc = calculateFareBreakdown(
-    params.quote.baseFarePaise,
-    params.quote.carrierTaxesPaise,
-    params.passengers.length,
-    params.quote.otaBenchmarkFeePaise,
-    params.quote.partnerRebateBps
-  );
-
-  // Seat allocations
-  const allocatedPassengers = params.passengers.map((p, idx) => {
-    let seat = "Confirmed";
-    if (params.selectedSeats && params.selectedSeats[idx]) {
-      seat = params.selectedSeats[idx];
-    } else if (params.quote.mode === "flight") {
-      seat = "Assigned on Charter / GDS Web Check-In";
-    } else if (params.quote.mode === "bus") {
-      seat = `Berth L${idx + 1} (${p.seatPreference || "Window"})`;
-    } else {
-      seat = `Seat ${idx + 1}`;
-    }
-    return {
-      ...p,
-      allocatedSeat: seat,
-      bookingStatus: "CONFIRMED" as const,
-    };
-  });
-
-  const transactionId = generateTransactionId(params.paymentMethod);
-  const rebateCreditedStr =
-    params.rebateDestination === "24k_gold"
-      ? `${fareCalc.rebateGoldMilligrams} mg 24K Digital Gold`
-      : `₹${(fareCalc.rebateFoodWalletPaise / 100).toFixed(2)} Food Wallet Cashback`;
-
-  let departureTimestamp: string;
-  try {
-    const rawTime = (params.quote.departureTime || "").split(" ")[0];
-    if (rawTime && /^\d{1,2}:\d{2}$/.test(rawTime)) {
-      departureTimestamp = new Date(`${dateStr}T${rawTime.padStart(5, "0")}:00`).toISOString();
-    } else {
-      departureTimestamp = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-    }
-  } catch {
-    departureTimestamp = new Date().toISOString();
-  }
-
-  // QR Code payload data
-  const qrCodeData = JSON.stringify({
-    pnr,
-    carrier: params.quote.serviceNumber,
-    paxCount: params.passengers.length,
-    origin: params.quote.fromCity,
-    destination: params.quote.toCity,
-    date: dateStr,
-    totalPaise: fareCalc.totalCheckoutPaise,
-    sovereignGuarantee: "Direct Carrier Fare",
-  });
-
-  const ticket: SovereignETicket = {
-    pnr,
-    bookingId,
-    mode: params.quote.mode,
-    carrierCode: params.quote.carrierCode,
-    carrierName: params.quote.carrierName,
-    serviceNumber: params.quote.serviceNumber,
-    serviceTitle: params.quote.title,
-    origin: {
-      city: params.quote.fromCity,
-      code: params.quote.fromCode,
-      terminalOrPlatform: params.quote.terminal || params.quote.platform || params.quote.boardingPoint || "Main Terminal",
-      departureDate: dateStr,
-      departureTime: params.quote.departureTime,
-    },
-    destination: {
-      city: params.quote.toCity,
-      code: params.quote.toCode,
-      terminalOrPlatform: params.quote.droppingPoint || "Arrival Terminal",
-      arrivalDate: dateStr,
-      arrivalTime: params.quote.arrivalTime,
-    },
-    duration: params.quote.duration,
-    classOrTier: params.quote.cabinClass || params.quote.trainClass || params.quote.busType || params.quote.vehicleType || "Confirmed",
-    quota: params.quote.quota,
-    stopsDisplay: params.quote.stopsDisplay,
-    passengers: allocatedPassengers,
-    contact: params.contact,
-    fareBreakdown: fareCalc,
-    payment: {
-      method: params.paymentMethod,
-      paidAt: new Date().toISOString(),
-      transactionId,
-      rebateDestination: params.rebateDestination,
-      rebateAmountCredited: rebateCreditedStr,
-    },
-    cancellationPolicy: {
-      refundableUntil: "Up to 4 hours before scheduled departure",
-      refundablePaise: fareCalc.totalCheckoutPaise,
-      orderKingPenaltyPaise: 0,
-      terms: "100% full refund directly credited back to KingPay Loyalty Wallet with ₹0 OrderKing cancellation penalty.",
-    },
-    departureTimestamp,
-    status: "CONFIRMED",
-    qrCodeData,
-    cabDriver: params.quote.mode === "cab" ? {
-      name: params.quote.driverName || "Rajesh Kumar",
-      phone: "+91 98765 43210",
-      vehicleModel: params.quote.vehicleModel || "Maruti Dzire",
-      vehiclePlate: params.quote.vehiclePlate || "DL-1Z-9281",
-      otp: `${Math.floor(1000 + Math.random() * 9000)}`,
-      etaMinutes: params.quote.etaMinutes || 4,
-    } : undefined,
-    bookedAt: new Date().toISOString(),
-  };
-
-  saveETicketToStorage(ticket);
-  syncTicketToSavedTrips(ticket);
-
-  return ticket;
+  // No provider-issued reservation, airline PNR, payment receipt or driver assignment
+  // is available here. Never manufacture a CONFIRMED customer ticket.
+  throw new SupplierUnavailableError("Confirmed bookings require an authorized provider-issued ticket.");
 }
 
 /**
@@ -1122,33 +579,9 @@ export async function bookDirectTravelQuote(params: {
   }
 }
 
+/** Legacy browser tickets are retained for audit, but are not proof of issuance. */
 export function getStoredETickets(): SovereignETicket[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(SOVEREIGN_ETICKETS_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    // Strict Fintech Audit: Zero synthetic train tickets in user passbook or storage.
-    // Train tickets must pass genuine CRIS PRS validation and must not be hardcoded quotes.
-    const sanitized = parsed.filter((t: SovereignETicket) => {
-      if (t.mode === "train") {
-        const cris = validateCrisPnr(t.pnr);
-        if (!cris.valid) return false;
-        if (isHardcodedTrainQuote({ id: t.serviceNumber || (t as any).quote?.id, mode: "train" })) return false;
-      }
-      return true;
-    });
-
-    // Automatically purge fabricated records from local storage if any were present
-    if (sanitized.length !== parsed.length) {
-      window.localStorage.setItem(SOVEREIGN_ETICKETS_STORAGE_KEY, JSON.stringify(sanitized));
-    }
-
-    return sanitized;
-  } catch {
-    return [];
-  }
+  return [];
 }
 
 export function saveETicketToStorage(ticket: SovereignETicket): void {
