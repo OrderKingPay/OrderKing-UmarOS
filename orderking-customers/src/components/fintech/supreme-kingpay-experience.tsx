@@ -184,9 +184,6 @@ export function SupremeKingPayExperience() {
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-
-</div>
         </div>
       </section>
 
@@ -776,7 +773,6 @@ export function SupremeKingPayExperience() {
 
 
 
-      {/* Add Money Modal */}
 
     </div>
   );
