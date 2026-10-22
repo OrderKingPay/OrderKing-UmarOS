@@ -1012,15 +1012,9 @@ function PassbookLedgerTool() {
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
-            // Strict Fintech Audit: Sanitize any synthetic train receipts, fake refund credits, or fabricated records
-            const sanitized = parsed.filter((e: any) => {
-              const memo = (e.memo || "").toLowerCase();
-              if (memo.includes("mock") || memo.includes("synthetic") || memo.includes("fake") || memo.includes("ok-tr-")) {
-                return false;
-              }
-              return true;
-            });
-            setEntries(sanitized);
+            // Keep original on-device entries intact for reconciliation; do not
+            // represent these rows as bank-cleared or independently verified.
+            setEntries(parsed);
           }
         }
       }
@@ -1031,9 +1025,9 @@ function PassbookLedgerTool() {
 
   const handleDownloadStatement = () => {
     try {
-      const header = "OrderKing KingPay Official Passbook Statement\n";
-      const userLine = `Account ID: ${user?.id || "dev-user"} | Generated: ${new Date().toISOString()}\n`;
-      const balanceLine = `Available Prepaid Balance: ₹${(walletBalancePaise / 100).toFixed(2)}\n\n`;
+      const header = "OrderKingPay On-Device Activity Export\n";
+      const userLine = `User reference: ${user?.id || "Not available"} | Exported: ${new Date().toISOString()}\n`;
+      const balanceLine = `Displayed Balance: ₹${(walletBalancePaise / 100).toFixed(2)}\n\n`;
       const colHeader = "Timestamp,Transaction ID / UTR,Direction,Amount (INR),Account,Memo\n";
       const rows = entries.map((e) => 
         `"${e.timestamp || ""}","${e.transaction_id || e.entry_id || ""}","${e.direction || ""}","${((e.amount_paise || 0) / 100).toFixed(2)}","${e.account || ""}","${(e.memo || "").replace(/"/g, '""')}"`
@@ -1042,11 +1036,11 @@ function PassbookLedgerTool() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `KingPay_Passbook_Statement_${Date.now()}.csv`);
+      link.setAttribute("download", `KingPay_OnDevice_Activity_${Date.now()}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success("Authentic passbook statement downloaded.");
+      toast.success("In-app activity exported.");
     } catch {
       toast.error("Failed to generate statement file.");
     }
@@ -1059,17 +1053,17 @@ function PassbookLedgerTool() {
           <div className="flex items-center gap-2 mb-1">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/50 px-2.5 py-0.5 text-[11px] font-black text-amber-300">
               <Receipt className="size-3.5" />
-              <span>Official Passbook &amp; UTR Desk</span>
+              <span>In-app Activity</span>
             </span>
             <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2 py-0.5 text-[9px] font-black">
-              RBI DOUBLE-ENTRY
+              On-device history
             </span>
           </div>
           <h2 className="text-xl font-black text-white tracking-tight">
-            Authentic Transaction Ledger &amp; Statements
+            Transaction Activity
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            100% verified settlement records. Every debit strictly matches a verified double-entry credit.
+            On-device entries are not bank statements or proof of payment or settlement.
           </p>
         </div>
 
@@ -1089,7 +1083,7 @@ function PassbookLedgerTool() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-5">
         <div className="rounded-2xl border border-amber-400/30 bg-black/40 p-4">
           <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
-            Prepaid Wallet Balance
+            Displayed Account Balance
           </span>
           <span className="text-2xl font-black font-mono text-white block mt-0.5">
             {formatPaise(walletBalancePaise)}
@@ -1106,7 +1100,7 @@ function PassbookLedgerTool() {
             {entries.length}
           </span>
           <span className="text-[10px] text-slate-400 block mt-1">
-            Immutable Double-Entry Entries
+            Browser-saved activity
           </span>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
@@ -1125,8 +1119,8 @@ function PassbookLedgerTool() {
       {/* Transactions List or Pristine Empty State */}
       <div className="space-y-3">
         <h3 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center justify-between">
-          <span>Recent UTR Records &amp; Entries</span>
-          <span className="text-[10px] text-slate-400 font-mono">SafeInteger Paise Precision</span>
+          <span>Recent activity entries</span>
+          <span className="text-[10px] text-slate-400 font-mono">Saved on this device</span>
         </h3>
 
         {entries.length > 0 ? (
@@ -1160,7 +1154,7 @@ function PassbookLedgerTool() {
                       </span>
                     </div>
                     <p className="text-[10px] text-slate-400 font-mono mt-0.5">
-                      UTR: {entry.transaction_id || "OKPAY-AUTHENTIC"} · {new Date(entry.timestamp).toLocaleString()}
+                      Reference: {entry.transaction_id || "Not provided"} · {new Date(entry.timestamp).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -1175,7 +1169,7 @@ function PassbookLedgerTool() {
                     {formatPaise(Number(entry.amount_paise) || 0)}
                   </span>
                   <span className="text-[9px] text-emerald-400 font-bold">
-                    ✓ NPCI SETTLED
+                    Local entry · not bank verified
                   </span>
                 </div>
               </div>
@@ -1187,9 +1181,9 @@ function PassbookLedgerTool() {
               <ShieldCheck className="size-6 stroke-[2.2]" />
             </div>
             <div>
-              <h4 className="text-sm font-black text-white">Double-Entry Ledger Verified</h4>
+              <h4 className="text-sm font-black text-white">No local activity recorded</h4>
               <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
-                Your double-entry ledger is active with real-time fee transparency and instant cashback reconciled directly against verified banking settlements.
+                Activity will be displayed only when saved on this device. This is not a bank statement.
               </p>
             </div>
           </div>
