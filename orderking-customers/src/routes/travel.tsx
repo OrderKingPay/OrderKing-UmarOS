@@ -12,7 +12,7 @@ import {
 } from "@/lib/travel/in-app-booking-service";
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
 import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
-import { buildOfficialAirlineDeepLink } from "@/lib/travel/airline-deep-links";
+import { buildOfficialAirlineDeepLink, extractAirportCode } from "@/lib/travel/airline-deep-links";
 import { type VIPTravelCategory } from "@/lib/travel/sovereign-travel-engine";
 import {
   Plane,
@@ -81,7 +81,7 @@ export interface PopularRoute {
 
 export function getRoutePartnerHandoff(
   route: PopularRoute,
-  opts?: { departureDate?: string; passengers?: number; cabinClass?: string }
+  opts?: { departureDate?: string; passengers?: number; cabinClass?: string; carrierCode?: string }
 ): {
   url: string;
   partnerName: string;
@@ -90,10 +90,11 @@ export function getRoutePartnerHandoff(
   const departureDate = opts?.departureDate || new Date().toISOString().split("T")[0];
   const passengers = opts?.passengers || 1;
   const cabinClass = opts?.cabinClass || "Economy";
+  const carrierCode = (opts?.carrierCode || "6E").toUpperCase();
 
   if (route.type === "flight") {
     const deepLink = buildOfficialAirlineDeepLink({
-      carrierCode: "6E",
+      carrierCode,
       from: route.fromCode,
       to: route.toCode,
       departureDate,
@@ -102,7 +103,7 @@ export function getRoutePartnerHandoff(
     });
     return {
       url: deepLink.bookingUrl,
-      partnerName: "IndiGo Airlines",
+      partnerName: deepLink.carrierName,
       portalName: deepLink.portalName,
     };
   }
@@ -121,7 +122,7 @@ export function getRoutePartnerHandoff(
   const destCity = route.toCity.replace(/\(.*\)/, "").trim();
   return {
     url: `https://www.redbus.in/bus-tickets/${encodeURIComponent(sourceCity.toLowerCase())}-to-${encodeURIComponent(destCity.toLowerCase())}`,
-    partnerName: "RedBus Partner",
+    partnerName: "RedBus Official Partner",
     portalName: "redbus.in",
   };
 }
@@ -135,7 +136,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Mumbai",
     toCode: "BOM",
     tag: "Aviation Corridor",
-    partnerUrl: "https://www.google.com/travel/flights",
+    partnerUrl: "https://www.goindigo.in/booking/flight-select.html?orCity=DEL&destCity=BOM",
   },
   {
     id: "route-ccu-blr",
@@ -145,7 +146,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Bengaluru",
     toCode: "BLR",
     tag: "Business Sector",
-    partnerUrl: "https://www.google.com/travel/flights",
+    partnerUrl: "https://www.goindigo.in/booking/flight-select.html?orCity=CCU&destCity=BLR",
   },
   {
     id: "route-bom-goi",
@@ -155,7 +156,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Goa (Dabolim/Mopa)",
     toCode: "GOI",
     tag: "Holiday Gateway",
-    partnerUrl: "https://www.google.com/travel/flights",
+    partnerUrl: "https://www.airindia.com/in/en/book/flight-search.html?from=BOM&to=GOI",
   },
   {
     id: "route-blr-del",
@@ -165,7 +166,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "New Delhi",
     toCode: "DEL",
     tag: "Metro Express",
-    partnerUrl: "https://www.google.com/travel/flights",
+    partnerUrl: "https://www.goindigo.in/booking/flight-select.html?orCity=BLR&destCity=DEL",
   },
   {
     id: "route-maa-hyd",
@@ -175,7 +176,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Hyderabad",
     toCode: "HYD",
     tag: "Fast Hopper",
-    partnerUrl: "https://www.google.com/travel/flights",
+    partnerUrl: "https://www.goindigo.in/booking/flight-select.html?orCity=MAA&destCity=HYD",
   },
   {
     id: "route-ndls-bsb-vb",
@@ -185,7 +186,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Varanasi Jn",
     toCode: "BSB",
     tag: "Vande Bharat Express",
-    partnerUrl: "https://www.irctc.co.in/nget/train-search",
+    partnerUrl: "https://www.irctc.co.in/nget/train-search?from=NDLS&to=BSB",
   },
   {
     id: "route-sbc-mys-vb",
@@ -195,7 +196,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Mysuru",
     toCode: "MYS",
     tag: "Superfast Rail",
-    partnerUrl: "https://www.irctc.co.in/nget/train-search",
+    partnerUrl: "https://www.irctc.co.in/nget/train-search?from=SBC&to=MYS",
   },
   {
     id: "route-blr-goa-bus",
@@ -205,7 +206,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Goa (Panaji)",
     toCode: "Kadamba",
     tag: "KSRTC Airavat AC",
-    partnerUrl: "https://www.redbus.in",
+    partnerUrl: "https://www.redbus.in/bus-tickets/bengaluru-to-goa",
   },
 ];
 
@@ -366,6 +367,9 @@ export function TravelPage() {
   const [airlineCheckInCode, setAirlineCheckInCode] = useState("6E (IndiGo)");
   const [flightPnrInput, setFlightPnrInput] = useState("");
   const [specialFareType, setSpecialFareType] = useState<"Regular" | "Student" | "Armed Forces" | "Senior Citizen">("Regular");
+  const [isSearchingDuffel, setIsSearchingDuffel] = useState(false);
+  const [duffelFlightResults, setDuffelFlightResults] = useState<any[] | null>(null);
+  const [duffelSearchSource, setDuffelSearchSource] = useState<string | null>(null);
 
   // Train PNR & Search state
   const [pnr, setPnr] = useState("");
@@ -1052,29 +1056,102 @@ export function TravelPage() {
 
               <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:p-5">
                 <p className="text-sm font-black text-sky-950">Flight price and availability</p>
-                <p className="text-xs text-sky-800 mt-1">Actual fares, taxes, fees, seats and confirmation are available from the booking provider. OrderKing has no authenticated live quote or reservation for this search. Complete the transaction on the provider website.</p>
+                <p className="text-xs text-sky-800 mt-1">
+                  Actual fares, taxes, fees and confirmation are available directly from the official airline. OrderKing charges strictly ₹0 platform fee. Complete the booking on the carrier's verified checkout portal.
+                </p>
               </div>
-              {/* Search Live Flights CTA */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  type="button"
-                  onClick={() => {
+
+              {/* Direct Official Carrier Checkout Options */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                  Direct Official Carrier Checkout (IndiGo, Air India, Akasa, SpiceJet)
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { code: "6E", name: "IndiGo", portal: "goindigo.in" },
+                    { code: "AI", name: "Air India", portal: "airindia.com" },
+                    { code: "QP", name: "Akasa Air", portal: "akasaair.com" },
+                    { code: "SG", name: "SpiceJet", portal: "spicejet.com" },
+                  ].map((carrier) => {
                     const deepLink = buildOfficialAirlineDeepLink({
-                      carrierCode: airlineCheckInCode.slice(0, 2),
+                      carrierCode: carrier.code,
                       from: flightFrom,
                       to: flightTo,
                       departureDate: flightDate,
                       passengers: flightPassengers,
                       cabinClass: flightClass,
                     });
-                    toast.success(
-                      `Redirecting to official ${deepLink.carrierName} portal (${deepLink.portalName}) for ${deepLink.fromCode} ➔ ${deepLink.toCode}...`
+                    return (
+                      <a
+                        key={carrier.code}
+                        href={deepLink.bookingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => {
+                          toast.success(
+                            `Connecting to official ${carrier.name} checkout (${carrier.portal})...`
+                          );
+                        }}
+                        className="flex flex-col items-start p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-sky-50 hover:border-sky-300 transition text-left group"
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-xs font-black text-slate-900 group-hover:text-sky-700">
+                            {carrier.name}
+                          </span>
+                          <ArrowUpRight className="size-3 text-slate-400 group-hover:text-sky-600" />
+                        </div>
+                        <span className="text-[10px] text-slate-500 font-mono mt-0.5">
+                          {carrier.portal}
+                        </span>
+                        <span className="text-[9px] font-bold text-emerald-700 mt-1 bg-emerald-50 px-1.5 py-0.5 rounded">
+                          0% Markup Direct
+                        </span>
+                      </a>
                     );
-                    window.open(deepLink.bookingUrl, "_blank", "noopener,noreferrer");
+                  })}
+                </div>
+              </div>
+
+              {/* Live Duffel API Flight Search */}
+              <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
+                <Button
+                  type="button"
+                  disabled={isSearchingDuffel}
+                  onClick={async () => {
+                    const origin = extractAirportCode(flightFrom, "DEL");
+                    const destination = extractAirportCode(flightTo, "BOM");
+                    setIsSearchingDuffel(true);
+                    try {
+                      const res = await fetch("/api/travel/flight-search", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          origin,
+                          destination,
+                          departureDate: flightDate,
+                          passengers: flightPassengers,
+                          cabinClass: flightClass,
+                        }),
+                      });
+                      const json = await res.json();
+                      setDuffelSearchSource(json?.source || "duffel_v2");
+                      if (json?.data && Array.isArray(json.data) && json.data.length > 0) {
+                        setDuffelFlightResults(json.data);
+                        toast.success(`Retrieved ${json.data.length} live carrier offer(s) via Duffel GDS API.`);
+                      } else {
+                        setDuffelFlightResults([]);
+                        toast.info("No live GDS offers returned for this route. Complete direct checkout at official carrier.");
+                      }
+                    } catch {
+                      setDuffelFlightResults([]);
+                      toast.error("Unable to query live flight API. Please use direct carrier checkout.");
+                    } finally {
+                      setIsSearchingDuffel(false);
+                    }
                   }}
                   className="flex-1 h-12 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-sm shadow-md shadow-sky-600/20"
                 >
-                  Compare &amp; Book on Official Airline ({airlineCheckInCode.split("(")[0]?.trim() || "IndiGo"}) ➔
+                  {isSearchingDuffel ? "Querying Duffel GDS API..." : "Query Live Duffel GDS Offers ➔"}
                 </Button>
                 <Button
                   type="button"
@@ -1087,7 +1164,7 @@ export function TravelPage() {
                       bookingRef: flightPnrInput || "PLANNED-NOT-BOOKED",
                       travelDate: flightDate,
                       routeOrLocation: `${flightFrom} ➔ ${flightTo}`,
-                      notes: `${flightPassengers} Pax · Price not quoted — no flight booked`,
+                      notes: `${flightPassengers} Pax · Price not quoted — direct carrier checkout`,
                       createdAt: new Date().toISOString(),
                     };
                     persistTrips([newTrip, ...savedTrips]);
@@ -1098,6 +1175,82 @@ export function TravelPage() {
                   Save Route to My Trips
                 </Button>
               </div>
+
+              {/* Duffel Flight Results View */}
+              {duffelFlightResults !== null && (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                      <Plane className="size-3.5 text-sky-600" />
+                      Live Duffel v2 Results ({duffelFlightResults.length} offers)
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-500">
+                      Source: {duffelSearchSource || "duffel_v2"} · Zero Platform Markup
+                    </span>
+                  </div>
+
+                  {duffelFlightResults.length === 0 ? (
+                    <div className="text-center py-4 text-xs text-slate-600 space-y-2">
+                      <p>No active GDS fares found for this specific sector in Duffel. Please use official carrier checkout:</p>
+                      <div className="flex justify-center gap-2">
+                        <a
+                          href={buildOfficialAirlineDeepLink({ carrierCode: "6E", from: flightFrom, to: flightTo, departureDate: flightDate, passengers: flightPassengers, cabinClass: flightClass }).bookingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 rounded-lg bg-sky-600 text-white font-bold text-xs"
+                        >
+                          Book on IndiGo
+                        </a>
+                        <a
+                          href={buildOfficialAirlineDeepLink({ carrierCode: "AI", from: flightFrom, to: flightTo, departureDate: flightDate, passengers: flightPassengers, cabinClass: flightClass }).bookingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 rounded-lg bg-rose-700 text-white font-bold text-xs"
+                        >
+                          Book on Air India
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {duffelFlightResults.map((fl: any) => (
+                        <div
+                          key={fl.id}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200 gap-3"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-black text-xs text-slate-900">{fl.carrierName}</span>
+                              <span className="text-[11px] font-mono font-bold text-slate-500">{fl.flightNumber}</span>
+                              {fl.aircraftType && <span className="text-[10px] text-slate-400">({fl.aircraftType})</span>}
+                            </div>
+                            <div className="text-xs text-slate-600 mt-1 flex items-center gap-3">
+                              <span>Dep: {fl.departureTime?.split("T")?.[1]?.slice(0, 5) || fl.departureTime}</span>
+                              <span>➔</span>
+                              <span>Arr: {fl.arrivalTime?.split("T")?.[1]?.slice(0, 5) || fl.arrivalTime}</span>
+                              <span className="text-slate-400">({fl.durationMinutes}m)</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between sm:justify-end gap-3">
+                            <span className="text-base font-black font-mono text-slate-900">
+                              {formatPaise(fl.pricePaise)}
+                            </span>
+                            <a
+                              href={fl.bookingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition flex items-center gap-1"
+                            >
+                              <span>Direct Checkout</span>
+                              <ArrowUpRight className="size-3" />
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Embedded Flight Booking Engine */}

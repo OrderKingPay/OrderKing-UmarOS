@@ -16,6 +16,7 @@ import {
 import { CustomerShell } from "@/components/market/shell";
 import { AppErrorComponent } from "@/lib/error-component";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/db-cloud";
 
 const JOB_APPLICATIONS_STORAGE_KEY = "orderking_job_applications_v1";
 
@@ -27,6 +28,7 @@ interface SubmittedJobApplication {
   applicantName?: string;
   applicantContact?: string;
   applicantNote?: string;
+  resumeUrl?: string;
   status: string;
   submittedAt: string;
 }
@@ -74,6 +76,45 @@ function TutorJobsHistoryPage() {
     } catch {
       // Safe fallback
     }
+
+    // Connect authentic live application records from Supabase PostgreSQL job_applications table
+    async function syncFromSupabase() {
+      try {
+        if (!supabase) return;
+        const { data, error } = await supabase
+          .from("job_applications")
+          .select("id, job_id, job_title, category, applicant_name, applicant_contact, applicant_note, status, created_at")
+          .order("created_at", { ascending: false })
+          .limit(50);
+
+        if (!error && data && Array.isArray(data) && data.length > 0) {
+          const supabaseApps: SubmittedJobApplication[] = data.map((r: any) => {
+            const noteStr = r.applicant_note || "";
+            const resumeMatch = noteStr.match(/Resume:\s*(https?:\/\/[^\s|]+)/i);
+            return {
+              jobId: r.job_id || r.id,
+              jobTitle: r.job_title,
+              category: r.category,
+              applicantName: r.applicant_name,
+              applicantContact: r.applicant_contact,
+              applicantNote: r.applicant_note,
+              resumeUrl: resumeMatch ? resumeMatch[1] : undefined,
+              status: r.status || "RECEIVED",
+              submittedAt: r.created_at ? new Date(r.created_at).toLocaleDateString() : "Recent",
+            };
+          });
+
+          setApplications((prev) => {
+            const existingIds = new Set(prev.map((a) => a.jobId));
+            const fresh = supabaseApps.filter((a) => !existingIds.has(a.jobId));
+            return [...prev, ...fresh];
+          });
+        }
+      } catch {
+        // Safe fallback
+      }
+    }
+    void syncFromSupabase();
   }, []);
 
   return (
@@ -259,6 +300,20 @@ function TutorJobsHistoryPage() {
                       <p className="text-xs text-stone-600 bg-stone-50 p-2.5 rounded-xl border border-stone-200/70 italic">
                         &ldquo;{app.applicantNote}&rdquo;
                       </p>
+                    )}
+
+                    {app.resumeUrl && (
+                      <div className="pt-1">
+                        <a
+                          href={app.resumeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-xs font-bold hover:bg-purple-100 transition"
+                        >
+                          <FileText className="size-3 text-purple-600" />
+                          <span>View Attached Resume</span>
+                        </a>
+                      </div>
                     )}
 
                     <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">

@@ -320,8 +320,8 @@ export function FlightBookingEngine({
                     <span className="text-xs font-extrabold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">
                       {q.stopsDisplay}
                     </span>
-                    <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
-                      {q.seatsAvailable} seats left
+                    <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                      Official Tariff
                     </span>
                   </div>
 
@@ -373,8 +373,8 @@ export function FlightBookingEngine({
                     <div className="text-[11px] text-slate-400">
                       for {passengersCount} traveler{passengersCount > 1 ? "s" : ""}
                     </div>
-                    <div className="text-[10px] text-emerald-700 font-extrabold mt-0.5">
-                      Save {formatPaise(q.otaBenchmarkFeePaise * passengersCount)} vs OTAs
+                    <div className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                      Direct Airline Checkout · ₹0 Platform Fee
                     </div>
                   </div>
 

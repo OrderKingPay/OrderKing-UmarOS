@@ -134,7 +134,7 @@ export async function solveAcademicProblem(
       // Try gemini-2.5-flash as primary model
       try {
         const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
+          model: "gemini-3.5-flash-lite",
           contents,
           config: {
             systemInstruction: systemPrompt,
@@ -147,7 +147,7 @@ export async function solveAcademicProblem(
         if (text && text.trim().length > 0) {
           return {
             text: text.trim(),
-            modelUsed: "gemini-2.5-flash",
+            modelUsed: "gemini-3.5-flash-lite",
             isFallback: false,
             board: params.board,
             stdClass: params.stdClass,
@@ -160,7 +160,7 @@ export async function solveAcademicProblem(
 
         // Fallback to gemini-2.0-flash
         const response20 = await ai.models.generateContent({
-          model: "gemini-2.0-flash",
+          model: "gemini-3.8-flash",
           contents,
           config: {
             systemInstruction: systemPrompt,
@@ -173,7 +173,7 @@ export async function solveAcademicProblem(
         if (text20 && text20.trim().length > 0) {
           return {
             text: text20.trim(),
-            modelUsed: "gemini-2.0-flash",
+            modelUsed: "gemini-3.8-flash",
             isFallback: false,
             board: params.board,
             stdClass: params.stdClass,

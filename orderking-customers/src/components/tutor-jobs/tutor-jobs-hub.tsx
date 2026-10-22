@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/db-cloud";
 import {
   searchJobs,
   searchDynamicCatalog,
@@ -239,7 +240,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
   }, [searchTitle, searchLocation, selectedCategory]);
 
   // Log application to local storage history
-  const recordApplication = (job: LiveJob, candidateNotes?: string) => {
+  const recordApplication = (job: LiveJob, candidateNotes?: string, resumeUrl?: string) => {
     try {
       if (typeof window !== "undefined") {
         const existingRaw = window.localStorage.getItem(JOB_APPLICATIONS_STORAGE_KEY);
@@ -254,6 +255,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
           applicantName: applicantName.trim() || "Candidate",
           applicantContact: applicantContact.trim() || "Direct Link",
           applicantNote: candidateNotes || "Applied via Jobs Hub",
+          resumeUrl: resumeUrl || applicantPortfolio.trim() || undefined,
           status: "Application Recorded",
           submittedAt: new Date().toISOString(),
         };
@@ -286,12 +288,41 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
     setApplyingJob(job);
   };
 
-  const handleConfirmJobApply = (e: React.FormEvent) => {
+  const handleConfirmJobApply = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmittingJob(true);
 
+    const resumeLink = applicantPortfolio.trim();
+    const notesText = applicantNotes.trim();
+    const combinedNotes = [
+      resumeLink ? `Resume: ${resumeLink}` : null,
+      notesText ? `Notes: ${notesText}` : null,
+    ]
+      .filter(Boolean)
+      .join(" | ") || "Applied via Jobs Hub";
+
     if (applyingJob) {
-      recordApplication(applyingJob, applicantNotes);
+      recordApplication(applyingJob, combinedNotes, resumeLink);
+
+      // Genuinely store application details and resume in Supabase PostgreSQL job_applications table
+      try {
+        if (supabase) {
+          await supabase.from("job_applications").insert([
+            {
+              job_id: applyingJob.id,
+              job_title: applyingJob.title,
+              category: applyingJob.category,
+              applicant_name: applicantName.trim() || "Candidate",
+              applicant_contact: applicantContact.trim() || "Direct Contact",
+              applicant_note: combinedNotes,
+              status: "RECEIVED",
+              created_at: new Date().toISOString(),
+            },
+          ]);
+        }
+      } catch (dbErr) {
+        console.warn("[TutorJobsHub] Supabase job_applications insert notice:", dbErr);
+      }
     }
 
     // Commercial and safety truth requirement: never fabricate backend delivery

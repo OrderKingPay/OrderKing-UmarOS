@@ -1,3 +1,5 @@
+import { supabase } from "@/lib/db-cloud";
+
 /**
  * All-India & Global Jobs Engine (Adzuna & Real-Time Dynamic Catalog)
  *
@@ -901,6 +903,69 @@ export async function fetchRemotiveJobs({
 }
 
 /**
+ * Fetch verified openings directly from Supabase PostgreSQL public.jobs table.
+ * Includes authentic local fleet delivery gigs, local merchant support, and educator roles.
+ */
+export async function fetchSupabaseJobs(): Promise<LiveJob[]> {
+  try {
+    if (!supabase) return [];
+    const isConfigured =
+      typeof window !== "undefined"
+        ? Boolean(import.meta.env?.VITE_SUPABASE_URL && !import.meta.env.VITE_SUPABASE_URL.includes("unconfigured"))
+        : Boolean(process.env?.VITE_SUPABASE_URL && !process.env.VITE_SUPABASE_URL.includes("unconfigured"));
+    if (!isConfigured) return [];
+
+    const { data, error } = await supabase
+      .from("jobs")
+      .select("id, title, company, category, payout, type, location, badge, perks, is_fleet, is_kitchen, active")
+      .eq("active", true)
+      .order("created_at", { ascending: false });
+
+    if (error || !data || !Array.isArray(data)) return [];
+
+    return data.map((r: any) => {
+      const isFleet = Boolean(r.is_fleet);
+      const isEducator =
+        String(r.title || "").toLowerCase().includes("tutor") ||
+        String(r.title || "").toLowerCase().includes("educator") ||
+        String(r.title || "").toLowerCase().includes("teacher") ||
+        String(r.title || "").toLowerCase().includes("academic");
+
+      let cat: JobCategory = "Pan-India National Roles";
+      if (isFleet) cat = "Local City & Fleet Delivery Gigs";
+      else if (isEducator) cat = "Pan-India National Roles";
+      else if (String(r.category || "").toLowerCase().includes("remote")) cat = "Remote / Work From Home";
+      else if (
+        String(r.category || "").toLowerCase().includes("gig") ||
+        String(r.category || "").toLowerCase().includes("fleet")
+      )
+        cat = "Local City & Fleet Delivery Gigs";
+      else if (String(r.category || "").toLowerCase().includes("freelance")) cat = "Freelance & Digital Tasks";
+
+      return {
+        id: `supabase-${r.id}`,
+        title: r.title,
+        company: r.company || "OrderKing Verified Partner",
+        location: r.location || "Pan-India",
+        city: r.location?.split(",")?.[0]?.trim() || "",
+        category: cat,
+        salaryRange: r.payout ? `₹${r.payout}` : "Competitive Verified Wage",
+        workType: (r.type as any) || "Full-Time",
+        description: `Verified opening for ${r.title} at ${r.company}. Perks: ${
+          Array.isArray(r.perks) ? r.perks.join(", ") : r.perks || "Verified Direct Opening"
+        }.`,
+        skills: Array.isArray(r.perks) && r.perks.length > 0 ? r.perks : ["Verified Direct Opening"],
+        postedDate: "Live Direct Feed",
+        applyUrl: `/tutor-jobs`,
+        source: "Direct Employer" as const,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Master Live Job Search Function
  * Connects to live Adzuna and Remotive APIs when available, falling back seamlessly to dynamic catalog.
  */
@@ -915,7 +980,7 @@ export async function searchJobs({
   location?: string;
   category?: JobCategory | "ALL";
   page?: number;
-  preferFeed?: "all" | "adzuna" | "remotive" | "catalog";
+  preferFeed?: "all" | "adzuna" | "remotive" | "catalog" | "supabase";
 } = {}): Promise<{ jobs: LiveJob[]; total: number; source: "Adzuna" | "Remotive" | "Dynamic Catalog" }> {
   const isVitest = typeof process !== "undefined" && Boolean(process.env.VITEST);
   const appId =
@@ -1002,7 +1067,42 @@ export async function searchJobs({
     }
   }
 
-  // 3. Fallback to dynamic real-time catalog
+  // 3. Live Supabase PostgreSQL jobs (verified fleet & educator openings)
+  if (!isVitest && preferFeed !== "catalog") {
+    try {
+      const supabaseJobs = await fetchSupabaseJobs();
+      if (supabaseJobs.length > 0) {
+        const filteredSupabase = supabaseJobs.filter((job) => {
+          if (category !== "ALL" && job.category !== category) return false;
+          if (query.trim()) {
+            const q = query.trim().toLowerCase();
+            const hay = `${job.title} ${job.company} ${job.description} ${job.skills.join(" ")}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          if (location.trim()) {
+            const l = location.trim().toLowerCase();
+            const hay = `${job.location} ${job.city || ""}`.toLowerCase();
+            if (!hay.includes(l)) return false;
+          }
+          return true;
+        });
+
+        if (filteredSupabase.length > 0) {
+          const dynamicCatalogJobs = searchDynamicCatalog({ query, location, category });
+          const merged = [...filteredSupabase, ...dynamicCatalogJobs.filter((d) => !filteredSupabase.some((s) => s.title === d.title))];
+          return {
+            jobs: merged,
+            total: merged.length,
+            source: "Direct Employer" as any,
+          };
+        }
+      }
+    } catch {
+      // Fall through to dynamic catalog
+    }
+  }
+
+  // 4. Fallback to dynamic real-time catalog
   const dynamicResults = searchDynamicCatalog({ query, location, category });
   return {
     jobs: dynamicResults,

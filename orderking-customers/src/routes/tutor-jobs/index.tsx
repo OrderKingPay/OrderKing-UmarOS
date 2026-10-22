@@ -39,3 +39,5 @@ function TutorJobsIndexPage() {
     </CustomerShell>
   );
 }
+
+export default TutorJobsIndexPage;
