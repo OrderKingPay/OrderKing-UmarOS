@@ -251,7 +251,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
     id: "buses",
     label: "Buses & Sleepers",
-    badge: "Verified AC Sleeper",
+    badge: "AC Sleeper",
     keywords: "bus interstate sleeper ac ksrtc msrtc upsrtc zingbus luxury seater volvo",
     subCategories: [
       "Intercity AC Sleepers",
@@ -579,7 +579,7 @@ export function TravelPage() {
                   <span>TravelStation</span>
                 </span>
                 <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
-                  Verified Booking
+                  Saved Booking Reference
                 </span>
               </div>
               <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
@@ -760,7 +760,7 @@ export function TravelPage() {
                     {route.fromCity} ({route.fromCode}) ➔ {route.toCity} ({route.toCode})
                   </h3>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Schedules confirmed by provider
+                    Check schedules with provider
                   </p>
                 </div>
 
@@ -1057,7 +1057,7 @@ export function TravelPage() {
               <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:p-5">
                 <p className="text-sm font-black text-sky-950">Flight price and availability</p>
                 <p className="text-xs text-sky-800 mt-1">
-                  Actual fares, taxes, fees and confirmation are available directly from the official airline. OrderKing charges strictly ₹0 platform fee. Complete the booking on the carrier's verified checkout portal.
+                  Check the final fare, fees, baggage and terms on the airline website. Payment and booking confirmation happen with the airline.
                 </p>
               </div>
 
@@ -1104,7 +1104,7 @@ export function TravelPage() {
                           {carrier.portal}
                         </span>
                         <span className="text-[9px] font-bold text-emerald-700 mt-1 bg-emerald-50 px-1.5 py-0.5 rounded">
-                          0% Markup Direct
+                          Official airline site
                         </span>
                       </a>
                     );
@@ -1134,24 +1134,24 @@ export function TravelPage() {
                         }),
                       });
                       const json = await res.json();
-                      setDuffelSearchSource(json?.source || "duffel_v2");
+                      setDuffelSearchSource(json?.source || "not_connected");
                       if (json?.data && Array.isArray(json.data) && json.data.length > 0) {
                         setDuffelFlightResults(json.data);
-                        toast.success(`Retrieved ${json.data.length} live carrier offer(s) via Duffel GDS API.`);
+                        toast.info(`Received ${json.data.length} supplier offer(s). Verify the final fare with the booking provider.`);
                       } else {
                         setDuffelFlightResults([]);
-                        toast.info("No live GDS offers returned for this route. Complete direct checkout at official carrier.");
+                        toast.info("No provider offers returned for this route. Check the airline directly.");
                       }
                     } catch {
                       setDuffelFlightResults([]);
-                      toast.error("Unable to query live flight API. Please use direct carrier checkout.");
+                      toast.error("Flight search is unavailable. Check the airline directly.");
                     } finally {
                       setIsSearchingDuffel(false);
                     }
                   }}
                   className="flex-1 h-12 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-sm shadow-md shadow-sky-600/20"
                 >
-                  {isSearchingDuffel ? "Querying Duffel GDS API..." : "Query Live Duffel GDS Offers ➔"}
+                  {isSearchingDuffel ? "Checking supplier offers..." : "Check flight prices"}
                 </Button>
                 <Button
                   type="button"
@@ -1182,10 +1182,10 @@ export function TravelPage() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
                       <Plane className="size-3.5 text-sky-600" />
-                      Live Duffel v2 Results ({duffelFlightResults.length} offers)
+                      Supplier Flight Offers ({duffelFlightResults.length})
                     </span>
                     <span className="text-[10px] font-mono text-slate-500">
-                      Source: {duffelSearchSource || "duffel_v2"} · Zero Platform Markup
+                      Source: {duffelSearchSource || "not_connected"}
                     </span>
                   </div>
 
@@ -1529,7 +1529,7 @@ export function TravelPage() {
 
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 border-t border-indigo-200/60">
                     <span className="text-xs font-medium text-slate-600">
-                      Fare Paid: <strong>{formatPaise(pnrLiveResult.farePaidPaise || 215000)}</strong> · Quota: {pnrLiveResult.quota}
+                      Fare Paid: <strong>{pnrLiveResult.farePaidPaise != null ? formatPaise(pnrLiveResult.farePaidPaise) : "Not provided by source"}</strong> · Quota: {pnrLiveResult.quota}
                     </span>
                     <Button
                       type="button"
@@ -1541,7 +1541,7 @@ export function TravelPage() {
                           bookingRef: pnrLiveResult.pnr,
                           travelDate: pnrLiveResult.boardingDate || trainDate,
                           routeOrLocation: `${pnrLiveResult.originStationCode} ➔ ${pnrLiveResult.destinationStationCode}`,
-                          notes: `Coach: ${pnrLiveResult.passengers?.[0]?.coach || "B2"} · Chart: ${pnrLiveResult.chartStatus}`,
+                          notes: `Coach: ${pnrLiveResult.passengers?.[0]?.coach || "Not provided"} · Chart: ${pnrLiveResult.chartStatus}`,
                           createdAt: new Date().toISOString(),
                         };
                         persistTrips([newTrip, ...savedTrips]);
@@ -1732,7 +1732,7 @@ export function TravelPage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    toast.success(`Verified route schedule for ${busOperator}.`);
+                    toast.info(`Opening provider route information for ${busOperator}.`);
                   }}
                   className="h-12 rounded-xl border-slate-200 text-slate-800 font-bold text-sm"
                 >
