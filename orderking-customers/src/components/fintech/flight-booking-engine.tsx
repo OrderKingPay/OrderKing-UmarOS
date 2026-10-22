@@ -99,7 +99,7 @@ export function FlightBookingEngine({
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
             <ShieldCheck className="size-4" />
-            <span>₹0 Platform Desk Fee Guaranteed</span>
+            <span>Compare prices on airline websites</span>
           </div>
         </div>
 
@@ -260,7 +260,7 @@ export function FlightBookingEngine({
             </span>
           </h3>
           <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-            Direct Official Airline Deep-Links &amp; Live Tariff Benchmarks
+            Official airline booking links
           </span>
         </div>
 
@@ -269,9 +269,9 @@ export function FlightBookingEngine({
             <div className="size-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center mx-auto">
               <Plane className="size-6" />
             </div>
-            <h4 className="text-base font-bold text-slate-900">No flights matched your specific inputs</h4>
+            <h4 className="text-base font-bold text-slate-900">No flight prices are available from a connected supplier</h4>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Try adjusting your origin or destination city to major aviation hubs.
+              Check current prices and availability using the airline links above.
             </p>
             <Button
               type="button"
@@ -354,7 +354,7 @@ export function FlightBookingEngine({
                       {q.baggageAllowance}
                     </span>
                     <span className="flex items-center gap-1 text-emerald-600 font-bold">
-                      <CheckCircle2 className="size-3.5" /> ₹0 OrderKing Convenience Fee
+                      <CheckCircle2 className="size-3.5" /> Final price shown at airline checkout
                     </span>
                     <span className="flex items-center gap-1 text-amber-600 font-bold">
                       <Coins className="size-3.5" /> Earn 24K Gold or Food Cashback
@@ -374,7 +374,7 @@ export function FlightBookingEngine({
                       for {passengersCount} traveler{passengersCount > 1 ? "s" : ""}
                     </div>
                     <div className="text-[10px] text-slate-500 font-semibold mt-0.5">
-                      Direct Airline Checkout · ₹0 Platform Fee
+                      Continue on official airline website
                     </div>
                   </div>
 
