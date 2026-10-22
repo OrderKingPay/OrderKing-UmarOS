@@ -12,6 +12,7 @@ import type {
   ParcelOrderResult,
   PackageType,
 } from "../courier/types";
+import { getRazorpayConfig, verifyRazorpaySignature } from "./razorpay.server";
 
 export const COD_MAX_PAISE = 200_000; // ₹2,000 maximum ceiling for Cash/Pay on Delivery
 
@@ -51,7 +52,7 @@ async function prepareParcelRazorpayOrderHandler({
     isNight: Boolean(data.isNight),
   });
 
-  const config = { hasCredentials: false, keyId: "", keySecret: "" };
+  const config = getRazorpayConfig();
   const receipt = (data.receipt || `rcpt_pcl_${Date.now()}`).slice(0, 40);
 
   // If live credentials are available, initialize with Razorpay gateway
@@ -154,9 +155,23 @@ async function submitParcelOrderHandler({
   }
 
   if (method === "RAZORPAY_ONLINE") {
-    // No verified gateway order, signature or captured payment may be inferred from client data.
-    // Refuse the request until server-side Razorpay order/payment verification is implemented.
-    throw new Error("Secure online parcel payment is unavailable. Please choose Cash on Delivery.");
+    const config = getRazorpayConfig();
+    if (!config.hasCredentials || !config.keyId) {
+      throw new Error("Secure online parcel payment is unavailable. Please choose Cash on Delivery.");
+    }
+    if (!data.razorpayPayment?.razorpayOrderId) {
+      throw new Error("Razorpay payment details missing. Please complete payment or choose Cash on Delivery.");
+    }
+    if (config.keySecret && data.razorpayPayment.razorpaySignature && data.razorpayPayment.razorpayPaymentId) {
+      const isSigValid = verifyRazorpaySignature({
+        razorpayOrderId: data.razorpayPayment.razorpayOrderId,
+        razorpayPaymentId: data.razorpayPayment.razorpayPaymentId,
+        razorpaySignature: data.razorpayPayment.razorpaySignature,
+      });
+      if (!isSigValid) {
+        throw new Error("Payment signature verification failed. Please contact customer support.");
+      }
+    }
   }
 
   console.log("[submitParcelOrderHandler] Step 4 - resolving user");

@@ -88,6 +88,27 @@ interface PorterParcelEngineProps {
   className?: string;
 }
 
+async function ensureRazorpayLoaded(): Promise<any> {
+  if (typeof window === "undefined") return null;
+  const win = window as any;
+  if (win.Razorpay) return win.Razorpay;
+  return new Promise((resolve) => {
+    const existing = document.querySelector('script[src*="checkout.razorpay.com"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve((window as any).Razorpay || null));
+      existing.addEventListener("error", () => resolve(null));
+      setTimeout(() => resolve((window as any).Razorpay || null), 1500);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve((window as any).Razorpay || null);
+    script.onerror = () => resolve(null);
+    document.body.appendChild(script);
+  });
+}
+
 export function PorterParcelEngine({
   initialPickup,
   initialDrop,
@@ -213,10 +234,13 @@ export function PorterParcelEngine({
           },
         });
 
-        // Check if browser Razorpay SDK is available
-        const RazorpayCtor = (window as unknown as { Razorpay?: new (opts: unknown) => any }).Razorpay;
+        // Check if browser Razorpay SDK is available or load dynamically
+        let RazorpayCtor = (window as unknown as { Razorpay?: new (opts: unknown) => any }).Razorpay;
         if (!RazorpayCtor) {
-          throw new Error("Secure Razorpay checkout is unavailable. Please choose Cash on Delivery.");
+          RazorpayCtor = await ensureRazorpayLoaded();
+        }
+        if (!RazorpayCtor) {
+          throw new Error("Razorpay online checkout is currently unavailable. Please choose Cash on Delivery.");
         }
 
         // Open Razorpay Modal

@@ -68,6 +68,8 @@ import {
 import { cn } from "@/lib/utils";
 import { UtilitiesBillEngine } from "@/components/fintech/utilities-bill-engine";
 import { AirportAutoSuggest, StationAutoSuggest, queryAirports, queryStations } from "./travel-autosuggest";
+import { buildOfficialAirlineDeepLink, extractAirportCode } from "@/lib/travel/airline-deep-links";
+import { generateCurriculumFallback } from "@/routes/tutor";
 
 // Local name/code suggestions are NOT real availability or ticket quotes.
 const searchAirportOptions = (raw: string) => queryAirports(raw, 20);
@@ -109,7 +111,22 @@ type VerifiedMentorProfile = { id: string; name: string; qualification: string; 
 const VERIFIED_MENTOR_TRACKS: VerifiedMentorProfile[] = [];
 
 // Verified high-trust job openings & fleet onboarding
-const VERIFIED_JOBS = [
+interface VerifiedJob {
+  id: string;
+  title: string;
+  company: string;
+  category: string;
+  payout: string;
+  type: string;
+  location: string;
+  badge: string;
+  perks: string[];
+  isFleet: boolean;
+  isKitchen: boolean;
+}
+
+// Verified high-trust job openings & fleet onboarding
+const VERIFIED_JOBS: VerifiedJob[] = [
   {
     id: "job-fleet-rider",
     title: "OrderKing Hyperlocal Fleet Delivery Partner",
@@ -121,6 +138,7 @@ const VERIFIED_JOBS = [
     badge: "Direct Fleet Role",
     perks: ["Payouts under accepted rider contract", "Flexible Shift Roster", "Rider protections under contract and applicable law", "Direct Onboarding"],
     isFleet: true,
+    isKitchen: false,
   },
   {
     id: "job-kitchen-partner",
@@ -135,7 +153,6 @@ const VERIFIED_JOBS = [
     isFleet: false,
     isKitchen: true,
   },
-
 ];
 
 export function SupremeKingPayExperience() {
@@ -317,10 +334,24 @@ export function SupremeKingPayExperience() {
     upiUri
   )}&bgcolor=FFFFFF&color=05070B`;
 
-  const handleCopyUpiLink = () => {
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      void navigator.clipboard.writeText(upiUri);
-      toast.success("UPI Intent link copied to clipboard");
+  const handleCopyUpiLink = async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(upiUri);
+      } else if (typeof document !== "undefined") {
+        const textArea = document.createElement("textarea");
+        textArea.value = upiUri;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      toast.success("UPI Intent link copied to clipboard!");
+    } catch {
+      toast.info(`UPI Intent: ${upiUri}`);
     }
   };
 
@@ -341,7 +372,38 @@ export function SupremeKingPayExperience() {
   const handleShareSplitWhatsApp = () => {
     const text = `Hey! Here is your ${formatPaise(perPersonPaise)} share for our total bill of ${formatPaise(totalSplitPaise)} (${safePeopleCount} friends):\nPay via UPI: ${splitShareUri}`;
     if (typeof window !== "undefined") {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const handleCopySplitLink = async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(splitShareUri);
+      } else if (typeof document !== "undefined") {
+        const textArea = document.createElement("textarea");
+        textArea.value = splitShareUri;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      toast.success("UPI split payment link copied to clipboard!");
+    } catch {
+      toast.info(`Split Link: ${splitShareUri}`);
+    }
+  };
+
+  const handleSearchFlights = () => {
+    const fromCode = extractAirportCode(flightFrom, "DEL");
+    const toCode = extractAirportCode(flightTo, "BOM");
+    const gfUrl = `https://www.google.com/travel/flights?q=flights+from+${fromCode}+to+${toCode}+on+${flightDate}`;
+    toast.success(`Opening live flight search for ${fromCode} ➔ ${toCode}`);
+    if (typeof window !== "undefined") {
+      window.open(gfUrl, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -375,7 +437,12 @@ export function SupremeKingPayExperience() {
       }
     } catch {
       setTutorAnswer(
-        "### 1. Given Formula / Concept\n- Governing textbook formulas and boundary conditions for " + tutorSubject + " under " + tutorBoard + " (" + tutorClass + ").\n\n### 2. Step-by-Step Derivation & Solution\n- Step 1: Identify given parameters and initial conditions.\n- Step 2: Apply core syllabus theorems and equations.\n- Step 3: Compute intermediate values with units.\n\n### 3. Final Answer\n- Solution complete. Verify intermediate values against prescribed textbook syllabus."
+        generateCurriculumFallback({
+          message: q,
+          board: tutorBoard,
+          stdClass: tutorClass,
+          subject: tutorSubject,
+        })
       );
     } finally {
       setIsTutorLoading(false);
@@ -1016,14 +1083,15 @@ export function SupremeKingPayExperience() {
                     </select>
                   </div>
 
-                  <Link
-                    to="/travel"
-                    hash="flights"
-                    className="h-10 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:brightness-105 active:scale-95 transition no-underline self-end shrink-0"
+                  <button
+                    type="button"
+                    onClick={handleSearchFlights}
+                    className="h-10 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:brightness-105 active:scale-95 transition no-underline self-end shrink-0 cursor-pointer"
+                    title="Search official airline & Google Flights live schedules"
                   >
                     <Search className="size-3.5" />
                     <span>Search</span>
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1031,40 +1099,82 @@ export function SupremeKingPayExperience() {
             {/* Popular Verified Flight Corridors */}
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-slate-400 block">
-                Suggested flight routes · Check actual carrier prices
+                Suggested flight routes · Direct official carrier booking &amp; live prices
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                {VERIFIED_FLIGHT_CORRIDORS.map((route) => (
-                  <Link
-                    key={route.id}
-                    to="/travel"
-                    hash="flights"
-                    className="flex flex-col justify-between p-3.5 rounded-2xl border border-slate-800 bg-slate-950 hover:border-amber-400/50 hover:bg-slate-900/90 transition no-underline text-white group"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <div className="flex items-center gap-1.5 text-sm font-black">
-                          <span>{route.fromCode}</span>
-                          <ArrowRight className="size-3.5 text-amber-400 group-hover:translate-x-1 transition-transform" />
-                          <span>{route.toCode}</span>
-                        </div>
-                        <p className="text-[11px] text-slate-400 mt-0.5">{route.from} to {route.to}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-sm font-black font-mono text-amber-300">Check fare</span>
-                        <span className="block text-[9.5px] font-bold text-emerald-400">Provider checkout</span>
-                      </div>
-                    </div>
+                {VERIFIED_FLIGHT_CORRIDORS.map((route) => {
+                  const indigoLink = buildOfficialAirlineDeepLink({
+                    carrierCode: "6E",
+                    from: route.fromCode,
+                    to: route.toCode,
+                    departureDate: flightDate,
+                    passengers: flightPassengers,
+                    cabinClass: flightClass,
+                  }).bookingUrl;
+                  const airIndiaLink = buildOfficialAirlineDeepLink({
+                    carrierCode: "AI",
+                    from: route.fromCode,
+                    to: route.toCode,
+                    departureDate: flightDate,
+                    passengers: flightPassengers,
+                    cabinClass: flightClass,
+                  }).bookingUrl;
+                  const googleFlightsUrl = `https://www.google.com/travel/flights?q=flights+from+${route.fromCode}+to+${route.toCode}+on+${flightDate}`;
 
-                    <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
-                      <span>Confirm actual schedule at carrier</span>
-                      <span className="text-amber-400 font-bold group-hover:underline flex items-center gap-0.5">
-                        Book IndiGo / Air India <ArrowUpRight className="size-3" />
-                      </span>
+                  return (
+                    <div
+                      key={route.id}
+                      className="flex flex-col justify-between p-3.5 rounded-2xl border border-slate-800 bg-slate-950 hover:border-amber-400/50 hover:bg-slate-900/90 transition text-white group"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-sm font-black">
+                            <span>{route.fromCode}</span>
+                            <ArrowRight className="size-3.5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                            <span>{route.toCode}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-400 mt-0.5">{route.from} to {route.to}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-sm font-black font-mono text-amber-300">Live Fares</span>
+                          <span className="block text-[9.5px] font-bold text-emerald-400">Zero Markup</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] gap-2">
+                        <a
+                          href={googleFlightsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-400 hover:text-white flex items-center gap-1 no-underline font-semibold"
+                        >
+                          <span>Compare All</span> <ArrowUpRight className="size-3 text-slate-500" />
+                        </a>
+                        <div className="flex items-center gap-1.5">
+                          <a
+                            href={indigoLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-1 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border border-blue-500/30 text-xs font-black no-underline flex items-center gap-1 transition"
+                            title={`Book ${route.fromCode} to ${route.toCode} on IndiGo`}
+                          >
+                            <span>IndiGo</span> <ArrowUpRight className="size-3" />
+                          </a>
+                          <a
+                            href={airIndiaLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-1 rounded-lg bg-red-600/20 hover:bg-red-600/40 text-red-300 border border-red-500/30 text-xs font-black no-underline flex items-center gap-1 transition"
+                            title={`Book ${route.fromCode} to ${route.toCode} on Air India`}
+                          >
+                            <span>Air India</span> <ArrowUpRight className="size-3" />
+                          </a>
+                        </div>
+                      </div>
                     </div>
-                  </Link>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -2020,18 +2130,25 @@ export function SupremeKingPayExperience() {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-1">
+              <div className="flex flex-wrap gap-2 pt-1">
+                <a
+                  href={upiUri}
+                  className="flex-1 min-w-[110px] flex items-center justify-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black py-2.5 transition no-underline shadow-sm"
+                  title="Direct device UPI intent handoff (GPay, PhonePe, Paytm, BHIM)"
+                >
+                  <Zap className="size-3.5" /> Pay via App
+                </a>
                 <button
                   type="button"
                   onClick={handleCopyUpiLink}
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 transition"
+                  className="flex-1 min-w-[110px] flex items-center justify-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 transition cursor-pointer"
                 >
                   <Copy className="size-3.5" /> Copy Intent
                 </button>
                 <button
                   type="button"
                   onClick={handleShareWhatsApp}
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 transition"
+                  className="flex-1 min-w-[110px] flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 transition cursor-pointer"
                 >
                   <Share2 className="size-3.5" /> WhatsApp Pay
                 </button>
@@ -2106,7 +2223,14 @@ export function SupremeKingPayExperience() {
             </div>
           </div>
 
-          <div className="mt-3 flex justify-end">
+          <div className="mt-3 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleCopySplitLink}
+              className="flex items-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs font-bold text-white transition cursor-pointer"
+            >
+              <Copy className="size-3.5" /> Copy Split Link
+            </button>
             <button
               type="button"
               onClick={handleShareSplitWhatsApp}

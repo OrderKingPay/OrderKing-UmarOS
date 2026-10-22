@@ -30,12 +30,12 @@ import { computeDeterministicSkillMatch } from "@/lib/career/skill-matcher";
 import { getSql } from "@/lib/db";
 import { TutorJobsHub } from "@/components/tutor-jobs/tutor-jobs-hub";
 
-function generateCurriculumFallback(data: { message: string; board: string; stdClass: string; subject: string; language?: string; difficulty?: string; tone?: string; goal?: string }): string {
+export function generateCurriculumFallback(data: { message: string; board: string; stdClass: string; subject: string; language?: string; difficulty?: string; tone?: string; goal?: string }): string {
   const query = (data.message || "").trim();
   const lower = query.toLowerCase();
 
   // If question is quadratic equation or formula
-  if (lower.includes("quadratic") || lower.includes("ax^2") || lower.includes("ax2")) {
+  if (lower.includes("quadratic") || lower.includes("ax^2") || lower.includes("ax2") || lower.includes("completing square")) {
     return `### 1. Given Formula / Concept
 - **Standard Form:** \\(ax^2 + bx + c = 0\\), where \\(a, b, c \\in \\mathbb{R}\\) and \\(a \\neq 0\\).
 - **Discriminant Formulation:** \\(\\Delta = b^2 - 4ac\\).
@@ -121,6 +121,132 @@ function generateCurriculumFallback(data: { message: string; board: string; stdC
 \\[P + \\frac{1}{2} \\rho v^2 + \\rho g h = \\text{Constant}\\]
 **Total Head Form (Meters of Fluid):**
 \\[\\frac{P}{\\rho g} + \\frac{v^2}{2g} + h = H_{\\text{total}} \\; (\\text{m})\\]`;
+  }
+
+  // Ohm's Law and Circuit Resistance
+  if (lower.includes("ohm") || lower.includes("v = ir") || lower.includes("resistance") || lower.includes("kirchhoff") || lower.includes("resistor")) {
+    return `### 1. Given Formula / Concept
+- **Ohm's Law:** At constant temperature, the current \\(I\\) flowing through a metallic conductor is directly proportional to the potential difference \\(V\\) across its terminals.
+- **Governing Equations:**
+  \\[V = I \\cdot R \\implies I = \\frac{V}{R}, \\quad R = \\frac{V}{I}\\]
+- **Equivalent Resistance:**
+  - Series: \\(R_{\\text{series}} = R_1 + R_2 + \\dots + R_n\\)
+  - Parallel: \\(\\frac{1}{R_{\\text{parallel}}} = \\frac{1}{R_1} + \\frac{1}{R_2} + \\dots + \\frac{1}{R_n}\\)
+- **Electrical Power:** \\(P = VI = I^2 R = \\frac{V^2}{R}\\ (\\text{Watts})\\).
+- **Curriculum Standard:** Prescribed under ${data.board} Class 10 & 12 Physics syllabus.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Microscopic Derivation of Ohm's Law):** Electric field \\(E = \\frac{V}{L}\\). Drift velocity of electrons is \\(v_d = \\frac{e E \\tau}{m} = \\frac{e V \\tau}{m L}\\), where \\(\\tau\\) is relaxation time.
+- **Step 2 (Current Expression):** \\(I = n e A v_d = n e A \\left( \\frac{e V \\tau}{m L} \\right) = \\left( \\frac{n e^2 A \\tau}{m L} \\right) V\\).
+- **Step 3 (Define Resistance \\(R\\)):** Comparing with \\(V = I R\\), \\(R = \\frac{m L}{n e^2 A \\tau} = \\rho \\frac{L}{A}\\), where resistivity \\(\\rho = \\frac{m}{n e^2 \\tau}\\).
+- **Step 4 (Verification of Boundary Conditions):** As temperature increases in pure metals, lattice vibration increases, relaxation time \\(\\tau\\) decreases, hence resistance \\(R\\) increases linearly according to \\(R_t = R_0 (1 + \\alpha \\Delta T)\\).
+
+### 3. Final Answer
+**Ohmic Relation:** \\[V = I \\cdot R \\]
+**SI Units:** Potential difference \\(V\\) in Volts (V), Current \\(I\\) in Amperes (A), Resistance \\(R\\) in Ohms (\\(\\Omega\\)).`;
+  }
+
+  // Newton's Second Law & Kinematics
+  if (lower.includes("newton") || lower.includes("f = ma") || lower.includes("kinematic") || lower.includes("v = u + at") || lower.includes("equation of motion")) {
+    return `### 1. Given Formula / Concept
+- **Newton's Second Law of Motion:** The rate of change of momentum of an object is directly proportional to the applied unbalanced external force and occurs in the direction of the force:
+  \\[\\vec{F} = \\frac{d\\vec{p}}{dt} = \\frac{d(m\\vec{v})}{dt}\\]
+- **Three Standard Equations of Uniformly Accelerated Motion:**
+  1. \\[v = u + at\\]
+  2. \\[s = ut + \\frac{1}{2}at^2\\]
+  3. \\[v^2 = u^2 + 2as\\]
+- **Standard SI Units:** Initial velocity \\(u\\) and final velocity \\(v\\) in \\(\\text{m/s}\\), acceleration \\(a\\) in \\(\\text{m/s}^2\\), time \\(t\\) in \\(\\text{s}\\), displacement \\(s\\) in \\(\\text{m}\\).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (First Equation \\(v = u + at\\)):** By definition of acceleration: \\(a = \\frac{dv}{dt} \\implies dv = a \\, dt\\). Integrating both sides from \\(t = 0\\) (velocity \\(u\\)) to \\(t\\) (velocity \\(v\\)):
+  \\[\\int_{u}^{v} dv = a \\int_{0}^{t} dt \\implies v - u = at \\implies v = u + at\\]
+- **Step 2 (Second Equation \\(s = ut + \\frac{1}{2}at^2\\)):** By definition of velocity: \\(v = \\frac{ds}{dt} = u + at \\implies ds = (u + at) \\, dt\\). Integrating from \\(s=0\\) to \\(s\\):
+  \\[\\int_{0}^{s} ds = \\int_{0}^{t} (u + at) \\, dt \\implies s = ut + \\frac{1}{2}at^2\\]
+- **Step 3 (Third Equation \\(v^2 = u^2 + 2as\\)):** From \\(a = v \\frac{dv}{ds} \\implies v \\, dv = a \\, ds\\). Integrating both sides:
+  \\[\\int_{u}^{v} v \\, dv = a \\int_{0}^{s} ds \\implies \\left[ \\frac{v^2}{2} \\right]_{u}^{v} = as \\implies \\frac{v^2 - u^2}{2} = as \\implies v^2 = u^2 + 2as\\]
+
+### 3. Final Answer
+\\[\\vec{F} = m\\vec{a}, \\quad v = u + at, \\quad s = ut + \\frac{1}{2}at^2, \\quad v^2 = u^2 + 2as\\]
+*(Applicable to rectilinear motion under constant acceleration as benchmarked by ${data.board} curriculum standards).*`;
+  }
+
+  // Pythagoras Theorem
+  if (lower.includes("pythagoras") || lower.includes("right triangle") || lower.includes("hypotenuse")) {
+    return `### 1. Given Formula / Concept
+- **Pythagoras Theorem:** In any right-angled triangle, the square of the length of the hypotenuse is equal to the sum of the squares of the lengths of the other two sides:
+  \\[a^2 + b^2 = c^2\\]
+  where \\(c\\) is the hypotenuse opposite the right angle (\\(90^\\circ\\)), and \\(a, b\\) are the perpendicular sides.
+- **Curriculum Standard:** Prescribed in Class 10 NCERT and State Board Geometry.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Construction):** Consider right triangle \\(\\triangle ABC\\) right-angled at \\(B\\). Draw altitude \\(BD \\perp AC\\).
+- **Step 2 (Similarity of \\(\\triangle ADB\\) and \\(\\triangle ABC\\)):**
+  - Both share \\(\\angle A\\).
+  - \\(\\angle ADB = \\angle ABC = 90^\\circ\\).
+  - Therefore, \\(\\triangle ADB \\sim \\triangle ABC\\) by AA criterion.
+  - Ratio of corresponding sides: \\(\\frac{AD}{AB} = \\frac{AB}{AC} \\implies AB^2 = AD \\cdot AC\\) (Equation 1).
+- **Step 3 (Similarity of \\(\\triangle BDC\\) and \\(\\triangle ABC\\)):**
+  - Both share \\(\\angle C\\).
+  - \\(\\angle BDC = \\angle ABC = 90^\\circ\\).
+  - Therefore, \\(\\triangle BDC \\sim \\triangle ABC\\) by AA criterion.
+  - Ratio: \\(\\frac{CD}{BC} = \\frac{BC}{AC} \\implies BC^2 = CD \\cdot AC\\) (Equation 2).
+- **Step 4 (Add Equations 1 & 2):**
+  \\[AB^2 + BC^2 = AD \\cdot AC + CD \\cdot AC = AC(AD + CD) = AC(AC) = AC^2\\]
+
+### 3. Final Answer
+\\[AB^2 + BC^2 = AC^2 \\implies a^2 + b^2 = c^2\\]
+*(Hence proved using triangle similarity according to standard Indian board step-marking criteria).*`;
+  }
+
+  // Trigonometric Fundamental Identity
+  if (lower.includes("sin^2 + cos^2") || lower.includes("sin2 + cos2") || (lower.includes("trigonometric") && lower.includes("identity"))) {
+    return `### 1. Given Formula / Concept
+- **Fundamental Pythagorean Trigonometric Identity:**
+  \\[\\sin^2(\\theta) + \\cos^2(\\theta) = 1\\]
+- **Derived Identities:**
+  1. \\[1 + \\tan^2(\\theta) = \\sec^2(\\theta)\\]
+  2. \\[1 + \\cot^2(\\theta) = \\csc^2(\\theta)\\]
+- **Curriculum Standard:** Prescribed under ${data.board} Class 10 & 11 Trigonometry.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Right Triangle Definitions):** Consider a right-angled triangle with acute angle \\(\\theta\\), perpendicular \\(p\\), base \\(b\\), and hypotenuse \\(h\\).
+  - \\(\\sin(\\theta) = \\frac{p}{h}\\)
+  - \\(\\cos(\\theta) = \\frac{b}{h}\\)
+- **Step 2 (Pythagoras Theorem):** \\(p^2 + b^2 = h^2\\).
+- **Step 3 (Evaluate Sum of Squares):**
+  \\[\\sin^2(\\theta) + \\cos^2(\\theta) = \\left(\\frac{p}{h}\\right)^2 + \\left(\\frac{b}{h}\\right)^2 = \\frac{p^2 + b^2}{h^2}\\]
+- **Step 4 (Substitute \\(p^2 + b^2 = h^2\\)):**
+  \\[\\sin^2(\\theta) + \\cos^2(\\theta) = \\frac{h^2}{h^2} = 1\\]
+- **Step 5 (Derive Secondary Identities):**
+  - Divide by \\(\\cos^2(\\theta)\\): \\(\\frac{\\sin^2(\\theta)}{\\cos^2(\\theta)} + 1 = \\frac{1}{\\cos^2(\\theta)} \\implies \\tan^2(\\theta) + 1 = \\sec^2(\\theta)\\).
+  - Divide by \\(\\sin^2(\\theta)\\): \\(1 + \\frac{\\cos^2(\\theta)}{\\sin^2(\\theta)} = \\frac{1}{\\sin^2(\\theta)} \\implies 1 + \\cot^2(\\theta) = \\csc^2(\\theta)\\).
+
+### 3. Final Answer
+\\[\\sin^2(\\theta) + \\cos^2(\\theta) = 1, \\quad 1 + \\tan^2(\\theta) = \\sec^2(\\theta), \\quad 1 + \\cot^2(\\theta) = \\csc^2(\\theta)\\]`;
+  }
+
+  // Photosynthesis
+  if (lower.includes("photosynthesis") || lower.includes("light reaction") || lower.includes("dark reaction") || lower.includes("chloroplast")) {
+    return `### 1. Given Formula / Concept
+- **Overall Balanced Chemical Equation of Photosynthesis:**
+  \\[6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\xrightarrow{\\text{Sunlight, Chlorophyll}} \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2\\]
+- **Biological Principle:** Anabolic endergonic photochemical process by which autotrophic organisms convert radiant solar energy into chemical energy stored in carbohydrates (glucose).
+- **Site of Occurrence:** Chloroplasts in mesophyll cells of green leaves.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Light-Dependent Reaction - Thylakoid Membrane):**
+  - Photolysis of water: \\(2\\text{H}_2\\text{O} \\rightarrow 4\\text{H}^+ + 4e^- + \\text{O}_2 \\uparrow\\).
+  - Photo-phosphorylation: Conversion of ADP and Pi into ATP via ATP synthase proton gradient.
+  - Reduction of NADP+: \\(\\text{NADP}^+ + 2\\text{H}^+ + 2e^- \\rightarrow \\text{NADPH} + \\text{H}^+\\).
+- **Step 2 (Light-Independent Reaction / Calvin Cycle - Stroma):**
+  - Carbon Fixation: Carboxylation of RuBP (Ribulose-1,5-bisphosphate) catalyzed by RuBisCO enzyme yielding 3-PGA (3-phosphoglycerate).
+  - Reduction Phase: ATP and NADPH reduce 3-PGA to Triose Phosphate (G3P/PGAL), synthesizing glucose.
+  - Regeneration Phase: Remaining triose phosphates regenerate RuBP using ATP.
+
+### 3. Final Answer
+\\[6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\rightarrow \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2\\]
+- **Primary Byproduct:** Molecular oxygen \\(\\text{O}_2\\) liberated through stomata.
+- **Energy Stored:** Chemical bonds of glucose and starch reserves.`;
   }
 
   // General Academic Formulation fallback

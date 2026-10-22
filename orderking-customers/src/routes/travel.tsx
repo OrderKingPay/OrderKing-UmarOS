@@ -135,7 +135,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Mumbai",
     toCode: "BOM",
     tag: "Aviation Corridor",
-    partnerUrl: "/travel#flights",
+    partnerUrl: "https://www.google.com/travel/flights",
   },
   {
     id: "route-ccu-blr",
@@ -145,7 +145,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Bengaluru",
     toCode: "BLR",
     tag: "Business Sector",
-    partnerUrl: "/travel#flights",
+    partnerUrl: "https://www.google.com/travel/flights",
   },
   {
     id: "route-bom-goi",
@@ -155,7 +155,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Goa (Dabolim/Mopa)",
     toCode: "GOI",
     tag: "Holiday Gateway",
-    partnerUrl: "/travel#flights",
+    partnerUrl: "https://www.google.com/travel/flights",
   },
   {
     id: "route-blr-del",
@@ -165,7 +165,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "New Delhi",
     toCode: "DEL",
     tag: "Metro Express",
-    partnerUrl: "/travel#flights",
+    partnerUrl: "https://www.google.com/travel/flights",
   },
   {
     id: "route-maa-hyd",
@@ -175,7 +175,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Hyderabad",
     toCode: "HYD",
     tag: "Fast Hopper",
-    partnerUrl: "/travel#flights",
+    partnerUrl: "https://www.google.com/travel/flights",
   },
   {
     id: "route-ndls-bsb-vb",
@@ -185,7 +185,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Varanasi Jn",
     toCode: "BSB",
     tag: "Vande Bharat Express",
-    partnerUrl: "/travel#trains",
+    partnerUrl: "https://www.irctc.co.in/nget/train-search",
   },
   {
     id: "route-sbc-mys-vb",
@@ -195,7 +195,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Mysuru",
     toCode: "MYS",
     tag: "Superfast Rail",
-    partnerUrl: "/travel#trains",
+    partnerUrl: "https://www.irctc.co.in/nget/train-search",
   },
   {
     id: "route-blr-goa-bus",
@@ -205,7 +205,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
     toCity: "Goa (Panaji)",
     toCode: "Kadamba",
     tag: "KSRTC Airavat AC",
-    partnerUrl: "/travel#buses",
+    partnerUrl: "https://www.redbus.in",
   },
 ];
 
