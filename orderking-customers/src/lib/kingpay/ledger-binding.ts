@@ -144,69 +144,17 @@ export async function fetchAuthenticKingPayBalance(userId: string): Promise<numb
 }
 
 /**
- * Records an authentic wallet top-up transaction with double-entry accounting.
- * Double Entry:
- *   DEBIT  -> BANK_CLEARING   (Funds received by partner bank gateway)
- *   CREDIT -> CUSTOMER_WALLET (Funds credited to customer's authentic balance)
- * Returns the recalculated authentic balance.
+ * Wallet crediting must occur only in a privileged server transaction after
+ * independently verifying provider signature, captured amount, order and
+ * idempotency. No client-side ledger entry proves payment.
  */
-export async function recordAuthenticTopUp(params: {
+export async function recordAuthenticTopUp(_params: {
   userId: string;
   amountPaise: number;
   idempotencyKey?: string;
   source?: string;
 }): Promise<{ newBalancePaise: number; transactionId: string }> {
-  if (!params.amountPaise || params.amountPaise <= 0) {
-    throw new Error(`Top-up amount must be positive paise: ${params.amountPaise}`);
-  }
-
-  const transactionId = `tx-topup-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-  const now = new Date().toISOString();
-
-  const debitEntry: KingPayLedgerEntry = {
-    entry_id: `ent-${Date.now()}-1`,
-    transaction_id: transactionId,
-    account: "BANK_CLEARING",
-    direction: "DEBIT",
-    amount_paise: params.amountPaise,
-    entity_id: "BANK_GATEWAY",
-    memo: `Top-up via ${params.source || "UPI"}`,
-    timestamp: now,
-  };
-
-  const creditEntry: KingPayLedgerEntry = {
-    entry_id: `ent-${Date.now()}-2`,
-    transaction_id: transactionId,
-    account: "CUSTOMER_WALLET",
-    direction: "CREDIT",
-    amount_paise: params.amountPaise,
-    entity_id: params.userId,
-    memo: `Wallet top-up credited for ${params.userId}`,
-    timestamp: now,
-  };
-
-  // Math invariant validation: debits must equal credits
-  if (debitEntry.amount_paise !== creditEntry.amount_paise) {
-    throw new Error("Double-entry violation: Debit does not equal Credit.");
-  }
-
-  // 1. Try Supabase insert
-  try {
-    await supabase.from("kingpay_ledger_entries").insert([
-      debitEntry,
-      creditEntry,
-    ]);
-  } catch {
-    // Ignore error if table not migrated in cloud yet
-  }
-
-  // 2. Persist to local authentic ledger
-  const local = getLocalLedgerEntries();
-  local.push(debitEntry, creditEntry);
-  saveLocalLedgerEntries(local);
-
-  const newBalance = calculateBalanceFromEntries(local, params.userId);
-  return { newBalancePaise: newBalance, transactionId };
+  throw new Error("Wallet top-ups are unavailable until authorized server-side payment verification is operational.");
 }
 
 /**
