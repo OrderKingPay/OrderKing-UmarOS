@@ -14,7 +14,6 @@ import {
   ExternalLink,
   ChevronRight,
   Receipt,
-  PlusCircle,
   Package,
   Plane,
   GraduationCap,
@@ -31,7 +30,6 @@ import { formatPaise } from "@/lib/money";
 import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { useLocationStore } from "@/lib/stores/location";
 import { ScanQrModal } from "@/components/fintech/scan-qr-modal";
-import { AddMoneyModal } from "@/components/fintech/add-money-modal";
 import { 
   ALL_INDIAN_BOARDS, 
   CORE_SUBJECTS, 
@@ -63,8 +61,6 @@ export function SupremeKingPayExperience() {
 
   // Modals
   const [isScannerOpen, setIsScannerOpen] = useState(false);
-  const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
-
   // Dynamic location
   const currentCity = location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi";
   const currentZone = location?.zoneName || "Connaught Place";
@@ -200,15 +196,7 @@ export function SupremeKingPayExperience() {
               <QrCode className="size-4" />
               <span>Scan QR</span>
             </button>
-            <button
-              type="button"
-              onClick={() => setIsAddMoneyOpen(true)}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 text-xs transition active:scale-95 cursor-pointer"
-            >
-              <PlusCircle className="size-4 text-amber-300" />
-              <span>Add Money</span>
-            </button>
-          </div>
+</div>
         </div>
       </section>
 
@@ -806,17 +794,7 @@ export function SupremeKingPayExperience() {
       )}
 
       {/* Add Money Modal */}
-      {isAddMoneyOpen && (
-        <AddMoneyModal
-          isOpen={isAddMoneyOpen}
-          onClose={() => setIsAddMoneyOpen(false)}
-          currentBalancePaise={walletBalancePaise}
-          onSuccess={(addedPaise: number) => {
-            setIsAddMoneyOpen(false);
-            toast.success(`Added ${formatPaise(addedPaise)} to your KingPay Wallet.`);
-          }}
-        />
-      )}
+
     </div>
   );
 }
