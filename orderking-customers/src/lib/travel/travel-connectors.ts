@@ -447,27 +447,34 @@ export async function searchLiveBuses(req: BusSearchRequest): Promise<BusSearchR
       if (res.ok) {
         const json = await res.json();
         if (json && Array.isArray(json.availableTrips) && json.availableTrips.length > 0) {
-          const buses: BusOption[] = json.availableTrips.map((trip: any, idx: number) => ({
+          const buses: BusOption[] = json.availableTrips.filter((trip: any) =>
+            trip?.id && trip?.travels && trip?.busType && trip?.departureTime &&
+            trip?.arrivalTime && Number(trip?.duration) > 0 &&
+            Number(trip?.availableSeats) >= 0 && Number(trip?.totalSeats) > 0 &&
+            Number(trip?.fares?.[0]) > 0
+          ).map((trip: any, idx: number) => ({
             id: trip.id || `rb-${idx}`,
-            operatorName: trip.travels || "Partner Express",
-            busType: trip.busType || "Volvo AC Sleeper (2+1)",
-            departureTime: trip.departureTime || "21:00",
-            arrivalTime: trip.arrivalTime || "06:30 (+1)",
-            durationMinutes: trip.duration ? parseInt(trip.duration, 10) : 570,
+            operatorName: trip.travels,
+            busType: trip.busType,
+            departureTime: trip.departureTime,
+            arrivalTime: trip.arrivalTime,
+            durationMinutes: Number(trip.duration),
             sourceCity,
             destinationCity,
-            boardingPoints: Array.isArray(trip.boardingTimes) ? trip.boardingTimes.map((b: any) => b.location) : ["Majestic", "Madiwala"],
-            droppingPoints: Array.isArray(trip.dropTimes) ? trip.dropTimes.map((d: any) => d.location) : ["Panaji", "Mapusa"],
-            rating: trip.rating ? parseFloat(trip.rating) : 4.6,
-            ratingsCount: 340,
-            totalSeats: trip.totalSeats || 36,
-            availableSeats: trip.availableSeats || 14,
-            farePaise: Math.round(Number(trip.fares?.[0] || 1200) * 100),
-            startingFarePaise: Math.round(Number(trip.fares?.[0] || 1200) * 100),
-            amenities: ["Live GPS", "AC", "Charging Port", "Blanket", "Water Bottle"],
+            boardingPoints: Array.isArray(trip.boardingTimes) ? trip.boardingTimes.map((b: any) => b.location).filter(Boolean) : [],
+            droppingPoints: Array.isArray(trip.dropTimes) ? trip.dropTimes.map((d: any) => d.location).filter(Boolean) : [],
+            rating: Number(trip.rating) || 0,
+            ratingsCount: Number(trip.ratingsCount) || 0,
+            totalSeats: Number(trip.totalSeats),
+            availableSeats: Number(trip.availableSeats),
+            farePaise: Math.round(Number(trip.fares[0]) * 100),
+            startingFarePaise: Math.round(Number(trip.fares[0]) * 100),
+            amenities: Array.isArray(trip.amenities) ? trip.amenities : [],
             bookingUrl: `https://www.redbus.in/bus-tickets/${encodeURIComponent(sourceCity)}-to-${encodeURIComponent(destinationCity)}`,
           }));
 
+          if (!buses.length) throw new Error("No complete RedBus offers were returned.");
+          buses.sort((a, b) => a.farePaise - b.farePaise);
           return {
             success: true,
             data: buses,
