@@ -112,20 +112,18 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
 
   const duffelToken =
     process.env.DUFFEL_ACCESS_TOKEN ||
-    process.env.DUFFEL_API_KEY ||
-    process.env.VITE_DUFFEL_ACCESS_TOKEN;
+    process.env.DUFFEL_API_KEY;
 
   const kiwiApiKey =
     process.env.KIWI_API_KEY ||
-    process.env.TEQUILA_API_KEY ||
-    process.env.VITE_TRAVEL_API_KEY;
+    process.env.TEQUILA_API_KEY;
 
   const travelpayoutsToken =
     process.env.TRAVELPAYOUTS_TOKEN ||
     process.env.AVIASALES_API_TOKEN;
 
   // 1. Try Duffel v2 Flights API if token is configured
-  if (duffelToken) {
+  if (duffelToken?.startsWith("duffel_live_")) {
     try {
       const duffelRes = await fetch("https://api.duffel.com/air/offer_requests?return_offers=true", {
         method: "POST",
@@ -155,7 +153,17 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
         const json = await duffelRes.json();
         const offers = json?.data?.offers;
         if (Array.isArray(offers) && offers.length > 0) {
-          const flights: FlightOption[] = offers.map((offer: any, idx: number) => {
+          const flights: FlightOption[] = offers.filter((offer: any) => {
+            const slice = offer?.slices?.[0];
+            const first = slice?.segments?.[0];
+            const last = slice?.segments?.at(-1);
+            return Boolean(
+              offer?.id && (offer?.owner?.iata_code || first?.operating_carrier?.iata_code) &&
+              first?.operating_carrier_flight_number && first?.departing_at &&
+              last?.arriving_at && slice?.duration && Number(offer?.total_amount) > 0 &&
+              offer?.total_currency?.toUpperCase() === "INR"
+            );
+          }).map((offer: any, idx: number) => {
             const firstSlice = offer.slices?.[0];
             const firstSegment = firstSlice?.segments?.[0];
             const lastSegment = firstSlice?.segments?.[firstSlice.segments.length - 1] || firstSegment;
@@ -168,7 +176,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
             const arrIso = lastSegment?.arriving_at || `${departureDate}T08:15:00`;
             const durationMins = parseIsoDurationMinutes(firstSlice?.duration);
             const rawAmount = parseFloat(offer.total_amount);
-            const pricePaise = !isNaN(rawAmount) && rawAmount > 0 ? Math.round(rawAmount * 100) : 450000;
+            const pricePaise = Math.round(rawAmount * 100);
             const stops = Math.max(0, (firstSlice?.segments?.length || 1) - 1);
 
             return {
@@ -198,6 +206,8 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
             };
           });
 
+          if (!flights.length) throw new Error("No complete INR Duffel offers were returned.");
+          flights.sort((a, b) => a.pricePaise - b.pricePaise);
           return {
             success: true,
             data: flights,
