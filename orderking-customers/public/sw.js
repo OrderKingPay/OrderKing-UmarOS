@@ -1,9 +1,9 @@
 "use strict";
 // OrderKing Tier-2/Tier-3 Low-Network Resilient Service Worker
-const SW_VERSION = "ok-shell-v5.4.0-cachebust-live";
+const SW_VERSION = "ok-shell-v5.5.0-kingpay-clean-minimal";
 const CACHE_SHELL = SW_VERSION;
-const CACHE_MENUS = "ok-menus-v5.4.0-cachebust-live";
-const CACHE_ASSETS = "ok-assets-v5.4.0-cachebust-live";
+const CACHE_MENUS = "ok-menus-v5.5.0-kingpay-clean-minimal";
+const CACHE_ASSETS = "ok-assets-v5.5.0-kingpay-clean-minimal";
 
 const SHELL_CACHE = CACHE_SHELL;
 const MENU_CACHE = CACHE_MENUS;
@@ -201,7 +201,7 @@ self.addEventListener("activate", (event) => {
       const existingNames = await caches.keys();
       await Promise.all(
         existingNames
-          .filter((name) => !validCaches.has(name) || !name.includes("v5.4.0-cachebust-live"))
+          .filter((name) => !validCaches.has(name) || !name.includes("v5.5.0-kingpay-clean-minimal"))
           .map((name) => caches.delete(name))
       );
       if (self.registration && self.registration.navigationPreload) {

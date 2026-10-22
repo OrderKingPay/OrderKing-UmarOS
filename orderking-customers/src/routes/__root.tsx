@@ -472,7 +472,7 @@ function Root() {
           </CustomizationProvider>
         </ErrorBoundary>
         <Scripts />
-        <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(r=>{r.update().catch(()=>{});if(r.waiting){r.waiting.postMessage({type:'SKIP_WAITING'});}r.addEventListener('updatefound',()=>{const w=r.installing;if(w){w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller){w.postMessage({type:'SKIP_WAITING'});}});}});}).catch(()=>{}))}if('caches' in window){caches.keys().then(k=>k.forEach(c=>{if(!c.includes('v5.4.0-cachebust-live'))caches.delete(c);})).catch(()=>{});}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(r=>{r.update().catch(()=>{});if(r.waiting){r.waiting.postMessage({type:'SKIP_WAITING'});}r.addEventListener('updatefound',()=>{const w=r.installing;if(w){w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller){w.postMessage({type:'SKIP_WAITING'});}});}});}).catch(()=>{}))}if('caches' in window){caches.keys().then(k=>k.forEach(c=>{if(!c.includes('v5.5.0-kingpay-clean-minimal'))caches.delete(c);})).catch(()=>{});}` }} />
       </body>
     </html>
   );
