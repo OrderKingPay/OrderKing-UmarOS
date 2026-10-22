@@ -6,12 +6,24 @@ export type DbSource = "neon" | "pglite";
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
-export function getDatabaseUrl() {
-  const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
-  let url = raw && raw.trim() ? raw : undefined;
-  if (url && url.includes('your_supabase_pooler')) url = undefined;
-  if (!url || !url.startsWith("postgres")) {
-    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
+/** Server-only PostgreSQL configuration. Never fall back to a checked-in credential. */
+export function getDatabaseUrl(): string {
+  const raw = typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
+  let url = raw?.trim() || "";
+  if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+    url = url.slice(1, -1).trim();
+  }
+  if (!/^postgres(?:ql)?:\/\//i.test(url) || url.includes("your_supabase_pooler")) {
+    throw new Error("DATABASE_URL must be configured as a server-side PostgreSQL environment secret.");
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error("DATABASE_URL is not a valid PostgreSQL connection URL.");
+  }
+  if (!parsed.hostname || parsed.searchParams.get("sslmode")?.toLowerCase() !== "verify-full") {
+    throw new Error("DATABASE_URL must use certificate-verified TLS (sslmode=verify-full).");
   }
   return url;
 }
