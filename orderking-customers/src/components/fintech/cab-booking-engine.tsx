@@ -88,14 +88,14 @@ export function CabBookingEngine({
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300">
                 <Sparkles className="size-3 text-amber-400" />
-                Verified Drivers · Zero Surge Markups · Direct Mobility Dispatch
+                Check current ride options with approved providers
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
             <ShieldCheck className="size-4" />
-            <span>0% Surge Guarantee</span>
+            <span>Provider fare applies</span>
           </div>
         </div>
 
@@ -189,13 +189,13 @@ export function CabBookingEngine({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-            <span>Verified Driver Fleet ({quotes.length})</span>
+            <span>Provider Cab Offers ({quotes.length})</span>
             <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-              Transparent Flat Fares
+              Check final quote
             </span>
           </h3>
           <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-            Verified Driver Assigned Instantly
+            Only confirmed driver assignments are shown
           </span>
         </div>
 
@@ -204,9 +204,9 @@ export function CabBookingEngine({
             <div className="size-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
               <Car className="size-6" />
             </div>
-            <h4 className="text-base font-bold text-slate-900">No cabs available for this category right now</h4>
+            <h4 className="text-base font-bold text-slate-900">No verified cab offers available</h4>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Try switching your service category or resetting to Delhi Airport Transfer.
+              A confirmed supplier connection is required to display fares.
             </p>
             <Button
               type="button"
