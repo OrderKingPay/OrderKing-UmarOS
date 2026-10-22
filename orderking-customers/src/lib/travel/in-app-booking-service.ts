@@ -70,6 +70,28 @@ export interface TrainQuote extends BaseQuote {
   pantryAvailable: boolean;
 }
 
+export interface TrainQuoteQueryResult {
+  mode: "train";
+  quotes: TrainQuote[];
+  realTimePrsManaged: boolean;
+  authenticated: boolean;
+  status: "authenticated" | "unauthenticated";
+  inventoryNotice: string;
+  fromCity: string;
+  fromCode: string;
+  toCity: string;
+  toCode: string;
+  journeyDate: string;
+  quota: TrainQuote["quota"];
+  trainClass: TrainQuote["trainClass"];
+  officialSearchUrl: string;
+}
+
+// IRCTC website handoff only: do not claim to submit searches or issue tickets.
+function buildOfficialIrctcSearchUrl(_from: string, _to: string, _date: string): string {
+  return "https://www.irctc.co.in/nget/train-search";
+}
+
 export interface BusSeatBerth {
   id: string;
   label: string; // e.g. "L1 (Window)", "U4 (Aisle)"
