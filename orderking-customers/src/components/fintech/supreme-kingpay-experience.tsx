@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Wallet,
-  QrCode,
   ArrowRight,
   ShieldCheck,
   Zap,
@@ -29,7 +28,6 @@ import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
 import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { useLocationStore } from "@/lib/stores/location";
-import { ScanQrModal } from "@/components/fintech/scan-qr-modal";
 import { 
   ALL_INDIAN_BOARDS, 
   CORE_SUBJECTS, 
@@ -60,7 +58,6 @@ export function SupremeKingPayExperience() {
   const [activeTab, setActiveTab] = useState<ActiveVerticalTab>("pay");
 
   // Modals
-  const [isScannerOpen, setIsScannerOpen] = useState(false);
   // Dynamic location
   const currentCity = location?.cityName && location.cityName !== "Locating..." ? location.cityName : "New Delhi";
   const currentZone = location?.zoneName || "Connaught Place";
@@ -188,14 +185,7 @@ export function SupremeKingPayExperience() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => setIsScannerOpen(true)}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2.5 text-xs shadow transition active:scale-95 cursor-pointer"
-            >
-              <QrCode className="size-4" />
-              <span>Scan QR</span>
-            </button>
+
 </div>
         </div>
       </section>
@@ -784,14 +774,7 @@ export function SupremeKingPayExperience() {
         </div>
       )}
 
-      {/* QR Scanner Modal */}
-      {isScannerOpen && (
-        <ScanQrModal
-          isOpen={isScannerOpen}
-          onClose={() => setIsScannerOpen(false)}
-          walletBalancePaise={walletBalancePaise}
-        />
-      )}
+
 
       {/* Add Money Modal */}
 
