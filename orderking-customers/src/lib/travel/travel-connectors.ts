@@ -252,7 +252,12 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
       if (res.ok) {
         const json = await res.json();
         if (json && Array.isArray(json.data) && json.data.length > 0) {
-          const flights: FlightOption[] = json.data.map((item: any, idx: number) => {
+          const flights: FlightOption[] = json.data.filter((item: any) =>
+            item?.id && item?.airlines?.[0] && item?.route?.[0]?.flight_no &&
+            item?.local_departure && item?.local_arrival &&
+            Number(item?.duration?.total) > 0 && Number(item?.price) > 0 &&
+            typeof item?.deep_link === "string" && item.deep_link.startsWith("https://")
+          ).map((item: any, idx: number) => {
             const primaryAirline = item.airlines?.[0] || "6E";
             const carrierName = AIRLINE_NAMES[primaryAirline] || item.cityFrom || "Carrier Partner";
             const firstRoute = item.route?.[0];
@@ -288,6 +293,8 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
             };
           });
 
+          if (!flights.length) throw new Error("No complete Kiwi offers were returned.");
+          flights.sort((a, b) => a.pricePaise - b.pricePaise);
           return {
             success: true,
             data: flights,
@@ -305,7 +312,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
   }
 
   // 2. Try Travelpayouts Aviasales API if token is available
-  if (travelpayoutsToken) {
+  if (travelpayoutsToken && process.env.TRAVELPAYOUTS_MARKER) {
     try {
       const tpUrl = new URL("https://api.travelpayouts.com/aviasales/v3/prices_for_dates");
       tpUrl.searchParams.set("origin", origin);
@@ -325,7 +332,11 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
       if (res.ok) {
         const json = await res.json();
         if (json && Array.isArray(json.data) && json.data.length > 0) {
-          const flights: FlightOption[] = json.data.map((item: any, idx: number) => {
+          const flights: FlightOption[] = json.data.filter((item: any) =>
+            item?.airline && item?.flight_number && item?.departure_at &&
+            Number(item?.duration) > 0 && Number(item?.price) > 0 &&
+            typeof item?.link === "string" && item.link.length > 0
+          ).map((item: any, idx: number) => {
             const airline = item.airline || "6E";
             const carrierName = AIRLINE_NAMES[airline] || "Direct Airline";
             const pricePaise = Math.round(Number(item.price) * 100);
@@ -335,25 +346,20 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
               carrierCode: airline,
               flightNumber: `${airline} ${item.flight_number || idx + 201}`,
               departureTime: item.departure_at || `${departureDate}T07:30:00`,
-              arrivalTime: item.return_at || `${departureDate}T09:45:00`,
+              arrivalTime: new Date(new Date(item.departure_at).getTime() + Number(item.duration) * 60000).toISOString(),
               durationMinutes: item.duration || 135,
               pricePaise,
               directStops: item.transfers || 0,
               cabinClass,
               seatsAvailable: undefined,
-              bookingUrl: item.link ? `https://tp.media/r?marker=${process.env.TRAVELPAYOUTS_MARKER || "500000"}&p=4114&u=${encodeURIComponent(item.link)}` : buildOfficialAirlineDeepLink({
-                carrierCode: airline,
-                from: origin,
-                to: destination,
-                departureDate,
-                passengers,
-                cabinClass,
-              }).bookingUrl,
+              bookingUrl: `https://tp.media/r?marker=${encodeURIComponent(process.env.TRAVELPAYOUTS_MARKER!)}&p=4114&u=${encodeURIComponent(item.link)}`,
               baggageAllowance: undefined,
               aircraftType: undefined,
             };
           });
 
+          if (!flights.length) throw new Error("No complete Travelpayouts offers were returned.");
+          flights.sort((a, b) => a.pricePaise - b.pricePaise);
           return {
             success: true,
             data: flights,
