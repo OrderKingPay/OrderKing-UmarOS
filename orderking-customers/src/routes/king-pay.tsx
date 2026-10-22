@@ -102,13 +102,13 @@ function OrderKingPayPage() {
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-black text-amber-300">Supreme KingPay Super Engine</span>
+                  <span className="text-xs font-black text-amber-300">OrderKingPay Services</span>
                   <span className="text-[9px] font-black uppercase px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                    Live 4 Pillars
+                    Services
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Tickets (Flights, Trains, Buses, Hotels) · AI Tutor · Verified Jobs · 1-Tap UPI
+                  Food · Travel · Account
                 </p>
               </div>
             </div>
