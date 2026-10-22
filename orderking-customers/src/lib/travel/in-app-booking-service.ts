@@ -10,7 +10,7 @@ import {
 } from "./irctc-reconciliation";
 
 export const SOVEREIGN_TRAVEL_DISCLAIMER =
-  "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon charter confirmation.";
+  "Travel availability and booking confirmation require the original supplier. Unverified local estimates are not bookable.";
 
 export type TravelMode = "flight" | "train" | "bus" | "cab";
 export type RebateChoice = "24k_gold" | "food_wallet";
@@ -176,21 +176,8 @@ export interface SovereignETicket {
 // PNR & SERIAL GENERATORS
 // ============================================================================
 
-export function generateSovereignPnr(mode: TravelMode): string {
-  if (mode === "train") {
-    throw new Error(
-      "Synthetic Indian Railways PNR generation is strictly prohibited under CRIS/IRCTC regulations. Genuine 10-digit numeric PNRs are issued exclusively by Indian Railways PRS upon official ticket confirmation."
-    );
-  }
-  const prefixMap: Record<Exclude<TravelMode, "train">, string> = {
-    flight: "OK-FL",
-    bus: "OK-BS",
-    cab: "OK-CB",
-  };
-  const prefix = (prefixMap as any)[mode] || "OK-TRV";
-  const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const timestampSuffix = Date.now().toString().slice(-4);
-  return `${prefix}-${randomChars}${timestampSuffix}`;
+export function generateSovereignPnr(_mode: TravelMode): string {
+  throw new SupplierUnavailableError("Booking references must be issued by an authorized travel provider.");
 }
 
 export function generateTransactionId(method: PaymentMethod): string {
@@ -361,18 +348,15 @@ export function searchTrainQuotes(
   // Strict Fintech Audit Guarantee: Zero fabricated train inventory.
   // In accordance with CRIS/IRCTC regulations, synthetic or mock train seat allocation is strictly prohibited.
   // In the absence of server-side authenticated CRIS PRS provider credentials, return an empty array with explicit unauthenticated state.
-  const isAuth = isIrctcPspAuthenticated();
   const quotes: TrainQuote[] = [];
 
   return Object.assign(quotes, {
     mode: "train" as const,
     quotes,
-    realTimePrsManaged: true as const,
-    authenticated: isAuth,
-    status: (isAuth ? "authenticated" : "unauthenticated") as "unauthenticated" | "authenticated",
-    inventoryNotice: isAuth
-      ? "Indian Railways PRS (Passenger Reservation System) inventory is live queried."
-      : "Indian Railways PRS (Passenger Reservation System) inventory is unauthenticated in-app. In accordance with CRIS/IRCTC regulations, synthetic or mock train seat allocation is strictly prohibited. Please search and book live on the official IRCTC portal: " + officialSearchUrl,
+    realTimePrsManaged: false as const,
+    authenticated: false,
+    status: "unauthenticated" as const,
+    inventoryNotice: "In-app railway inventory is not connected to an authorized booking provider. Use the official IRCTC booking portal: " + officialSearchUrl,
     fromCity: from,
     fromCode,
     toCity: to,
@@ -584,22 +568,9 @@ export function getStoredETickets(): SovereignETicket[] {
   return [];
 }
 
-export function saveETicketToStorage(ticket: SovereignETicket): void {
-  if (typeof window === "undefined") return;
-  // Strictly prevent synthetic train tickets from persisting to storage
-  if (ticket.mode === "train") {
-    const cris = validateCrisPnr(ticket.pnr);
-    if (!cris.valid || isHardcodedTrainQuote({ id: ticket.serviceNumber, mode: "train" })) {
-      return;
-    }
-  }
-  try {
-    const current = getStoredETickets();
-    const updated = [ticket, ...current.filter((t) => t.pnr !== ticket.pnr)];
-    window.localStorage.setItem(SOVEREIGN_ETICKETS_STORAGE_KEY, JSON.stringify(updated));
-  } catch {
-    // ignore quota
-  }
+export function saveETicketToStorage(_ticket: SovereignETicket): void {
+  // Keep existing local data untouched; never persist unverified new tickets.
+  throw new SupplierUnavailableError("Only server-verified provider tickets may be stored as confirmed bookings.");
 }
 
 function syncTicketToSavedTrips(ticket: SovereignETicket): void {
