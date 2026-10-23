@@ -559,7 +559,7 @@ export const getRestaurant = createServerFn({ method: "GET" })
         restaurant: r,
         hours,
         documents: docs,
-        storageConnected: storageAdapter.connected,
+        storageConnected: (await import("@/lib/adapters/storage-private.server")).isPrivateMerchantStorageConfigured(),
       };
     });
   });
