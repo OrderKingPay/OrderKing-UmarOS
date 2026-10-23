@@ -7,4 +7,6 @@
  *
  * Do NOT edit `server.ts` for this — that file is frozen pre-wired config.
  */
-export const emailAndPasswordEnabled = true;
+// Disabled until phone-OTP authentication issues an auditable server session.
+// Existing phone-derived credentials are predictable and must not be accepted.
+export const emailAndPasswordEnabled = false;

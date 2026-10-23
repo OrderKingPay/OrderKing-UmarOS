@@ -57,43 +57,31 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
     });
   });
 
-  describe("2. WhatsApp OTP Deep Link Generator", () => {
-    it("generates 1-tap wa.me URL with pre-filled verification code", () => {
+  describe("2. WhatsApp OTP delivery safety", () => {
+    it("does not put a secret into an outgoing chat link", () => {
       const url = buildWhatsAppOtpUrl("9876543210", "482910", "OrderKing");
-      expect(url).toContain("https://wa.me/919876543210?text=");
-      expect(url).toContain(encodeURIComponent("482910"));
-      expect(url).toContain(encodeURIComponent("OrderKing Verification Code"));
+      expect(url).toBe("https://wa.me/919876543210");
+      expect(url).not.toContain("482910");
     });
 
-    it("dispatches immediate WhatsApp deep link when channel is whatsapp", async () => {
-      const res = await dispatchOtpSms({
-        phone: "9876543210",
-        otp: "889900",
-        channel: "whatsapp",
-      });
-
-      expect(res.success).toBe(true);
-      expect(res.provider).toBe("whatsapp");
-      expect(res.debugOtp).toBe("889900");
-      expect(res.whatsAppOtpUrl).toContain("https://wa.me/919876543210");
+    it("fails closed without a real WhatsApp provider", async () => {
+      const res = await dispatchOtpSms({ phone: "9876543210", otp: "889900", channel: "whatsapp" });
+      expect(res.success).toBe(false);
+      expect(res.provider).toBe("unavailable");
+      expect(res.debugOtp).toBeUndefined();
+      expect(res.whatsAppOtpUrl).toBeUndefined();
     });
   });
 
-  describe("3. Unconfigured Environment (Cloudflare Pending Config)", () => {
-    it("returns pendingConfig with debugOtp when no gateway API keys are set", async () => {
+  describe("3. Unconfigured SMS provider safety", () => {
+    it("never issues a successful or browser-visible OTP without a provider", async () => {
       expect(getAvailableSmsProviders()).toEqual([]);
-
-      const res = await dispatchOtpSms({
-        phone: "9876543210",
-        otp: "654321",
-      });
-
-      expect(res.success).toBe(true);
+      const res = await dispatchOtpSms({ phone: "9876543210", otp: "654321" });
+      expect(res.success).toBe(false);
       expect(res.pendingConfig).toBe(true);
-      expect(res.provider).toBe("mock");
-      expect(res.debugOtp).toBe("654321");
-      expect(res.providerNotice).toContain("SMS gateway key not yet provided in Cloudflare environment");
-      expect(res.whatsAppOtpUrl).toContain("9876543210");
+      expect(res.provider).toBe("unavailable");
+      expect(res.debugOtp).toBeUndefined();
+      expect(res.whatsAppOtpUrl).toBeUndefined();
     });
   });
 
@@ -119,7 +107,7 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
       expect(res.success).toBe(true);
       expect(res.provider).toBe("fast2sms");
       expect(res.messageId).toBe("REQ_F2S_778899");
-      expect(res.debugOtp).toBe("778899");
+      expect(res.debugOtp).toBeUndefined();
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
       const [url, options] = mockFetch.mock.calls[0];
@@ -262,8 +250,8 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
     });
   });
 
-  describe("9. Zero-Lockout Emergency Fallback", () => {
-    it("never locks out users even if all external gateways fail", async () => {
+  describe("9. Provider outage fails closed", () => {
+    it("never treats delivery failure as verified authentication", async () => {
       process.env.FAST2SMS_API_KEY = "f2s_key";
 
       const mockFetch = vi.fn().mockRejectedValue(new Error("Network timeout after 5000ms"));
@@ -274,11 +262,11 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
         otp: "123987",
       });
 
-      expect(res.success).toBe(true);
-      expect(res.provider).toBe("mock");
-      expect(res.debugOtp).toBe("123987");
+      expect(res.success).toBe(false);
+      expect(res.provider).toBe("unavailable");
+      expect(res.debugOtp).toBeUndefined();
       expect(res.error).toContain("Network timeout");
-      expect(res.whatsAppOtpUrl).toContain("123987");
+      expect(res.whatsAppOtpUrl).toBeUndefined();
     });
   });
 });

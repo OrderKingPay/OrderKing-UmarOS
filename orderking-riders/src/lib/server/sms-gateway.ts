@@ -7,7 +7,7 @@
  * 3. MSG91 OTP API (authkey + template_id)
  * 4. Twilio SMS API fallback (HTTP Basic Auth)
  * 5. Instant WhatsApp OTP 1-Tap Deep Link URL
- * 6. Zero-Lockout Failover & Cloudflare Environment Awareness
+ * 6. Fail-closed delivery and Cloudflare Environment Awareness
  */
 
 export interface DispatchOtpParams {
@@ -23,7 +23,7 @@ export type TelecomProvider =
   | "2factor"
   | "msg91"
   | "twilio"
-  | "mock"
+  | "unavailable"
   | "whatsapp";
 
 export interface DispatchOtpResult {
@@ -32,8 +32,9 @@ export interface DispatchOtpResult {
   messageId?: string;
   pendingConfig?: boolean;
   providerNotice?: string;
-  debugOtp: string;
-  whatsAppOtpUrl: string;
+  // Never return authentication codes or self-send message URLs to the requester.
+  debugOtp?: never;
+  whatsAppOtpUrl?: never;
   deliveryLatencyMs?: number;
   error?: string;
 }
@@ -54,15 +55,18 @@ export function isValidIndianPhone(cleanPhone: string): boolean {
 }
 
 /**
- * Builds a direct 1-tap WhatsApp deep link for OTP verification.
+ * Builds a contact-only link. This is not a verified WhatsApp OTP integration.
  */
 export function buildWhatsAppOtpUrl(
   cleanPhone: string,
   otp: string,
   appName = "OrderKing",
 ): string {
-  const text = `*${appName} Verification Code*\nYour one-time login OTP is: *${otp}*\n\nValid for 10 minutes. Do not share this code with anyone.`;
-  return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(text)}`;
+  // This is not an authorized WhatsApp Business OTP dispatch integration.
+  // A WhatsApp contact link must never carry an authentication challenge.
+  void otp;
+  void appName;
+  return `https://wa.me/91${cleanPhone}`;
 }
 
 /**
@@ -387,7 +391,6 @@ export async function dispatchOtpSms(
   const otp = params.otp.trim();
   const appName = params.appName || "OrderKing";
   const timeoutMs = params.timeoutMs || 5000;
-  const whatsAppOtpUrl = buildWhatsAppOtpUrl(cleanPhone, otp, appName);
 
   if (!isValidIndianPhone(cleanPhone)) {
     throw new Error(
@@ -395,39 +398,26 @@ export async function dispatchOtpSms(
     );
   }
 
-  // If user requested WhatsApp channel directly
+  // A locally constructed chat link is not provider-issued OTP delivery.
   if (params.channel === "whatsapp") {
-    console.log(
-      `[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. Deep link generated.`,
-    );
     return {
-      success: true,
-      provider: "whatsapp",
-      messageId: `WA-${Date.now()}`,
-      debugOtp: otp,
-      whatsAppOtpUrl,
+      success: false,
+      provider: "unavailable" as const,
+      pendingConfig: true,
+      providerNotice: "WhatsApp authentication is unavailable until an authorized API is connected.",
       deliveryLatencyMs: Date.now() - startTime,
     };
   }
 
   const availableProviders = getAvailableSmsProviders();
 
-  // No active API key found in Cloudflare / environment
+  // If no authorized gateway is configured, fail closed without revealing a code.
   if (availableProviders.length === 0) {
-    const notice =
-      "SMS gateway key not yet provided in Cloudflare environment. OTP generated and logged.";
-    console.warn(
-      `[SMS Gateway] ⚠️ ${notice} (Recipient: +91-${cleanPhone}, OTP: [${otp}])`,
-    );
-
     return {
-      success: true,
-      provider: "mock",
+      success: false,
+      provider: "unavailable" as const,
       pendingConfig: true,
-      providerNotice: notice,
-      debugOtp: otp,
-      whatsAppOtpUrl,
-      messageId: `SIMULATED-${Date.now()}`,
+      providerNotice: "SMS authentication is unavailable: no authorized gateway configured.",
       deliveryLatencyMs: Date.now() - startTime,
     };
   }
@@ -438,7 +428,7 @@ export async function dispatchOtpSms(
   for (const provider of availableProviders) {
     try {
       console.log(
-        `[SMS Gateway] 🚀 Dispatching OTP [${otp}] to +91-${cleanPhone} via ${provider.toUpperCase()}...`,
+        `[SMS Gateway] Dispatching verification message to +91-${cleanPhone} via ${provider.toUpperCase()}...`,
       );
 
       let result: { success: boolean; messageId: string };
@@ -478,8 +468,6 @@ export async function dispatchOtpSms(
         success: true,
         provider,
         messageId: result.messageId,
-        debugOtp: otp,
-        whatsAppOtpUrl,
         deliveryLatencyMs: latency,
       };
     } catch (err: unknown) {
@@ -491,20 +479,14 @@ export async function dispatchOtpSms(
     }
   }
 
-  // All configured providers encountered an error (e.g. rate limit / network issue)
-  // Ensure the rider is NEVER locked out by providing resilient fallback
+  // Provider outage must never turn into a successful authentication.
   const combinedError = errors.join(" | ");
-  console.warn(
-    `[SMS Gateway] ⚠️ All configured gateways failed (${combinedError}). Falling back to debug verification to prevent lockout.`,
-  );
-
+  console.warn("[SMS Gateway] All configured delivery providers failed. Verification unavailable.");
   return {
-    success: true,
-    provider: "mock",
+    success: false,
+    provider: "unavailable",
     pendingConfig: false,
-    providerNotice: `Gateway delivery issue (${errors[0] || "Network timeout"}). Emergency fallback OTP active.`,
-    debugOtp: otp,
-    whatsAppOtpUrl,
+    providerNotice: "SMS delivery is unavailable. Try again later.",
     error: combinedError,
     deliveryLatencyMs: Date.now() - startTime,
   };

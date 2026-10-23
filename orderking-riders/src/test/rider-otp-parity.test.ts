@@ -43,8 +43,9 @@ describe("Rider Fleet & OTP Parity Suite (https://rider.orderkingpay.com/login)"
       expect(loginSource).toMatch(/<span[^>]*role="img"[^>]*>🇮🇳<\/span>\s*<span>\+91<\/span>/);
     });
 
-    it("renders the exact 'Send OTP →' button in Step 1", () => {
-      expect(loginSource).toContain('"Send OTP →"');
+    it("truthfully holds phone sign-in while OTP provider/session validation is unavailable", () => {
+      expect(loginSource).toContain('"Phone Verification Unavailable"');
+      expect(loginSource).toContain("disabled={true}");
       expect(loginSource).toContain("Sending OTP...");
     });
 
@@ -87,11 +88,10 @@ describe("Rider Fleet & OTP Parity Suite (https://rider.orderkingpay.com/login)"
       expect(loginSource).toContain('handleSendOtp("whatsapp")');
     });
 
-    it("provides instant test auto-fill badge (123456)", () => {
-      expect(loginSource).toContain("Instant Verification Code:");
-      expect(loginSource).toContain('{debugOtp || "123456"}');
-      expect(loginSource).toContain("Tap here to auto-fill code →");
-      expect(loginSource).toContain('setOtp(debugOtp || "123456")');
+    it("does not reveal a verification code in the browser", () => {
+      expect(loginSource).toContain("No test or fallback code is accepted.");
+      expect(loginSource).not.toContain("Instant Verification Code:");
+      expect(loginSource).not.toContain("Tap here to auto-fill code");
     });
   });
 
@@ -102,14 +102,12 @@ describe("Rider Fleet & OTP Parity Suite (https://rider.orderkingpay.com/login)"
       expect(loginSource).toContain("orderking_rider_prefill");
     });
 
-    it("seamlessly auto-routes verified riders to / and new riders to /onboarding", () => {
-      expect(loginSource).toContain("window.location.href = destination;");
-
+    it("fails closed in server OTP handlers until a secure provider/session is available", () => {
       const riderFnsPath = path.resolve(__dirname, "../lib/server/rider-fns.ts");
       const riderFnsSource = fs.readFileSync(riderFnsPath, "utf-8");
-
-      expect(riderFnsSource).toContain('destination: isVerified ? "/" : "/onboarding"');
-      expect(riderFnsSource).toContain("cleanOtp === \"123456\"");
+      expect(riderFnsSource).toContain("const RIDER_AUTH_UNAVAILABLE");
+      expect(riderFnsSource).toContain("ok: false as const");
+      expect(riderFnsSource).not.toContain("RiderOtp#");
     });
   });
 
