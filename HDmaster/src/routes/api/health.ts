@@ -15,7 +15,9 @@ export const Route = createFileRoute('/api/health')({
       },
       GET: async () => {
         try {
-          const dbUrl = getDatabaseUrl();
+          // An absent/invalid secret must report degraded health, not expose connection details.
+          let dbUrl: string | null = null;
+          try { dbUrl = getDatabaseUrl(); } catch { dbUrl = null; }
           let dbStatus = 'unconfigured';
 
           if (dbUrl) {
@@ -34,8 +36,8 @@ export const Route = createFileRoute('/api/health')({
               } finally {
                 if (timerId) clearTimeout(timerId);
               }
-            } catch (dbErr) {
-              dbStatus = `error: ${String(dbErr)}`;
+            } catch {
+              dbStatus = 'unavailable';
             }
           }
 
@@ -56,22 +58,22 @@ export const Route = createFileRoute('/api/health')({
               timestamp: new Date().toISOString(),
             }),
             {
-              status: isHealthy ? 200 : 200, // Return 200 with diagnostic status so health probes don't false-fail network layers
+              status: isHealthy ? 200 : 503,
               headers: {
                 'content-type': 'application/json',
                 'cache-control': 'no-store, no-cache, must-revalidate',
               },
             }
           );
-        } catch (error) {
+        } catch {
           return new Response(
             JSON.stringify({
               status: 'unhealthy',
-              error: String(error),
+              error: 'Health check failed',
               timestamp: new Date().toISOString(),
             }),
             {
-              status: 200,
+              status: 503,
               headers: {
                 'content-type': 'application/json',
                 'cache-control': 'no-store, no-cache, must-revalidate',

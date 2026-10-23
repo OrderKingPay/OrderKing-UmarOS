@@ -10,9 +10,6 @@ export type KingPayFeature =
   | 'autopay' 
   | 'settlements';
 
-// JSON import outside rootDir
-import secrets from '../../../../secrets.json';
-
 export class KingPayComplianceMaster {
   private features: Record<KingPayFeature, boolean>;
 
@@ -68,4 +65,5 @@ export class KingPayComplianceMaster {
   }
 }
 
-export const complianceMaster = new KingPayComplianceMaster(undefined, (secrets as any).KINGPAY_FEATURES);
+// Regulated features are disabled until provider approval is checked by trusted server controls.
+export const complianceMaster = new KingPayComplianceMaster();

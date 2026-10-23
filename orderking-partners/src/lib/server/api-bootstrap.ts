@@ -3,7 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import { platformConfig } from "@/lib/platform-config";
 import { notificationChannelStatus } from "@/lib/adapters/notifications";
-import { storageAdapter } from "@/lib/adapters/storage";
+
 import { dispatchAdapter } from "@/lib/adapters/dispatch";
 import { getBankingGatewayStatus } from "@/lib/adapters/banking-gateway";
 import { newId } from "@/lib/utils";
@@ -88,6 +88,8 @@ export const getBootstrap = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const customization = buildPartnerCustomizationState();
     const bankingStatus = getBankingGatewayStatus();
+    const { isPrivateMerchantStorageConfigured } = await import("@/lib/adapters/storage-private.server");
+    const privateStorageReady = isPrivateMerchantStorageConfigured();
     try {
       const sql = await getSql();
       const memberships = await loadMemberships(sql, context.userId);
@@ -106,7 +108,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
         featureFlags: platformConfig.featureFlags,
         adapters: {
           notifications: notificationChannelStatus(),
-          storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
+          storage: { connected: privateStorageReady, provider: privateStorageReady ? "SUPABASE_PRIVATE" : "NOT_CONNECTED" },
           dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
           payments: {
             connected: bankingStatus.readyForLivePayouts,
@@ -136,7 +138,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
         featureFlags: platformConfig.featureFlags,
         adapters: {
           notifications: notificationChannelStatus(),
-          storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
+          storage: { connected: privateStorageReady, provider: privateStorageReady ? "SUPABASE_PRIVATE" : "NOT_CONNECTED" },
           dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
           payments: {
             connected: bankingStatus.readyForLivePayouts,
@@ -179,48 +181,29 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
       "-" +
       restaurantId.slice(-6);
 
-    try {
-      await sql`
-        insert into restaurants (
-          id, owner_user_id, slug, name, display_name, owner_name, phone, email,
-          address, landmark, cuisine, diet, description, verification_status, data_label, active, status
-        ) values (
-          ${restaurantId}, ${context.userId}, ${slug}, ${name}, ${displayName},
-          ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
-          ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
-          ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
-          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', true, 'ACTIVE'
-        )
-      `;
-    } catch {
-      await sql`
-        insert into restaurants (
-          id, owner_user_id, name, display_name, owner_name, phone, email,
-          address, landmark, cuisine, diet, description, verification_status, data_label
-        ) values (
-          ${restaurantId}, ${context.userId}, ${name}, ${displayName},
-          ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
-          ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
-          ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
-          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL'
-        )
-      `;
-    }
+    // Drafts must never become orderable before independent approval.
+    // The live schema supports active/status; do not silently fall back to an
+    // insert that activates a restaurant through its default values.
+    await sql`
+      insert into restaurants (
+        id, owner_user_id, slug, name, display_name, owner_name, phone, email,
+        address, landmark, cuisine, diet, description, verification_status, data_label, active, status
+      ) values (
+        ${restaurantId}, ${context.userId}, ${slug}, ${name}, ${displayName},
+        ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
+        ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
+        ${(data.cuisine || "").trim()}, ${data.diet ?? "NONVEG"},
+        ${(data.description || "").trim()}, 'DRAFT', 'REAL', false, 'DRAFT'
+      )
+    `;
 
     await sql`
       insert into outlets (id, restaurant_id, name, address, is_primary)
       values (${outletId}, ${restaurantId}, ${displayName}, ${(data.address || "").trim()}, true)
     `;
 
-    try {
-      await sql`
-        insert into restaurant_outlets (id, restaurant_id, name, address_line, area, lat, lng, zone_id, active)
-        values (${outletId}, ${restaurantId}, ${displayName}, ${(data.address || "").trim()}, 'Central', 28.6304, 77.2177, 'del-cp', true)
-        on conflict (id) do update set active = true
-      `;
-    } catch {
-      // Non-fatal if schema differs in local mock
-    }
+    // Never fabricate geolocation or delivery-zone assignment at registration.
+    // A reviewed, geocoded location is required before enabling a delivery outlet.
 
     await sql`
       insert into restaurant_staff (id, restaurant_id, outlet_id, user_id, role)
@@ -477,9 +460,9 @@ export const submitForReview = createServerFn({ method: "POST" })
       }
       await sql`
         update restaurants
-        set verification_status = 'VERIFIED',
-            status = 'ACTIVE',
-            active = true,
+        set verification_status = 'PENDING_VERIFICATION',
+            status = 'PENDING_VERIFICATION',
+            active = false,
             data_label = 'REAL',
             updated_at = now()
         where id = ${ctx.restaurantId}
@@ -487,7 +470,7 @@ export const submitForReview = createServerFn({ method: "POST" })
       try {
         await sql`
           update restaurant_outlets
-          set active = true
+          set active = false
           where restaurant_id = ${ctx.restaurantId}
         `;
       } catch {
@@ -496,12 +479,12 @@ export const submitForReview = createServerFn({ method: "POST" })
       await writeAudit(sql, {
         restaurantId: ctx.restaurantId,
         actorUserId: context.userId,
-        action: "submit_review_auto_verified",
+        action: "submit_for_manual_compliance_review",
         entityType: "restaurant",
         entityId: ctx.restaurantId,
-        detail: "Automated self-serve merchant onboarding verified with 14-digit FSSAI, PAN & IFSC",
+        detail: "Merchant submitted format-checked identification for independent evidence-based compliance review",
       });
-      return { ok: true as const, verificationStatus: "VERIFIED" as const };
+      return { ok: true as const, verificationStatus: "PENDING_VERIFICATION" as const };
     });
   });
 
@@ -576,7 +559,7 @@ export const getRestaurant = createServerFn({ method: "GET" })
         restaurant: r,
         hours,
         documents: docs,
-        storageConnected: storageAdapter.connected,
+        storageConnected: (await import("@/lib/adapters/storage-private.server")).isPrivateMerchantStorageConfigured(),
       };
     });
   });
@@ -593,31 +576,53 @@ export const uploadDocument = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");
     return withVendor(context.userId, data.restaurantId, "documents.upload", async (sql, ctx) => {
-      const comma = data.dataUrl.indexOf(",");
-      const b64 = comma >= 0 ? data.dataUrl.slice(comma + 1) : data.dataUrl;
-      const byteSize = Math.floor((b64.length * 3) / 4);
+      // Reject oversized base64 before allocating decoded bytes.
+      if (data.dataUrl.length > platformConfig.restaurantSettings.maxUploadBytes * 2 + 128) {
+        throw new Error("Document exceeds the secure upload limit.");
+      }
+      const match = /^data:([^;,]+);base64,([A-Za-z0-9+/]+={0,2})$/.exec(data.dataUrl);
+      if (!match || match[1] !== data.contentType) {
+        throw new Error("Invalid document data or content type.");
+      }
+      let bytes: Uint8Array;
+      try {
+        const decoded = atob(match[2]);
+        bytes = Uint8Array.from(decoded, char => char.charCodeAt(0));
+      } catch {
+        throw new Error("Document encoding is invalid.");
+      }
+      const byteSize = bytes.byteLength;
       const check = validateUpload({ contentType: data.contentType, byteSize, kind: "document" });
       if (!check.ok) throw new Error(check.error);
-      const stored = await storageAdapter.put({
-        key: `${ctx.restaurantId}/${data.kind}/${data.fileName}`,
+      const { uploadPrivateMerchantDocument, removePrivateMerchantDocument } =
+        await import("@/lib/adapters/storage-private.server");
+      const stored = await uploadPrivateMerchantDocument({
+        restaurantId: ctx.restaurantId,
+        kind: data.kind,
         contentType: data.contentType,
-        bytes: new Uint8Array(byteSize),
+        bytes,
       });
+      // Never store identity-document bodies or data URLs in the database.
       const id = newId("doc");
-      await sql`
-        insert into restaurant_documents (
-          id, restaurant_id, kind, file_name, content_type, byte_size,
-          storage_backend, storage_key, data_url, status, verification_status
-        ) values (
-          ${id}, ${ctx.restaurantId}, ${data.kind}, ${data.fileName}, ${data.contentType},
-          ${byteSize}, ${stored.backend}, ${stored.key}, ${data.dataUrl.slice(0, 200000)},
-          'uploaded', 'PENDING'
-        )
-      `;
+      try {
+        await sql`
+          insert into restaurant_documents (
+            id, restaurant_id, kind, file_name, content_type, byte_size,
+            storage_backend, storage_key, data_url, status, verification_status
+          ) values (
+            ${id}, ${ctx.restaurantId}, ${data.kind}, ${data.fileName.slice(0, 160)}, ${data.contentType},
+            ${byteSize}, ${stored.backend}, ${stored.key}, ${null},
+            'uploaded', 'PENDING'
+          )
+        `;
+      } catch (err) {
+        await removePrivateMerchantDocument(stored.key).catch(() => {});
+        throw err;
+      }
       return {
         ok: true as const,
         id,
-        storage: "NOT_CONNECTED" as const,
+        storage: "SUPABASE_PRIVATE" as const,
         verificationStatus: "PENDING" as const,
       };
     });
@@ -638,19 +643,18 @@ export const verifyBankPennyDrop = createServerFn({ method: "POST" })
     let businessName = data.businessName;
     let ownerName = data.ownerName;
 
-    if (data.restaurantId && (!businessName || !ownerName)) {
-      try {
-        const sql = await getSql();
+    if (data.restaurantId) {
+      // Check tenant ownership/financial permissions before reading private merchant
+      // information or contacting a live bank-verification provider.
+      const { withVendor } = await import("./helpers");
+      await withVendor(context.userId, data.restaurantId, "settings.financial", async (sql, ctx) => {
         const rows = await sql<{ name: string; owner_name: string; display_name: string }>`
-          select name, owner_name, display_name from restaurants where id = ${data.restaurantId} limit 1
+          select name, owner_name, display_name from restaurants where id = ${ctx.restaurantId} limit 1
         `;
-        if (rows[0]) {
-          if (!businessName) businessName = rows[0].display_name || rows[0].name;
-          if (!ownerName) ownerName = rows[0].owner_name;
-        }
-      } catch (e) {
-        // Fall back to provided names
-      }
+        if (!rows[0]) throw new Error("Restaurant not found");
+        businessName = rows[0].display_name || rows[0].name;
+        ownerName = rows[0].owner_name;
+      });
     }
 
     const { verifyBankPennyDropLive } = await import("@/lib/adapters/banking-gateway");

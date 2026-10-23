@@ -9,7 +9,7 @@ import {
   validateDigitalExecution,
 } from "../lib/merchant-kyc";
 
-describe("Restaurant Onboarding Revolution - Instant 60s Activation (Zomato Equivalent)", () => {
+describe("Restaurant onboarding contract validation and draft safety", () => {
   let mockStorage: Record<string, string> = {};
 
   beforeEach(() => {
@@ -40,7 +40,7 @@ describe("Restaurant Onboarding Revolution - Instant 60s Activation (Zomato Equi
     expect(source).not.toContain("fssaiExpiry = defaultExpiryStr");
     expect(source).toContain("Enter the actual FSSAI certificate expiry before submitting for review.");
   });
-  describe("Zero SMS OTP Dependency & Frictionless Station 5 Activation", () => {
+  describe("Clickwrap contract-field validation", () => {
     it("satisfies Station 5 commercial contract completely via 1-click legal agreement without any SMS OTP", () => {
       // Simulating user clicking the single 1-click legal checkbox:
       // "I agree to the OrderKing Partner Terms, FSSAI Food Safety Declaration, and Merchant Agreement"
@@ -82,7 +82,7 @@ describe("Restaurant Onboarding Revolution - Instant 60s Activation (Zomato Equi
       expect(validation.details.digitalExecution.auditDetails?.signatureType).toContain("Clickwrap Electronic Signature");
     });
 
-    it("persists draft locally with CLICKWRAP executionMethod and auto-filled signatory name", () => {
+    it("persists non-sensitive clickwrap draft fields without saving credentials", () => {
       persistDraftLocally({
         restaurantId: "rest_quick_punjabi_dhaba",
         form: {
@@ -127,6 +127,11 @@ describe("Restaurant Onboarding Revolution - Instant 60s Activation (Zomato Equi
       expect(parsed.covenantsAccepted).toBe(true);
       expect(parsed.foodSafetyUndertakingAccepted).toBe(true);
       expect(parsed.privacyAndTaxAccepted).toBe(true);
+      expect(parsed.fssaiNumber).toBe("");
+      expect(parsed.pan).toBe("");
+      expect(parsed.gstin).toBe("");
+      expect(parsed.bankAccount).toBe("");
+      expect(parsed.bankIfsc).toBe("");
     });
 
     it("verifies clickwrap digital execution requires only name, timestamp, and IP without any OTP", () => {

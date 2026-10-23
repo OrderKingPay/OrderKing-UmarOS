@@ -131,15 +131,15 @@ export function persistDraftLocally(data: {
       cuisine: data.form.cuisine,
       diet: data.form.diet,
       description: data.form.description,
-      gstin: data.form.gstin,
+      gstin: "", // Private verification data is never persisted in browser storage.
       exemptFromGst: data.exemptFromGst,
-      fssaiNumber: data.form.fssaiNumber,
+      fssaiNumber: "", // Private verification data is never persisted in browser storage.
       fssaiExpiryDate: data.form.fssaiExpiryDate,
-      pan: data.form.pan,
+      pan: "", // Private verification data is never persisted in browser storage.
       holder: data.form.holder,
       bankName: data.form.bankName,
-      bankAccount: data.form.bankAccount,
-      bankIfsc: data.form.bankIfsc,
+      bankAccount: "", // Private verification data is never persisted in browser storage.
+      bankIfsc: "", // Private verification data is never persisted in browser storage.
       openingTime: data.form.openingTime || "10:00",
       closingTime: data.form.closingTime || "23:00",
       dishName: data.form.dishName || "",
@@ -1733,13 +1733,14 @@ function Field({
 
 function DocumentUpload({ restaurantId, kind, label }: { restaurantId?: string; kind: string; label: string }) {
   const [msg, setMsg] = useState<string | null>(null);
+  const [uploaded, setUploaded] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3 space-y-2">
       <div className="flex items-center justify-between">
         <h4 className="text-xs font-semibold text-slate-200">{label}</h4>
-        {msg ? (
+        {uploaded ? (
           <span className="text-[10px] font-mono text-emerald-400">UPLOADED</span>
         ) : (
           <span className="text-[10px] font-mono text-slate-500">PDF / IMG</span>
@@ -1754,6 +1755,8 @@ function DocumentUpload({ restaurantId, kind, label }: { restaurantId?: string; 
           const file = e.target.files?.[0];
           if (!file) return;
           setUploading(true);
+          setUploaded(false);
+          setMsg(null);
           try {
             const dataUrl = await new Promise<string>((resolve, reject) => {
               const reader = new FileReader();
@@ -1763,22 +1766,7 @@ function DocumentUpload({ restaurantId, kind, label }: { restaurantId?: string; 
             });
 
             if (!restaurantId || restaurantId.startsWith("local_")) {
-              if (typeof window !== "undefined") {
-                try {
-                  window.localStorage.setItem(
-                    `orderking_draft_doc_${kind}`,
-                    JSON.stringify({
-                      fileName: file.name,
-                      contentType: file.type || "application/octet-stream",
-                      byteSize: file.size,
-                      savedAt: new Date().toISOString(),
-                    }),
-                  );
-                } catch {
-                  // ignore storage limit
-                }
-              }
-              setMsg("Saved locally (pending server sync)");
+              setMsg("Connect to the server before uploading this document.");
               return;
             }
 
@@ -1791,15 +1779,17 @@ function DocumentUpload({ restaurantId, kind, label }: { restaurantId?: string; 
                 dataUrl,
               },
             });
-            setMsg(`Uploaded (${res.verificationStatus})`);
+            setUploaded(true);
+            setMsg(`Received for review (${res.verificationStatus})`);
           } catch (err) {
-            setMsg(formatFriendlyError(err, "Upload failed — saved locally"));
+            setUploaded(false);
+            setMsg(formatFriendlyError(err, "Document upload failed. Please retry."));
           } finally {
             setUploading(false);
           }
         }}
       />
-      {msg ? <p className="text-[11px] text-emerald-400 font-mono">{msg}</p> : null}
+      {msg ? <p className={`text-[11px] font-mono ${uploaded ? "text-emerald-400" : "text-rose-400"}`}>{msg}</p> : null}
     </div>
   );
 }
