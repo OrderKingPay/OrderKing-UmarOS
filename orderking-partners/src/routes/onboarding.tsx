@@ -131,15 +131,15 @@ export function persistDraftLocally(data: {
       cuisine: data.form.cuisine,
       diet: data.form.diet,
       description: data.form.description,
-      gstin: data.form.gstin,
+      gstin: "", // Private verification data is never persisted in browser storage.
       exemptFromGst: data.exemptFromGst,
-      fssaiNumber: data.form.fssaiNumber,
+      fssaiNumber: "", // Private verification data is never persisted in browser storage.
       fssaiExpiryDate: data.form.fssaiExpiryDate,
-      pan: data.form.pan,
+      pan: "", // Private verification data is never persisted in browser storage.
       holder: data.form.holder,
       bankName: data.form.bankName,
-      bankAccount: data.form.bankAccount,
-      bankIfsc: data.form.bankIfsc,
+      bankAccount: "", // Private verification data is never persisted in browser storage.
+      bankIfsc: "", // Private verification data is never persisted in browser storage.
       openingTime: data.form.openingTime || "10:00",
       closingTime: data.form.closingTime || "23:00",
       dishName: data.form.dishName || "",
