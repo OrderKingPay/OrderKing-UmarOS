@@ -43,7 +43,7 @@ function TravelpayoutsDriveHead() {
   return (
     <script
       id="orderking-travelpayouts-drive-loader"
-      nowprocket=""
+      {...{ nowprocket: "" }}
       data-noptimize="1"
       data-cfasync="false"
       data-wpfc-render="false"
