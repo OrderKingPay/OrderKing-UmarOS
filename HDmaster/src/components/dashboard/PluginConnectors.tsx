@@ -510,9 +510,9 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
     "b2bLeadGen",
   ];
 
-  const connectedCount = useMemo(() => {
-    return coreServices.filter((s) => getHonestStatus(s).status === "CONNECTED").length;
-  }, [config, initialConfig, extraConfig, initialExtraConfig]);
+  // Until a server-backed connectivity check is implemented for every provider,
+  // the number of independently verified connections is zero, not key count.
+  const connectedCount = 0;
 
   const renderStatusBadge = (svc: ConnectorTab) => {
     const st = getHonestStatus(svc);
