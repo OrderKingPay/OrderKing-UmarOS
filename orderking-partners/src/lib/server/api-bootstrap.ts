@@ -179,33 +179,21 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
       "-" +
       restaurantId.slice(-6);
 
-    try {
-      await sql`
-        insert into restaurants (
-          id, owner_user_id, slug, name, display_name, owner_name, phone, email,
-          address, landmark, cuisine, diet, description, verification_status, data_label, active, status
-        ) values (
-          ${restaurantId}, ${context.userId}, ${slug}, ${name}, ${displayName},
-          ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
-          ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
-          ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
-          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', false, 'ACTIVE'
-        )
-      `;
-    } catch {
-      await sql`
-        insert into restaurants (
-          id, owner_user_id, name, display_name, owner_name, phone, email,
-          address, landmark, cuisine, diet, description, verification_status, data_label
-        ) values (
-          ${restaurantId}, ${context.userId}, ${name}, ${displayName},
-          ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
-          ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
-          ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
-          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL'
-        )
-      `;
-    }
+    // Drafts must never become orderable before independent approval.
+    // The live schema supports active/status; do not silently fall back to an
+    // insert that activates a restaurant through its default values.
+    await sql`
+      insert into restaurants (
+        id, owner_user_id, slug, name, display_name, owner_name, phone, email,
+        address, landmark, cuisine, diet, description, verification_status, data_label, active, status
+      ) values (
+        ${restaurantId}, ${context.userId}, ${slug}, ${name}, ${displayName},
+        ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
+        ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
+        ${(data.cuisine || "").trim()}, ${data.diet ?? "NONVEG"},
+        ${(data.description || "").trim()}, 'DRAFT', 'REAL', false, 'DRAFT'
+      )
+    `;
 
     await sql`
       insert into outlets (id, restaurant_id, name, address, is_primary)
@@ -471,6 +459,7 @@ export const submitForReview = createServerFn({ method: "POST" })
       await sql`
         update restaurants
         set verification_status = 'PENDING_VERIFICATION',
+            status = 'PENDING_VERIFICATION',
             active = false,
             data_label = 'REAL',
             updated_at = now()
