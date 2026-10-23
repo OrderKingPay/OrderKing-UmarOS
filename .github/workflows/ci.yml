@@ -27,9 +27,12 @@ jobs:
       - name: Test shared UI
         timeout-minutes: 7
         run: pnpm --filter @orderking/ui test
-      - name: Test integration app
-        timeout-minutes: 7
-        run: pnpm --filter app-builder-workspace test
+      - name: Test integration app scripts
+        timeout-minutes: 3
+        run: pnpm --filter app-builder-workspace exec node --test --test-force-exit 'scripts/**/*.test.mjs'
+      - name: Test integration app runtime
+        timeout-minutes: 5
+        run: pnpm --filter app-builder-workspace exec node --experimental-strip-types --test --test-force-exit src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/orderking/money.test.ts src/lib/orderking/webhook-security.test.ts
       - name: Test riders
         timeout-minutes: 7
         run: pnpm --filter orderking-riders test
