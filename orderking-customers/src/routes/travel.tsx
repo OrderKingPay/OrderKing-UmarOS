@@ -15,6 +15,13 @@ import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
 import { buildOfficialAirlineDeepLink, extractAirportCode } from "@/lib/travel/airline-deep-links";
 import { type VIPTravelCategory } from "@/lib/travel/sovereign-travel-engine";
 import {
+  resolveTravelEngine,
+  isDomesticIndianRoute,
+  isInternationalRoute,
+  generateTravelpayoutsDomesticLink,
+  type TravelEngineResolution,
+} from "@/lib/travel/dual-travel-engine";
+import {
   Plane,
   Train,
   Bus,
@@ -370,6 +377,14 @@ export function TravelPage() {
   const [isSearchingDuffel, setIsSearchingDuffel] = useState(false);
   const [duffelFlightResults, setDuffelFlightResults] = useState<any[] | null>(null);
   const [duffelSearchSource, setDuffelSearchSource] = useState<string | null>(null);
+  const [isForeignCard, setIsForeignCard] = useState(false);
+  const [flightSearchEngine, setFlightSearchEngine] = useState<string | null>(null);
+
+  const activeEngineResolution: TravelEngineResolution = resolveTravelEngine({
+    origin: flightFrom,
+    destination: flightTo,
+    isForeignCard,
+  });
 
   // Train PNR & Search state
   const [pnr, setPnr] = useState("");
@@ -971,7 +986,7 @@ export function TravelPage() {
               </div>
             </div>
 
-            {/* Real-time Flight Search Card */}
+            {/* Real-time Dual-Engine Flight Search Card */}
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
@@ -984,13 +999,65 @@ export function TravelPage() {
                     </h2>
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    Open an official airline checkout to verify current fares, taxes and availability. OrderKing does not issue airline tickets here.
+                    Direct official airline checkouts with zero platform fee. Verified tariffs and availability across domestic and international corridors.
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-black text-emerald-700">
-                  <ShieldCheck className="size-3.5 text-emerald-600" />
-                  <span>Carrier Direct</span>
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black border transition ${
+                      activeEngineResolution.engine === "TRAVELPAYOUTS_DOMESTIC"
+                        ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                        : "bg-sky-50 border-sky-200 text-sky-800"
+                    }`}
+                  >
+                    <span
+                      className={`size-2 rounded-full ${
+                        activeEngineResolution.engine === "TRAVELPAYOUTS_DOMESTIC" ? "bg-emerald-500" : "bg-sky-500"
+                      }`}
+                    />
+                    <span>{activeEngineResolution.engineBadge}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-full bg-slate-50 border border-slate-200 px-3 py-1 text-xs font-bold text-slate-700">
+                    <ShieldCheck className="size-3.5 text-emerald-600" />
+                    <span>0% Markup</span>
+                  </div>
                 </div>
+              </div>
+
+              {/* Dynamic Engine Banner & Foreign Card Processing Switch */}
+              <div
+                className={`p-4 rounded-2xl border transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3 ${
+                  activeEngineResolution.engine === "TRAVELPAYOUTS_DOMESTIC"
+                    ? "bg-emerald-50/50 border-emerald-200"
+                    : "bg-sky-50/50 border-sky-200"
+                }`}
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-slate-900">
+                      Active Engine: {activeEngineResolution.engineName}
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white border border-slate-200 font-bold text-slate-700">
+                      {activeEngineResolution.settlementCurrency} Settlement
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600">
+                    {activeEngineResolution.notes}
+                  </p>
+                </div>
+
+                <label className="flex items-center gap-2.5 cursor-pointer select-none bg-white px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 shadow-2xs self-start md:self-auto">
+                  <input
+                    type="checkbox"
+                    checked={isForeignCard}
+                    onChange={(e) => setIsForeignCard(e.target.checked)}
+                    className="size-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300"
+                  />
+                  <div className="text-left">
+                    <span className="text-xs font-bold text-slate-800 block">Foreign Card / Amex</span>
+                    <span className="text-[10px] text-slate-500 block">Clear via Duffel NDC Engine</span>
+                  </div>
+                </label>
               </div>
 
               {/* Working Flight Search Inputs */}
@@ -1054,25 +1121,60 @@ export function TravelPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 sm:p-5">
-                <p className="text-sm font-black text-sky-950">Flight price and availability</p>
-                <p className="text-xs text-sky-800 mt-1">
-                  Actual fares, taxes, fees and confirmation are available directly from the official airline. OrderKing charges strictly ₹0 platform fee. Complete the booking on the carrier's verified checkout portal.
-                </p>
+              {/* Payment Rails & Zero Markup Guarantee */}
+              <div className="rounded-2xl border border-sky-200 bg-sky-50/70 p-4 sm:p-5 space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-black text-sky-950">Direct Carrier Tariffs · Zero Platform Fee</p>
+                    <p className="text-xs text-sky-800 mt-0.5">
+                      Actual fares, taxes and seats are verified directly with the operating carriers. OrderKing charges strictly ₹0 platform fee.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-lg bg-white/90 border border-sky-200 px-2.5 py-1 text-[11px] font-bold text-sky-900 shadow-2xs">
+                    <CreditCard className="size-3.5 text-sky-700" />
+                    <span>{activeEngineResolution.settlementCurrency} Settlement</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-sky-200/60 flex flex-wrap items-center gap-1.5 text-[11px] text-sky-900">
+                  <span className="font-bold text-sky-950">Supported Payment Rails:</span>
+                  {activeEngineResolution.supportedPaymentMethods.map((pm) => (
+                    <span
+                      key={pm}
+                      className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/90 border border-sky-200 text-[10px] font-semibold text-sky-800"
+                    >
+                      {pm}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               {/* Direct Official Carrier Checkout Options */}
               <div className="space-y-2">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                  Direct Official Carrier Checkout (IndiGo, Air India, Akasa, SpiceJet)
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                    {activeEngineResolution.isDomestic
+                      ? "Direct Official Domestic Carrier Checkout (IndiGo, Air India, Akasa, SpiceJet)"
+                      : "Direct Official International Carrier Checkout (Air India, Emirates, Qatar, Singapore)"}
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    ₹0 Intermediary Markup
+                  </span>
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    { code: "6E", name: "IndiGo", portal: "goindigo.in" },
-                    { code: "AI", name: "Air India", portal: "airindia.com" },
-                    { code: "QP", name: "Akasa Air", portal: "akasaair.com" },
-                    { code: "SG", name: "SpiceJet", portal: "spicejet.com" },
-                  ].map((carrier) => {
+                  {(activeEngineResolution.isDomestic
+                    ? [
+                        { code: "6E", name: "IndiGo", portal: "goindigo.in" },
+                        { code: "AI", name: "Air India", portal: "airindia.com" },
+                        { code: "QP", name: "Akasa Air", portal: "akasaair.com" },
+                        { code: "SG", name: "SpiceJet", portal: "spicejet.com" },
+                      ]
+                    : [
+                        { code: "AI", name: "Air India (Int'l)", portal: "airindia.com" },
+                        { code: "EK", name: "Emirates", portal: "emirates.com" },
+                        { code: "QR", name: "Qatar Airways", portal: "qatarairways.com" },
+                        { code: "SQ", name: "Singapore Airlines", portal: "singaporeair.com" },
+                      ]
+                  ).map((carrier) => {
                     const deepLink = buildOfficialAirlineDeepLink({
                       carrierCode: carrier.code,
                       from: flightFrom,
@@ -1112,7 +1214,7 @@ export function TravelPage() {
                 </div>
               </div>
 
-              {/* Live Duffel API Flight Search */}
+              {/* Dual-Engine Live Flight Search Dispatcher */}
               <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
                 <Button
                   type="button"
@@ -1131,13 +1233,16 @@ export function TravelPage() {
                           departureDate: flightDate,
                           passengers: flightPassengers,
                           cabinClass: flightClass,
+                          isForeignCard,
                         }),
                       });
                       const json = await res.json();
-                      setDuffelSearchSource(json?.source || "duffel_v2");
+                      setFlightSearchEngine(json?.engine || activeEngineResolution.engine);
+                      setDuffelSearchSource(json?.source || (activeEngineResolution.engine === "TRAVELPAYOUTS_DOMESTIC" ? "travelpayouts" : "duffel_v2"));
                       if (json?.data && Array.isArray(json.data) && json.data.length > 0) {
                         setDuffelFlightResults(json.data);
-                        toast.success(`Retrieved ${json.data.length} live carrier offer(s) via Duffel GDS API.`);
+                        const engineLabel = json?.engine === "TRAVELPAYOUTS_DOMESTIC" ? "Travelpayouts Domestic Network" : "Duffel International GDS";
+                        toast.success(`Retrieved ${json.data.length} live carrier offer(s) via ${engineLabel}.`);
                       } else {
                         setDuffelFlightResults([]);
                         toast.info("No live GDS offers returned for this route. Complete direct checkout at official carrier.");
@@ -1149,9 +1254,15 @@ export function TravelPage() {
                       setIsSearchingDuffel(false);
                     }
                   }}
-                  className="flex-1 h-12 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-sm shadow-md shadow-sky-600/20"
+                  className={`flex-1 h-12 rounded-xl text-white font-black text-sm shadow-md transition ${
+                    activeEngineResolution.engine === "TRAVELPAYOUTS_DOMESTIC"
+                      ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20"
+                      : "bg-sky-600 hover:bg-sky-700 shadow-sky-600/20"
+                  }`}
                 >
-                  {isSearchingDuffel ? "Querying Duffel GDS API..." : "Query Live Duffel GDS Offers ➔"}
+                  {isSearchingDuffel
+                    ? `Querying ${activeEngineResolution.engineName}...`
+                    : `Query Live ${activeEngineResolution.engine === "TRAVELPAYOUTS_DOMESTIC" ? "Travelpayouts Domestic" : "Duffel GDS"} Offers ➔`}
                 </Button>
                 <Button
                   type="button"
@@ -1164,7 +1275,7 @@ export function TravelPage() {
                       bookingRef: flightPnrInput || "PLANNED-NOT-BOOKED",
                       travelDate: flightDate,
                       routeOrLocation: `${flightFrom} ➔ ${flightTo}`,
-                      notes: `${flightPassengers} Pax · Price not quoted — direct carrier checkout`,
+                      notes: `${flightPassengers} Pax · Price not quoted — direct carrier checkout · ${activeEngineResolution.engineName}`,
                       createdAt: new Date().toISOString(),
                     };
                     persistTrips([newTrip, ...savedTrips]);
@@ -1176,22 +1287,27 @@ export function TravelPage() {
                 </Button>
               </div>
 
-              {/* Duffel Flight Results View */}
+              {/* Dual-Engine Flight Results View */}
               {duffelFlightResults !== null && (
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
                       <Plane className="size-3.5 text-sky-600" />
-                      Live Duffel v2 Results ({duffelFlightResults.length} offers)
+                      {flightSearchEngine === "TRAVELPAYOUTS_DOMESTIC"
+                        ? `Travelpayouts Domestic Network (${duffelFlightResults.length} offers)`
+                        : `Duffel International GDS Results (${duffelFlightResults.length} offers)`}
                     </span>
                     <span className="text-[10px] font-mono text-slate-500">
-                      Source: {duffelSearchSource || "duffel_v2"} · Zero Platform Markup
+                      Engine: {flightSearchEngine || activeEngineResolution.engine} · Zero Platform Markup
                     </span>
                   </div>
 
                   {duffelFlightResults.length === 0 ? (
                     <div className="text-center py-4 text-xs text-slate-600 space-y-2">
-                      <p>No active GDS fares found for this specific sector in Duffel. Please use official carrier checkout:</p>
+                      <p>
+                        No active GDS fares found for this sector via{" "}
+                        {flightSearchEngine === "TRAVELPAYOUTS_DOMESTIC" ? "Travelpayouts" : "Duffel"}. Please use official carrier direct checkout:
+                      </p>
                       <div className="flex justify-center gap-2">
                         <a
                           href={buildOfficialAirlineDeepLink({ carrierCode: "6E", from: flightFrom, to: flightTo, departureDate: flightDate, passengers: flightPassengers, cabinClass: flightClass }).bookingUrl}

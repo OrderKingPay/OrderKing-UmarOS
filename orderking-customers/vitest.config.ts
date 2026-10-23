@@ -41,6 +41,7 @@ export default defineConfig({
       "src/test/academic-tutor-reality.test.ts",
       "src/test/gemini-tutor-solver.test.ts",
       "src/test/travel-autosuggest.test.ts",
+      "src/test/dual-travel-engine.test.ts",
     ],
     environment: "node",
   },

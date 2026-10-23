@@ -26,6 +26,7 @@ import {
 import {
   buildOfficialAirlineDeepLink,
   extractAirportCode,
+  isDomesticIndianRoute,
 } from "@/lib/travel/airline-deep-links";
 
 interface Props {
@@ -101,6 +102,21 @@ export function FlightBookingEngine({
             <ShieldCheck className="size-4" />
             <span>₹0 Platform Desk Fee Guaranteed</span>
           </div>
+        </div>
+
+        {/* Dual Routing Engine Indicator Badge */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          {isDomesticIndianRoute(originCode, destinationCode) ? (
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-300">
+              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+              🇮🇳 Domestic Indian Route · Travelpayouts Direct INR Settlement (0% Platform Fee)
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 px-3 py-1 text-xs font-bold text-sky-300">
+              <span className="size-2 rounded-full bg-sky-400 animate-pulse" />
+              🌐 International Route · Duffel Global GDS &amp; Multi-Currency Settlement
+            </div>
+          )}
         </div>
 
         {/* Input Fields Grid with Route Swap */}

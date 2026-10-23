@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { searchLiveFlights } from "@/lib/travel/travel-connectors";
-import { type FlightSearchRequest } from "@/lib/travel/types";
+import { searchDualEngineFlights, type DualEngineFlightRequest } from "@/lib/travel/dual-travel-engine";
 
 export const Route = createFileRoute("/api/travel/flight-search")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
         try {
-          const body = (await request.json().catch(() => ({}))) as Partial<FlightSearchRequest>;
+          const body = (await request.json().catch(() => ({}))) as Partial<DualEngineFlightRequest>;
           const origin = (body.origin || "").trim().toUpperCase();
           const destination = (body.destination || "").trim().toUpperCase();
           const departureDate = (body.departureDate || "").trim();
@@ -26,12 +25,14 @@ export const Route = createFileRoute("/api/travel/flight-search")({
             );
           }
 
-          const result = await searchLiveFlights({
+          const result = await searchDualEngineFlights({
             origin,
             destination,
             departureDate: departureDate || new Date().toISOString().split("T")[0],
             passengers: Number(body.passengers) || 1,
-            cabinClass: body.cabinClass === "BUSINESS" ? "BUSINESS" : "ECONOMY",
+            cabinClass: body.cabinClass === "BUSINESS" || body.cabinClass === "Business" ? "BUSINESS" : "ECONOMY",
+            isForeignCard: Boolean(body.isForeignCard),
+            preferredEngine: body.preferredEngine,
           });
 
           return new Response(JSON.stringify(result), {

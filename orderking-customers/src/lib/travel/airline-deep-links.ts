@@ -66,6 +66,17 @@ const COMMON_CITY_IATA_MAP: Record<string, string> = {
   VIZAG: "VTZ",
 };
 
+export const INDIAN_AIRPORT_IATA_CODES = new Set(Object.values(COMMON_CITY_IATA_MAP));
+
+/**
+ * Checks if a route is purely domestic between two Indian airports
+ */
+export function isDomesticIndianRoute(originCode: string, destCode: string): boolean {
+  const o = (originCode || "").trim().toUpperCase();
+  const d = (destCode || "").trim().toUpperCase();
+  return INDIAN_AIRPORT_IATA_CODES.has(o) && INDIAN_AIRPORT_IATA_CODES.has(d);
+}
+
 /**
  * Extracts standard 3-letter IATA airport code from user input
  * e.g. "New Delhi (DEL)" -> "DEL", "BOM" -> "BOM", "Bengaluru" -> "BLR"
