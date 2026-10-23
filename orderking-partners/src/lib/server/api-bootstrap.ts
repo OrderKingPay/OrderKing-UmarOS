@@ -88,6 +88,8 @@ export const getBootstrap = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const customization = buildPartnerCustomizationState();
     const bankingStatus = getBankingGatewayStatus();
+    const { isPrivateMerchantStorageConfigured } = await import("@/lib/adapters/storage-private.server");
+    const privateStorageReady = isPrivateMerchantStorageConfigured();
     try {
       const sql = await getSql();
       const memberships = await loadMemberships(sql, context.userId);
@@ -106,7 +108,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
         featureFlags: platformConfig.featureFlags,
         adapters: {
           notifications: notificationChannelStatus(),
-          storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
+          storage: { connected: privateStorageReady, provider: privateStorageReady ? "SUPABASE_PRIVATE" : "NOT_CONNECTED" },
           dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
           payments: {
             connected: bankingStatus.readyForLivePayouts,
@@ -136,7 +138,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
         featureFlags: platformConfig.featureFlags,
         adapters: {
           notifications: notificationChannelStatus(),
-          storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
+          storage: { connected: privateStorageReady, provider: privateStorageReady ? "SUPABASE_PRIVATE" : "NOT_CONNECTED" },
           dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
           payments: {
             connected: bankingStatus.readyForLivePayouts,
@@ -574,36 +576,53 @@ export const uploadDocument = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");
     return withVendor(context.userId, data.restaurantId, "documents.upload", async (sql, ctx) => {
-      // Decode and persist the actual uploaded file, never an empty placeholder.
+      // Reject oversized base64 before allocating decoded bytes.
+      if (data.dataUrl.length > platformConfig.restaurantSettings.maxUploadBytes * 2 + 128) {
+        throw new Error("Document exceeds the secure upload limit.");
+      }
       const match = /^data:([^;,]+);base64,([A-Za-z0-9+/]+={0,2})$/.exec(data.dataUrl);
-      if (!match || match[1] !== data.contentType) throw new Error("Invalid document data or content type");
-      const b64 = match[2];
-      const decoded = atob(b64);
-      const bytes = Uint8Array.from(decoded, (char) => char.charCodeAt(0));
+      if (!match || match[1] !== data.contentType) {
+        throw new Error("Invalid document data or content type.");
+      }
+      let bytes: Uint8Array;
+      try {
+        const decoded = atob(match[2]);
+        bytes = Uint8Array.from(decoded, char => char.charCodeAt(0));
+      } catch {
+        throw new Error("Document encoding is invalid.");
+      }
       const byteSize = bytes.byteLength;
       const check = validateUpload({ contentType: data.contentType, byteSize, kind: "document" });
       if (!check.ok) throw new Error(check.error);
-      const stored = await storageAdapter.put({
-        key: `${ctx.restaurantId}/${data.kind}/${data.fileName}`,
+      const { uploadPrivateMerchantDocument, removePrivateMerchantDocument } =
+        await import("@/lib/adapters/storage-private.server");
+      const stored = await uploadPrivateMerchantDocument({
+        restaurantId: ctx.restaurantId,
+        kind: data.kind,
         contentType: data.contentType,
         bytes,
       });
-      if (!stored.connected) throw new Error("Document was not stored in a verified private storage provider.");
+      // Never store identity-document bodies or data URLs in the database.
       const id = newId("doc");
-      await sql`
-        insert into restaurant_documents (
-          id, restaurant_id, kind, file_name, content_type, byte_size,
-          storage_backend, storage_key, data_url, status, verification_status
-        ) values (
-          ${id}, ${ctx.restaurantId}, ${data.kind}, ${data.fileName}, ${data.contentType},
-          ${byteSize}, ${stored.backend}, ${stored.key}, ${data.dataUrl.slice(0, 200000)},
-          'uploaded', 'PENDING'
-        )
-      `;
+      try {
+        await sql`
+          insert into restaurant_documents (
+            id, restaurant_id, kind, file_name, content_type, byte_size,
+            storage_backend, storage_key, data_url, status, verification_status
+          ) values (
+            ${id}, ${ctx.restaurantId}, ${data.kind}, ${data.fileName.slice(0, 160)}, ${data.contentType},
+            ${byteSize}, ${stored.backend}, ${stored.key}, ${null},
+            'uploaded', 'PENDING'
+          )
+        `;
+      } catch (err) {
+        await removePrivateMerchantDocument(stored.key).catch(() => {});
+        throw err;
+      }
       return {
         ok: true as const,
         id,
-        storage: "NOT_CONNECTED" as const,
+        storage: "SUPABASE_PRIVATE" as const,
         verificationStatus: "PENDING" as const,
       };
     });
