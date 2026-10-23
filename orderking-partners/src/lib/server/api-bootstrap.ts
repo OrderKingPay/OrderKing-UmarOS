@@ -588,6 +588,7 @@ export const uploadDocument = createServerFn({ method: "POST" })
         contentType: data.contentType,
         bytes,
       });
+      if (!stored.connected) throw new Error("Document was not stored in a verified private storage provider.");
       const id = newId("doc");
       await sql`
         insert into restaurant_documents (
@@ -623,19 +624,18 @@ export const verifyBankPennyDrop = createServerFn({ method: "POST" })
     let businessName = data.businessName;
     let ownerName = data.ownerName;
 
-    if (data.restaurantId && (!businessName || !ownerName)) {
-      try {
-        const sql = await getSql();
+    if (data.restaurantId) {
+      // Check tenant ownership/financial permissions before reading private merchant
+      // information or contacting a live bank-verification provider.
+      const { withVendor } = await import("./helpers");
+      await withVendor(context.userId, data.restaurantId, "settings.financial", async (sql, ctx) => {
         const rows = await sql<{ name: string; owner_name: string; display_name: string }>`
-          select name, owner_name, display_name from restaurants where id = ${data.restaurantId} limit 1
+          select name, owner_name, display_name from restaurants where id = ${ctx.restaurantId} limit 1
         `;
-        if (rows[0]) {
-          if (!businessName) businessName = rows[0].display_name || rows[0].name;
-          if (!ownerName) ownerName = rows[0].owner_name;
-        }
-      } catch (e) {
-        // Fall back to provided names
-      }
+        if (!rows[0]) throw new Error("Restaurant not found");
+        businessName = rows[0].display_name || rows[0].name;
+        ownerName = rows[0].owner_name;
+      });
     }
 
     const { verifyBankPennyDropLive } = await import("@/lib/adapters/banking-gateway");
