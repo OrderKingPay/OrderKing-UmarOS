@@ -189,7 +189,7 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
           ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
           ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
           ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
-          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', true, 'ACTIVE'
+          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', false, 'ACTIVE'
         )
       `;
     } catch {
@@ -212,15 +212,8 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
       values (${outletId}, ${restaurantId}, ${displayName}, ${(data.address || "").trim()}, true)
     `;
 
-    try {
-      await sql`
-        insert into restaurant_outlets (id, restaurant_id, name, address_line, area, lat, lng, zone_id, active)
-        values (${outletId}, ${restaurantId}, ${displayName}, ${(data.address || "").trim()}, 'Central', 28.6304, 77.2177, 'del-cp', true)
-        on conflict (id) do update set active = true
-      `;
-    } catch {
-      // Non-fatal if schema differs in local mock
-    }
+    // Never fabricate geolocation or delivery-zone assignment at registration.
+    // A reviewed, geocoded location is required before enabling a delivery outlet.
 
     await sql`
       insert into restaurant_staff (id, restaurant_id, outlet_id, user_id, role)
@@ -477,9 +470,8 @@ export const submitForReview = createServerFn({ method: "POST" })
       }
       await sql`
         update restaurants
-        set verification_status = 'VERIFIED',
-            status = 'ACTIVE',
-            active = true,
+        set verification_status = 'PENDING_VERIFICATION',
+            active = false,
             data_label = 'REAL',
             updated_at = now()
         where id = ${ctx.restaurantId}
@@ -487,7 +479,7 @@ export const submitForReview = createServerFn({ method: "POST" })
       try {
         await sql`
           update restaurant_outlets
-          set active = true
+          set active = false
           where restaurant_id = ${ctx.restaurantId}
         `;
       } catch {
@@ -496,12 +488,12 @@ export const submitForReview = createServerFn({ method: "POST" })
       await writeAudit(sql, {
         restaurantId: ctx.restaurantId,
         actorUserId: context.userId,
-        action: "submit_review_auto_verified",
+        action: "submit_for_manual_compliance_review",
         entityType: "restaurant",
         entityId: ctx.restaurantId,
-        detail: "Automated self-serve merchant onboarding verified with 14-digit FSSAI, PAN & IFSC",
+        detail: "Merchant submitted format-checked identification for independent evidence-based compliance review",
       });
-      return { ok: true as const, verificationStatus: "VERIFIED" as const };
+      return { ok: true as const, verificationStatus: "PENDING_VERIFICATION" as const };
     });
   });
 
@@ -593,15 +585,19 @@ export const uploadDocument = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");
     return withVendor(context.userId, data.restaurantId, "documents.upload", async (sql, ctx) => {
-      const comma = data.dataUrl.indexOf(",");
-      const b64 = comma >= 0 ? data.dataUrl.slice(comma + 1) : data.dataUrl;
-      const byteSize = Math.floor((b64.length * 3) / 4);
+      // Decode and persist the actual uploaded file, never an empty placeholder.
+      const match = /^data:([^;,]+);base64,([A-Za-z0-9+/]+={0,2})$/.exec(data.dataUrl);
+      if (!match || match[1] !== data.contentType) throw new Error("Invalid document data or content type");
+      const b64 = match[2];
+      const decoded = atob(b64);
+      const bytes = Uint8Array.from(decoded, (char) => char.charCodeAt(0));
+      const byteSize = bytes.byteLength;
       const check = validateUpload({ contentType: data.contentType, byteSize, kind: "document" });
       if (!check.ok) throw new Error(check.error);
       const stored = await storageAdapter.put({
         key: `${ctx.restaurantId}/${data.kind}/${data.fileName}`,
         contentType: data.contentType,
-        bytes: new Uint8Array(byteSize),
+        bytes,
       });
       const id = newId("doc");
       await sql`
