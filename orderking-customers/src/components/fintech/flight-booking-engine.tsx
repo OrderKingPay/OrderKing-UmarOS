@@ -89,7 +89,7 @@ export function FlightBookingEngine({
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Direct Airline Fare Comparison · Zero Convenience Fee Markup
+                Compare flights with official airlines
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-300">
                 <Sparkles className="size-3 text-sky-400" />
@@ -100,7 +100,7 @@ export function FlightBookingEngine({
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
             <ShieldCheck className="size-4" />
-            <span>₹0 Platform Desk Fee Guaranteed</span>
+            <span>Payment and final fare confirmed by airline</span>
           </div>
         </div>
 
@@ -109,12 +109,12 @@ export function FlightBookingEngine({
           {isDomesticIndianRoute(originCode, destinationCode) ? (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-300">
               <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              🇮🇳 Domestic Indian Route · Travelpayouts Direct INR Settlement (0% Platform Fee)
+              🇮🇳 Domestic route · Check live fares on official airline websites
             </div>
           ) : (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 px-3 py-1 text-xs font-bold text-sky-300">
               <span className="size-2 rounded-full bg-sky-400 animate-pulse" />
-              🌐 International Route · Duffel Global GDS &amp; Multi-Currency Settlement
+              🌐 International route · Check with authorized airline suppliers
             </div>
           )}
         </div>
@@ -270,13 +270,13 @@ export function FlightBookingEngine({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-            <span>Available Domestic Flights ({quotes.length})</span>
+            <span>In-app flight inventory not connected</span>
             <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
               Zero OTA Convenience Markup
             </span>
           </h3>
           <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-            Direct Official Airline Deep-Links &amp; Live Tariff Benchmarks
+            Official airline websites provide actual availability and fares
           </span>
         </div>
 
@@ -285,9 +285,9 @@ export function FlightBookingEngine({
             <div className="size-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center mx-auto">
               <Plane className="size-6" />
             </div>
-            <h4 className="text-base font-bold text-slate-900">No flights matched your specific inputs</h4>
+            <h4 className="text-base font-bold text-slate-900">In-app flight fares are currently unavailable</h4>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Try adjusting your origin or destination city to major aviation hubs.
+              Use an official airline link above to check real fares, seats and book securely.
             </p>
             <Button
               type="button"

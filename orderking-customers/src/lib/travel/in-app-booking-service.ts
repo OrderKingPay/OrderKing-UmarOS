@@ -177,6 +177,10 @@ export interface SovereignETicket {
 // ============================================================================
 
 export function generateSovereignPnr(mode: TravelMode): string {
+  // Only synthetic test fixtures may use an invented reference. Production PNRs come from suppliers.
+  if (import.meta.env.MODE !== "test") {
+    throw new SupplierUnavailableError("Ticket reference generation disabled: an authorized supplier must issue the actual reference.");
+  }
   if (mode === "train") {
     throw new Error(
       "Synthetic Indian Railways PNR generation is strictly prohibited under CRIS/IRCTC regulations. Genuine 10-digit numeric PNRs are issued exclusively by Indian Railways PRS upon official ticket confirmation."
@@ -335,6 +339,8 @@ export function searchFlightQuotes(
   date = new Date().toISOString().split("T")[0],
   cabinClass: "Economy" | "Premium Economy" | "Business" = "Economy"
 ): FlightQuote[] {
+  // The following fixed fares, schedules and seats are test fixtures, not live supplier quotes.
+  if (import.meta.env.MODE !== "test") return [];
   const classMultiplier = cabinClass === "Business" ? 2.8 : cabinClass === "Premium Economy" ? 1.6 : 1.0;
   const baggage = cabinClass === "Business" ? "35 kg Check-in · 10 kg Cabin" : cabinClass === "Premium Economy" ? "20 kg Check-in · 7 kg Cabin" : "15 kg Check-in · 7 kg Cabin";
 
@@ -550,6 +556,8 @@ export function searchBusQuotes(
   to = "Goa (Panaji)",
   date = new Date().toISOString().split("T")[0]
 ): BusQuote[] {
+  // Do not display fabricated bus seats or fares in customer-facing environments.
+  if (import.meta.env.MODE !== "test") return [];
   return [
     {
       id: "bs-intrcity-volvo",
@@ -659,6 +667,8 @@ export function searchCabQuotes(
   drop = "Connaught Place, New Delhi",
   category: "City Taxi" | "Airport Transfer" | "Intercity One-Way" | "Hourly Rental" = "Airport Transfer"
 ): CabQuote[] {
+  // The driver, fare and ETA values below are fixtures without verified provider inventory.
+  if (import.meta.env.MODE !== "test") return [];
   const baseRate = category === "Airport Transfer" ? 95000 : category === "Intercity One-Way" ? 285000 : category === "Hourly Rental" ? 165000 : 55000;
 
   return [
@@ -870,6 +880,11 @@ export function issueSovereignETicket(params: {
   supplierState?: SupplierApiState;
   region?: string;
 }): SovereignETicket {
+  // Client input cannot verify payment capture, supplier issuance or real PNRs.
+  // Never create a confirmed customer ticket from caller-supplied tokens or flags.
+  if (import.meta.env.MODE !== "test") {
+    throw new SupplierUnavailableError("Direct ticket issuance is unavailable until a server-verified supplier booking and payment workflow is connected. Book with an authorized provider.");
+  }
   // Fail-Closed Supplier Gating: if carrier or supplier APIs are unauthenticated,
   // offline, or rate-limited, fail closed with truthful unavailable message.
   if (

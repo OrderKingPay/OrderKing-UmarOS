@@ -88,14 +88,14 @@ export function CabBookingEngine({
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300">
                 <Sparkles className="size-3 text-amber-400" />
-                Verified Drivers · Zero Surge Markups · Direct Mobility Dispatch
+                Actual fares and driver availability require an authorized provider
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
             <ShieldCheck className="size-4" />
-            <span>0% Surge Guarantee</span>
+            <span>Final price confirmed by cab provider</span>
           </div>
         </div>
 
@@ -195,7 +195,7 @@ export function CabBookingEngine({
             </span>
           </h3>
           <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-            Verified Driver Assigned Instantly
+            Live driver inventory not connected
           </span>
         </div>
 
@@ -204,9 +204,9 @@ export function CabBookingEngine({
             <div className="size-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
               <Car className="size-6" />
             </div>
-            <h4 className="text-base font-bold text-slate-900">No cabs available for this category right now</h4>
+            <h4 className="text-base font-bold text-slate-900">Live cab availability is not connected</h4>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Try switching your service category or resetting to Delhi Airport Transfer.
+              Use a verified cab provider to see actual driver availability and fares.
             </p>
             <Button
               type="button"
