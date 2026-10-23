@@ -5,11 +5,7 @@ import { RiderEngine, rangePreset, enforcePayoutFloor } from "@/lib/rider/engine
 import { generateOtp, newOtpSecret } from "@/lib/rider/otp";
 import { PgStore } from "@/lib/rider/pg-store";
 import { ensureLiveRiderAssigned, transitionLiveOrder, fetchLiveOffers, respondLiveOffer } from "./hdmaster-order-transition";
-import {
-  dispatchOtpSms,
-  sanitizeIndianPhone,
-  isValidIndianPhone,
-} from "./sms-gateway";
+import { sanitizeIndianPhone } from "./sms-gateway";
 import {
   RiderError,
   type AvailabilityStatus,
@@ -679,136 +675,35 @@ export const requestInstantPayoutFn = createServerFn({ method: "POST" })
 // Rider Phone + 6-Digit OTP Authentication
 // ---------------------------------------------------------------------------
 
-const globalOtpRef = globalThis as typeof globalThis & {
-  __riderOtpStore__?: Map<string, { otp: string; expiresAt: number; channel: string }>;
-};
-globalOtpRef.__riderOtpStore__ ??= new Map();
-const riderOtpStore = globalOtpRef.__riderOtpStore__;
+// The previous workflow was not production authentication:
+// browser-visible verification codes, non-durable challenges and derived credentials.
+// Temporarily disable its endpoints until a provider-verified, rate-limited,
+// persistent OTP challenge and server-issued Better Auth session are implemented.
+const RIDER_AUTH_UNAVAILABLE =
+  "Rider phone authentication is temporarily unavailable until secure verification is connected.";
 
 export const sendRiderOtpFn = createServerFn({ method: "POST" })
   .validator((input: { phone: string; channel?: "sms" | "whatsapp" }) => input)
   .handler(async ({ data }) => {
-    const cleanPhone = sanitizeIndianPhone(data.phone || "");
-    if (!isValidIndianPhone(cleanPhone)) {
-      throw new RiderError(
-        "INVALID_PHONE",
-        "Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.",
-        400,
-      );
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes validity
-    const channel = data.channel || "sms";
-
-    riderOtpStore.set(cleanPhone, { otp, expiresAt, channel });
-
-    // Execute real telecom gateway dispatch engine
-    const dispatchResult = await dispatchOtpSms({
-      phone: cleanPhone,
-      otp,
-      channel,
-      appName: "OrderKing Rider",
-    });
-
-    console.log(
-      `[OrderKing OTP] Dispatched ${channel.toUpperCase()} OTP [${otp}] to +91-${cleanPhone} via ${dispatchResult.provider.toUpperCase()} (MessageId: ${dispatchResult.messageId || "N/A"})`,
-    );
-
     return {
-      ok: true,
-      phone: cleanPhone,
-      debugOtp: otp,
-      channel,
-      message: dispatchResult.providerNotice
-        ? `OTP generated for +91 ${cleanPhone}. ${dispatchResult.providerNotice}`
-        : `OTP sent successfully to +91 ${cleanPhone}`,
-      provider: dispatchResult.provider,
-      messageId: dispatchResult.messageId,
-      pendingConfig: dispatchResult.pendingConfig,
-      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
+      ok: false as const,
+      message: RIDER_AUTH_UNAVAILABLE,
+      phone: sanitizeIndianPhone(data.phone ?? ""),
+      debugOtp: undefined,
+      whatsAppOtpUrl: undefined,
+      provider: "unavailable" as const,
+      pendingConfig: true,
     };
   });
 
 export const verifyRiderOtpFn = createServerFn({ method: "POST" })
   .validator((input: { phone: string; otp: string }) => input)
-  .handler(async ({ data }) => {
-    const cleanPhone = sanitizeIndianPhone(data.phone || "");
-    const cleanOtp = (data.otp || "").replace(/\D/g, "").trim();
-
-    if (!isValidIndianPhone(cleanPhone)) {
-      throw new RiderError("INVALID_PHONE", "Please enter a valid 10-digit mobile number.", 400);
-    }
-    if (cleanOtp.length !== 6) {
-      throw new RiderError("INVALID_OTP", "Please enter a valid 6-digit verification code.", 400);
-    }
-
-    const record = riderOtpStore.get(cleanPhone);
-    const isMasterBypass = cleanOtp === "123456";
-    const isMatched = record && record.otp === cleanOtp && record.expiresAt > Date.now();
-
-    if (!isMasterBypass && !isMatched) {
-      if (record && record.expiresAt <= Date.now()) {
-        throw new RiderError(
-          "OTP_EXPIRED",
-          "Verification code has expired. Please request a new OTP.",
-          400,
-        );
-      }
-      throw new RiderError(
-        "OTP_MISMATCH",
-        "Invalid verification code. Please check the code or tap Resend.",
-        400,
-      );
-    }
-
-    // Clear used OTP challenge
-    riderOtpStore.delete(cleanPhone);
-
-    const email = `${cleanPhone}@rider.orderking.in`;
-    const credential = `RiderOtp#${cleanPhone}!2026`;
-
-    let isNewUser = true;
-    let isVerified = false;
-
-    try {
-      const sql = await getSql();
-      const existingUsers = await sql`SELECT id, email FROM "user" WHERE email = ${email} LIMIT 1`;
-      if (existingUsers && existingUsers.length > 0) {
-        isNewUser = false;
-        const userId = existingUsers[0].id as string;
-
-        // Synchronize password in account table with better-auth standard hashing
-        try {
-          const { hashPassword } = await import("better-auth/crypto");
-          const hashedPassword = await hashPassword(credential);
-          await sql`UPDATE "account" SET password = ${hashedPassword}, "updatedAt" = NOW() WHERE "userId" = ${userId} AND "providerId" = 'credential'`;
-        } catch {
-          /* ignore hash update error */
-        }
-
-        // Check if rider profile has completed KYC
-        const riders = await sql`SELECT id, kyc_status FROM riders WHERE user_id = ${userId} LIMIT 1`;
-        if (riders && riders.length > 0) {
-          const kycStatus = riders[0].kyc_status as string;
-          isVerified = kycStatus === "VERIFIED" || kycStatus === "ACTIVE";
-        }
-      }
-    } catch {
-      /* ignore db error during check */
-    }
-
+  .handler(async () => {
     return {
-      ok: true,
-      phone: cleanPhone,
-      email,
-      credential,
-      isNewUser,
-      isVerified,
-      destination: isVerified ? "/" : "/onboarding",
+      ok: false as const,
+      email: "",
+      credential: "",
+      destination: "/login",
+      message: RIDER_AUTH_UNAVAILABLE,
     };
   });
-
-
-
-

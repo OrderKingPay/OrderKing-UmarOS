@@ -22,7 +22,6 @@ import {
   RefreshCw,
   ShieldCheck,
   Sparkles,
-  Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -48,7 +47,6 @@ function Login() {
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState("");
-  const [debugOtp, setDebugOtp] = useState<string | null>(null);
 
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +100,6 @@ function Login() {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
 
-      setDebugOtp(res.debugOtp);
       setStep("otp");
       setCountdown(30);
       setCanResend(false);
@@ -322,7 +319,7 @@ function Login() {
                   Enter Mobile Number
                 </h1>
                 <p className="mt-1 text-xs text-[#94A3B8] leading-relaxed">
-                  We'll send a 6-digit OTP to verify your delivery partner account.
+                  Phone verification is temporarily unavailable until an authorized OTP provider and secure login are connected.
                 </p>
               </div>
 
@@ -371,7 +368,7 @@ function Login() {
                 {/* Benchmark Send OTP Button */}
                 <Button
                   type="submit"
-                  disabled={pending || !isPhoneValid}
+                  disabled={true}
                   size="lg"
                   className="w-full rounded-2xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wide text-black shadow-lg shadow-amber-500/25 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
                 >
@@ -381,7 +378,7 @@ function Login() {
                       Sending OTP...
                     </span>
                   ) : (
-                    "Send OTP →"
+                    "Phone Verification Unavailable"
                   )}
                 </Button>
               </form>
@@ -431,28 +428,7 @@ function Login() {
                 </p>
               </div>
 
-              {/* ⚡ Instant Test / Preview Verification Banner */}
-              <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-300">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-1.5 font-bold">
-                    <Zap className="size-4 text-amber-400" />
-                    Instant Verification Code:
-                  </span>
-                  <span className="font-mono text-base font-black tracking-widest text-white bg-black/40 px-2 py-0.5 rounded-lg border border-amber-500/30">
-                    {debugOtp || "123456"}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOtp(debugOtp || "123456");
-                    setError(null);
-                  }}
-                  className="mt-2 w-full text-center text-[11px] font-bold text-[#E5A93C] hover:underline"
-                >
-                  Tap here to auto-fill code →
-                </button>
-              </div>
+              <p className="text-xs text-amber-300" role="status">Verification is available only through a working authorized SMS provider. No test or fallback code is accepted.</p>
 
               <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <div className="space-y-1.5">
@@ -460,7 +436,7 @@ function Login() {
                     <Label htmlFor="otp-input" className="text-xs font-semibold text-[#94A3B8]">
                       6-Digit OTP Code
                     </Label>
-                    <span className="text-[11px] text-[#64748B]">Auto-verification active</span>
+                    <span className="text-[11px] text-[#64748B]">Provider verification required</span>
                   </div>
                   <Input
                     id="otp-input"
