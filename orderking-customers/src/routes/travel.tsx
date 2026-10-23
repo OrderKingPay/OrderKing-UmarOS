@@ -12,6 +12,7 @@ import {
 } from "@/lib/travel/in-app-booking-service";
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
 import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
+import { TravelpayoutsWhiteLabelWidget } from "@/components/travel/travelpayouts-white-label-widget";
 import { buildOfficialAirlineDeepLink, extractAirportCode } from "@/lib/travel/airline-deep-links";
 import { type VIPTravelCategory } from "@/lib/travel/sovereign-travel-engine";
 import {
@@ -846,6 +847,7 @@ export function TravelPage() {
            ===================================================================== */}
         {activeTab === "flights" && (
           <div className="space-y-6">
+            <TravelpayoutsWhiteLabelWidget />
             <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>

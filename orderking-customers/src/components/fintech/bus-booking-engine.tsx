@@ -120,7 +120,7 @@ export function BusBookingEngine({
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
             <ShieldCheck className="size-4" />
-            <span>₹0 Booking Surcharge Guaranteed</span>
+            <span>Final fees and fare confirmed by bus operator</span>
           </div>
         </div>
 
@@ -215,9 +215,9 @@ export function BusBookingEngine({
           <div className="size-12 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center mx-auto">
             <Bus className="size-6" />
           </div>
-          <h4 className="text-base font-bold text-slate-900">No luxury sleeper buses found for this route</h4>
+          <h4 className="text-base font-bold text-slate-900">Live bus seats and fares are not connected</h4>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            Please check city names or reset to the premier Bengaluru — Goa Volvo line.
+            No bus seats or fares can be confirmed in OrderKingPay. Book through an authorized operator.
           </p>
           <Button
             type="button"

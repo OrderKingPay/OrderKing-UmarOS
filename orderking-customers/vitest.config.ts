@@ -42,6 +42,8 @@ export default defineConfig({
       "src/test/gemini-tutor-solver.test.ts",
       "src/test/travel-autosuggest.test.ts",
       "src/test/dual-travel-engine.test.ts",
+      "src/test/travelpayouts-white-label.test.ts",
+      "src/test/travel-category-real-claims.test.ts",
     ],
     environment: "node",
   },

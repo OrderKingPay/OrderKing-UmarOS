@@ -138,14 +138,14 @@ function MyTripsPage() {
         <div className="mx-auto max-w-5xl space-y-5">
           <header className="rounded-3xl border border-amber-300/30 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-950 p-6 text-white shadow-xl">
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-amber-300"><Crown className="size-5" /> OrderKing Travel Hub</p>
-            <h1 className="mt-3 text-3xl font-extrabold tracking-tight">My Trips &amp; Live Tracking</h1>
-            <p className="mt-2 max-w-xl text-sm text-slate-200">1-Tap Direct IRCTC PNR validation, live airport gate departures, and direct fare comparison with 0% platform markups.</p>
-            <p className="mt-3 flex items-center gap-2 text-xs text-amber-200"><ShieldCheck className="size-4" /> 100% Verified Carrier Tracking</p>
+            <h1 className="mt-3 text-3xl font-extrabold tracking-tight">My Trips &amp; Saved References</h1>
+            <p className="mt-2 max-w-xl text-sm text-slate-200">Live in-app PNR and flight-status providers are not yet connected. Check official suppliers for current information.</p>
+            <p className="mt-3 flex items-center gap-2 text-xs text-amber-200"><ShieldCheck className="size-4" /> Status verification available only on official supplier portals</p>
           </header>
 
           <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" aria-label="Travel bookings">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-lg font-bold">Booking history ({filteredTickets.length})</h2>
+              <h2 className="text-lg font-bold">Locally saved travel records ({filteredTickets.length})</h2>
               <CalendarDays className="size-5 text-emerald-700" />
             </div>
             <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
@@ -159,38 +159,10 @@ function MyTripsPage() {
             </div>
 
             {view === "Cancelled / Refunds" && (
-              <div className="mt-4 rounded-2xl border border-amber-300/40 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 text-white space-y-3 shadow-md">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="size-5 text-amber-400" />
-                    <h3 className="text-sm font-black text-amber-300">
-                      Indian Railways IRCTC Statutory Cancellation &amp; TDR Rules (Gazette 2015)
-                    </h3>
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full">
-                    Sovereign Settlement Desk
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-300 pt-1">
-                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/10 space-y-1">
-                    <span className="font-bold text-white block">Confirmed E-Tickets Cancellation:</span>
-                    <p className="text-[11px] leading-relaxed">
-                      • <strong>&gt;48 hrs:</strong> Flat clerkage (1A/EC: ₹240+GST, 2A/1st: ₹200+GST, 3A/CC: ₹180+GST, SL: ₹120, 2S: ₹60).<br />
-                      • <strong>48h to 12h:</strong> 25% of fare (or flat minimum) + 5% GST on AC.<br />
-                      • <strong>12h to 4h:</strong> 50% of fare (or flat minimum) + 5% GST on AC.<br />
-                      • <strong>&lt;4 hrs / Post-Charting:</strong> Direct refund blocked; online TDR required.
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-950/70 border border-white/10 space-y-1">
-                    <span className="font-bold text-white block">TDR Lifecycle &amp; Gateway SLA:</span>
-                    <p className="text-[11px] leading-relaxed">
-                      • <strong>TDR Grounds:</strong> Train delayed &gt;3 hrs, coach AC failure, route diversion.<br />
-                      • <strong>Audit Authority:</strong> Railway Zonal CCM (Claims) with 30-90 days verification.<br />
-                      • <strong>Settlement Timeline:</strong> <strong>T+2 to T+5 Banking Days</strong> directly to source payment gateway.<br />
-                      • <strong>OrderKing Guarantee:</strong> Strictly ₹0 platform cancellation penalty.
-                    </p>
-                  </div>
-                </div>
+              <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-5 text-sm text-slate-800">
+                <p className="font-bold">Cancellation and refunds depend on the issuing travel provider.</p>
+                <p className="mt-2">OrderKingPay does not currently issue or cancel tickets. Check the actual booking supplier, fare conditions and current official policies for charges, timelines and refund eligibility. Locally stored trip references are not evidence of payment or ticket issuance.</p>
+                <a className="mt-2 inline-block font-semibold underline" href="https://www.irctc.co.in/nget/train-search" target="_blank" rel="noopener noreferrer">Open official IRCTC portal</a>
               </div>
             )}
 
@@ -210,11 +182,11 @@ function MyTripsPage() {
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-xs font-black font-mono px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
-                              PNR: {t.pnr}
+                              Saved reference: {t.pnr}
                             </span>
                             <span className="text-xs font-bold text-slate-900">{t.serviceTitle}</span>
                             <span className="text-[10px] text-emerald-600 font-extrabold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                              ✓ {t.status}
+                              Saved status: {t.status} (unverified)
                             </span>
                           </div>
                           <p className="text-sm font-black text-slate-800 mt-1">
@@ -232,7 +204,7 @@ function MyTripsPage() {
                             {formatPaise(t.fareBreakdown.totalCheckoutPaise)}
                           </span>
                           <span className="text-[10px] text-emerald-600 font-bold block">
-                            Direct Verified
+                            Not independently verified
                           </span>
                         </div>
                         <button
@@ -240,7 +212,7 @@ function MyTripsPage() {
                           onClick={() => setSelectedTicket(t)}
                           className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm"
                         >
-                          <QrCode className="size-3.5" /> E-Ticket
+                          <QrCode className="size-3.5" /> Local record
                         </button>
                       </div>
                     </div>
@@ -267,7 +239,7 @@ function MyTripsPage() {
           <section className="grid gap-4 md:grid-cols-2" aria-label="Check travel references">
             {/* IRCTC PNR Direct Status */}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
-              <h2 className="flex items-center gap-2 font-bold"><TrainFront className="size-5 text-emerald-700" /> Train PNR Live Verification</h2>
+              <h2 className="flex items-center gap-2 font-bold"><TrainFront className="size-5 text-emerald-700" /> Train PNR verification unavailable in-app</h2>
               <label htmlFor="trip-pnr" className="block text-xs font-medium text-slate-600">10-digit Indian Railways PNR</label>
               <div className="flex gap-2">
                 <input id="trip-pnr" type="text" inputMode="numeric" maxLength={10} value={pnr} onChange={(e) => setPnr(e.target.value.replace(/\D/g,""))}

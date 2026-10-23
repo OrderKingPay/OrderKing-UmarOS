@@ -509,55 +509,9 @@ export async function searchLiveHotels(req: HotelSearchRequest): Promise<HotelSe
   dNext.setDate(dNext.getDate() + 1);
   const checkOutDate = req.checkOutDate || dNext.toISOString().split("T")[0];
 
-  const travelpayoutsToken =
-    process.env.TRAVELPAYOUTS_TOKEN ||
-    process.env.AVIASALES_API_TOKEN ||
-    process.env.VITE_TRAVELPAYOUTS_TOKEN;
-
-  const marker = process.env.TRAVELPAYOUTS_MARKER || "500000";
-
-  // Connect Travelpayouts Hotellook live hotel aggregator for Indian domestic & international stays
-  if (travelpayoutsToken) {
-    try {
-      const res = await fetch(`https://engine.hotellook.com/api/v2/lookup.json?query=${encodeURIComponent(city)}&lang=en&lookFor=both&limit=10`, {
-        signal: AbortSignal.timeout(8000),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        const results = json?.results?.hotels;
-        if (Array.isArray(results) && results.length > 0) {
-          const hotels: HotelOption[] = results.map((h: any, idx: number) => ({
-            id: `ht-tp-${h.id || idx}`,
-            hotelName: h.label || h.fullName || `${city} Hotel`,
-            starRating: h.stars || 4,
-            userRating: 8.8,
-            reviewCount: 150,
-            address: h.locationName || city,
-            city,
-            thumbnailUrl: "",
-            nightlyRatePaise: 350000,
-            totalFarePaise: 392000,
-            roomType: "Deluxe Room",
-            freeCancellation: true,
-            breakfastIncluded: true,
-            bookingUrl: `https://tp.media/r?marker=${marker}&p=4115&u=${encodeURIComponent(`https://hotellook.com/search/${encodeURIComponent(city)}`)}`,
-            provider: "partner_wholesale",
-          }));
-          return {
-            success: true,
-            data: hotels,
-            source: "partner_wholesale",
-            count: hotels.length,
-            cityOrLocation: city,
-            checkInDate,
-            checkOutDate,
-          };
-        }
-      }
-    } catch (e) {
-      console.warn("[TravelConnectors] Hotellook API lookup failed:", e);
-    }
-  }
+  // A hotel-name/location lookup is NOT a live room inventory, rate, cancellation,
+  // or breakfast quote. No permitted supplier booking API is connected here.
+  // Fail closed instead of fabricating prices, ratings and affiliate checkout links.
 
   void req.guests;
   void req.rooms;

@@ -172,7 +172,7 @@ export function SovereignTravelConcierge({
               <Train className="size-5" />
             </div>
             <div>
-              <h4 className="text-base font-black text-slate-900">Direct 1-Tap IRCTC PNR Status</h4>
+              <h4 className="text-base font-black text-slate-900">PNR enquiry (provider connection required)</h4>
               <p className="text-xs text-slate-500">Provider-backed PNR enquiry when available</p>
             </div>
           </div>
@@ -258,7 +258,7 @@ export function SovereignTravelConcierge({
               <Plane className="size-5" />
             </div>
             <div>
-              <h4 className="text-base font-black text-slate-900">Live Flight Departure Radar</h4>
+              <h4 className="text-base font-black text-slate-900">Flight status (verified provider required)</h4>
               <p className="text-xs text-slate-500">Flight details shown only when a verified provider responds</p>
             </div>
           </div>

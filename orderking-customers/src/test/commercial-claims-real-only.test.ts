@@ -1,9 +1,25 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { generateSovereignPnr, issueSovereignETicket, searchFlightQuotes, searchBusQuotes, searchCabQuotes } from "../lib/travel/in-app-booking-service";
 import { readFileSync } from "node:fs";
 
 const read = (file: string) => readFileSync(new URL(file, import.meta.url), "utf8");
 
 describe("commercial claim safety", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("never exposes fabricated inventory in production mode", () => {
+    vi.stubEnv("MODE", "production");
+    expect(searchFlightQuotes()).toEqual([]);
+    expect(searchBusQuotes()).toEqual([]);
+    expect(searchCabQuotes()).toEqual([]);
+  });
+
+  it("blocks production synthetic references and browser-issued tickets", () => {
+    vi.stubEnv("MODE", "production");
+    expect(() => generateSovereignPnr("flight")).toThrow(/disabled/i);
+    expect(() => issueSovereignETicket({} as never)).toThrow(/unavailable/i);
+  });
+
   it("never claims unearned carrier rebates or gold rewards", () => {
     const code = read("../components/fintech/sovereign-travel-concierge.tsx");
     expect(code).not.toContain("goldMilligramsAccrued");
