@@ -18,6 +18,8 @@ jobs:
           cache: pnpm
       - name: Install locked workspace
         run: pnpm install --frozen-lockfile
+      - name: Screen tracked source for embedded credentials
+        run: node scripts/scan-source-secrets.mjs
       - name: Typecheck
         run: pnpm run typecheck
       # Run each workspace suite separately for reliable logs and bounded failures.

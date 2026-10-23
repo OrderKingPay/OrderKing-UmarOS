@@ -783,7 +783,7 @@ This report audits the repository for mock claims across specific directories an
 | actual fake production functionality | `apiKey: "F2SMS_KEY_MOCK_91829182",` |
 | fail-closed production behavior | `autoFallbackToSimulation: true,` |
 | actual fake production functionality | `status: "MOCK_ACTIVE",` |
-| actual fake production functionality | `apiKey: "AIzaSyMockKeyForOrderKingLiveMaps9812",` |
+| actual fake production functionality | `apiKey: "[REDACTED_GOOGLE_KEY]",` |
 | actual fake production functionality | `status: "MOCK_ACTIVE",` |
 | fail-closed production behavior | `if (config.database.offlineFallbackEnabled) {` |
 | fail-closed production behavior | `commWarnings.push("SMS Gateway API key missing. Operating in fallback simulation mode.");` |

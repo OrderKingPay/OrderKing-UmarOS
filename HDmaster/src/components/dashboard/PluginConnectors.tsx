@@ -843,7 +843,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                         razorpay: { ...p.razorpay, keyId: e.target.value },
                       }))
                     }
-                    placeholder="rzp_live_xxxxxxxxxxxxxx"
+                    placeholder="RAZORPAY_LIVE_KEY_ID_FROM_PROVIDER"
                     className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
                   />
                 </div>
