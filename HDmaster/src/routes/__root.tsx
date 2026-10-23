@@ -95,7 +95,7 @@ export const Route = createRootRoute({
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
                   {isChunk
                     ? "A newer control build was deployed. Auto-syncing enterprise command modules..."
-                    : "The system intercepted a lifecycle condition. Database credentials and state are 100% secure."}
+                    : "Unable to load this page. Founder access must be verified and server services must be available."}
                 </p>
               </div>
 

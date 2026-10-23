@@ -32,6 +32,7 @@ export default defineConfig({
       "src/lib/orderking/economics/ccpa-gst-engine.test.ts",
       "src/lib/orderking/payments/**/*.test.ts",
       "src/lib/orderking/security/umar-os-security-hardening.test.ts",
+      "src/lib/orderking/security/founder-session-boundary.test.ts",
       "src/lib/orderking/customization/sync-bus.test.ts",
       "src/routes/customization-studio.test.ts",
       "src/lib/orderking/logistics/tier1-rider-algorithm.test.ts",

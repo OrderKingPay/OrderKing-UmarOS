@@ -226,7 +226,7 @@ test("terminatePids SIGTERMs live pids and skips dead ones", async () => {
 
 test("terminatePids escalates to SIGKILL when SIGTERM is ignored", async () => {
   const fake = fakeProcesses({ pids: [11, 12], ignoresTerm: [12] });
-  const result = await terminatePids([11, 12], fake);
+  const result = await terminatePids([11, 12], { ...fake, graceMs: 15, pollMs: 1 });
   assert.deepEqual(result, { signalled: [11, 12], killed: [12], stubborn: [] });
   assert.deepEqual(fake.signals, [
     [11, "SIGTERM"],
@@ -241,6 +241,8 @@ test("terminatePids reports a pid that survives SIGKILL as stubborn", async () =
     isAlive: () => true,
     kill: (pid, signal) => signals.push([pid, signal]),
     sleep: async () => {},
+    graceMs: 15,
+    pollMs: 1,
   });
   assert.deepEqual(result, { signalled: [11], killed: [11], stubborn: [11] });
   assert.deepEqual(signals, [

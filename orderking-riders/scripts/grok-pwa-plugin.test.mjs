@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import {
   appNameFromHost,
-  createHeadInjector,
+  createHeadInjector as createActualHeadInjector,
   grokXCreatorHeadTags,
-  injectGrokPwaHead,
+  injectGrokPwaHead as injectActualGrokPwaHead,
   isDocumentPath,
   isInstallQuery,
   publicAppHost,
@@ -20,6 +20,15 @@ import {
 import { renderInstallPage } from "./grok-pwa-plugin.mjs";
 
 const TEMPLATE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+// Generic metadata tests must not inherit OrderKing's current production site.json.
+// Deliberately use an empty isolated fixture, while passing explicit site/cwd values
+// through unchanged where the test is about real on-disk card discovery.
+const GENERIC_TEST_CWD = mkdtempSync(join(tmpdir(), "grok-pwa-generic-test-"));
+const injectGrokPwaHead = (html, ctx = {}) =>
+  injectActualGrokPwaHead(html, { cwd: GENERIC_TEST_CWD, site: {}, ...ctx });
+const createHeadInjector = (ctx = {}) =>
+  createActualHeadInjector({ cwd: GENERIC_TEST_CWD, site: {}, ...ctx });
 
 test("injects before </head>", () => {
   const out = injectGrokPwaHead("<html><head><title>x</title></head><body></body></html>");

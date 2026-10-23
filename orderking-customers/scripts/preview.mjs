@@ -109,9 +109,11 @@ export function previewOwners({ portPids, pidFilePid, cmdlineOf }) {
 
 async function waitForExit(pids, { isAlive, sleep, timeoutMs, pollMs }) {
   let remaining = pids.filter((pid) => isAlive(pid));
-  const timeout = AbortSignal.timeout(timeoutMs);
-  while (remaining.length > 0 && !timeout.aborted) {
+  const deadline = Date.now() + Math.max(0, timeoutMs);
+  // Timer callbacks can starve if test sleep() resolves immediately.
+  while (remaining.length > 0 && Date.now() < deadline) {
     await sleep(pollMs);
+    await new Promise((resolve) => setImmediate(resolve));
     remaining = remaining.filter((pid) => isAlive(pid));
   }
   return remaining;

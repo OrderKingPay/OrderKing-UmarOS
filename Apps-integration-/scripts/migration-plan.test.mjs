@@ -60,7 +60,7 @@ test("shipped SQL migrations are explicitly discoverable and auth copy is presen
   const migrationsDir = join(projectRoot(), "migrations");
   const files = pendingMigrations(readdirSync(migrationsDir), []).map((f) => f.name);
   assert.ok(files.includes("0001_auth.sql"), "Sign-in enabled: auth migration must be discoverable");
-  assert.ok(files.includes("0002_orderking.sql"), "OrderKing schema migration must be discoverable");
+  assert.ok(files.some((name) => /^0002_[a-z0-9_-]+\.sql$/i.test(name)), "App schema migration must be discoverable");
   assert.ok(readdirSync(join(migrationsDir, "auth")).includes("0001_auth.sql"));
 });
 
