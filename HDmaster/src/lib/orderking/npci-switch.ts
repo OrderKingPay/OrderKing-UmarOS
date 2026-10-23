@@ -51,14 +51,9 @@ export class NPCICoreSwitch {
       throw new Error('Setu API keys not configured. Waiting for production keys.');
     }
     
-    // Mocking the Setu API integration logic for QR payloads
-    console.log(`[Setu Gateway] Processing payload for merchant ${payload.merchantId} with QR data.`);
-    // TODO: Implement actual Setu HTTP request via standard axios/fetch here
-    
-    return {
-      success: true,
-      transactionId: `setu_txn_${Date.now()}`
-    };
+    // Provider-side authorization, request, response and settlement verification
+    // are not implemented in this adapter. Never manufacture success.
+    throw new Error('Setu QR processing is not connected to a verified provider.');
   }
 
   private async routeToRazorpay(payload: PaymentPayload): Promise<PaymentResponse> {
@@ -66,13 +61,8 @@ export class NPCICoreSwitch {
       throw new Error('Razorpay API keys not configured. Waiting for production keys.');
     }
 
-    // Mocking the Razorpay API integration logic for QR payloads
-    console.log(`[Razorpay Gateway] Processing payload for merchant ${payload.merchantId} with QR data.`);
-    // TODO: Implement actual Razorpay HTTP request via razorpay-node SDK here
-
-    return {
-      success: true,
-      transactionId: `rzp_txn_${Date.now()}`
-    };
+    // A configured API key is not proof of an authorized QR order, captured
+    // payment or reconciled settlement. Fail closed until that flow exists.
+    throw new Error('Razorpay QR processing is not connected to a verified provider.');
   }
 }
