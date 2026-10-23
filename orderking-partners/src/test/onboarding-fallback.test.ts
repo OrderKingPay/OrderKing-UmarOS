@@ -64,7 +64,7 @@ describe("Merchant Onboarding Resilience & Local Draft Fallback", () => {
   });
 
   describe("LocalStorage Draft Fallback & Persistence", () => {
-    it("persists 'Party Box' draft with all station details so merchant never loses data", () => {
+    it("persists non-sensitive draft fields without storing tax IDs or bank credentials", () => {
       persistDraftLocally({
         restaurantId: "local_rst_party_box_123",
         form: {
@@ -106,8 +106,11 @@ describe("Merchant Onboarding Resilience & Local Draft Fallback", () => {
       expect(parsed.name).toBe("Party Box");
       expect(parsed.restaurantId).toBe("local_rst_party_box_123");
       expect(parsed.exemptFromGst).toBe(true);
-      expect(parsed.fssaiNumber).toBe("10326999000184");
-      expect(parsed.bankIfsc).toBe("HDFC0001234");
+      expect(parsed.fssaiNumber).toBe("");
+      expect(parsed.pan).toBe("");
+      expect(parsed.gstin).toBe("");
+      expect(parsed.bankAccount).toBe("");
+      expect(parsed.bankIfsc).toBe("");
       expect(parsed.onboardingFeeOption).toBe("AMORTIZED");
       expect(parsed.savedAt).toBeDefined();
     });
