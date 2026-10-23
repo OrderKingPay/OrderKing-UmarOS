@@ -22,6 +22,40 @@ import { installChunkErrorRecovery, isChunkLoadError, triggerSelfHealingReload }
 import { ResilientRouteOutlet } from "@/components/common/resilient-route-outlet";
 import { AlertCircle, RotateCcw, Home, RefreshCw, ShieldCheck } from "lucide-react";
 
+/**
+ * Travelpayouts Drive installation — issued for the OrderKing Travelpayouts project.
+ * Their verification bot checks the website root, not only /travel.
+ * Keep the exact vendor-provided loader in the SSR <head> of every customer page.
+ * Async external loading prevents blocking the first application render.
+ * Configure monetization functions in the Travelpayouts account after verification.
+ */
+const travelpayoutsDriveLoader = `
+(function () {
+    var script = document.createElement("script");
+    script.async = 1;
+    script.setAttribute("data-cmp-ab","2");
+    script.src = 'https://tpembars.com/NTg5NTU0.js?t=589554';
+    document.head.appendChild(script);
+})();
+`;
+
+function TravelpayoutsDriveHead() {
+  return (
+    <script
+      id="orderking-travelpayouts-drive-loader"
+      nowprocket=""
+      data-noptimize="1"
+      data-cfasync="false"
+      data-wpfc-render="false"
+      seraph-accel-crit="1"
+      data-no-defer="1"
+      data-cmp-ab="2"
+      dangerouslySetInnerHTML={{ __html: travelpayoutsDriveLoader }}
+    />
+  );
+}
+
+
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
   try {
     const { getSessionUser } = await import("@/lib/auth/verify.server");
@@ -81,6 +115,7 @@ export const Route = createRootRoute({
       <html lang="en" className="antialiased bg-[#FCFAF7] text-gray-900" suppressHydrationWarning>
         <head>
           <HeadContent />
+          <TravelpayoutsDriveHead />
         </head>
         <body className="bg-[#FCFAF7] text-gray-900 min-h-screen">
           <main
@@ -449,6 +484,7 @@ function Root() {
     <html lang="en" className="antialiased bg-[#FCFAF7] text-gray-900" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <TravelpayoutsDriveHead />
         <NextGenSeo config={config} />
         <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
       </head>
