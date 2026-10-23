@@ -22,7 +22,7 @@
 import { spawn } from "node:child_process";
 import { readFileSync, realpathSync } from "node:fs";
 import { constants as osConstants } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const APP_ENV_REL_PATH = ".grok/app-env.json";
@@ -111,7 +111,14 @@ function main(argv) {
     process.exit(2);
   }
   const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
-  const child = spawn(command, args, { stdio: "inherit", env, shell: process.platform === "win32" });
+  // Absolute executable paths (e.g. C:\Program Files\nodejs\node.exe) must
+  // not pass through cmd.exe: its tokenization breaks paths containing spaces,
+  // and shell interpolation is unsafe for externally sourced arguments.
+  const child = spawn(command, args, {
+    stdio: "inherit",
+    env,
+    shell: process.platform === "win32" && !isAbsolute(command),
+  });
   // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
     process.on(signal, () => child.kill(signal));

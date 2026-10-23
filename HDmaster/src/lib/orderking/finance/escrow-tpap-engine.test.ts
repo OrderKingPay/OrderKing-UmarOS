@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import { canRunDbMutationTests } from "../testing/isolated-db-test-gate";
 import {
   EscrowTpapEngine,
   MilestoneEscrowEngine,
@@ -9,7 +10,7 @@ import {
 } from "./escrow-tpap-engine.ts";
 import { canonicalLedger } from "./canonical-ledger.ts";
 
-describe("Fintech Escrow & TPAP Architecture (Council Domains 3 & 7)", () => {
+describe.skipIf(!canRunDbMutationTests())("Fintech Escrow & TPAP Architecture (Council Domains 3 & 7) — requires isolated DB", () => {
   let mockDriver: MockBankingPartnerDriver;
   let escrowEngine: EscrowTpapEngine;
   let milestoneEngine: MilestoneEscrowEngine;

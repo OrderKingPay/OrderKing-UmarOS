@@ -53,8 +53,15 @@ export function validateIfsc(ifsc: string): boolean {
 
 export function validatePostgresUrl(url: string): boolean {
   if (!url || typeof url !== "string") return false;
-  const clean = url.trim();
-  return /^postgres(ql)?:\/\/[^:]+:[^@]+@[^:]+:\d+\/.+/i.test(clean);
+  try {
+    const parsed = new URL(url.trim());
+    // Format is not connection proof, but insecure/missing TLS must block launch.
+    return ["postgres:", "postgresql:"].includes(parsed.protocol) &&
+      Boolean(parsed.hostname && parsed.username && parsed.password && parsed.pathname !== "/") &&
+      parsed.searchParams.get("sslmode")?.toLowerCase() === "verify-full";
+  } catch {
+    return false;
+  }
 }
 
 export function validateDomain(domain: string): boolean {

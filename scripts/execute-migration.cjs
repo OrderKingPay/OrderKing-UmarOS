@@ -15,18 +15,32 @@ try {
 
 const { Client } = pg;
 
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres';
+const DATABASE_URL = process.env.DATABASE_URL?.trim();
+if (!DATABASE_URL) {
+  console.error("DATABASE_URL must be configured securely before running this migration.");
+  process.exit(1);
+}
+const databaseUrl = new URL(DATABASE_URL);
+if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol) ||
+    ["no-verify", "disable"].includes(databaseUrl.searchParams.get("sslmode")?.toLowerCase())) {
+  console.error("A valid PostgreSQL URL with verified TLS is required.");
+  process.exit(1);
+}
+if (process.env.ORDERKING_LIVE_MIGRATION_APPROVED !== "YES_EXPLICIT_MIGRATION") {
+  console.error("Explicit migration approval is required: ORDERKING_LIVE_MIGRATION_APPROVED.");
+  process.exit(1);
+}
 
 async function main() {
   const client = new Client({
     connectionString: DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: true }
   });
 
   try {
     console.log('Connecting to live Supabase PostgreSQL...');
     await client.connect();
-    console.log('Connected successfully to database host aws-0-ap-southeast-1.pooler.supabase.com.');
+    console.log('Connected to the configured PostgreSQL database.');
 
     const migrationPath = path.resolve(__dirname, '../supabase/migrations/20261018_umaros_master_fees_menus.sql');
     console.log('Reading migration file:', migrationPath);
@@ -49,7 +63,7 @@ async function main() {
     for (const row of configRes.rows) {
       console.log(`Key: [${row.key}]`);
       console.log(`Description: ${row.description}`);
-      console.log('Value:', JSON.stringify(row.value, null, 2));
+      // Do not log configuration values: they may include live credentials.
     }
 
     // 2. Check Realtime Publication

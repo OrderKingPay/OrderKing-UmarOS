@@ -150,5 +150,5 @@ if (clientLeaks.length > 0 || serverLeaks.length > 0) {
   if (serverLeaks.length > 0) console.error('SERVER LEAKS:', JSON.stringify(serverLeaks, null, 2));
   process.exit(1);
 } else {
-  console.log('AUDIT RESULT: 100% CLEAN. Zero secrets leaked in client bundles or public build outputs.');
+  console.log('AUDIT RESULT: No matching secret patterns detected in the scanned existing build assets; this is not proof of zero secrets.');
 }

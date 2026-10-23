@@ -1,4 +1,5 @@
 import { test, expect } from 'vitest';
+import { canRunDbMutationTests } from '../testing/isolated-db-test-gate';
 import path from 'path';
 import dotenv from 'dotenv';
 
@@ -10,7 +11,7 @@ import { ensureWorkspace } from '@/lib/orderking/server/workspace.server';
 import * as q from '@/lib/orderking/server/queries.server';
 import { handleAdminHttp } from '@/lib/orderking/server/admin-http.server';
 
-test('UmarOS Admin & Fleet Governance - Real DB Schema & Live Endpoints', async () => {
+test.skipIf(!canRunDbMutationTests())('UmarOS Admin & Fleet Governance - isolated DB only', async () => {
   const dbUrl = process.env.DATABASE_URL;
   expect(dbUrl).toBeDefined();
 

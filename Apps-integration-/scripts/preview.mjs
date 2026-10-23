@@ -109,9 +109,13 @@ export function previewOwners({ portPids, pidFilePid, cmdlineOf }) {
 
 async function waitForExit(pids, { isAlive, sleep, timeoutMs, pollMs }) {
   let remaining = pids.filter((pid) => isAlive(pid));
-  const timeout = AbortSignal.timeout(timeoutMs);
-  while (remaining.length > 0 && !timeout.aborted) {
+  const deadline = Date.now() + Math.max(0, timeoutMs);
+  // Wall-clock deadline is required: tests may supply an immediately resolved
+  // sleep() that starves timer callbacks, so AbortSignal.timeout alone hangs.
+  while (remaining.length > 0 && Date.now() < deadline) {
     await sleep(pollMs);
+    // Also give the event loop a real turn when sleep() is mocked.
+    await new Promise((resolve) => setImmediate(resolve));
     remaining = remaining.filter((pid) => isAlive(pid));
   }
   return remaining;

@@ -22,6 +22,20 @@ import {
   submitParcelOrder,
 } from "../lib/server/parcel-order";
 
+function canRunParcelDbIntegration(): boolean {
+  if (process.env.CI === "true" || process.env.ORDERKING_TEST_DB_MUTATIONS !== "YES_ISOLATED_ONLY") return false;
+  const url = process.env.DATABASE_URL;
+  if (!url || url !== process.env.ORDERKING_TEST_DATABASE_URL) return false;
+  try {
+    const parsed = new URL(url);
+    return ["postgres:", "postgresql:"].includes(parsed.protocol) &&
+      decodeURIComponent(parsed.pathname.replace(/^\//, "")).startsWith("orderking_test_") &&
+      !["disable", "no-verify"].includes(parsed.searchParams.get("sslmode")?.toLowerCase() ?? "");
+  } catch {
+    return false;
+  }
+}
+
 describe("Parcel Order Database Storage & Server RPC Integration", () => {
   it("refuses Razorpay order creation without verified provider integration", async () => {
     await expect(prepareParcelRazorpayOrder({
@@ -34,8 +48,8 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
     })).rejects.toThrow("Secure online parcel payment");
   });
 
-  it(
-    "stores a COD parcel order directly into PostgreSQL orders table with category 'PARCEL'",
+  it.skipIf(!canRunParcelDbIntegration())(
+    "stores a COD parcel order in a dedicated test PostgreSQL database with category 'PARCEL'",
     async () => {
       const testKey = `test_idk_cod_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       const submission = {

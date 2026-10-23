@@ -44,6 +44,7 @@ import {
 } from "lucide-react";
 import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
+import { requireVerifiedFounderSession } from "@/lib/auth/founder-access.server";
 import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSettings";
 import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
@@ -221,6 +222,7 @@ async function savePlatformSettingBag(
 
 export const getUmarOSStats = createServerFn({ method: "GET" }).handler(
   async () => {
+    await requireVerifiedFounderSession();
     let userCount = 0;
     let restCount = 0;
     let riderCount = 0;
@@ -324,39 +326,40 @@ export type WorldId =
 export const saveUmarOsSettingsFn = createServerFn({ method: "POST" })
   .validator((d: { worldId: string; settings: Record<string, any> }) => d)
   .handler(async ({ data }) => {
+    await requireVerifiedFounderSession();
     const savedAt = new Date().toISOString();
 
     try {
       const sql = await getSql();
       await savePlatformSettingBag(sql, data.worldId, data.settings);
-    } catch (_e) {}
-
-    return {
-      ok: true,
-      worldId: data.worldId,
-      savedAt,
-    };
+      return { ok: true, worldId: data.worldId, savedAt };
+    } catch {
+      // No fabricated success: failed writes must remain failed.
+      return { ok: false, worldId: data.worldId, savedAt, error: "PERSISTENCE_FAILED" };
+    }
   });
 
 export const approveRestaurantFn = createServerFn({ method: "POST" })
   .validator((d: { restaurantId: string }) => d)
   .handler(async ({ data }) => {
+    await requireVerifiedFounderSession();
     const updatedAt = new Date().toISOString();
 
     try {
       const sql = await getSql();
-      await sql`
+      const updated = await sql<{ id: string }>`
         UPDATE restaurants
         SET status = 'ACTIVE'
         WHERE id = ${data.restaurantId}
+        RETURNING id
       `;
-    } catch (_e) {}
-
-    return {
-      ok: true,
-      restaurantId: data.restaurantId,
-      updatedAt,
-    };
+      if (updated.length !== 1) {
+        return { ok: false, restaurantId: data.restaurantId, updatedAt, error: "RESTAURANT_NOT_FOUND" };
+      }
+      return { ok: true, restaurantId: data.restaurantId, updatedAt };
+    } catch {
+      return { ok: false, restaurantId: data.restaurantId, updatedAt, error: "PERSISTENCE_FAILED" };
+    }
   });
 
 export interface UmarAiActionResult {
@@ -384,6 +387,7 @@ export interface UmarAiActionResult {
 export const runUmarAiActionFn = createServerFn({ method: "POST" })
   .validator((d: { prompt: string; activeWorldId?: WorldId }) => d)
   .handler(async ({ data }): Promise<UmarAiActionResult> => {
+    await requireVerifiedFounderSession();
     const prompt = (data?.prompt || "").trim();
     const lower = prompt.toLowerCase();
     const timestamp = new Date().toLocaleTimeString([], {

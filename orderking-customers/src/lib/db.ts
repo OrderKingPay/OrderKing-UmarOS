@@ -6,16 +6,23 @@ export type DbSource = "neon" | "pglite";
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
-export function getDatabaseUrl() {
-  const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
-  let url = raw && typeof raw === 'string' ? raw.trim() : undefined;
-  if (url) {
-    if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
-      url = url.slice(1, -1).trim();
-    }
+export function getDatabaseUrl(): string | undefined {
+  const raw = typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
+  if (typeof raw !== "string") return undefined;
+  let url = raw.trim();
+  if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+    url = url.slice(1, -1).trim();
   }
-  if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
-    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
+  if (!/^postgres(?:ql)?:\/\//i.test(url) || url.includes("your_supabase_pooler")) return undefined;
+  try {
+    const parsed = new URL(url);
+    const tls = parsed.searchParams.get("sslmode")?.toLowerCase();
+    if (tls === "no-verify" || tls === "disable") {
+      throw new Error("Refusing an unverified or disabled PostgreSQL TLS mode");
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Refusing")) throw error;
+    return undefined;
   }
   return url;
 }

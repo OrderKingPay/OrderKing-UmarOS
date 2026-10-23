@@ -85,7 +85,7 @@ Navigate to **Pages Project > Settings > Environment Variables** and add under b
 - `VITE_AUTH_ENABLED` = `true`
 - `BETTER_AUTH_URL` = (e.g. `https://orderkingpay.com` for customers, `https://partner.orderkingpay.com` for partners, `https://rider.orderkingpay.com` for riders, `https://admin.orderkingpay.com` for HDmaster)
 - `GROK_PROJECT_ID` = `1809652e-8dad-44ba-8bfa-67bafbfb2dfd`
-- `RAZORPAY_KEY_ID` = `rzp_live_xxxxxxxxxxxxxx`
+- `RAZORPAY_KEY_ID` = `RAZORPAY_LIVE_KEY_ID_FROM_PROVIDER`
 - `FOUNDER_UPI_PHONEPE` = `9395065587@ybl`
 - `FOUNDER_UPI_PAYTM` = `9395065587@pthdfc`
 - `FOUNDER_UPI_CRED` = `9395065587@yescred`
@@ -140,7 +140,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
 
 # Payment Gateways
-RAZORPAY_KEY_ID=rzp_live_xxxxxxxxxxxxxx
+RAZORPAY_KEY_ID=RAZORPAY_LIVE_KEY_ID_FROM_PROVIDER
 RAZORPAY_KEY_SECRET=your_razorpay_secret_here
 
 # Founder 0% Fee Direct UPI VPAs
