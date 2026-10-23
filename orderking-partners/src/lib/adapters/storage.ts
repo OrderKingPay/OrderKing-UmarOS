@@ -35,24 +35,18 @@ export function validateUpload(input: {
 }
 
 /**
- * Object storage adapter. S3 is NOT CONNECTED. Preview stores a metadata
- * record plus a truncated data URL in Postgres so documents have a status
- * without pretending a production bucket exists.
+ * Disabled until a real private object-storage provider is connected.
+ * Returning metadata here would falsely claim sensitive identity documents
+ * were uploaded, so merchant onboarding must fail closed.
  */
 export const storageAdapter = {
   connected: false as const,
   provider: "NOT_CONNECTED" as const,
-  async put(input: {
+  async put(_input: {
     key: string;
     contentType: string;
     bytes: Uint8Array;
   }): Promise<StoredObject> {
-    return {
-      backend: "local_preview",
-      key: input.key,
-      contentType: input.contentType,
-      byteSize: input.bytes.byteLength,
-      connected: false,
-    };
+    throw new Error("Secure document storage is not configured. Contact OrderKing support; your document was not uploaded.");
   },
 };
