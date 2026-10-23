@@ -662,7 +662,7 @@ export async function setRestaurantStatus(
       data_label: string | null;
       data_mode: string | null;
       fssai_number: string | null;
-      fssai_expiry_date: string | null;
+      fssai_expiry_date: string | Date | null;
       pan: string | null;
       bank_account: string | null;
       bank_ifsc: string | null;
@@ -694,9 +694,12 @@ export async function setRestaurantStatus(
     if (evidence.verification_status !== "PENDING_VERIFICATION") {
       throw new ForbiddenError("Restaurant must be submitted for independent verification before approval");
     }
-    if (!/^\\d{14}$/.test(String(evidence.fssai_number ?? "")) ||
-        !evidence.fssai_expiry_date ||
-        String(evidence.fssai_expiry_date).slice(0, 10) < new Date().toISOString().slice(0, 10)) {
+    const expiry = evidence.fssai_expiry_date instanceof Date
+      ? evidence.fssai_expiry_date.toISOString().slice(0, 10)
+      : String(evidence.fssai_expiry_date ?? "").slice(0, 10);
+    if (!/^[0-9]{14}$/.test(String(evidence.fssai_number ?? "")) ||
+        !/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(expiry) ||
+        expiry < new Date().toISOString().slice(0, 10)) {
       throw new ForbiddenError("Current FSSAI registration and expiry evidence are required");
     }
     if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(String(evidence.pan ?? "")) ||
