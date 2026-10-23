@@ -654,6 +654,65 @@ export async function setRestaurantStatus(
         : "approve_restaurants";
   requireHighRisk(ws.ctx, perm, reason, { orgId: ws.ctx.orgId, cityId: String(current.cityId) });
   const sql = await getSql();
+  // Every activation requires documented, independent verification evidence.
+  // Displayed number formats and merchant-submitted claims are never approval.
+  if (status === "ACTIVE" || status === "APPROVED") {
+    const rows = await sql.query<{
+      verification_status: string | null;
+      data_label: string | null;
+      data_mode: string | null;
+      fssai_number: string | null;
+      fssai_expiry_date: string | null;
+      pan: string | null;
+      bank_account: string | null;
+      bank_ifsc: string | null;
+      zone_id: string | null;
+      lat: number | null;
+      lng: number | null;
+      fssai_docs: number;
+      pan_docs: number;
+    }>(
+      `select r.verification_status, r.data_label, r.data_mode, r.fssai_number,
+              r.fssai_expiry_date, r.pan, r.bank_account, r.bank_ifsc,
+              r.zone_id, r.lat, r.lng,
+              (select count(*)::int from restaurant_documents d
+               where d.restaurant_id=r.id and d.kind='FSSAI_DOC'
+                 and d.storage_backend='supabase_private'
+                 and d.verification_status in ('VERIFIED','APPROVED')) as fssai_docs,
+              (select count(*)::int from restaurant_documents d
+               where d.restaurant_id=r.id and d.kind='PAN_DOC'
+                 and d.storage_backend='supabase_private'
+                 and d.verification_status in ('VERIFIED','APPROVED')) as pan_docs
+         from restaurants r where r.id=$1 and r.org_id=$2`,
+      [id, ws.ctx.orgId],
+    );
+    const evidence = rows[0];
+    if (!evidence) throw new ForbiddenError("Restaurant not found in this organization");
+    if (evidence.data_label === "SIMULATED" || evidence.data_mode === "SIMULATED") {
+      throw new ForbiddenError("Test restaurants cannot be activated for customers");
+    }
+    if (evidence.verification_status !== "PENDING_VERIFICATION") {
+      throw new ForbiddenError("Restaurant must be submitted for independent verification before approval");
+    }
+    if (!/^\\d{14}$/.test(String(evidence.fssai_number ?? "")) ||
+        !evidence.fssai_expiry_date ||
+        String(evidence.fssai_expiry_date).slice(0, 10) < new Date().toISOString().slice(0, 10)) {
+      throw new ForbiddenError("Current FSSAI registration and expiry evidence are required");
+    }
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(String(evidence.pan ?? "")) ||
+        !evidence.bank_account || !evidence.bank_ifsc) {
+      throw new ForbiddenError("Valid merchant PAN and bank details are required");
+    }
+    if (Number(evidence.fssai_docs) < 1 || Number(evidence.pan_docs) < 1) {
+      throw new ForbiddenError("Independent approval of private FSSAI and PAN document evidence is required");
+    }
+    const latitude = Number(evidence.lat);
+    const longitude = Number(evidence.lng);
+    if (!evidence.zone_id || !Number.isFinite(latitude) || !Number.isFinite(longitude) ||
+        latitude < 6 || latitude > 38 || longitude < 68 || longitude > 98) {
+      throw new ForbiddenError("Verified Indian restaurant coordinates and assigned service zone are required");
+    }
+  }
   const nextVerificationStatus = (status === "ACTIVE" || status === "APPROVED") ? "VERIFIED" : (status === "REJECTED" ? "REJECTED" : "PENDING");
   const nextActive = (status === "ACTIVE" || status === "APPROVED");
   await sql.query(`update restaurants set status=$3, verification_status=$4, active=$5, updated_at=now() where id=$1 and org_id=$2`, [id, ws.ctx.orgId, status, nextVerificationStatus, nextActive]);
