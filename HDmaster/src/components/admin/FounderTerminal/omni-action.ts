@@ -8,6 +8,8 @@ import { createServerFn } from '@tanstack/react-start';
 export const executeOmniCommand = createServerFn({ method: 'POST' })
   .validator((data: { command: string }) => data)
   .handler(async () => ({
-    status: 'ERROR' as const,
+    status: 'ERROR' as 'SUCCESS' | 'ERROR',
+    intent: '',
+    result: null,
     message: 'This command is unavailable because no verified infrastructure action is connected.',
   }));
