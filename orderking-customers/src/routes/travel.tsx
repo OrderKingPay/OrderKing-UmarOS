@@ -329,6 +329,32 @@ export interface SavedTripReference {
 const SAVED_TRIPS_STORAGE_KEY = "orderking_saved_trips_v1";
 
 export function TravelPage() {
+  // The Travelpayouts Drive snippet is only prepared for explicitly enabled,
+  // isolated travel-page testing. Drive can rewrite third-party links and
+  // inject recommendations; never load it globally on food, auth or payments.
+  useEffect(() => {
+    if (import.meta.env.VITE_ENABLE_TRAVELPAYOUTS_DRIVE !== "true") return;
+    if (typeof window === "undefined" || window.location.pathname !== "/travel") return;
+    const scriptId = "orderking-travelpayouts-drive";
+    if (document.getElementById(scriptId)) return;
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.async = true;
+    script.src = "https://tpembars.com/NTg5NTU0.js?t=589554";
+    script.setAttribute("data-cmp-ab", "2");
+    script.setAttribute("data-cfasync", "false");
+    script.setAttribute("data-noptimize", "1");
+    script.setAttribute("data-no-defer", "1");
+    script.setAttribute("seraph-accel-crit", "1");
+    script.setAttribute("data-wpfc-render", "false");
+    script.setAttribute("nowprocket", "");
+    document.head.appendChild(script);
+    return () => {
+      // Removal prevents future reloads; vendor-created links or widgets may
+      // persist in a client-side SPA. Exclude sensitive pages in Drive settings.
+      script.remove();
+    };
+  }, []);
   const [activeTab, setActiveTab] = useState<TravelTab>("vip_concierge");
   const [activeSubCategory, setActiveSubCategory] = useState<Record<TravelTab, string>>({
     vip_concierge: "Private Aviation & Jet Charters",
