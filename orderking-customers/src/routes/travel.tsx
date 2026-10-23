@@ -847,6 +847,9 @@ export function TravelPage() {
            ===================================================================== */}
         {activeTab === "flights" && (
           <div className="space-y-6">
+            {/* Optional genuine partner search, above existing flight booking options. */}
+            <TravelpayoutsFlightWidget />
+
             <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
@@ -1369,9 +1372,6 @@ export function TravelPage() {
                 </div>
               )}
             </div>
-
-            {/* Partner metasearch is opt-in and does not replace existing booking paths. */}
-            <TravelpayoutsFlightWidget />
 
             {/* Embedded Flight Booking Engine */}
             <FlightBookingEngine initialFrom={flightFrom} initialTo={flightTo} />
