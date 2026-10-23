@@ -52,6 +52,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
 import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
+import { TravelpayoutsFlightWidget } from "@/components/travel/travelpayouts-flight-widget";
 import { AppErrorComponent } from "@/lib/error-component";
 import { queryAirports, queryStations } from "@/components/fintech/travel-autosuggest";
 import { AirportAutoSuggest, StationAutoSuggest } from "@/components/fintech/travel-autosuggest";
@@ -1368,6 +1369,9 @@ export function TravelPage() {
                 </div>
               )}
             </div>
+
+            {/* Partner metasearch is opt-in and does not replace existing booking paths. */}
+            <TravelpayoutsFlightWidget />
 
             {/* Embedded Flight Booking Engine */}
             <FlightBookingEngine initialFrom={flightFrom} initialTo={flightTo} />
