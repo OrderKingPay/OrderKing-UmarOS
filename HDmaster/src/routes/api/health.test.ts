@@ -55,14 +55,14 @@ describe('HDmaster /api/health Endpoint Suite', () => {
       expect(body.timestamp).toBeDefined();
     });
 
-    it('returns degraded status (200 OK) when database is unconfigured', async () => {
+    it('returns degraded status (503) when database is unconfigured', async () => {
       process.env.BETTER_AUTH_SECRET = 'test-secret';
       delete process.env.DATABASE_URL;
       delete process.env.VITE_PG_LITE_URL;
-      vi.mocked(getDatabaseUrl).mockReturnValue(undefined);
+      vi.mocked(getDatabaseUrl).mockImplementation(() => { throw new Error('DATABASE_URL is unconfigured'); });
 
       const response = await handlers.GET();
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(503);
 
       const body = await response.json();
       expect(body.status).toBe('degraded');
@@ -70,7 +70,7 @@ describe('HDmaster /api/health Endpoint Suite', () => {
       expect(body.secrets.db).toBe(false);
     });
 
-    it('returns degraded status (200 OK) when database query throws an error', async () => {
+    it('returns degraded status (503) when database query throws an error', async () => {
       process.env.BETTER_AUTH_SECRET = 'test-secret';
       process.env.DATABASE_URL = 'postgres://user:pass@localhost:5432/db';
       vi.mocked(getDatabaseUrl).mockReturnValue('postgres://user:pass@localhost:5432/db');
@@ -78,24 +78,25 @@ describe('HDmaster /api/health Endpoint Suite', () => {
       vi.mocked(getSql).mockRejectedValue(new Error('Connection refused'));
 
       const response = await handlers.GET();
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(503);
 
       const body = await response.json();
       expect(body.status).toBe('degraded');
-      expect(body.database).toContain('Connection refused');
+      expect(body.database).toBe('unavailable');
     });
 
-    it('returns unhealthy status in 200 payload if an unexpected internal exception occurs', async () => {
+    it('does not leak secret configuration errors in degraded response', async () => {
       vi.mocked(getDatabaseUrl).mockImplementation(() => {
         throw new Error('Fatal panic');
       });
 
       const response = await handlers.GET();
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(503);
 
       const body = await response.json();
-      expect(body.status).toBe('unhealthy');
-      expect(body.error).toContain('Fatal panic');
+      expect(body.status).toBe('degraded');
+      expect(body.database).toBe('unconfigured');
+      expect(body.error).toBeUndefined();
     });
   });
 });
