@@ -333,7 +333,9 @@ export function TravelPage() {
   // isolated travel-page testing. Drive can rewrite third-party links and
   // inject recommendations; never load it globally on food, auth or payments.
   useEffect(() => {
-    if (import.meta.env.VITE_ENABLE_TRAVELPAYOUTS_DRIVE !== "true") return;
+    const previewHost = window.location.hostname.endsWith(".orderking-customers.pages.dev");
+    const enabled = previewHost || import.meta.env.VITE_ENABLE_TRAVELPAYOUTS_DRIVE === "true";
+    if (!enabled) return;
     if (typeof window === "undefined" || window.location.pathname !== "/travel") return;
     const scriptId = "orderking-travelpayouts-drive";
     if (document.getElementById(scriptId)) return;
