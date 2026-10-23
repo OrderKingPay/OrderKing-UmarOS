@@ -52,6 +52,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
 import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
+import { TravelpayoutsFlightWidget } from "@/components/travel/travelpayouts-flight-widget";
 import { AppErrorComponent } from "@/lib/error-component";
 import { queryAirports, queryStations } from "@/components/fintech/travel-autosuggest";
 import { AirportAutoSuggest, StationAutoSuggest } from "@/components/fintech/travel-autosuggest";
@@ -846,6 +847,9 @@ export function TravelPage() {
            ===================================================================== */}
         {activeTab === "flights" && (
           <div className="space-y-6">
+            {/* Optional genuine partner search, above existing flight booking options. */}
+            <TravelpayoutsFlightWidget />
+
             <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
