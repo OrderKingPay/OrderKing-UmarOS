@@ -56,9 +56,11 @@ test("non-.sql entries are dropped (readdir also yields the auth/ directory)", (
   assert.deepEqual(pendingMigrations(["auth", "README.md"], []), []);
 });
 
-test("the auth schema ships outside the globbed directory", () => {
+test("shipped SQL migrations are explicitly discoverable and auth copy is present", () => {
   const migrationsDir = join(projectRoot(), "migrations");
-  assert.deepEqual(pendingMigrations(readdirSync(migrationsDir), []), []);
+  const files = pendingMigrations(readdirSync(migrationsDir), []).map((f) => f.name);
+  assert.ok(files.includes("0001_auth.sql"), "Sign-in enabled: auth migration must be discoverable");
+  assert.ok(files.includes("0002_orderking.sql"), "OrderKing schema migration must be discoverable");
   assert.ok(readdirSync(join(migrationsDir, "auth")).includes("0001_auth.sql"));
 });
 
