@@ -111,6 +111,15 @@ const DEFAULT_EXTRA_CONNECTORS: ExtraPlatformConnectors = {
 
 const EXTRA_STORAGE_KEY = "orderking_extra_connectors_v1";
 
+// Public preferences only. Database, service role and AI API keys must be
+// configured and verified on the server, never persisted in browser storage.
+function sanitizeExtraConnectors(extra: ExtraPlatformConnectors): ExtraPlatformConnectors {
+  return {
+    supabase: { ...extra.supabase, databaseUrl: "", serviceRoleKey: "" },
+    openaiGemini: { ...extra.openaiGemini, geminiApiKey: "", openaiApiKey: "" },
+  };
+}
+
 export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
   const [config, setConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
   const [initialConfig, setInitialConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
@@ -146,7 +155,13 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
         try {
           const rawExtra = localStorage.getItem(EXTRA_STORAGE_KEY);
           if (rawExtra) {
-            const parsed = { ...DEFAULT_EXTRA_CONNECTORS, ...JSON.parse(rawExtra) };
+            const stored = JSON.parse(rawExtra);
+            const parsed = sanitizeExtraConnectors({
+              supabase: { ...DEFAULT_EXTRA_CONNECTORS.supabase, ...stored?.supabase },
+              openaiGemini: { ...DEFAULT_EXTRA_CONNECTORS.openaiGemini, ...stored?.openaiGemini },
+            });
+            // Purge previously stored credentials on the next page load.
+            localStorage.setItem(EXTRA_STORAGE_KEY, JSON.stringify(parsed));
             setExtraConfig(parsed);
             setInitialExtraConfig(parsed);
           }
@@ -234,10 +249,12 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
       setStatusBanner(null);
 
       try {
-        localStorage.setItem(EXTRA_STORAGE_KEY, JSON.stringify(extraConfig));
-        setInitialExtraConfig(extraConfig);
+        const safeExtra = sanitizeExtraConnectors(extraConfig);
+        localStorage.setItem(EXTRA_STORAGE_KEY, JSON.stringify(safeExtra));
+        setExtraConfig(safeExtra);
+        setInitialExtraConfig(safeExtra);
       } catch {
-        setInitialExtraConfig(extraConfig);
+        setInitialExtraConfig(sanitizeExtraConnectors(extraConfig));
       }
 
       let success = false;
@@ -260,15 +277,15 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
             success = true;
           }
         } catch {
-          setInitialConfig(config);
-          success = true;
+          // Server save failed. Never claim an unpersisted change succeeded.
+          success = false;
         }
       }
 
       if (success) {
         setStatusBanner({
           type: "success",
-          text: "API keys and connector settings saved.",
+          text: "Connector settings saved by the server. Extra public preferences are browser-only; provider secrets need server configuration.",
         });
         setTimeout(() => setStatusBanner(null), 5000);
       } else {
@@ -321,34 +338,12 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
   const handleTestConnection = async (service: string) => {
     const nowStr = new Date().toLocaleTimeString();
 
-    if (service === "supabase") {
-      const hasUrl = !!extraConfig.supabase.projectUrl.trim() || !!extraConfig.supabase.databaseUrl.trim();
-      const hasKey = !!extraConfig.supabase.anonKey.trim() || !!extraConfig.supabase.serviceRoleKey.trim();
+    if (service === "supabase" || service === "openaiGemini") {
       setTestResults((prev) => ({
         ...prev,
-        supabase: {
-          ok: hasUrl && hasKey,
-          message:
-            hasUrl && hasKey
-              ? "Database URL and key format verified. Click Save Keys to persist."
-              : "Not Connected — Enter your Supabase Project URL and API Key first.",
-          timestamp: nowStr,
-        },
-      }));
-      return;
-    }
-
-    if (service === "openaiGemini") {
-      const hasKey =
-        !!extraConfig.openaiGemini.geminiApiKey.trim() ||
-        !!extraConfig.openaiGemini.openaiApiKey.trim();
-      setTestResults((prev) => ({
-        ...prev,
-        openaiGemini: {
-          ok: hasKey,
-          message: hasKey
-            ? "AI API key format verified. Click Save Keys to persist."
-            : "Not Connected — Enter a Gemini or OpenAI API Key first.",
+        [service]: {
+          ok: false,
+          message: "Not verified. Configure the provider securely on the server, then run an authenticated connectivity test.",
           timestamp: nowStr,
         },
       }));
@@ -404,21 +399,21 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
 
   // Honest connection status helper: ONLY returns Connected when an API key is actually entered AND saved!
   const getHonestStatus = (service: ConnectorTab) => {
+    if (service === "supabase" || service === "openaiGemini") {
+      return {
+        status: "NOT_CONNECTED" as const,
+        label: "Server verification required",
+        badgeClass: "bg-slate-100 text-slate-600 border-slate-300",
+      };
+    }
     const checkHasKey = (cfg: PluginConnectorsConfig, ext: ExtraPlatformConnectors): boolean => {
       switch (service) {
         case "razorpay":
           return !!cfg.razorpay.keyId.trim() && !!cfg.razorpay.keySecret.trim();
-        case "supabase":
-          return (
-            (!!ext.supabase.projectUrl.trim() || !!ext.supabase.databaseUrl.trim()) &&
-            (!!ext.supabase.anonKey.trim() || !!ext.supabase.serviceRoleKey.trim())
-          );
         case "whatsapp":
           return !!cfg.whatsapp.phoneNumberId.trim() && !!cfg.whatsapp.systemAccessToken.trim();
         case "mapbox":
           return !!cfg.mapbox.publicAccessToken.trim();
-        case "openaiGemini":
-          return !!ext.openaiGemini.geminiApiKey.trim() || !!ext.openaiGemini.openaiApiKey.trim();
         case "fssai":
           return !!cfg.fssai.clientId.trim() && !!cfg.fssai.authorizationToken.trim();
         case "cleartax":
@@ -468,8 +463,6 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
     };
 
     const checkEnabled = (cfg: PluginConnectorsConfig, ext: ExtraPlatformConnectors): boolean => {
-      if (service === "supabase") return ext.supabase.enabled;
-      if (service === "openaiGemini") return ext.openaiGemini.enabled;
       if (service === "all") return false;
       return !!cfg[service]?.enabled;
     };
@@ -494,10 +487,11 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
       };
     }
 
+    // Saved credentials alone do not prove provider acceptance or transactions.
     return {
-      status: "CONNECTED" as const,
-      label: "Connected",
-      badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-300",
+      status: "NOT_CONNECTED" as const,
+      label: "Configured — live verification pending",
+      badgeClass: "bg-slate-100 text-slate-600 border-slate-300",
     };
   };
 
@@ -1037,23 +1031,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                   />
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1">
-                    Postgres Connection String (DATABASE_URL)
-                  </label>
-                  <input
-                    type="password"
-                    value={extraConfig.supabase.databaseUrl}
-                    onChange={(e) =>
-                      setExtraConfig((p) => ({
-                        ...p,
-                        supabase: { ...p.supabase, databaseUrl: e.target.value },
-                      }))
-                    }
-                    placeholder="postgresql://postgres:password@db.supabase.co:5432/postgres"
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
+                <div className="rounded-lg border border-border bg-secondary/30 px-3 py-3 text-xs text-muted-foreground">Set DATABASE_URL in Cloudflare as a server secret; this browser form cannot verify or save it.</div>
 
                 <div>
                   <label className="text-xs font-semibold text-foreground block mb-1">
@@ -1073,23 +1051,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                   />
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1">
-                    Service Role Secret Key
-                  </label>
-                  <input
-                    type="password"
-                    value={extraConfig.supabase.serviceRoleKey}
-                    onChange={(e) =>
-                      setExtraConfig((p) => ({
-                        ...p,
-                        supabase: { ...p.supabase, serviceRoleKey: e.target.value },
-                      }))
-                    }
-                    placeholder="Enter Service Role Secret"
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
+                <div className="rounded-lg border border-border bg-secondary/30 px-3 py-3 text-xs text-muted-foreground">Set the Supabase service-role key only in the server secret store. Never enter it in a browser.</div>
               </div>
             </div>
           )}
@@ -1405,41 +1367,9 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
               {renderTestBanner("openaiGemini")}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1">
-                    Google Gemini API Key
-                  </label>
-                  <input
-                    type="password"
-                    value={extraConfig.openaiGemini.geminiApiKey}
-                    onChange={(e) =>
-                      setExtraConfig((p) => ({
-                        ...p,
-                        openaiGemini: { ...p.openaiGemini, geminiApiKey: e.target.value },
-                      }))
-                    }
-                    placeholder="AIzaSy..."
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
+                <div className="rounded-lg border border-border bg-secondary/30 px-3 py-3 text-xs text-muted-foreground">Set the Gemini API key as a server secret. This page cannot save or verify it.</div>
 
-                <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1">
-                    OpenAI API Key (Optional)
-                  </label>
-                  <input
-                    type="password"
-                    value={extraConfig.openaiGemini.openaiApiKey}
-                    onChange={(e) =>
-                      setExtraConfig((p) => ({
-                        ...p,
-                        openaiGemini: { ...p.openaiGemini, openaiApiKey: e.target.value },
-                      }))
-                    }
-                    placeholder="sk-proj-..."
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
+                <div className="rounded-lg border border-border bg-secondary/30 px-3 py-3 text-xs text-muted-foreground">Set the OpenAI API key as a server secret. This page cannot save or verify it.</div>
               </div>
             </div>
           )}

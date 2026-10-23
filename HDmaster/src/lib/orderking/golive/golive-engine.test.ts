@@ -51,13 +51,15 @@ test("Go-Live Statutory & Format Validators", async (t) => {
 
   await t.test("validates PostgreSQL connection strings accurately", () => {
     assert.equal(
-      validatePostgresUrl("postgresql://postgres:secret@db.supabase.com:5432/postgres?sslmode=require"),
+      validatePostgresUrl("postgresql://unit_test:UNIT_ONLY_NOT_REAL@localhost:5432/orderking_test_fixture?sslmode=verify-full"),
       true,
     );
     assert.equal(
-      validatePostgresUrl("postgres://user:pass@localhost:5432/mydb"),
+      validatePostgresUrl("postgres://unit_test:UNIT_ONLY_NOT_REAL@localhost:5432/orderking_test_fixture?sslmode=verify-full"),
       true,
     );
+    assert.equal(validatePostgresUrl("postgresql://unit_test:UNIT_ONLY_NOT_REAL@localhost:5432/orderking_test_fixture?sslmode=no-verify"), false);
+    assert.equal(validatePostgresUrl("postgresql://unit_test:UNIT_ONLY_NOT_REAL@localhost:5432/orderking_test_fixture?sslmode=disable"), false);
     assert.equal(validatePostgresUrl("http://localhost:5432"), false);
     assert.equal(validatePostgresUrl(""), false);
   });
@@ -71,7 +73,7 @@ test("Go-Live Statutory & Format Validators", async (t) => {
 
 const VALID_DUMMY_CONFIG: MasterGoLiveConfig = {
   ...DEFAULT_GOLIVE_CONFIG,
-  database: { ...DEFAULT_GOLIVE_CONFIG.database, connectionString: "postgresql://postgres:secret@db.supabase.com:5432/postgres?sslmode=require" },
+  database: { ...DEFAULT_GOLIVE_CONFIG.database, connectionString: "postgresql://unit_test:UNIT_ONLY_NOT_REAL@localhost:5432/orderking_test_fixture?sslmode=verify-full" },
   paymentGateway: { ...DEFAULT_GOLIVE_CONFIG.paymentGateway, apiKey: "rzp_test_123", secretKey: "secret_123", webhookSecret: "whsec_123", mode: "PRODUCTION" },
   smsGateway: { ...DEFAULT_GOLIVE_CONFIG.smsGateway, apiKey: "sms_123", senderId: "ORDKNG", dltEntityId: "123", dltTemplateIdOtp: "456" },
   maps: { ...DEFAULT_GOLIVE_CONFIG.maps, apiKey: "maps_123" },

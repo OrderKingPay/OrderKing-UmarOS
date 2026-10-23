@@ -20,8 +20,25 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Typecheck
         run: pnpm run typecheck
-      - name: Tests
-        timeout-minutes: 30
-        run: pnpm exec turbo run test --concurrency=1
+      # Run each workspace suite separately for reliable logs and bounded failures.
+      # Turbo's aggregated command previously hung for 30 minutes without test output.
+      - name: Test shared UI
+        timeout-minutes: 7
+        run: pnpm --filter @orderking/ui test
+      - name: Test integration app
+        timeout-minutes: 7
+        run: pnpm --filter app-builder-workspace test
+      - name: Test riders
+        timeout-minutes: 7
+        run: pnpm --filter orderking-riders test
+      - name: Test partners
+        timeout-minutes: 7
+        run: pnpm --filter orderking-partners test
+      - name: Test customers
+        timeout-minutes: 7
+        run: pnpm --filter orderking-customers test
+      - name: Test admin
+        timeout-minutes: 7
+        run: pnpm --filter HDmaster test
       - name: Build
         run: pnpm run build

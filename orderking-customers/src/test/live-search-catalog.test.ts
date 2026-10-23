@@ -1,9 +1,23 @@
 import { describe, it, expect } from "vitest";
 import { Route } from "../routes/api/search";
 
-describe("Live Real Restaurant Catalog Verification", () => {
+function canUseDedicatedCatalogDatabase(): boolean {
+  if (process.env.CI === "true" || process.env.ORDERKING_LIVE_CATALOG_TESTS !== "YES_DEDICATED_TEST_DB") return false;
+  const url = process.env.DATABASE_URL;
+  if (!url || url !== process.env.ORDERKING_TEST_DATABASE_URL) return false;
+  try {
+    const parsed = new URL(url);
+    const name = decodeURIComponent(parsed.pathname.replace(/^\//, ""));
+    return ["postgres:", "postgresql:"].includes(parsed.protocol) &&
+      name.startsWith("orderking_test_") &&
+      !["no-verify", "disable"].includes(parsed.searchParams.get("sslmode")?.toLowerCase() ?? "");
+  } catch {
+    return false;
+  }
+}
+
+describe.skipIf(!canUseDedicatedCatalogDatabase())("Restaurant catalog integration (dedicated test DB required)", () => {
   it("loads authentic Connaught Place restaurants with real ratings and timing", async () => {
-    process.env.DATABASE_URL = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres";
     const handler = (Route.options as any)?.server?.handlers?.GET;
     expect(handler).toBeDefined();
 
@@ -24,7 +38,6 @@ describe("Live Real Restaurant Catalog Verification", () => {
   }, 45000);
 
   it("checks real restaurants in Sribhumi Core, Mumbai Metropolitan, and Bengaluru Tech Hub", async () => {
-    process.env.DATABASE_URL = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres";
     const handler = (Route.options as any)?.server?.handlers?.GET;
 
     // Sribhumi Core

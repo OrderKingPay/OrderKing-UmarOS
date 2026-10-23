@@ -1,11 +1,25 @@
 const { Client } = require('../node_modules/.pnpm/pg@8.23.0/node_modules/pg');
 
-const DATABASE_URL = 'postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres';
+const DATABASE_URL = process.env.DATABASE_URL?.trim();
+if (!DATABASE_URL) {
+  console.error("Missing DATABASE_URL. No database migration was attempted.");
+  process.exit(1);
+}
+const databaseUrl = new URL(DATABASE_URL);
+if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol) ||
+    ["no-verify", "disable"].includes(databaseUrl.searchParams.get("sslmode")?.toLowerCase())) {
+  console.error("A valid PostgreSQL URL with verified TLS is required.");
+  process.exit(1);
+}
+if (process.env.ORDERKING_LIVE_MIGRATION_APPROVED !== "YES_EXPLICIT_MIGRATION") {
+  console.error("Explicit migration approval is required: ORDERKING_LIVE_MIGRATION_APPROVED.");
+  process.exit(1);
+}
 
 async function main() {
   const client = new Client({
     connectionString: DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: true }
   });
 
   try {
@@ -39,9 +53,10 @@ async function main() {
     console.log('Default rows seeded.');
 
     const rows = await client.query('SELECT * FROM public.umar_os_config;');
-    console.log('Current rows:', rows.rows);
+    console.log('Configuration record count:', rows.rowCount);
   } catch (err) {
-    console.error('Migration error:', err);
+    console.error('Migration failed; inspect protected server logs.');
+    process.exitCode = 1;
   } finally {
     await client.end();
   }
