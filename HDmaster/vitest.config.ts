@@ -40,6 +40,7 @@ export default defineConfig({
       "src/lib/orderking/playbook/**/*.test.ts",
       "src/lib/orderking/dispatch/**/*.test.ts",
       "src/lib/orderking/governance/**/*.test.ts",
+      "src/lib/orderking/testing/isolated-db-test-gate.test.ts",
       "src/lib/orderking/finance/escrow-tpap-engine.test.ts",
       "src/lib/orderking/travel/providers/amadeus-production-gate.test.ts",
     ],
