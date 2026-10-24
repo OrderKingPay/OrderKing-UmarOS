@@ -67,9 +67,6 @@ function CrownOpportunitiesPage() {
                 <span className="inline-flex items-center rounded-full border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-yellow-400/30 to-amber-500/20 px-3.5 py-1.5 text-xs font-black text-amber-200 shadow-sm">
                   <Sparkles className="mr-1.5 inline size-3.5 text-amber-300" /> Transparent Order Discounts · Active
                 </span>
-                <span className="inline-flex items-center rounded-full border border-emerald-400/50 bg-emerald-500/20 px-3.5 py-1.5 text-xs font-black text-emerald-200 shadow-sm">
-                  <ShieldCheck className="mr-1.5 inline size-3.5 text-emerald-300" /> 100% RBI PA / Double-Entry Audited
-                </span>
               </div>
             </div>
           </header>

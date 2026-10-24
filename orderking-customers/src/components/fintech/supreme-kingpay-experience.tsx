@@ -449,6 +449,8 @@ export function SupremeKingPayExperience() {
                   <img
                     src={qrImageUrl}
                     alt={`UPI QR for ${payeeVpa}`}
+                    loading="lazy"
+                    decoding="async"
                     className="size-40 sm:size-44 object-contain"
                   />
                 </div>

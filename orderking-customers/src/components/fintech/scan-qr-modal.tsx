@@ -283,6 +283,8 @@ export function ScanQrModal({
                   alt="Scan to Pay OrderKing UPI"
                   width={200}
                   height={200}
+                  loading="lazy"
+                  decoding="async"
                   className="rounded-xl w-44 h-44 object-contain"
                 />
               </div>

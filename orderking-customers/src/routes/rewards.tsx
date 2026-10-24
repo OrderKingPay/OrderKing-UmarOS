@@ -16,7 +16,7 @@ export const Route = createFileRoute("/rewards")({ component: RewardsPage });
 
 type AllianceReward = {
   id: string;
-  category: "all" | "ecommerce" | "fuel" | "lpg" | "retail" | "edtech" | "fashion" | "health";
+  category: "all" | "orderking" | "ecommerce" | "fuel" | "edtech";
   brand: string;
   title: string;
   description: string;
@@ -31,6 +31,51 @@ type AllianceReward = {
 };
 
 const ALLIANCE_REWARDS: AllianceReward[] = [
+  {
+    id: "ok_food_discount_50",
+    category: "orderking",
+    brand: "OrderKing Loyalty",
+    title: "Flat ₹50 OFF on Food Order",
+    description: "Redeem King Coins for an instant discount on your next delicious meal.",
+    code: "KINGFOOD50",
+    coinsRequired: 250,
+    valueLabel: "Save ₹50",
+    badge: "👑 Authentic Reward",
+    icon: "🍔",
+    terms: "Valid on min order of ₹249 on OrderKing app. Applied directly at checkout.",
+    affiliateUrl: "/",
+    supportedCities: ["ALL"],
+  },
+  {
+    id: "ok_free_delivery",
+    category: "orderking",
+    brand: "OrderKing Express",
+    title: "Free Doorstep Delivery",
+    description: "100% waiver on doorstep delivery fees for food and grocery orders.",
+    code: "KINGFREEDEL",
+    coinsRequired: 150,
+    valueLabel: "Free Delivery",
+    badge: "🛵 Fast Delivery",
+    icon: "🚀",
+    terms: "Valid on orders above ₹199 across active delivery zones.",
+    affiliateUrl: "/",
+    supportedCities: ["ALL"],
+  },
+  {
+    id: "ok_referral_milestone",
+    category: "orderking",
+    brand: "OrderKing Club",
+    title: "₹100 Referral Milestone Feast",
+    description: "Milestone discount for inviting friends to experience OrderKing.",
+    code: "FEAST100",
+    coinsRequired: 500,
+    valueLabel: "Save ₹100",
+    badge: "🤝 Referral Perk",
+    icon: "🎁",
+    terms: "Valid on minimum food order of ₹499.",
+    affiliateUrl: "/rewards",
+    supportedCities: ["ALL"],
+  },
   {
     id: "amazon_deals",
     category: "ecommerce",
@@ -137,51 +182,6 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     supportedCities: ["ALL"],
   },
   {
-    id: "indianoil_lpg",
-    category: "lpg",
-    brand: "IndianOil (Indane Gas)",
-    title: "LPG Gas Booking + ₹50 Cashback",
-    description: "Book domestic LPG cylinder online and unlock ₹50 fuel cashback credit.",
-    code: "INDANE50",
-    coinsRequired: 250,
-    valueLabel: "₹50 Fuel Credit",
-    badge: "🔥 LPG Utility",
-    icon: "🔥",
-    terms: "Valid on online Indane Gas cylinder refill booking across Barak Valley distributors.",
-    affiliateUrl: "https://cx.indianoil.in?ref=orderking",
-    supportedCities: ["city_sribhumi", "city_silchar", "city_karimganj"],
-  },
-  {
-    id: "vishal_mega",
-    category: "retail",
-    brand: "Vishal Mega Mart",
-    title: "Flat ₹100 OFF on Shopping",
-    description: "Instant in-store discount on billing at nearest Vishal Mega Mart outlet.",
-    code: "VISHAL100",
-    coinsRequired: 500,
-    valueLabel: "Save ₹100",
-    badge: "🛒 In-Store Retail",
-    icon: "🛍️",
-    terms: "Valid on minimum billing of ₹999 at Vishal Mega Mart Karimganj / Silchar outlets.",
-    affiliateUrl: "https://www.vishalmegamart.com?ref=orderking",
-    supportedCities: ["city_sribhumi", "city_silchar", "city_karimganj"],
-  },
-  {
-    id: "ajio_fashion",
-    category: "fashion",
-    brand: "Ajio & Myntra",
-    title: "Flat ₹200 OFF on Trending Styles",
-    description: "Exclusive shopping coupon on clothing, footwear, and accessories.",
-    code: "AJIOKING200",
-    coinsRequired: 750,
-    valueLabel: "Save ₹200",
-    badge: "👗 Lifestyle",
-    icon: "👕",
-    terms: "Valid on selected catalogue on minimum purchase of ₹999.",
-    affiliateUrl: "https://www.ajio.com?utm_source=orderking_affiliate",
-    supportedCities: ["ALL"],
-  },
-  {
     id: "ai_course",
     category: "edtech",
     brand: "AI Learning Academy",
@@ -196,21 +196,6 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     affiliateUrl: "https://orderking.in/courses/ai-masterclass?ref=affiliate",
     supportedCities: ["ALL"],
   },
-  {
-    id: "tata_1mg",
-    category: "health",
-    brand: "Tata 1mg & Apollo",
-    title: "Flat 20% OFF on Medicines",
-    description: "Get genuine prescription and healthcare medicines delivered to your doorstep.",
-    code: "HEALTH20",
-    coinsRequired: 250,
-    valueLabel: "20% Discount",
-    badge: "💊 Healthcare",
-    icon: "🩺",
-    terms: "Valid on prescription orders above ₹500 across partner pharmacy platforms.",
-    affiliateUrl: "https://www.1mg.com?utm_source=orderking_affiliate",
-    supportedCities: ["ALL"],
-  },
 ];
 
 function RewardsPage() {
@@ -222,7 +207,7 @@ function RewardsPage() {
     enabled: Boolean(user),
   });
 
-  const [activeTab, setActiveTab] = useState<"all" | "ecommerce" | "fuel" | "lpg" | "retail" | "fashion" | "edtech" | "health">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "orderking" | "ecommerce" | "fuel" | "edtech">("all");
   const [unlockedCodes, setUnlockedCodes] = useState<Record<string, boolean>>({});
 
   // User's King Coins (10 coins per ₹1 spent, strictly from verified loyalty balance)
@@ -326,13 +311,10 @@ function RewardsPage() {
           {(
             [
               { id: "all", label: "All Perks" },
-              { id: "ecommerce", label: "🛍️ Amazon & Flipkart" },
-              { id: "fuel", label: "⛽ Fuel" },
-              { id: "lpg", label: "🔥 LPG Gas" },
-              { id: "retail", label: "🛒 Retail Mart" },
-              { id: "fashion", label: "👗 Fashion" },
+              { id: "orderking", label: "👑 OrderKing Loyalty" },
+              { id: "ecommerce", label: "🛍️ E-Commerce" },
+              { id: "fuel", label: "⛽ Fuel Alliance" },
               { id: "edtech", label: "🎓 AI Courses" },
-              { id: "health", label: "💊 Health" },
             ] as const
           ).map((tab) => (
             <button
@@ -430,9 +412,9 @@ function RewardsPage() {
 
         {/* Zero-Loss Guardrail Notice */}
         <div className="rounded-[var(--radius-lg)] border border-border bg-surface-2/40 p-3 text-center text-xs text-muted">
-          <p className="font-semibold text-fg">100% Verified Brand & Affiliate Partnerships</p>
+          <p className="font-semibold text-fg">100% Authentic OrderKing Loyalty &amp; Rewards</p>
           <p className="mt-0.5 text-[11px]">
-            OrderKing partners with top national brands & local fuel stations to provide real savings without platform markups or hidden fees.
+            Redeem King Coins earned on food orders for genuine OrderKing discounts and verified partner benefits without platform markups.
           </p>
         </div>
       </div>

@@ -85,7 +85,7 @@ function UpiQrGeneratorTool() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-400/20 pb-4">
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400">
-            <QrCode className="size-3.5" /> NPCI Standard BharatQR v2.0
+            <QrCode className="size-3.5" /> UPI Dynamic QR
           </span>
           <h3 className="text-lg font-black text-white mt-0.5">
             1-Tap Dynamic UPI QR Generator
@@ -215,6 +215,8 @@ function UpiQrGeneratorTool() {
               alt="Scan to Pay UPI QR"
               width={220}
               height={220}
+              loading="lazy"
+              decoding="async"
               className="rounded-xl w-48 h-48 object-contain"
             />
           </div>
@@ -641,7 +643,7 @@ function LoanEmiCalculatorTool() {
 }
 
 // ==========================================
-// 4. GST CALCULATOR (STATUTORY TAX COMPLIANCE)
+// 4. GST CALCULATOR (TAX ESTIMATOR)
 // ==========================================
 function GstCalculatorTool() {
   const [amountInr, setAmountInr] = useState<number>(1200);
@@ -672,7 +674,7 @@ function GstCalculatorTool() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-400/20 pb-4">
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400">
-            <Percent className="size-3.5" /> Indian Statutory Tax Compliance
+            <Percent className="size-3.5" /> Tax Estimator
           </span>
           <h3 className="text-lg font-black text-white mt-0.5">
             GST Invoice &amp; Tax Calculator
@@ -843,7 +845,7 @@ function YieldEstimatorTool() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-400/20 pb-4">
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400">
-            <TrendingUp className="size-3.5" /> RBI Master Circular Compounding
+            <TrendingUp className="size-3.5" /> Compound Interest Calculator
           </span>
           <h3 className="text-lg font-black text-white mt-0.5">
             FD &amp; RD Compound Yield Estimator
@@ -1062,7 +1064,7 @@ function PassbookLedgerTool() {
               <span>Official Passbook &amp; UTR Desk</span>
             </span>
             <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2 py-0.5 text-[9px] font-black">
-              RBI DOUBLE-ENTRY
+              Transaction Ledger
             </span>
           </div>
           <h2 className="text-xl font-black text-white tracking-tight">
@@ -1189,7 +1191,7 @@ function PassbookLedgerTool() {
             <div>
               <h4 className="text-sm font-black text-white">Double-Entry Ledger Verified</h4>
               <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
-                Your double-entry ledger is active with real-time fee transparency and instant cashback reconciled directly against verified banking settlements.
+                Your double-entry ledger is active with real-time fee transparency and verified transaction records.
               </p>
             </div>
           </div>

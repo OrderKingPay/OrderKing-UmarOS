@@ -13,7 +13,6 @@ import {
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
 import { LivePnrStatusBar } from "@/components/travel/live-pnr-status-bar";
 import { buildOfficialAirlineDeepLink, extractAirportCode } from "@/lib/travel/airline-deep-links";
-import { type VIPTravelCategory } from "@/lib/travel/sovereign-travel-engine";
 import {
   resolveTravelEngine,
   isDomesticIndianRoute,
@@ -65,7 +64,7 @@ export const Route = createFileRoute("/travel")({
   errorComponent: AppErrorComponent,
 });
 
-export type TravelTab = "vip_concierge" | "flights" | "trains" | "buses" | "hotels" | "cabs" | "fastag" | "trips";
+export type TravelTab = "flights" | "trains" | "buses" | "hotels" | "cabs" | "fastag" | "trips";
 
 interface TravelCategoryConfig {
   id: TravelTab;
@@ -129,7 +128,7 @@ export function getRoutePartnerHandoff(
   const destCity = route.toCity.replace(/\(.*\)/, "").trim();
   return {
     url: `https://www.redbus.in/bus-tickets/${encodeURIComponent(sourceCity.toLowerCase())}-to-${encodeURIComponent(destCity.toLowerCase())}`,
-    partnerName: "RedBus Official Partner",
+    partnerName: "Search on redBus",
     portalName: "redbus.in",
   };
 }
@@ -219,19 +218,6 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
 
 export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
-    id: "vip_concierge",
-    label: "VIP Concierge & Charters",
-    badge: "Luxury Travel Enquiries",
-    keywords: "private jet aviation helicopter charter taj oberoi heritage stay executive chauffeur vip concierge luxury",
-    subCategories: [
-      "Private Aviation & Jet Charters",
-      "Helicopter Charters & Himalayan Tours",
-      "Luxury Heritage Stays at Taj & Oberoi",
-      "Executive Chauffeur Fleet",
-      "Superfast Rail & Palace on Wheels",
-    ],
-  },
-  {
     id: "flights",
     label: "Flights",
     badge: "Air Travel",
@@ -246,11 +232,11 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
     id: "trains",
     label: "Trains & IRCTC",
-    badge: "IRCTC Direct",
+    badge: "Search on IRCTC Portal",
     keywords: "railway stations tickets irctc pnr tatkal coach position vande bharat",
     subCategories: [
       "Search Trains Between Stations",
-      "IRCTC Authorised Ticket Handoff",
+      "Search on IRCTC Portal",
       "Live PNR Enquiry",
       "Tatkal & Coach Position Guide",
     ],
@@ -316,7 +302,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
 
 export interface SavedTripReference {
   id: string;
-  bookingType: "Flight" | "Train" | "Bus" | "Hotel" | "Cab" | "VIP Concierge";
+  bookingType: "Flight" | "Train" | "Bus" | "Hotel" | "Cab";
   providerName: string;
   bookingRef: string;
   travelDate: string;
@@ -329,9 +315,8 @@ export interface SavedTripReference {
 const SAVED_TRIPS_STORAGE_KEY = "orderking_saved_trips_v1";
 
 export function TravelPage() {
-  const [activeTab, setActiveTab] = useState<TravelTab>("vip_concierge");
+  const [activeTab, setActiveTab] = useState<TravelTab>("flights");
   const [activeSubCategory, setActiveSubCategory] = useState<Record<TravelTab, string>>({
-    vip_concierge: "Private Aviation & Jet Charters",
     flights: "Domestic Flights",
     trains: "Search Trains Between Stations",
     buses: "Intercity AC Sleepers",
@@ -343,26 +328,19 @@ export function TravelPage() {
   const [serviceQuery, setServiceQuery] = useState("");
   const sectionHash = useRouterState({ select: (s) => s?.location?.hash ?? "" }) ?? "";
 
-  // VIP Concierge Modal State
-  const [isConciergeModalOpen, setIsConciergeModalOpen] = useState(false);
-  const [conciergeModalCategory, setConciergeModalCategory] = useState<VIPTravelCategory>("private_aviation");
-  const [conciergeModalOrigin, setConciergeModalOrigin] = useState("New Delhi (DEL)");
-  const [conciergeModalDestination, setConciergeModalDestination] = useState("Mumbai (BOM)");
-
   // Price comparison real math interactive state
   const [comparisonPassengers, setComparisonPassengers] = useState<number>(1);
   const [comparisonIsRoundTrip, setComparisonIsRoundTrip] = useState<boolean>(false);
 
   useEffect(() => {
     const cleanHash = (sectionHash ?? "").replace(/^#/, "").toLowerCase();
-    if (cleanHash === "concierge" || cleanHash === "vip") setActiveTab("vip_concierge");
-    else if (cleanHash === "hotels") setActiveTab("hotels");
-    else if (cleanHash === "trips") setActiveTab("trips");
-    else if (cleanHash === "flights") setActiveTab("flights");
+    if (cleanHash === "flights") setActiveTab("flights");
     else if (cleanHash === "trains") setActiveTab("trains");
     else if (cleanHash === "buses") setActiveTab("buses");
+    else if (cleanHash === "hotels") setActiveTab("hotels");
     else if (cleanHash === "cabs") setActiveTab("cabs");
     else if (cleanHash === "fastag") setActiveTab("fastag");
+    else if (cleanHash === "trips") setActiveTab("trips");
   }, [sectionHash]);
 
   // Flight search & calculator state
@@ -594,7 +572,7 @@ export function TravelPage() {
                   <span>TravelStation</span>
                 </span>
                 <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
-                  Verified Booking
+                  Direct Carrier Search
                 </span>
               </div>
               <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
@@ -1377,12 +1355,12 @@ export function TravelPage() {
         {/* =====================================================================
             CATEGORY 2: TRAINS & IRCTC
             Sub-categories: Search Trains Between Stations,
-            IRCTC Authorised Ticket Handoff, Live PNR Enquiry,
+            Search on IRCTC Portal, Live PNR Enquiry,
             Tatkal & Coach Position Guide
            ===================================================================== */}
         {activeTab === "trains" && (
           <div className="space-y-6">
-            {/* Train Search Between Stations & IRCTC Authorised Handoff */}
+            {/* Train Search Between Stations & Search on IRCTC Portal */}
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
@@ -1391,11 +1369,11 @@ export function TravelPage() {
                   </span>
                   <h2 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2 mt-0.5">
                     <Train className="size-5 text-indigo-600" />
-                    Search Trains Between Stations &amp; Authorised IRCTC Handoff
+                    Search Trains Between Stations &amp; Search on IRCTC Portal
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start">
-                  Official IRCTC Booking Redirect
+                  Search on IRCTC Portal
                 </span>
               </div>
 
@@ -1837,12 +1815,12 @@ export function TravelPage() {
                     const cleanSource = busFrom.replace(/\(.*\)/, "").trim().toLowerCase();
                     const cleanDest = busTo.replace(/\(.*\)/, "").trim().toLowerCase();
                     const redBusUrl = `https://www.redbus.in/bus-tickets/${encodeURIComponent(cleanSource)}-to-${encodeURIComponent(cleanDest)}?onward=${busDate}`;
-                    toast.success(`Handoff to partner RedBus for ${busFrom} ➔ ${busTo}...`);
+                    toast.success(`Search on redBus for ${busFrom} ➔ ${busTo}...`);
                     window.open(redBusUrl, "_blank", "noopener,noreferrer");
                   }}
                   className="flex-1 h-12 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-sm transition shadow-md shadow-orange-600/20 flex items-center justify-center gap-1.5"
                 >
-                  <span>Book on RedBus</span>
+                  <span>Search on redBus</span>
                   <ArrowUpRight className="size-4" />
                 </Button>
                 <Button

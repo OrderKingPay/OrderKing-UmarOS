@@ -792,6 +792,8 @@ export function UtilitiesBillEngine() {
                     <img
                       src={qrImageUrl}
                       alt={`UPI Payment for ${selectedBiller.name}`}
+                      loading="lazy"
+                      decoding="async"
                       className="size-44 sm:size-48 object-contain"
                     />
                   </div>

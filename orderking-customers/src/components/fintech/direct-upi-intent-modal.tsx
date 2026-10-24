@@ -293,6 +293,8 @@ export function DirectUpiIntentModal({
                 alt="OrderKing Dynamic Live UPI QR"
                 width={190}
                 height={190}
+                loading="lazy"
+                decoding="async"
                 className="rounded-xl w-44 h-44 object-contain"
               />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
