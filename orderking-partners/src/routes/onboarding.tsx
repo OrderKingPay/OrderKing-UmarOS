@@ -689,7 +689,8 @@ function OnboardingPage() {
   const isSubmitted =
     verificationStatus === "SUBMITTED" ||
     verificationStatus === "PENDING_APPROVAL" ||
-    verificationStatus === "PENDING_VERIFICATION";
+    verificationStatus === "PENDING_VERIFICATION" ||
+    verificationStatus === "UNDER_REVIEW";
 
   if (vendor.restaurantId && (isApproved || isSubmitted) && !editingApproved) {
     const feeDetails = getOnboardingFeeDetails(onboardingFeeOption);

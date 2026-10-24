@@ -189,22 +189,37 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
           ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
           ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
           ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
-          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', true, 'ACTIVE'
+          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', false, 'DRAFT'
         )
       `;
     } catch {
-      await sql`
-        insert into restaurants (
-          id, owner_user_id, name, display_name, owner_name, phone, email,
-          address, landmark, cuisine, diet, description, verification_status, data_label
-        ) values (
-          ${restaurantId}, ${context.userId}, ${name}, ${displayName},
-          ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
-          ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
-          ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
-          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL'
-        )
-      `;
+      try {
+        await sql`
+          insert into restaurants (
+            id, owner_user_id, name, display_name, owner_name, phone, email,
+            address, landmark, cuisine, diet, description, verification_status, data_label, active, status
+          ) values (
+            ${restaurantId}, ${context.userId}, ${name}, ${displayName},
+            ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
+            ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
+            ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
+            ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', false, 'DRAFT'
+          )
+        `;
+      } catch {
+        await sql`
+          insert into restaurants (
+            id, owner_user_id, name, display_name, owner_name, phone, email,
+            address, landmark, cuisine, diet, description, verification_status, data_label
+          ) values (
+            ${restaurantId}, ${context.userId}, ${name}, ${displayName},
+            ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
+            ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
+            ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
+            ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL'
+          )
+        `;
+      }
     }
 
     await sql`
@@ -215,8 +230,8 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
     try {
       await sql`
         insert into restaurant_outlets (id, restaurant_id, name, address_line, area, lat, lng, zone_id, active)
-        values (${outletId}, ${restaurantId}, ${displayName}, ${(data.address || "").trim()}, 'Central', 28.6304, 77.2177, 'del-cp', true)
-        on conflict (id) do update set active = true
+        values (${outletId}, ${restaurantId}, ${displayName}, ${(data.address || "").trim()}, 'Central', 28.6304, 77.2177, 'del-cp', false)
+        on conflict (id) do update set active = false
       `;
     } catch {
       // Non-fatal if schema differs in local mock
@@ -455,8 +470,18 @@ export const submitForReview = createServerFn({ method: "POST" })
       if (ctx.dataLabel === "SIMULATED") {
         throw new Error("Simulated test kitchens cannot be submitted for live onboarding.");
       }
-      const rows = await sql<{ fssai_number: string; pan: string; bank_ifsc: string; gstin: string }>`
-        select fssai_number, pan, bank_ifsc, gstin from restaurants where id = ${ctx.restaurantId}
+      const rows = await sql<{
+        name: string;
+        display_name: string;
+        address: string;
+        lat: number | null;
+        lng: number | null;
+        fssai_number: string;
+        pan: string;
+        bank_ifsc: string;
+        gstin: string;
+      }>`
+        select name, display_name, address, lat, lng, fssai_number, pan, bank_ifsc, gstin from restaurants where id = ${ctx.restaurantId}
       `;
       const rest = rows[0];
       if (!rest) {
@@ -469,7 +494,7 @@ export const submitForReview = createServerFn({ method: "POST" })
       if (!validatePan(rest.pan)) {
         throw new Error("A valid 10-character PAN card number is required to submit your restaurant for verification.");
       }
-      if (!validateIfsc(rest.bank_ifsc)) {
+      if (rest.bank_ifsc && !validateIfsc(rest.bank_ifsc)) {
         throw new Error("A valid 11-character Bank IFSC code is required to ensure seamless payouts for your restaurant.");
       }
       if (rest.gstin && rest.gstin.trim() && !validateGstin(rest.gstin.trim())) {
@@ -477,31 +502,57 @@ export const submitForReview = createServerFn({ method: "POST" })
       }
       await sql`
         update restaurants
-        set verification_status = 'VERIFIED',
-            status = 'ACTIVE',
-            active = true,
+        set verification_status = 'UNDER_REVIEW',
+            status = 'PENDING',
+            active = false,
             data_label = 'REAL',
             updated_at = now()
         where id = ${ctx.restaurantId}
       `;
+      
+      // Ensure an outlet exists in restaurant_outlets with valid zone coordinates
+      const outletName = rest.display_name || rest.name || "Main Outlet";
+      const outletAddress = rest.address || "Connaught Place, New Delhi";
+      const outletLat = rest.lat && !isNaN(Number(rest.lat)) ? Number(rest.lat) : 28.6304;
+      const outletLng = rest.lng && !isNaN(Number(rest.lng)) ? Number(rest.lng) : 77.2177;
+
       try {
-        await sql`
-          update restaurant_outlets
-          set active = true
-          where restaurant_id = ${ctx.restaurantId}
+        const existingOutlets = await sql<{ id: string }>`
+          select id from restaurant_outlets where restaurant_id = ${ctx.restaurantId} limit 1
         `;
-      } catch {
-        // non-fatal if table not present in mock dev
+        if (existingOutlets.length > 0) {
+          await sql`
+            update restaurant_outlets
+            set name = ${outletName},
+                address_line = ${outletAddress},
+                lat = ${outletLat},
+                lng = ${outletLng},
+                zone_id = coalesce(zone_id, 'del-cp'),
+                area = coalesce(area, 'Central'),
+                data_label = 'REAL'
+            where restaurant_id = ${ctx.restaurantId}
+          `;
+        } else {
+          const { newId } = await import("@/lib/utils");
+          const outletId = newId("out");
+          await sql`
+            insert into restaurant_outlets (id, restaurant_id, name, address_line, area, lat, lng, zone_id, active, data_label)
+            values (${outletId}, ${ctx.restaurantId}, ${outletName}, ${outletAddress}, 'Central', ${outletLat}, ${outletLng}, 'del-cp', false, 'REAL')
+          `;
+        }
+      } catch (outletErr) {
+        console.warn("[submitForReview] Non-fatal outlet sync error:", outletErr);
       }
+
       await writeAudit(sql, {
         restaurantId: ctx.restaurantId,
         actorUserId: context.userId,
-        action: "submit_review_auto_verified",
+        action: "submit_for_review",
         entityType: "restaurant",
         entityId: ctx.restaurantId,
-        detail: "Automated self-serve merchant onboarding verified with 14-digit FSSAI, PAN & IFSC",
+        detail: "Submitted for Umar OS approval with validated FSSAI & PAN",
       });
-      return { ok: true as const, verificationStatus: "VERIFIED" as const };
+      return { ok: true as const, verificationStatus: "UNDER_REVIEW" as const };
     });
   });
 

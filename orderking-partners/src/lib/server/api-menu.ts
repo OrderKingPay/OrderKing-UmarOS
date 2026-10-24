@@ -264,10 +264,19 @@ export const saveItem = createServerFn({ method: "POST" })
       if (!data.variants.length) throw new Error("At least one variant is required");
       for (const v of data.variants) paise(v.pricePaise);
 
-      const cat = await sql<{ id: string }>`
-        select id from categories where id = ${data.categoryId} and restaurant_id = ${ctx.restaurantId}
+      const cat = await sql<{ id: string; name?: string }>`
+        select id, name from categories where id = ${data.categoryId} and restaurant_id = ${ctx.restaurantId}
       `;
       if (!cat[0]) throw new Error("Category not found");
+
+      try {
+        const catName = cat[0].name || name;
+        await sql`
+          insert into menu_categories (id, restaurant_id, name_en, name_bn, sort_order)
+          values (${data.categoryId}, ${ctx.restaurantId}, ${catName}, ${catName}, 1)
+          on conflict (id) do nothing
+        `;
+      } catch {}
 
       const modifierGroupsJson = JSON.stringify(data.modifierGroups ?? []);
 
@@ -347,6 +356,13 @@ export const saveItem = createServerFn({ method: "POST" })
             update variants set name = ${v.name.trim()}, price_paise = ${v.pricePaise}, sort_order = ${sort}
             where id = ${v.id} and restaurant_id = ${ctx.restaurantId}
           `;
+          try {
+            await sql`
+              update menu_variants
+              set name_en = ${v.name.trim()}, name_bn = ${v.name.trim()}, price_paise = ${v.pricePaise}, available = true
+              where id = ${v.id}
+            `;
+          } catch {}
         } else {
           const vid = newId("var");
           keep.add(vid);
@@ -354,6 +370,13 @@ export const saveItem = createServerFn({ method: "POST" })
             insert into variants (id, item_id, restaurant_id, name, price_paise, sort_order)
             values (${vid}, ${itemId}, ${ctx.restaurantId}, ${v.name.trim()}, ${v.pricePaise}, ${sort})
           `;
+          try {
+            await sql`
+              insert into menu_variants (id, item_id, name_en, name_bn, price_paise, is_default, available, sort_order)
+              values (${vid}, ${itemId}, ${v.name.trim()}, ${v.name.trim()}, ${v.pricePaise}, ${sort === 0}, true, ${sort})
+              on conflict (id) do update set price_paise = excluded.price_paise, available = true
+            `;
+          } catch {}
         }
         sort += 1;
       }
@@ -378,18 +401,20 @@ export const saveItem = createServerFn({ method: "POST" })
       try {
         await sql`
           insert into menu_items (
-            id, restaurant_id, category_id, name_en, name, description_en,
+            id, restaurant_id, category_id, name_en, name_bn, name, description_en,
             veg, available, base_price_paise, price_paise, sort_order, data_label
           ) values (
-            ${itemId}, ${ctx.restaurantId}, ${data.categoryId}, ${name}, ${name}, ${data.description ?? ""},
+            ${itemId}, ${ctx.restaurantId}, ${data.categoryId}, ${name}, ${name}, ${name}, ${data.description ?? ""},
             ${isVeg}, true, ${basePricePaise}, ${basePricePaise}, 1, 'REAL'
           )
           on conflict (id) do update set
             category_id = excluded.category_id,
             name_en = excluded.name_en,
+            name_bn = excluded.name_bn,
             name = excluded.name,
             description_en = excluded.description_en,
             veg = excluded.veg,
+            available = true,
             base_price_paise = excluded.base_price_paise,
             price_paise = excluded.price_paise
         `;

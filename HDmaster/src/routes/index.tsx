@@ -246,7 +246,7 @@ export const getUmarOSStats = createServerFn({ method: "GET" }).handler(
         sql<{ count: number }>`SELECT COUNT(*) FROM restaurants`,
         sql<{ count: number }>`SELECT COUNT(*) FROM riders`,
         sql<{ count: number }>`SELECT COUNT(*) FROM orders`,
-        sql<PendingRestaurantRow>`SELECT id, name, status FROM restaurants WHERE status = 'PENDING' LIMIT 10`,
+        sql<PendingRestaurantRow>`SELECT id, name, status FROM restaurants WHERE status = 'PENDING' OR verification_status = 'UNDER_REVIEW' LIMIT 10`,
         sql<RestaurantRow>`SELECT id, name, status FROM restaurants ORDER BY id DESC LIMIT 10`,
         sql<RiderRow>`SELECT id, name, status FROM riders ORDER BY id DESC LIMIT 10`,
         sql<OrderRow>`SELECT id, status FROM orders ORDER BY id DESC LIMIT 10`,
@@ -347,8 +347,16 @@ export const approveRestaurantFn = createServerFn({ method: "POST" })
       const sql = await getSql();
       await sql`
         UPDATE restaurants
-        SET status = 'ACTIVE'
+        SET status = 'ACTIVE',
+            verification_status = 'VERIFIED',
+            active = true,
+            data_label = 'REAL'
         WHERE id = ${data.restaurantId}
+      `;
+      await sql`
+        UPDATE restaurant_outlets
+        SET active = true
+        WHERE restaurant_id = ${data.restaurantId}
       `;
     } catch (_e) {}
 
@@ -429,15 +437,25 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
       if (sql) {
         try {
           const pending = (await sql<{ id: string; name: string }>`
-            SELECT id, name FROM restaurants WHERE status = 'PENDING'
+            SELECT id, name FROM restaurants WHERE status = 'PENDING' OR verification_status = 'UNDER_REVIEW'
           `) || [];
           approvedCount = pending.length;
           names = pending.map((p: { id: string; name: string }) => p.name);
           if (approvedCount > 0) {
             await sql`
               UPDATE restaurants
-              SET status = 'ACTIVE'
-              WHERE status = 'PENDING'
+              SET status = 'ACTIVE',
+                  verification_status = 'VERIFIED',
+                  active = true,
+                  data_label = 'REAL'
+              WHERE status = 'PENDING' OR verification_status = 'UNDER_REVIEW'
+            `;
+            await sql`
+              UPDATE restaurant_outlets
+              SET active = true
+              WHERE restaurant_id IN (
+                SELECT id FROM restaurants WHERE status = 'ACTIVE'
+              )
             `;
           }
         } catch (_e) {}
