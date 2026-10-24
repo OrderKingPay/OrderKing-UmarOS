@@ -1,4 +1,3 @@
-
 import { getRequest } from "@tanstack/react-start/server";
 import { gateIdentityEnabled } from "./gate-identity.server";
 import { auth, authConfigured } from "./server";
@@ -61,6 +60,14 @@ export async function getSessionUser(
   if (!authConfigured && !gateIdentityEnabled()) return null;
   const request = getRequest();
   if (!request) return null;
+
+  // Instant fast-path: If visitor has neither cookie nor bearer auth, avoid calling DB
+  const cookieHeader = request.headers?.get("cookie") || "";
+  const authHeader = request.headers?.get("authorization") || "";
+  if (!bearerToken && !authHeader && !cookieHeader.includes("session_token")) {
+    return null;
+  }
+
   let headers = request.headers;
   if (bearerToken) {
     headers = new Headers(request.headers);
