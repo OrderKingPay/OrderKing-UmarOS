@@ -292,6 +292,7 @@ export interface TravelpayoutsFlightLinkParams {
   departureDate: string; // YYYY-MM-DD
   returnDate?: string; // YYYY-MM-DD
   passengers?: number;
+  cabinClass?: "Economy" | "Premium Economy" | "Business" | "First" | string;
   marker?: string;
   currency?: string;
   subId?: string;
@@ -307,6 +308,7 @@ export function generateTravelpayoutsFlightLink({
   departureDate,
   returnDate,
   passengers = 1,
+  cabinClass,
   marker,
   currency = "INR",
   subId,
@@ -338,7 +340,8 @@ export function generateTravelpayoutsFlightLink({
 
   const activeSubId = subId || "kingpay_flight";
   const subParam = `&sub_id=${encodeURIComponent(activeSubId)}`;
-  const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${dateSegment}${passengers}?marker=${activeMarker}&currency=${currency.toLowerCase()}${subParam}`;
+  const classCode = cabinClass === "Business" || cabinClass === "First" ? "c" : "";
+  const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${dateSegment}${passengers}${classCode}?marker=${activeMarker}&currency=${currency.toLowerCase()}${subParam}`;
 
   return {
     url: directAviasalesUrl,

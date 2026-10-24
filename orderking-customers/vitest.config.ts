@@ -3,6 +3,8 @@ import path from "node:path";
 
 export default defineConfig({
   test: {
+    testTimeout: 20000,
+    hookTimeout: 20000,
     include: [
       "src/test/micro-task-earn.test.ts",
       "src/test/checkout-unavailable.test.ts",

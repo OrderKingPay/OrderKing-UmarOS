@@ -76,9 +76,11 @@ export const POPULAR_INDIAN_DISH_CHIPS = [
 export function CustomerShell({
   children,
   onSearch,
+  maxWidth = "max-w-lg md:max-w-5xl",
 }: {
   children: React.ReactNode;
   onSearch?: () => void;
+  maxWidth?: string;
 }) {
   const { t, lang, setLang } = useT();
   const { brand } = useBrand();
@@ -153,7 +155,7 @@ export function CustomerShell({
     ["/restaurants", "/menu", "/r/", "/dining", "/cart"].some((prefix) => path.startsWith(prefix));
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-[#FCFAF7] text-gray-900 pb-28 md:max-w-5xl">
+    <div className={cn("mx-auto flex min-h-dvh w-full flex-col bg-[#FCFAF7] text-gray-900 pb-28", maxWidth)}>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:text-black focus:shadow-md"

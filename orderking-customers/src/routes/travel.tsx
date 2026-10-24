@@ -554,8 +554,8 @@ export function TravelPage() {
   // Live fares and booking status are available only at authenticated providers.
 
   return (
-    <CustomerShell>
-      <div className="mx-auto max-w-5xl px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
+    <CustomerShell maxWidth="max-w-7xl">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 py-4 sm:py-6 space-y-5 sm:space-y-6">
         {/* TOP STATUS BAR & CATEGORY DECK - SEAMLESS ALIGNMENT */}
         <div className="space-y-2.5">
           <LivePnrStatusBar />
@@ -833,6 +833,22 @@ export function TravelPage() {
            ===================================================================== */}
         {activeTab === "flights" && (
           <div className="space-y-6">
+            {/* Travelpayouts Sovereign White Label & Metasearch - Top Position (MakeMyTrip Architecture) */}
+            <div className="rounded-3xl border border-sky-300/60 bg-gradient-to-b from-white to-sky-50/30 p-4 sm:p-6 shadow-md space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-3">
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 tracking-tight">OrderKing Live Flight Metasearch</h3>
+                  <p className="text-xs text-slate-500">Live inventory across 1,000+ carriers · ₹0 Platform Convenience Fee Guarantee</p>
+                </div>
+                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-black text-emerald-700 border border-emerald-500/30">
+                  Marker #794122 · WL #23797
+                </span>
+              </div>
+              <TravelpayoutsWhiteLabel wlId="23797" />
+            </div>
+
+            {/* Direct Airline Booking Desk (IndiGo, Air India, Akasa, SpiceJet) */}
+            <FlightBookingEngine initialFrom={flightFrom} initialTo={flightTo} />
             <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
@@ -1356,22 +1372,7 @@ export function TravelPage() {
               )}
             </div>
 
-            {/* Travelpayouts Sovereign White Label Engine */}
-            <div className="rounded-3xl border border-amber-200/70 bg-gradient-to-b from-white to-amber-50/20 p-5 shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-black text-slate-900 tracking-tight">OrderKing Live Metasearch</h3>
-                  <p className="text-xs text-slate-500">Live airline inventory with 100+ carriers (IndiGo, Air India, Akasa, SpiceJet)</p>
-                </div>
-                <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-bold text-emerald-700 border border-emerald-500/20">
-                  Branded White Label
-                </span>
-              </div>
-              <TravelpayoutsWhiteLabel wlId="23797" />
-            </div>
 
-            {/* Embedded Flight Booking Engine */}
-            <FlightBookingEngine initialFrom={flightFrom} initialTo={flightTo} />
           </div>
         )}
 
