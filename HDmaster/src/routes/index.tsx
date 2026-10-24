@@ -1,5 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect, lazy, Suspense } from "react";
+import { authMiddleware } from "@/lib/auth/middleware";
+import { UserButton, RedirectToSignIn } from "@/lib/auth/gates";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import {
   Home,
   UtensilsCrossed,
@@ -219,8 +222,9 @@ async function savePlatformSettingBag(
   } catch (_e) {}
 }
 
-export const getUmarOSStats = createServerFn({ method: "GET" }).handler(
-  async () => {
+export const getUmarOSStats = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
     let userCount = 0;
     let restCount = 0;
     let riderCount = 0;
@@ -322,8 +326,9 @@ export type WorldId =
   | "settings";
 
 export const saveUmarOsSettingsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((d: { worldId: string; settings: Record<string, any> }) => d)
-  .handler(async ({ data }) => {
+  .handler(async ({ context, data }) => {
     const savedAt = new Date().toISOString();
 
     try {
@@ -339,8 +344,9 @@ export const saveUmarOsSettingsFn = createServerFn({ method: "POST" })
   });
 
 export const approveRestaurantFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((d: { restaurantId: string }) => d)
-  .handler(async ({ data }) => {
+  .handler(async ({ context, data }) => {
     const updatedAt = new Date().toISOString();
 
     try {
@@ -390,8 +396,9 @@ export interface UmarAiActionResult {
 }
 
 export const runUmarAiActionFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((d: { prompt: string; activeWorldId?: WorldId }) => d)
-  .handler(async ({ data }): Promise<UmarAiActionResult> => {
+  .handler(async ({ context, data }): Promise<UmarAiActionResult> => {
     const prompt = (data?.prompt || "").trim();
     const lower = prompt.toLowerCase();
     const timestamp = new Date().toLocaleTimeString([], {
@@ -710,7 +717,20 @@ All 10 Worlds (Home, OrderKing, King Pay, Travel & Work, B2B & CRM, UMAR AI, App
   }
 );
 
+export const verifyUmarOsSessionFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    return { ok: true as const, userId: context.userId };
+  });
+
 export const Route = createFileRoute("/")({
+  beforeLoad: async () => {
+    try {
+      await verifyUmarOsSessionFn();
+    } catch (_err) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: UmarOSDashboard,
   pendingComponent: WorldSkeleton,
   errorComponent: AppErrorComponent,
@@ -1629,6 +1649,7 @@ const INDIAN_23_LANGUAGES_LIST = INDIAN_10_LANGUAGES_LIST;
 // ============================================================================
 
 function UmarOSDashboard() {
+  const { user, isPending } = useCurrentUserState();
   const loaderData = Route.useLoaderData();
 
   // Active Bottom Navigation World (Only 1 World renders at a time!)
@@ -2390,6 +2411,14 @@ function UmarOSDashboard() {
   const currentSettings =
     worldSettings[safeActiveWorldId] || currentWorld.defaultSettings;
 
+  if (isPending) {
+    return <WorldSkeleton />;
+  }
+
+  if (!user) {
+    return <RedirectToSignIn />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-28">
       {/* =====================================================================
@@ -2411,14 +2440,15 @@ function UmarOSDashboard() {
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">
-                PostgreSQL Live: {loaderData.restaurants} Restaurants ·{" "}
-                {loaderData.riders} Riders · {loaderData.users} Users ·{" "}
-                {loaderData.todayOrders} Orders
+                PostgreSQL Live: {loaderData?.restaurants ?? 0} Restaurants ·{" "}
+                {loaderData?.riders ?? 0} Riders · {loaderData?.users ?? 0} Users ·{" "}
+                {loaderData?.todayOrders ?? 0} Orders
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <UserButton />
             {activeUnresolvedAlerts.length > 0 && (
               <button
                 type="button"

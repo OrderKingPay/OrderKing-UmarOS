@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { authMiddleware } from "../../auth/middleware.ts";
 import { getSql } from "../../db.ts";
 import { runAlgorithmicAutoDispatch, type AutoDispatchResult } from "../server/auto-dispatch-engine.server.ts";
 import {
@@ -232,9 +233,11 @@ export async function fetchUmarOsTelemetry(): Promise<UmarOsTelemetryData> {
   }
 }
 
-export const getUmarOsTelemetry = createServerFn({ method: "GET" }).handler(async (): Promise<UmarOsTelemetryData> => {
-  return fetchUmarOsTelemetry();
-});
+export const getUmarOsTelemetry = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async (): Promise<UmarOsTelemetryData> => {
+    return fetchUmarOsTelemetry();
+  });
 
 /**
  * Core implementation: update engine settings
@@ -264,6 +267,7 @@ export async function applyUmarOsSettings(data: Partial<UmarOsEngineSettings>): 
 }
 
 export const updateUmarOsSettings = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((newSettings: Partial<UmarOsEngineSettings>) => newSettings)
   .handler(async ({ data }): Promise<{ ok: boolean; settings: UmarOsEngineSettings }> => {
     return applyUmarOsSettings(data);
@@ -285,6 +289,7 @@ export async function executeAutoDispatchCore(): Promise<{ ok: boolean; result: 
 }
 
 export const triggerAutoDispatchNow = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .handler(async (): Promise<{ ok: boolean; result: AutoDispatchResult }> => {
     return executeAutoDispatchCore();
   });
@@ -380,6 +385,7 @@ export async function executeAutonomousRefundCore(params: {
 }
 
 export const executeAutonomousRefund = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((params: { claim: RefundClaimPayload; signature: string; clientIp?: string; merchantIp?: string }) => params)
   .handler(async ({ data }): Promise<AutonomousRefundResult> => {
     return executeAutonomousRefundCore(data);
@@ -433,6 +439,7 @@ export async function executeAutonomousAuditCore(): Promise<{
 }
 
 export const triggerAutonomousAuditNow = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .handler(async () => {
     return executeAutonomousAuditCore();
   });
@@ -770,6 +777,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
 }
 
 export const executeFounderConsoleCommand = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((payload: { command: string; model?: string }) => payload)
   .handler(async ({ data }): Promise<FounderCommandResponse> => {
     return runFounderConsoleCommandCore(data);

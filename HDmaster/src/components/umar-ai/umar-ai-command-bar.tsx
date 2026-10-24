@@ -37,12 +37,15 @@ import type {
 } from "./umar-ai-command-parser";
 import { parseNaturalLanguageConfigCommand } from "./umar-ai-command-parser";
 
+import { authMiddleware } from "@/lib/auth/middleware";
+
 export type { UmarOsConfigRow, ParsedCommandResult, CommandHistoryItem };
 
 /**
  * Server Function: Persist config changes directly to PostgreSQL table `umar_os_config`
  */
 export const persistUmarOsConfigServerFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((d: { key: string; patch: Record<string, any>; updatedBy?: string }) => d)
   .handler(async ({ data }) => {
     const updatedAt = new Date().toISOString();

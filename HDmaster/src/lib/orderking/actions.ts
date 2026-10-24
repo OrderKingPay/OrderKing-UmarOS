@@ -1165,6 +1165,7 @@ export const getEnterpriseBlueprintsFn = createServerFn({ method: "GET" })
   });
 
 export const loadEcosystemCmsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
   .handler(async () => {
     try {
       const { loadEcosystemCmsData } = await import("@/lib/orderking/cms-connectors");
@@ -1176,6 +1177,7 @@ export const loadEcosystemCmsFn = createServerFn({ method: "GET" })
   });
 
 export const saveEcosystemCmsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((input: { cms: any }) => input)
   .handler(async ({ data }) => {
     try {
@@ -1188,6 +1190,7 @@ export const saveEcosystemCmsFn = createServerFn({ method: "POST" })
   });
 
 export const loadPluginConnectorsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
   .handler(async () => {
     try {
       const { loadPluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
@@ -1199,6 +1202,7 @@ export const loadPluginConnectorsFn = createServerFn({ method: "GET" })
   });
 
 export const savePluginConnectorsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((input: { connectors: any }) => input)
   .handler(async ({ data }) => {
     try {
@@ -1211,6 +1215,7 @@ export const savePluginConnectorsFn = createServerFn({ method: "POST" })
   });
 
 export const testPluginConnectorFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((input: { service: "razorpay" | "stripeAtlas" | "payoneer" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing" | "b2bLeadGen" | "telemarketing" | "geospatialAdExchange" | "metaOmnichannel" | "aiMediaEngine" | "oemLockScreen" | "globalAdSyndicate" | "wifiCaptivePortal"; payload: any }) => input)
   .handler(async ({ data }) => {
     try {
@@ -1854,6 +1859,7 @@ export const dispatchMetaOmnichannelGeoBlastFn = createServerFn({ method: "POST"
   });
 
 export const loadCustomerUiSettingsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
   .handler(async () => {
     try {
       const { loadCustomerUiSettingsData } = await import("@/lib/orderking/cms-connectors");
@@ -1865,6 +1871,7 @@ export const loadCustomerUiSettingsFn = createServerFn({ method: "GET" })
   });
 
 export const saveCustomerUiSettingsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((input: { settings: any }) => input)
   .handler(async ({ data }) => {
     try {
@@ -1877,6 +1884,7 @@ export const saveCustomerUiSettingsFn = createServerFn({ method: "POST" })
   });
 
 export const loadAlgorithmSettingsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
   .handler(async () => {
     try {
       const { loadAlgorithmSettingsData } = await import("@/lib/orderking/cms-connectors");
@@ -1888,6 +1896,7 @@ export const loadAlgorithmSettingsFn = createServerFn({ method: "GET" })
   });
 
 export const saveAlgorithmSettingsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((input: { algorithm: any }) => input)
   .handler(async ({ data }) => {
     try {

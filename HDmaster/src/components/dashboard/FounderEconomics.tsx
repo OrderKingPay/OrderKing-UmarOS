@@ -1,9 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
+import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import { money, MetricCard, Panel } from "@/components/command/widgets";
 
-export const getLiveEconomics = createServerFn({ method: "GET" }).handler(async () => {
+export const getLiveEconomics = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async () => {
   const sql = await getSql();
 
   // Gross Revenue from ledger_transactions

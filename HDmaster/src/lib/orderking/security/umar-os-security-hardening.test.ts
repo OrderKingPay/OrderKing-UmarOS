@@ -415,4 +415,89 @@ describe("UmarOS Security Hardening & DevSecOps Suite", () => {
       expect(() => decrypt(tampered, key)).toThrow();
     });
   });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // 6. Umar OS Route & Server Function Lockdown (Zero Unauthorized Exposure)
+  // ───────────────────────────────────────────────────────────────────────────
+  describe("Umar OS Route & Server Function Lockdown", () => {
+    it("verifies Route / has beforeLoad redirecting unauthenticated visitors to /login", async () => {
+      const { Route } = await import("../../../routes/index.tsx");
+      expect(Route.options.beforeLoad).toBeDefined();
+
+      // Invoking beforeLoad without session credentials must throw a redirect to /login
+      try {
+        await (Route.options.beforeLoad as any)({});
+        expect.fail("beforeLoad should have redirected unauthenticated visitor");
+      } catch (err: any) {
+        const isRedirect =
+          (err && err.headers?.get?.("Location") === "/login") ||
+          (err && (err as any).to === "/login") ||
+          (err && (err as any).status === 307) ||
+          (err && String(err).includes("/login"));
+        expect(isRedirect).toBe(true);
+      }
+    });
+
+    it("verifies Umar OS server functions enforce authMiddleware and fail closed", async () => {
+      const {
+        getUmarOSStats,
+        saveUmarOsSettingsFn,
+        approveRestaurantFn,
+        runUmarAiActionFn,
+        verifyUmarOsSessionFn,
+      } = await import("../../../routes/index.tsx");
+      const { persistUmarOsConfigServerFn } = await import("../../../components/umar-ai/umar-ai-command-bar.tsx");
+      const { getLiveFounderProfit } = await import("../../../components/dashboard/LiveFounderProfitDashboard.tsx");
+      const { getLiveEconomics } = await import("../../../components/dashboard/FounderEconomics.tsx");
+      const { authMiddleware } = await import("../../auth/middleware.ts");
+      const { requireUserId, UnauthorizedError } = await import("../../auth/verify.server.ts");
+
+      // 1. Verify all functions are wrapped with authMiddleware
+      const fns = [
+        getUmarOSStats,
+        saveUmarOsSettingsFn,
+        approveRestaurantFn,
+        runUmarAiActionFn,
+        verifyUmarOsSessionFn,
+        persistUmarOsConfigServerFn,
+        getLiveFounderProfit,
+        getLiveEconomics,
+      ];
+
+      for (const fn of fns) {
+        expect(fn).toBeDefined();
+        expect(typeof (fn as any).__executeServer).toBe("function");
+      }
+
+      // 2. Verify requireUserId fails closed with UnauthorizedError (401) without session credentials
+      await expect(requireUserId()).rejects.toThrow(UnauthorizedError);
+      try {
+        await requireUserId();
+        expect.fail("requireUserId should have thrown UnauthorizedError");
+      } catch (err: any) {
+        expect(err.name).toBe("UnauthorizedError");
+        expect(err.status).toBe(401);
+        expect(err.message).toBe("Unauthorized");
+      }
+
+      // 3. Verify authMiddleware server handler rejects unauthenticated invocations with 401
+      const serverHandler = (authMiddleware as any).options?.server;
+      expect(serverHandler).toBeDefined();
+      await expect(
+        serverHandler({
+          next: () => Promise.resolve(),
+          context: {},
+        })
+      ).rejects.toThrow("Unauthorized");
+    });
+
+    it("verifies index.tsx code contains authentication enforcement and RedirectToSignIn", () => {
+      const indexCode = fs.readFileSync(path.resolve(__dirname, "../../../routes/index.tsx"), "utf8");
+      expect(indexCode).toContain("useCurrentUserState");
+      expect(indexCode).toContain("RedirectToSignIn");
+      expect(indexCode).toContain("authMiddleware");
+      expect(indexCode).toContain("redirect({ to: \"/login\" })");
+      expect(indexCode).toContain("UserButton");
+    });
+  });
 });

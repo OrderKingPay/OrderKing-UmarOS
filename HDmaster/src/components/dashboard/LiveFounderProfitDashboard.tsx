@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { authMiddleware } from "@/lib/auth/middleware";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo, useEffect } from "react";
 import { getSql } from "@/lib/db";
@@ -85,8 +86,9 @@ const DEFAULT_FOUNDER_SETTINGS: CustomFounderSettings = {
 const STORAGE_KEY = "orderking_founder_profit_settings";
 
 // Server function: Queries real paid customer orders from PostgreSQL
-export const getLiveFounderProfit = createServerFn({ method: "GET" }).handler(
-  async (): Promise<FounderProfitSummary> => {
+export const getLiveFounderProfit = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async (): Promise<FounderProfitSummary> => {
     try {
       const sql = await getSql();
 
