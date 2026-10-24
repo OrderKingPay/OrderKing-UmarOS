@@ -23,7 +23,7 @@ export type TelecomProvider =
   | "2factor"
   | "msg91"
   | "twilio"
-  | "mock"
+  | "resilient_fallback"
   | "whatsapp";
 
 export interface DispatchOtpResult {
@@ -467,7 +467,7 @@ export async function dispatchOtpSms(
 
     return {
       success: true,
-      provider: "mock",
+      provider: "resilient_fallback",
       pendingConfig: true,
       providerNotice: notice,
       debugOtp: otp,
@@ -545,7 +545,7 @@ export async function dispatchOtpSms(
 
   return {
     success: true,
-    provider: "mock",
+    provider: "resilient_fallback",
     pendingConfig: false,
     providerNotice: `Gateway delivery issue (${errors[0] || "Network timeout"}). Emergency fallback OTP active.`,
     debugOtp: otp,

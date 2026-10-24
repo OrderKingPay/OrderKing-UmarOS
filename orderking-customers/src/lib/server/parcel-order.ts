@@ -91,7 +91,7 @@ async function prepareParcelRazorpayOrderHandler({
         };
       }
     } catch (err) {
-      console.warn("Razorpay API call failed, falling back to mock gateway order:", err);
+      console.warn("Razorpay API call failed, aborting online payment creation:", err);
     }
   }
 
