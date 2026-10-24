@@ -48,6 +48,7 @@ export default defineConfig({
       "src/test/travelpayouts-white-label.test.ts",
       "src/test/connected-ecosystem-lifecycle.test.ts",
       "src/test/fintech-payment-settlement-lifecycle.test.ts",
+      "src/test/phone-auth.test.ts",
     ],
     environment: "node",
   },
