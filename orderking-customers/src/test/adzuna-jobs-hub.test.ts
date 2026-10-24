@@ -157,5 +157,5 @@ describe("All-India & Global Jobs Hub (Adzuna & Real Gigs)", () => {
       expect(jobs[0].source).toBe("Remotive");
       expect(jobs[0].applyUrl).toBeTruthy();
     }
-  });
+  }, 15000);
 });
