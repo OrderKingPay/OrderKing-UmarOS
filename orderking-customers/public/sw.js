@@ -1,6 +1,6 @@
 "use strict";
 // OrderKing Tier-2/Tier-3 Low-Network Resilient Service Worker
-const SW_VERSION = "v5.5.0-kingpay-clean-minimal";
+const SW_VERSION = "v5.5.1-travel-wide-screen";
 const CACHE_SHELL = `ok-shell-${SW_VERSION}`;
 const CACHE_MENUS = `ok-menus-${SW_VERSION}`;
 const CACHE_ASSETS = `ok-assets-${SW_VERSION}`;
