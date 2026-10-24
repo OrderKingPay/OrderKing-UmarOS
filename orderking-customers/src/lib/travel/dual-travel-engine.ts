@@ -26,7 +26,13 @@
 import { extractAirportCode, buildOfficialAirlineDeepLink } from "./airline-deep-links";
 import { type FlightOption, type FlightSearchResponse } from "./types";
 import { searchLiveFlights } from "./travel-connectors";
-import { getTravelpayoutsMarker, TP_MARKER } from "./travelpayouts-config";
+import {
+  getTravelpayoutsMarker,
+  TP_MARKER,
+  TP_PROJECT_ID,
+  TP_WL_ID,
+  TP_WL_DOMAIN,
+} from "./travelpayouts-config";
 
 // ============================================================================
 // 1. COMPREHENSIVE INDIAN IATA AIRPORT REGISTER
@@ -212,6 +218,26 @@ export function getActiveTravelpayoutsMarker(customMarker?: string): string {
   return getTravelpayoutsMarker();
 }
 
+/**
+ * 👑 Sovereign White Label search link on custom domain www.orderkingpay.com
+ * Bound to Travelpayouts WL ID 23797 and Marker 794122.
+ */
+export function generateWhiteLabelSearchLink(params?: {
+  marker?: string;
+  subId?: string;
+  origin?: string;
+  destination?: string;
+}): string {
+  const activeMarker = getActiveTravelpayoutsMarker(params?.marker);
+  const activeSubId = params?.subId || "kingpay_wl";
+  const url = new URL(`https://${TP_WL_DOMAIN}`);
+  url.searchParams.set("marker", activeMarker);
+  url.searchParams.set("sub_id", activeSubId);
+  if (params?.origin) url.searchParams.set("origin", params.origin);
+  if (params?.destination) url.searchParams.set("destination", params.destination);
+  return url.toString();
+}
+
 export interface TravelpayoutsDomesticLinkParams {
   origin: string;
   destination: string;
@@ -229,7 +255,7 @@ export function generateTravelpayoutsDomesticLink({
   passengers = 1,
   marker,
   currency = "INR",
-  subId,
+  subId = "kingpay_domestic",
 }: TravelpayoutsDomesticLinkParams): {
   url: string;
   originCode: string;
@@ -246,7 +272,8 @@ export function generateTravelpayoutsDomesticLink({
   const [year, month, day] = departureDate.split("-");
   const shortDate = day && month ? `${day}${month}` : "0112";
 
-  const subParam = subId ? `&sub_id=${encodeURIComponent(subId)}` : "";
+  const activeSubId = subId || "kingpay_domestic";
+  const subParam = `&sub_id=${encodeURIComponent(activeSubId)}`;
   const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${shortDate}${destCode}${passengers}?marker=${activeMarker}&currency=${currency.toLowerCase()}${subParam}`;
 
   return {
@@ -309,7 +336,8 @@ export function generateTravelpayoutsFlightLink({
     }
   }
 
-  const subParam = subId ? `&sub_id=${encodeURIComponent(subId)}` : "";
+  const activeSubId = subId || "kingpay_flight";
+  const subParam = `&sub_id=${encodeURIComponent(activeSubId)}`;
   const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${dateSegment}${passengers}?marker=${activeMarker}&currency=${currency.toLowerCase()}${subParam}`;
 
   return {
@@ -347,7 +375,7 @@ export function generateTravelpayoutsHotelLink({
   rooms = 1,
   marker,
   partner = "agoda",
-  subId = "ok_travel",
+  subId = "kingpay_hotel",
 }: TravelpayoutsHotelLinkParams): {
   url: string;
   cleanCity: string;
@@ -451,7 +479,7 @@ export function generateRedBusDomesticLink(
   const cleanDest = destinationCity.replace(/\(.*\)/, "").trim().toLowerCase();
   const dateIso = journeyDate || new Date().toISOString().split("T")[0];
   const activeAffId = affiliateId || (typeof process !== "undefined" ? process.env?.REDBUS_AFFILIATE_ID : undefined) || "orderking_bus";
-  const activeSubId = subId || "ok_bus";
+  const activeSubId = subId || "kingpay_bus";
 
   const url = new URL(`https://www.redbus.in/bus-tickets/${encodeURIComponent(cleanSrc)}-to-${encodeURIComponent(cleanDest)}`);
   url.searchParams.set("onward", dateIso);

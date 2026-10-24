@@ -22,6 +22,7 @@ import {
   type TrainSeatStatus,
 } from "./types";
 import { buildOfficialAirlineDeepLink, extractAirportCode, isDomesticIndianRoute } from "./airline-deep-links";
+import { getTravelpayoutsMarker } from "./travelpayouts-config";
 
 // ============================================================================
 // CARRIER & STATION LOOKUP MAPS
@@ -248,7 +249,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
               cabinClass,
               seatsAvailable: undefined,
               bookingUrl: item.link
-                ? `https://tp.media/r?marker=${process.env.TRAVELPAYOUTS_MARKER || "500000"}&p=4114&u=${encodeURIComponent(item.link)}`
+                ? `https://tp.media/r?marker=${getTravelpayoutsMarker()}&p=4114&u=${encodeURIComponent(item.link)}`
                 : buildOfficialAirlineDeepLink({
                     carrierCode: airline,
                     from: origin,
@@ -514,7 +515,7 @@ export async function searchLiveHotels(req: HotelSearchRequest): Promise<HotelSe
     process.env.AVIASALES_API_TOKEN ||
     process.env.VITE_TRAVELPAYOUTS_TOKEN;
 
-  const marker = process.env.TRAVELPAYOUTS_MARKER || "500000";
+  const marker = getTravelpayoutsMarker();
 
   // Connect Travelpayouts Hotellook live hotel aggregator for Indian domestic & international stays
   if (travelpayoutsToken) {

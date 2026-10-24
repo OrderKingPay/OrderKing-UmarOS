@@ -2,6 +2,7 @@ import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { FlightBookingEngine } from "@/components/fintech/flight-booking-engine";
+import { TravelpayoutsWhiteLabel } from "@/components/fintech/travelpayouts-white-label";
 import { TrainBookingEngine } from "@/components/fintech/train-booking-engine";
 import { BusBookingEngine } from "@/components/fintech/bus-booking-engine";
 import { CabBookingEngine } from "@/components/fintech/cab-booking-engine";
@@ -1349,6 +1350,20 @@ export function TravelPage() {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* Travelpayouts Sovereign White Label Engine */}
+            <div className="rounded-3xl border border-amber-200/70 bg-gradient-to-b from-white to-amber-50/20 p-5 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-black text-slate-900 tracking-tight">OrderKing Live Metasearch</h3>
+                  <p className="text-xs text-slate-500">Live airline inventory with 100+ carriers (IndiGo, Air India, Akasa, SpiceJet)</p>
+                </div>
+                <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-bold text-emerald-700 border border-emerald-500/20">
+                  Branded White Label
+                </span>
+              </div>
+              <TravelpayoutsWhiteLabel wlId="23797" />
             </div>
 
             {/* Embedded Flight Booking Engine */}

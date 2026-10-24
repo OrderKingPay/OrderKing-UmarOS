@@ -74,11 +74,6 @@ export type DialTabKey =
   | "wednesday_payout"
   | "ad_auction"
   | "travel_governance";
-  | "commissions"
-  | "surge"
-  | "penalties"
-  | "wednesday_payout"
-  | "ad_auction";
 
 export function CommercialCommandDials() {
   const qc = useQueryClient();

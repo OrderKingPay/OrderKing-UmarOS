@@ -100,7 +100,8 @@ async function runWay1LiveEndpointAudit() {
     console.log(`  -> Cloudflare 1101 Crash: ${has1101WorkerCrash ? "❌ YES" : "✅ NO"}`);
     console.log(`  -> Seamless Recovery Crash: ${hasSeamlessRecovery ? "❌ YES" : "✅ NO"}`);
 
-    if (ep.url.includes("kingpay")) {
+    const isKingPayRoute = ep.url.endsWith("/kingpay") || ep.url.endsWith("/king-pay");
+    if (isKingPayRoute) {
       const hasFounderUpi = res.body.includes("9395065587@ybl");
       console.log(`  -> Verified Founder VPA (9395065587@ybl) Rendered: ${hasFounderUpi ? "✅ YES" : "❌ NO"}`);
       if (!hasFounderUpi) passed = false;
