@@ -37,7 +37,7 @@ import {
   CORE_SUBJECTS, 
   CLASS_LEVELS, 
   AcademicSolutionCard 
-} from "@/routes/tutor";
+} from "@/components/tutor/academic-solution-card";
 import { cn } from "@/lib/utils";
 import { AirportAutoSuggest, StationAutoSuggest, queryAirports, queryStations } from "./travel-autosuggest";
 

@@ -3,7 +3,7 @@
  * Council Domain 6: Rider Fleet Safety, Low Battery Optimization & Doorstep Verification.
  */
 
-import { createHash, timingSafeEqual } from "node:crypto";
+import { sha256Hex, safeTimingSafeEqual } from "@/lib/rider/crypto-util";
 
 export const STANDARD_GPS_INTERVAL_MS = 3_000; // 3 seconds standard
 export const LOW_BATTERY_GPS_INTERVAL_MS = 10_000; // 10 seconds power saver (<20% battery)
@@ -133,10 +133,7 @@ export function generateDynamicDeliveryQr(
 ): string {
   const cleanOrderId = orderId.trim();
   const cleanOtp = otp.trim();
-  const signature = createHash("sha256")
-    .update(`ORDERKING:${cleanOrderId}:${cleanOtp}:${timestamp}`)
-    .digest("hex")
-    .slice(0, 16);
+  const signature = sha256Hex(`ORDERKING:${cleanOrderId}:${cleanOtp}:${timestamp}`).slice(0, 16);
 
   const data: DynamicDeliveryQrData = {
     prefix: "ORDERKING_DOORSTEP_QR",
@@ -179,12 +176,9 @@ export function verifyDynamicDeliveryQr(
       return { valid: false, reason: "QR_EXPIRED: Dynamic handover QR code has expired. Ask customer to refresh." };
     }
 
-    const expectedSig = createHash("sha256")
-      .update(`ORDERKING:${data.orderId}:${data.otp}:${data.timestamp}`)
-      .digest("hex")
-      .slice(0, 16);
+    const expectedSig = sha256Hex(`ORDERKING:${data.orderId}:${data.otp}:${data.timestamp}`).slice(0, 16);
 
-    if (data.signature !== expectedSig) {
+    if (!safeTimingSafeEqual(data.signature, expectedSig)) {
       return { valid: false, reason: "TAMPERED_QR: Cryptographic signature mismatch" };
     }
 
@@ -260,13 +254,11 @@ export function verifyDoorstepDelivery(params: {
 
     // Hash & Salt verification if provided
     if (params.expectedSalt && params.expectedHash) {
-      const computedHash = createHash("sha256")
-        .update(`${params.expectedSalt}:${rawOtp}`)
-        .digest("hex");
+      const computedHash = sha256Hex(`${params.expectedSalt}:${rawOtp}`);
 
       if (
         computedHash.length === params.expectedHash.length &&
-        timingSafeEqual(Buffer.from(computedHash), Buffer.from(params.expectedHash))
+        safeTimingSafeEqual(computedHash, params.expectedHash)
       ) {
         return {
           success: true,

@@ -47,6 +47,7 @@ export const en = {
     reviews: "Guest Reviews",
     notifications: "Alerts",
     assistant: "King AI",
+    academy: "Operations Academy",
     hours: "Operating Hours",
     settings: "Settings",
     onboarding: "Restaurant Profile",

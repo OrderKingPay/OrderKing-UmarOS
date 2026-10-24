@@ -1,8 +1,14 @@
 import { createRouter } from "@tanstack/react-router";
+import { Buffer } from "buffer";
 import { AppErrorComponent } from "@/lib/error-component";
 import { routeTree } from "./routeTree.gen";
 import { CustomerAppSkeleton } from "./routes/__root";
 import { Compass, Home } from "lucide-react";
+
+if (typeof window !== "undefined") {
+  (window as any).Buffer = (window as any).Buffer || Buffer;
+  (globalThis as any).Buffer = (globalThis as any).Buffer || Buffer;
+}
 
 function CustomerNotFoundComponent() {
   return (

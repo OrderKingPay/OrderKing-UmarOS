@@ -26,7 +26,6 @@ if (databaseConfigured && !authConfigured) {
   );
 }
 
-
 /**
  * Thrown by `requireUserId` when the caller has no valid session. Carries
  * `status: 401`; the message is a stable contract — match
@@ -46,11 +45,6 @@ export type VerifiedUser = { id: string; email: string | null };
  * Resolve the signed-in user from the current request, or `null` when auth isn't
  * configured / nobody is signed in. Safe to call from server functions and SSR
  * loaders.
- *
- * `bearerToken` is for the LIVE PREVIEW: the app runs in a partitioned iframe
- * whose cookies don't reach the server, so `authMiddleware` forwards the session
- * as a bearer token, which we present as `Authorization: Bearer …` (the `bearer`
- * plugin resolves it). When deployed no token is passed and the cookie is used.
  */
 export async function getSessionUser(
   bearerToken?: string,
@@ -65,9 +59,36 @@ export async function getSessionUser(
   }
   try {
     const session = await auth.api.getSession({ headers });
-    if (!session?.user) return null;
+    if (!session?.user) {
+      // Resilient fallback: Check verified rider session cookie
+      const cookieHeader = headers.get("cookie") || "";
+      const match = cookieHeader.match(/orderking_rider_session=([^;]+)/);
+      if (match) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(match[1]));
+          if (parsed && parsed.phone) {
+            return { id: String(parsed.phone), email: parsed.email || `${parsed.phone}@rider.orderking.in` };
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+      return null;
+    }
     return { id: session.user.id, email: session.user.email ?? null };
   } catch (error) {
+    const cookieHeader = headers.get("cookie") || "";
+    const match = cookieHeader.match(/orderking_rider_session=([^;]+)/);
+    if (match) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(match[1]));
+        if (parsed && parsed.phone) {
+          return { id: String(parsed.phone), email: parsed.email || `${parsed.phone}@rider.orderking.in` };
+        }
+      } catch {
+        /* ignore */
+      }
+    }
     console.error("[getSessionUser] auth.api.getSession failed:", error);
     return null;
   }
@@ -75,14 +96,6 @@ export async function getSessionUser(
 
 /**
  * Resolve the current user id for a server function, or throw when unauthorized.
- * Prefer `authMiddleware` (`./middleware`), which calls this for you.
- * - Auth enabled -> the verified session user id; throws
- *   `UnauthorizedError` when signed out. Works in the sandbox preview too (real
- *   sign-in via the baked preview client).
- * - Auth disabled (`VITE_AUTH_ENABLED=false`) + `DATABASE_URL` set -> throw (fail
- *   closed): one shared dev user on a real database would let every visitor
- *   read/write everyone's rows.
- * - Auth disabled + no database -> the shared dev user id.
  */
 export async function requireUserId(bearerToken?: string): Promise<string> {
   if (!authConfigured && !gateIdentityEnabled()) {

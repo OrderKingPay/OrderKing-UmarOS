@@ -18,6 +18,7 @@ import { useClientState } from "@/lib/client-state";
 import { platformConfig, type AppLanguage } from "@/lib/platform-config";
 import { orderKingSpark } from "@/lib/ai/order-king-spark";
 import { tryExecutePartnerAiCommand } from "@/lib/ai/partner-ai-actions";
+import { PARTNER_ACADEMY_MODULES, type SopModule } from "@/lib/academy/partner-sop-data";
 
 export const Route = createFileRoute("/assistant")({ component: AssistantPage });
 
@@ -268,6 +269,16 @@ function AssistantPage() {
   const [shiftReconDate, setShiftReconDate] = useState<string>("Today");
   const [shiftRecon, setShiftRecon] = useState(() =>
     orderKingSpark.generateDailyShiftRecon("Today")
+  );
+
+  const [selectedSopId, setSelectedSopId] = useState<string>(
+    PARTNER_ACADEMY_MODULES[0]?.id ?? "sop-acceptance-sla"
+  );
+  const selectedSop = useMemo(
+    () =>
+      PARTNER_ACADEMY_MODULES.find((m) => m.id === selectedSopId) ??
+      PARTNER_ACADEMY_MODULES[0],
+    [selectedSopId]
   );
 
   const dash = useQuery({
@@ -800,12 +811,16 @@ function AssistantPage() {
         languageCode: activeLang.code,
         canEditMenu: Boolean(vendor.role && can(vendor.role, "menu.edit") && !menu.data?.isMenuLocked),
         canEditAvailability: Boolean(vendor.role && can(vendor.role, "availability.edit") && !menu.data?.isMenuLocked),
+        canEditHours: Boolean(vendor.role && can(vendor.role, "hours.edit")),
+        canEditPromotions: Boolean(vendor.role && can(vendor.role, "promotions.edit")),
       });
 
       if (actionResult.handled) {
         await Promise.all([
           qc.invalidateQueries({ queryKey: ["menu"] }),
           qc.invalidateQueries({ queryKey: ["dashboard"] }),
+          qc.invalidateQueries({ queryKey: ["hours"] }),
+          qc.invalidateQueries({ queryKey: ["promotions"] }),
         ]);
         setLog((l) => [
           ...l,
@@ -841,12 +856,22 @@ function AssistantPage() {
         qLower.includes("portion") ||
         qLower.includes("shift") ||
         qLower.includes("recon") ||
-        qLower.includes("gst 9(5)")
+        qLower.includes("gst 9(5)") ||
+        qLower.includes("sop") ||
+        qLower.includes("academy") ||
+        qLower.includes("pack") ||
+        qLower.includes("seal") ||
+        qLower.includes("handover") ||
+        qLower.includes("otp") ||
+        qLower.includes("fssai") ||
+        qLower.includes("hygiene") ||
+        qLower.includes("ring") ||
+        qLower.includes("sla")
       ) {
         const sparkResp = orderKingSpark.handleRestaurantQuery(userQuestion);
         if (!isOk || serverReply.includes("unavailable")) {
           finalReply = sparkResp.text;
-        } else if (!serverReply.includes("Arbitrator") && !serverReply.includes("Pricing") && !serverReply.includes("Recon")) {
+        } else if (!serverReply.includes("Arbitrator") && !serverReply.includes("Pricing") && !serverReply.includes("Recon") && !serverReply.includes("Academy")) {
           finalReply = `${serverReply}\n\n${sparkResp.text}`;
         }
       }
@@ -2073,6 +2098,118 @@ function AssistantPage() {
                 {shiftRecon.conversationalSummary}
               </p>
             </div>
+          </div>
+
+          {/* MODULE 10: OrderKing Partner Operations & SOP Academy */}
+          <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3 lg:col-span-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
+                  10. OrderKing Partner Operations &amp; SOP Academy
+                </h3>
+                <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
+                  STANDARD OPERATING PROCEDURES
+                </span>
+              </div>
+              <Link
+                to="/academy"
+                className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1"
+              >
+                <span>Full Academy Portal</span>
+                <span className="font-mono">→</span>
+              </Link>
+            </div>
+            <p className="text-[11px] text-muted">
+              Authentic commercial kitchen benchmarks: 120s order acceptance SLA, anti-spill container sealing, 4-digit rider handover OTP, FSSAI cold chain hygiene, and dispute legal sense.
+            </p>
+
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-muted">Select Standard Operating Procedure:</span>
+              <div className="flex flex-wrap gap-1.5">
+                {PARTNER_ACADEMY_MODULES.map((mod) => (
+                  <button
+                    key={mod.id}
+                    type="button"
+                    onClick={() => setSelectedSopId(mod.id)}
+                    className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
+                      selectedSopId === mod.id
+                        ? "border-emerald-500 bg-emerald-500/15 font-bold text-emerald-300 shadow-sm"
+                        : "border-line bg-surface text-muted hover:text-ink hover:border-slate-700"
+                    }`}
+                  >
+                    {mod.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {selectedSop && (
+              <div className="rounded-lg border border-line bg-surface p-3 space-y-2.5 text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                      {selectedSop.badge}
+                    </span>
+                    <span className="font-bold text-ink text-xs">{selectedSop.title}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[11px] font-mono text-muted">
+                    <span>SLA: <strong className="text-ink">{selectedSop.slaTarget}</strong></span>
+                    <span>·</span>
+                    <span>Metric: <strong className="text-emerald-400">{selectedSop.keyMetric}</strong></span>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-muted leading-relaxed">
+                  {selectedSop.summary}
+                </p>
+
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold block">
+                    Execution Steps:
+                  </span>
+                  <div className="grid gap-1.5 sm:grid-cols-2">
+                    {selectedSop.steps.map((st) => (
+                      <div key={st.stepNumber} className="rounded border border-line bg-surface-2/60 p-2 space-y-1">
+                        <div className="font-bold text-[11px] text-ink flex items-center gap-1.5">
+                          <span className="flex size-4 items-center justify-center rounded bg-emerald-500/20 text-[9px] text-emerald-300 font-mono">
+                            {st.stepNumber}
+                          </span>
+                          <span>{st.title}</span>
+                        </div>
+                        <p className="text-[10px] text-muted leading-tight">
+                          {st.instruction}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded border border-emerald-500/30 bg-emerald-950/20 p-2 text-[10px] text-slate-300 flex items-start gap-2">
+                  <span className="font-bold text-emerald-300 shrink-0">🛡️ Legal &amp; Payout Protection:</span>
+                  <span>{selectedSop.arbitrationProtection}</span>
+                </div>
+
+                <div className="pt-1 flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQ(`Explain operational SOP for: ${selectedSop.title}`);
+                    }}
+                    className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1"
+                  >
+                    <span>Ask King Spark AI about this SOP</span>
+                    <span className="font-mono">→</span>
+                  </button>
+
+                  <Link
+                    to="/academy"
+                    className="rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-[11px] px-2.5 py-1 transition"
+                  >
+                    Open Academy Hub
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Card>

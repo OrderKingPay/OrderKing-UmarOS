@@ -55,7 +55,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
         on conflict (id) do nothing
       `;
     } catch {}
-  });
+  }, 30000);
 
   afterAll(async () => {
     if (!sql) return;

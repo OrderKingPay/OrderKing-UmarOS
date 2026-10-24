@@ -49,6 +49,7 @@ export const bn: MessageTree = {
     reviews: "অতিথি রিভিউ",
     notifications: "সতর্কতা",
     assistant: "King AI",
+    academy: "অপারেশনস একাডেমি",
     hours: "খোলা থাকার সময়",
     settings: "সেটিংস",
     onboarding: "রেস্তোরাঁর প্রোফাইল",

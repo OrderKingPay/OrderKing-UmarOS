@@ -1,3 +1,10 @@
+import { Buffer } from "buffer";
+if (typeof globalThis !== "undefined" && !(globalThis as any).Buffer) {
+  (globalThis as any).Buffer = Buffer;
+}
+if (typeof window !== "undefined" && !(window as any).Buffer) {
+  (window as any).Buffer = Buffer;
+}
 import { createFileRoute } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { SupremeKingPayExperience } from "@/components/fintech/supreme-kingpay-experience";

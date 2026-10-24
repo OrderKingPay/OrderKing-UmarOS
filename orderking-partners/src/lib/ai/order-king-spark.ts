@@ -2,6 +2,12 @@
 // Provides operations, finance, menu management, proactive anomaly alerts,
 // dispute & refund arbitration, menu pricing intelligence, and daily shift recon.
 
+import {
+  PARTNER_ACADEMY_MODULES,
+  queryPartnerAcademy,
+  type SopModule,
+} from "../academy/partner-sop-data.ts";
+
 export interface SparkMenuItem {
   id: string;
   name: string;
@@ -138,7 +144,8 @@ export interface SparkChatMessage {
       | "growth_plan"
       | "dispute_arbitration"
       | "menu_intelligence"
-      | "shift_recon";
+      | "shift_recon"
+      | "sop_guide";
     data: Record<string, unknown>;
   };
 }
@@ -612,6 +619,73 @@ export class OrderKingSpark {
     const q = query.toLowerCase().trim();
     const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const id = `msg-spark-${Date.now()}`;
+
+    // 0. Partner Operations Academy & Operational SOP Knowledge Base
+    if (
+      q.includes("sop") ||
+      q.includes("academy") ||
+      q.includes("training") ||
+      q.includes("how to pack") ||
+      q.includes("packaging rule") ||
+      q.includes("packaging sop") ||
+      q.includes("pack soup") ||
+      q.includes("pack curry") ||
+      q.includes("container") ||
+      q.includes("tamper seal") ||
+      q.includes("handover otp") ||
+      q.includes("rider otp") ||
+      q.includes("rider handover") ||
+      q.includes("counter turnaround") ||
+      q.includes("fssai rule") ||
+      q.includes("fssai sop") ||
+      q.includes("hygiene rule") ||
+      q.includes("temperature log") ||
+      q.includes("ring sla") ||
+      q.includes("120s sla") ||
+      q.includes("acceptance sla")
+    ) {
+      const matched = queryPartnerAcademy(query);
+      const mod = matched[0] ?? PARTNER_ACADEMY_MODULES[0];
+      const stepsMarkdown = mod.steps
+        .map(
+          (s) =>
+            `${s.stepNumber}. **${s.title}**: ${s.instruction}${
+              s.criticalInvariant ? `\n   ⚠️ *Critical Invariant:* ${s.criticalInvariant}` : ""
+            }${s.proTip ? `\n   💡 *Pro-Tip:* ${s.proTip}` : ""}`
+        )
+        .join("\n");
+
+      return {
+        id,
+        sender: "spark",
+        text: `### 🎓 Partner Operations Academy: ${mod.title}
+**Category**: ${mod.category} · **SLA Target**: ${mod.slaTarget} · **Key Metric**: ${mod.keyMetric}
+
+${mod.summary}
+
+#### 📋 Execution Steps:
+${stepsMarkdown}
+
+#### 🛡️ Arbitration & Payout Protection:
+${mod.arbitrationProtection}
+
+*(For full interactive walkthroughs and all operational modules, visit the **Operations Academy** tab in More)*`,
+        timestamp,
+        actionCard: {
+          type: "sop_guide",
+          data: {
+            module: mod,
+            allModules: PARTNER_ACADEMY_MODULES.map((m) => ({
+              id: m.id,
+              title: m.title,
+              badge: m.badge,
+              category: m.category,
+              slaTarget: m.slaTarget,
+            })),
+          },
+        },
+      };
+    }
 
     // 1. Customer Dispute & Refund Arbitrator
     if (

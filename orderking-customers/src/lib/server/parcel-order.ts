@@ -58,7 +58,9 @@ async function prepareParcelRazorpayOrderHandler({
   // If live credentials are available, initialize with Razorpay gateway
   if (config.hasCredentials && config.keyId && config.keySecret) {
     try {
-      const authHeader = Buffer.from(`${config.keyId}:${config.keySecret}`).toString("base64");
+      const authHeader = typeof Buffer !== "undefined"
+        ? Buffer.from(`${config.keyId}:${config.keySecret}`).toString("base64")
+        : btoa(`${config.keyId}:${config.keySecret}`);
       const res = await fetch("https://api.razorpay.com/v1/orders", {
         method: "POST",
         headers: {

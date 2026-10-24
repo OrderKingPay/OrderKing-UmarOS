@@ -49,6 +49,12 @@ const NAV_ITEM_METADATA: Record<
     subtitle: "Operating timings, holiday shifts & prep SLA pacing",
     tag: "Operations",
   },
+  "/academy": {
+    title: "Operations Academy & Standard Operating Procedures (SOP)",
+    subtitle: "Anti-spill packing, 120s order SLA, rider OTP handover & FSSAI FoSCoS rules",
+    tag: "Academy",
+    highlight: true,
+  },
   "/assistant": {
     title: "King AI Restaurant Co-Pilot",
     subtitle: "Ask business questions, prep forecasts & menu optimization",

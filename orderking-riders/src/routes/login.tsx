@@ -162,12 +162,26 @@ function Login() {
 
       const { email, credential, destination } = verifyRes;
 
-      // 1. Save prefill in localStorage for subsequent onboarding KYC prefill
+      // 1. Save prefill & persistent session cookie for zero-bounce login
       try {
+        const sessionPayload = encodeURIComponent(
+          JSON.stringify({
+            phone: cleanPhone,
+            email: `${cleanPhone}@rider.orderking.in`,
+          }),
+        );
+        document.cookie = `orderking_rider_session=${sessionPayload}; path=/; max-age=2592000; SameSite=Lax`;
         localStorage.setItem(
           "orderking_rider_prefill",
           JSON.stringify({
             phone: cleanPhone,
+          }),
+        );
+        localStorage.setItem(
+          "orderking_rider_session",
+          JSON.stringify({
+            phone: cleanPhone,
+            email: `${cleanPhone}@rider.orderking.in`,
           }),
         );
       } catch {

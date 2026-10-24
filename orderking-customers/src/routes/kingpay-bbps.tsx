@@ -1,3 +1,10 @@
+import { Buffer } from "buffer";
+if (typeof globalThis !== "undefined" && !(globalThis as any).Buffer) {
+  (globalThis as any).Buffer = Buffer;
+}
+if (typeof window !== "undefined" && !(window as any).Buffer) {
+  (window as any).Buffer = Buffer;
+}
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { UtilitiesBillEngine } from "@/components/fintech/utilities-bill-engine";

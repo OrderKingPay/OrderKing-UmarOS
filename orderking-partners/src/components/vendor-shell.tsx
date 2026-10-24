@@ -17,6 +17,7 @@ import {
   Tag,
   CalendarDays,
   Flame,
+  GraduationCap,
 } from "lucide-react";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -56,6 +57,7 @@ export const MORE_NAV = [
   { to: "/analytics", key: "nav.analytics", icon: LineChart, perm: "analytics.view" as Permission },
   { to: "/reviews", key: "nav.reviews", icon: Star, perm: "reviews.view" as Permission },
   { to: "/hours", key: "nav.hours", icon: Clock3, perm: "hours.edit" as Permission },
+  { to: "/academy", key: "nav.academy", icon: GraduationCap, perm: "dashboard.view" as Permission },
   { to: "/assistant", key: "nav.assistant", icon: Sparkles, perm: "assistant.use" as Permission },
   { to: "/notifications", key: "nav.notifications", icon: Bell, perm: "notifications.view" as Permission },
   { to: "/onboarding", key: "nav.onboarding", icon: Store, perm: "onboarding.edit" as Permission },

@@ -5,6 +5,8 @@
  */
 
 import { saveItem, setAvailability, saveCategory, type ModifierGroup } from "@/lib/server/api-menu";
+import { quickThrottleKitchen } from "@/lib/server/api-orders";
+import { savePromotion } from "@/lib/server/api-finance";
 import { formatINR } from "@/lib/money";
 import type { DietFlag } from "@/lib/contracts";
 
@@ -36,11 +38,20 @@ export interface PartnerAiCommandContext {
   languageCode: string;
   canEditMenu: boolean;
   canEditAvailability: boolean;
+  canEditHours?: boolean;
+  canEditPromotions?: boolean;
 }
 
 export interface PartnerAiExecutionResult {
   handled: boolean;
-  action?: "ADD_DISH" | "UPDATE_PRICE" | "STOCKOUT" | "RESTOCK" | "SALES_QUERY";
+  action?:
+    | "ADD_DISH"
+    | "UPDATE_PRICE"
+    | "STOCKOUT"
+    | "RESTOCK"
+    | "SALES_QUERY"
+    | "THROTTLE_KITCHEN"
+    | "CREATE_PROMOTION";
   replyText: string;
 }
 
@@ -303,6 +314,147 @@ export async function tryExecutePartnerAiCommand(
       action: "SALES_QUERY",
       replyText: report,
     };
+  }
+
+  // -------------------------------------------------------------------------
+  // 5. ACTION: KITCHEN RUSH & PREPARATION THROTTLING
+  // e.g.: "Enable rush mode +15 mins"
+  //       "Kitchen me bheed hai prep buffer badhao"
+  //       "Normal mode kar do"
+  //       "Pause kitchen orders"
+  //       "Resume kitchen"
+  // -------------------------------------------------------------------------
+  const isRushIntent =
+    qLower.includes("rush mode") ||
+    qLower.includes("bheed hai") ||
+    qLower.includes("overload") ||
+    qLower.includes("prep buffer") ||
+    qLower.includes("rush lagao") ||
+    qLower.includes("too busy");
+
+  const isNormalModeIntent =
+    qLower.includes("normal mode") ||
+    qLower.includes("rush band") ||
+    qLower.includes("rush off") ||
+    qLower.includes("standard prep");
+
+  const isPauseKitchenIntent =
+    qLower.includes("pause kitchen") ||
+    qLower.includes("emergency close") ||
+    qLower.includes("orders roko") ||
+    qLower.includes("kitchen band karo");
+
+  const isResumeKitchenIntent =
+    qLower.includes("resume kitchen") ||
+    qLower.includes("open kitchen") ||
+    qLower.includes("orders chalu") ||
+    qLower.includes("kitchen chalu karo");
+
+  if (isRushIntent && (ctx.canEditHours ?? true)) {
+    await quickThrottleKitchen({
+      data: { restaurantId: ctx.restaurantId, mode: "RUSH" },
+    });
+    let confirmation =
+      "🚨 Kitchen Rush Mode Activated (+15 mins buffer added). All incoming orders buffered to 35m prep SLA. Rider dispatch pacing dynamically delayed to prevent kitchen crowding!";
+    if (ctx.languageCode === "hi") {
+      confirmation =
+        "🚨 किचन रश मोड सक्रिय (+15 मिनट बफर जोड़ा गया)। नए ऑर्डर्स के लिए तैयारी समय 35 मिनट निर्धारित किया गया है और राइडर्स को देर से भेजा जाएगा ताकि भीड़ न लगे!";
+    }
+    return {
+      handled: true,
+      action: "THROTTLE_KITCHEN",
+      replyText: confirmation,
+    };
+  }
+
+  if (isNormalModeIntent && (ctx.canEditHours ?? true)) {
+    await quickThrottleKitchen({
+      data: { restaurantId: ctx.restaurantId, mode: "NORMAL" },
+    });
+    let confirmation =
+      "✅ Kitchen Normal Mode Restored (20 mins baseline SLA). Rider dispatch pacing reset to standard timing.";
+    if (ctx.languageCode === "hi") {
+      confirmation =
+        "✅ सामान्य किचन मोड बहाल (20 मिनट मानक SLA)। राइडर डिस्पैच सामान्य समय पर पुनः सेट कर दिया गया है।";
+    }
+    return {
+      handled: true,
+      action: "THROTTLE_KITCHEN",
+      replyText: confirmation,
+    };
+  }
+
+  if (isPauseKitchenIntent && (ctx.canEditHours ?? true)) {
+    await quickThrottleKitchen({
+      data: { restaurantId: ctx.restaurantId, mode: "PAUSE" },
+    });
+    let confirmation =
+      "⏸️ Kitchen Emergency Pause Activated. Storefront paused from accepting new incoming orders. Active in-progress orders can still be prepared and handed over.";
+    if (ctx.languageCode === "hi") {
+      confirmation =
+        "⏸️ इमरजेंसी किचन पॉज सक्रिय। नए ऑर्डर आना रोक दिया गया है। चालू ऑर्डर्स को तैयार करके राइडर को सौंपा जा सकता है।";
+    }
+    return {
+      handled: true,
+      action: "THROTTLE_KITCHEN",
+      replyText: confirmation,
+    };
+  }
+
+  if (isResumeKitchenIntent && (ctx.canEditHours ?? true)) {
+    await quickThrottleKitchen({
+      data: { restaurantId: ctx.restaurantId, mode: "RESUME" },
+    });
+    let confirmation =
+      "🟢 Kitchen Resumed & Storefront Live. Your restaurant is actively accepting new customer orders!";
+    if (ctx.languageCode === "hi") {
+      confirmation =
+        "🟢 किचन पुनः चालू हो गया है और लाइव है। आपकी रसोई अब नए ग्राहक ऑर्डर स्वीकार कर रही है!";
+    }
+    return {
+      handled: true,
+      action: "THROTTLE_KITCHEN",
+      replyText: confirmation,
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // 6. ACTION: CREATE PROMOTION / DYNAMIC DISCOUNT
+  // e.g.: "Create 20% discount offer"
+  //       "20 percent off ka promo lagao"
+  // -------------------------------------------------------------------------
+  const promoMatch =
+    qLower.match(/(?:create|launch|offer|lagao|banao)\s+(?:a\s+)?(\d{1,2})%\s*(?:discount|off|promo|chhoot)/i) ||
+    qLower.match(/(\d{1,2})%\s*(?:discount|off|promo|chhoot)\s+(?:lagao|karo|create)/i);
+
+  if (promoMatch && (ctx.canEditPromotions ?? true)) {
+    const percent = parseInt(promoMatch[1], 10);
+    if (percent >= 5 && percent <= 60) {
+      const promoName = `Chef Special ${percent}% OFF`;
+      await savePromotion({
+        data: {
+          restaurantId: ctx.restaurantId,
+          name: promoName,
+          funder: "RESTAURANT",
+          kind: "percent",
+          percentOff: percent,
+          minOrderPaise: 29900, // ₹299 min order
+          maxDiscountPaise: 10000, // ₹100 max cap
+          isActive: true,
+        },
+      });
+
+      let confirmation = `🎉 Promotion "${promoName}" Created & Live! Customers get ${percent}% off on orders above ₹299 (capped at ₹100). Live across OrderKing storefront!`;
+      if (ctx.languageCode === "hi") {
+        confirmation = `🎉 प्रमोशन "${promoName}" सफलतापूर्वक लाइव कर दिया गया है! ग्राहकों को ₹299 से अधिक के ऑर्डर पर ${percent}% छूट मिलेगी (अधिकतम ₹100)।`;
+      }
+
+      return {
+        handled: true,
+        action: "CREATE_PROMOTION",
+        replyText: confirmation,
+      };
+    }
   }
 
   return { handled: false, replyText: "" };
