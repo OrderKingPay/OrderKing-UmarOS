@@ -1,5 +1,6 @@
 
 export const ORDER_STATUSES = [
+  "CREATED",
   "CART",
   "CHECKOUT",
   "PLACED",
@@ -46,9 +47,10 @@ export const TERMINAL_STATUSES: ReadonlySet<OrderStatus> = new Set([
 ]);
 
 const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  CREATED: ["ACCEPTED", "AUTO_ACCEPTED", "PREPARING", "CANCELLED", "CANCELLED_BY_CUSTOMER", "REJECTED", "FAILED_PAYMENT"],
   CART: ["CHECKOUT", "CANCELLED"],
-  CHECKOUT: ["PLACED", "AUTO_ACCEPTED", "FAILED_PAYMENT", "CANCELLED"],
-  PLACED: ["ACCEPTED", "AUTO_ACCEPTED", "REJECTED", "CANCELLED", "CANCELLED_BY_CUSTOMER", "FAILED_PAYMENT"],
+  CHECKOUT: ["CREATED", "PLACED", "AUTO_ACCEPTED", "FAILED_PAYMENT", "CANCELLED"],
+  PLACED: ["ACCEPTED", "AUTO_ACCEPTED", "PREPARING", "REJECTED", "CANCELLED", "CANCELLED_BY_CUSTOMER", "FAILED_PAYMENT"],
   ACCEPTED: ["PREPARING", "CANCELLED", "CANCELLED_BY_CUSTOMER"],
   AUTO_ACCEPTED: ["PREPARING", "CANCELLED", "CANCELLED_BY_CUSTOMER"],
   PREPARING: ["READY", "CANCELLED"],
@@ -77,7 +79,7 @@ export function assertTransition(from: OrderStatus, to: OrderStatus): void {
 }
 
 export function customerMayCancel(status: OrderStatus): boolean {
-  return status === "PLACED" || status === "ACCEPTED" || status === "AUTO_ACCEPTED";
+  return status === "CREATED" || status === "PLACED" || status === "ACCEPTED" || status === "AUTO_ACCEPTED";
 }
 
 export function isTerminal(status: OrderStatus): boolean {
@@ -85,13 +87,15 @@ export function isTerminal(status: OrderStatus): boolean {
 }
 
 export function trackIndex(status: OrderStatus): number {
-  if (status === "AUTO_ACCEPTED") return 1;
+  if (status === "CREATED" || status === "PLACED") return 0;
+  if (status === "AUTO_ACCEPTED" || status === "ACCEPTED") return 1;
   const i = CUSTOMER_TRACK_STEPS.indexOf(status);
   return i;
 }
 
 /** Dev-only: advance sample kitchens without partner/rider apps. */
 export const SIMULATED_ADVANCE: Partial<Record<OrderStatus, OrderStatus>> = {
+  CREATED: "ACCEPTED",
   PLACED: "ACCEPTED",
   ACCEPTED: "PREPARING",
   AUTO_ACCEPTED: "PREPARING",

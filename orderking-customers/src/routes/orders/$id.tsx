@@ -177,8 +177,9 @@ function OrderDetailPage() {
   const order = detail.data?.order;
   if (!order) return <CustomerShell><p className="p-6">{t("common.empty")}</p></CustomerShell>;
 
-  const idx = CUSTOMER_TRACK_STEPS.indexOf(order.status as (typeof CUSTOMER_TRACK_STEPS)[number]);
+  const idx = order.status === "CREATED" ? 0 : CUSTOMER_TRACK_STEPS.indexOf(order.status as (typeof CUSTOMER_TRACK_STEPS)[number]);
   const labels: Record<string, string> = {
+    CREATED: "Order Placed & Confirmed",
     PLACED: t("orders.placed"),
     ACCEPTED: t("orders.accepted"),
     PREPARING: t("orders.preparing"),

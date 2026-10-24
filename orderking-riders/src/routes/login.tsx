@@ -102,7 +102,7 @@ function Login() {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
 
-      setDebugOtp(res.debugOtp);
+      setDebugOtp(res.debugOtp ?? null);
       setStep("otp");
       setCountdown(30);
       setCanResend(false);

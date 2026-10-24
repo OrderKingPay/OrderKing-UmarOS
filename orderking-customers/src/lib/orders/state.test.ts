@@ -55,6 +55,31 @@ describe("order state machine", () => {
     assert.equal(trackIndex("CANCELLED"), -1);
   });
 
+  it("supports canonical connected ecosystem progression (CREATED -> ACCEPTED -> PREPARING -> READY -> RIDER_ASSIGNED -> ON_THE_WAY -> DELIVERED)", () => {
+    const canonical = [
+      ["CREATED", "ACCEPTED"],
+      ["ACCEPTED", "PREPARING"],
+      ["PREPARING", "READY"],
+      ["READY", "RIDER_ASSIGNED"],
+      ["RIDER_ASSIGNED", "ON_THE_WAY"],
+      ["ON_THE_WAY", "DELIVERED"],
+    ] as const;
+
+    for (const [from, to] of canonical) {
+      assert.equal(canTransition(from, to), true, `Canonical step ${from} -> ${to} must be allowed`);
+    }
+
+    // Direct transition from CREATED to PREPARING (instant kitchen accept)
+    assert.equal(canTransition("CREATED", "PREPARING"), true);
+
+    // Negative invariants: unauthorized status jumps are strictly rejected
+    assert.equal(canTransition("CREATED", "DELIVERED"), false);
+    assert.equal(canTransition("CREATED", "READY"), false);
+    assert.equal(canTransition("CREATED", "ON_THE_WAY"), false);
+    assert.equal(customerMayCancel("CREATED"), true);
+    assert.equal(trackIndex("CREATED"), 0);
+  });
+
   it("supports autonomous zero-human dispatch pipeline (AUTO_ACCEPTED -> PREPARING -> READY -> RIDER_ASSIGNED -> ON_THE_WAY -> DELIVERED)", () => {
     const pipeline = [
       ["CHECKOUT", "AUTO_ACCEPTED"],

@@ -98,6 +98,14 @@ function getStatusDescription(status: string): { title: string; subtitle: string
     };
   }
   if (["READY", "RIDER_ASSIGNED", "ARRIVING_AT_RESTAURANT", "ARRIVED_AT_RESTAURANT"].includes(normalized)) {
+    const isReadyOnly = normalized === "READY";
+    if (isReadyOnly) {
+      return {
+        title: "Food Ready for Pickup",
+        subtitle: "Food is packed and ready. Dispatching delivery partner for pickup.",
+        icon: "📦",
+      };
+    }
     return {
       title: "Delivery Partner Assigned",
       subtitle: "Food is packed and ready. Partner is picking up your order from the kitchen.",

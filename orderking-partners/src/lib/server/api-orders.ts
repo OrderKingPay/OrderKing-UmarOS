@@ -174,13 +174,13 @@ export const acceptOrder = createServerFn({ method: "POST" })
       const prepMins = data.prepMinutes ? Math.max(5, Math.min(120, asInt(data.prepMinutes))) : null;
       const res = await sql`
         UPDATE orders
-        SET status = 'CONFIRMED',
-            state = 'ACCEPTED',
+        SET status = 'PREPARING',
+            state = 'PREPARING',
             prep_minutes = coalesce(${prepMins}, prep_minutes),
             accepted_at = now(),
             updated_at = now()
         WHERE id = ${data.orderId}
-          AND (status = 'PENDING' OR state = 'PLACED')
+          AND (status IN ('CREATED', 'PENDING', 'PLACED', 'ACCEPTED', 'CONFIRMED') OR state IN ('CREATED', 'PENDING', 'PLACED', 'ACCEPTED', 'CONFIRMED'))
           AND restaurant_id = ${ctx.restaurantId}
         RETURNING id
       `;
@@ -191,7 +191,7 @@ export const acceptOrder = createServerFn({ method: "POST" })
         insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
         values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, 'PLACED', 'ACCEPTED', 'restaurant', ${context.userId}, ${prepMins ? `Order Accepted with ${prepMins}m Prep SLA` : 'Order Accepted'})
       `;
-      return { ok: true, status: 'CONFIRMED', state: 'ACCEPTED' };
+      return { ok: true, status: 'PREPARING', state: 'PREPARING' };
     });
   });
 
@@ -449,3 +449,54 @@ export const processCustomerChargeback = createServerFn({ method: "POST" })
     });
   });
 
+
+
+export async function setOrderStatus(params: {
+  orderId: string;
+  status: "ACCEPTED" | "PREPARING" | "READY" | "REJECTED";
+  restaurantId?: string;
+  actorUserId?: string;
+  reason?: string;
+}) {
+  const sql = await getSql();
+  const rows = await sql<{ id: string; status: string; state: string }>`
+    SELECT id, status, state FROM orders WHERE id = ${params.orderId} LIMIT 1
+  `;
+  if (!rows[0]) throw new Error("Order not found");
+  const prev = rows[0].status || rows[0].state || "CREATED";
+
+  await sql`
+    UPDATE orders
+    SET status = ${params.status},
+        state = ${params.status},
+        accepted_at = CASE WHEN ${params.status} IN ('ACCEPTED', 'PREPARING') AND accepted_at IS NULL THEN now() ELSE accepted_at END,
+        ready_at = CASE WHEN ${params.status} = 'READY' THEN now() ELSE ready_at END,
+        updated_at = now()
+    WHERE id = ${params.orderId}
+  `;
+
+  try {
+    await sql`
+      INSERT INTO order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at)
+      VALUES (
+        ${newId("evt")}, ${params.orderId}, ${prev}, ${params.status},
+        ${params.actorUserId || 'partner_kds'}, 'restaurant',
+        ${params.reason || `Status transitioned to ${params.status}`}, now()
+      )
+    `;
+  } catch {
+    try {
+      await sql`
+        INSERT INTO order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason, at)
+        VALUES (
+          ${newId("evt")}, ${params.orderId}, ${params.restaurantId || 'rst_default'}, ${prev}, ${params.status},
+          'restaurant', ${params.actorUserId || 'partner_kds'}, ${params.reason || `Status transitioned to ${params.status}`}, now()
+        )
+      `;
+    } catch {
+      // Non-fatal event write
+    }
+  }
+
+  return { ok: true, status: params.status, state: params.status };
+}

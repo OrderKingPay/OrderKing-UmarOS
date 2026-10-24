@@ -42,6 +42,8 @@ export default defineConfig({
       "src/test/gemini-tutor-solver.test.ts",
       "src/test/travel-autosuggest.test.ts",
       "src/test/dual-travel-engine.test.ts",
+      "src/test/connected-ecosystem-lifecycle.test.ts",
+      "src/test/fintech-payment-settlement-lifecycle.test.ts",
     ],
     environment: "node",
   },

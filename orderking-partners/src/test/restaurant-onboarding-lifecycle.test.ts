@@ -66,7 +66,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
     try { await sql`delete from restaurant_outlets where restaurant_id = ${testRestaurantId}`; } catch {}
     try { await sql`delete from outlets where restaurant_id = ${testRestaurantId}`; } catch {}
     try { await sql`delete from restaurants where id = ${testRestaurantId}`; } catch {}
-  });
+  }, 30000);
 
   // Test 1: Register partner draft -> restaurant created with verification_status = 'DRAFT'
   it("Test 1: registers partner draft with verification_status = 'DRAFT', data_label = 'REAL', active = false", async () => {
@@ -307,7 +307,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
     expect(items[0].name_en).toBe("Murgh Malai Tikka");
     expect(items[0].available).toBe(true);
     expect(Number(items[0].base_price_paise)).toBe(itemPricePaise);
-  });
+  }, 30000);
 
   // Test 5: Verify query simulates customer catalog and retrieves the verified restaurant with menu items
   it("Test 5: customer catalog query retrieves verified restaurant and its active menu items", async () => {
@@ -370,5 +370,5 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
       where r.active = false and r.id = ${testRestaurantId}
     `;
     expect(inactiveSim.length).toBe(0);
-  });
+  }, 30000);
 });

@@ -421,7 +421,9 @@ export const placeOrder = createServerFn({ method: "POST" })
             ? "wallet_paid"
             : method === "RAZORPAY_ONLINE"
               ? "captured"
-              : "sandbox_paid";
+              : method === "DIRECT_UPI"
+                ? "awaiting_verification"
+                : "sandbox_paid";
       const paymentIdemKey =
         method === "RAZORPAY_ONLINE" && data.razorpayPayment?.razorpayPaymentId
           ? `rzp:${data.razorpayPayment.razorpayPaymentId}`
@@ -435,9 +437,16 @@ export const placeOrder = createServerFn({ method: "POST" })
                 razorpayPaymentId: data.razorpayPayment.razorpayPaymentId,
                 signatureVerified: true,
               })
-            : method === "UPI_SANDBOX"
-              ? JSON.stringify({ sandbox: true, note: "Not a real UPI transfer" })
-              : null;
+            : method === "DIRECT_UPI"
+              ? JSON.stringify({
+                  directUpi: true,
+                  payeeVpa: "9395065587@ybl",
+                  surchargePaise: 0,
+                  note: "Direct 1-Tap UPI transfer to verified merchant/founder VPA with 0 platform surcharge",
+                })
+              : method === "UPI_SANDBOX"
+                ? JSON.stringify({ sandbox: true, note: "Not a real UPI transfer" })
+                : null;
 
       await tx`insert into payments (id, order_id, provider, status, amount_paise, currency, idempotency_key, raw_payload) values (${newId("pay")}, ${orderId}, ${paymentProvider}, ${paymentRowStatus}, ${finalTotalPaise}, ${"INR"}, ${paymentIdemKey}, ${paymentPayload})`;
       if (built.promo) {
@@ -471,6 +480,143 @@ export const placeOrder = createServerFn({ method: "POST" })
     await sql`insert into analytics_events (id, user_id, name, payload) values (${newId("evt")}, ${context.userId}, ${"order_placed"}, ${JSON.stringify({ orderId })})`;
     return { orderId, publicId, duplicate: false, deliveryOtp: otp };
   });
+
+export type CreateOrderParams = {
+  userId?: string;
+  restaurantId?: string | null;
+  outletId?: string | null;
+  zoneId?: string;
+  category?: string;
+  lines?: CartLineInput[] | Array<{ itemId?: string; name?: string; quantity: number; unitPricePaise: number }>;
+  items?: Array<{ itemId?: string; name: string; quantity: number; unitPricePaise: number; instructions?: string | null }>;
+  address?: { line1: string; area: string; landmark?: string; instructions?: string; label?: string; lat?: number; lng?: number };
+  addressSnapshot?: any;
+  paymentMethod?: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE" | "DIRECT_UPI" | string;
+  paymentStatus?: string;
+  totalPaise?: number;
+  foodSubtotalPaise?: number;
+  deliveryFeePaise?: number;
+  idempotencyKey?: string;
+  notes?: string;
+  deliveryOtp?: string;
+  dataLabel?: string;
+};
+
+/**
+ * Creates row in orders table with status 'CREATED' and writes initial row to order_events.
+ */
+export async function createOrder(
+  args: CreateOrderParams | { data: CreateOrderParams; context?: any }
+) {
+  const params: CreateOrderParams =
+    args && typeof args === "object" && "data" in args && args.data
+      ? args.data
+      : (args as CreateOrderParams);
+
+  const sql = await getSql();
+  const cfg = await loadConfig();
+
+  const userId = params.userId || "usr_customer_default";
+  const orderId = newId("ord");
+  const publicId = publicOrderCode(cfg.marketplace?.orderPrefix || "ORD");
+  const deliveryOtp = params.deliveryOtp || String(crypto.randomInt(1000, 10000));
+  const method = params.paymentMethod || "COD";
+  const paymentStatus =
+    params.paymentStatus ||
+    (method === "COD"
+      ? "pending_collection"
+      : method === "KING_PAY"
+        ? "wallet_paid"
+        : method === "RAZORPAY_ONLINE"
+          ? "paid"
+          : "sandbox_paid");
+
+  const totalPaise = params.totalPaise ?? params.foodSubtotalPaise ?? 15000;
+  const foodSubtotalPaise = params.foodSubtotalPaise ?? totalPaise;
+  const deliveryFeePaise = params.deliveryFeePaise ?? 0;
+  const zoneId = params.zoneId || "zone_cp";
+  const dataLabel = params.dataLabel || "REAL";
+  const idempotencyKey = params.idempotencyKey || newId("idk");
+
+  const addressObj = params.address || {
+    line1: "Connaught Place",
+    area: "Central Delhi",
+    lat: 28.6315,
+    lng: 77.2167,
+  };
+  const addressSnapshot =
+    typeof params.addressSnapshot === "string"
+      ? params.addressSnapshot
+      : JSON.stringify(params.addressSnapshot || addressObj);
+
+  await sql.transaction(async (tx) => {
+    await tx`
+      INSERT INTO orders (
+        id, public_id, user_id, restaurant_id, outlet_id, zone_id,
+        address_snapshot, status, payment_method, payment_status,
+        idempotency_key, food_subtotal_paise, restaurant_discount_paise,
+        platform_discount_paise, delivery_fee_paise, service_fee_paise,
+        tax_paise, packaging_paise, total_paise, commission_bps,
+        commission_paise, restaurant_payable_paise, notes, delivery_otp,
+        data_label, placed_at, updated_at
+      ) VALUES (
+        ${orderId}, ${publicId}, ${userId}, ${params.restaurantId ?? null}, ${params.outletId ?? null}, ${zoneId},
+        ${addressSnapshot}, ${'CREATED'}, ${method}, ${paymentStatus},
+        ${idempotencyKey}, ${foodSubtotalPaise}, ${0},
+        ${0}, ${deliveryFeePaise}, ${0},
+        ${0}, ${0}, ${totalPaise}, ${0},
+        ${0}, ${totalPaise}, ${(params.notes ?? "").slice(0, 240)}, ${deliveryOtp},
+        ${dataLabel}, NOW(), NOW()
+      )
+    `;
+
+    const items =
+      params.items ||
+      (params.lines as any[]) || [
+        { itemId: "itm_default", name: "Chef Special Combo", quantity: 1, unitPricePaise: totalPaise },
+      ];
+    for (const item of items) {
+      const lineTotal = (item.unitPricePaise ?? totalPaise) * (item.quantity ?? 1);
+      await tx`
+        INSERT INTO order_items (
+          id, order_id, item_id, variant_id, name_snapshot, quantity,
+          unit_price_paise, addons_snapshot, instructions, line_total_paise
+        ) VALUES (
+          ${newId("oit")}, ${orderId}, ${item.itemId ?? newId("itm")}, ${null},
+          ${item.name || "Food Item"}, ${item.quantity ?? 1}, ${item.unitPricePaise ?? totalPaise},
+          ${"[]"}, ${item.instructions || null}, ${lineTotal}
+        )
+      `;
+    }
+
+    // Write initial canonical row to order_events
+    await tx`
+      INSERT INTO order_events (
+        id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at
+      ) VALUES (
+        ${newId("oev")}, ${orderId}, ${null}, ${'CREATED'}, ${userId}, ${'customer'},
+        ${'Order created in canonical connected ecosystem'}, NOW()
+      )
+    `;
+  });
+
+  return {
+    orderId,
+    publicId,
+    status: "CREATED" as const,
+    deliveryOtp,
+    totalPaise,
+    paymentMethod: method,
+    paymentStatus,
+  };
+}
+
+export const createOrderFn = createServerFn({ method: "POST" })
+  .validator((input: CreateOrderParams) => input)
+  .handler(async ({ data }: any) => {
+    return createOrder(data);
+  });
+
 
 async function getOwnedOrder(userId: string, orderId: string) {
   const sql = await getSql();

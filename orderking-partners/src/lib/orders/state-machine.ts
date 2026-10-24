@@ -1,4 +1,5 @@
 export const ORDER_STATES = [
+  "CREATED",
   "PLACED",
   "ACCEPTED",
   "PREPARING",
@@ -58,6 +59,13 @@ export type TransitionActor =
   | "simulated_rider";
 
 const ALLOWED: Record<OrderState, Partial<Record<OrderState, TransitionActor[]>>> = {
+  CREATED: {
+    ACCEPTED: ["restaurant", "admin"],
+    PREPARING: ["restaurant", "admin"],
+    REJECTED: ["restaurant", "admin"],
+    CANCELLED: ["customer", "admin", "system"],
+    FAILED_PAYMENT: ["system", "admin"],
+  },
   PLACED: {
     ACCEPTED: ["restaurant", "admin"],
     REJECTED: ["restaurant", "admin"],

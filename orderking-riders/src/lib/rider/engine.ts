@@ -12,6 +12,7 @@ import { assertTransition, isActiveDelivery } from "./machine.ts";
 import {
   assertNonNegativePaise,
   calculateRiderPayout,
+  calculateDeliveryPayoutWithTip,
   enforcePayoutFloor,
   calculateRestaurantWaitPay,
   calculateRestaurantWaitPayPaise,

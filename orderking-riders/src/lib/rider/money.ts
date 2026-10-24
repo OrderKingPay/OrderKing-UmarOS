@@ -1250,6 +1250,38 @@ export function enforcePayoutFloor(amountPaise: number, floorPaise = STATUTORY_B
   return Math.max(floorPaise, amount);
 }
 
+/**
+ * Calculates delivery partner payout using SafeInteger paise precision:
+ * Base Fare (e.g. ₹30 / 3000 paise) + Distance Incentive (e.g. ₹10/km / 1000 paise/km) + Customer Tip (100% pass-through).
+ * Zero floating-point rounding.
+ */
+export function calculateDeliveryPayoutWithTip(params: {
+  baseFarePaise?: number; // e.g. 3000 (₹30.00)
+  distanceKm: number;
+  distanceRatePerKmPaise?: number; // e.g. 1000 (₹10.00/km)
+  tipPaise?: number;
+}): {
+  baseFarePaise: number;
+  distanceKm: number;
+  distanceIncentivePaise: number;
+  tipPaise: number;
+  totalPayoutPaise: number;
+} {
+  const base = Math.max(0, Math.round(params.baseFarePaise ?? 3000));
+  const dist = Math.max(0, Number.isFinite(params.distanceKm) ? params.distanceKm : 0);
+  const rate = Math.max(0, Math.round(params.distanceRatePerKmPaise ?? 1000));
+  const distanceIncentivePaise = Math.round(dist * rate);
+  const tip = Math.max(0, Math.round(params.tipPaise ?? 0));
+  const totalPayoutPaise = base + distanceIncentivePaise + tip;
+  return {
+    baseFarePaise: base,
+    distanceKm: dist,
+    distanceIncentivePaise,
+    tipPaise: tip,
+    totalPayoutPaise,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // 10. CLEAN OPERATIONAL TIERS (Bronze, Silver, Gold, Diamond - No Fantasy Jargon)
 // ---------------------------------------------------------------------------
