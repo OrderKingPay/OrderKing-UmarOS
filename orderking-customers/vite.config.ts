@@ -218,6 +218,8 @@ export default defineConfig(({ command, isPreview }) => ({
     tsconfigPaths: true,
     alias: {
       '@orderking/ui': join(__dirname, '../packages/ui/src'),
+      // Cloudflare Pages edge runtime cannot use raw Node TCP pg driver.
+      'pg': '@neondatabase/serverless',
       '@better-auth/telemetry': join(__dirname, './scripts/empty.mjs')
     }
   },
