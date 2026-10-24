@@ -54,6 +54,33 @@ function Login() {
   const isPhoneValid = /^[6-9]\d{9}$/.test(cleanPhone);
 
   // 30s countdown timer on Step 2 (OTP)
+  // WebOTP API for 1-tap SMS autofill on mobile devices (Tier-1 benchmark)
+  useEffect(() => {
+    if (step !== "otp") return;
+    if (typeof window === "undefined" || !("OTPCredential" in window)) return;
+
+    const ac = new AbortController();
+    (navigator.credentials as any)
+      ?.get({
+        otp: { transport: ["sms"] },
+        signal: ac.signal,
+      })
+      .then((otpCredential: any) => {
+        if (otpCredential?.code) {
+          const autoCode = String(otpCredential.code).replace(/\D/g, "").slice(0, 6);
+          if (autoCode.length === 6) {
+            setOtp(autoCode);
+            void verifyCode(autoCode);
+          }
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      ac.abort();
+    };
+  }, [step]);
+
   useEffect(() => {
     if (step !== "otp") return;
     if (countdown <= 0) {
@@ -101,7 +128,7 @@ function Login() {
       setCanResend(false);
 
       if (channel === "whatsapp" && res.whatsAppOtpUrl && typeof window !== "undefined") {
-        window.open(res.whatsAppOtpUrl, "_blank", "noopener,noreferrer");
+        window.location.href = res.whatsAppOtpUrl;
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to send OTP.";
@@ -111,11 +138,11 @@ function Login() {
     }
   }
 
-  // Step 2: Verify OTP & Authenticate Session
-  async function handleVerifyOtp(e?: FormEvent) {
+  // Step 2: Verify OTP & Authenticate Session with auto-submit
+  async function verifyCode(overrideCode?: string, e?: FormEvent) {
     if (e) e.preventDefault();
 
-    const cleanCode = otp.replace(/\D/g, "").trim();
+    const cleanCode = (overrideCode ?? otp).replace(/\D/g, "").trim();
     if (cleanCode.length !== 6) {
       setError("Please enter the complete 6-digit verification code.");
       return;
@@ -412,30 +439,63 @@ function Login() {
                 </p>
               </div>
 
-              <form onSubmit={handleVerifyOtp} className="space-y-4">
-                <div className="space-y-1.5">
+              <form onSubmit={(e) => void verifyCode(undefined, e)} className="space-y-4">
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="otp-input" className="text-xs font-semibold text-[#94A3B8]">
                       6-Digit OTP Code
                     </Label>
+                    <span className="text-[11px] text-[#64748B]">Auto-detecting SMS</span>
                   </div>
-                  <Input
-                    id="otp-input"
-                    type="tel"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={6}
-                    autoFocus
-                    required
-                    placeholder="••••••"
-                    value={otp}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "").slice(0, 6);
-                      setOtp(val);
-                      if (error) setError(null);
-                    }}
-                    className="border-[#1E283D] bg-[#161D2B] text-center font-mono text-2xl tracking-[0.6em] font-extrabold text-white placeholder:tracking-normal placeholder:font-sans placeholder:text-sm focus:border-[#E5A93C] focus:bg-[#0E121B] h-13 rounded-2xl"
-                  />
+
+                  {/* Tier-1 Benchmark 6 Individual Digit Slots */}
+                  <div className="relative">
+                    <div className="flex items-center justify-between gap-2 sm:gap-3">
+                      {[0, 1, 2, 3, 4, 5].map((idx) => {
+                        const digit = otp[idx] || "";
+                        const isFocused = otp.length === idx || (idx === 5 && otp.length === 6);
+                        const isFilled = Boolean(digit);
+                        return (
+                          <div
+                            key={idx}
+                            className={`relative flex h-14 flex-1 items-center justify-center rounded-2xl border-2 text-center font-mono text-2xl font-black transition-all ${
+                              isFocused
+                                ? "border-[#E5A93C] bg-[#161D2B] shadow-[0_0_16px_rgba(229,169,60,0.25)] text-white scale-[1.02]"
+                                : isFilled
+                                ? "border-[#2563EB]/60 bg-[#161D2B] text-white"
+                                : "border-[#1E283D] bg-[#0E121B] text-slate-500"
+                            }`}
+                          >
+                            {digit}
+                            {isFocused && !digit && !pending && (
+                              <span className="absolute bottom-3 h-0.5 w-4 rounded-full bg-[#E5A93C] animate-pulse" />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <Input
+                      id="otp-input"
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={6}
+                      autoFocus
+                      required
+                      placeholder="••••••"
+                      value={otp}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                        setOtp(val);
+                        if (error) setError(null);
+                        if (val.length === 6) {
+                          void verifyCode(val);
+                        }
+                      }}
+                      className="absolute inset-0 h-full w-full opacity-0 cursor-pointer text-transparent selection:bg-transparent selection:text-transparent"
+                    />
+                  </div>
                 </div>
 
                 {error && (
