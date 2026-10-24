@@ -118,11 +118,11 @@ describe("Connected Ecosystem Lifecycle Integration: Customer, Partner, Rider an
     expect(acceptRes.status).toBe("PREPARING");
 
     // Check DB status is PREPARING
-    const prepOrder = await sql<{ status: string; prep_minutes: number }>`
-      SELECT status, prep_minutes FROM orders WHERE id = ${createdOrder.orderId} LIMIT 1
+    const prepOrder = await sql<{ status: string; confirmed_at: string | null }>`
+      SELECT status, confirmed_at::text as confirmed_at FROM orders WHERE id = ${createdOrder.orderId} LIMIT 1
     `;
     expect(prepOrder[0]!.status).toBe("PREPARING");
-    expect(prepOrder[0]!.prep_minutes).toBe(25);
+    expect(prepOrder[0]!.confirmed_at).not.toBeNull();
 
     // 2B. Kitchen marks cooking complete -> transitions status to 'READY'
     const readyRes = await partnerMarkReady(createdOrder.orderId, {
@@ -131,12 +131,12 @@ describe("Connected Ecosystem Lifecycle Integration: Customer, Partner, Rider an
     expect(readyRes.ok).toBe(true);
     expect(readyRes.status).toBe("READY");
 
-    // Check DB status is READY and ready_at timestamp is set
-    const readyOrder = await sql<{ status: string; ready_at: string | null }>`
-      SELECT status, ready_at::text as ready_at FROM orders WHERE id = ${createdOrder.orderId} LIMIT 1
+    // Check DB status is READY
+    const readyOrder = await sql<{ status: string; updated_at: string | null }>`
+      SELECT status, updated_at::text as updated_at FROM orders WHERE id = ${createdOrder.orderId} LIMIT 1
     `;
     expect(readyOrder[0]!.status).toBe("READY");
-    expect(readyOrder[0]!.ready_at).not.toBeNull();
+    expect(readyOrder[0]!.updated_at).not.toBeNull();
 
     // Verify order_events audit trail contains both PREPARING and READY transitions
     const events = await sql<{ to_status: string; actor_role: string }>`

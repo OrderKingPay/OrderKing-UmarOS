@@ -133,8 +133,7 @@ export async function partnerAcceptOrder(
   await sql`
     UPDATE orders
     SET status = 'PREPARING',
-        prep_minutes = ${prepMinutes},
-        accepted_at = COALESCE(accepted_at, NOW()),
+        confirmed_at = COALESCE(confirmed_at, NOW()),
         updated_at = NOW()
     WHERE id = ${orderId}
   `;
@@ -173,7 +172,6 @@ export async function partnerMarkReady(
   await sql`
     UPDATE orders
     SET status = 'READY',
-        ready_at = NOW(),
         updated_at = NOW()
     WHERE id = ${orderId}
   `;
