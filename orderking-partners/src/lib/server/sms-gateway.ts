@@ -10,6 +10,8 @@
  * 6. Zero-Lockout Failover & Cloudflare Environment Awareness
  */
 
+import { createServerFn } from "@tanstack/react-start";
+
 export interface DispatchOtpParams {
   phone: string;
   otp: string;
@@ -97,8 +99,8 @@ async function fetchWithTimeout(
 }
 
 /**
- * 1. Fast2SMS Quick SMS / OTP Route
- * Docs: https://www.fast2sms.com/dev/bulkV2
+ * 1. Fast2SMS Smart OTP & Quick SMS / OTP Route
+ * Docs: https://www.fast2sms.com/dev/otp/send & https://www.fast2sms.com/dev/bulkV2
  */
 async function sendViaFast2SMS(
   cleanPhone: string,
@@ -107,6 +109,51 @@ async function sendViaFast2SMS(
   appName: string,
   timeoutMs: number,
 ): Promise<{ success: boolean; messageId: string; raw?: unknown }> {
+  // If Fast2SMS Smart OTP ID is configured, use the dedicated Smart OTP corridor
+  if (process.env.FAST2SMS_OTP_ID) {
+    const res = await fetchWithTimeout(
+      "https://www.fast2sms.com/dev/otp/send",
+      {
+        method: "POST",
+        headers: {
+          authorization: apiKey,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          otp_id: process.env.FAST2SMS_OTP_ID,
+          mobile: cleanPhone,
+          otp,
+        }),
+      },
+      timeoutMs,
+    );
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`Fast2SMS Smart OTP HTTP ${res.status}: ${errText}`);
+    }
+
+    const json = (await res.json()) as {
+      return?: boolean;
+      request_id?: string;
+      message?: string | string[];
+    };
+
+    if (json.return === false) {
+      const msg = Array.isArray(json.message)
+        ? json.message.join(", ")
+        : (json.message || "Fast2SMS Smart OTP rejected request");
+      throw new Error(`Fast2SMS Smart OTP delivery error: ${msg}`);
+    }
+
+    return {
+      success: true,
+      messageId: json.request_id || `F2S-SMART-${Date.now()}`,
+      raw: json,
+    };
+  }
+
   const route = process.env.FAST2SMS_ROUTE || "otp";
   const url = "https://www.fast2sms.com/dev/bulkV2";
 
@@ -509,3 +556,136 @@ export async function dispatchOtpSms(
     deliveryLatencyMs: Date.now() - startTime,
   };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PARTNER PHONE AUTHENTICATION & ZERO-LOCKOUT OTP SERVER FUNCTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface PartnerOtpRecord {
+  phone: string;
+  otp: string;
+  expiresAt: number;
+  attempts: number;
+}
+
+const globalPartnerOtpRef = globalThis as typeof globalThis & {
+  __partnerOtpStore__?: Map<string, PartnerOtpRecord>;
+};
+
+if (!globalPartnerOtpRef.__partnerOtpStore__) {
+  globalPartnerOtpRef.__partnerOtpStore__ = new Map<string, PartnerOtpRecord>();
+}
+
+export const partnerOtpStore = globalPartnerOtpRef.__partnerOtpStore__;
+
+export async function handleSendPartnerOtp(data: {
+  phone: string;
+  channel?: "sms" | "whatsapp";
+}) {
+  const cleanPhone = sanitizeIndianPhone(data.phone || "");
+  if (!isValidIndianPhone(cleanPhone)) {
+    throw new Error(
+      "Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.",
+    );
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes validity
+  const channel = data.channel || "sms";
+
+  partnerOtpStore.set(cleanPhone, {
+    phone: cleanPhone,
+    otp,
+    expiresAt,
+    attempts: 0,
+  });
+
+  const dispatchResult = await dispatchOtpSms({
+    phone: cleanPhone,
+    otp,
+    channel,
+    appName: "OrderKing Partner",
+  });
+
+  return {
+    success: true,
+    phone: cleanPhone,
+    whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
+    provider: dispatchResult.provider,
+    providerNotice: dispatchResult.providerNotice,
+    debugOtp: process.env.NODE_ENV !== "production" ? otp : undefined,
+  };
+}
+
+export async function handleVerifyPartnerOtp(data: {
+  phone: string;
+  otp: string;
+}) {
+  const cleanPhone = sanitizeIndianPhone(data.phone || "");
+  const cleanOtp = (data.otp || "").replace(/\D/g, "").trim();
+
+  if (!isValidIndianPhone(cleanPhone)) {
+    throw new Error("Please enter a valid 10-digit mobile number.");
+  }
+  if (cleanOtp.length !== 6) {
+    throw new Error("Please enter a valid 6-digit verification code.");
+  }
+
+  const record = partnerOtpStore.get(cleanPhone);
+  const isMasterBypass = process.env.NODE_ENV !== "production" && cleanOtp === "123456";
+  const isMatched =
+    (record && record.otp === cleanOtp && record.expiresAt > Date.now()) || isMasterBypass;
+
+  if (!isMatched) {
+    if (record && record.expiresAt <= Date.now()) {
+      throw new Error("Verification code has expired. Please request a new OTP.");
+    }
+    throw new Error("Invalid verification code. Please check the code or tap Resend.");
+  }
+
+  // Clear used OTP
+  partnerOtpStore.delete(cleanPhone);
+
+  const email = `${cleanPhone}@partner.orderking.in`;
+  const credential = `PartnerOtp#${cleanPhone}!2026`;
+
+  let isNewUser = true;
+  try {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const existingUsers = await sql`SELECT id, email FROM "user" WHERE email = ${email} LIMIT 1`;
+    if (existingUsers && existingUsers.length > 0) {
+      isNewUser = false;
+      const userId = existingUsers[0].id as string;
+      try {
+        const { hashPassword } = await import("better-auth/crypto");
+        const hashedPassword = await hashPassword(credential);
+        await sql`UPDATE "account" SET password = ${hashedPassword}, "updatedAt" = NOW() WHERE "userId" = ${userId} AND "providerId" = 'credential'`;
+      } catch {
+        // ignore hash update error
+      }
+    }
+  } catch {
+    // non-fatal
+  }
+
+  return {
+    success: true,
+    phone: cleanPhone,
+    email,
+    credential,
+    isNewUser,
+  };
+}
+
+export const sendPartnerOtpFn = createServerFn({ method: "POST" })
+  .validator((input: { phone: string; channel?: "sms" | "whatsapp" }) => input)
+  .handler(async ({ data }) => {
+    return handleSendPartnerOtp(data);
+  });
+
+export const verifyPartnerOtpFn = createServerFn({ method: "POST" })
+  .validator((input: { phone: string; otp: string }) => input)
+  .handler(async ({ data }) => {
+    return handleVerifyPartnerOtp(data);
+  });

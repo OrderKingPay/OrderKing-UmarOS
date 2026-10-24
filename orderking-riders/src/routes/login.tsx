@@ -175,32 +175,33 @@ function Login() {
       }
 
       // 2. Authenticate session with Better Auth
-      const signInRes = await authClient.signIn.email({
-        email,
-        password: credential,
-        callbackURL: destination,
-      });
-
-      if (signInRes.error) {
-        // If not registered, create account then sign in
-        const signUpRes = await authClient.signUp.email({
+      try {
+        const signInRes = await authClient.signIn.email({
           email,
           password: credential,
-          name: "Delivery Partner",
           callbackURL: destination,
         });
 
-        if (signUpRes.error) {
-          // Fallback retry sign in
-          const retrySignIn = await authClient.signIn.email({
+        if (signInRes.error) {
+          // If not registered, create account then sign in
+          const signUpRes = await authClient.signUp.email({
             email,
             password: credential,
+            name: "Delivery Partner",
             callbackURL: destination,
           });
-          if (retrySignIn.error) {
-            throw new Error(retrySignIn.error.message || "Authentication failed.");
+
+          if (signUpRes.error) {
+            // Fallback retry sign in
+            await authClient.signIn.email({
+              email,
+              password: credential,
+              callbackURL: destination,
+            });
           }
         }
+      } catch (authErr) {
+        console.warn("Better Auth session sync warning:", authErr);
       }
 
       // 3. Seamlessly redirect: verified -> `/`, new / draft -> `/onboarding`

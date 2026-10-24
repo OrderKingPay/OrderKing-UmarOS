@@ -97,8 +97,8 @@ async function fetchWithTimeout(
 }
 
 /**
- * 1. Fast2SMS Quick SMS / OTP Route
- * Docs: https://www.fast2sms.com/dev/bulkV2
+ * 1. Fast2SMS Smart OTP & Quick SMS / OTP Route
+ * Docs: https://www.fast2sms.com/dev/otp/send & https://www.fast2sms.com/dev/bulkV2
  */
 async function sendViaFast2SMS(
   cleanPhone: string,
@@ -107,6 +107,51 @@ async function sendViaFast2SMS(
   appName: string,
   timeoutMs: number,
 ): Promise<{ success: boolean; messageId: string; raw?: unknown }> {
+  // If Fast2SMS Smart OTP ID is configured, use the dedicated Smart OTP corridor
+  if (process.env.FAST2SMS_OTP_ID) {
+    const res = await fetchWithTimeout(
+      "https://www.fast2sms.com/dev/otp/send",
+      {
+        method: "POST",
+        headers: {
+          authorization: apiKey,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          otp_id: process.env.FAST2SMS_OTP_ID,
+          mobile: cleanPhone,
+          otp,
+        }),
+      },
+      timeoutMs,
+    );
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`Fast2SMS Smart OTP HTTP ${res.status}: ${errText}`);
+    }
+
+    const json = (await res.json()) as {
+      return?: boolean;
+      request_id?: string;
+      message?: string | string[];
+    };
+
+    if (json.return === false) {
+      const msg = Array.isArray(json.message)
+        ? json.message.join(", ")
+        : (json.message || "Fast2SMS Smart OTP rejected request");
+      throw new Error(`Fast2SMS Smart OTP delivery error: ${msg}`);
+    }
+
+    return {
+      success: true,
+      messageId: json.request_id || `F2S-SMART-${Date.now()}`,
+      raw: json,
+    };
+  }
+
   const route = process.env.FAST2SMS_ROUTE || "otp";
   const url = "https://www.fast2sms.com/dev/bulkV2";
 
