@@ -2827,3 +2827,42 @@ export const updateFeaturedAdBidFn = createServerFn({ method: "POST" })
 
 
 
+
+export const loadTravelPartnerGovernanceFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { getTravelPartnerGovernance } = await import("./server/commercial-dials.server");
+      return { ok: true as const, data: await getTravelPartnerGovernance(ws.ctx) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const updateTravelPartnerGovernanceFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    patch: {
+      travelpayoutsActive?: boolean;
+      travelpayoutsMarker?: string;
+      duffelGdsActive?: boolean;
+      bookingComActive?: boolean;
+      agodaActive?: boolean;
+      redbusActive?: boolean;
+      irctcActive?: boolean;
+      cashbackPercentage?: number;
+      autoRouteDomesticToTravelpayouts?: boolean;
+    };
+    reason?: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { updateTravelPartnerGovernance } = await import("./server/commercial-dials.server");
+      const res = await updateTravelPartnerGovernance(ws, data.patch, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });

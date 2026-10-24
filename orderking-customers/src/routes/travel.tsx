@@ -18,6 +18,9 @@ import {
   isDomesticIndianRoute,
   isInternationalRoute,
   generateTravelpayoutsDomesticLink,
+  generateTravelpayoutsFlightLink,
+  generateTravelpayoutsHotelLink,
+  generateRedBusDomesticLink,
   type TravelEngineResolution,
 } from "@/lib/travel/dual-travel-engine";
 import {
@@ -705,9 +708,10 @@ export function TravelPage() {
           <p className="text-sm text-slate-300 mt-2">Fares, seat availability, payment and ticket confirmation are provided at external checkout. OrderKing does not yet issue railway tickets or collect railway payments.</p>
           <div className="flex flex-wrap gap-2 mt-5">
             <a href="https://www.irctc.co.in/nget/train-search" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-sky-400 px-4 py-3 text-slate-950 font-black text-sm no-underline hover:bg-sky-300">Train tickets · IRCTC ↗</a>
-            <a href="https://www.goindigo.in/" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline">Flights · IndiGo ↗</a>
-            <a href="https://www.redbus.in/" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline">Bus tickets · redBus ↗</a>
-            <a href="https://www.booking.com/" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline">Hotels · Booking.com ↗</a>
+            <a href={generateTravelpayoutsDomesticLink({ origin: "DEL", destination: "BOM", departureDate: new Date().toISOString().split("T")[0] }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Flights · Aviasales / Travelpayouts ↗</a>
+            <a href={generateRedBusDomesticLink("Delhi", "Jaipur").url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Bus tickets · redBus ↗</a>
+            <a href={generateTravelpayoutsHotelLink({ cityOrLocation: "Goa", checkInDate: new Date().toISOString().split("T")[0], partner: "booking_com" }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Hotels · Booking.com ↗</a>
+            <a href={generateTravelpayoutsHotelLink({ cityOrLocation: "Goa", checkInDate: new Date().toISOString().split("T")[0], partner: "agoda" }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Hotels · Agoda ↗</a>
           </div>
           <p className="text-[11px] text-slate-400 mt-3">Final fare, fees, refunds and PNR or booking confirmation are controlled by the selected provider.</p>
         </section>
@@ -2090,22 +2094,75 @@ export function TravelPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3">
               <Button
                 onClick={() => {
                   const checkIn = hotelCheckIn;
                   const dNext = new Date(checkIn);
                   dNext.setDate(dNext.getDate() + hotelNights);
                   const checkOut = dNext.toISOString().split("T")[0];
-                  const cleanCity = hotelCity.replace(/\,.*$/, "").trim();
-                  const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?city=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${hotelRooms}&adults=${hotelRooms * 2}`;
-                  toast.success(`Handoff to hotel partner for ${cleanCity} (${hotelNights} nights)...`);
-                  window.open(agodaUrl, "_blank", "noopener,noreferrer");
+                  const hotelLink = generateTravelpayoutsHotelLink({
+                    cityOrLocation: hotelCity,
+                    checkInDate: checkIn,
+                    checkOutDate: checkOut,
+                    nights: hotelNights,
+                    rooms: hotelRooms,
+                    partner: "agoda",
+                    subId: "ok_travel_hotels",
+                  });
+                  toast.success(`Handoff to Agoda for ${hotelLink.cleanCity} (${hotelNights} nights)...`);
+                  window.open(hotelLink.url, "_blank", "noopener,noreferrer");
                 }}
-                className="flex-1 h-12 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5"
+                className="flex-1 min-w-[200px] h-12 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs sm:text-sm shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5"
               >
-                <span>Check {currentSub} at Hotel Provider</span>
+                <span>Book on Agoda (Tracked)</span>
                 <ArrowUpRight className="size-4" />
+              </Button>
+              <Button
+                onClick={() => {
+                  const checkIn = hotelCheckIn;
+                  const dNext = new Date(checkIn);
+                  dNext.setDate(dNext.getDate() + hotelNights);
+                  const checkOut = dNext.toISOString().split("T")[0];
+                  const hotelLink = generateTravelpayoutsHotelLink({
+                    cityOrLocation: hotelCity,
+                    checkInDate: checkIn,
+                    checkOutDate: checkOut,
+                    nights: hotelNights,
+                    rooms: hotelRooms,
+                    partner: "booking_com",
+                    subId: "ok_travel_hotels",
+                  });
+                  toast.success(`Handoff to Booking.com for ${hotelLink.cleanCity} (${hotelNights} nights)...`);
+                  window.open(hotelLink.url, "_blank", "noopener,noreferrer");
+                }}
+                className="flex-1 min-w-[200px] h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-1.5"
+              >
+                <span>Book on Booking.com (Tracked)</span>
+                <ArrowUpRight className="size-4" />
+              </Button>
+              <Button
+                onClick={() => {
+                  const checkIn = hotelCheckIn;
+                  const dNext = new Date(checkIn);
+                  dNext.setDate(dNext.getDate() + hotelNights);
+                  const checkOut = dNext.toISOString().split("T")[0];
+                  const hotelLink = generateTravelpayoutsHotelLink({
+                    cityOrLocation: hotelCity,
+                    checkInDate: checkIn,
+                    checkOutDate: checkOut,
+                    nights: hotelNights,
+                    rooms: hotelRooms,
+                    partner: "hotellook",
+                    subId: "ok_travel_hotels",
+                  });
+                  toast.success(`Comparing Hotel Rates across 70+ OTAs via Travelpayouts...`);
+                  window.open(hotelLink.url, "_blank", "noopener,noreferrer");
+                }}
+                variant="outline"
+                className="h-12 rounded-xl border-amber-400 text-amber-950 font-bold text-xs hover:bg-amber-50"
+              >
+                <span>Hotellook Meta-Search ↗</span>
               </Button>
               <Button
                 type="button"
@@ -2124,9 +2181,9 @@ export function TravelPage() {
                   persistTrips([newTrip, ...savedTrips]);
                   toast.success(`Saved stay in ${hotelCity} to My Trips & Bookings.`);
                 }}
-                className="h-12 rounded-xl border-amber-300 text-amber-900 font-bold text-xs"
+                className="h-12 rounded-xl border-slate-300 text-slate-700 font-bold text-xs"
               >
-                Save Hotel to My Trips
+                Save Stay to Trips
               </Button>
             </div>
           </div>

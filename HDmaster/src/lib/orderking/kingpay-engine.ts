@@ -56,66 +56,19 @@ export async function chargeUserWallet(userId: string, amount: number, memo?: st
   }
 }
 
+import {
+  executeRazorpayXPayout as executeRazorpayXUnifiedPayout,
+  type PayoutDisbursementResult,
+  type PayoutDisbursementInput,
+} from "./finance/razorpayx-payout-engine.ts";
+
 /**
  * The actual API blueprint to hit RazorpayX/Cashfree to send real money to the public bank.
+ * Backwards compatible with (targetVpa: string, amount: number) and (input: PayoutDisbursementInput).
  */
-export async function executeRazorpayXPayout(targetVpa: string, amount: number): Promise<any> {
-  // Ensure RazorpayX environment variables are set securely
-  const RAZORPAYX_ACCOUNT_NUMBER = process.env.RAZORPAYX_ACCOUNT_NUMBER;
-  const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
-  const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
-
-  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
-    throw new Error('Razorpay credentials missing from environment variables.');
-  }
-
-  console.log(`Initiating payout of ${amount} to VPA: ${targetVpa}`);
-
-  // Construct the RazorpayX Payout payload
-  const payload = {
-    account_number: RAZORPAYX_ACCOUNT_NUMBER,
-    fund_account: {
-      account_type: "vpa",
-      vpa: {
-        address: targetVpa
-      },
-      contact: {
-        name: "OrderKing Beneficiary",
-        type: "customer"
-      }
-    },
-    amount: Math.round(amount * 100), // Amount in paise
-    currency: "INR",
-    mode: "UPI",
-    purpose: "payout",
-    queue_if_low_balance: true,
-    reference_id: `payout_${Date.now()}`,
-    narration: "KingPay P2P Transfer"
-  };
-
-  try {
-    const authHeader = `Basic ${Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64')}`;
-    
-    const response = await fetch('https://api.razorpay.com/v1/payouts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': authHeader
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('RazorpayX Payout failed:', errorData);
-      throw new Error('Payout execution failed');
-    }
-
-    const data = await response.json();
-    console.log('Payout successful:', data);
-    return data;
-  } catch (error) {
-    console.error('Error executing RazorpayX Payout:', error);
-    throw error;
-  }
+export async function executeRazorpayXPayout(
+  inputOrVpa: string | PayoutDisbursementInput,
+  amount?: number,
+): Promise<any> {
+  return await executeRazorpayXUnifiedPayout(inputOrVpa as any, amount);
 }

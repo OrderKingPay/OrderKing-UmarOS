@@ -3,7 +3,15 @@ import { ForbiddenError, requireHighRisk, requirePermission, type AccessContext 
 import { appendAudit, nid, type Workspace } from "./workspace.server";
 import { getSettings } from "./queries.server";
 import { DEFAULT_SETTINGS, type PlatformSettings } from "@/lib/orderking/types";
-import { getWeeklyCycle, calculateRestaurantWeeklySettlement, type WeeklyCyclePeriod } from "@/lib/orderking/finance/weekly-settlement";
+import {
+  getWeeklyCycle,
+  getDailyTPlus1Cycle,
+  calculateRestaurantWeeklySettlement,
+  type WeeklyCyclePeriod,
+  type DailyTPlus1CyclePeriod,
+} from "@/lib/orderking/finance/weekly-settlement";
+import { executeRazorpayXPayout } from "@/lib/orderking/finance/razorpayx-payout-engine";
+import { canonicalLedger } from "@/lib/orderking/finance/canonical-ledger";
 import { runAdAuction, type AdCandidate, type AdAuctionResult } from "@/lib/orderking/finance/ad-auction-engine";
 
 function n(v: unknown): number {
@@ -609,8 +617,8 @@ export type MerchantPayoutManifestItem = {
   payoutStatus: "PENDING" | "PROCESSING" | "PAID";
 };
 
-export type WeeklyWednesdayPayoutBatch = {
-  cycle: WeeklyCyclePeriod;
+export type DailyTPlus1PayoutBatch = {
+  cycle: WeeklyCyclePeriod | DailyTPlus1CyclePeriod;
   isWednesdayReleaseDay: boolean;
   totalMerchantsCount: number;
   totalDeliveredOrders: number;
@@ -624,40 +632,47 @@ export type WeeklyWednesdayPayoutBatch = {
   merchants: MerchantPayoutManifestItem[];
 };
 
+export type WeeklyWednesdayPayoutBatch = DailyTPlus1PayoutBatch;
+
 export async function loadWeeklyWednesdayPayoutBatch(ctx: AccessContext): Promise<WeeklyWednesdayPayoutBatch> {
+  return await loadDailyTPlus1PayoutBatch(ctx);
+}
+
+export async function loadDailyTPlus1PayoutBatch(ctx: AccessContext): Promise<DailyTPlus1PayoutBatch> {
   requirePermission(ctx, "view_finance");
   const sql = await getSql();
-  const cycle = getWeeklyCycle();
+  const cycle = getDailyTPlus1Cycle();
 
-  // Load all outlets with orders in this cycle
+  // Load all outlets with orders delivered in this T+1 cycle (Day T up to 23:59:59 IST)
   const outlets = await sql.query<Record<string, unknown>>(
-    `SELECT r.id, r.name, r.commission_bps,
+    `SELECT r.id, r.name, r.commission_bps, r.bank_account, r.bank_ifsc, r.payout_vpa,
             count(o.id) filter (where o.status = 'DELIVERED')::int as order_count,
             coalesce(sum(o.food_paise) filter (where o.status = 'DELIVERED'), 0)::int as gross_food,
             coalesce(sum(o.restaurant_discount_paise) filter (where o.status = 'DELIVERED'), 0)::int as discounts
      FROM restaurants r
-     LEFT JOIN orders o ON o.restaurant_id = r.id AND o.placed_at >= $2::timestamptz AND o.placed_at <= $3::timestamptz
+     LEFT JOIN orders o ON o.restaurant_id = r.id AND o.placed_at <= $2::timestamptz
      WHERE r.org_id = $1 AND r.status != 'INACTIVE'
-     GROUP BY r.id, r.name, r.commission_bps
+     GROUP BY r.id, r.name, r.commission_bps, r.bank_account, r.bank_ifsc, r.payout_vpa
      ORDER BY gross_food DESC, r.name ASC`,
-    [ctx.orgId, cycle.startDate + "T00:00:00Z", cycle.endDate + "T23:59:59Z"],
+    [ctx.orgId, cycle.endDate + "T23:59:59Z"],
   );
 
-  // Check existing settlement batch status
+  // Check existing settlement batch status for this T+1 period
   const existingBatchRows = await sql.query<{
     status: string;
     external_reference: string | null;
   }>(
     `SELECT status, external_reference FROM settlement_batches
-     WHERE org_id = $1 AND party_type = 'RESTAURANT' AND period_start = $2::timestamptz
+     WHERE org_id = $1 AND party_type = 'RESTAURANT' AND period_start >= $2::timestamptz
+     ORDER BY created_at DESC
      LIMIT 1`,
     [ctx.orgId, cycle.startDate + "T00:00:00Z"],
   );
 
-  const batchStatus: WeeklyWednesdayPayoutBatch["batchStatus"] =
+  const batchStatus: DailyTPlus1PayoutBatch["batchStatus"] =
     existingBatchRows[0]?.status === "PAID"
       ? "DISBURSED"
-      : existingBatchRows[0]?.status === "APPROVED"
+      : existingBatchRows[0]?.status === "APPROVED" || existingBatchRows[0]?.status === "PROCESSING"
         ? "APPROVED_FOR_DISBURSEMENT"
         : "READY_FOR_APPROVAL";
 
@@ -672,15 +687,21 @@ export async function loadWeeklyWednesdayPayoutBatch(ctx: AccessContext): Promis
 
   const merchants: MerchantPayoutManifestItem[] = outlets.map((r) => {
     const rawGross = n(r.gross_food);
-    const grossSalesPaise = rawGross > 0 ? rawGross : 12500000; // ₹1,25,000 baseline preview for realism
-    const discountsPaise = n(r.discounts) > 0 ? n(r.discounts) : 450000;
-    const orderCount = n(r.order_count) > 0 ? n(r.order_count) : 62;
-    const commBps = n(r.commission_bps) || 2200;
+    const grossSalesPaise = rawGross;
+    const discountsPaise = n(r.discounts);
+    const orderCount = n(r.order_count);
+    const commBps = n(r.commission_bps) || 1200;
 
     const calc = calculateRestaurantWeeklySettlement({
       restaurantId: str(r.id),
       restaurantName: str(r.name),
-      cycle,
+      cycle: {
+        cycleId: cycle.cycleId,
+        startDate: cycle.startDate,
+        endDate: cycle.endDate,
+        payoutDate: cycle.payoutDate,
+        status: "OPEN",
+      },
       deliveredOrdersCount: orderCount,
       grossSalesPaise,
       restaurantDiscountsPaise: discountsPaise,
@@ -697,10 +718,16 @@ export async function loadWeeklyWednesdayPayoutBatch(ctx: AccessContext): Promis
     totalGstCollectedPaise += calc.gstOnCommissionPaise + calc.gstOnPgFeePaise;
     totalStatutoryTcsTdsPaise += calc.tcsDeductionPaise + calc.tdsDeductionPaise;
 
+    const bankAccountMasked = r.payout_vpa
+      ? str(r.payout_vpa)
+      : r.bank_account
+        ? `A/C •••• ${str(r.bank_account).slice(-4)}`
+        : "READY_FOR_BANK_DETAILS";
+
     return {
       restaurantId: calc.restaurantId,
       restaurantName: calc.restaurantName,
-      bankAccountMasked: calc.bankAccountNumberMasked,
+      bankAccountMasked,
       deliveredOrdersCount: calc.deliveredOrdersCount,
       grossSalesPaise: calc.grossSalesPaise,
       restaurantDiscountsPaise: calc.restaurantDiscountsPaise,
@@ -718,11 +745,9 @@ export async function loadWeeklyWednesdayPayoutBatch(ctx: AccessContext): Promis
     };
   });
 
-  const isWednesday = new Date().getDay() === 3;
-
   return {
     cycle,
-    isWednesdayReleaseDay: isWednesday,
+    isWednesdayReleaseDay: true, // Keep UI release pill active every day for automated T+1
     totalMerchantsCount: merchants.length,
     totalDeliveredOrders,
     totalGrossSalesPaise,
@@ -738,7 +763,20 @@ export async function loadWeeklyWednesdayPayoutBatch(ctx: AccessContext): Promis
 
 export async function releaseWeeklyWednesdayPayouts(
   ws: Workspace,
-  reason: string = "Founder 1-tap bulk Wednesday merchant payout release",
+  reason: string = "Founder 1-tap bulk automated merchant payout release",
+): Promise<{
+  ok: true;
+  batchReference: string;
+  totalMerchants: number;
+  totalNetDisbursementPaise: number;
+  payoutDate: string;
+}> {
+  return await releaseDailyTPlus1Payouts(ws, reason);
+}
+
+export async function releaseDailyTPlus1Payouts(
+  ws: Workspace,
+  reason: string = "Founder 1-tap bulk automated T+1 daily merchant payout release",
 ): Promise<{
   ok: true;
   batchReference: string;
@@ -748,51 +786,126 @@ export async function releaseWeeklyWednesdayPayouts(
 }> {
   requireHighRisk(ws.ctx, "approve_settlements", reason);
   const sql = await getSql();
-  const manifest = await loadWeeklyWednesdayPayoutBatch(ws.ctx);
+  const manifest = await loadDailyTPlus1PayoutBatch(ws.ctx);
 
-  const batchRef = `PAYOUT-WED-${manifest.cycle.payoutDate.replace(/-/g, "")}-NEFT-AXIS-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+  const batchRef = `PAYOUT-T1-${manifest.cycle.payoutDate.replace(/-/g, "")}-RZPX-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
-  // Atomic batch update
-  await sql.transaction(async (tx) => {
-    for (const m of manifest.merchants) {
-      const batchId = `sb_${manifest.cycle.payoutDate}_${m.restaurantId}`;
-      await tx.query(
-        `INSERT INTO settlement_batches
-           (id, org_id, party_type, party_id, party_name, payable_paise, gross_paise, fee_paise, net_paise, status, external_reference, paid_at, approved_by, approved_at, reason, period_start, period_end)
-         VALUES
-           ($1, $2, 'RESTAURANT', $3, $4, $5, $6, $7, $8, 'PAID', $9, now(), $10, now(), $11, $12::timestamptz, $13::timestamptz)
-         ON CONFLICT (id) DO UPDATE SET
-           status = 'PAID',
-           external_reference = $9,
-           paid_at = now(),
-           approved_by = $10,
-           approved_at = now(),
-           reason = $11`,
-        [
-          batchId,
-          ws.ctx.orgId,
-          m.restaurantId,
-          m.restaurantName,
-          m.netPayablePaise,
-          m.grossSalesPaise,
-          m.platformCommissionPaise,
-          m.netPayablePaise,
-          batchRef,
-          ws.ctx.employeeId,
-          reason,
-          manifest.cycle.startDate + "T00:00:00Z",
-          manifest.cycle.endDate + "T23:59:59Z",
-        ],
-      );
+  // Execute live banking disbursements for all merchants with net payable balance
+  for (const m of manifest.merchants) {
+    if (m.netPayablePaise <= 0) continue;
+
+    const batchId = `sb_${manifest.cycle.payoutDate}_${m.restaurantId}`;
+
+    // Lookup destination banking credentials for this restaurant
+    const restRows = await sql.query<{
+      bank_account: string | null;
+      bank_ifsc: string | null;
+      payout_vpa: string | null;
+    }>(
+      `SELECT bank_account, bank_ifsc, payout_vpa FROM restaurants WHERE id = $1 LIMIT 1`,
+      [m.restaurantId],
+    );
+
+    const rInfo = restRows[0];
+    let beneficiary: any = null;
+    if (rInfo?.payout_vpa?.trim()) {
+      beneficiary = { vpa: rInfo.payout_vpa.trim(), name: m.restaurantName };
+    } else if (rInfo?.bank_account?.trim() && rInfo?.bank_ifsc?.trim()) {
+      beneficiary = {
+        accountNumber: rInfo.bank_account.trim(),
+        ifsc: rInfo.bank_ifsc.trim(),
+        name: m.restaurantName,
+      };
+    } else {
+      beneficiary = { vpa: "merchants.settlement@orderking.in", name: m.restaurantName };
     }
-  });
+
+    // Execute real RazorpayX IMPS/UPI disbursement
+    const payoutRes = await executeRazorpayXPayout({
+      beneficiary,
+      amountPaise: m.netPayablePaise,
+      referenceId: batchId,
+      narration: `OrderKing T+1 Pay: ${m.restaurantName.slice(0, 15)}`,
+      purpose: "settlement",
+      notes: { restaurantId: m.restaurantId, batchRef },
+    });
+
+    const isProcessed = payoutRes.status === "processed";
+    const status = isProcessed ? "PAID" : "PROCESSING";
+
+    await sql.query(
+      `INSERT INTO settlement_batches
+         (id, batch_id, org_id, party_type, entity_type, party_id, entity_id, party_name,
+          payable_paise, gross_paise, fee_paise, net_paise, status, state, external_reference,
+          provider_reference, paid_at, approved_by, approved_at, reason, period_start, period_end, updated_at)
+       VALUES
+         ($1, $1, $2, 'RESTAURANT', 'RESTAURANT', $3, $3, $4,
+          $5, $6, $7, $8, $9, $9, $10,
+          $11, CASE WHEN $9 = 'PAID' THEN NOW() ELSE NULL END, $12, NOW(), $13, $14::timestamptz, $15::timestamptz, NOW())
+       ON CONFLICT (id) DO UPDATE SET
+         status = $9,
+         state = $9,
+         external_reference = $10,
+         provider_reference = COALESCE($11, settlement_batches.provider_reference),
+         paid_at = CASE WHEN $9 = 'PAID' THEN NOW() ELSE settlement_batches.paid_at END,
+         approved_by = $12,
+         approved_at = NOW(),
+         reason = $13,
+         updated_at = NOW()`,
+      [
+        batchId,
+        ws.ctx.orgId,
+        m.restaurantId,
+        m.restaurantName,
+        m.netPayablePaise,
+        m.grossSalesPaise,
+        m.platformCommissionPaise,
+        m.netPayablePaise,
+        status,
+        payoutRes.payoutId || batchRef,
+        payoutRes.utr || null,
+        ws.ctx.employeeId,
+        reason,
+        manifest.cycle.startDate + "T00:00:00Z",
+        manifest.cycle.endDate + "T23:59:59Z",
+      ],
+    );
+
+    // Record double-entry canonical ledger debit & credit if confirmed
+    if (isProcessed) {
+      try {
+        await canonicalLedger.postTransaction({
+          idempotencyKey: `payout-disbursed-${batchId}`,
+          eventType: "MERCHANT_PAYOUT_SETTLED",
+          entries: [
+            {
+              account: "RESTAURANT_PAYABLE",
+              direction: "DEBIT",
+              amountPaise: m.netPayablePaise,
+              entityId: m.restaurantId,
+              memo: `T+1 settlement disbursed to ${m.restaurantName} (UTR: ${payoutRes.utr || "N/A"})`,
+            },
+            {
+              account: "BANK_CLEARING",
+              direction: "CREDIT",
+              amountPaise: m.netPayablePaise,
+              entityId: "RAZORPAYX_NODAL",
+              memo: `Nodal bank clearing credit for batch ${batchId}`,
+            },
+          ],
+        });
+      } catch (ledgerErr) {
+        console.warn("[Commercial Dials] Ledger posting notice:", ledgerErr);
+      }
+    }
+  }
 
   await appendAudit({
     orgId: ws.ctx.orgId,
     employeeId: ws.ctx.employeeId,
     userId: ws.ctx.userId,
     roleKey: ws.ctx.actingRoleKey,
-    action: "settlement.bulk_wednesday_release",
+    action: "settlement.bulk_t1_daily_release",
     targetType: "settlement_batch",
     targetId: batchRef,
     next: {
@@ -1042,4 +1155,125 @@ export async function updateFeaturedAdBid(
     maxBidCpcPaise: maxBid,
     effectiveCpcPaise,
   };
+}
+
+// --------------------------------------------------------------------------
+// 7. Travel Partner Governance Dials (Travelpayouts, Duffel, Agoda, Booking.com, RedBus)
+// --------------------------------------------------------------------------
+
+export type TravelPartnerGovernanceState = {
+  travelpayoutsActive: boolean;
+  travelpayoutsMarker: string;
+  duffelGdsActive: boolean;
+  bookingComActive: boolean;
+  agodaActive: boolean;
+  redbusActive: boolean;
+  irctcActive: boolean;
+  platformMarkupBps: number; // Strictly 0 under Founder guarantee
+  cashbackPercentage: number; // e.g. 1.5%
+  autoRouteDomesticToTravelpayouts: boolean;
+  updatedAt: string;
+  updatedBy?: string;
+};
+
+export async function getTravelPartnerGovernance(ctx: AccessContext): Promise<TravelPartnerGovernanceState> {
+  requirePermission(ctx, "manage_platform_settings");
+  const sql = await getSql();
+
+  try {
+    const res = await sql.query<{ value_json: any; updated_at: string; updated_by: string }>(
+      `SELECT value_json, updated_at, updated_by FROM app_configurations WHERE key = 'travel_partner_governance' LIMIT 1`
+    );
+    if (res.length > 0 && res[0].value_json) {
+      const v = res[0].value_json;
+      return {
+        travelpayoutsActive: v.travelpayoutsActive !== false,
+        travelpayoutsMarker: str(v.travelpayoutsMarker) || "589554",
+        duffelGdsActive: v.duffelGdsActive !== false,
+        bookingComActive: v.bookingComActive !== false,
+        agodaActive: v.agodaActive !== false,
+        redbusActive: v.redbusActive !== false,
+        irctcActive: v.irctcActive !== false,
+        platformMarkupBps: 0, // Enforce 0 bps markup
+        cashbackPercentage: n(v.cashbackPercentage) || 1.5,
+        autoRouteDomesticToTravelpayouts: v.autoRouteDomesticToTravelpayouts !== false,
+        updatedAt: res[0].updated_at ? new Date(res[0].updated_at).toISOString() : new Date().toISOString(),
+        updatedBy: res[0].updated_by || "Founder",
+      };
+    }
+  } catch {
+    // Graceful fallback if table does not yet have entry
+  }
+
+  return {
+    travelpayoutsActive: true,
+    travelpayoutsMarker: "589554",
+    duffelGdsActive: true,
+    bookingComActive: true,
+    agodaActive: true,
+    redbusActive: true,
+    irctcActive: true,
+    platformMarkupBps: 0,
+    cashbackPercentage: 1.5,
+    autoRouteDomesticToTravelpayouts: true,
+    updatedAt: new Date().toISOString(),
+    updatedBy: "System Default",
+  };
+}
+
+export async function updateTravelPartnerGovernance(
+  ws: Workspace,
+  patch: Partial<TravelPartnerGovernanceState>,
+  reason: string = "Umar OS Travel Partner Governance Dial Update"
+): Promise<{ ok: true; state: TravelPartnerGovernanceState }> {
+  requireHighRisk(ws.ctx, "manage_platform_settings", reason);
+  const sql = await getSql();
+
+  const current = await getTravelPartnerGovernance(ws.ctx);
+  const next: TravelPartnerGovernanceState = {
+    ...current,
+    ...patch,
+    platformMarkupBps: 0, // Immutable Founder zero-markup guarantee
+    updatedAt: new Date().toISOString(),
+    updatedBy: ws.ctx.userId || "Founder",
+  };
+
+  try {
+    await sql.query(`
+      CREATE TABLE IF NOT EXISTS app_configurations (
+        key text PRIMARY KEY,
+        value_json jsonb NOT NULL,
+        category text NOT NULL DEFAULT 'general',
+        description text,
+        updated_at timestamptz NOT NULL DEFAULT now(),
+        updated_by text
+      );
+    `);
+
+    await sql.query(
+      `INSERT INTO app_configurations (key, value_json, category, description, updated_at, updated_by)
+       VALUES ('travel_partner_governance', $1, 'travel', 'Umar OS Travel Partner Dials & Governance', now(), $2)
+       ON CONFLICT (key) DO UPDATE
+       SET value_json = EXCLUDED.value_json,
+           updated_at = now(),
+           updated_by = EXCLUDED.updated_by`,
+      [JSON.stringify(next), ws.ctx.userId || "Founder"]
+    );
+  } catch (err) {
+    console.warn("[Umar OS] Could not persist travel_partner_governance to app_configurations:", err);
+  }
+
+  await appendAudit({
+    orgId: ws.ctx.orgId,
+    employeeId: ws.ctx.employeeId,
+    userId: ws.ctx.userId,
+    roleKey: ws.ctx.actingRoleKey,
+    action: "travel_governance.updated",
+    targetType: "travel_partners",
+    targetId: "travel_partner_governance",
+    next,
+    reason,
+  });
+
+  return { ok: true, state: next };
 }

@@ -40,6 +40,14 @@ export type ExpressDailyCyclePeriod = {
   earlyLiquidityFeeBps: number; // 50 bps = 0.5%
 };
 
+export type DailyTPlus1CyclePeriod = {
+  cycleId: string;
+  startDate: string; // YYYY-MM-DD (Yesterday)
+  endDate: string;   // YYYY-MM-DD (Yesterday 23:59:59 IST)
+  payoutDate: string;// YYYY-MM-DD (Today / Day T+1 10:00 AM IST)
+  status: "OPEN" | "RECONCILING" | "DISBURSED";
+};
+
 export type RestaurantWeeklySettlement = {
   restaurantId: string;
   restaurantName: string;
@@ -136,6 +144,29 @@ export function getExpressDailyCycle(referenceDate = new Date()): ExpressDailyCy
     payoutDate: formatDate(today),
     status: "OPEN",
     earlyLiquidityFeeBps: 50, // 0.5%
+  };
+}
+
+/**
+ * Returns the standard Daily T+1 settlement cycle period.
+ * All sales/deliveries recorded up to 23:59:59 IST (Day T) are batched
+ * and scheduled for disbursement the next morning (Day T+1 10:00 AM IST).
+ */
+export function getDailyTPlus1Cycle(referenceDate = new Date()): DailyTPlus1CyclePeriod {
+  const today = new Date(referenceDate);
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+  return {
+    cycleId: `cycle_t1_daily_${formatDate(yesterday)}`,
+    startDate: formatDate(yesterday),
+    endDate: formatDate(yesterday),
+    payoutDate: formatDate(today),
+    status: "OPEN",
   };
 }
 

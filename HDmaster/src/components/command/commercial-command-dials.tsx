@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -31,6 +31,8 @@ import {
   Info,
   Calendar,
   Lock,
+  Plane,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +50,8 @@ import {
   releaseWeeklyWednesdayPayoutsFn,
   loadFeaturedAdStudioFn,
   updateFeaturedAdBidFn,
+  loadTravelPartnerGovernanceFn,
+  updateTravelPartnerGovernanceFn,
 } from "@/lib/orderking/actions";
 import type {
   CommercialDialsState,
@@ -59,10 +63,17 @@ import type {
   MerchantPayoutManifestItem,
   FeaturedAdCampaignItem,
   AdAuctionStudioState,
+  TravelPartnerGovernanceState,
 } from "@/lib/orderking/server/commercial-dials.server";
 
 export type DialTabKey =
   | "platform_fee"
+  | "commissions"
+  | "surge"
+  | "penalties"
+  | "wednesday_payout"
+  | "ad_auction"
+  | "travel_governance";
   | "commissions"
   | "surge"
   | "penalties"
@@ -152,8 +163,8 @@ export function CommercialCommandDials() {
         </div>
       </div>
 
-      {/* 2. Navigation Tabs for the 6 Master Operational Dials */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+      {/* 2. Navigation Tabs for the 7 Master Operational Dials */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
         {[
           {
             id: "platform_fee" as DialTabKey,
@@ -185,8 +196,8 @@ export function CommercialCommandDials() {
           },
           {
             id: "wednesday_payout" as DialTabKey,
-            label: "5. Wednesday Payout",
-            subtitle: "1-Tap Bulk Release",
+            label: "5. T+1 Daily Payout (Auto)",
+            subtitle: "1-Tap / Autonomous Release",
             icon: Building2,
             color: "yellow",
           },
@@ -196,6 +207,13 @@ export function CommercialCommandDials() {
             subtitle: "Top-of-Feed GSP CPC",
             icon: Megaphone,
             color: "purple",
+          },
+          {
+            id: "travel_governance" as DialTabKey,
+            label: "7. Travel Governance",
+            subtitle: "Travelpayouts, OTAs, ₹0 Markup",
+            icon: Globe,
+            color: "sky",
           },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -258,6 +276,7 @@ export function CommercialCommandDials() {
         {activeTab === "wednesday_payout" && <WednesdayPayoutReleaseSection />}
 
         {activeTab === "ad_auction" && <FeaturedAdAuctionStudioSection />}
+        {activeTab === "travel_governance" && <TravelPartnerGovernanceSection />}
       </div>
     </div>
   );
@@ -1238,10 +1257,10 @@ function WednesdayPayoutReleaseSection() {
         <div>
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <Building2 className="size-5 text-yellow-400" />
-            Weekly Wednesday Payout Release Gateway
+            T+1 Daily Automated Payout Release Gateway
           </h2>
           <p className="text-xs text-muted">
-            Monday to Sunday settlement reconciliation with automated Section 9(5) CGST, 1% TCS, 1% TDS, and 18% commission GST.
+            Daily T+1 settlement reconciliation for deliveries recorded up to 23:59:59 IST with automated RazorpayX IMPS/NEFT/UPI disbursements and Section 9(5) CGST, 1% TCS, 1% TDS.
           </p>
         </div>
 
@@ -1260,13 +1279,13 @@ function WednesdayPayoutReleaseSection() {
       {/* Cycle Banner */}
       <div className="grid gap-4 md:grid-cols-4 font-mono text-xs">
         <div className="rounded-xl border border-border/80 bg-black/50 p-3 space-y-1">
-          <span className="text-[10px] text-muted block uppercase">Weekly Cycle</span>
-          <span className="font-bold text-white">{batch?.cycle.startDate} to {batch?.cycle.endDate}</span>
+          <span className="text-[10px] text-muted block uppercase">Settlement Window</span>
+          <span className="font-bold text-white">{batch?.cycle.startDate} (Day T)</span>
         </div>
 
         <div className="rounded-xl border border-border/80 bg-black/50 p-3 space-y-1">
           <span className="text-[10px] text-muted block uppercase">Scheduled Disbursement</span>
-          <span className="font-bold text-amber-400">Wednesday, {batch?.cycle.payoutDate}</span>
+          <span className="font-bold text-amber-400">Day T+1, {batch?.cycle.payoutDate}</span>
         </div>
 
         <div className="rounded-xl border border-border/80 bg-black/50 p-3 space-y-1">
@@ -1337,14 +1356,14 @@ function WednesdayPayoutReleaseSection() {
           {batch?.batchStatus === "DISBURSED" ? (
             <span className="flex items-center gap-2">
               <CheckCircle2 className="size-5 text-emerald-400" />
-              Wednesday Batch Disbursed • Batch Ref: {batch.externalBatchReference}
+              T+1 Daily Batch Disbursed • Batch Ref: {batch.externalBatchReference}
             </span>
           ) : isReleasing ? (
-            "Executing Bulk Bank Disbursement Gateway..."
+            "Executing Bulk Bank Disbursement Gateway via RazorpayX..."
           ) : (
             <span className="flex items-center gap-2">
               <Building2 className="size-5" />
-              1-Tap Authorize &amp; Release Wednesday Payouts (₹
+              1-Tap Authorize &amp; Disburse T+1 Daily Payouts (₹
               {formatNumber(Math.round((batch?.totalNetPayablePaise ?? 0) / 100))})
             </span>
           )}
@@ -1619,6 +1638,326 @@ function FeaturedAdAuctionStudioSection() {
               {isSubmitting ? "Submitting Bid..." : "Submit Bid to Auction"}
             </Button>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================================================
+// 7. TRAVEL PARTNER GOVERNANCE & DIAL SECTION
+// ==========================================================================
+
+function TravelPartnerGovernanceSection() {
+  const qc = useQueryClient();
+  const q = useQuery({
+    queryKey: ["travel-partner-governance"],
+    queryFn: () => loadTravelPartnerGovernanceFn(),
+  });
+
+  const state: TravelPartnerGovernanceState | null =
+    q.data && q.data.ok ? q.data.data : null;
+
+  const [form, setForm] = useState<Partial<TravelPartnerGovernanceState>>({});
+  const [markerDraft, setMarkerDraft] = useState("");
+  const [cashbackDraft, setCashbackDraft] = useState<number>(1.5);
+
+  useEffect(() => {
+    if (state) {
+      setForm(state);
+      setMarkerDraft(state.travelpayoutsMarker || "589554");
+      setCashbackDraft(state.cashbackPercentage || 1.5);
+    }
+  }, [state]);
+
+  const mutateSettings = useMutation({
+    mutationFn: (patch: Partial<TravelPartnerGovernanceState>) =>
+      updateTravelPartnerGovernanceFn({ data: { patch, reason: "Umar OS Live Dial Adjustment" } }),
+    onSuccess: (res) => {
+      if (res && res.ok) {
+        toast.success("Travel partner governance updated successfully");
+        void qc.invalidateQueries({ queryKey: ["travel-partner-governance"] });
+      } else {
+        toast.error((res as any)?.message || "Failed to update travel governance");
+      }
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Error saving travel settings");
+    },
+  });
+
+  if (q.isLoading) {
+    return (
+      <div className="flex h-48 items-center justify-center text-sm text-muted">
+        Loading Travel Governance State from PostgreSQL...
+      </div>
+    );
+  }
+
+  const travelpayoutsActive = form.travelpayoutsActive ?? state?.travelpayoutsActive ?? true;
+  const duffelGdsActive = form.duffelGdsActive ?? state?.duffelGdsActive ?? true;
+  const bookingComActive = form.bookingComActive ?? state?.bookingComActive ?? true;
+  const agodaActive = form.agodaActive ?? state?.agodaActive ?? true;
+  const redbusActive = form.redbusActive ?? state?.redbusActive ?? true;
+  const irctcActive = form.irctcActive ?? state?.irctcActive ?? true;
+  const autoRouteDomestic = form.autoRouteDomesticToTravelpayouts ?? state?.autoRouteDomesticToTravelpayouts ?? true;
+
+  return (
+    <div className="space-y-6">
+      {/* Header Banner */}
+      <div className="flex flex-col gap-4 rounded-xl border border-sky-500/40 bg-gradient-to-r from-sky-950/40 via-slate-900 to-black p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Globe className="size-5 text-sky-400" />
+            <h2 className="text-lg font-black text-white">TRAVEL PARTNER ECOSYSTEM GOVERNANCE</h2>
+            <Badge className="border-sky-500/40 bg-sky-500/20 text-sky-300 font-mono text-[10px]">
+              AFFILIATE & GDS RAILS
+            </Badge>
+          </div>
+          <p className="text-xs text-slate-300">
+            Control live distribution channels across Travelpayouts (Aviasales), Duffel NDC, Booking.com, Agoda, RedBus, and IRCTC.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge className="border-emerald-500/40 bg-emerald-950/60 text-emerald-300 font-mono text-xs px-3 py-1">
+            🔒 ₹0 Platform Markup Guarantee
+          </Badge>
+        </div>
+      </div>
+
+      {/* Main Grid: Partner Toggles & Config */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Card 1: Flights (Travelpayouts & Duffel) */}
+        <div className="rounded-xl border border-border/80 bg-surface/50 p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <Plane className="size-4 text-sky-400" />
+              <h3 className="text-sm font-bold text-white">Flight Aggregation & GDS Engines</h3>
+            </div>
+            <span className="text-[10px] font-mono text-muted">2 Active Engines</span>
+          </div>
+
+          {/* Travelpayouts Toggle */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
+            <div>
+              <div className="font-bold text-xs text-white">Travelpayouts Domestic Network (Aviasales)</div>
+              <div className="text-[11px] text-muted">Indian domestic air corridors, ₹0 convenience fee routing</div>
+            </div>
+            <Button
+              size="sm"
+              variant={travelpayoutsActive ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !travelpayoutsActive;
+                setForm((prev) => ({ ...prev, travelpayoutsActive: nextVal }));
+                mutateSettings.mutate({ travelpayoutsActive: nextVal });
+              }}
+              className={travelpayoutsActive ? "bg-emerald-600 hover:bg-emerald-500 text-xs" : "text-xs border-border/60"}
+            >
+              {travelpayoutsActive ? "Active" : "Disabled"}
+            </Button>
+          </div>
+
+          {/* Travelpayouts Marker Editor */}
+          <div className="p-3 rounded-lg bg-black/40 border border-border/60 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-white">Travelpayouts Affiliate Marker</span>
+              <span className="text-[10px] font-mono text-amber-300">Marker ID: {markerDraft}</span>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={markerDraft}
+                onChange={(e) => setMarkerDraft(e.target.value)}
+                placeholder="589554"
+                className="bg-black/60 border-border/60 text-xs font-mono h-9"
+              />
+              <Button
+                size="sm"
+                onClick={() => {
+                  mutateSettings.mutate({ travelpayoutsMarker: markerDraft.trim() || "589554" });
+                }}
+                className="bg-sky-600 hover:bg-sky-500 text-xs h-9 font-bold"
+              >
+                Save Marker
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted">Applied to all Aviasales and Travelpayouts deep-links across Customer SuperApp.</p>
+          </div>
+
+          {/* Duffel International GDS Toggle */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
+            <div>
+              <div className="font-bold text-xs text-white">Duffel International GDS (NDC)</div>
+              <div className="text-[11px] text-muted">Worldwide IATA NDC carrier quotes, foreign currency clearance</div>
+            </div>
+            <Button
+              size="sm"
+              variant={duffelGdsActive ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !duffelGdsActive;
+                setForm((prev) => ({ ...prev, duffelGdsActive: nextVal }));
+                mutateSettings.mutate({ duffelGdsActive: nextVal });
+              }}
+              className={duffelGdsActive ? "bg-emerald-600 hover:bg-emerald-500 text-xs" : "text-xs border-border/60"}
+            >
+              {duffelGdsActive ? "Active" : "Disabled"}
+            </Button>
+          </div>
+
+          {/* Domestic Auto-route */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
+            <div>
+              <div className="font-bold text-xs text-white">Domestic Auto-Route to Travelpayouts</div>
+              <div className="text-[11px] text-muted">Direct Indian city pairs to INR rails instead of USD GDS</div>
+            </div>
+            <Button
+              size="sm"
+              variant={autoRouteDomestic ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !autoRouteDomestic;
+                setForm((prev) => ({ ...prev, autoRouteDomesticToTravelpayouts: nextVal }));
+                mutateSettings.mutate({ autoRouteDomesticToTravelpayouts: nextVal });
+              }}
+              className={autoRouteDomestic ? "bg-sky-600 hover:bg-sky-500 text-xs" : "text-xs border-border/60"}
+            >
+              {autoRouteDomestic ? "Enforced" : "Manual"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Card 2: Hotels & Ground Transit (Booking.com, Agoda, RedBus, IRCTC) */}
+        <div className="rounded-xl border border-border/80 bg-surface/50 p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <Building2 className="size-4 text-amber-400" />
+              <h3 className="text-sm font-bold text-white">Hotels & Ground Logistics</h3>
+            </div>
+            <span className="text-[10px] font-mono text-muted">4 Integrated Networks</span>
+          </div>
+
+          {/* Booking.com */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
+            <div>
+              <div className="font-bold text-xs text-white">Booking.com Affiliate Integration</div>
+              <div className="text-[11px] text-muted">Worldwide stays, verified GST corporate invoicing</div>
+            </div>
+            <Button
+              size="sm"
+              variant={bookingComActive ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !bookingComActive;
+                setForm((prev) => ({ ...prev, bookingComActive: nextVal }));
+                mutateSettings.mutate({ bookingComActive: nextVal });
+              }}
+              className={bookingComActive ? "bg-emerald-600 hover:bg-emerald-500 text-xs" : "text-xs border-border/60"}
+            >
+              {bookingComActive ? "Active" : "Disabled"}
+            </Button>
+          </div>
+
+          {/* Agoda */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
+            <div>
+              <div className="font-bold text-xs text-white">Agoda Accommodations Partner</div>
+              <div className="text-[11px] text-muted">Southeast Asia & India domestic resort inventory (CID: 1894215)</div>
+            </div>
+            <Button
+              size="sm"
+              variant={agodaActive ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !agodaActive;
+                setForm((prev) => ({ ...prev, agodaActive: nextVal }));
+                mutateSettings.mutate({ agodaActive: nextVal });
+              }}
+              className={agodaActive ? "bg-emerald-600 hover:bg-emerald-500 text-xs" : "text-xs border-border/60"}
+            >
+              {agodaActive ? "Active" : "Disabled"}
+            </Button>
+          </div>
+
+          {/* RedBus */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
+            <div>
+              <div className="font-bold text-xs text-white">RedBus Interstate Ticketing</div>
+              <div className="text-[11px] text-muted">Over 3,500 bus operators with ₹0 convenience fee comparison</div>
+            </div>
+            <Button
+              size="sm"
+              variant={redbusActive ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !redbusActive;
+                setForm((prev) => ({ ...prev, redbusActive: nextVal }));
+                mutateSettings.mutate({ redbusActive: nextVal });
+              }}
+              className={redbusActive ? "bg-emerald-600 hover:bg-emerald-500 text-xs" : "text-xs border-border/60"}
+            >
+              {redbusActive ? "Active" : "Disabled"}
+            </Button>
+          </div>
+
+          {/* IRCTC Railway Assistant */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
+            <div>
+              <div className="font-bold text-xs text-white">IRCTC NextGen Rail Routing</div>
+              <div className="text-[11px] text-muted">Station pair assistance, Vande Bharat & Tatkal coach routing</div>
+            </div>
+            <Button
+              size="sm"
+              variant={irctcActive ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !irctcActive;
+                setForm((prev) => ({ ...prev, irctcActive: nextVal }));
+                mutateSettings.mutate({ irctcActive: nextVal });
+              }}
+              className={irctcActive ? "bg-emerald-600 hover:bg-emerald-500 text-xs" : "text-xs border-border/60"}
+            >
+              {irctcActive ? "Active" : "Disabled"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 3: Commercial Controls (Cashback & Sovereign Fee Lock) */}
+      <div className="rounded-xl border border-border/80 bg-surface/50 p-5 space-y-4">
+        <h3 className="text-sm font-bold text-white flex items-center gap-2">
+          <DollarSign className="size-4 text-emerald-400" />
+          Customer Cashback & Sovereign Platform Fee Dial
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl bg-black/40 border border-border/60 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-bold text-white">Customer Gold Cashback</span>
+              <span className="text-xs font-mono font-bold text-amber-400">{cashbackDraft.toFixed(1)}% of Fare</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="5"
+              step="0.1"
+              value={cashbackDraft}
+              onChange={(e) => setCashbackDraft(parseFloat(e.target.value))}
+              onMouseUp={() => mutateSettings.mutate({ cashbackPercentage: cashbackDraft })}
+              className="w-full accent-amber-500"
+            />
+            <p className="text-[11px] text-muted">
+              Funded entirely from partner affiliate commissions. Deposited into customer Sovereign Digital Gold wallet upon journey completion.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-black/40 border border-emerald-500/30 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-bold text-white">Platform Convenience Markup</span>
+              <span className="text-xs font-mono font-bold text-emerald-400">₹0.00 (0 bps)</span>
+            </div>
+            <div className="rounded-lg bg-emerald-950/40 p-2.5 border border-emerald-500/30 text-[11px] text-emerald-200">
+              🔒 Immutable Founder Guarantee: OrderKing never marks up carrier fares or inflates tickets with convenience surcharges.
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between border-t border-border/60 pt-3 text-[11px] text-muted">
+          <span>Last Updated: {state?.updatedAt ? new Date(state.updatedAt).toLocaleString("en-IN") : "Just now"}</span>
+          <span>Operator: {state?.updatedBy || "Founder"}</span>
         </div>
       </div>
     </div>

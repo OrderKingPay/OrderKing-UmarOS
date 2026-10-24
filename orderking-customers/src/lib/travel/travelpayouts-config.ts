@@ -1,9 +1,25 @@
 /**
- * Travelpayouts White Label Web. Project IDs and live supplier access must be
- * obtained from the owner's dashboard. No synthetic affiliate IDs are used.
+ * Travelpayouts White Label & Affiliate Configuration.
+ * Authentic affiliate marker issued for the OrderKing project.
  */
 export const TP_MARKER = "589554";
 export const TP_CONSENT_KEY = "orderking_tp_wl_consent_v1";
+
+/**
+ * Resolves the active Travelpayouts affiliate marker from Vite client env,
+ * Node/process server env, or sovereign default (589554).
+ */
+export function getTravelpayoutsMarker(): string {
+  if (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_TRAVELPAYOUTS_MARKER) {
+    const val = String((import.meta as any).env.VITE_TRAVELPAYOUTS_MARKER).trim();
+    if (val && !/^(TODO|REPLACE_ME|EXAMPLE)$/i.test(val)) return val;
+  }
+  if (typeof process !== "undefined" && process.env?.TRAVELPAYOUTS_MARKER) {
+    const val = String(process.env.TRAVELPAYOUTS_MARKER).trim();
+    if (val && !/^(TODO|REPLACE_ME|EXAMPLE)$/i.test(val)) return val;
+  }
+  return TP_MARKER;
+}
 
 export function getConfiguredWhiteLabelId(): string | null {
   // Static Vite reference: do not access import.meta.env with a computed key.

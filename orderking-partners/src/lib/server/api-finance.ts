@@ -7,6 +7,7 @@ import { withVendor } from "./helpers";
 import type { PromotionFunder, PromotionKind } from "@/lib/contracts";
 
 import { getSql } from "@/lib/db";
+import { executePartnerBankingPayout } from "@/lib/adapters/banking-gateway";
 
 export const getSettlements = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
@@ -127,8 +128,8 @@ export const requestExpressDailyPayout = createServerFn({ method: "POST" })
       }
 
       // Check registered settlement bank account
-      const rest = await sql<{ bank_account: string | null; bank_ifsc: string | null }>`
-        select bank_account, bank_ifsc from restaurants where id = ${ctx.restaurantId} limit 1
+      const rest = await sql<{ name: string; bank_account: string | null; bank_ifsc: string | null }>`
+        select name, bank_account, bank_ifsc from restaurants where id = ${ctx.restaurantId} limit 1
       `;
       if (!rest[0]?.bank_account || !rest[0]?.bank_ifsc) {
         throw new Error("Settlement bank account and IFSC must be configured before requesting Express Daily payout.");
@@ -144,13 +145,26 @@ export const requestExpressDailyPayout = createServerFn({ method: "POST" })
       const idempotencyKey = data.idempotencyKey || `exp_${ctx.restaurantId}_${Date.now()}`;
       const batchId = newId("stl");
 
+      // Execute live banking disbursement via RazorpayX switch
+      const payoutResult = await executePartnerBankingPayout({
+        accountNumber: rest[0].bank_account,
+        ifsc: rest[0].bank_ifsc,
+        name: rest[0].name || "Restaurant Partner",
+        amountPaise: netPayoutPaise,
+        referenceId: batchId,
+        narration: `OrderKing Express Pay: ${(rest[0].name || "Partner").slice(0, 15)}`,
+      });
+
+      const initialStatus = payoutResult.status === "processed" ? "PAID" : "PROCESSING";
+
       await sql`
         insert into settlement_batches (
           id, restaurant_id, status, period_start, period_end, scheduled_for, settled_at,
           total_payable_paise, data_label
         ) values (
-          ${batchId}, ${ctx.restaurantId}, 'PROCESSING',
-          (now() - interval '1 day')::date::text, now()::date::text, now()::date::text, now()::date::text,
+          ${batchId}, ${ctx.restaurantId}, ${initialStatus},
+          (now() - interval '1 day')::date::text, now()::date::text, now()::date::text,
+          ${initialStatus === "PAID" ? new Date().toISOString().slice(0, 10) : null},
           ${netPayoutPaise}, ${ctx.dataLabel}
         )
       `;

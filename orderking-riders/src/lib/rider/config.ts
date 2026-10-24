@@ -69,7 +69,7 @@ export const DEFAULT_DYNAMIC_PRICING_CONFIG: DynamicPricingConfig = {
   waitCapPaise: 3000, // ₹30
   floatingCashLimitInr: 2000,
   coolingOffDurationMinutes: 15,
-  payoutCycleDay: "Wednesday",
+  payoutCycleDay: "Daily (T+1)",
   kingAiAutonomousResolution: true,
 };
 
@@ -84,7 +84,7 @@ export const DEFAULT_CONFIG: PlatformConfig = {
   otpMaxAttempts: 5,
   otpSuspiciousThreshold: 3,
   podMaxBytes: 180_000,
-  payoutFrequency: "weekly",
+  payoutFrequency: "daily",
   supportedLocales: ["en", "hi", "bn", "as", "ta", "te", "ml", "kn", "mr", "gu"],
   defaultLocale: "en",
   pickupVerification: "ORDER_CODE",
@@ -97,7 +97,7 @@ export const DEFAULT_CONFIG: PlatformConfig = {
   volunteerEnabled: false,
   discipline: DEFAULT_DISCIPLINE_CONFIG,
   pricing: DEFAULT_DYNAMIC_PRICING_CONFIG,
-  payoutCycleDay: "Wednesday",
+  payoutCycleDay: "Daily (T+1)",
   kingAiAutonomousResolution: true,
 };
 

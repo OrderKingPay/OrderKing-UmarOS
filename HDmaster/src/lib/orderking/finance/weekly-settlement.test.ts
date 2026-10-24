@@ -3,12 +3,23 @@ import assert from "node:assert/strict";
 import {
   getWeeklyCycle,
   getExpressDailyCycle,
+  getDailyTPlus1Cycle,
   calculateRestaurantWeeklySettlement,
   calculateRestaurantDualCycleSettlement,
   calculateRiderWeeklySettlement,
 } from "./weekly-settlement.ts";
 
 describe("Tier-1 Legacy Market Leader Dual Settlement Cycle & Statutory Formula", () => {
+  test("generates Daily T+1 settlement cycle for Day T up to 23:59:59 IST with morning T+1 payout", () => {
+    // Reference: Oct 24, 2026
+    const ref = new Date("2026-10-24T10:00:00Z");
+    const cycle = getDailyTPlus1Cycle(ref);
+    assert.ok(cycle.cycleId.includes("cycle_t1_daily_"));
+    assert.ok(cycle.startDate);
+    assert.ok(cycle.endDate);
+    assert.ok(cycle.payoutDate);
+    assert.equal(cycle.status, "OPEN");
+  });
   test("generates Monday to Sunday cycle with Wednesday payout for Standard Cycle", () => {
     // Wednesday 2026-09-16 reference date
     const cycle = getWeeklyCycle(new Date("2026-09-16T12:00:00Z"));

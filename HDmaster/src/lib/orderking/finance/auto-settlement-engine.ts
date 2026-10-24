@@ -2,9 +2,12 @@ import { getSql, type Sql } from '@/lib/db';
 import {
   getWeeklyCycle,
   getExpressDailyCycle,
+  getDailyTPlus1Cycle,
   calculateRestaurantWeeklySettlement,
   calculateRestaurantDualCycleSettlement,
 } from "./weekly-settlement";
+import { executeRazorpayXPayout } from "./razorpayx-payout-engine";
+import { canonicalLedger } from "./canonical-ledger";
 
 /**
  * 👑 ORDERKING AUTONOMOUS TIER-1 LEGACY COMPATIBLE SETTLEMENT ENGINE
@@ -251,6 +254,312 @@ export const AutoSettlementEngine = {
       processed: totalProcessed,
       escalated: totalEscalated,
       message: `Global Express Daily reconciliation complete. ${totalProcessed} payouts processed (0.5% liquidity fee).`
+    };
+  },
+
+  /**
+   * 🌅 T+1 DAILY AUTOMATED PAYOUT DISBURSEMENT ENGINE
+   * 
+   * Mandate: All sales/deliveries recorded up to 23:59:59 IST (Day T) are batched
+   * and disbursed automatically the following morning (Day T+1 10:00 AM IST) via RazorpayX IMPS/UPI/NEFT.
+   * Covers BOTH Restaurant Partners and Fleet Riders.
+   * Zero manual bottleneck failures. Direct real banking execution.
+   */
+  async runGlobalDailyTPlus1Settlement(referenceDate: Date = new Date(), autoDisburse: boolean = true) {
+    const cycle = getDailyTPlus1Cycle(referenceDate);
+    const sql = await getSql();
+
+    let totalProcessed = 0;
+    let totalEscalated = 0;
+    let totalDisbursedPaise = 0;
+    let restaurantCount = 0;
+    let riderCount = 0;
+
+    const periodStart = `${cycle.startDate} 00:00:00Z`;
+    const periodEnd = `${cycle.endDate} 23:59:59Z`;
+
+    // -------------------------------------------------------------------------
+    // 1. RESTAURANT PARTNERS T+1 DAILY SETTLEMENT
+    // -------------------------------------------------------------------------
+    const restaurantStats = await sql.query<any>(`
+      SELECT 
+        r.id as restaurant_id, 
+        r.name as restaurant_name,
+        r.payout_status,
+        r.bank_account,
+        r.bank_ifsc,
+        r.bank_name,
+        r.payout_vpa,
+        r.commission_bps,
+        COUNT(o.id) as total_orders,
+        COALESCE(SUM(o.food_paise), 0) as gross_sales,
+        COALESCE(SUM(o.restaurant_discount_paise), 0) as total_discounts,
+        COALESCE(SUM(o.commission_paise), 0) as expected_commission,
+        COALESCE(SUM(o.delivery_fee_paise), 0) as expected_delivery_fees,
+        COALESCE(SUM(o.total_paise), 0) as total_collected
+      FROM restaurants r
+      JOIN orders o ON o.restaurant_id = r.id
+      WHERE o.status = 'DELIVERED' 
+        AND o.placed_at <= $1::timestamptz
+        AND NOT EXISTS (
+          SELECT 1 FROM settlement_batches sb 
+          WHERE (sb.party_id = r.id OR sb.entity_id = r.id) 
+            AND sb.period_end >= o.placed_at 
+            AND sb.status IN ('PAID', 'PROCESSING')
+        )
+      GROUP BY r.id, r.name, r.payout_status, r.bank_account, r.bank_ifsc, r.bank_name, r.payout_vpa, r.commission_bps
+    `, [periodEnd]);
+
+    for (const stat of restaurantStats) {
+      const deliveredCount = parseInt(stat.total_orders || "0", 10);
+      const grossSalesPaise = parseInt(stat.gross_sales || "0", 10);
+      if (deliveredCount === 0 || grossSalesPaise <= 0) continue;
+
+      const idempotencyKey = `stl_daily_rest_${stat.restaurant_id}_${cycle.cycleId}`;
+      const existing = await sql.query<any>(
+        `SELECT id, batch_id, status FROM settlement_batches WHERE idempotency_key = $1 LIMIT 1`,
+        [idempotencyKey]
+      );
+      if (existing.length > 0 && (existing[0].status === "PAID" || existing[0].status === "PROCESSING")) {
+        continue;
+      }
+
+      const commissionBps = parseInt(stat.commission_bps || "1000", 10);
+      const settlement = calculateRestaurantWeeklySettlement({
+        restaurantId: stat.restaurant_id,
+        restaurantName: stat.restaurant_name,
+        cycle: {
+          cycleId: cycle.cycleId,
+          startDate: cycle.startDate,
+          endDate: cycle.endDate,
+          payoutDate: cycle.payoutDate,
+          status: "OPEN",
+        },
+        deliveredOrdersCount: deliveredCount,
+        grossSalesPaise,
+        restaurantDiscountsPaise: parseInt(stat.total_discounts || "0", 10),
+        commissionBps,
+        pgFeeBps: 180,
+      });
+
+      const netPayablePaise = settlement.netPayablePaise;
+      let payoutState = "READY_FOR_PAYOUT";
+      let escalationReason: string | null = null;
+
+      if (stat.payout_status === "SUSPENDED") {
+        payoutState = "ESCALATED_SUSPENDED";
+        escalationReason = "Restaurant payout is manually suspended by Admin.";
+      } else if (netPayablePaise <= 0) {
+        payoutState = "ESCALATED_ZERO";
+        escalationReason = "Net payable is zero after statutory deductions.";
+      }
+
+      const batchId = `stl-dly-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      const destinationMasked = stat.payout_vpa || (stat.bank_account ? `A/C ${String(stat.bank_account).slice(-4)}` : "NO_BANK_DETAILS");
+
+      await sql.query(`
+        INSERT INTO settlement_batches (
+          id, batch_id, org_id, party_type, entity_type, party_id, entity_id, party_name,
+          period_start, period_end, gross_paise, gross_amount_paise, fee_paise, deductions_paise,
+          commission_paise, gst_paise, net_paise, net_payout_paise, payable_paise,
+          status, state, idempotency_key, payout_upi_or_account_number, attempts_count, reason, notes, created_at, updated_at
+        ) VALUES (
+          $1, $1, 'default', 'RESTAURANT', 'RESTAURANT', $2, $2, $3,
+          $4::timestamptz, $5::timestamptz, $6, $6, $7, $7,
+          $8, $9, $10, $10, $10,
+          $11, $11, $12, $13, 0, $14, $14, NOW(), NOW()
+        )
+        ON CONFLICT (id) DO UPDATE SET
+          net_paise = $10, net_payout_paise = $10, payable_paise = $10,
+          status = $11, updated_at = NOW()
+      `, [
+        batchId,
+        stat.restaurant_id,
+        stat.restaurant_name,
+        periodStart,
+        periodEnd,
+        settlement.grossSalesPaise,
+        settlement.tcsDeductionPaise + settlement.tdsDeductionPaise + settlement.paymentGatewayFeePaise + settlement.gstOnPgFeePaise,
+        settlement.platformCommissionPaise,
+        settlement.gstOnCommissionPaise,
+        netPayablePaise,
+        payoutState,
+        idempotencyKey,
+        destinationMasked,
+        escalationReason,
+      ]);
+
+      if (payoutState.startsWith("ESCALATED")) {
+        totalEscalated++;
+        continue;
+      }
+
+      restaurantCount++;
+      totalProcessed++;
+
+      // Automated Disbursement via RazorpayX
+      if (autoDisburse && netPayablePaise > 0) {
+        let beneficiaryInput: any = null;
+        if (stat.payout_vpa?.trim()) {
+          beneficiaryInput = { vpa: stat.payout_vpa.trim(), name: stat.restaurant_name };
+        } else if (stat.bank_account?.trim() && stat.bank_ifsc?.trim()) {
+          beneficiaryInput = {
+            accountNumber: stat.bank_account.trim(),
+            ifsc: stat.bank_ifsc.trim(),
+            name: stat.restaurant_name,
+          };
+        }
+
+        if (beneficiaryInput) {
+          const payoutRes = await executeRazorpayXPayout({
+            beneficiary: beneficiaryInput,
+            amountPaise: netPayablePaise,
+            referenceId: batchId,
+            idempotencyKey,
+            narration: `OrderKing T+1 Payout: ${stat.restaurant_name.slice(0, 15)}`,
+            purpose: "settlement",
+            notes: { restaurantId: stat.restaurant_id, cycle: cycle.cycleId },
+          });
+
+          const finalStatus = payoutRes.status === "processed" ? "PAID" : "PROCESSING";
+          await sql.query(`
+            UPDATE settlement_batches
+            SET status = $1, state = $1,
+                external_reference = $2, provider_reference = $3,
+                paid_at = CASE WHEN $1 = 'PAID' THEN NOW() ELSE paid_at END,
+                updated_at = NOW()
+            WHERE id = $4
+          `, [finalStatus, payoutRes.payoutId || batchId, payoutRes.utr || null, batchId]);
+
+          totalDisbursedPaise += netPayablePaise;
+        }
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. FLEET RIDERS T+1 DAILY SETTLEMENT
+    // -------------------------------------------------------------------------
+    const riderStats = await sql.query<any>(`
+      SELECT 
+        rd.id as rider_id,
+        rd.name as rider_name,
+        rd.payout_upi,
+        rd.bank_account,
+        rd.bank_ifsc,
+        rd.cash_collected_paise,
+        COUNT(o.id) as total_trips,
+        COALESCE(SUM(o.delivery_fee_paise), 0) as gross_delivery_paise
+      FROM riders rd
+      JOIN orders o ON o.rider_id = rd.id
+      WHERE o.status = 'DELIVERED'
+        AND o.placed_at <= $1::timestamptz
+        AND NOT EXISTS (
+          SELECT 1 FROM settlement_batches sb
+          WHERE (sb.party_id = rd.id OR sb.entity_id = rd.id)
+            AND sb.period_end >= o.placed_at
+            AND sb.status IN ('PAID', 'PROCESSING')
+        )
+      GROUP BY rd.id, rd.name, rd.payout_upi, rd.bank_account, rd.bank_ifsc, rd.cash_collected_paise
+    `, [periodEnd]);
+
+    for (const rStat of riderStats) {
+      const totalTrips = parseInt(rStat.total_trips || "0", 10);
+      const grossDeliveryPaise = parseInt(rStat.gross_delivery_paise || "0", 10);
+      if (totalTrips === 0 || grossDeliveryPaise <= 0) continue;
+
+      const cashOffset = parseInt(rStat.cash_collected_paise || "0", 10);
+      const netRiderPaise = Math.max(0, grossDeliveryPaise - cashOffset);
+      if (netRiderPaise <= 0) continue;
+
+      const idempotencyKey = `stl_daily_rider_${rStat.rider_id}_${cycle.cycleId}`;
+      const existing = await sql.query<any>(
+        `SELECT id, batch_id, status FROM settlement_batches WHERE idempotency_key = $1 LIMIT 1`,
+        [idempotencyKey]
+      );
+      if (existing.length > 0 && (existing[0].status === "PAID" || existing[0].status === "PROCESSING")) {
+        continue;
+      }
+
+      const batchId = `stl-rdr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      const destinationMasked = rStat.payout_upi || (rStat.bank_account ? `A/C ${String(rStat.bank_account).slice(-4)}` : "NO_UPI_REGISTERED");
+
+      await sql.query(`
+        INSERT INTO settlement_batches (
+          id, batch_id, org_id, party_type, entity_type, party_id, entity_id, party_name,
+          period_start, period_end, gross_paise, gross_amount_paise, fee_paise, deductions_paise,
+          commission_paise, gst_paise, net_paise, net_payout_paise, payable_paise,
+          status, state, idempotency_key, payout_upi_or_account_number, attempts_count, reason, notes, created_at, updated_at
+        ) VALUES (
+          $1, $1, 'default', 'RIDER', 'RIDER', $2, $2, $3,
+          $4::timestamptz, $5::timestamptz, $6, $6, 0, 0,
+          0, 0, $7, $7, $7,
+          'READY_FOR_PAYOUT', 'READY_FOR_PAYOUT', $8, $9, 0, 'Rider T+1 Daily Delivery Settlement', 'Autonomous Payout', NOW(), NOW()
+        )
+        ON CONFLICT (id) DO UPDATE SET
+          net_paise = $7, net_payout_paise = $7, payable_paise = $7, updated_at = NOW()
+      `, [
+        batchId,
+        rStat.rider_id,
+        rStat.rider_name,
+        periodStart,
+        periodEnd,
+        grossDeliveryPaise,
+        netRiderPaise,
+        idempotencyKey,
+        destinationMasked,
+      ]);
+
+      riderCount++;
+      totalProcessed++;
+
+      if (autoDisburse && netRiderPaise > 0) {
+        let riderBeneficiary: any = null;
+        if (rStat.payout_upi?.trim()) {
+          riderBeneficiary = { vpa: rStat.payout_upi.trim(), name: rStat.rider_name };
+        } else if (rStat.bank_account?.trim() && rStat.bank_ifsc?.trim()) {
+          riderBeneficiary = {
+            accountNumber: rStat.bank_account.trim(),
+            ifsc: rStat.bank_ifsc.trim(),
+            name: rStat.rider_name,
+          };
+        }
+
+        if (riderBeneficiary) {
+          const payoutRes = await executeRazorpayXPayout({
+            beneficiary: riderBeneficiary,
+            amountPaise: netRiderPaise,
+            referenceId: batchId,
+            idempotencyKey,
+            narration: `OrderKing Rider T+1 Pay: ${rStat.rider_name.slice(0, 15)}`,
+            purpose: "settlement",
+            mode: rStat.payout_upi ? "UPI" : "IMPS",
+            notes: { riderId: rStat.rider_id, cycle: cycle.cycleId },
+          });
+
+          const finalStatus = payoutRes.status === "processed" ? "PAID" : "PROCESSING";
+          await sql.query(`
+            UPDATE settlement_batches
+            SET status = $1, state = $1,
+                external_reference = $2, provider_reference = $3,
+                paid_at = CASE WHEN $1 = 'PAID' THEN NOW() ELSE paid_at END,
+                updated_at = NOW()
+            WHERE id = $4
+          `, [finalStatus, payoutRes.payoutId || batchId, payoutRes.utr || null, batchId]);
+
+          totalDisbursedPaise += netRiderPaise;
+        }
+      }
+    }
+
+    return {
+      success: true,
+      cycle: cycle.cycleId,
+      processed: totalProcessed,
+      escalated: totalEscalated,
+      restaurantCount,
+      riderCount,
+      totalDisbursedPaise,
+      message: `T+1 Daily Automated Settlement Complete. ${restaurantCount} restaurants and ${riderCount} riders processed. ₹${(totalDisbursedPaise / 100).toFixed(2)} disbursed.`,
     };
   }
 };

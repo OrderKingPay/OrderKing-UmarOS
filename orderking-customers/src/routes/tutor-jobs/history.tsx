@@ -17,6 +17,9 @@ import { CustomerShell } from "@/components/market/shell";
 import { AppErrorComponent } from "@/lib/error-component";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/db-cloud";
+import { toast } from "sonner";
+import { getMyTutorBookingsFn, releaseTutorEscrowFn } from "@/routes/tutor";
+import { KingPayMark } from "@/components/brand/kingpay-mark";
 
 const JOB_APPLICATIONS_STORAGE_KEY = "orderking_job_applications_v1";
 
@@ -40,7 +43,10 @@ interface BookedClassSession {
   grade: string;
   scheduledTime: string;
   status: "Confirmed" | "Completed" | "In Session";
-  mode: "1-on-1 Online" | "Home Tutoring";
+  mode: string;
+  amountInr?: number;
+  escrowStatus?: "HELD" | "RELEASED" | "REFUNDED";
+  meetingLink?: string;
 }
 
 const TUTOR_SESSIONS_STORAGE_KEY = "orderking_tutor_sessions_v1";
@@ -54,6 +60,44 @@ function TutorJobsHistoryPage() {
   const [activeTab, setActiveTab] = useState<"classes" | "jobs">("classes");
   const [applications, setApplications] = useState<SubmittedJobApplication[]>([]);
   const [classes, setClasses] = useState<BookedClassSession[]>([]);
+  const [releasingEscrowId, setReleasingEscrowId] = useState<string | null>(null);
+
+  const handleReleaseEscrow = async (bookingId: string, tutorName: string) => {
+    setReleasingEscrowId(bookingId);
+    try {
+      const res = await releaseTutorEscrowFn({ data: { bookingId } });
+      if (res?.success) {
+        toast.success(`🎉 Session verified complete! KingPay escrow released to ${tutorName}.`);
+        setClasses((prev) =>
+          prev.map((c) =>
+            c.id === bookingId
+              ? { ...c, status: "Completed", escrowStatus: "RELEASED" }
+              : c
+          )
+        );
+
+        // Update local storage
+        if (typeof window !== "undefined") {
+          const raw = window.localStorage.getItem(TUTOR_SESSIONS_STORAGE_KEY);
+          if (raw) {
+            const list = JSON.parse(raw);
+            const updated = list.map((item: any) =>
+              item.id === bookingId
+                ? { ...item, status: "Completed", escrowStatus: "RELEASED" }
+                : item
+            );
+            window.localStorage.setItem(TUTOR_SESSIONS_STORAGE_KEY, JSON.stringify(updated));
+          }
+        }
+      } else {
+        toast.error(res?.error || "Could not release escrow.");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to release escrow.");
+    } finally {
+      setReleasingEscrowId(null);
+    }
+  };
 
   useEffect(() => {
     try {
@@ -115,6 +159,22 @@ function TutorJobsHistoryPage() {
       }
     }
     void syncFromSupabase();
+
+    // Proactively fetch genuine tutor bookings from PostgreSQL via server function
+    getMyTutorBookingsFn()
+      .then((res: any) => {
+        if (res?.success && Array.isArray(res.bookings) && res.bookings.length > 0) {
+          setClasses((prev) => {
+            const existingIds = new Set(prev.map((c) => c.id));
+            const fresh = res.bookings.filter((b: any) => !existingIds.has(b.id));
+            return [...prev, ...fresh];
+          });
+        }
+      })
+      .catch((e: any) => {
+        console.warn("[TutorJobsHistoryPage] Booking fetch notice:", e);
+      });
+
   }, []);
 
   return (
@@ -225,18 +285,42 @@ function TutorJobsHistoryPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
-                      <span className="text-[11px] text-stone-500 flex items-center gap-1">
-                        <ShieldCheck className="size-3.5 text-emerald-600" />
-                        Verified OrderKing Academic Mentor
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 rounded-xl text-xs font-bold border-purple-300 text-purple-900 hover:bg-purple-50"
-                      >
-                        Class Classroom Link
-                      </Button>
+                    <div className="mt-4 pt-3 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[11px] text-stone-600 flex items-center gap-1">
+                          <ShieldCheck className="size-3.5 text-emerald-600" />
+                          Verified Educator
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 border border-amber-300/60 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
+                          <KingPayMark className="size-3" />
+                          <span>
+                            {cls.escrowStatus === "RELEASED"
+                              ? "Escrow Settled & Released"
+                              : `Escrow Held: ₹${cls.amountInr || 499}`}
+                          </span>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {cls.escrowStatus !== "RELEASED" && (
+                          <button
+                            type="button"
+                            disabled={releasingEscrowId === cls.id}
+                            onClick={() => handleReleaseEscrow(cls.id, cls.tutorName)}
+                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+                          >
+                            {releasingEscrowId === cls.id ? "Releasing..." : "Complete & Release Escrow"}
+                          </button>
+                        )}
+                        <a
+                          href={cls.meetingLink || `https://meet.orderking.in/tutor-${cls.id.slice(0, 8)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-purple-300 text-purple-900 hover:bg-purple-50 text-xs font-bold transition no-underline"
+                        >
+                          <span>Classroom Link</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 ))

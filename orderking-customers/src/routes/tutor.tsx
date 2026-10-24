@@ -30,6 +30,8 @@ import { computeDeterministicSkillMatch } from "@/lib/career/skill-matcher";
 import { getSql } from "@/lib/db";
 import { TutorJobsHub } from "@/components/tutor-jobs/tutor-jobs-hub";
 import { solveAcademicProblem } from "@/lib/ai/gemini-tutor-solver";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
+import { KingPayMark } from "@/components/brand/kingpay-mark";
 
 export function generateCurriculumFallback(data: { message: string; board: string; stdClass: string; subject: string; language?: string; difficulty?: string; tone?: string; goal?: string }): string {
   const query = (data.message || "").trim();
@@ -500,6 +502,68 @@ export const askIntelligenceFn = createServerFn({ method: "POST" })
     history?: any[] 
   }) => data)
   .handler(async ({ data }: any) => {
+    let billingStatus: {
+      billed: boolean;
+      amountPaise?: number;
+      remainingBalancePaise?: number;
+      note?: string;
+    } = {
+      billed: false,
+      amountPaise: 0,
+      note: "Complimentary Academic Session",
+    };
+
+    // KingPay micro-billing check
+    try {
+      const { getSessionUser } = await import("@/lib/auth/verify.server");
+      const user = await getSessionUser();
+      if (user) {
+        const sql = await getSql();
+        const microFeePaise = 100; // ₹1.00 micro-fee
+
+        const walletRows = await sql<{ balance_paise: number }>`
+          SELECT balance_paise FROM kingpay_wallets WHERE user_id = ${user.id}
+        `;
+        const currentPaise = walletRows[0]?.balance_paise ?? 0;
+
+        if (currentPaise >= microFeePaise) {
+          await sql.transaction(async (tx: any) => {
+            await tx`
+              UPDATE kingpay_wallets 
+              SET balance_paise = balance_paise - ${microFeePaise}, updated_at = NOW() 
+              WHERE user_id = ${user.id}
+            `;
+            await tx`
+              INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+              VALUES (
+                gen_random_uuid(),
+                ${user.id},
+                ${microFeePaise},
+                'DEBIT',
+                ${'KingPay Micro-Fee: AI Academic Problem Solving (' + data.subject + ' · ' + data.board + ')'}
+              )
+            `;
+          });
+
+          billingStatus = {
+            billed: true,
+            amountPaise: microFeePaise,
+            remainingBalancePaise: currentPaise - microFeePaise,
+            note: "Micro-transaction settled via KingPay (₹1.00)",
+          };
+        } else {
+          billingStatus = {
+            billed: false,
+            amountPaise: 0,
+            remainingBalancePaise: currentPaise,
+            note: "Complimentary Tier (Zero KingPay Balance)",
+          };
+        }
+      }
+    } catch (billingErr) {
+      console.warn("[askIntelligenceFn] KingPay micro-billing notice:", billingErr);
+    }
+
     try {
       const solution = await solveAcademicProblem(data, generateCurriculumFallback);
       return { 
@@ -510,10 +574,271 @@ export const askIntelligenceFn = createServerFn({ method: "POST" })
         stdClass: solution.stdClass,
         subject: solution.subject,
         language: solution.language,
+        billingStatus,
       };
     } catch (outerErr: any) {
       console.warn("askIntelligenceFn outer handler caught error, using fallback:", outerErr);
-      return { text: generateCurriculumFallback(data) };
+      return { 
+        text: generateCurriculumFallback(data),
+        billingStatus,
+      };
+    }
+  });
+
+export const bookTutorSessionFn = createServerFn({ method: "POST" })
+  .validator((data: {
+    tutorId: string;
+    tutorName: string;
+    subject: string;
+    grade: string;
+    board: string;
+    scheduledTime: string;
+    deliveryMode: "Online 1-on-1" | "In-Person Home" | "Hybrid";
+    hourlyRateInr: number;
+    studentName?: string;
+    studentContact?: string;
+    notes?: string;
+  }) => data)
+  .handler(async ({ data }: any) => {
+    try {
+      const { getSessionUser } = await import("@/lib/auth/verify.server");
+      const user = await getSessionUser();
+      const sql = await getSql();
+      const amountPaise = Math.round(data.hourlyRateInr * 100);
+      const userId = user?.id || `guest-${Date.now()}`;
+      const { randomUUID } = await import("node:crypto");
+      const bookingId = randomUUID();
+
+      // Ensure tutor_bookings table exists in PostgreSQL
+      try {
+        await sql`
+          CREATE TABLE IF NOT EXISTS public.tutor_bookings (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id TEXT NOT NULL,
+            tutor_id TEXT NOT NULL,
+            tutor_name TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            grade TEXT NOT NULL,
+            board TEXT NOT NULL,
+            scheduled_time TEXT NOT NULL,
+            delivery_mode TEXT NOT NULL,
+            amount_paise BIGINT NOT NULL,
+            escrow_status TEXT NOT NULL DEFAULT 'HELD',
+            meeting_link TEXT,
+            student_name TEXT,
+            student_contact TEXT,
+            notes TEXT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+          )
+        `;
+      } catch (tblErr) {
+        console.warn("[bookTutorSessionFn] Ensure table notice:", tblErr);
+      }
+
+      // If user is authenticated, execute genuine KingPay atomic escrow hold
+      if (user) {
+        await sql.transaction(async (tx: any) => {
+          await tx`
+            INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins) 
+            VALUES (${user.id}, 0, 0) 
+            ON CONFLICT DO NOTHING
+          `;
+
+          const rows = await tx<{ balance_paise: number }>`
+            SELECT balance_paise FROM kingpay_wallets WHERE user_id = ${user.id} FOR UPDATE
+          `;
+          const currentBalance = rows[0]?.balance_paise ?? 0;
+          if (currentBalance < amountPaise) {
+            throw new Error(
+              `Insufficient KingPay balance. This session requires ₹${data.hourlyRateInr}, but available balance is ₹${(currentBalance / 100).toFixed(2)}. Please add money to KingPay wallet.`
+            );
+          }
+
+          // Deduct from user wallet and place in escrow
+          await tx`
+            UPDATE kingpay_wallets 
+            SET balance_paise = balance_paise - ${amountPaise}, updated_at = NOW() 
+            WHERE user_id = ${user.id}
+          `;
+
+          await tx`
+            INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+            VALUES (
+              gen_random_uuid(),
+              ${user.id},
+              ${amountPaise},
+              'DEBIT',
+              ${'KingPay Escrow Hold: 1-on-1 Tutoring Session with ' + data.tutorName + ' (' + data.subject + ')'}
+            )
+          `;
+
+          await tx`
+            INSERT INTO public.tutor_bookings (
+              id, user_id, tutor_id, tutor_name, subject, grade, board, scheduled_time, delivery_mode, amount_paise, escrow_status, meeting_link, student_name, student_contact, notes
+            )
+            VALUES (
+              ${bookingId},
+              ${user.id},
+              ${data.tutorId},
+              ${data.tutorName},
+              ${data.subject},
+              ${data.grade},
+              ${data.board},
+              ${data.scheduledTime},
+              ${data.deliveryMode},
+              ${amountPaise},
+              'HELD',
+              ${'https://meet.orderking.in/tutor-' + bookingId.slice(0, 8)},
+              ${data.studentName || (user as any).name || 'Student'},
+              ${data.studentContact || (user as any).phone || user.email || 'Registered Contact'},
+              ${data.notes || '1-on-1 Syllabus Problem Solving & Concept Mastery'}
+            )
+          `;
+        });
+      } else {
+        // Guest booking with escrow recorded
+        await sql`
+          INSERT INTO public.tutor_bookings (
+            id, user_id, tutor_id, tutor_name, subject, grade, board, scheduled_time, delivery_mode, amount_paise, escrow_status, meeting_link, student_name, student_contact, notes
+          )
+          VALUES (
+            ${bookingId},
+            ${userId},
+            ${data.tutorId},
+            ${data.tutorName},
+            ${data.subject},
+            ${data.grade},
+            ${data.board},
+            ${data.scheduledTime},
+            ${data.deliveryMode},
+            ${amountPaise},
+            'HELD',
+            ${'https://meet.orderking.in/tutor-' + bookingId.slice(0, 8)},
+            ${data.studentName || 'Student'},
+            ${data.studentContact || 'Direct Contact'},
+            ${data.notes || '1-on-1 Syllabus Problem Solving & Concept Mastery'}
+          )
+        `;
+      }
+
+      return {
+        success: true,
+        booking: {
+          id: bookingId,
+          tutorId: data.tutorId,
+          tutorName: data.tutorName,
+          subject: data.subject,
+          grade: data.grade,
+          board: data.board,
+          scheduledTime: data.scheduledTime,
+          mode: data.deliveryMode,
+          amountInr: data.hourlyRateInr,
+          amountPaise,
+          status: "Confirmed" as const,
+          escrowStatus: "HELD" as const,
+          meetingLink: `https://meet.orderking.in/tutor-${bookingId.slice(0, 8)}`,
+          createdAt: new Date().toISOString(),
+        },
+      };
+    } catch (err: any) {
+      console.error("[bookTutorSessionFn] Booking failure:", err?.message || err);
+      return {
+        success: false,
+        error: err?.message || "Failed to process tutor booking and escrow hold.",
+      };
+    }
+  });
+
+export const releaseTutorEscrowFn = createServerFn({ method: "POST" })
+  .validator((data: { bookingId: string }) => data)
+  .handler(async ({ data }: any) => {
+    try {
+      const sql = await getSql();
+      const rows = await sql<any>`
+        SELECT id, user_id, tutor_name, amount_paise, escrow_status
+        FROM public.tutor_bookings
+        WHERE id = ${data.bookingId}
+      `;
+
+      if (rows.length === 0) {
+        return { success: false, error: "Booking not found." };
+      }
+
+      const booking = rows[0];
+      if (booking.escrow_status === "RELEASED") {
+        return { success: true, message: "Escrow was already settled and released." };
+      }
+
+      await sql.transaction(async (tx: any) => {
+        await tx`
+          UPDATE public.tutor_bookings
+          SET escrow_status = 'RELEASED', updated_at = NOW()
+          WHERE id = ${data.bookingId}
+        `;
+
+        await tx`
+          INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+          VALUES (
+            gen_random_uuid(),
+            ${booking.user_id},
+            ${booking.amount_paise},
+            'SETTLEMENT',
+            ${'KingPay Escrow Settled & Released to Educator: ' + booking.tutor_name}
+          )
+        `;
+      });
+
+      return { success: true, escrowStatus: "RELEASED" };
+    } catch (err: any) {
+      console.error("[releaseTutorEscrowFn] Error:", err?.message || err);
+      return { success: false, error: err?.message || "Failed to release escrow." };
+    }
+  });
+
+export const getMyTutorBookingsFn = createServerFn({ method: "GET" })
+  .handler(async () => {
+    try {
+      const { getSessionUser } = await import("@/lib/auth/verify.server");
+      const user = await getSessionUser();
+      const sql = await getSql();
+      let rows: any[] = [];
+      if (user) {
+        rows = await sql<any>`
+          SELECT id, user_id, tutor_id, tutor_name, subject, grade, board, scheduled_time, delivery_mode, amount_paise, escrow_status, meeting_link, student_name, student_contact, created_at
+          FROM public.tutor_bookings
+          WHERE user_id = ${user.id}
+          ORDER BY created_at DESC
+          LIMIT 50
+        `;
+      } else {
+        rows = await sql<any>`
+          SELECT id, user_id, tutor_id, tutor_name, subject, grade, board, scheduled_time, delivery_mode, amount_paise, escrow_status, meeting_link, student_name, student_contact, created_at
+          FROM public.tutor_bookings
+          ORDER BY created_at DESC
+          LIMIT 20
+        `;
+      }
+      return {
+        success: true,
+        bookings: rows.map((r: any) => ({
+          id: r.id,
+          tutorName: r.tutor_name,
+          subject: r.subject,
+          grade: r.grade,
+          board: r.board,
+          scheduledTime: r.scheduled_time,
+          mode: r.delivery_mode,
+          amountInr: Number(r.amount_paise) / 100,
+          status: r.escrow_status === "RELEASED" ? "Completed" : "Confirmed",
+          escrowStatus: r.escrow_status,
+          meetingLink: r.meeting_link,
+          createdAt: r.created_at,
+        })),
+      };
+    } catch (err: any) {
+      console.warn("[getMyTutorBookingsFn] Fetch error:", err?.message || err);
+      return { success: false, bookings: [] };
     }
   });
 
@@ -752,7 +1077,13 @@ export function parseStructuredAcademicSolution(rawText: string) {
   };
 }
 
-export function AcademicSolutionCard({ solutionText }: { solutionText: string }) {
+export function AcademicSolutionCard({
+  solutionText,
+  billingStatus,
+}: {
+  solutionText: string;
+  billingStatus?: { billed?: boolean; amountPaise?: number; remainingBalancePaise?: number; note?: string };
+}) {
   const parsed = parseStructuredAcademicSolution(solutionText);
 
   if (parsed.formula || parsed.derivation || parsed.finalAnswer) {
@@ -797,6 +1128,36 @@ export function AcademicSolutionCard({ solutionText }: { solutionText: string })
             <div className="text-xs sm:text-[13px] font-semibold text-emerald-200 whitespace-pre-wrap leading-relaxed pl-7 font-sans">
               {parsed.finalAnswer}
             </div>
+          </div>
+        )}
+
+        {billingStatus && (
+          <div className="pt-1 flex items-center justify-between text-[11px] text-zinc-400 px-1 border-t border-zinc-800/60">
+            <div className="flex items-center gap-1.5">
+              {billingStatus.billed ? (
+                <>
+                  <span className="inline-block size-1.5 rounded-full bg-emerald-400" />
+                  <span className="font-semibold text-emerald-400">
+                    ⚡ KingPay Micro-Transaction Settled (₹{(billingStatus.amountPaise ?? 100) / 100})
+                  </span>
+                  {typeof billingStatus.remainingBalancePaise === "number" && (
+                    <span className="text-zinc-500 font-mono">
+                      · Balance: ₹{(billingStatus.remainingBalancePaise / 100).toFixed(2)}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span className="inline-block size-1.5 rounded-full bg-amber-400" />
+                  <span className="text-zinc-300">
+                    {billingStatus.note || "Complimentary Session"}
+                  </span>
+                </>
+              )}
+            </div>
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">
+              Instant AI Tutor
+            </span>
           </div>
         )}
       </div>
@@ -1190,6 +1551,7 @@ export const Route = createFileRoute('/tutor')({
 
 function IntelligencePage() {
   const search = Route.useSearch();
+  const { walletBalance } = useRealKingPayWallet();
   const [message, setMessage] = useState("");
   const [board, setBoard] = useState("CBSE (Central Board)");
   const [stdClass, setStdClass] = useState("Class 10");
@@ -1297,7 +1659,8 @@ function IntelligencePage() {
       });
   }, []);
 
-  const [history, setHistory] = useState<{role: 'user' | 'assistant', content: string}[]>([
+  const [history, setHistory] = useState<{role: 'user' | 'assistant', content: string, billingStatus?: any}[]>([
+
     { role: 'assistant', content: "Academic Tutor initialized for Central & 28 State Boards. Select your Board, Class Level, and Core Subject. Enter your question to receive step-by-step solutions formatted into: Given Formula / Concept, Step-by-Step Derivation & Solution, and Final Answer." }
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -1397,7 +1760,10 @@ function IntelligencePage() {
       const res = await askIntelligenceFn({
         data: { message, board, stdClass, subject, language, difficulty, tone, goal, history: history.slice(-6) }
       });
-      setHistory([...newHistory, { role: 'assistant', content: res.text }]);
+      setHistory([...newHistory, { role: 'assistant', content: res.text, billingStatus: res.billingStatus }]);
+      if (res.billingStatus?.billed) {
+        toast.success("KingPay micro-transaction settled: ₹1.00");
+      }
     } catch (e) {
       setHistory([...newHistory, { role: 'assistant', content: "Network anomaly detected..." }]);
     } finally {
@@ -1805,7 +2171,7 @@ function IntelligencePage() {
                     {msg.role === 'user' ? (
                       msg.content
                     ) : (
-                      <AcademicSolutionCard solutionText={msg.content} />
+                      <AcademicSolutionCard solutionText={msg.content} billingStatus={msg.billingStatus} />
                     )}
                   </div>
                 </div>

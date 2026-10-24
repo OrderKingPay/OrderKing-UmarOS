@@ -38,6 +38,7 @@ import {
   isJustifiedOperationalReason,
 } from "./discipline.ts";
 import { DEFAULT_DISCIPLINE_CONFIG } from "./config.ts";
+import { executeRiderRazorpayXPayout } from "./banking.ts";
 import type { RiderStore } from "./store.ts";
 import {
   RiderError,
@@ -1845,7 +1846,29 @@ export class RiderEngine {
       }
 
       const cfg = await this.cfg();
-      const payoutRef = `UPI-WD-${Date.now().toString(36).toUpperCase()}`;
+      const payoutRef = `UPI-WD-${Date.now().toString(36).toUpperCase()}-${rider.id.replace(/[^a-zA-Z0-9]/g, "").slice(-4)}`;
+
+      // Execute live disbursement via RazorpayX (UPI / IMPS)
+      const payoutRes = await executeRiderRazorpayXPayout({
+        riderId: rider.id,
+        riderName: rider.fullName || "OrderKing Rider",
+        amountPaise: netPayable,
+        vpa: rider.payoutUpi,
+        referenceId: payoutRef,
+        narration: `OrderKing Rider Instant Payout`,
+      });
+
+      if (!payoutRes.success) {
+        throw new RiderError(
+          "PAYOUT_GATEWAY_ERROR",
+          `RazorpayX banking payout failed: ${payoutRes.error || "Unable to initiate instant transfer"}`,
+          502,
+        );
+      }
+
+      const effectiveRef = payoutRes.utr || payoutRes.payoutId || payoutRef;
+      const isPaid = payoutRes.status === "processed" || payoutRes.status === "paid";
+      const settlementStatus = isPaid ? "PAID" : "PROCESSING";
 
       // Append instant payout deduction in ledger
       await this.store.appendEarning(
@@ -1856,7 +1879,7 @@ export class RiderEngine {
           orderCode: null,
           kind: "ADJUSTMENT",
           amountPaise: -netPayable,
-          note: `Instant UPI Withdrawal to ${rider.payoutUpi} (Ref: ${payoutRef})`,
+          note: `Instant UPI Withdrawal to ${rider.payoutUpi} (Ref: ${effectiveRef})`,
           at: this.now(),
           dataMode: cfg.dataMode,
         },
@@ -1871,8 +1894,8 @@ export class RiderEngine {
           periodStart: new Date().toISOString().slice(0, 10),
           periodEnd: new Date().toISOString().slice(0, 10),
           amountPaise: netPayable,
-          status: "PAID",
-          confirmedPaidAt: this.now(),
+          status: settlementStatus as any,
+          confirmedPaidAt: isPaid ? this.now() : null,
           dataMode: cfg.dataMode,
         },
         userId,
@@ -1882,19 +1905,21 @@ export class RiderEngine {
         id: nid(),
         userId,
         title: "⚡ Instant UPI Withdrawal Dispatched",
-        body: `₹${(netPayable / 100).toFixed(2)} transferred to ${rider.payoutUpi} via NPCI Instant IMPS/UPI (Ref: ${payoutRef}).`,
+        body: `₹${(netPayable / 100).toFixed(2)} transferred to ${rider.payoutUpi} via NPCI Instant IMPS/UPI (Ref: ${effectiveRef}).`,
         kind: "PAYOUT",
         read: false,
         createdAt: this.now(),
       });
 
-      await this.audit(userId, "INSTANT_UPI_PAYOUT", "rider", rider.id, `${netPayable}:${rider.payoutUpi}:${payoutRef}`);
+      await this.audit(userId, "INSTANT_UPI_PAYOUT", "rider", rider.id, `${netPayable}:${rider.payoutUpi}:${effectiveRef}`);
 
       return {
         success: true,
+        status: payoutRes.status,
         amountPaise: netPayable,
         payoutUpi: rider.payoutUpi,
-        reference: payoutRef,
+        reference: effectiveRef,
+        payoutId: payoutRes.payoutId,
       };
     });
   }

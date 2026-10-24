@@ -26,6 +26,7 @@
 import { extractAirportCode, buildOfficialAirlineDeepLink } from "./airline-deep-links";
 import { type FlightOption, type FlightSearchResponse } from "./types";
 import { searchLiveFlights } from "./travel-connectors";
+import { getTravelpayoutsMarker, TP_MARKER } from "./travelpayouts-config";
 
 // ============================================================================
 // 1. COMPREHENSIVE INDIAN IATA AIRPORT REGISTER
@@ -203,8 +204,13 @@ export function resolveTravelEngine({
 }
 
 // ============================================================================
-// 3. ENGINE 1: TRAVELPAYOUTS DOMESTIC DEEP-LINKS & SEARCH GENERATOR
+// 3. ENGINE 1: TRAVELPAYOUTS DOMESTIC & GLOBAL DEEP-LINKS & SEARCH GENERATOR
 // ============================================================================
+
+export function getActiveTravelpayoutsMarker(customMarker?: string): string {
+  if (customMarker && customMarker.trim()) return customMarker.trim();
+  return getTravelpayoutsMarker();
+}
 
 export interface TravelpayoutsDomesticLinkParams {
   origin: string;
@@ -213,6 +219,7 @@ export interface TravelpayoutsDomesticLinkParams {
   passengers?: number;
   marker?: string;
   currency?: string;
+  subId?: string;
 }
 
 export function generateTravelpayoutsDomesticLink({
@@ -222,6 +229,7 @@ export function generateTravelpayoutsDomesticLink({
   passengers = 1,
   marker,
   currency = "INR",
+  subId,
 }: TravelpayoutsDomesticLinkParams): {
   url: string;
   originCode: string;
@@ -232,16 +240,14 @@ export function generateTravelpayoutsDomesticLink({
 } {
   const origCode = extractAirportCode(origin, "DEL");
   const destCode = extractAirportCode(destination, "BOM");
-  const activeMarker =
-    marker ||
-    (typeof process !== "undefined" ? process.env?.TRAVELPAYOUTS_MARKER : undefined) ||
-    "500000";
+  const activeMarker = getActiveTravelpayoutsMarker(marker);
 
   // Format date for Aviasales (DDMM)
   const [year, month, day] = departureDate.split("-");
   const shortDate = day && month ? `${day}${month}` : "0112";
 
-  const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${shortDate}${destCode}${passengers}?marker=${activeMarker}&currency=${currency.toLowerCase()}`;
+  const subParam = subId ? `&sub_id=${encodeURIComponent(subId)}` : "";
+  const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${shortDate}${destCode}${passengers}?marker=${activeMarker}&currency=${currency.toLowerCase()}${subParam}`;
 
   return {
     url: directAviasalesUrl,
@@ -250,6 +256,156 @@ export function generateTravelpayoutsDomesticLink({
     marker: activeMarker,
     currency: currency.toUpperCase(),
     engine: "TRAVELPAYOUTS_DOMESTIC",
+  };
+}
+
+export interface TravelpayoutsFlightLinkParams {
+  origin: string;
+  destination: string;
+  departureDate: string; // YYYY-MM-DD
+  returnDate?: string; // YYYY-MM-DD
+  passengers?: number;
+  marker?: string;
+  currency?: string;
+  subId?: string;
+}
+
+/**
+ * Universal Flight deep-link generator via Travelpayouts / Aviasales
+ * Supporting both Indian Domestic and International Air Corridors with active affiliate tracking.
+ */
+export function generateTravelpayoutsFlightLink({
+  origin,
+  destination,
+  departureDate,
+  returnDate,
+  passengers = 1,
+  marker,
+  currency = "INR",
+  subId,
+}: TravelpayoutsFlightLinkParams): {
+  url: string;
+  originCode: string;
+  destinationCode: string;
+  marker: string;
+  currency: string;
+  isDomestic: boolean;
+  engine: "TRAVELPAYOUTS_DOMESTIC" | "TRAVELPAYOUTS_INTERNATIONAL";
+} {
+  const origCode = extractAirportCode(origin, "DEL");
+  const destCode = extractAirportCode(destination, "BOM");
+  const activeMarker = getActiveTravelpayoutsMarker(marker);
+  const isDomestic = isIndianAirport(origCode) && isIndianAirport(destCode);
+
+  const [year, month, day] = departureDate.split("-");
+  const shortDate = day && month ? `${day}${month}` : "0112";
+
+  let dateSegment = `${shortDate}${destCode}`;
+  if (returnDate) {
+    const [retY, retM, retD] = returnDate.split("-");
+    const shortRetDate = retD && retM ? `${retD}${retM}` : "";
+    if (shortRetDate) {
+      dateSegment = `${shortDate}${destCode}${shortRetDate}`;
+    }
+  }
+
+  const subParam = subId ? `&sub_id=${encodeURIComponent(subId)}` : "";
+  const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${dateSegment}${passengers}?marker=${activeMarker}&currency=${currency.toLowerCase()}${subParam}`;
+
+  return {
+    url: directAviasalesUrl,
+    originCode: origCode,
+    destinationCode: destCode,
+    marker: activeMarker,
+    currency: currency.toUpperCase(),
+    isDomestic,
+    engine: isDomestic ? "TRAVELPAYOUTS_DOMESTIC" : "TRAVELPAYOUTS_INTERNATIONAL",
+  };
+}
+
+export interface TravelpayoutsHotelLinkParams {
+  cityOrLocation: string;
+  checkInDate: string;
+  checkOutDate?: string;
+  nights?: number;
+  guests?: number;
+  rooms?: number;
+  marker?: string;
+  partner?: "booking_com" | "agoda" | "hotellook";
+  subId?: string;
+}
+
+/**
+ * Universal Hotel tracked deep-link generator for Booking.com, Agoda, and Hotellook.
+ */
+export function generateTravelpayoutsHotelLink({
+  cityOrLocation,
+  checkInDate,
+  checkOutDate,
+  nights = 2,
+  guests = 2,
+  rooms = 1,
+  marker,
+  partner = "agoda",
+  subId = "ok_travel",
+}: TravelpayoutsHotelLinkParams): {
+  url: string;
+  cleanCity: string;
+  checkIn: string;
+  checkOut: string;
+  partner: "booking_com" | "agoda" | "hotellook";
+  partnerName: string;
+  marker: string;
+} {
+  const cleanCity = cityOrLocation.replace(/\,.*$/, "").trim() || "Goa";
+  const checkIn = checkInDate || new Date().toISOString().split("T")[0];
+  let checkOut = checkOutDate;
+  if (!checkOut) {
+    const dNext = new Date(checkIn);
+    dNext.setDate(dNext.getDate() + (nights || 1));
+    checkOut = dNext.toISOString().split("T")[0];
+  }
+
+  const activeMarker = getActiveTravelpayoutsMarker(marker);
+
+  if (partner === "booking_com") {
+    const aid = (typeof process !== "undefined" ? process.env?.BOOKING_COM_AID : undefined) || "orderking_hotels";
+    const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${guests}&no_rooms=${rooms}&selected_currency=INR&aid=${aid}&label=${encodeURIComponent(subId)}`;
+    return {
+      url: bookingUrl,
+      cleanCity,
+      checkIn,
+      checkOut,
+      partner: "booking_com",
+      partnerName: "Booking.com",
+      marker: activeMarker,
+    };
+  }
+
+  if (partner === "hotellook") {
+    const hotellookUrl = `https://search.hotellook.com/?destination=${encodeURIComponent(cleanCity)}&checkIn=${checkIn}&checkOut=${checkOut}&adults=${guests}&rooms=${rooms}&marker=${activeMarker}${subId ? `&sub_id=${encodeURIComponent(subId)}` : ""}`;
+    return {
+      url: hotellookUrl,
+      cleanCity,
+      checkIn,
+      checkOut,
+      partner: "hotellook",
+      partnerName: "Hotellook (Travelpayouts)",
+      marker: activeMarker,
+    };
+  }
+
+  // Default: Agoda partner with CID and tracking tag
+  const cid = (typeof process !== "undefined" ? process.env?.AGODA_CID : undefined) || "1894215";
+  const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?city=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${rooms}&adults=${guests}&cid=${cid}&tag=${encodeURIComponent(subId)}`;
+  return {
+    url: agodaUrl,
+    cleanCity,
+    checkIn,
+    checkOut,
+    partner: "agoda",
+    partnerName: "Agoda Accommodations",
+    marker: activeMarker,
   };
 }
 
@@ -280,23 +436,36 @@ export function generateIrctcTrainAssistanceLink(
 export function generateRedBusDomesticLink(
   sourceCity: string,
   destinationCity: string,
-  journeyDate?: string
+  journeyDate?: string,
+  affiliateId?: string,
+  subId?: string
 ): {
   url: string;
   sourceCity: string;
   destinationCity: string;
   journeyDate: string;
+  affiliateId: string;
   engine: "TRAVELPAYOUTS_DOMESTIC";
 } {
   const cleanSrc = sourceCity.replace(/\(.*\)/, "").trim().toLowerCase();
   const cleanDest = destinationCity.replace(/\(.*\)/, "").trim().toLowerCase();
   const dateIso = journeyDate || new Date().toISOString().split("T")[0];
+  const activeAffId = affiliateId || (typeof process !== "undefined" ? process.env?.REDBUS_AFFILIATE_ID : undefined) || "orderking_bus";
+  const activeSubId = subId || "ok_bus";
+
+  const url = new URL(`https://www.redbus.in/bus-tickets/${encodeURIComponent(cleanSrc)}-to-${encodeURIComponent(cleanDest)}`);
+  url.searchParams.set("onward", dateIso);
+  url.searchParams.set("utm_source", "orderking");
+  url.searchParams.set("utm_medium", "affiliate");
+  url.searchParams.set("affId", activeAffId);
+  url.searchParams.set("subId", activeSubId);
 
   return {
-    url: `https://www.redbus.in/bus-tickets/${encodeURIComponent(cleanSrc)}-to-${encodeURIComponent(cleanDest)}?onward=${dateIso}`,
+    url: url.toString(),
     sourceCity: cleanSrc,
     destinationCity: cleanDest,
     journeyDate: dateIso,
+    affiliateId: activeAffId,
     engine: "TRAVELPAYOUTS_DOMESTIC",
   };
 }
