@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Plane,
   ShieldCheck,
@@ -28,12 +28,20 @@ import {
   extractAirportCode,
   isDomesticIndianRoute,
 } from "@/lib/travel/airline-deep-links";
+import {
+  loadTravelpayoutsWhiteLabelScript,
+  TP_WL_ID,
+  TP_MARKER,
+  TP_WL_DOMAIN,
+} from "@/lib/travel/travelpayouts-config";
+import { TravelpayoutsWhiteLabel } from "./travelpayouts-white-label";
 
 interface Props {
   walletBalance?: number;
   onDeductWallet?: (amount: number, description: string) => boolean;
   initialFrom?: string;
   initialTo?: string;
+  showWhiteLabel?: boolean;
 }
 
 const OFFICIAL_CARRIERS = [
@@ -48,12 +56,17 @@ export function FlightBookingEngine({
   onDeductWallet,
   initialFrom = "New Delhi (DEL)",
   initialTo = "Mumbai (BOM)",
+  showWhiteLabel = false,
 }: Props) {
   const [from, setFrom] = useState(initialFrom);
   const [to, setTo] = useState(initialTo);
   const [departureDate, setDepartureDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [passengersCount, setPassengersCount] = useState(1);
   const [cabinClass, setCabinClass] = useState<"Economy" | "Premium Economy" | "Business">("Economy");
+
+  useEffect(() => {
+    loadTravelpayoutsWhiteLabelScript();
+  }, []);
 
   // Live quotes
   const quotes = searchFlightQuotes(
@@ -80,6 +93,11 @@ export function FlightBookingEngine({
 
   return (
     <div className="space-y-6 text-slate-900">
+      {/* Optional Travelpayouts Pure White Label Metasearch */}
+      {showWhiteLabel && (
+        <TravelpayoutsWhiteLabel wlId={TP_WL_ID} marker={TP_MARKER} subId="kingpay_flight" />
+      )}
+
       {/* Search Bar Card */}
       <div className="relative overflow-hidden rounded-3xl border border-sky-400/30 bg-gradient-to-br from-[#06122E] via-[#0B1A40] to-[#120E33] p-5 sm:p-8 shadow-xl text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
@@ -98,9 +116,17 @@ export function FlightBookingEngine({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
-            <ShieldCheck className="size-4" />
-            <span>₹0 Platform Desk Fee Guaranteed</span>
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            {walletBalance > 0 && (
+              <div className="flex items-center gap-1.5 bg-amber-500/20 border border-amber-400/40 px-3 py-1.5 rounded-full text-amber-300 text-xs font-extrabold">
+                <Coins className="size-4" />
+                <span>KingPay: {formatPaise(walletBalance)}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
+              <ShieldCheck className="size-4" />
+              <span>₹0 Platform Desk Fee Guaranteed</span>
+            </div>
           </div>
         </div>
 
@@ -109,7 +135,7 @@ export function FlightBookingEngine({
           {isDomesticIndianRoute(originCode, destinationCode) ? (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-300">
               <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              🇮🇳 Domestic Indian Route · Travelpayouts Direct INR Settlement (0% Platform Fee)
+              🇮🇳 Domestic Indian Route · Travelpayouts Direct INR Settlement (0% Platform Fee · Marker #{TP_MARKER})
             </div>
           ) : (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 px-3 py-1 text-xs font-bold text-sky-300">

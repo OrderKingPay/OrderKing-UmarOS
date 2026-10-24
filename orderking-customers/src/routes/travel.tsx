@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { FlightBookingEngine } from "@/components/fintech/flight-booking-engine";
 import { TravelpayoutsWhiteLabel } from "@/components/fintech/travelpayouts-white-label";
+import { loadTravelpayoutsWhiteLabelScript } from "@/lib/travel/travelpayouts-config";
 import { TrainBookingEngine } from "@/components/fintech/train-booking-engine";
 import { BusBookingEngine } from "@/components/fintech/bus-booking-engine";
 import { CabBookingEngine } from "@/components/fintech/cab-booking-engine";
@@ -319,6 +320,9 @@ export interface SavedTripReference {
 const SAVED_TRIPS_STORAGE_KEY = "orderking_saved_trips_v1";
 
 export function TravelPage() {
+  useEffect(() => {
+    loadTravelpayoutsWhiteLabelScript();
+  }, []);
   const [activeTab, setActiveTab] = useState<TravelTab>("flights");
   const [activeSubCategory, setActiveSubCategory] = useState<Record<TravelTab, string>>({
     flights: "Domestic Flights",
@@ -2123,7 +2127,7 @@ export function TravelPage() {
                     nights: hotelNights,
                     rooms: hotelRooms,
                     partner: "agoda",
-                    subId: "ok_travel_hotels",
+                    subId: "kingpay_hotels",
                   });
                   toast.success(`Handoff to Agoda for ${hotelLink.cleanCity} (${hotelNights} nights)...`);
                   window.open(hotelLink.url, "_blank", "noopener,noreferrer");
@@ -2146,7 +2150,7 @@ export function TravelPage() {
                     nights: hotelNights,
                     rooms: hotelRooms,
                     partner: "booking_com",
-                    subId: "ok_travel_hotels",
+                    subId: "kingpay_hotels",
                   });
                   toast.success(`Handoff to Booking.com for ${hotelLink.cleanCity} (${hotelNights} nights)...`);
                   window.open(hotelLink.url, "_blank", "noopener,noreferrer");
@@ -2169,7 +2173,7 @@ export function TravelPage() {
                     nights: hotelNights,
                     rooms: hotelRooms,
                     partner: "hotellook",
-                    subId: "ok_travel_hotels",
+                    subId: "kingpay_hotels",
                   });
                   toast.success(`Comparing Hotel Rates across 70+ OTAs via Travelpayouts...`);
                   window.open(hotelLink.url, "_blank", "noopener,noreferrer");

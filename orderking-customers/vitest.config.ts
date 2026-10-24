@@ -43,6 +43,7 @@ export default defineConfig({
       "src/test/academic-tutor-kingpay-integration.test.ts",
       "src/test/travel-autosuggest.test.ts",
       "src/test/dual-travel-engine.test.ts",
+      "src/test/travelpayouts-white-label.test.ts",
       "src/test/connected-ecosystem-lifecycle.test.ts",
       "src/test/fintech-payment-settlement-lifecycle.test.ts",
     ],

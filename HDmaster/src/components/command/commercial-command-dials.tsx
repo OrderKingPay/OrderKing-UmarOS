@@ -1660,7 +1660,7 @@ function TravelPartnerGovernanceSection() {
   useEffect(() => {
     if (state) {
       setForm(state);
-      setMarkerDraft(state.travelpayoutsMarker || "589554");
+      setMarkerDraft(state.travelpayoutsMarker || "794122");
       setCashbackDraft(state.cashbackPercentage || 1.5);
     }
   }, [state]);
@@ -1762,13 +1762,13 @@ function TravelPartnerGovernanceSection() {
               <Input
                 value={markerDraft}
                 onChange={(e) => setMarkerDraft(e.target.value)}
-                placeholder="589554"
+                placeholder="794122"
                 className="bg-black/60 border-border/60 text-xs font-mono h-9"
               />
               <Button
                 size="sm"
                 onClick={() => {
-                  mutateSettings.mutate({ travelpayoutsMarker: markerDraft.trim() || "589554" });
+                  mutateSettings.mutate({ travelpayoutsMarker: markerDraft.trim() || "794122" });
                 }}
                 className="bg-sky-600 hover:bg-sky-500 text-xs h-9 font-bold"
               >

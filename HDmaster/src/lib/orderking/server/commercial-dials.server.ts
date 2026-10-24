@@ -1188,7 +1188,7 @@ export async function getTravelPartnerGovernance(ctx: AccessContext): Promise<Tr
       const v = res[0].value_json;
       return {
         travelpayoutsActive: v.travelpayoutsActive !== false,
-        travelpayoutsMarker: str(v.travelpayoutsMarker) || "589554",
+        travelpayoutsMarker: str(v.travelpayoutsMarker) || "794122",
         duffelGdsActive: v.duffelGdsActive !== false,
         bookingComActive: v.bookingComActive !== false,
         agodaActive: v.agodaActive !== false,
@@ -1207,7 +1207,7 @@ export async function getTravelPartnerGovernance(ctx: AccessContext): Promise<Tr
 
   return {
     travelpayoutsActive: true,
-    travelpayoutsMarker: "589554",
+    travelpayoutsMarker: "794122",
     duffelGdsActive: true,
     bookingComActive: true,
     agodaActive: true,
