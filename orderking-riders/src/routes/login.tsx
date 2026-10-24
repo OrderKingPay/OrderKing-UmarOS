@@ -15,14 +15,9 @@ import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   Bike,
-  CheckCircle2,
   Globe,
   MessageCircle,
-  Phone,
   RefreshCw,
-  ShieldCheck,
-  Sparkles,
-  Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -48,7 +43,6 @@ function Login() {
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState("");
-  const [debugOtp, setDebugOtp] = useState<string | null>(null);
 
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +96,6 @@ function Login() {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
 
-      setDebugOtp(res.debugOtp ?? null);
       setStep("otp");
       setCountdown(30);
       setCanResend(false);
@@ -300,18 +293,6 @@ function Login() {
           <div className="pointer-events-none absolute -top-24 -right-24 size-48 rounded-full bg-[#E5A93C]/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-24 size-48 rounded-full bg-[#2563EB]/10 blur-3xl" />
 
-          {/* Delivery Partner Status Badge */}
-          <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
-              <ShieldCheck className="size-3.5 text-emerald-400" />
-              Delivery Partner Portal
-            </span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#94A3B8]">
-              <Sparkles className="size-3 text-[#E5A93C]" />
-              Official Fleet App
-            </span>
-          </div>
-
           {/* ========================================================================= */}
           {/* STEP 1: PHONE NUMBER ENTRY (Benchmark Screen 1)                           */}
           {/* ========================================================================= */}
@@ -431,36 +412,12 @@ function Login() {
                 </p>
               </div>
 
-              {/* ⚡ Instant Test / Preview Verification Banner */}
-              <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-300">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-1.5 font-bold">
-                    <Zap className="size-4 text-amber-400" />
-                    Instant Verification Code:
-                  </span>
-                  <span className="font-mono text-base font-black tracking-widest text-white bg-black/40 px-2 py-0.5 rounded-lg border border-amber-500/30">
-                    {debugOtp || "123456"}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOtp(debugOtp || "123456");
-                    setError(null);
-                  }}
-                  className="mt-2 w-full text-center text-[11px] font-bold text-[#E5A93C] hover:underline"
-                >
-                  Tap here to auto-fill code →
-                </button>
-              </div>
-
               <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="otp-input" className="text-xs font-semibold text-[#94A3B8]">
                       6-Digit OTP Code
                     </Label>
-                    <span className="text-[11px] text-[#64748B]">Auto-verification active</span>
                   </div>
                   <Input
                     id="otp-input"
@@ -534,32 +491,6 @@ function Login() {
               </form>
             </div>
           )}
-
-          {/* Quick link to KYC Desk */}
-          <div className="mt-5 border-t border-[#1E283D] pt-4 text-center text-xs text-[#94A3B8]">
-            <Link
-              to="/onboarding"
-              className="font-semibold text-emerald-400 hover:underline"
-            >
-              Direct KYC Document &amp; Bank Desk →
-            </Link>
-          </div>
-        </div>
-
-        {/* Fleet Micro Trust Indicators */}
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold text-[#64748B]">
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-emerald-400" />
-            Weekly Settlements
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-[#E5A93C]" />
-            Instant Cash Deposits
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-[#2563EB]" />
-            Zero Joining Fee
-          </span>
         </div>
       </div>
 

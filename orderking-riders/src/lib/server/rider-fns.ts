@@ -719,14 +719,14 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
       ok: true,
       phone: cleanPhone,
       channel,
-      message: dispatchResult.providerNotice
-        ? `OTP generated for +91 ${cleanPhone}. ${dispatchResult.providerNotice}`
-        : `OTP sent successfully to +91 ${cleanPhone}`,
+      message:
+        channel === "whatsapp"
+          ? `WhatsApp verification deep link ready for +91 ${cleanPhone}`
+          : `OTP sent successfully to +91 ${cleanPhone}`,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
       pendingConfig: dispatchResult.pendingConfig,
-      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
-      debugOtp: process.env.NODE_ENV !== "production" ? otp : undefined,
+      whatsAppOtpUrl: channel === "whatsapp" ? dispatchResult.whatsAppOtpUrl : undefined,
     };
   });
 
@@ -744,7 +744,8 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     }
 
     const record = riderOtpStore.get(cleanPhone);
-    const isMasterBypass = cleanOtp === "123456";
+    // In production, bypass is strictly prohibited. Permitted strictly in automated test/dev suites.
+    const isMasterBypass = process.env.NODE_ENV !== "production" && cleanOtp === "123456";
     const isMatched = (record && record.otp === cleanOtp && record.expiresAt > Date.now()) || isMasterBypass;
 
     if (!isMatched) {

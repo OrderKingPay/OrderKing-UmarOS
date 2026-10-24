@@ -87,15 +87,45 @@ describe("Rider Fleet & OTP Parity Suite (https://rider.orderkingpay.com/login)"
       expect(loginSource).toContain('handleSendOtp("whatsapp")');
     });
 
-    it("provides instant test auto-fill badge (123456)", () => {
-      expect(loginSource).toContain("Instant Verification Code:");
-      expect(loginSource).toContain('{debugOtp || "123456"}');
-      expect(loginSource).toContain("Tap here to auto-fill code →");
-      expect(loginSource).toContain('setOtp(debugOtp || "123456")');
+    it("strictly prohibits instant test auto-fill badges or on-screen OTP display in production", () => {
+      expect(loginSource).not.toContain("Instant Verification Code:");
+      expect(loginSource).not.toContain("Tap here to auto-fill code →");
+      expect(loginSource).not.toContain("debugOtp");
+    });
+
+    it("maintains clean UI with ZERO generic badges, marketing slogans, or pre-login bypass links", () => {
+      expect(loginSource).not.toContain("Delivery Partner Portal");
+      expect(loginSource).not.toContain("Official Fleet App");
+      expect(loginSource).not.toContain("Weekly Settlements");
+      expect(loginSource).not.toContain("Instant Cash Deposits");
+      expect(loginSource).not.toContain("Zero Joining Fee");
+      expect(loginSource).not.toContain("Direct KYC Document & Bank Desk");
     });
   });
 
-  describe("3. Instant Auth Sync with Better Auth & Auto-Routing", () => {
+  describe("3. Instant Auth Sync with Better Auth, Production Security & Auto-Routing", () => {
+    it("ensures sendRiderOtpFn strictly prevents OTP leakage to the client", () => {
+      const riderFnsPath = path.resolve(__dirname, "../lib/server/rider-fns.ts");
+      const riderFnsSource = fs.readFileSync(riderFnsPath, "utf-8");
+
+      const sendStart = riderFnsSource.indexOf("export const sendRiderOtpFn");
+      const sendEnd = riderFnsSource.indexOf("export const verifyRiderOtpFn");
+      expect(sendStart).toBeGreaterThan(-1);
+      expect(sendEnd).toBeGreaterThan(sendStart);
+      const sendFnBody = riderFnsSource.slice(sendStart, sendEnd);
+
+      // Verify no debugOtp returned by server function to client
+      expect(sendFnBody).not.toMatch(/debugOtp\s*:/);
+      // Verify WhatsApp URL is ONLY exposed when channel is explicitly whatsapp
+      expect(sendFnBody).toContain('whatsAppOtpUrl: channel === "whatsapp" ? dispatchResult.whatsAppOtpUrl : undefined');
+    });
+
+    it("strictly prohibits master bypass OTP in production environment", () => {
+      const riderFnsPath = path.resolve(__dirname, "../lib/server/rider-fns.ts");
+      const riderFnsSource = fs.readFileSync(riderFnsPath, "utf-8");
+
+      expect(riderFnsSource).toContain('process.env.NODE_ENV !== "production" && cleanOtp === "123456"');
+    });
     it("synchronizes session via Better Auth client signIn and fallback signUp", () => {
       expect(loginSource).toContain("authClient.signIn.email");
       expect(loginSource).toContain("authClient.signUp.email");
