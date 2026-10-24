@@ -21,7 +21,7 @@
  * SafeInteger paise arithmetic everywhere.
  */
 
-export type SettlementCycleType = "STANDARD_WEEKLY" | "EXPRESS_DAILY";
+import type { SettlementCycleType } from "./SettlementReconciliationEngine";
 
 export type WeeklyCyclePeriod = {
   cycleId: string;
