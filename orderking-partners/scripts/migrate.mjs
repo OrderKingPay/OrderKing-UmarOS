@@ -18,6 +18,17 @@ import { dirname, join } from "node:path";
 import pg from "pg";
 import { pendingMigrations } from "./migration-plan.mjs";
 
+import dotenv from "dotenv";
+
+const currentDir = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: join(currentDir, "..", ".env") });
+if (!process.env.DATABASE_URL) {
+  dotenv.config({ path: join(currentDir, "../..", ".env") });
+}
+if (process.env.DATABASE_URL) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
   console.log(

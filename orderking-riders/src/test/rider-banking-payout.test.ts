@@ -3,6 +3,8 @@ import { RiderEngine, todayRange } from "../lib/rider/engine.ts";
 import { MemoryStore } from "../lib/rider/memory-store.ts";
 import { executeRiderRazorpayXPayout, isRiderBankingLive } from "../lib/rider/banking.ts";
 import { DEFAULT_CONFIG } from "../lib/rider/config.ts";
+import { computeNextDailySettlementIst, computeNextSettlementWindowIst } from "../lib/rider/money.ts";
+import { founderCommandDials } from "../lib/rider/founder-dials.ts";
 
 describe("OrderKing Rider RazorpayX Banking & T+1 Instant Payout Suite", () => {
   let store: MemoryStore;
@@ -155,5 +157,52 @@ describe("OrderKing Rider RazorpayX Banking & T+1 Instant Payout Suite", () => {
       if (prevKeySecret) process.env.RAZORPAYX_KEY_SECRET = prevKeySecret;
       else delete process.env.RAZORPAYX_KEY_SECRET;
     }
+  });
+
+  it("calculates next-day daily settlement schedule with 10:00 AM window", () => {
+    // Test reference at 22:00 IST (10:00 PM - night shift active)
+    const testDate = new Date("2026-10-24T16:30:00Z"); // 22:00 IST
+    const dailyWindow = computeNextDailySettlementIst(testDate);
+
+    expect(dailyWindow.timeIst).toContain("10:00 AM");
+    expect(dailyWindow.scheduleDescription).toContain("Next-Day Daily Settlement");
+    expect(dailyWindow.cycleCutoffDescription).toContain("23:59:59 IST midnight cutoff");
+    expect(dailyWindow.hoursRemaining).toBeGreaterThanOrEqual(1);
+
+    const universal = computeNextSettlementWindowIst("daily", testDate);
+    expect(universal.timeIst).toContain("10:00 AM");
+  });
+
+  it("computes founder dials daily cycle period and statutory 1% TDS accurately", () => {
+    const cycle = founderCommandDials.getDailyCyclePeriod(new Date("2026-10-24T12:00:00Z"));
+    expect(cycle.frequency).toBe("DAILY");
+    expect(cycle.cycleId).toContain("cycle_daily_2026-10-24");
+
+    const statement = founderCommandDials.computeWeeklyRiderSettlement(
+      {
+        riderId: "rider-daily-1",
+        riderName: "Imran Khan",
+        payoutUpiOrBank: "imran@paytm",
+        deliveriesCount: 14,
+        basePayPaise: 49000, // ₹490
+        distancePayPaise: 24000, // ₹240
+        surgeIncentivesPaise: 5000, // ₹50
+        milestoneBonusPaise: 10000, // ₹100
+        waitTimePaise: 3000, // ₹30
+        codCashCollectedPaise: 20000, // ₹200 COD collected
+      },
+      cycle,
+    );
+
+    // Gross: 49000 + 24000 + 5000 + 10000 + 3000 = 91000 paise (₹910.00)
+    expect(statement.earningsBreakdown.grossEarningsPaise).toBe(91000);
+    // 1% Section 194-O TDS: 910 paise (₹9.10)
+    expect(statement.deductions.tdsSection194OPaise).toBe(910);
+    // Deductions: 20000 COD + 910 TDS = 20910 paise
+    expect(statement.deductions.netDeductionsPaise).toBe(20910);
+    // Net disbursement: 91000 - 20910 = 70090 paise (₹700.90)
+    expect(statement.netDisbursementPaise).toBe(70090);
+    expect(statement.disbursementRail).toBe("NPCI_UPI");
+    expect(statement.immutableLedgerHash).toBeTruthy();
   });
 });

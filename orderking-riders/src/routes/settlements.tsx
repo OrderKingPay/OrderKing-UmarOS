@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { formatPaise, computeNextWednesdaySettlementIst } from "@/lib/rider/money";
+import { formatPaise, computeNextWednesdaySettlementIst, computeNextDailySettlementIst } from "@/lib/rider/money";
 import {
   bootstrapRiderFn,
   createTicketFn,
@@ -64,7 +64,8 @@ export function SettlementsDesk() {
   const [disputeNote, setDisputeNote] = useState("");
   const [submittingDispute, setSubmittingDispute] = useState(false);
 
-  const nextPayoutWindow = useMemo(() => computeNextWednesdaySettlementIst(), []);
+  const nextPayoutWindow = useMemo(() => computeNextDailySettlementIst(), []);
+  const nextWeeklyPayout = useMemo(() => computeNextWednesdaySettlementIst(), []);
 
   async function loadAll(selectedPreset: Preset) {
     setLoading(true);
@@ -255,7 +256,7 @@ export function SettlementsDesk() {
                   </span>
                 </div>
                 <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-slate-900">
-                  Weekly Payouts, Bank Mandate &amp; Tax Statements
+                  Daily &amp; Weekly Payouts, Bank Mandate &amp; Tax Statements
                 </h1>
               </div>
             </div>
@@ -283,19 +284,36 @@ export function SettlementsDesk() {
           </div>
 
           {/* Human-Style Explanation of Settlement Schedule */}
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 text-xs text-slate-800 space-y-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="font-bold text-emerald-950 flex items-center gap-1.5 text-sm">
-                <CalendarClock className="size-4 text-emerald-700" />
-                Next Scheduled NEFT / IMPS Settlement: {nextPayoutWindow.formattedDate} at 14:00 IST (2:00 PM IST)
-              </span>
-              <span className="rounded-md bg-emerald-800 px-2.5 py-0.5 text-[11px] font-bold text-white">
-                In ~{nextPayoutWindow.hoursRemaining} hours
-              </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs text-slate-800 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-bold text-emerald-950 flex items-center gap-1.5 text-sm">
+                  <CalendarClock className="size-4 text-emerald-700" />
+                  Next-Day Daily Settlement (Default)
+                </span>
+                <span className="rounded-md bg-emerald-800 px-2 py-0.5 text-[10px] font-bold text-white">
+                  In ~{nextPayoutWindow.hoursRemaining}h
+                </span>
+              </div>
+              <p className="leading-relaxed text-slate-700">
+                <strong>00:00–23:59:59 Midnight Cutoff:</strong> Shifts worked until 12:00 AM reconcile at 00:05 AM. Net payout releases next day between <strong>10:00 AM &amp; 12:00 PM IST</strong> directly to your UPI handle or Bank A/C.
+              </p>
             </div>
-            <p className="leading-relaxed text-slate-700">
-              <strong>Weekly Wednesday Settlement Architecture:</strong> Orders completed from Monday 00:00:00 to Sunday 23:59:59 are settled automatically every Wednesday afternoon at 14:00 IST via automated NEFT/IMPS. 100% of base fare, extra distance pay, kitchen wait pay (&gt;5 mins), milestone bonuses, and customer tips are swept directly to your verified bank account or UPI mandate with zero platform deductions.
-            </p>
+
+            <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4 text-xs text-slate-800 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-bold text-blue-950 flex items-center gap-1.5 text-sm">
+                  <CalendarClock className="size-4 text-blue-700" />
+                  Weekly Wednesday Sweep
+                </span>
+                <span className="rounded-md bg-blue-800 px-2 py-0.5 text-[10px] font-bold text-white">
+                  In ~{nextWeeklyPayout.hoursRemaining}h
+                </span>
+              </div>
+              <p className="leading-relaxed text-slate-700">
+                <strong>Monday–Sunday Sweep:</strong> Full multi-day statutory reconciliation and cumulative tax summary disbursed every Wednesday at 14:00 IST via NEFT/IMPS with Section 194-O TDS compliance.
+              </p>
+            </div>
           </div>
         </div>
 

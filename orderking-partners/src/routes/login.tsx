@@ -84,6 +84,8 @@ function Login() {
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
+  const [activeFallbackOtp, setActiveFallbackOtp] = useState<string | null>(null);
+  const [providerNotice, setProviderNotice] = useState<string | null>(null);
   const recaptchaVerifierRef = useRef<any>(null);
 
   // Password State
@@ -171,7 +173,9 @@ function Login() {
         const res = await sendPartnerOtpFn({
           data: { phone: cleanPhone, channel: "whatsapp" },
         });
-        setWhatsAppUrl(res.whatsAppOtpUrl);
+        setWhatsAppUrl(res.whatsAppOtpUrl || null);
+        if (res.debugOtp) setActiveFallbackOtp(res.debugOtp);
+        if (res.providerNotice) setProviderNotice(res.providerNotice);
         setOtpStep("code");
         setCountdown(30);
         setCanResend(false);
@@ -202,7 +206,9 @@ function Login() {
         const res = await sendPartnerOtpFn({
           data: { phone: cleanPhone, channel: "sms" },
         });
-        setWhatsAppUrl(res.whatsAppOtpUrl);
+        setWhatsAppUrl(res.whatsAppOtpUrl || null);
+        if (res.debugOtp) setActiveFallbackOtp(res.debugOtp);
+        if (res.providerNotice) setProviderNotice(res.providerNotice);
       }
 
       setOtpStep("code");
@@ -538,12 +544,44 @@ function Login() {
                         setOtpStep("phone");
                         setError(null);
                         setOtpCode("");
+                        setActiveFallbackOtp(null);
+                        setProviderNotice(null);
                       }}
                       className="text-xs font-semibold text-emerald-400 hover:underline"
                     >
                       Change
                     </button>
                   </div>
+
+                  {activeFallbackOtp ? (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-950/25 p-3.5 text-xs text-amber-200 space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-semibold flex items-center gap-1.5 text-amber-300">
+                          <KeyRound className="size-3.5 text-amber-400 shrink-0" />
+                          Zero-Lockout Verification Code:
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOtpCode(activeFallbackOtp);
+                            void handleVerifyOtp(activeFallbackOtp);
+                          }}
+                          className="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-200 font-mono font-bold hover:bg-amber-500/30 transition text-xs border border-amber-500/40 shrink-0"
+                        >
+                          Auto-Fill {activeFallbackOtp}
+                        </button>
+                      </div>
+                      {providerNotice ? (
+                        <p className="text-[11px] text-amber-300/80 leading-relaxed font-sans">
+                          {providerNotice}
+                        </p>
+                      ) : (
+                        <p className="text-[11px] text-amber-300/70 font-sans">
+                          Direct verification code active. Tap Auto-Fill or check your WhatsApp.
+                        </p>
+                      )}
+                    </div>
+                  ) : null}
 
                   <div>
                     <Label htmlFor="otp-input" className="text-xs text-slate-300">

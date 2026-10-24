@@ -63,11 +63,14 @@ export interface AutonomousDisputeResolution {
 
 export interface WeeklySettlementCycle {
   cycleId: string;
-  cycleStartIso: string; // Monday 00:00:00 IST
-  cycleEndIso: string;   // Sunday 23:59:59 IST
-  payoutDateIso: string; // Wednesday 06:00:00 IST
+  cycleStartIso: string; // Monday 00:00:00 IST (or Day 00:00:00 IST for daily)
+  cycleEndIso: string;   // Sunday 23:59:59 IST (or Day 23:59:59 IST for daily)
+  payoutDateIso: string; // Wednesday 06:00:00 IST (or Next Day 10:00:00 IST for daily)
   status: "OPEN" | "RECONCILING" | "DISBURSED";
+  frequency?: "DAILY" | "WEEKLY";
 }
+
+export type SettlementCycle = WeeklySettlementCycle;
 
 export interface RiderSettlementComputationInput {
   riderId: string;
@@ -323,7 +326,47 @@ export class FounderCommandDials {
   }
 
   /**
-   * 4. Weekly Wednesday Payout Release Gateway:
+   * 4a. Daily (T+1) Next-Day Settlement Cycle:
+   * Reconciles daily orders completed between 00:00:00 and 23:59:59 IST midnight,
+   * runs autonomous 00:05 AM reconciliation audit, and executes direct UPI/IMPS
+   * batch payout next day between 10:00 AM and 12:00 PM IST with zero human payroll clerks.
+   */
+  public getDailyCyclePeriod(referenceDate = new Date()): SettlementCycle {
+    const d = new Date(referenceDate);
+    const istOffsetMs = 5.5 * 60 * 60 * 1000;
+    const istNow = new Date(d.getTime() + istOffsetMs);
+
+    const year = istNow.getUTCFullYear();
+    const month = String(istNow.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(istNow.getUTCDate()).padStart(2, "0");
+    const dateStr = `${year}-${month}-${day}`;
+
+    // Start: Today 00:00:00 IST
+    const startIst = new Date(Date.UTC(year, istNow.getUTCMonth(), istNow.getUTCDate(), 0, 0, 0, 0));
+    const startUtc = new Date(startIst.getTime() - istOffsetMs);
+
+    // End: Today 23:59:59.999 IST
+    const endIst = new Date(Date.UTC(year, istNow.getUTCMonth(), istNow.getUTCDate(), 23, 59, 59, 999));
+    const endUtc = new Date(endIst.getTime() - istOffsetMs);
+
+    // Payout: Next Day 10:00:00 IST
+    const payoutIst = new Date(Date.UTC(year, istNow.getUTCMonth(), istNow.getUTCDate() + 1, 10, 0, 0, 0));
+    const payoutUtc = new Date(payoutIst.getTime() - istOffsetMs);
+
+    const cycleId = `cycle_daily_${dateStr}`;
+
+    return {
+      cycleId,
+      cycleStartIso: startUtc.toISOString(),
+      cycleEndIso: endUtc.toISOString(),
+      payoutDateIso: payoutUtc.toISOString(),
+      status: "OPEN",
+      frequency: "DAILY",
+    };
+  }
+
+  /**
+   * 4b. Weekly Wednesday Payout Release Gateway:
    * Generates statutory Monday-to-Sunday cycle and executes direct banking disbursement
    * every Wednesday 06:00 IST with zero human payroll clerks.
    */
@@ -351,6 +394,7 @@ export class FounderCommandDials {
       cycleEndIso: sunday.toISOString(),
       payoutDateIso: wednesday.toISOString(),
       status: "OPEN",
+      frequency: "WEEKLY",
     };
   }
 

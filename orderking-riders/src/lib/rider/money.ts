@@ -1494,3 +1494,66 @@ export function computeNextWednesdaySettlementIst(nowInput: Date | string | numb
     scheduleDescription: "Wednesday afternoon at 14:00 IST via automated NEFT/IMPS",
   };
 }
+
+/**
+ * Calculates the next automated Daily T+1 (Next-Day 10:00 AM – 12:00 PM IST) settlement window.
+ * Shift window: 00:00:00 to 23:59:59 IST midnight cutoff with 00:05 AM autonomous reconciliation,
+ * and automated banking disbursement executed next day between 10:00 AM and 12:00 PM IST via UPI/IMPS.
+ */
+export function computeNextDailySettlementIst(nowInput: Date | string | number = new Date()): {
+  date: Date;
+  formattedDate: string;
+  hoursRemaining: number;
+  timeIst: string;
+  scheduleDescription: string;
+  cycleCutoffDescription: string;
+} {
+  const now = typeof nowInput === "string" || typeof nowInput === "number" ? new Date(nowInput) : nowInput;
+  const istOffsetMs = 5.5 * 60 * 60 * 1000;
+  const istNow = new Date(now.getTime() + istOffsetMs);
+
+  const istHours = istNow.getUTCHours();
+
+  // Target next payout window: 10:00 AM IST.
+  // If current IST hour is < 10, today's 10:00 AM is the target payout window (for yesterday's shifts).
+  // If current IST hour >= 10, tomorrow's 10:00 AM is the target payout window (for today's shifts ending at 23:59:59).
+  const targetIst = new Date(istNow.getTime());
+  if (istHours >= 10) {
+    targetIst.setUTCDate(targetIst.getUTCDate() + 1);
+  }
+  targetIst.setUTCHours(10, 0, 0, 0);
+
+  const targetUtc = new Date(targetIst.getTime() - istOffsetMs);
+  const diffMs = Math.max(0, targetUtc.getTime() - now.getTime());
+  const hoursRemaining = Math.max(1, Math.round(diffMs / 3_600_000));
+
+  const formattedDate = targetUtc.toLocaleDateString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  return {
+    date: targetUtc,
+    formattedDate,
+    hoursRemaining,
+    timeIst: "10:00 AM – 12:00 PM IST",
+    scheduleDescription: "Next-Day Daily Settlement between 10:00 AM & 12:00 PM IST via automated UPI / IMPS",
+    cycleCutoffDescription: "Daily 00:00 to 23:59:59 IST midnight cutoff with 00:05 AM autonomous reconciliation",
+  };
+}
+
+/**
+ * Universal settlement window calculator supporting both Daily (T+1) and Weekly Wednesday schedules.
+ */
+export function computeNextSettlementWindowIst(
+  frequency: "daily" | "twice_weekly" | "weekly" = "daily",
+  nowInput: Date | string | number = new Date(),
+) {
+  if (frequency === "weekly") {
+    return computeNextWednesdaySettlementIst(nowInput);
+  }
+  return computeNextDailySettlementIst(nowInput);
+}

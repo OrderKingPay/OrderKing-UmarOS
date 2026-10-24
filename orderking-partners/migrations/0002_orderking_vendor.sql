@@ -1,6 +1,65 @@
 -- OrderKing Window 2 — restaurant / vendor operating system
 -- Integer paise for all money. TEXT ids. Compatible with future shared core.
 
+-- Compatibility shim for pre-existing database tables
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS restaurant_id text;
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS name text;
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS is_active boolean DEFAULT true;
+
+ALTER TABLE restaurant_hours ADD COLUMN IF NOT EXISTS id text DEFAULT ('hrs_' || substr(md5(random()::text), 1, 12));
+ALTER TABLE restaurant_hours ADD COLUMN IF NOT EXISTS restaurant_id text;
+ALTER TABLE restaurant_hours ADD COLUMN IF NOT EXISTS open_minutes integer DEFAULT 0;
+ALTER TABLE restaurant_hours ADD COLUMN IF NOT EXISTS close_minutes integer DEFAULT 1440;
+
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS state text DEFAULT 'PLACED';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_number text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS food_value_paise integer DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS packing_paise integer DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS is_cod boolean DEFAULT true;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_area text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_ref text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_total_paise integer DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS platform_funded_discount_paise integer DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS platform_fee_paise integer DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS other_deductions_paise integer DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS other_deductions_code text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS refund_adjustment_paise integer DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS prep_minutes integer DEFAULT 20;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS accepted_at timestamptz;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS ready_at timestamptz;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS reject_reason text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS special_instructions text;
+
+ALTER TABLE order_events ADD COLUMN IF NOT EXISTS at timestamptz DEFAULT now();
+ALTER TABLE order_events ADD COLUMN IF NOT EXISTS restaurant_id text;
+ALTER TABLE order_events ADD COLUMN IF NOT EXISTS previous_state text;
+ALTER TABLE order_events ADD COLUMN IF NOT EXISTS new_state text;
+ALTER TABLE order_events ADD COLUMN IF NOT EXISTS actor text;
+ALTER TABLE order_events ADD COLUMN IF NOT EXISTS reason text;
+
+ALTER TABLE settlement_batches ADD COLUMN IF NOT EXISTS restaurant_id text;
+ALTER TABLE settlement_batches ADD COLUMN IF NOT EXISTS scheduled_for date;
+ALTER TABLE settlement_batches ADD COLUMN IF NOT EXISTS settled_at timestamptz;
+ALTER TABLE settlement_batches ADD COLUMN IF NOT EXISTS total_payable_paise integer DEFAULT 0;
+ALTER TABLE settlement_batches ADD COLUMN IF NOT EXISTS data_label text DEFAULT 'REAL';
+
+ALTER TABLE ledger_entries ADD COLUMN IF NOT EXISTS at timestamptz DEFAULT now();
+ALTER TABLE ledger_entries ADD COLUMN IF NOT EXISTS code text DEFAULT 'GENERIC';
+ALTER TABLE ledger_entries ADD COLUMN IF NOT EXISTS data_label text DEFAULT 'REAL';
+
+ALTER TABLE notifications ADD COLUMN IF NOT EXISTS restaurant_id text;
+ALTER TABLE notifications ADD COLUMN IF NOT EXISTS type text DEFAULT 'GENERAL';
+ALTER TABLE notifications ADD COLUMN IF NOT EXISTS is_read boolean DEFAULT false;
+
+ALTER TABLE idempotency_keys ADD COLUMN IF NOT EXISTS restaurant_id text;
+ALTER TABLE idempotency_keys ADD COLUMN IF NOT EXISTS request_hash text DEFAULT '';
+
+ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS at timestamptz DEFAULT now();
+ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS restaurant_id text;
+ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS entity_type text;
+ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS detail text DEFAULT '';
+
+
 create table if not exists platform_settings (
   key text primary key,
   value_json text not null,
@@ -393,7 +452,9 @@ create table if not exists assistant_messages (
 );
 
 
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS check_positive_food_value_paise;
 ALTER TABLE orders ADD CONSTRAINT check_positive_food_value_paise CHECK (food_value_paise >= 0);
 
 -- Market-Dominance Mandate: Strict Constraints
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS check_positive_food_value;
 ALTER TABLE orders ADD CONSTRAINT check_positive_food_value CHECK (food_value_paise >= 0);
