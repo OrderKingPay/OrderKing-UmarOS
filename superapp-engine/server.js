@@ -227,8 +227,8 @@ app.get('/api/umar-os/bootstrap', (req, res) => {
 
 app.post('/api/umar-os/update', (req, res) => {
   const { masterKey, updates } = req.body;
-  const validKey = process.env.UMAR_OS_MASTER_KEY || 'umar_god_9999';
-  if (masterKey !== validKey) {
+  const validKey = process.env.UMAR_OS_MASTER_KEY;
+  if (!validKey || !masterKey || masterKey !== validKey) {
     return res.status(403).json({ error: "Invalid Umar OS Master Key" });
   }
   db.umarConfig = { ...db.umarConfig, ...updates };
@@ -357,8 +357,10 @@ app.post('/api/kingpay/checkout', (req, res) => {
   };
 
   db.ledger.orders.unshift(newOrder);
-  db.ledger.founderNetProfitINR += Number(founderNetProfitINR);
-  db.ledger.grossMerchandiseValueINR += Number(customerPaidINR);
+  // Real revenue protection: Only verified/paid orders increment founder profit and GMV
+  if (paymentTag === 'COD') {
+    db.ledger.grossMerchandiseValueINR += Number(customerPaidINR);
+  }
   db.ledger.userKingCashBalanceINR = Math.max(0, db.ledger.userKingCashBalanceINR - Number(kingCashUsed) + Number(kingCashEarned));
 
   saveDB(db);

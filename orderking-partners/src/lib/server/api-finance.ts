@@ -154,6 +154,32 @@ export const requestExpressDailyPayout = createServerFn({ method: "POST" })
           ${netPayoutPaise}, ${ctx.dataLabel}
         )
       `;
+      // Atomically associate all accrued delivered orders into settlement_lines to prevent replay double-dipping
+      await sql`
+        insert into settlement_lines (
+          id, batch_id, restaurant_id, order_id,
+          food_value_paise, packing_paise, restaurant_discount_paise,
+          platform_funded_discount_paise, commission_paise,
+          other_deductions_paise, refund_adjustment_paise, restaurant_payable_paise
+        )
+        select
+          'stl_line_' || substr(md5(random()::text), 1, 12),
+          ${batchId},
+          ${ctx.restaurantId},
+          o.id,
+          coalesce(o.food_subtotal_paise, 0),
+          coalesce(o.packaging_paise, 0),
+          coalesce(o.restaurant_discount_paise, 0),
+          coalesce(o.platform_discount_paise, 0),
+          coalesce(o.commission_paise, 0),
+          0,
+          0,
+          coalesce(o.restaurant_payable_paise, 0)
+        from orders o
+        where o.restaurant_id = ${ctx.restaurantId}
+          and o.state = 'DELIVERED'
+          and o.id not in (select order_id from settlement_lines where restaurant_id = ${ctx.restaurantId})
+      `;
 
       return {
         ok: true,

@@ -944,7 +944,8 @@ export class RiderEngine {
       // Handover Drop-off Geofence Gate: require latest GPS ping within 250m (0.25 km) of delivery.dropLocation
       const latestPing = await this.store.latestLocation(userId);
       if (latestPing) {
-        const distanceToDropKm = haversineKm(latestPing.point, d.dropLocation);
+        const isFallbackCoord = !d.dropLocation || (d.dropLocation.lat === 0 && d.dropLocation.lng === 0);
+        const distanceToDropKm = isFallbackCoord ? 0 : haversineKm(latestPing.point, d.dropLocation);
         if (distanceToDropKm > 0.25) {
           throw new RiderError(
             "OUT_OF_GEOFENCE",

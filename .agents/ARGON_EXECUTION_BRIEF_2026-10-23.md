@@ -1,0 +1,16 @@
+# ORDERKING — GEMINI 4 ARGON EXECUTION BRIEF (23 OCT 2026)
+GitHub repository: https://github.com/OrderKingPay/OrderKing-UmarOS
+Local working tree: C:\Users\hasan\OrderKing (do not assume Gemini web can see local files)
+Current local HEAD: 49ff9483 (Cloudflare nodejs_compat native pg max:1 pool fix)
+IMPORTANT: HDmaster/src/lib/orderking/kingpay/compliance-flags.ts has UNCOMMITTED local changes (2 additions, 2 deletions). Preserve; GitHub import cannot see them.
+Existing evidence: ORDERKING_CONSOLIDATED_LAUNCH_MANIFEST_2026-10-21.md (historical NO-GO, revalidate before concluding), .github/workflows/ci.yml, production-gate.yml, deploy-partner-pages.yml, deploy-partners-pages.yml.
+Stack: pnpm 9.15.4 monorepo, Turbo, TypeScript; HDmaster, orderking-customers, orderking-partners, orderking-riders, apps-integration; Cloudflare deployment; real PostgreSQL; payment integration depends on approved provider credentials.
+PRIORITY QUEUE — execute ONE scoped task at a time; do not re-audit entire repository in every turn.
+P0-1 Security/payment/order truth: inspect existing checkout, server order creation, COD, Razorpay verification/webhooks, status changes, refunds, idempotency, DB writes, HMAC signatures, role-based authorization. Never weaken fail-closed controls. Distinguish verified code defects from unverified provider credentials.
+P0-2 Partner onboarding: inspect orderking-partners/src/lib/server/autonomous-onboarding.ts; do not approve FSSAI/GST numbers based on format, fabricated registry or expiry. Confirm revised pending-verification behavior is wired into actual production API, not only isolated tests.
+P0-3 Customer-to-partner-to-rider: enforce honest inventory/hours/pincode service availability, accepted orders, rider assignment/acceptance, pickup/delivery proof, reconciliation and failure states. No phantom partners, dispatch, jobs or payments.
+P0-4 Build/release: test Cloudflare commit 49ff9483 in isolated context; inspect duplicate-looking partner deploy workflows, production gate, secrets references, builds, typechecks, auth and exact deployed commit. Never access/log secret values.
+P1-5 Admin/UX: private Umar OS, persistent feature flags and settings, role-based controls, clean accessible customer UI.
+P1-6 Travel and notifications: Travelpayouts Drive site installation and real supplier availability; Resend domain/opt-in/delivery; do not claim these are functional without verified evidence.
+ARGON OPERATING RULES: Start with P0-1 ONLY. Use imported GitHub repository content and quote exact file paths/line references. Say which evidence is stale/missing. Return: (1) verified findings ranked by impact (2) smallest proposed fixes as precise code diff or per-file instructions (3) exact non-destructive test commands and expected behavior (4) blocked external provider requirements. Gemini web cannot edit GitHub or run local tests; DO NOT claim code was changed, tests passed or deployment occurred. Do not reveal secrets. Ask for no details already in repository. No marketing rhetoric.
+HANDOFF: ChatGPT via Desktop Commander reviews/implements approved changes safely; Antigravity can run local tests; founder reviews before production, payment and Git operations.

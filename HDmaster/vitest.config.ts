@@ -3,6 +3,9 @@ import path from "node:path";
 
 export default defineConfig({
   test: {
+    testTimeout: 30000,
+    hookTimeout: 30000,
+    fileParallelism: false,
     include: [
       "src/lib/orderking/billing/subscriptions.test.ts",
       "src/lib/orderking/tech-registry/catalog.test.ts",

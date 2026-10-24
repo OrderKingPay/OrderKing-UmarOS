@@ -168,7 +168,7 @@ async function loadPlatformSettingBag(sql: any): Promise<Record<string, any>> {
 
   try {
     const rows = await sql<{ key: string; value: any }>`
-      SELECT key, value FROM platform_settings WHERE key IS NOT NULL
+      SELECT key, value FROM public.umar_os_config WHERE key IS NOT NULL
     `;
     for (const r of rows || []) {
       if (r.key && r.value) {
@@ -211,7 +211,7 @@ async function savePlatformSettingBag(
   try {
     const jsonPayload = JSON.stringify(value || {});
     await sql`
-      INSERT INTO platform_settings (key, value, updated_at)
+      INSERT INTO public.umar_os_config (key, value, updated_at)
       VALUES (${key}, ${jsonPayload}::jsonb, NOW())
       ON CONFLICT (key)
       DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()

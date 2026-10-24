@@ -66,4 +66,4 @@ export class KingPayComplianceMaster {
 }
 
 // Fail closed until a verified provider authorization explicitly enables each feature.
-export const complianceMaster = new KingPayComplianceMaster();
+export const complianceMaster = new KingPayComplianceMaster(undefined, {});

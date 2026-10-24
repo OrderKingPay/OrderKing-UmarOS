@@ -59,7 +59,7 @@ describe('HDmaster /api/health Endpoint Suite', () => {
       process.env.BETTER_AUTH_SECRET = 'test-secret';
       delete process.env.DATABASE_URL;
       delete process.env.VITE_PG_LITE_URL;
-      vi.mocked(getDatabaseUrl).mockReturnValue("");
+      vi.mocked(getDatabaseUrl).mockReturnValue(undefined as unknown as string);
 
       const response = await handlers.GET();
       expect(response.status).toBe(200);

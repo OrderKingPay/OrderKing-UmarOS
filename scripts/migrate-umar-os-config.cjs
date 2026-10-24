@@ -1,6 +1,10 @@
 const { Client } = require('../node_modules/.pnpm/pg@8.23.0/node_modules/pg');
 
-const DATABASE_URL = 'postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres';
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error("FATAL: DATABASE_URL environment variable is required.");
+  process.exit(1);
+}
 
 async function main() {
   const client = new Client({

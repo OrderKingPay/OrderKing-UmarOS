@@ -9,9 +9,9 @@ const CACHE_NAME = "orderking-rider-v5-live";
 const STATIC_ASSETS = [
   "/",
   "/offline.html",
-  "/favicon.svg",
+  "/favicon.ico",
   "/icon-192.png",
-  "/__grok/manifest.webmanifest",
+  "/manifest.json",
 ];
 
 const IDB_NAME = "orderking-rider-sw";

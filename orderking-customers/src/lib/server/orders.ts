@@ -352,6 +352,7 @@ export const placeOrder = createServerFn({ method: "POST" })
     const orderId = newId("ord");
     const publicId = publicOrderCode(cfg.marketplace.orderPrefix);
     const otp = String(crypto.randomInt(1000, 10000));
+    const initialOrderStatus = method === "DIRECT_UPI" ? "PAYMENT_PENDING" : "PLACED";
     const paymentStatus =
       method === "COD"
         ? "pending_collection"
@@ -360,7 +361,7 @@ export const placeOrder = createServerFn({ method: "POST" })
           : method === "RAZORPAY_ONLINE"
             ? "paid"
             : method === "DIRECT_UPI"
-              ? "direct_upi_settled"
+              ? "awaiting_verification"
               : "sandbox_paid";
     const addressSnapshot = JSON.stringify({ ...data.address, lat: data.lat, lng: data.lng, zoneId: data.zoneId });
 
@@ -388,7 +389,7 @@ export const placeOrder = createServerFn({ method: "POST" })
         await tx`INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description) VALUES (${newId("kpt")}, ${context.userId}, ${finalTotalPaise}, 'DEBIT', ${`Order payment for #${publicId}`})`;
       }
 
-      await tx`insert into orders (id, public_id, user_id, restaurant_id, outlet_id, zone_id, address_snapshot, status, payment_method, payment_status, idempotency_key, food_subtotal_paise, restaurant_discount_paise, platform_discount_paise, delivery_fee_paise, service_fee_paise, tax_paise, packaging_paise, total_paise, commission_bps, commission_paise, restaurant_payable_paise, promotion_id, notes, delivery_otp, data_label) values (${orderId}, ${publicId}, ${context.userId}, ${built.restaurantId}, ${built.outletId}, ${built.zoneId}, ${addressSnapshot}, ${"PLACED"}, ${method}, ${paymentStatus}, ${data.idempotencyKey}, ${q.foodSubtotalPaise}, ${q.restaurantDiscountPaise}, ${q.platformDiscountPaise}, ${q.deliveryFeePaise}, ${q.serviceFeePaise}, ${q.taxPaise}, ${q.packagingPaise}, ${finalTotalPaise}, ${q.commissionBps}, ${q.commissionPaise}, ${q.restaurantPayablePaise}, ${built.promo?.id ?? null}, ${(data.notes ?? "").slice(0, 240)}, ${otp}, ${built.dataLabel})`;
+      await tx`insert into orders (id, public_id, user_id, restaurant_id, outlet_id, zone_id, address_snapshot, status, payment_method, payment_status, idempotency_key, food_subtotal_paise, restaurant_discount_paise, platform_discount_paise, delivery_fee_paise, service_fee_paise, tax_paise, packaging_paise, total_paise, commission_bps, commission_paise, restaurant_payable_paise, promotion_id, notes, delivery_otp, data_label) values (${orderId}, ${publicId}, ${context.userId}, ${built.restaurantId}, ${built.outletId}, ${built.zoneId}, ${addressSnapshot}, ${initialOrderStatus}, ${method}, ${paymentStatus}, ${data.idempotencyKey}, ${q.foodSubtotalPaise}, ${q.restaurantDiscountPaise}, ${q.platformDiscountPaise}, ${q.deliveryFeePaise}, ${q.serviceFeePaise}, ${q.taxPaise}, ${q.packagingPaise}, ${finalTotalPaise}, ${q.commissionBps}, ${q.commissionPaise}, ${q.restaurantPayablePaise}, ${built.promo?.id ?? null}, ${(data.notes ?? "").slice(0, 240)}, ${otp}, ${built.dataLabel})`;
       for (const line of built.pricedLines) {
         await tx`insert into order_items (id, order_id, item_id, variant_id, name_snapshot, quantity, unit_price_paise, addons_snapshot, instructions, line_total_paise) values (${newId("oit")}, ${orderId}, ${line.itemId}, ${line.variantId}, ${line.name}, ${line.quantity}, ${line.unitPaise}, ${JSON.stringify(line.addons)}, ${line.instructions || null}, ${line.unitPaise * line.quantity})`;
       }

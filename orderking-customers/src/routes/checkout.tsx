@@ -123,7 +123,7 @@ function CheckoutPage() {
   const { user, isPending } = useCurrentUserState();
   const { restaurantId, restaurantName, items, coupon, clear } = useCartStore();
   const location = useLocationStore((s) => s.location);
-  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY" | "DIRECT_UPI">("DIRECT_UPI");
+  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY" | "DIRECT_UPI">("RAZORPAY_ONLINE");
   const [preferredUpiApp, setPreferredUpiApp] = useState<string>("UPI QR");
   const [directUpiModalOpen, setDirectUpiModalOpen] = useState(false);
   const [directUpiTxnRef, setDirectUpiTxnRef] = useState<string>("");
@@ -380,6 +380,10 @@ function CheckoutPage() {
           setBusy(false);
         });
         rzp.open();
+      } else if (method === "DIRECT_UPI" && !directUpiTxnRef) {
+        setDirectUpiModalOpen(true);
+        setBusy(false);
+        return;
       } else {
         await placeFinalOrder(method);
       }

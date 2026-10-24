@@ -63,7 +63,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
               const restaurant = { id: o.restaurant_id ?? "live_restaurant", name: o.restaurant_name ?? "Restaurant", area: "", address: o.restaurant_address ?? "", location: { lat: o.restaurant_lat ?? 0, lng: o.restaurant_lng ?? 0 }, phoneMasked: "XXX", specialPickupInstructions: null, preparationStatus: "READY" as const };
               const customer = { displayName: o.customer_name ?? "Customer", area: o.zone_name ?? "", address: o.customer_address ?? o.zone_name ?? "", contactMasked: null, contactAllowed: false, instructions: null };
               await e.getStore().insertDelivery({
-                pickupLocation: {lat:0, lng:0}, dropLocation: {lat:0, lng:0}, packageCount: 1, cod: false, codAmountPaise: 0, pickupVerification: "ORDER_CODE", pickupCode: "0000", otpRequired: true, arrivedRestaurantAt: null, expectedReadyAt: null, pickedUpAt: null, arrivedCustomerAt: null, deliveredAt: null, waitStartedAt: null, contactAttempts: 0, cancelReason: null, failReason: null, updatedAt: o.offered_at,
+                pickupLocation: { lat: Number(o.restaurant_lat) || 0, lng: Number(o.restaurant_lng) || 0 }, dropLocation: { lat: Number(o.customer_lat) || 0, lng: Number(o.customer_lng) || 0 }, packageCount: 1, cod: false, codAmountPaise: 0, pickupVerification: "ORDER_CODE", pickupCode: "0000", otpRequired: true, arrivedRestaurantAt: null, expectedReadyAt: null, pickedUpAt: null, arrivedCustomerAt: null, deliveredAt: null, waitStartedAt: null, contactAttempts: 0, cancelReason: null, failReason: null, updatedAt: o.offered_at,
                 id: o.order_id,
                 orderCode: o.order_id,
                 orderId: o.order_id,
@@ -84,7 +84,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
                 // routeScore: o.score,
                 createdAt: o.offered_at,
               });
-              const plainOtp = generateOtp(4);
+              const plainOtp = (o.delivery_otp && String(o.delivery_otp).trim().length === 4) ? String(o.delivery_otp).trim() : generateOtp(4);
               const secret = newOtpSecret(plainOtp);
               await e.getStore().saveOtp(
                 {
@@ -98,7 +98,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
                 context.userId,
               );
               await e.getStore().insertOffer({
-                  pickupLocation: {lat:0, lng:0}, dropLocation: {lat:0, lng:0},
+                  pickupLocation: { lat: Number(o.restaurant_lat) || 0, lng: Number(o.restaurant_lng) || 0 }, dropLocation: { lat: Number(o.customer_lat) || 0, lng: Number(o.customer_lng) || 0 },
                 id: o.id,
                 orderCode: o.order_id,
                 riderId: home.rider.id,
@@ -718,7 +718,6 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
     return {
       ok: true,
       phone: cleanPhone,
-      debugOtp: otp,
       channel,
       message: dispatchResult.providerNotice
         ? `OTP generated for +91 ${cleanPhone}. ${dispatchResult.providerNotice}`
@@ -744,10 +743,9 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     }
 
     const record = riderOtpStore.get(cleanPhone);
-    const isMasterBypass = cleanOtp === "123456";
     const isMatched = record && record.otp === cleanOtp && record.expiresAt > Date.now();
 
-    if (!isMasterBypass && !isMatched) {
+    if (!isMatched) {
       if (record && record.expiresAt <= Date.now()) {
         throw new RiderError(
           "OTP_EXPIRED",

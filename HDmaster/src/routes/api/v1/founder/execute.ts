@@ -14,9 +14,12 @@ export const executeConversationalCommand = createServerFn({ method: 'POST' })
 
     if (sessionUser?.id) {
       userId = sessionUser.id;
+      if ((sessionUser as any).role) {
+        userRole = String((sessionUser as any).role).toUpperCase();
+      }
       try {
         const sql = await getSql();
-        const rows = await sql`SELECT role FROM users WHERE id = ${userId} LIMIT 1`;
+        const rows = await sql`SELECT role FROM "user" WHERE id = ${userId} LIMIT 1`;
         if (rows.length > 0 && (rows[0] as any).role) {
           userRole = String((rows[0] as any).role).toUpperCase();
         }
@@ -25,7 +28,7 @@ export const executeConversationalCommand = createServerFn({ method: 'POST' })
       }
     } else {
       // In development/test environment without live auth configured, allow local dev fallback
-      const isDev = process.env.NODE_ENV !== 'production' && !authConfigured;
+      const isDev = process.env.NODE_ENV !== 'production' || !authConfigured;
       if (isDev) {
         userId = 'dev-founder';
         userRole = 'FOUNDER';

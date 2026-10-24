@@ -227,64 +227,80 @@ export class CanonicalLedger {
     let auditHash = "";
     let duplicateTxId: string | null = null;
 
-    await sql.transaction(async (tx: Sql) => {
-      await tx.query("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
-      const lockedExisting = await tx.query<any>(
-        "SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 FOR UPDATE",
-        [params.idempotencyKey],
-      );
-      if (lockedExisting.length > 0) {
-        duplicateTxId = lockedExisting[0].transaction_id;
-        return;
-      }
-
-      const chainState = await tx.query<{ last_audit_hash: string }>(
-        "SELECT last_audit_hash FROM ledger_chain_state WHERE id = 1 FOR UPDATE",
-      );
-      previousHash =
-        chainState[0]?.last_audit_hash ??
-        "0000000000000000000000000000000000000000000000000000000000000000";
-
-      const canonicalPayload = JSON.stringify({
-        transactionId,
-        idempotencyKey: params.idempotencyKey,
-        previousHash,
-        totalAmountPaise: totalDebit,
-        entries: params.entries.map((e) => ({
-          account: e.account,
-          direction: e.direction,
-          amountPaise: e.amountPaise,
-          entityId: e.entityId,
-        })),
-      });
-      auditHash = this.generateHash(canonicalPayload);
-
-      await tx.query(
-        "INSERT INTO ledger_transactions (transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
-        [transactionId, params.idempotencyKey, params.orderId || null, params.eventType, totalDebit, now, auditHash, previousHash, params.isFraudSuspicious || false, fraudReasonsJson, params.fraudScore || 0],
-      );
-
-      for (const entry of params.entries) {
-        const entryId = "ent-" + crypto.randomUUID();
-        await tx.query(
-          "INSERT INTO ledger_entries (id, entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $1, $2, $3, $4, $5, $6, $7, $8)",
-          [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now],
-        );
-        try {
-          await tx.query(
-            "INSERT INTO kingpay_ledger_entries (entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (entry_id) DO NOTHING",
-            [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now],
+    const maxRetries = 5;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        await sql.transaction(async (tx: Sql) => {
+          await tx.query("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+          const lockedExisting = await tx.query<any>(
+            "SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 FOR UPDATE",
+            [params.idempotencyKey],
           );
-        } catch {
-          // Fallback if table not yet migrated
-        }
-      }
+          if (lockedExisting.length > 0) {
+            duplicateTxId = lockedExisting[0].transaction_id;
+            return;
+          }
 
-      await tx.query(
-        "UPDATE ledger_chain_state SET last_audit_hash = $1 WHERE id = 1",
-        [auditHash],
-      );
-    });
+          const chainState = await tx.query<{ last_audit_hash: string }>(
+            "SELECT last_audit_hash FROM ledger_chain_state WHERE id = 1 FOR UPDATE",
+          );
+          previousHash =
+            chainState[0]?.last_audit_hash ??
+            "0000000000000000000000000000000000000000000000000000000000000000";
+
+          const canonicalPayload = JSON.stringify({
+            transactionId,
+            idempotencyKey: params.idempotencyKey,
+            previousHash,
+            totalAmountPaise: totalDebit,
+            entries: params.entries.map((e) => ({
+              account: e.account,
+              direction: e.direction,
+              amountPaise: e.amountPaise,
+              entityId: e.entityId,
+            })),
+          });
+          auditHash = this.generateHash(canonicalPayload);
+
+          await tx.query(
+            "INSERT INTO ledger_transactions (transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+            [transactionId, params.idempotencyKey, params.orderId || null, params.eventType, totalDebit, now, auditHash, previousHash, params.isFraudSuspicious || false, fraudReasonsJson, params.fraudScore || 0],
+          );
+
+          for (const entry of params.entries) {
+            const entryId = "ent-" + crypto.randomUUID();
+            await tx.query(
+              "INSERT INTO ledger_entries (id, entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $1, $2, $3, $4, $5, $6, $7, $8)",
+              [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now],
+            );
+            try {
+              await tx.query(
+                "INSERT INTO kingpay_ledger_entries (entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (entry_id) DO NOTHING",
+                [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now],
+              );
+            } catch {
+              // Fallback if table not yet migrated
+            }
+          }
+
+          await tx.query(
+            "UPDATE ledger_chain_state SET last_audit_hash = $1 WHERE id = 1",
+            [auditHash],
+          );
+        });
+        break;
+      } catch (err: any) {
+        const isSerializationError =
+          err?.code === "40001" ||
+          err?.message?.includes("could not serialize access") ||
+          err?.message?.includes("deadlock detected");
+        if (isSerializationError && attempt < maxRetries - 1) {
+          await new Promise((r) => setTimeout(r, 60 * Math.pow(2, attempt) + Math.random() * 50));
+          continue;
+        }
+        throw err;
+      }
+    }
 
     if (duplicateTxId) {
       const txRows = await sql.query<any>(
