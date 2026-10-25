@@ -171,7 +171,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
                 <Wine className="size-5" />
               </div>
               <span className="rounded-full bg-gradient-to-r from-rose-500/25 via-rose-400/30 to-pink-500/25 border border-rose-400/70 px-2.5 py-0.5 text-[10px] font-black text-rose-200 uppercase tracking-wider shadow-2xs">
-                👑 Up to 40% Off
+                👑 Instant Booking
               </span>
             </div>
             <div className="mt-3">

@@ -359,7 +359,7 @@ export function detectSpokenOrTextLanguage(text: string): string {
   }
 
   // Assamese specific keywords
-  if (/\b(axom|bhal|namaskar|lagibo)\b/i.test(text)) {
+  if (/\b(axom|bhal|keneko|lagibo)\b/i.test(text)) {
     return "as-IN";
   }
 

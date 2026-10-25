@@ -20,11 +20,11 @@ export type LuxuryTheme =
   | "classic_gold"
   | "festive_red"
   | "celebration"
-  | "festive_diya"
+  | "festive_cyan"
   | "business_blue"
   | "cozy_cafe"
   | "royal_gold"
-  | "shagun_red"
+  | "ruby_red"
   | "titanium_platinum";
 
 type Props = {
@@ -79,9 +79,9 @@ const LUXURY_THEMES: Array<{
     tagline: "Celebration Purple · Events & Counter",
   },
   {
-    id: "festive_diya",
+    id: "festive_cyan",
     name: "Festive Cyan",
-    icon: "🪔",
+    icon: "💎",
     cardBg: "bg-gradient-to-b from-[#081C1E] via-[#0E2C2E] to-[#041112]",
     borderClass: "border-2 border-cyan-400/90 shadow-[0_12px_40px_rgba(34,211,238,0.35)]",
     accentText: "text-cyan-300",
@@ -114,9 +114,9 @@ const LUXURY_THEMES: Array<{
 ];
 
 const NOTE_PRESETS = [
-  { label: "🎁 Birthday Gift", text: "Wishing you a wonderful and blessed birthday! 🎂" },
-  { label: "🧧 Wedding Shagun", text: "Auspicious wedding shagun & prayers for your new journey! 💍" },
-  { label: "✨ Festive Shagun", text: "Heartfelt festive greetings & blessings to you and family! 🪔" },
+  { label: "🎁 Birthday Gift", text: "Wishing you a wonderful and joyful birthday! 🎂" },
+  { label: "💍 Wedding Gift", text: "Warmest congratulations and best wishes on your wedding! 💍" },
+  { label: "✨ Seasonal Gift", text: "Warmest seasonal greetings and best wishes to you and family! ✨" },
   { label: "🍲 Food & Dinner Split", text: "For our delicious dinner & feast! 🍲" },
   { label: "☕ Chai Treat", text: "Chai and snacks treat on me! ☕" },
   { label: "🏡 Rent & Dues", text: "Monthly rental & maintenance payment 🏡" },
@@ -506,7 +506,7 @@ export function ReceiveMoneyQrStudio({
             </label>
             <input
               type="text"
-              placeholder="e.g. Birthday Shagun, Dinner Split, Rent"
+              placeholder="e.g. Birthday Gift, Dinner Split, Rent"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               className="w-full rounded-xl border border-border bg-bg px-3.5 py-2.5 text-xs text-fg focus:outline-none focus:ring-2 focus:ring-primary font-medium"

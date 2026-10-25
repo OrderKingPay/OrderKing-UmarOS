@@ -10,10 +10,12 @@
         "lint": "turbo run lint",
         "test": "turbo run test",
         "typecheck": "turbo run typecheck",
+        "deploy:customers": "pnpm --filter orderking-customers run deploy",
         "start:superapp": "node server.js"
     },
     "devDependencies": {
-        "turbo": "latest"
+        "turbo": "latest",
+        "wrangler": "^4.152.0"
     },
     "dependencies": {
         "@google/genai": "^2.27.0",

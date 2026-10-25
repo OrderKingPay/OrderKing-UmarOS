@@ -62,58 +62,41 @@ export function MonthlyGstr1InvoiceModal({
 }: MonthlyGstr1InvoiceModalProps) {
   const [selectedMonth, setSelectedMonth] = useState<string>("2026-10");
 
-  // Fallback realistic baseline if newly onboarded merchant has 0 settled lines yet
+  // Genuine settlement totals calculated directly from verified database ledger
   const effectiveTotals = useMemo(() => {
-    if (totals.gross > 0) {
-      return {
-        ...totals,
-        delivery: totals.delivery ?? Math.round(totals.gross * 0.05),
-      };
-    }
-
-    // Default CA benchmark numbers for October 2026
-    const mockFood = 23880000; // ₹2,38,800.00
-    const mockPacking = 920000; // ₹9,200.00
-    const mockGross = mockFood + mockPacking; // ₹2,48,000.00
-    const mockDelivery = 1240000; // ₹12,400.00 customer delivery charges
-    const mockRestDisc = 1800000; // ₹18,000.00
-    const mockPlatDisc = 650000; // ₹6,500.00
-    const pct = typeof commissionPct === "number" ? commissionPct : parseFloat(String(commissionPct)) || 28;
-    const mockComm = Math.round((mockGross * pct) / 100);
-    const mockCommGst = Math.round((mockComm * 18) / 100);
-    const mockGwFee = Math.round((mockGross * 1.84) / 100);
-    const mockGwGst = Math.round((mockGwFee * 18) / 100);
-    const netSupply = mockGross - mockRestDisc;
-    const mockTcs = Math.round(netSupply * 0.005); // 0.5% (0.25% CGST + 0.25% SGST)
-    const mockTds = Math.round(mockGross * 0.001); // 0.1% TDS u/s 194-O
-    const mockSec95 = Math.round(netSupply * 0.05); // 5% Food GST
-    const mockPayable =
-      mockGross -
-      mockRestDisc -
-      mockComm -
-      mockCommGst -
-      mockGwFee -
-      mockGwGst -
-      mockTcs -
-      mockTds +
-      mockPlatDisc;
+    const gross = totals.gross || 0;
+    const food = totals.food || 0;
+    const packing = totals.packing || 0;
+    const delivery = totals.delivery ?? Math.round(gross * 0.05);
+    const restDisc = totals.restDisc || 0;
+    const platDisc = totals.platDisc || 0;
+    const pct = typeof commissionPct === 'number' ? commissionPct : parseFloat(String(commissionPct)) || 28;
+    const commission = totals.commission || Math.round((gross * pct) / 100);
+    const commGst = totals.commGst || Math.round((commission * 18) / 100);
+    const gwFee = totals.gwFee || Math.round((gross * 1.84) / 100);
+    const gwGst = totals.gwGst || Math.round((gwFee * 18) / 100);
+    const netSupply = Math.max(0, gross - restDisc);
+    const tcs = totals.tcs || Math.round(netSupply * 0.005);
+    const tds = totals.tds || Math.round(gross * 0.001);
+    const sec9_5 = totals.sec9_5 || Math.round(netSupply * 0.05);
+    const payable = totals.payable || Math.max(0, gross - restDisc - commission - commGst - gwFee - gwGst - tcs - tds + platDisc);
 
     return {
-      gross: mockGross,
-      food: mockFood,
-      packing: mockPacking,
-      delivery: mockDelivery,
-      restDisc: mockRestDisc,
-      platDisc: mockPlatDisc,
-      commission: mockComm,
-      commGst: mockCommGst,
-      gwFee: mockGwFee,
-      gwGst: mockGwGst,
-      tcs: mockTcs,
-      tds: mockTds,
-      sec9_5: mockSec95,
-      refund: 0,
-      payable: mockPayable,
+      gross,
+      food,
+      packing,
+      delivery,
+      restDisc,
+      platDisc,
+      commission,
+      commGst,
+      gwFee,
+      gwGst,
+      tcs,
+      tds,
+      sec9_5,
+      refund: totals.refund || 0,
+      payable,
     };
   }, [totals, commissionPct]);
 
@@ -327,18 +310,18 @@ export function MonthlyGstr1InvoiceModal({
                     </span>
                   </div>
                   <div className="text-[11px] text-slate-600 mt-0.5 font-medium">
-                    Order King Hyperlocal Food Delivery &amp; Partner Platform Operations
+                    Orderkingpay (Order King · King Pay)
                   </div>
                   <div className="text-[10px] text-slate-500 mt-1 max-w-md leading-relaxed">
-                    Registered Office: Ground &amp; 4th Floor, Sovereign Horizon Towers, Outer Ring Road, Bellandur,
-                    Bengaluru, Karnataka 560103, India
+                    Principal Place of Business: Main Road, Near Sambu Sagar Park, Sribhumi, Assam 788710, India
+
                   </div>
                   <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-mono text-slate-700">
                     <div>
-                      <span className="font-bold text-slate-900">GSTIN:</span> 29AAFCO8921M1ZX
+                      <span className="font-bold text-slate-900">GSTIN:</span> 18AFXPH9838M1Z9
                     </div>
                     <div>
-                      <span className="font-bold text-slate-900">PAN:</span> AAFCO8921M
+                      <span className="font-bold text-slate-900">PAN:</span> AFXPH9838M
                     </div>
                     <div>
                       <span className="font-bold text-slate-900">CIN:</span> U72900KA2024PTC189201
@@ -364,7 +347,7 @@ export function MonthlyGstr1InvoiceModal({
                       Billing Cycle: <strong className="text-slate-950 font-bold">{monthLabel}</strong>
                     </div>
                     <div>
-                      Place of Supply: <strong className="text-slate-950 font-bold">Karnataka (29)</strong>
+                      Place of Supply: <strong className="text-slate-950 font-bold">Assam (18)</strong>
                     </div>
                   </div>
                 </div>
@@ -542,7 +525,7 @@ export function MonthlyGstr1InvoiceModal({
                         Section 9(5) Food GST Platform Liability (5%)
                       </div>
                       <div className="text-[10px] text-emerald-800 leading-snug">
-                        Collected and remitted directly to Government Treasury under Order King GSTIN 29AAFCO8921M1ZX.
+                        Collected and remitted directly to Government Treasury under Orderkingpay GSTIN 18AFXPH9838M1Z9.
                         (Statutory platform liability - ₹0 debited from merchant payout).
                       </div>
                     </td>
@@ -699,9 +682,9 @@ export function MonthlyGstr1InvoiceModal({
                 Chartered Accountant (CA) Statutory Compliance Notes
               </div>
               <p className="text-[10px] text-slate-600 leading-relaxed">
-                1. <strong>Section 9(5) CGST Act 2017:</strong> Order King Internet Private Limited, being an Electronic
+                1. <strong>Section 9(5) CGST Act 2017:</strong> Orderkingpay, being an Electronic
                 Commerce Operator (ECO), has discharged 5% GST on the restaurant supply facilitated during the period under its
-                GSTIN 29AAFCO8921M1ZX. The restaurant partner is not required to pay GST again on this turnover under Table 3.1.1(i)
+                GSTIN 18AFXPH9838M1Z9. The restaurant partner is not required to pay GST again on this turnover under Table 3.1.1(i)
                 of Form GSTR-3B.
               </p>
               <p className="text-[10px] text-slate-600 leading-relaxed">

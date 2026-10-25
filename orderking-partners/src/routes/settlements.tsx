@@ -591,7 +591,7 @@ function SettlementsPage() {
                 <span>
                   <strong>Section 9(5) CGST Act Remittance:</strong> Platform collected and remitted{" "}
                   <span className="font-mono text-emerald-400 font-semibold">{formatINR(totals.sec9_5)}</span> (5% GST)
-                  directly to the Government under OrderKing GSTIN. (Not debited from your payout).
+                  directly to the Government under Orderkingpay GSTIN (18AFXPH9838M1Z9). (Not debited from your payout).
                 </span>
               </div>
               <span className="text-[10px] font-mono text-slate-400 shrink-0">

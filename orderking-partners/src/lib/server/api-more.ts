@@ -714,7 +714,7 @@ const DEFAULT_SEED_RESERVATIONS = [
   },
   {
     bookingRef: "TB-59012",
-    guestName: "Pooja Hegde",
+    guestName: "Priya Das",
     phone: "+91 97112 33445",
     guestsCount: 2,
     timeSlot: "6:30 PM",

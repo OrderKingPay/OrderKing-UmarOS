@@ -42,7 +42,7 @@ describe("OrderKing Partner Agreement (Code on Social Security, 2020)", () => {
       aadhaarLast4: "4821",
     });
     expect(markdown.toLowerCase()).not.toContain(FORBIDDEN_LEGACY_MARKET_LEADER);
-    expect(markdown).toContain("OrderKing Foods Private Limited");
+    expect(markdown).toContain("Orderkingpay");
     expect(markdown).toContain("Code on Social Security, 2020");
     expect(markdown).toContain("INR 10,00,000");
   });

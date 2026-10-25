@@ -296,7 +296,7 @@ export class OrderKingSpark {
       {
         disputeId: "dsp-taste-104",
         orderId: "ord-8870",
-        customerName: "Pooja Malhotra",
+        customerName: "Priya Malhotra",
         complaintType: "SUBJECTIVE_TASTE",
         complaintText: "Mutton Biryani had slightly less salt and cardamom flavor compared to my previous visit.",
         claimAmountPaise: 38000,

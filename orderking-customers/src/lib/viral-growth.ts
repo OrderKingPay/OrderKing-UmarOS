@@ -747,7 +747,7 @@ export type InstitutionalPitchDossier = {
 
 export function generateInstitutionalPitchDossier(
   institutionName: string,
-  founderName: string = "Hasan"
+  founderName: string = "Founder & Chief Architect"
 ): InstitutionalPitchDossier {
   return {
     subject: `Keynote Speaker Invitation / Innovation Showcase: ${founderName}, Founder of OrderKing`,
@@ -1160,8 +1160,8 @@ export function generateAutoBookingDossier(
   }
 ): AutoBookingDossier {
   const opp = OPPORTUNITY_RADAR_REGISTRY.find((o) => o.id === opportunityId) || OPPORTUNITY_RADAR_REGISTRY[0];
-  const founderName = founderDetails.name || "Hasan";
-  const entityName = founderDetails.entityName || "OrderKing Technologies Private Limited";
+  const founderName = founderDetails.name || "Founder & Chief Architect";
+  const entityName = founderDetails.entityName || "Orderkingpay";
   const email = founderDetails.email || "founder@orderking.in";
   const phone = founderDetails.phone || "+91 98765 43210";
   const udyamNumber = founderDetails.udyamNumber || "UDYAM-AS-03-0012345";

@@ -166,7 +166,7 @@ export const VERIFIED_EDUCATOR_PROFILES: readonly TutorProfile[] = [
   },
   {
     id: "tutor-3",
-    name: "Pooja Deshmukh",
+    name: "Priya Deshmukh",
     avatarText: "PD",
     boards: ["CBSE", "ICSE / ISC", "All State Boards"],
     classes: ["Class 11–12 (Commerce)", "Class 9–10"],

@@ -336,7 +336,7 @@ export function PassengerDrawer({
                       required
                       value={pax.fullName}
                       onChange={(e) => handleUpdatePassenger(index, "fullName", e.target.value)}
-                      placeholder="e.g. Hasan Raza"
+                      placeholder="e.g. Rahul Sharma"
                       className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-indigo-500 transition"
                     />
                   </div>

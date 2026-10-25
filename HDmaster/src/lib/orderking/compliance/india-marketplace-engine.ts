@@ -1450,7 +1450,7 @@ export function generateStatutoryCreditNote(input: CreditNoteInputPaise): Statut
     originalOrderId: input.originalOrderId,
     restaurantId: input.restaurantId,
     restaurantGstin: input.restaurantGstin || "URP (Unregistered Person)",
-    platformGstin: input.platformGstin || "07AAAAO0000A1Z5",
+    platformGstin: input.platformGstin || "18AFXPH9838M1Z9",
     reasonCode: input.reasonCode,
     reasonDescription: input.reasonDescription,
 

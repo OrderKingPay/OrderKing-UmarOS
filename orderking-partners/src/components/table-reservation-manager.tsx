@@ -226,7 +226,7 @@ export const INITIAL_RESERVATIONS: ReservationBooking[] = [
   {
     id: "res-5",
     bookingRef: "TB-59012",
-    guestName: "Pooja Hegde",
+    guestName: "Priya Das",
     phone: "+91 97112 33445",
     guestsCount: 2,
     timeSlot: "6:30 PM",

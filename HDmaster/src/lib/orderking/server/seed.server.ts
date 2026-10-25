@@ -877,7 +877,7 @@ async function seedV2(): Promise<void> {
 
   const campaigns = [
     ["cmp_launch", "Karimganj launch week", "push", "customers", 250000],
-    ["cmp_ramadan", "Ramadan restaurant hours", "whatsapp", "restaurants", 80000],
+    ["cmp_night", "Extended restaurant hours", "whatsapp", "restaurants", 80000],
     ["cmp_rider", "Night shift rider bonus (copy only)", "sms", "riders", 120000],
   ] as const;
   for (const c of campaigns) {

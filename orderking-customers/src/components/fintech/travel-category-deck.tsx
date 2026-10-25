@@ -124,9 +124,7 @@ export function TravelCategoryDeck({
             <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
               Travel Categories &amp; Services
             </h2>
-            <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-black text-emerald-700 hidden sm:inline-flex">
-              0% Intermediary Fee
-            </span>
+            
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
             Choose your journey, then check current fares and seat availability directly with the booking provider.
@@ -184,9 +182,7 @@ export function TravelCategoryDeck({
           <span className="text-[11px] font-black uppercase tracking-wider text-slate-500">
             {current?.name} Quick Options
           </span>
-          <span className="text-[10px] font-bold text-sky-600">
-            Click to configure sector
-          </span>
+          
         </div>
         <div className="flex flex-wrap gap-1.5">
           {(current?.options || []).map((item) => {

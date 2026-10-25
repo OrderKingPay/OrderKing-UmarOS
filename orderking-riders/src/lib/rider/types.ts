@@ -149,6 +149,7 @@ export type Branding = {
   legalCompanyName: string;
   appStoreName: string;
   invoiceBrand: string;
+  gstin?: string;
 };
 
 export type ProgressiveDistanceSlabs = {

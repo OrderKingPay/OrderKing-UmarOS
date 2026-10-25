@@ -51,7 +51,7 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
     clauses: [
       {
         heading: "1. Independent Gig Engagement",
-        body: "You engage with Order King Foods Private Limited on a non-exclusive, principal-to-principal basis as an Independent Delivery Partner. You retain full freedom to choose your online hours, book optional operational gig slots, and accept or decline dispatch offers.",
+        body: "You engage with Orderkingpay on a non-exclusive, principal-to-principal basis as an Independent Delivery Partner. You retain full freedom to choose your online hours, book optional operational gig slots, and accept or decline dispatch offers.",
       },
       {
         heading: "2. Transparent Per-Order Rate Card",

@@ -275,7 +275,7 @@ H = v_0^2 / (2g) [SI Unit: meters (m)]`;
             ${testUserId},
             ${tutorSessionFeePaise},
             'DEBIT',
-            'KingPay Escrow Hold: 1-on-1 Tutoring Session with CA Pooja Deshmukh (Accountancy)'
+            'KingPay Escrow Hold: 1-on-1 Tutoring Session with CA Priya Deshmukh (Accountancy)'
           )
         `;
         await tx`
@@ -286,7 +286,7 @@ H = v_0^2 / (2g) [SI Unit: meters (m)]`;
             ${bookingId},
             ${testUserId},
             'tutor-3',
-            'CA Pooja Deshmukh',
+            'CA Priya Deshmukh',
             'Accountancy (Company & Partnership)',
             'Class 11–12 (Commerce)',
             'CBSE',
@@ -327,7 +327,7 @@ H = v_0^2 / (2g) [SI Unit: meters (m)]`;
             ${testUserId},
             ${tutorSessionFeePaise},
             'SETTLEMENT',
-            'KingPay Escrow Settled & Released to Educator: CA Pooja Deshmukh'
+            'KingPay Escrow Settled & Released to Educator: CA Priya Deshmukh'
           )
         `;
       });

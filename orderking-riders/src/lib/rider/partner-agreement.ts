@@ -38,8 +38,8 @@ export interface PartnerAgreementMetadata {
 
 export const ORDERKING_PARTNER_AGREEMENT_METADATA: PartnerAgreementMetadata = {
   documentTitle: "OrderKing Independent Delivery Partner Service Agreement",
-  companyName: "OrderKing Foods Private Limited",
-  cin: "U74999DL2024PTC987654",
+  companyName: "Orderkingpay",
+  cin: "18AFXPH9838M1Z9",
   governingLaw: "Republic of India",
   complianceFramework: "Code on Social Security, 2020 (Act 36 of 2020)",
   version: "v2026.1-CSS2020",

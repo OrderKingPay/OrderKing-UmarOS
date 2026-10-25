@@ -108,38 +108,6 @@ export function TravelpayoutsWhiteLabel({
 
   return (
     <div className="w-full space-y-4 my-2 font-sans">
-      {/* Sovereign Trust & Branding Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-slate-950 via-[#0A1A3A] to-slate-950 border border-sky-400/30 p-4 text-white shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/20 text-sky-400 border border-sky-400/30 shadow-sm">
-            <Plane className="size-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-base font-black tracking-tight text-white">
-                OrderKingPay Live Aviation Metasearch
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                WL #{wlId}
-              </span>
-            </div>
-            <p className="text-xs text-sky-200/80">
-              1,000+ Verified Airlines &amp; OTAs · ₹0 Convenience Fee Guarantee · Official KingPay Settlement
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2.5 self-start sm:self-auto">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 px-3 py-1 text-xs font-black text-emerald-300">
-            <ShieldCheck className="size-4 text-emerald-400" />
-            <span>₹0 Platform Markup Guarantee</span>
-          </div>
-          <span className="text-xs font-mono text-slate-400 hidden sm:inline">
-            Tracking: #{marker}
-          </span>
-        </div>
-      </div>
-
       {/* MakeMyTrip-Grade Instant Flight Search Bar (Zero Lag, 100% Reliable) */}
       <form
         onSubmit={handleInstantSearch}
@@ -282,7 +250,7 @@ export function TravelpayoutsWhiteLabel({
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
             <span>
-              Best price comparison with ₹0 convenience fee markup. Direct booking with airline or OTA.
+              Compare airfares across verified airlines and booking partners.
             </span>
           </div>
 
@@ -291,7 +259,7 @@ export function TravelpayoutsWhiteLabel({
             className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-black text-sm shadow-md transition flex items-center justify-center gap-2"
           >
             <Search className="size-4" />
-            <span>Search Live Flights (₹0 Markup)</span>
+            <span>Search Flights</span>
             <ExternalLink className="size-3.5 opacity-80" />
           </Button>
         </div>

@@ -11,11 +11,12 @@ export const DEFAULT_BRANDING: Branding = {
     background: "#08090C",
     foreground: "#F8FAFC",
   },
-  domain: "partner.orderking.in",
-  notificationSender: "OrderKing Partner",
-  legalCompanyName: "Order King Foods Private Limited",
+  domain: "rider.orderkingpay.com",
+  notificationSender: "Orderkingpay",
+  legalCompanyName: "Orderkingpay",
   appStoreName: "OrderKing Partner",
-  invoiceBrand: "OrderKing Partner",
+  invoiceBrand: "Orderkingpay",
+  gstin: "18AFXPH9838M1Z9",
 };
 
 export const DEFAULT_FLAGS: FeatureFlags = {

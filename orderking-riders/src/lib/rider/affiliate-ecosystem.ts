@@ -269,7 +269,7 @@ export function getPoliteFloatingCashMessage(params: {
     tone: "COMFORTABLE",
     badgeLabel: "Safe & Active",
     badgeTone: "online",
-    headline: `Shubh Aarambh, ${name}! Pocket balance is well within safe limits.`,
+    headline: `Welcome, ${name}! Pocket balance is well within safe limits.`,
     greetingAndStatus: `You are holding ₹${balanceInr.toLocaleString("en-IN")} with ₹${headroomInr.toLocaleString("en-IN")} full headroom available under your ${tierConfig.title} tier.`,
     suggestedAction: `No immediate deposit required. Focus on delivering with care and delighting customers.`,
     chaiBreakEncouragement: "Drive safely and observe helmet safety on the road.",

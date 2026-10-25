@@ -577,18 +577,7 @@ export function TravelPage() {
         {activeTab === "flights" && (
           <div className="space-y-6">
             {/* Travelpayouts Sovereign White Label & Metasearch - Top Position (MakeMyTrip Architecture) */}
-            <div className="rounded-3xl border border-sky-300/60 bg-gradient-to-b from-white to-sky-50/30 p-4 sm:p-6 shadow-md space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-sky-100 pb-3">
-                <div>
-                  <h3 className="text-lg font-black text-slate-900 tracking-tight">OrderKing Live Flight Metasearch</h3>
-                  <p className="text-xs text-slate-500">Live inventory across 1,000+ carriers · ₹0 Platform Convenience Fee Guarantee</p>
-                </div>
-                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-black text-emerald-700 border border-emerald-500/30">
-                  Marker #794122 · WL #23797
-                </span>
-              </div>
-              <TravelpayoutsWhiteLabel wlId="23797" />
-            </div>
+            <TravelpayoutsWhiteLabel wlId="23797" />
 
             {/* Direct Airline Booking Desk (IndiGo, Air India, Akasa, SpiceJet) */}
             <FlightBookingEngine initialFrom={flightFrom} initialTo={flightTo} />

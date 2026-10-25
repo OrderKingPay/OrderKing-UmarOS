@@ -114,7 +114,7 @@ describe("Order King Spark - Partner AI Assistant", () => {
     const missingCase = {
       disputeId: "dsp-test-missing",
       orderId: "ord-9902",
-      customerName: "Pooja V",
+      customerName: "Priya V",
       complaintType: "MISSING_ITEM" as const,
       complaintText: "Ordered 2 Garlic Naans, but only 1 was packed.",
       claimAmountPaise: 6000,

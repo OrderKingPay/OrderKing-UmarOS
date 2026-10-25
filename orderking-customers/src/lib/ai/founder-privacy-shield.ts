@@ -15,15 +15,15 @@ export interface PublicFacingEntity {
 export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", PublicFacingEntity> = {
   FOODS: {
     appName: "Order King",
-    legalEntity: "OrderKing Sovereign Operations Private Limited",
+    legalEntity: "Orderkingpay",
     supportEmail: "ops@orderking.in",
     publicPhone: "+91 8000 123 456",
     publicUpiVpa: "9395065587@ybl",
-    regulatoryJurisdiction: "Sribhumi Jurisdiction, Section 79 IT Act 2000",
+    regulatoryJurisdiction: "Sribhumi, Assam - 788710 | GSTIN: 18AFXPH9838M1Z9",
   },
   KINGPAY: {
     appName: "King Pay",
-    legalEntity: "King Pay Technologies Private Limited",
+    legalEntity: "Orderkingpay",
     supportEmail: "compliance@kingpay.in",
     publicPhone: "+91 8000 987 654",
     publicUpiVpa: "9395065587@ybl",
@@ -31,7 +31,7 @@ export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", P
   },
   SYSTEM: {
     appName: "Order King",
-    legalEntity: "Order King Sovereign Infrastructure Group",
+    legalEntity: "Orderkingpay",
     supportEmail: "executive@orderking.internal",
     publicPhone: "+91 8000 000 000",
     publicUpiVpa: "9395065587@ybl",

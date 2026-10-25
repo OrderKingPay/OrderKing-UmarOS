@@ -23,8 +23,8 @@ export type FestiveContext = {
 /**
  * Real-Time Calendar, Holiday & Geographical Demand Engine
  * Automatically senses:
- * - Major National & Regional Festivals (Durga Puja, Diwali, Eid, Christmas, New Year, Holi, Bihu)
- * - Weekly Rituals (Sunday Family Feast, Friday/Saturday Weekend Specials)
+ * - Major National & Regional Seasonal Celebrations (Harvest, Spring, New Year, Regional Celebrations)
+ * - Weekly Specials (Sunday Family Feast, Friday/Saturday Weekend Specials)
  * - Monthly Milestones (Payday Week 1st-7th)
  * - Real-Time Meal Hours (Lunch 11:30-15:30, Evening Tea 16:00-18:30, Dinner 19:00-23:30, Midnight 23:30-04:00)
  */
@@ -35,33 +35,33 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
   const day = now.getDay(); // 0 = Sun, 5 = Fri, 6 = Sat
   const hour = now.getHours();
 
-  // 1. Durga Puja / Navratri / Dussehra (September - October)
+  // 1. Autumn Season (September - October)
   if ((month === 8 && date >= 20) || (month === 9 && date <= 28)) {
     return {
-      id: "durga_puja_navratri",
-      festivalName: "Durga Puja & Navratri Mahotsav",
-      greeting: "Subho Bijoya & Happy Navratri! 🎉",
-      badge: "✨ Festive Special",
-      icon: "🪔",
+      id: "autumn_celebration",
+      festivalName: "Autumn Celebration Season",
+      greeting: "Happy Celebration Season! 🎉",
+      badge: "✨ Seasonal Special",
+      icon: "🎉",
       theme: "crimson",
       orderKingHeadline: "Order King",
       orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
       orderKingCta: "Open Order King - FOODS",
       orderKingHighlight: "🍗 0% Menu Markup · Save ₹200+ · 25 Min Delivery",
       kingPayHeadline: "King Pay",
-      kingPayTagline: "Send festive shagun gifts, scan any shop QR code with zero fee, clear vehicle challans & earn 24K pure digital gold!",
+      kingPayTagline: "Send festive gifts, scan any shop QR code with zero fee, clear vehicle challans & earn 24K pure digital gold!",
       kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 0% Fee UPI · Send Shagun · 24K Gold Cashbacks",
+      kingPayHighlight: "⚡ 0% Fee UPI · Send Gifts · 24K Gold Cashbacks",
     };
   }
 
-  // 2. Diwali, Kali Puja & Chhath (October - November)
+  // 2. Winter Lights (October - November)
   if ((month === 9 && date >= 29) || (month === 10 && date <= 20)) {
     return {
-      id: "diwali_kali_puja",
-      festivalName: "Diwali & Kali Puja Deepotsav",
-      greeting: "Happy Diwali & Kali Puja! Auspicious Wealth & Joy ✨",
-      badge: "🪔 Shagun & Deepotsav",
+      id: "winter_lights",
+      festivalName: "Winter Lights & Grand Savings",
+      greeting: "Happy Winter Celebration! Joy & Prosperity ✨",
+      badge: "✨ Grand Celebration",
       icon: "✨",
       theme: "gold",
       orderKingHeadline: "Order King",
@@ -69,7 +69,7 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       orderKingCta: "Open Order King - FOODS",
       orderKingHighlight: "🍗 0% Markup · Authentic Kitchens · 24K Gold Coin",
       kingPayHeadline: "King Pay",
-      kingPayTagline: "Send digital shagun to loved ones, pay any market QR with zero convenience fee & double your 24K gold rewards.",
+      kingPayTagline: "Send digital gifts to loved ones, pay any market QR with zero convenience fee & double your 24K gold rewards.",
       kingPayCta: "Open King Pay",
       kingPayHighlight: "⚡ 0% Fee Payments · 24K Gold Doubled · Instant UPI",
     };

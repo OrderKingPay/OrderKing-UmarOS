@@ -157,7 +157,8 @@ export function SettlementsDesk() {
 
   function downloadCsvVoucher(batch?: Settlement) {
     const rows: string[][] = [
-      ["OrderKing Foods Private Limited - Official Partner Settlement & Tax Voucher"],
+      ["Orderkingpay - Official Partner Settlement & Section 194-O Tax Voucher"],
+      ["Platform GSTIN", "18AFXPH9838M1Z9"],
       ["Partner Name", rider?.fullName || "Verified Delivery Partner"],
       ["Partner ID", rider?.id || "N/A"],
       ["Registered Mobile", rider?.phone || "N/A"],
