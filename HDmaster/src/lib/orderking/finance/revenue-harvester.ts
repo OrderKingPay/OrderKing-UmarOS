@@ -476,7 +476,7 @@ export function calculatePlanetaryRevenueHarvest(options: {
       complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
       actionableSteps: [
         "Capture 1.80% spread on all spare-change checkout roundups (Jar/Cred model)",
-        "Enable festive gold gifting during Eid, Diwali, New Year, and Dhanteras",
+        "Enable seasonal digital gold gifting during holidays, national celebrations, and New Year",
         "Zero inventory or price risk: Backed 1:1 by insured physical vault bullion",
       ],
     },

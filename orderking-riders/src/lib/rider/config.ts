@@ -3,7 +3,7 @@ import type { Branding, DynamicPricingConfig, FeatureFlags, PlatformConfig, Prog
 export const DEFAULT_BRANDING: Branding = {
   appName: "OrderKing Partner",
   riderFacingBrand: "OrderKing Partner",
-  tagline: "Deliver like a King. 100% Payout Transparency.",
+  tagline: "Delivery Partner Fleet",
   logoUrl: "/brand/logo.svg",
   faviconUrl: "/favicon.svg",
   colors: {

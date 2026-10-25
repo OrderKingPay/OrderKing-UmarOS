@@ -292,9 +292,9 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
 
     it("should accurately detect spoken language heuristics across dialects", () => {
       assert.strictEqual(detectSpokenOrTextLanguage("apnar taka lagbe ki"), "bn-IN");
-      assert.strictEqual(detectSpokenOrTextLanguage("নমস্কার কি খবর"), "bn-IN");
-      assert.strictEqual(detectSpokenOrTextLanguage("namaste mujhe online paise kamane hai"), "hi-IN");
-      assert.strictEqual(detectSpokenOrTextLanguage("नमस्ते कैसे हैं आप"), "hi-IN");
+      assert.strictEqual(detectSpokenOrTextLanguage("আপনি কেমন আছেন"), "bn-IN");
+      assert.strictEqual(detectSpokenOrTextLanguage("hello mujhe online paise kamane hai"), "hi-IN");
+      assert.strictEqual(detectSpokenOrTextLanguage("आप कैसे हैं"), "hi-IN");
       assert.strictEqual(detectSpokenOrTextLanguage("hola amigo necesito un proyecto"), "es-ES");
       assert.strictEqual(detectSpokenOrTextLanguage("bonjour je veux développer une app"), "fr-FR");
       assert.strictEqual(detectSpokenOrTextLanguage("hallo wir brauchen ein neues projekt"), "de-DE");
@@ -370,7 +370,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
       assert.ok(
         res!.voiceSpokenText.includes("Ami") ||
         res!.voiceSpokenText.includes("kora") ||
-        res!.voiceSpokenText.includes("Nomoshkar") ||
+        res!.voiceSpokenText.includes("Hello") ||
         res!.voiceSpokenText.includes("taka")
       );
     });

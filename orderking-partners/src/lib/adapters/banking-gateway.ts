@@ -444,12 +444,11 @@ export async function executePartnerBankingPayout(params: {
   ).trim();
 
   if (!keyId || !keySecret) {
-    console.warn(`[Partner Banking] Live credentials not set. Returning safe simulation for ${params.referenceId}.`);
+    console.error(`[Partner Banking] Live credentials not set for payout ${params.referenceId}.`);
     return {
-      success: true,
-      status: "queued",
-      payoutId: `pout_sim_${params.referenceId}`,
-      utr: `SIM${Date.now().toString().slice(-8)}`,
+      success: false,
+      status: "failed",
+      error: "RazorpayX banking credentials (RAZORPAYX_KEY_ID / RAZORPAY_KEY_ID) not configured in environment.",
     };
   }
 

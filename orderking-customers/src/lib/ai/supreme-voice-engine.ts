@@ -353,7 +353,7 @@ export function detectSpokenOrTextLanguage(text: string): string {
   // Hindi Devanagari or common Hinglish
   if (
     /[\u0900-\u097F]/.test(text) ||
-    /\b(namaste|kaise|karna|chahiye|paise|karo|aapka|bhai|shukriya|mujhe|kamana|hoga)\b/i.test(text)
+    /\b(hello|kaise|karna|chahiye|paise|karo|aapka|bhai|shukriya|mujhe|kamana|hoga)\b/i.test(text)
   ) {
     return "hi-IN";
   }

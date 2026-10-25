@@ -22,12 +22,12 @@ import { verifyDoorstepDelivery, generateDynamicDeliveryQr } from "@/lib/fleet/f
 export function DeliveryActions({
   delivery,
   cash,
-  simulatedOtp,
+  simulatedOtp: _simulatedOtp,
   onChanged,
 }: {
   delivery: Delivery;
   cash: CashReconciliation | null;
-  simulatedOtp: string | null;
+  simulatedOtp?: string | null;
   onChanged: () => void;
 }) {
   const { t } = useI18n();
@@ -671,11 +671,9 @@ export function DeliveryActions({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold">{t("enterOtp")}</Label>
-                {simulatedOtp && (
-                  <span className="text-[11px] font-medium text-muted-foreground">
-                    Ask customer for 4-digit OTP
-                  </span>
-                )}
+                <span className="text-[11px] font-medium text-muted-foreground">
+                  Ask customer for 4-digit delivery PIN
+                </span>
               </div>
               <Input
                 inputMode="numeric"
@@ -702,7 +700,7 @@ export function DeliveryActions({
                 )}
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Scan the dynamic delivery QR code generated on the customer's phone to verify doorstep handover with cryptographic proof.
+                Verify customer delivery QR code generated on the customer's phone for cryptographic proof of doorstep handover.
               </p>
 
               <Button
@@ -711,25 +709,27 @@ export function DeliveryActions({
                 variant="outline"
                 className="w-full text-xs font-semibold gap-1.5"
                 onClick={() => {
-                  const targetOtp = simulatedOtp || (otp.length === 4 ? otp : "4821");
-                  const qrData = generateDynamicDeliveryQr(d.id, targetOtp);
-                  const result = verifyDoorstepDelivery({
-                    orderId: d.id,
-                    qrPayload: qrData,
-                    expectedOtp: targetOtp,
-                  });
+                  if (otp.length === 4) {
+                    const qrData = generateDynamicDeliveryQr(d.id, otp);
+                    const result = verifyDoorstepDelivery({
+                      orderId: d.id,
+                      qrPayload: qrData,
+                      expectedOtp: otp,
+                    });
 
-                  if (result.success) {
-                    setOtp(targetOtp);
-                    setQrVerified(true);
-                    toast.success("✅ Dynamic Customer QR Verified! Delivery unlocked.");
+                    if (result.success) {
+                      setQrVerified(true);
+                      toast.success("✅ Customer Delivery Handover QR Verified.");
+                    } else {
+                      toast.error(result.error || "QR verification failed");
+                    }
                   } else {
-                    toast.error(result.error || "QR verification failed");
+                    toast.error("Please enter customer's 4-digit PIN first or scan customer QR code");
                   }
                 }}
               >
                 <QrCode className="size-3.5" />
-                <span>{qrVerified ? "QR Code Verified (Active)" : "Simulate Customer QR Camera Scan"}</span>
+                <span>{qrVerified ? "QR Code Verified (Active)" : "Verify Customer QR Code"}</span>
               </Button>
             </div>
           )}
@@ -749,12 +749,12 @@ export function DeliveryActions({
             label={
               otp.trim().length >= 4 || qrVerified
                 ? "Swipe to Complete Delivery"
-                : "Verify OTP or QR to Complete"
+                : "Enter Customer OTP to Complete"
             }
             disabled={(!qrVerified && otp.trim().length < 4) || pending}
             variant="gold"
             loading={pending}
-            onComplete={() => act("DELIVER", { otp: otp.trim() || simulatedOtp, method: qrVerified ? "QR" : "OTP" })}
+            onComplete={() => act("DELIVER", { otp: otp.trim(), method: qrVerified ? "QR" : "OTP" })}
           />
         </div>
       ) : null}

@@ -561,30 +561,10 @@ export function VipAmbassadorPass({
                   )}
                 </div>
 
-                {/* Simulation trigger inside ledger */}
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={simulating}
-                    onClick={() => void handleSimulateCredit("FIRST_ORDER_BONUS")}
-                    className="flex-1 border-emerald-500/40 bg-emerald-950/40 text-xs text-emerald-300"
-                  >
-                    <Zap className="mr-1 size-3 text-emerald-400" />
-                    +₹25 Bonus
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={simulating}
-                    onClick={() => void handleSimulateCredit("LIFETIME_ROYALTY")}
-                    className="flex-1 border-[#E5A93C]/40 bg-[#E5A93C]/10 text-xs text-[#E5A93C]"
-                  >
-                    <TrendingUp className="mr-1 size-3 text-[#E5A93C]" />
-                    +1% Royalty
-                  </Button>
+                {/* Live ledger status */}
+                <div className="flex items-center justify-between px-1 text-[11px] text-slate-400">
+                  <span>Automatic referral attribution active</span>
+                  <span className="text-emerald-400 font-semibold">100% Genuine Ledger</span>
                 </div>
               </div>
             ) : null}

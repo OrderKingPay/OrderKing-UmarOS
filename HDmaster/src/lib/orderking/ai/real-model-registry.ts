@@ -47,7 +47,7 @@ export function getProviderApiKey(provider: string): string | undefined {
   };
 
   const keyFromEnv = envMap[provider.toLowerCase()];
-  if (keyFromEnv && keyFromEnv.trim().length > 0) return keyFromEnv.trim();
+  if (keyFromEnv && keyFromEnv.trim().length > 0 && !keyFromEnv.toLowerCase().startsWith("dummy_")) return keyFromEnv.trim();
 
   // Browser localStorage fallback if available
   if (typeof window !== "undefined" && window.localStorage) {

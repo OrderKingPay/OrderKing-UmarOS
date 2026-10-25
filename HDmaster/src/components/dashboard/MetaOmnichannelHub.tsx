@@ -1302,7 +1302,7 @@ export function MetaOmnichannelHub({
                   value={form.acquisitionPitchBody}
                   onChange={(e) => handleFieldChange("acquisitionPitchBody", e.target.value)}
                   className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 leading-relaxed font-sans"
-                  placeholder="Namaste {{restaurant_name}} Team! Why sacrifice 28-32% margins to Dominant Legacy Aggregators?..."
+                  placeholder="Hello {{restaurant_name}} Team! Why sacrifice 28-32% margins to Dominant Legacy Aggregators?..."
                 />
               </div>
 

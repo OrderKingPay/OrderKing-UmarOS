@@ -234,7 +234,7 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
         on conflict (id) do update set active = false
       `;
     } catch {
-      // Non-fatal if schema differs in local mock
+      // Non-fatal if outlet already exists or schema table constraint handles migration
     }
 
     await sql`

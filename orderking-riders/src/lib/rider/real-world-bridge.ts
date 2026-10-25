@@ -210,7 +210,7 @@ export async function initiateCustomerCall(
   const fallbackTelUri = `tel:${normalizedCustomer}`;
 
   const messageText = customMessage ||
-    `Namaste ${customerName}! I am your OrderKing delivery partner regarding order #${orderId}. I am arriving with your order. Please keep your delivery OTP ready.`;
+    `Hello ${customerName}! I am your OrderKing delivery partner regarding order #${orderId}. I am arriving with your order. Please keep your delivery OTP ready.`;
 
   const whatsAppUrl = allowDirectFallback ? generateWhatsAppDirectUrl(normalizedCustomer, messageText) : "";
 

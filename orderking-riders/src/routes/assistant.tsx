@@ -183,7 +183,7 @@ function Page() {
               : `• पीक शिफ्ट सलाह: लंच (12:00–3:00) और डिनर (7:00–11:00) के समय सबसे ज्यादा ऑर्डर उपलब्ध रहते हैं।`);
         } else {
           greeting =
-            `Namaste ${firstName} ji! Welcome to King AI (King Spark) — your autonomous Fleet AI Support & Operations Co-Pilot.\n` +
+            `Hello ${firstName} ji! Welcome to King AI (King Spark) — your autonomous Fleet AI Support & Operations Co-Pilot.\n` +
             `• Today's Take-Home: ${formatPaise(e.totals.net)} across ${h.completedToday} completed deliveries (Tips: ${formatPaise(e.totals.tip)} | Incentives: ${formatPaise(e.totals.incentive)}).\n` +
             `• Milestone Coach: ${ms.remaining > 0 ? `Complete ${ms.remaining} more trips to unlock +${formatPaise(ms.bonusPaise)} under ${ms.tier}.` : `You unlocked ${ms.tier} (+${formatPaise(ms.bonusPaise)})!`}\n` +
             (h.active
@@ -341,7 +341,7 @@ function Page() {
   const accruedKitchenBonusInr = Math.max(0, kitchenWaitMins - 6);
 
   const advisorSpeechSummary =
-    `Namaste ${firstName} ji. I am King AI, your Fleet AI Support Co-Pilot. Today you have completed ${completedToday} trips and earned ${formatPaise(todayNetPaise)}. ` +
+    `Hello ${firstName} ji. I am King AI, your Fleet AI Support Co-Pilot. Today you have completed ${completedToday} trips and earned ${formatPaise(todayNetPaise)}. ` +
     (milestone.remaining > 0
       ? `Complete ${milestone.remaining} more trips to unlock your ${formatPaise(milestone.bonusPaise)} milestone bonus. `
       : `You have unlocked your daily champion milestone bonus of ${formatPaise(milestone.bonusPaise)}. `) +
@@ -585,7 +585,7 @@ function Page() {
                 King AI Autonomous Operations & Earnings Co-Pilot
               </p>
               <h2 className="text-base font-bold text-white">
-                Namaste {firstName} ji — Live Shift & Take-Home Coach
+                Hello {firstName} ji — Live Shift & Take-Home Coach
               </h2>
             </div>
             <Badge tone={home?.rider.status === "ONLINE" ? "online" : home?.rider.status === "BUSY" ? "busy" : "offline"}>

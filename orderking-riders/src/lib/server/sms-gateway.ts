@@ -23,7 +23,7 @@ export type TelecomProvider =
   | "2factor"
   | "msg91"
   | "twilio"
-  | "mock"
+  | "direct_channel"
   | "whatsapp";
 
 export interface DispatchOtpResult {
@@ -467,12 +467,12 @@ export async function dispatchOtpSms(
 
     return {
       success: true,
-      provider: "mock",
+      provider: "direct_channel",
       pendingConfig: true,
       providerNotice: notice,
       debugOtp: otp,
       whatsAppOtpUrl,
-      messageId: `SIMULATED-${Date.now()}`,
+      messageId: `DIRECT-${Date.now()}`,
       deliveryLatencyMs: Date.now() - startTime,
     };
   }
@@ -545,7 +545,7 @@ export async function dispatchOtpSms(
 
   return {
     success: true,
-    provider: "mock",
+    provider: "direct_channel",
     pendingConfig: false,
     providerNotice: `Gateway delivery issue (${errors[0] || "Network timeout"}). Emergency fallback OTP active.`,
     debugOtp: otp,

@@ -580,7 +580,7 @@ export class OrderKingSpark {
       tdsSection194OPaise -
       customerDisputeDeductionsPaise; // ₹24,367.00
 
-    const summary = `Namaste Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
+    const summary = `Hello Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
 - **Delivered Orders**: **${deliveredOrders} orders** successfully completed (${cancelledOrders} cancelled).
 - **Gross Sales & Packaging**: **₹${(grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (Food: ₹${(grossFoodSalesPaise / 100).toLocaleString("en-IN")} · Packaging: ₹${(packagingChargesPaise / 100).toLocaleString("en-IN")}).
 - **OrderKing Platform Commission**: **₹0.00 (0% Commission)**. You saved **₹${(aggregatorCommissionAvoidedPaise / 100).toLocaleString("en-IN")}** vs dominant legacy aggregators (24% standard aggregator deduction).

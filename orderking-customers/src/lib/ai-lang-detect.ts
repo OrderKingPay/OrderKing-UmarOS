@@ -27,7 +27,7 @@ export function detectLanguage(text: string, defaultCode: string = "en"): string
   const lower = text.toLowerCase();
 
   // Hindi / Hinglish
-  if (/\b(kya|kaise|batao|chahiye|kripya|namaste|pranam|bhai|khana|khao|paise|bhej|madad|karo|bataiye|aapka|karna)\b/.test(lower)) {
+  if (/\b(kya|kaise|batao|chahiye|kripya|hello|bhai|khana|khao|paise|bhej|madad|karo|bataiye|aapka|karna)\b/.test(lower)) {
     return "hi";
   }
   // Bengali / Bonglish
@@ -36,23 +36,23 @@ export function detectLanguage(text: string, defaultCode: string = "en"): string
   }
 
   // Tamil / Tanglish
-  if (/\b(vanakkam|eppadi|venum|sapadu|panam|anupu|sollunga|ungalukku|epadi)\b/.test(lower)) {
+  if (/\b(eppadi|venum|sapadu|panam|anupu|sollunga|ungalukku|epadi)\b/.test(lower)) {
     return "ta";
   }
   // Telugu
-  if (/\b(namaskaram|ela|kavali|tinnava|dabbu|cheppandi|meeru|emiti)\b/.test(lower)) {
+  if (/\b(ela|kavali|tinnava|dabbu|cheppandi|meeru|emiti)\b/.test(lower)) {
     return "te";
   }
   // Kannada
-  if (/\b(namaskara|hege|beku|oota|hana|heli|nimma|enu)\b/.test(lower)) {
+  if (/\b(hege|beku|oota|hana|heli|nimma|enu)\b/.test(lower)) {
     return "kn";
   }
   // Malayalam
-  if (/\b(namaskaram|engane|venam|bhojanam|parayu|ningal|enth)\b/.test(lower)) {
+  if (/\b(engane|venam|bhojanam|parayu|ningal|enth)\b/.test(lower)) {
     return "ml";
   }
   // Marathi
-  if (/\b(namaskar|kasa|aahat|jevayla|sanga|tumhala|kay)\b/.test(lower)) {
+  if (/\b(kasa|aahat|jevayla|sanga|tumhala|kay)\b/.test(lower)) {
     return "mr";
   }
   // Gujarati
@@ -60,7 +60,7 @@ export function detectLanguage(text: string, defaultCode: string = "en"): string
     return "gu";
   }
   // Punjabi
-  if (/\b(sat sri akal|kiven|ki haal|chahida|roti|dasso|tuhanu|kujh)\b/.test(lower)) {
+  if (/\b(kiven|ki haal|chahida|roti|dasso|tuhanu|kujh)\b/.test(lower)) {
     return "pa";
   }
 

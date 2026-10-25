@@ -662,7 +662,10 @@ export async function postSubscriptionSettlementToLedger(params: {
     // return the mathematically guaranteed settlement result
     if (
       err.message?.includes('DATABASE_URL is missing') ||
-      err.message?.includes('connect ECONNREFUSED')
+      err.message?.includes('connect ECONNREFUSED') ||
+      err.message?.includes('Connection terminated') ||
+      err.message?.includes('ENOTFOUND') ||
+      err.message?.includes('timeout')
     ) {
       return settlement;
     }

@@ -8,17 +8,6 @@ import { Badge } from "@/components/ui/badge";
 const curriculumManager = new CurriculumManager();
 const tutor = new AITutor(curriculumManager);
 
-// Add some dummy progress
-tutor.registerStudent("stu_001", "CBSE", 10);
-const p1 = tutor.getStudentProfile("stu_001")!;
-p1.topicProgress["cbse-10-math-1-1"] = 100;
-p1.topicProgress["cbse-10-math-1-2"] = 60;
-p1.topicProgress["cbse-10-sci-1-1"] = 90;
-
-tutor.registerStudent("stu_002", "CBSE", 10);
-const p2 = tutor.getStudentProfile("stu_002")!;
-p2.topicProgress["cbse-10-math-1-1"] = 40;
-
 export function EducationDashboard() {
   const [selectedBoard, setSelectedBoard] = useState<Board>("CBSE");
   const [selectedGrade, setSelectedGrade] = useState<Grade>(10);

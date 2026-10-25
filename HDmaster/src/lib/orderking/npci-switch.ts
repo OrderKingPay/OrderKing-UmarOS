@@ -1,3 +1,5 @@
+import { createRazorpayOrder } from "./payments/razorpay.server";
+
 export interface PaymentPayload {
   amount: number;
   currency: string;
@@ -21,9 +23,8 @@ export class NPCICoreSwitch {
   private razorpayApiKey: string | undefined;
 
   constructor(setuKey?: string, razorpayKey?: string) {
-    // Keys will be injected when legal constraints are lifted and production keys are available
     this.setuApiKey = setuKey || process.env.SETU_API_KEY;
-    this.razorpayApiKey = razorpayKey || process.env.RAZORPAY_API_KEY;
+    this.razorpayApiKey = razorpayKey || process.env.RAZORPAY_API_KEY || process.env.RAZORPAY_KEY_ID;
   }
 
   /**
@@ -51,28 +52,61 @@ export class NPCICoreSwitch {
       throw new Error('Setu API keys not configured. Waiting for production keys.');
     }
     
-    // Mocking the Setu API integration logic for QR payloads
-    console.log(`[Setu Gateway] Processing payload for merchant ${payload.merchantId} with QR data.`);
-    // TODO: Implement actual Setu HTTP request via standard axios/fetch here
-    
+    const setuUrl = process.env.SETU_API_URL || "https://pine.setu.co/api/v1/payment-requests";
+    const res = await fetch(setuUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Setu-Product-Instance-ID": process.env.SETU_PRODUCT_INSTANCE_ID || "",
+        Authorization: `Bearer ${this.setuApiKey}`,
+      },
+      body: JSON.stringify({
+        amount: {
+          currencyCode: payload.currency || "INR",
+          value: Math.round(payload.amount * 100),
+        },
+        merchantId: payload.merchantId,
+        additionalInfo: { qrData: payload.qrData },
+      }),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      throw new Error(`Setu API HTTP ${res.status}: ${errBody.slice(0, 300)}`);
+    }
+
+    const data = (await res.json()) as { id?: string; data?: { id?: string } };
+    const txnId = data.id || data.data?.id;
+    if (!txnId) {
+      throw new Error("Setu API response did not contain a valid transaction id");
+    }
+
     return {
       success: true,
-      transactionId: `setu_txn_${Date.now()}`
+      transactionId: txnId,
     };
   }
 
   private async routeToRazorpay(payload: PaymentPayload): Promise<PaymentResponse> {
-    if (!this.razorpayApiKey) {
+    const keyId = this.razorpayApiKey || process.env.RAZORPAY_KEY_ID;
+    if (!keyId) {
       throw new Error('Razorpay API keys not configured. Waiting for production keys.');
     }
 
-    // Mocking the Razorpay API integration logic for QR payloads
-    console.log(`[Razorpay Gateway] Processing payload for merchant ${payload.merchantId} with QR data.`);
-    // TODO: Implement actual Razorpay HTTP request via razorpay-node SDK here
+    const amountPaise = Math.round(payload.amount * 100);
+    const receipt = `rcpt_${payload.merchantId.slice(0, 8)}_${Date.now()}`;
+    const order = await createRazorpayOrder({
+      amountPaise,
+      receipt,
+      notes: {
+        merchantId: payload.merchantId,
+        qrData: payload.qrData,
+      },
+    });
 
     return {
       success: true,
-      transactionId: `rzp_txn_${Date.now()}`
+      transactionId: order.id,
     };
   }
 }

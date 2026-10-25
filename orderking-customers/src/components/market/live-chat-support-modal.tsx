@@ -41,7 +41,7 @@ export function LiveChatSupportModal({
       id: "msg-2",
       sender: "agent",
       agentName: "Aarav Sharma (Senior Resolution Executive)",
-      text: "Namaste! I'm Aarav from OrderKing Priority Care. I have your order details open right now. How may I assist you today?",
+      text: "Hello! I'm Aarav from OrderKing Priority Care. I have your order details open right now. How may I assist you today?",
       timestamp: "Just now",
     },
   ]);

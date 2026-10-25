@@ -2100,7 +2100,7 @@ export function synthesizeOpenWorldCognitiveResponse(
 
   // 0A. GREETINGS & CASUAL OPENINGS
   const isGreeting =
-    /^(hi|hello|hey|yo|namaste|nomoshkar|kemon acho|kaisa hai|good morning|good afternoon|good evening|salaam|assalamu alaikum)[\s!.,?]*$/i.test(q) ||
+    /^(hi|hello|hey|yo|kemon acho|kaisa hai|good morning|good afternoon|good evening)[\s!.,?]*$/i.test(q) ||
     q === "hi there" ||
     q === "hello there" ||
     q === "whats up" ||
@@ -2109,9 +2109,9 @@ export function synthesizeOpenWorldCognitiveResponse(
   if (isGreeting) {
     const responseMarkdown = `Hello! I'm your AI assistant. How can I help you today?`;
     const voiceSpokenText = isHindi
-      ? `Namaste! Main online hoon. Aaj aap kya karna chahte hain?`
+      ? `Hello! Main online hoon. Aaj aap kya karna chahte hain?`
       : isBengali
-      ? `Nomoshkar! Ami online achhi. Aajke ami apnake ki bhabe sahajjo korte pari?`
+      ? `Hello! Ami online achhi. Aajke ami apnake ki bhabe sahajjo korte pari?`
       : `Hello! How can I help you today?`;
 
     return {

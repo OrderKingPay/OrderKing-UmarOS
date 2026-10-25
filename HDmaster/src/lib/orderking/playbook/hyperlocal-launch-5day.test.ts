@@ -241,7 +241,7 @@ describe("5-Day Hyperlocal Launch Playbook & Economics Engine", () => {
       // Stage 1: Hook
       expect(stage1.timeRangeMinutes).toContain("00:00–02:30");
       expect(stage1.englishScript).toContain("Good afternoon, boss");
-      expect(stage1.hinglishScript).toContain("Namaste bhaiya");
+      expect(stage1.hinglishScript).toContain("Hello bhaiya");
 
       // Stage 2: Demo
       expect(stage2.timeRangeMinutes).toContain("02:30–07:00");

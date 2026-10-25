@@ -109,7 +109,7 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
       : "Building 7-day order hour baseline";
 
   const lines: string[] = [
-    `Namaste ${snap.restaurantName} Team — Here is your live, SQL-verified consultation from your kitchen ledger:`,
+    `Hello ${snap.restaurantName} Team — Here is your live, SQL-verified consultation from your kitchen ledger:`,
     ``,
   ];
 

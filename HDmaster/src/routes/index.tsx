@@ -4008,7 +4008,7 @@ function UmarOSDashboard() {
                   audience: "Delivery Fleet Riders",
                   duration: "2 mins",
                   speechText:
-                    "Always greet the customer with a respectful Namaste or Good afternoon. Ensure the insulated delivery hot-bag is sealed. Hand over the package carefully with both hands, confirm the order number, and politely wish them an enjoyable meal.",
+                    "Always greet the customer with a respectful Hello or Good afternoon. Ensure the insulated delivery hot-bag is sealed. Hand over the package carefully with both hands, confirm the order number, and politely wish them an enjoyable meal.",
                   summary:
                     "Standard doorstep etiquette: 2-hand handover, insulated bag check, respectful greeting, and zero tip coercion.",
                 },

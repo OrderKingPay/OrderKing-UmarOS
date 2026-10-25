@@ -161,4 +161,201 @@ H = v_0^2 / (2g) [SI Unit: meters (m)]`;
       expect(hubCode).not.toContain("Guaranteed 100% Exam Marks");
     });
   });
+
+  describe("6. Real Transaction Execution & Escrow Integrity Lifecycle", () => {
+    it("executes authentic KingPay micro-billing, escrow hold, and escrow release in PostgreSQL", async () => {
+      const { getSql } = await import("../lib/db");
+      const sql = await getSql();
+
+      // Ensure tables exist
+      await sql`
+        CREATE TABLE IF NOT EXISTS kingpay_wallets (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id TEXT NOT NULL UNIQUE,
+          balance_paise BIGINT NOT NULL DEFAULT 0,
+          king_coins BIGINT NOT NULL DEFAULT 0,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+      `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS kingpay_transactions (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id TEXT NOT NULL,
+          amount_paise BIGINT NOT NULL,
+          type TEXT NOT NULL,
+          description TEXT NOT NULL,
+          created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+      `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS public.tutor_bookings (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id TEXT NOT NULL,
+          tutor_id TEXT NOT NULL,
+          tutor_name TEXT NOT NULL,
+          subject TEXT NOT NULL,
+          grade TEXT NOT NULL,
+          board TEXT NOT NULL,
+          scheduled_time TEXT NOT NULL,
+          delivery_mode TEXT NOT NULL,
+          amount_paise BIGINT NOT NULL,
+          escrow_status TEXT NOT NULL DEFAULT 'HELD',
+          meeting_link TEXT,
+          student_name TEXT,
+          student_contact TEXT,
+          notes TEXT,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+      `;
+
+      const testUserId = `real-test-student-${Date.now()}`;
+      const testEmail = `${testUserId}@orderking.in`;
+      const startingPaise = 50000; // ₹500.00
+      const microFeePaise = 100;   // ₹1.00
+      const tutorSessionFeePaise = 45000; // ₹450.00
+
+      // Step 0: Ensure User Exists in authentic auth table
+      await sql`
+        INSERT INTO "user" ("id", "name", "email", "emailVerified", "createdAt", "updatedAt")
+        VALUES (${testUserId}, 'Real Student', ${testEmail}, true, NOW(), NOW())
+        ON CONFLICT ("id") DO NOTHING;
+      `;
+
+      // Step 1: Wallet Provisioning
+      await sql`
+        INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins)
+        VALUES (${testUserId}, ${startingPaise}, 50)
+        ON CONFLICT (user_id) DO UPDATE SET balance_paise = ${startingPaise};
+      `;
+
+      const initialWallet = await sql<{ balance_paise: number }>`
+        SELECT balance_paise FROM kingpay_wallets WHERE user_id = ${testUserId}
+      `;
+      expect(Number(initialWallet[0].balance_paise)).toBe(50000);
+
+      // Step 2: AI Problem Solving Micro-Deduction (₹1.00)
+      await sql.transaction(async (tx) => {
+        await tx`
+          UPDATE kingpay_wallets 
+          SET balance_paise = balance_paise - ${microFeePaise}, updated_at = NOW() 
+          WHERE user_id = ${testUserId}
+        `;
+        await tx`
+          INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+          VALUES (
+            gen_random_uuid(),
+            ${testUserId},
+            ${microFeePaise},
+            'DEBIT',
+            'KingPay Micro-Fee: AI Academic Problem Solving (Physics · CBSE)'
+          )
+        `;
+      });
+
+      const walletAfterMicro = await sql<{ balance_paise: number }>`
+        SELECT balance_paise FROM kingpay_wallets WHERE user_id = ${testUserId}
+      `;
+      expect(Number(walletAfterMicro[0].balance_paise)).toBe(49900); // ₹499.00 left
+
+      // Step 3: Verified Tutor 1-on-1 Escrow Hold (₹450.00)
+      const bookingId = (await sql<{ id: string }>`SELECT gen_random_uuid() as id`)[0].id;
+
+      await sql.transaction(async (tx) => {
+        await tx`
+          UPDATE kingpay_wallets 
+          SET balance_paise = balance_paise - ${tutorSessionFeePaise}, updated_at = NOW() 
+          WHERE user_id = ${testUserId}
+        `;
+        await tx`
+          INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+          VALUES (
+            gen_random_uuid(),
+            ${testUserId},
+            ${tutorSessionFeePaise},
+            'DEBIT',
+            'KingPay Escrow Hold: 1-on-1 Tutoring Session with CA Pooja Deshmukh (Accountancy)'
+          )
+        `;
+        await tx`
+          INSERT INTO public.tutor_bookings (
+            id, user_id, tutor_id, tutor_name, subject, grade, board, scheduled_time, delivery_mode, amount_paise, escrow_status, meeting_link, student_name, student_contact, notes
+          )
+          VALUES (
+            ${bookingId},
+            ${testUserId},
+            'tutor-3',
+            'CA Pooja Deshmukh',
+            'Accountancy (Company & Partnership)',
+            'Class 11–12 (Commerce)',
+            'CBSE',
+            'Tomorrow at 05:00 PM',
+            'Online 1-on-1',
+            ${tutorSessionFeePaise},
+            'HELD',
+            'https://meet.orderking.in/tutor-real-test',
+            'Aakash Patel',
+            '+91 98765 00000',
+            'Cash flow statement mastery'
+          )
+        `;
+      });
+
+      const walletAfterBooking = await sql<{ balance_paise: number }>`
+        SELECT balance_paise FROM kingpay_wallets WHERE user_id = ${testUserId}
+      `;
+      expect(Number(walletAfterBooking[0].balance_paise)).toBe(4900); // ₹49.00 remaining
+
+      const bookingInDb = await sql<{ escrow_status: string; amount_paise: number }>`
+        SELECT escrow_status, amount_paise FROM public.tutor_bookings WHERE id = ${bookingId}
+      `;
+      expect(bookingInDb[0].escrow_status).toBe("HELD");
+      expect(Number(bookingInDb[0].amount_paise)).toBe(45000);
+
+      // Step 4: Session Completion & Escrow Settlement Release
+      await sql.transaction(async (tx) => {
+        await tx`
+          UPDATE public.tutor_bookings
+          SET escrow_status = 'RELEASED', updated_at = NOW()
+          WHERE id = ${bookingId}
+        `;
+        await tx`
+          INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+          VALUES (
+            gen_random_uuid(),
+            ${testUserId},
+            ${tutorSessionFeePaise},
+            'SETTLEMENT',
+            'KingPay Escrow Settled & Released to Educator: CA Pooja Deshmukh'
+          )
+        `;
+      });
+
+      const releasedBooking = await sql<{ escrow_status: string }>`
+        SELECT escrow_status FROM public.tutor_bookings WHERE id = ${bookingId}
+      `;
+      expect(releasedBooking[0].escrow_status).toBe("RELEASED");
+
+      // Step 5: Full Ledger Audit Verification
+      const auditTrail = await sql<{ type: string; amount_paise: number; description: string }>`
+        SELECT type, amount_paise, description FROM kingpay_transactions 
+        WHERE user_id = ${testUserId} 
+        ORDER BY created_at ASC
+      `;
+      expect(auditTrail.length).toBe(3);
+      expect(auditTrail[0].type).toBe("DEBIT");
+      expect(Number(auditTrail[0].amount_paise)).toBe(100);
+      expect(auditTrail[1].type).toBe("DEBIT");
+      expect(Number(auditTrail[1].amount_paise)).toBe(45000);
+      expect(auditTrail[2].type).toBe("SETTLEMENT");
+      expect(Number(auditTrail[2].amount_paise)).toBe(45000);
+
+      // Cleanup test fixture data
+      await sql`DELETE FROM public.tutor_bookings WHERE user_id = ${testUserId}`;
+      await sql`DELETE FROM kingpay_transactions WHERE user_id = ${testUserId}`;
+      await sql`DELETE FROM kingpay_wallets WHERE user_id = ${testUserId}`;
+      await sql`DELETE FROM "user" WHERE "id" = ${testUserId}`;
+    }, 20000);
+  });
 });

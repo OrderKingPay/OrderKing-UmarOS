@@ -69,7 +69,7 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: APP_NAME },
       { name: "theme-color", content: DEFAULT_BRANDING.colors.primary },
-      { name: "description", content: DEFAULT_BRANDING.tagline },
+      { name: "description", content: "OrderKing Delivery Partner Fleet & Logistics" },
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/icon-192.png" },

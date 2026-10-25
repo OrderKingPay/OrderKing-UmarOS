@@ -168,8 +168,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               </p>
               <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
                 {riderProfile?.fullName
-                  ? `${riderProfile.fullName} · ${DEFAULT_BRANDING.domain}`
-                  : DEFAULT_BRANDING.tagline}
+                  ? `${riderProfile.fullName}`
+                  : "Fleet Operations"}
               </p>
             </div>
           </Link>

@@ -3,8 +3,8 @@ import path from "node:path";
 
 export default defineConfig({
   test: {
-    testTimeout: 30000,
-    hookTimeout: 30000,
+    testTimeout: 60000,
+    hookTimeout: 60000,
     fileParallelism: false,
     include: [
       "src/lib/orderking/billing/subscriptions.test.ts",

@@ -614,7 +614,7 @@ async function seedV1(): Promise<void> {
 
   const cms = [
     ["customer", "home_hero", "Karimganj eats, without the noise", 0],
-    ["customer", "banner", "Ramadan hours — check before you order", 0],
+    ["customer", "banner", "Extended night hours — check before you order", 0],
     ["customer", "featured", "Sribhumi Thali", 0],
     ["customer", "featured", "Surma Biryani House — sponsored", 1],
     ["restaurant", "help", "How settlements are calculated", 0],

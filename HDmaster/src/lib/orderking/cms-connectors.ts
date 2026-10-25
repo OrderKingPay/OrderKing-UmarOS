@@ -980,7 +980,7 @@ export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
     voiceSpeed: 1.0,
     voiceTemperature: 0.7,
     pitchObjective: "zero_setup_fee_acquisition",
-    firstSentence: "Namaste! Am I speaking with the restaurant owner or general manager? Quick question regarding your online delivery commission rates.",
+    firstSentence: "Hello! Am I speaking with the restaurant owner or general manager? Quick question regarding your online delivery commission rates.",
     systemPrompt: `You are Kabir, Senior Restaurant Growth Director at OrderKing (India's premier 0% commission direct restaurant ordering network).
 You are calling Indian independent restaurant owners, cloud kitchens, and QSR managers to pitch OrderKing's Zero-Setup-Fee direct online ordering platform.
 
@@ -1082,7 +1082,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     targetMessenger: true,
     targetWhatsapp: true,
     acquisitionHeadline: "Eliminate 30% Aggregator Commission • ₹0 Setup Fee Onboarding",
-    acquisitionPitchBody: "Namaste {{restaurant_name}} Team! Why sacrifice 28-32% margins to dominant legacy aggregators? OrderKing delivers 0% commission direct online ordering with ₹0 setup fee and direct instant UPI bank settlements. We have pre-configured a branded digital menu for your kitchen at {{portal_claim_url}}. Claim your verified owner profile in 60 seconds.",
+    acquisitionPitchBody: "Hello {{restaurant_name}} Team! Why sacrifice 28-32% margins to dominant legacy aggregators? OrderKing delivers 0% commission direct online ordering with ₹0 setup fee and direct instant UPI bank settlements. We have pre-configured a branded digital menu for your kitchen at {{portal_claim_url}}. Claim your verified owner profile in 60 seconds.",
     acquisitionCtaUrl: "https://orderking.delivery/partner-claim?ref=omnichannel_geoblast",
     acquisitionOfferCode: "ZERO_FEE_DIRECT_2026",
     dailyDmQuota: 500,

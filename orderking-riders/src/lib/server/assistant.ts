@@ -8,7 +8,7 @@ import { PgStore } from "@/lib/rider/pg-store";
 const POLICY = [
   "You are King AI (also known as King Spark) — the warm, respectful, hyper-intelligent human-style Fleet AI Support & Operations Mentor for OrderKing Delivery Partners in India.",
   "Brand exclusively as 'King AI' / 'King Spark' (OrderKing Fleet AI Assistant). Never mention 'UmarOS' in rider UI or any competitor brand names.",
-  "Address the rider respectfully by their name (e.g. 'Namaste <Name> ji', or with appropriate cultural honorific in their language).",
+  "Address the rider respectfully by their name (e.g. 'Hello <Name> ji', or with appropriate cultural honorific in their language).",
   "Provide natural, human-style conversational intelligence in Bengali (বাংলা), Assamese (অসমীয়া), Hindi (हिन्दी), and English.",
   "Empower riders with autonomous resolution tools (zero founder headache):",
   "1. Explain exact payout breakdowns: Base floor (₹35 statutory minimum floor covering first 2.0 km), progressive distance slabs (2.0-5.0 km at ₹12/km, beyond 5.0 km at ₹15/km), wait-time pay (₹1/min after 6 mins grace period), and 100% customer tip pass-through with zero platform deductions.",
@@ -114,7 +114,7 @@ function detectLanguage(q: string, userLocale?: string): SupportedLang {
     userLocale === "hi" ||
     userLocale === "mai" ||
     /[\u0900-\u097F]/.test(q) ||
-    text.includes("namaste") ||
+    text.includes("hello") ||
     text.includes("kamai") ||
     text.includes("deri") ||
     text.includes("paisa") ||
@@ -1064,7 +1064,7 @@ function localHumanMentorAnswer(
     );
   }
   return (
-    `Namaste ${firstName} ji! I am King AI (King Spark), your live Fleet AI Support & Operations Co-Pilot. Here is your real-time shift briefing:\n` +
+    `Hello ${firstName} ji! I am King AI (King Spark), your live Fleet AI Support & Operations Co-Pilot. Here is your real-time shift briefing:\n` +
     `• Duty & KYC Status: ${home.rider.status} (${home.rider.kycStatus}) | Today's Earnings: ${formatPaise(s.todayEarningsPaise)} (${s.completedToday} trips)\n` +
     `• Milestone Coach: ${milestone.remaining > 0 ? `${milestone.remaining} more trips to unlock +${formatPaise(milestone.bonusPaise)} (${milestone.tierName})` : `${milestone.tierName} unlocked!`}\n` +
     `• Active Order: ${active ? `#${active.orderCode} (${active.restaurant.name} → ${active.customer.area})` : "None right now"}\n` +

@@ -1046,25 +1046,14 @@ export async function apiRequest<T>(endpoint: string, options?: RequestInit): Pr
 }
 
 export async function fetchOrders(): Promise<OrderItem[]> {
-  // Mocked or remote dispatch adapter
-  return [
-    {
-      id: "ORD-901",
-      customerName: "Aarav Sharma",
-      totalAmount: 1450,
-      itemCount: 3,
-      status: "CONFIRMED",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "ORD-902",
-      customerName: "Priya Nair",
-      totalAmount: 2890,
-      itemCount: 5,
-      status: "OUT_FOR_DELIVERY",
-      createdAt: new Date().toISOString(),
-    },
-  ];
+  try {
+    const res = await fetch("/api/v1/orders");
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) return data;
+    }
+  } catch (_e) {}
+  return [];
 }
 
 export async function fetchHealthStatus(): Promise<{ status: string; uptime: number }> {

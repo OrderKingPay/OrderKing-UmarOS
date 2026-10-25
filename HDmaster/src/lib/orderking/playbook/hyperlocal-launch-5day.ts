@@ -377,7 +377,7 @@ export const RESTAURANT_WALK_IN_SCRIPT: WalkInScriptStage[] = [
 I'm not here to ask you to stop existing delivery apps. Just one honest question: after commissions, deductions, sponsored ads and discounts, are you genuinely satisfied with what actually hits your bank account every week from online orders?
 
 We are launching an additional sales channel with a simple, written rate card and live kitchen KOT printing on your existing phone. If it makes financial sense, we can do a small test trial.`,
-    hinglishScript: `Namaste bhaiya, main OrderKing ka founder hoon. Yahin local area mein food delivery start kar rahe hain. Lunch ka rush abhi khatam hua hoga, bas do minute lunga.
+    hinglishScript: `Hello bhaiya, main OrderKing ka founder hoon. Yahin local area mein food delivery start kar rahe hain. Lunch ka rush abhi khatam hua hoga, bas do minute lunga.
 
 Aapse purane delivery apps band karwane nahi aaya hoon. Ek seedhi baat poochhun? Online order mein 28-30% commission, deductions aur customer discount ke baad jo haath mein paisa aata hai, kya aap usse satisfied hain?
 

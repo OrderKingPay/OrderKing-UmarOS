@@ -90,7 +90,7 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
 
       expect(res.success).toBe(true);
       expect(res.pendingConfig).toBe(true);
-      expect(res.provider).toBe("mock");
+      expect(res.provider).toBe("direct_channel");
       expect(res.debugOtp).toBe("654321");
       expect(res.providerNotice).toContain("SMS gateway key not yet provided in Cloudflare environment");
       expect(res.whatsAppOtpUrl).toContain("9876543210");
@@ -275,7 +275,7 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
       });
 
       expect(res.success).toBe(true);
-      expect(res.provider).toBe("mock");
+      expect(res.provider).toBe("direct_channel");
       expect(res.debugOtp).toBe("123987");
       expect(res.error).toContain("Network timeout");
       expect(res.whatsAppOtpUrl).toContain("123987");

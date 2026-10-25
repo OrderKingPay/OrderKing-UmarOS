@@ -164,7 +164,6 @@ function Page() {
           <DeliveryActions
             delivery={d}
             cash={pack.cash ?? null}
-            simulatedOtp={pack.simulatedOtp}
             onChanged={load}
           />
 
