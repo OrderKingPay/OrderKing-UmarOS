@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Utensils, MapPin, ShieldCheck, Share2 } from "lucide-react";
-import { getSql } from "@/lib/db";
 import { loadConfig } from "@/lib/server/load-config";
 import { distanceKm, travelMinutes } from "@/lib/geo";
 import { isOpenNow, type HourWindow } from "@/lib/hours";
@@ -51,6 +50,7 @@ export type HyperlocalTownAreaResult = {
 export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
   .validator((input: { town: string; area: string; lang?: string }) => input)
   .handler(async ({ data }: any): Promise<HyperlocalTownAreaResult> => {
+    const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const cfg = await loadConfig();
 

@@ -1404,7 +1404,7 @@ export function EcosystemCMS() {
                   <div className="rounded-xl bg-slate-900 border border-slate-800 p-2.5 space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-amber-400">
-                        {formData.brandTagline || "Have It Your Way"}
+                        {formData.brandTagline || "Fast Delivery · Honest Prices"}
                       </span>
                       <span className="text-[9px] text-slate-400">Sribhumi</span>
                     </div>

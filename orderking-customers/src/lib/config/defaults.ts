@@ -7,7 +7,7 @@ export const DEFAULT_CONFIG: PublicAppConfig = {
     appName: "OrderKing",
     shortName: "OrderKing",
     companyName: "OrderKing Foods",
-    tagline: "Have It Your Way",
+    tagline: "Fast Delivery · Honest Prices · Genuine Quality",
     description: "Premium food delivery and KingPay payments across Karimganj, Silchar, and Sribhumi.",
     logoUrl: "/logo.jpg", logoLightUrl: "", logoDarkUrl: "", faviconUrl: "/logo.jpg", appIconUrl: "/logo.jpg", splashIconUrl: "/logo.jpg",
     primaryColor: "#0D3B2E", secondaryColor: "#FAF8F5", accentColor: "#EA580C", backgroundColor: "#FAF8F5", surfaceColor: "#FFFFFF", textColor: "#111827", mutedColor: "#57534E",

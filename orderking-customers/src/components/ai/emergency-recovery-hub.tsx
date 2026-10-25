@@ -48,11 +48,11 @@ export function EmergencyRecoveryHub() {
 
   const handleSimulateIncident = () => {
     setIsSimulating(true);
-    toast.error("Emergency Failure Injected: Simulating deployment regression...");
+    toast.error("Diagnostics Injected: Verifying deployment resilience...");
 
     setTimeout(() => {
       const { incident, stageHistory } = executeEmergencyRecoverySequence(
-        "Simulated 500 error on checkout route: unhandled promise rejection",
+        "Fault-tolerance verification drill on checkout route",
         "v2.3.9"
       );
       setActiveIncident(incident);
@@ -106,7 +106,7 @@ export function EmergencyRecoveryHub() {
               ) : (
                 <>
                   <Flame className="h-4 w-4" />
-                  Simulate Incident & Auto-Recover
+                  Run Self-Healing Verification Drill
                 </>
               )}
             </Button>

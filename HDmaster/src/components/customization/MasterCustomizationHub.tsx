@@ -919,7 +919,7 @@ export function MasterCustomizationHub({
                 </button>
               </div>
               <p className="text-[10.5px] text-slate-400 leading-snug">
-                King AI dish enhancement, lighting correction &amp; menu photo magic.
+                King AI dish enhancement, lighting correction &amp; menu photo optimization.
               </p>
             </div>
 

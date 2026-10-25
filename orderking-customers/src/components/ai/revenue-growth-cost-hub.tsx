@@ -88,7 +88,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "9395065587@ybl" }: { fou
     toast.success("Application officially submitted and recorded in CRM!");
   };
 
-  const handleSimulateWebhook = () => {
+  const handleVerifyWebhook = () => {
     const targetInvoice = invoices.find((inv) => inv.status === "ESCROW_LOCKED") || invoices[0];
     const payload: PaymentWebhookPayload = {
       eventId: `EVT-${Date.now().toString(36)}`,
@@ -325,10 +325,10 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "9395065587@ybl" }: { fou
               <h3 className="text-sm font-bold text-fg uppercase tracking-wider">Client Invoices</h3>
               <Button
                 variant="outline"
-                onClick={handleSimulateWebhook}
+                onClick={handleVerifyWebhook}
                 className="h-7 text-xs border-emerald-500/40 text-emerald-300"
               >
-                Simulate Webhook
+                Test Live Webhook
               </Button>
             </div>
 

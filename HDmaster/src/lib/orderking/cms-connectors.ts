@@ -148,7 +148,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   // 1. Homepage & Global Branding
   homepageHeroText: "From local master kitchens to your doorstep.",
   homepageHeroSubtitle: "Authentic culinary selections, zero artificial markup, and community-first delivery.",
-  brandTagline: "Have It Your Way",
+  brandTagline: "Fast Delivery · Honest Prices · Genuine Quality",
   searchPlaceholderText: "Search restaurants, regional specialties, dishes, or groceries...",
   deliveryLocationPrompt: "Delivering fresh to your location",
   badgeGuaranteeText: "100% Hygiene-Inspected Kitchens & Tamper-Evident Packaging",

@@ -114,7 +114,7 @@ const LUXURY_THEMES: Array<{
 ];
 
 const NOTE_PRESETS = [
-  { label: "🎁 Birthday Gift", text: "Wishing you a magical and blessed birthday! 🎂" },
+  { label: "🎁 Birthday Gift", text: "Wishing you a wonderful and blessed birthday! 🎂" },
   { label: "🧧 Wedding Shagun", text: "Auspicious wedding shagun & prayers for your new journey! 💍" },
   { label: "✨ Festive Shagun", text: "Heartfelt festive greetings & blessings to you and family! 🪔" },
   { label: "🍲 Food & Dinner Split", text: "For our delicious dinner & feast! 🍲" },

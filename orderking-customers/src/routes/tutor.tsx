@@ -27,7 +27,6 @@ import { CustomerShell } from "@/components/market/shell";
 import { toast } from "sonner";
 import { AppErrorComponent } from "@/lib/error-component";
 import { computeDeterministicSkillMatch } from "@/lib/career/skill-matcher";
-import { getSql } from "@/lib/db";
 import { TutorJobsHub } from "@/components/tutor-jobs/tutor-jobs-hub";
 import { solveAcademicProblem } from "@/lib/ai/gemini-tutor-solver";
 import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
@@ -518,6 +517,7 @@ export const askIntelligenceFn = createServerFn({ method: "POST" })
       const { getSessionUser } = await import("@/lib/auth/verify.server");
       const user = await getSessionUser();
       if (user) {
+        const { getSql } = await import("@/lib/db");
         const sql = await getSql();
         const microFeePaise = 100; // ₹1.00 micro-fee
 
@@ -603,7 +603,8 @@ export const bookTutorSessionFn = createServerFn({ method: "POST" })
     try {
       const { getSessionUser } = await import("@/lib/auth/verify.server");
       const user = await getSessionUser();
-      const sql = await getSql();
+      const { getSql } = await import("@/lib/db");
+        const sql = await getSql();
       const amountPaise = Math.round(data.hourlyRateInr * 100);
       const userId = user?.id || `guest-${Date.now()}`;
       const { randomUUID } = await import("node:crypto");
@@ -754,7 +755,8 @@ export const releaseTutorEscrowFn = createServerFn({ method: "POST" })
   .validator((data: { bookingId: string }) => data)
   .handler(async ({ data }: any) => {
     try {
-      const sql = await getSql();
+      const { getSql } = await import("@/lib/db");
+        const sql = await getSql();
       const rows = await sql<any>`
         SELECT id, user_id, tutor_name, amount_paise, escrow_status
         FROM public.tutor_bookings
@@ -801,7 +803,8 @@ export const getMyTutorBookingsFn = createServerFn({ method: "GET" })
     try {
       const { getSessionUser } = await import("@/lib/auth/verify.server");
       const user = await getSessionUser();
-      const sql = await getSql();
+      const { getSql } = await import("@/lib/db");
+        const sql = await getSql();
       let rows: any[] = [];
       if (user) {
         rows = await sql<any>`
@@ -853,7 +856,8 @@ export const submitJobApplicationFn = createServerFn({ method: "POST" })
   }) => data)
   .handler(async ({ data }: any) => {
     try {
-      const sql = await getSql();
+      const { getSql } = await import("@/lib/db");
+        const sql = await getSql();
       const rows = await sql<any>`
         INSERT INTO public.job_applications (
           job_id,
@@ -916,7 +920,8 @@ export const getMyJobApplicationsFn = createServerFn({ method: "GET" })
   .validator((input?: { contact?: string }) => input || {})
   .handler(async ({ data }: any) => {
     try {
-      const sql = await getSql();
+      const { getSql } = await import("@/lib/db");
+        const sql = await getSql();
       let rows: any[] = [];
       if (data?.contact) {
         rows = await sql<any>`
@@ -944,7 +949,8 @@ export const getMyJobApplicationsFn = createServerFn({ method: "GET" })
 export const getLiveJobsFn = createServerFn({ method: "GET" })
   .handler(async () => {
     try {
-      const sql = await getSql();
+      const { getSql } = await import("@/lib/db");
+        const sql = await getSql();
       const rows = await sql<any>`
         SELECT id, title, company, category, payout, type, location, badge, perks, is_fleet, is_kitchen, active
         FROM public.jobs
