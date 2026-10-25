@@ -36,7 +36,8 @@ import {
 } from "@/lib/kingpay/ledger-binding";
 
 function OrderKingPayPage() {
-  const search = Route.useSearch();
+  const routerSearch = useRouterState({ select: (s) => s?.location?.search }) as KingPaySearch | undefined;
+  const search = routerSearch ?? {};
   const hash = useRouterState({ select: (s) => s?.location?.hash ?? "" }) ?? "";
   const initialSection: KingPaySection =
     search?.tab === "passbook" || (hash || "").replace(/^#/, "").toLowerCase() === "passbook"

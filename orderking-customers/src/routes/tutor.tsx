@@ -1550,7 +1550,8 @@ export const Route = createFileRoute('/tutor')({
 });
 
 function IntelligencePage() {
-  const search = Route.useSearch();
+  const routerSearch = useRouterState({ select: (s) => s?.location?.search }) as any;
+  const search = routerSearch ?? {};
   const { walletBalance } = useRealKingPayWallet();
   const [message, setMessage] = useState("");
   const [board, setBoard] = useState("CBSE (Central Board)");

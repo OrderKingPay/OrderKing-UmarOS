@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   Wallet,
   QrCode,
@@ -54,7 +54,6 @@ export const extractStationCode = (value: string): string | null => {
 type ActiveVerticalTab = "pay" | "courier" | "travel" | "tutor" | "jobs";
 
 export function SupremeKingPayExperience() {
-  const navigate = useNavigate();
   const location = useLocationStore((s) => s.location);
   const { walletBalancePaise } = useRealKingPayWallet();
 

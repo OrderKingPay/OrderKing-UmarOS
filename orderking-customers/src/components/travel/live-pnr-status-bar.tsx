@@ -63,14 +63,20 @@ export const LivePnrStatusBar: React.FC<LivePnrStatusBarProps> = ({
     if (supabaseClient) return supabaseClient;
     const url = supabaseUrl || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_URL);
     const key = supabaseAnonKey || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_ANON_KEY);
-    if (url && key) return createClient(url, key);
+    if (url && key && String(url).startsWith('https://') && !String(url).includes('unconfigured')) {
+      try {
+        return createClient(url, key);
+      } catch {
+        return null;
+      }
+    }
     return null;
   };
 
   // Sync live founder convenience fee & cashback from umar_os_config
   useEffect(() => {
     const sb = getSupabase();
-    if (!sb) return;
+    if (!sb || typeof sb.from !== 'function') return;
 
     let active = true;
     sb.from('umar_os_config')

@@ -183,6 +183,7 @@ function TrackingRoute() {
     const loadInitialData = async () => {
       setLoading(true);
       try {
+        if (!supabase || typeof supabase.from !== "function") return;
         const { data } = await supabase
           .from("orders")
           .select("id, public_id, status, total_paise, delivery_otp, notes, placed_at, rider_lat, rider_lng, restaurant_lat, restaurant_lng, payment_method")

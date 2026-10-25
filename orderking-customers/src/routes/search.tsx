@@ -84,7 +84,8 @@ export const Route = createFileRoute("/search")({
 
 function PredictiveSearchPage() {
   const { t, lang } = useT();
-  const search = Route.useSearch();
+  const routerSearch = useRouterState({ select: (s) => s?.location?.search }) as any;
+  const search = routerSearch ?? {};
   const navigate = useNavigate({ from: "/search" });
   const location = useLocationStore((s) => s.location);
 

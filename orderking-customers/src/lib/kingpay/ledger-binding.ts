@@ -114,25 +114,27 @@ export async function fetchAuthenticKingPayBalance(userId: string): Promise<numb
   if (!userId) return 0;
 
   try {
-    const { data, error } = await supabase
-      .from("kingpay_ledger_entries")
-      .select("entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp")
-      .eq("entity_id", userId)
-      .eq("account", "CUSTOMER_WALLET");
+    if (supabase && typeof supabase.from === "function") {
+      const { data, error } = await supabase
+        .from("kingpay_ledger_entries")
+        .select("entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp")
+        .eq("entity_id", userId)
+        .eq("account", "CUSTOMER_WALLET");
 
-    if (!error && Array.isArray(data) && data.length > 0) {
-      const mapped: KingPayLedgerEntry[] = data.map((d: any) => ({
-        entry_id: String(d.entry_id),
-        transaction_id: String(d.transaction_id),
-        account: d.account as KingPayAccountType,
-        direction: d.direction as LedgerDirection,
-        amount_paise: Number(d.amount_paise),
-        entity_id: String(d.entity_id),
-        memo: String(d.memo || ""),
-        timestamp: String(d.timestamp),
-      }));
+      if (!error && Array.isArray(data) && data.length > 0) {
+        const mapped: KingPayLedgerEntry[] = data.map((d: any) => ({
+          entry_id: String(d.entry_id),
+          transaction_id: String(d.transaction_id),
+          account: d.account as KingPayAccountType,
+          direction: d.direction as LedgerDirection,
+          amount_paise: Number(d.amount_paise),
+          entity_id: String(d.entity_id),
+          memo: String(d.memo || ""),
+          timestamp: String(d.timestamp),
+        }));
 
-      return calculateBalanceFromEntries(mapped, userId);
+        return calculateBalanceFromEntries(mapped, userId);
+      }
     }
   } catch (err) {
     // Supabase query failed or not configured, proceed to authentic local ledger
@@ -192,10 +194,12 @@ export async function recordAuthenticTopUp(params: {
 
   // 1. Try Supabase insert
   try {
-    await supabase.from("kingpay_ledger_entries").insert([
-      debitEntry,
-      creditEntry,
-    ]);
+    if (supabase && typeof supabase.from === "function") {
+      await supabase.from("kingpay_ledger_entries").insert([
+        debitEntry,
+        creditEntry,
+      ]);
+    }
   } catch {
     // Ignore error if table not migrated in cloud yet
   }
@@ -284,10 +288,12 @@ export async function recordAuthenticPayment(params: {
 
   // 1. Try Supabase insert
   try {
-    await supabase.from("kingpay_ledger_entries").insert([
-      debitEntry,
-      creditEntry,
-    ]);
+    if (supabase && typeof supabase.from === "function") {
+      await supabase.from("kingpay_ledger_entries").insert([
+        debitEntry,
+        creditEntry,
+      ]);
+    }
   } catch {
     // Ignore error if table not migrated in cloud yet
   }
