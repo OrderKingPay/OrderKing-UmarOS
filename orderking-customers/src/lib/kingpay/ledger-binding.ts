@@ -162,7 +162,9 @@ export async function recordAuthenticTopUp(params: {
     throw new Error(`Top-up amount must be positive paise: ${params.amountPaise}`);
   }
 
-  const transactionId = `tx-topup-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+  const txBuf = new Uint32Array(1);
+  crypto.getRandomValues(txBuf);
+  const transactionId = `tx-topup-${Date.now()}-${1000 + (txBuf[0] % 9000)}`;
   const now = new Date().toISOString();
 
   const debitEntry: KingPayLedgerEntry = {
@@ -256,7 +258,9 @@ export async function recordAuthenticPayment(params: {
     };
   }
 
-  const transactionId = `tx-pay-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+  const txPayBuf = new Uint32Array(1);
+  crypto.getRandomValues(txPayBuf);
+  const transactionId = `tx-pay-${Date.now()}-${1000 + (txPayBuf[0] % 9000)}`;
   const now = new Date().toISOString();
 
   const debitEntry: KingPayLedgerEntry = {

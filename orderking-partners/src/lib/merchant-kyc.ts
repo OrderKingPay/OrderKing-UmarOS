@@ -700,7 +700,9 @@ export function executePennyDropVerification(input: PennyDropRequest): PennyDrop
   const timestamp = new Date().toISOString();
   const refId = `pny_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   // 12-digit standard IMPS Retrieval Reference Number (RRN)
-  const impsRrn = `${Date.now().toString().slice(-6)}${Math.floor(100000 + Math.random() * 900000)}`;
+  const rrnBuffer = new Uint32Array(1);
+  crypto.getRandomValues(rrnBuffer);
+  const impsRrn = `${Date.now().toString().slice(-6)}${100000 + (rrnBuffer[0] % 900000)}`;
 
   if (!holder) {
     return {

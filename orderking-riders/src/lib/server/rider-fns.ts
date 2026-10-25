@@ -697,7 +697,9 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
       );
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const randomBuffer = new Uint32Array(1);
+    crypto.getRandomValues(randomBuffer);
+    const otp = (100000 + (randomBuffer[0] % 900000)).toString();
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes validity
     const channel = data.channel || "sms";
 

@@ -76,11 +76,13 @@ export const POPULAR_INDIAN_DISH_CHIPS = [
 export function CustomerShell({
   children,
   onSearch,
-  maxWidth = "max-w-lg md:max-w-5xl",
+  maxWidth,
+  dark: explicitDark,
 }: {
   children: React.ReactNode;
   onSearch?: () => void;
   maxWidth?: string;
+  dark?: boolean;
 }) {
   const { t, lang, setLang } = useT();
   const { brand } = useBrand();
@@ -89,6 +91,13 @@ export function CustomerShell({
   const items = useCartStore((s) => s.items) ?? [];
   const count = cartCount(items);
   const path = useRouterState({ select: (s) => s.location?.pathname }) || "";
+  const isDark = explicitDark ?? (
+    path.startsWith("/tutor") ||
+    path.startsWith("/tutor-jobs") ||
+    path.startsWith("/kingpay") ||
+    path.startsWith("/king-pay")
+  );
+  const effectiveMaxWidth = maxWidth || (isDark ? "max-w-7xl" : "max-w-lg md:max-w-5xl");
   const { user, isPending } = useCurrentUserState();
   const navigate = useNavigate();
   const [locOpen, setLocOpen] = useState(false);
@@ -141,13 +150,26 @@ export function CustomerShell({
   }, []);
 
   useEffect(() => {
-    // Strictly enforce light mode in DOM
     if (typeof document !== "undefined") {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.style.backgroundColor = "#FCFAF7";
-      document.documentElement.style.colorScheme = "light";
+      const prevHtmlBg = document.documentElement.style.backgroundColor;
+      const prevBodyBg = document.body.style.backgroundColor;
+      if (isDark) {
+        document.documentElement.classList.add("dark");
+        document.documentElement.style.backgroundColor = "#080a10";
+        document.body.style.backgroundColor = "#080a10";
+        document.documentElement.style.colorScheme = "dark";
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.style.backgroundColor = "#FCFAF7";
+        document.body.style.backgroundColor = "#FCFAF7";
+        document.documentElement.style.colorScheme = "light";
+      }
+      return () => {
+        document.documentElement.style.backgroundColor = prevHtmlBg || "#FCFAF7";
+        document.body.style.backgroundColor = prevBodyBg || "#FCFAF7";
+      };
     }
-  }, []);
+  }, [isDark]);
 
   const currentPlaceholder =
     SEARCH_PLACEHOLDERS[searchPlaceholderIndex % SEARCH_PLACEHOLDERS.length] || "What are you hungry for?";
@@ -155,7 +177,8 @@ export function CustomerShell({
     ["/restaurants", "/menu", "/r/", "/dining", "/cart"].some((prefix) => path.startsWith(prefix));
 
   return (
-    <div className={cn("mx-auto flex min-h-dvh w-full flex-col bg-[#FCFAF7] text-gray-900 pb-28", maxWidth)}>
+    <div className={cn("w-full min-h-dvh flex flex-col transition-colors duration-200", isDark ? "bg-[#080a10] text-slate-100" : "bg-[#FCFAF7] text-gray-900")}>
+      <div className={cn("mx-auto flex min-h-dvh w-full flex-col pb-28", effectiveMaxWidth)}>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:text-black focus:shadow-md"
@@ -166,10 +189,14 @@ export function CustomerShell({
       {/* Pristine Ultra-Luxury Header */}
       <header
         className={cn(
-          "sticky top-0 z-40 bg-gradient-to-b from-[#FFFDF9]/95 via-[#FAF6F0]/95 to-[#F5EFEB]/90 backdrop-blur-md px-3 sm:px-4 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 space-y-2 transition-all duration-300",
-          isScrolled
-            ? "border-b border-amber-900/15 shadow-[0_6px_24px_rgba(40,25,10,0.08)]"
-            : "border-b border-amber-900/5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]"
+          "sticky top-0 z-40 backdrop-blur-md px-3 sm:px-4 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 space-y-2 transition-all duration-300",
+          isDark
+            ? isScrolled
+              ? "bg-[#0b0f19]/95 border-b border-white/10 shadow-[0_6px_24px_rgba(0,0,0,0.4)] text-white"
+              : "bg-[#080a10]/90 border-b border-white/5 text-white"
+            : isScrolled
+              ? "bg-gradient-to-b from-[#FFFDF9]/95 via-[#FAF6F0]/95 to-[#F5EFEB]/90 border-b border-amber-900/15 shadow-[0_6px_24px_rgba(40,25,10,0.08)] text-gray-900"
+              : "bg-gradient-to-b from-[#FFFDF9]/95 via-[#FAF6F0]/95 to-[#F5EFEB]/90 border-b border-amber-900/5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] text-gray-900"
         )}
       >
         {/* ROW 1: Authentic Indian Food Delivery Header: Logo + Delivery Address (Left) | Language + AI Support + Cart + Profile (Right) */}
@@ -181,7 +208,7 @@ export function CustomerShell({
                 <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
                 <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
               </div>
-              <span className="text-base sm:text-lg font-black tracking-tight text-gray-950 leading-none hidden xs:inline">
+              <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-white" : "text-gray-950")}>
                 OrderKing
               </span>
             </Link>
@@ -190,7 +217,10 @@ export function CustomerShell({
             <button
               type="button"
               onClick={() => setLocOpen(true)}
-              className="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-amber-100/50 border border-transparent hover:border-amber-200/80 text-left transition-all max-w-[130px] xs:max-w-[170px] sm:max-w-[220px] group cursor-pointer"
+              className={cn(
+                "flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-transparent transition-all max-w-[130px] xs:max-w-[170px] sm:max-w-[220px] group cursor-pointer",
+                isDark ? "hover:bg-white/10 hover:border-white/15 text-slate-200" : "hover:bg-amber-100/50 hover:border-amber-200/80 text-gray-900"
+              )}
               title="Change delivery location"
               aria-label="Select delivery address"
             >
@@ -200,7 +230,7 @@ export function CustomerShell({
               </div>
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-0.5 leading-tight">
-                  <span className="text-xs font-black text-gray-900 truncate">
+                  <span className={cn("text-xs font-black truncate", isDark ? "text-white" : "text-gray-900")}>
                     {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "Connaught Place")}
                   </span>
                   <ChevronDown className="size-3 text-gray-500 shrink-0 group-hover:translate-y-0.5 transition-transform" />
@@ -219,11 +249,15 @@ export function CustomerShell({
               className={cn(
                 "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
                 path.startsWith("/travel")
-                  ? "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
-                  : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+                  ? isDark
+                    ? "border-sky-400 bg-sky-500/20 text-sky-200 font-black ring-1 ring-sky-400/40"
+                    : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                  : isDark
+                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
+                    : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
               )}
             >
-              <Plane className="size-3.5 text-amber-600" />
+              <Plane className={cn("size-3.5", isDark ? "text-sky-400" : "text-amber-600")} />
               <span>Travel</span>
             </Link>
             <Link
@@ -231,11 +265,15 @@ export function CustomerShell({
               className={cn(
                 "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
                 path.startsWith("/tutor")
-                  ? "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
-                  : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+                  ? isDark
+                    ? "border-purple-400 bg-purple-500/20 text-purple-200 font-black ring-1 ring-purple-400/40"
+                    : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                  : isDark
+                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
+                    : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
               )}
             >
-              <GraduationCap className="size-3.5 text-amber-600" />
+              <GraduationCap className={cn("size-3.5", isDark ? "text-purple-400" : "text-amber-600")} />
               <span>AI Tutor</span>
             </Link>
             <Link
@@ -243,11 +281,15 @@ export function CustomerShell({
               className={cn(
                 "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
                 path.startsWith("/tutor-jobs")
-                  ? "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
-                  : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+                  ? isDark
+                    ? "border-emerald-400 bg-emerald-500/20 text-emerald-200 font-black ring-1 ring-emerald-400/40"
+                    : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                  : isDark
+                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
+                    : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
               )}
             >
-              <Briefcase className="size-3.5 text-amber-600" />
+              <Briefcase className={cn("size-3.5", isDark ? "text-emerald-400" : "text-amber-600")} />
               <span>Jobs</span>
             </Link>
           </nav>
@@ -258,12 +300,17 @@ export function CustomerShell({
             <button
               type="button"
               onClick={() => setLangOpen(true)}
-              className="flex items-center gap-1 px-2 py-1 rounded-xl bg-white/80 hover:bg-amber-50 border border-amber-200/80 text-gray-800 text-xs font-bold shadow-2xs hover:border-amber-300 transition-all active:scale-95 shrink-0 cursor-pointer"
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-bold shadow-2xs transition-all active:scale-95 shrink-0 cursor-pointer border",
+                isDark
+                  ? "bg-white/10 hover:bg-white/20 border-white/15 text-slate-200"
+                  : "bg-white/80 hover:bg-amber-50 border-amber-200/80 text-gray-800 hover:border-amber-300"
+              )}
               title="Change Language (English, हिन्दी, বাংলা, etc.)"
               aria-label="Select language"
             >
-              <Languages className="size-3.5 text-amber-700" />
-              <span className="text-[11px] font-black uppercase text-amber-950">
+              <Languages className={cn("size-3.5", isDark ? "text-amber-400" : "text-amber-700")} />
+              <span className={cn("text-[11px] font-black uppercase", isDark ? "text-amber-300" : "text-amber-950")}>
                 {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "EN"}
               </span>
             </button>
@@ -284,11 +331,16 @@ export function CustomerShell({
             {/* Cart icon with badge counter (redirecting to /cart or opening drawer) */}
             <Link
               to="/cart"
-              className="relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/80 hover:bg-amber-50 border border-amber-200/80 text-gray-800 shadow-2xs hover:border-amber-400 transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
+              className={cn(
+                "relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl shadow-2xs transition-all active:scale-95 shrink-0 no-underline cursor-pointer border",
+                isDark
+                  ? "bg-white/10 hover:bg-white/20 border-white/15 text-white"
+                  : "bg-white/80 hover:bg-amber-50 border-amber-200/80 text-gray-800 hover:border-amber-400"
+              )}
               title="Shopping Cart"
               aria-label={`Cart with ${count} items`}
             >
-              <ShoppingBag className="size-4 text-gray-900" />
+              <ShoppingBag className={cn("size-4", isDark ? "text-white" : "text-gray-900")} />
               {count > 0 && (
                 <span className="absolute -top-1 -right-1 flex min-w-4 h-4 px-1 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[9px] font-black text-white shadow-2xs ring-1 ring-white">
                   {count > 99 ? "99+" : count}
@@ -304,7 +356,12 @@ export function CustomerShell({
                 <button
                   type="button"
                   onClick={() => setUserMenuOpen((v) => !v)}
-                  className="flex items-center gap-1 p-0.5 rounded-full border border-amber-300/90 bg-white/95 hover:bg-amber-50 hover:border-amber-400 transition no-underline text-gray-900 shadow-2xs shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                  className={cn(
+                    "flex items-center gap-1 p-0.5 rounded-full border transition no-underline shadow-2xs shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50",
+                    isDark
+                      ? "border-amber-400/60 bg-slate-900 hover:bg-slate-800 text-white"
+                      : "border-amber-300/90 bg-white/95 hover:bg-amber-50 hover:border-amber-400 text-gray-900"
+                  )}
                   title="Your Profile & Account Menu"
                   aria-label="Account and Profile Menu"
                   aria-expanded={userMenuOpen}
@@ -538,6 +595,7 @@ export function CustomerShell({
           </Suspense>
         </ModalErrorBoundary>
       ) : null}
+      </div>
     </div>
   );
 }

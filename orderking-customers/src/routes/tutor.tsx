@@ -1563,7 +1563,7 @@ function IntelligencePage() {
   const [tone, setTone] = useState("Direct Easy Exam Answers");
   const [goal, setGoal] = useState("Concept Mastery");
   const [showConfig, setShowConfig] = useState(true);
-  const [mode, setMode] = useState<"tutor" | "jobs" | "hub">("hub");
+  const [mode, setMode] = useState<"tutor" | "jobs" | "hub">("tutor");
 
   // Academic Tutor Category & Sub-Category state
   const [tutorCategory, setTutorCategory] = useState<TutorPrimaryCategory>("School & Board Exams");
@@ -1857,7 +1857,7 @@ function IntelligencePage() {
   });
 
   return (
-    <CustomerShell>
+    <CustomerShell dark maxWidth="max-w-7xl">
       <div className="flex flex-col min-h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
         
         {/* COMPACT HIGH-DENSITY TUTOR HERO */}

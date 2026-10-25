@@ -112,10 +112,10 @@ const FIELD_DEFINITIONS: FieldDefinition[] = [
   },
   {
     key: "brandTagline",
-    label: "App Slogan / Tagline",
+    label: "App Core Value Proposition",
     category: "branding",
-    description: "Short slogan shown next to the logo in the top header and splash screen.",
-    placeholder: "Have It Your Way",
+    description: "Clear brand proposition shown next to the logo in the top header and splash screen.",
+    placeholder: "Fast Delivery · Honest Prices · Genuine Quality",
     customerSurface: "App Top Header",
   },
   {

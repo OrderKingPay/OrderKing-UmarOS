@@ -196,7 +196,7 @@ export function ScanQrModal({
                 <QrCode className="size-4" />
               </span>
               <span className="text-[11px] font-black uppercase tracking-wider text-amber-400">
-                KingPay Sovereign UPI
+                KingPay UPI
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white">
@@ -204,7 +204,7 @@ export function ScanQrModal({
             </h2>
             <p className="text-xs text-slate-300 mt-0.5 flex items-center gap-1.5">
               <ShieldCheck className="size-3.5 text-emerald-400 inline" />
-              <span>Zero Convenience Fee • Instant 256-Bit Escrow</span>
+              <span>Zero Convenience Fee</span>
             </p>
           </div>
 
@@ -351,7 +351,7 @@ export function ScanQrModal({
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Payment Mode:</span>
-                <span className="text-amber-400 font-bold">KingPay Sovereign Vault</span>
+                <span className="text-amber-400 font-bold">KingPay Wallet</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Convenience Fee:</span>

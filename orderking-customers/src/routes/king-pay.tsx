@@ -102,27 +102,24 @@ function OrderKingPayPage() {
         <div className="mx-auto max-w-5xl px-4 pt-4 pb-1">
           <Link
             to="/kingpay"
-            className="flex items-center justify-between p-3.5 rounded-2xl border border-amber-400/50 bg-gradient-to-r from-amber-950/70 via-slate-900 to-[#121622] hover:border-amber-400 transition no-underline text-white shadow-md group"
+            className="flex items-center justify-between p-4 rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-950/80 via-[#0d111a] to-slate-900 hover:border-amber-400 transition no-underline text-white shadow-xl group"
           >
-            <div className="flex items-center gap-2.5">
-              <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 shadow-sm group-hover:scale-105 transition-transform">
-                <Sparkles className="size-4" />
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 shadow-md group-hover:scale-105 transition-transform">
+                <Sparkles className="size-5" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-black text-amber-300">Supreme KingPay Super Engine</span>
-                  <span className="text-[9px] font-black uppercase px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                    Live 4 Pillars
-                  </span>
+                  <span className="text-sm font-bold text-white">KingPay</span>
                 </div>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  Tickets (Flights, Trains, Buses, Hotels) · AI Tutor · Verified Jobs · 1-Tap UPI
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Payments, Travel, Learning &amp; Work
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-1 text-xs font-bold text-amber-400 group-hover:underline">
-              <span>Open Supreme Hub</span>
-              <ChevronRight className="size-3.5" />
+            <div className="flex items-center gap-1 text-xs font-bold text-amber-400 group-hover:underline shrink-0">
+              <span>Open</span>
+              <ChevronRight className="size-4" />
             </div>
           </Link>
         </div>

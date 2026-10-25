@@ -557,8 +557,7 @@ export function TravelPage() {
     <CustomerShell maxWidth="max-w-7xl">
       <div className="mx-auto max-w-7xl px-3 sm:px-6 py-4 sm:py-6 space-y-5 sm:space-y-6">
         {/* TOP STATUS BAR & CATEGORY DECK - SEAMLESS ALIGNMENT */}
-        <div className="space-y-2.5">
-          <LivePnrStatusBar />
+        <div>
           <TravelCategoryDeck
             onChoose={(id) => {
               setActiveTab(id);
@@ -569,262 +568,6 @@ export function TravelPage() {
             activeTab={activeTab}
           />
         </div>
-
-        {/* COMPACT HIGH-DENSITY TRAVEL HERO */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#050D24] via-[#0E1A40] to-[#1E0F3D] text-white p-4 sm:p-5 shadow-xl border border-sky-400/30">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="inline-flex items-center gap-1 rounded-full bg-sky-400/20 border border-sky-400/40 px-2 py-0.5 text-[10px] font-black text-sky-300">
-                  <span>✈️</span>
-                  <span>TravelStation</span>
-                </span>
-                <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
-                  Direct Carrier Search
-                </span>
-              </div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Book Flights, Trains, Buses &amp; Cabs
-              </h1>
-            </div>
-
-            {/* My Trips Quick Link */}
-            <button
-              type="button"
-              onClick={() => setActiveTab("trips")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition border shrink-0 ${
-                activeTab === "trips"
-                  ? "bg-sky-500 text-slate-950 border-sky-400 font-black shadow-xs"
-                  : "bg-white/10 text-slate-200 border-white/15 hover:bg-white/20"
-              }`}
-            >
-              <Compass className="size-3.5 text-sky-300" />
-              <span>My Bookings</span>
-              {savedTrips.length > 0 && (
-                <span className="rounded-full bg-emerald-500/30 text-emerald-300 px-1.5 py-0.2 text-[10px] font-black">
-                  {savedTrips.length}
-                </span>
-              )}
-            </button>
-          </div>
-
-          {/* Quick Search */}
-          <div className="relative mt-3">
-            <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 shadow-inner">
-              <Search className="size-4 text-sky-300 shrink-0" aria-hidden />
-              <input
-                id="travel-service-search"
-                type="search"
-                autoComplete="off"
-                value={serviceQuery}
-                onChange={(e) => setServiceQuery(e.target.value)}
-                placeholder="Search Flights (DEL➔BOM), IRCTC Trains, Sleeper Buses, Stays, Cabs..."
-                aria-label="Search travel services"
-                className="h-10 min-w-0 flex-1 bg-transparent text-xs sm:text-sm text-white placeholder:text-slate-400 focus:outline-none"
-              />
-            </div>
-            {serviceQuery.trim() && (
-              <div className="absolute left-0 right-0 top-12 z-20 max-h-48 space-y-1 overflow-y-auto rounded-xl border border-white/20 bg-slate-950 p-2 shadow-2xl">
-                {TRAVEL_CATEGORIES.flatMap((cat) =>
-                  cat.subCategories
-                    .filter((sub) =>
-                      `${cat.label} ${cat.keywords} ${sub}`
-                        .toLocaleLowerCase()
-                        .includes(serviceQuery.trim().toLocaleLowerCase())
-                    )
-                    .map((sub) => ({ cat, sub }))
-                ).map(({ cat, sub }) => (
-                  <button
-                    key={`${cat.id}-${sub}`}
-                    type="button"
-                    onClick={() => {
-                      setActiveTab(cat.id);
-                      setActiveSubCategory((prev) => ({ ...prev, [cat.id]: sub }));
-                      setServiceQuery("");
-                    }}
-                    className="flex items-center justify-between w-full rounded-lg px-2.5 py-1.5 text-left text-xs text-slate-100 hover:bg-white/10 transition"
-                  >
-                    <span className="font-bold">{sub}</span>
-                    <span className="text-[9px] font-extrabold uppercase rounded bg-sky-400/20 text-sky-300 px-1.5 py-0.5">
-                      {cat.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Quick Category Switcher Tabs */}
-          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {TRAVEL_CATEGORIES.map((cat) => {
-              const isSelected = activeTab === cat.id;
-              const Icon = cat.id === "flights" ? Plane : cat.id === "trains" ? Train : cat.id === "buses" ? Bus : cat.id === "hotels" ? Building2 : cat.id === "cabs" ? Car : CreditCard;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setActiveTab(cat.id)}
-                  className={`flex items-center gap-1.5 shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
-                    isSelected
-                      ? "bg-sky-400 text-slate-950 border-sky-300 font-black shadow-xs"
-                      : "bg-white/10 text-slate-200 border-white/10 hover:bg-white/20"
-                  }`}
-                >
-                  <Icon className="size-3.5" />
-                  <span>{cat.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Sub-Category Strip for Active Category */}
-          {currentCategory.subCategories.length > 0 && (
-            <div className="mt-2.5 flex flex-wrap items-center gap-1.5 pt-2.5 border-t border-white/10">
-              {currentCategory.subCategories.map((sub) => {
-                const isSelected = currentSub === sub;
-                return (
-                  <button
-                    key={sub}
-                    type="button"
-                    onClick={() =>
-                      setActiveSubCategory((prev) => ({
-                        ...prev,
-                        [activeTab]: sub,
-                      }))
-                    }
-                    className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
-                      isSelected
-                        ? "bg-sky-300 text-slate-950 font-black shadow-xs"
-                        : "bg-white/5 text-slate-300 hover:bg-white/15"
-                    }`}
-                  >
-                    {sub}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Real checkout paths: never invent fares or issue unverified tickets. */}
-        <section className="rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 border border-sky-400/30 p-5 sm:p-7 text-white shadow-xl">
-          <p className="text-xs uppercase tracking-wider font-black text-sky-300">Genuine provider checkout</p>
-          <h2 className="text-xl sm:text-2xl font-black mt-2">Find your journey. Book with the actual ticket issuer.</h2>
-          <p className="text-sm text-slate-300 mt-2">Fares, seat availability, payment and ticket confirmation are provided at external checkout. OrderKing does not yet issue railway tickets or collect railway payments.</p>
-          <div className="flex flex-wrap gap-2 mt-5">
-            <a href="https://www.irctc.co.in/nget/train-search" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-sky-400 px-4 py-3 text-slate-950 font-black text-sm no-underline hover:bg-sky-300">Train tickets · IRCTC ↗</a>
-            <a href={generateTravelpayoutsDomesticLink({ origin: "DEL", destination: "BOM", departureDate: new Date().toISOString().split("T")[0] }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Flights · Aviasales / Travelpayouts ↗</a>
-            <a href={generateRedBusDomesticLink("Delhi", "Jaipur").url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Bus tickets · redBus ↗</a>
-            <a href={generateTravelpayoutsHotelLink({ cityOrLocation: "Goa", checkInDate: new Date().toISOString().split("T")[0], partner: "booking_com" }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Hotels · Booking.com ↗</a>
-            <a href={generateTravelpayoutsHotelLink({ cityOrLocation: "Goa", checkInDate: new Date().toISOString().split("T")[0], partner: "agoda" }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Hotels · Agoda ↗</a>
-          </div>
-          <p className="text-[11px] text-slate-400 mt-3">Final fare, fees, refunds and PNR or booking confirmation are controlled by the selected provider.</p>
-        </section>
-        {/* =====================================================================
-            POPULAR HIGH-FREQUENCY INDIAN ROUTES CAROUSEL
-            Delhi ⇄ Mumbai · Kolkata ⇄ Bengaluru · Mumbai ⇄ Goa · etc.
-           ===================================================================== */}
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-            <div>
-              <span className="text-[11px] font-black uppercase tracking-wider text-sky-600 flex items-center gap-1.5">
-                <Compass className="size-3.5" /> High-Density Indian Corridors
-              </span>
-              <h2 className="text-lg font-black text-slate-900 mt-0.5">
-                Suggested routes · Check live fares on provider
-              </h2>
-            </div>
-            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start sm:self-auto">
-              Provider checkout required
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {POPULAR_ROUTES.map((route) => (
-              <div
-                key={route.id}
-                className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-sky-50/60 hover:border-sky-300 p-4 transition-all duration-200 flex flex-col justify-between gap-3 group"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-100 px-2 py-0.5 rounded-md">
-                      {route.type === "flight" && <Plane className="size-3" />}
-                      {route.type === "train" && <Train className="size-3" />}
-                      {route.type === "bus" && <Bus className="size-3" />}
-                      {route.tag}
-                    </span>
-                    <span className="text-[10px] font-mono font-bold text-slate-500">
-                      Choose journey date
-                    </span>
-                  </div>
-
-                  <h3 className="text-sm font-black text-slate-900 group-hover:text-sky-700 transition-colors">
-                    {route.fromCity} ({route.fromCode}) ➔ {route.toCity} ({route.toCode})
-                  </h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Schedules confirmed by provider
-                  </p>
-                </div>
-
-                <div className="border-t border-slate-200/80 pt-2.5 space-y-2">
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase">Fare</span>
-                    <span className="text-sm font-black font-mono text-slate-900">
-                      Check with provider
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        const handoff = getRoutePartnerHandoff(route, {
-                          departureDate: flightDate,
-                          passengers: flightPassengers,
-                          cabinClass: flightClass,
-                        });
-                        toast.success(
-                          `Connecting to official ${handoff.portalName} for ${route.fromCity} ➔ ${route.toCity}.`
-                        );
-                        window.open(handoff.url, "_blank", "noopener,noreferrer");
-                      }}
-                      className="w-full h-8 px-2 rounded-xl bg-slate-900 hover:bg-sky-600 text-white font-black text-[11px] transition flex items-center justify-center gap-1 shadow-xs"
-                    >
-                      <span>Book Direct</span>
-                      <ArrowUpRight className="size-3" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        if (route.type === "flight") {
-                          setActiveTab("flights");
-                          setFlightFrom(`${route.fromCity} (${route.fromCode})`);
-                          setFlightTo(`${route.toCity} (${route.toCode})`);
-                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} sector.`);
-                        } else if (route.type === "train") {
-                          setActiveTab("trains");
-                          setTrainFrom(`${route.fromCity} (${route.fromCode})`);
-                          setTrainTo(`${route.toCity} (${route.toCode})`);
-                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} rail.`);
-                        } else {
-                          setActiveTab("buses");
-                          setBusFrom(route.fromCity);
-                          setBusTo(route.toCity);
-                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} bus.`);
-                        }
-                      }}
-                      className="w-full h-8 px-2 rounded-xl border-slate-200 text-slate-700 hover:text-sky-700 hover:border-sky-300 font-bold text-[11px] transition"
-                    >
-                      Compare
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Unsupported rebate and hypothetical fare calculator withheld from customers. */}
 
         {/* =====================================================================
             CATEGORY 1: FLIGHTS
@@ -2725,6 +2468,128 @@ export function TravelPage() {
             </div>
           </div>
         )}
+
+        
+
+        {/* Real checkout paths: never invent fares or issue unverified tickets. */}
+        <section className="rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 border border-sky-400/30 p-5 sm:p-7 text-white shadow-xl">
+          <p className="text-xs uppercase tracking-wider font-black text-sky-300">Genuine provider checkout</p>
+          <h2 className="text-xl sm:text-2xl font-black mt-2">Find your journey. Book with the actual ticket issuer.</h2>
+          <p className="text-sm text-slate-300 mt-2">Fares, seat availability, payment and ticket confirmation are provided at external checkout. OrderKing does not yet issue railway tickets or collect railway payments.</p>
+          <div className="flex flex-wrap gap-2 mt-5">
+            <a href="https://www.irctc.co.in/nget/train-search" target="_blank" rel="noopener noreferrer" className="rounded-xl bg-sky-400 px-4 py-3 text-slate-950 font-black text-sm no-underline hover:bg-sky-300">Train tickets · IRCTC ↗</a>
+            <a href={generateTravelpayoutsDomesticLink({ origin: "DEL", destination: "BOM", departureDate: new Date().toISOString().split("T")[0] }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Flights · Aviasales / Travelpayouts ↗</a>
+            <a href={generateRedBusDomesticLink("Delhi", "Jaipur").url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Bus tickets · redBus ↗</a>
+            <a href={generateTravelpayoutsHotelLink({ cityOrLocation: "Goa", checkInDate: new Date().toISOString().split("T")[0], partner: "booking_com" }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Hotels · Booking.com ↗</a>
+            <a href={generateTravelpayoutsHotelLink({ cityOrLocation: "Goa", checkInDate: new Date().toISOString().split("T")[0], partner: "agoda" }).url} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-white/10 px-4 py-3 text-white font-bold text-sm border border-white/20 no-underline hover:bg-white/20">Hotels · Agoda ↗</a>
+          </div>
+          <p className="text-[11px] text-slate-400 mt-3">Final fare, fees, refunds and PNR or booking confirmation are controlled by the selected provider.</p>
+        </section>
+        {/* =====================================================================
+            POPULAR HIGH-FREQUENCY INDIAN ROUTES CAROUSEL
+            Delhi ⇄ Mumbai · Kolkata ⇄ Bengaluru · Mumbai ⇄ Goa · etc.
+           ===================================================================== */}
+        <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <span className="text-[11px] font-black uppercase tracking-wider text-sky-600 flex items-center gap-1.5">
+                <Compass className="size-3.5" /> High-Density Indian Corridors
+              </span>
+              <h2 className="text-lg font-black text-slate-900 mt-0.5">
+                Suggested routes · Check live fares on provider
+              </h2>
+            </div>
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start sm:self-auto">
+              Provider checkout required
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {POPULAR_ROUTES.map((route) => (
+              <div
+                key={route.id}
+                className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-sky-50/60 hover:border-sky-300 p-4 transition-all duration-200 flex flex-col justify-between gap-3 group"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-100 px-2 py-0.5 rounded-md">
+                      {route.type === "flight" && <Plane className="size-3" />}
+                      {route.type === "train" && <Train className="size-3" />}
+                      {route.type === "bus" && <Bus className="size-3" />}
+                      {route.tag}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-slate-500">
+                      Choose journey date
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm font-black text-slate-900 group-hover:text-sky-700 transition-colors">
+                    {route.fromCity} ({route.fromCode}) ➔ {route.toCity} ({route.toCode})
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Schedules confirmed by provider
+                  </p>
+                </div>
+
+                <div className="border-t border-slate-200/80 pt-2.5 space-y-2">
+                  <div className="flex items-center justify-between bg-slate-100/80 px-2.5 py-1.5 rounded-xl border border-slate-200/60">
+                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Fare</span>
+                    <span className="text-xs font-black text-sky-700">
+                      Check Live on Provider ↗
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const handoff = getRoutePartnerHandoff(route, {
+                          departureDate: flightDate,
+                          passengers: flightPassengers,
+                          cabinClass: flightClass,
+                        });
+                        toast.success(
+                          `Connecting to official ${handoff.portalName} for ${route.fromCity} ➔ ${route.toCity}.`
+                        );
+                        window.open(handoff.url, "_blank", "noopener,noreferrer");
+                      }}
+                      className="w-full h-8 px-2 rounded-xl bg-slate-900 hover:bg-sky-600 text-white font-black text-[11px] transition flex items-center justify-center gap-1 shadow-xs"
+                    >
+                      <span>Book Direct</span>
+                      <ArrowUpRight className="size-3" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        if (route.type === "flight") {
+                          setActiveTab("flights");
+                          setFlightFrom(`${route.fromCity} (${route.fromCode})`);
+                          setFlightTo(`${route.toCity} (${route.toCode})`);
+                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} sector.`);
+                        } else if (route.type === "train") {
+                          setActiveTab("trains");
+                          setTrainFrom(`${route.fromCity} (${route.fromCode})`);
+                          setTrainTo(`${route.toCity} (${route.toCode})`);
+                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} rail.`);
+                        } else {
+                          setActiveTab("buses");
+                          setBusFrom(route.fromCity);
+                          setBusTo(route.toCity);
+                          toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} bus.`);
+                        }
+                      }}
+                      className="w-full h-8 px-2 rounded-xl border-slate-200 text-slate-700 hover:text-sky-700 hover:border-sky-300 font-bold text-[11px] transition"
+                    >
+                      Compare
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Unsupported rebate and hypothetical fare calculator withheld from customers. */}
 
         {/* Sovereign Digital E-Ticket Modal */}
         {activeTicketModal && (

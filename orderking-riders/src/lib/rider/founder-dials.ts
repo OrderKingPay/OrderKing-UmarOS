@@ -454,13 +454,17 @@ export class FounderCommandDials {
     const payoutId = `payout_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     statement.payoutStatus = "DISBURSED";
 
+    const refBuf = new Uint32Array(1);
+    crypto.getRandomValues(refBuf);
+    const settleSuffix = 100000 + (refBuf[0] % 900000);
+
     return {
       payoutId,
       statementId: statement.statementId,
       riderId: statement.riderId,
       amountPaise: Math.max(0, statement.netDisbursementPaise),
       destinationAccountOrVpa: statement.payoutUpiOrBank,
-      gatewayReference: `OK_SETTLE_${Date.now()}_${Math.floor(100000 + Math.random() * 900000)}`,
+      gatewayReference: `OK_SETTLE_${Date.now()}_${settleSuffix}`,
       clearedAt: new Date().toISOString(),
       status: "SUCCESS",
       autonomousExecution: true,

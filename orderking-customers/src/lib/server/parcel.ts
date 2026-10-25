@@ -54,7 +54,9 @@ export const createParcelOrderFn = createServerFn({ method: "POST" })
     const fare = computeParcelFare(data.distanceKm);
     const sql = await getSql();
     const id = newId("pcl");
-    const publicId = `OK-PCL-${Math.floor(100000 + Math.random() * 900000)}`;
+    const pclBuf = new Uint32Array(1);
+    crypto.getRandomValues(pclBuf);
+    const publicId = `OK-PCL-${100000 + (pclBuf[0] % 900000)}`;
 
     try {
       await sql`

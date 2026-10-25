@@ -107,6 +107,7 @@ async function sendViaFast2SMS(
   appName: string,
   timeoutMs: number,
 ): Promise<{ success: boolean; messageId: string; raw?: unknown }> {
+  const cleanKey = (apiKey || "").trim().replace(/^["']|["']$/g, "");
   // If Fast2SMS Smart OTP ID is configured, use the dedicated Smart OTP corridor
   if (process.env.FAST2SMS_OTP_ID) {
     const res = await fetchWithTimeout(
@@ -114,12 +115,12 @@ async function sendViaFast2SMS(
       {
         method: "POST",
         headers: {
-          authorization: apiKey,
+          authorization: cleanKey,
           "Content-Type": "application/json",
           Accept: "application/json",
         },
         body: JSON.stringify({
-          otp_id: process.env.FAST2SMS_OTP_ID,
+          otp_id: process.env.FAST2SMS_OTP_ID.trim().replace(/^["']|["']$/g, ""),
           mobile: cleanPhone,
           otp,
         }),
@@ -136,12 +137,16 @@ async function sendViaFast2SMS(
       return?: boolean;
       request_id?: string;
       message?: string | string[];
+      status_code?: number;
     };
 
     if (json.return === false) {
-      const msg = Array.isArray(json.message)
+      let msg = Array.isArray(json.message)
         ? json.message.join(", ")
         : (json.message || "Fast2SMS Smart OTP rejected request");
+      if (json.status_code === 996) {
+        msg = "Fast2SMS requires website verification under 'OTP Message' menu on fast2sms.com";
+      }
       throw new Error(`Fast2SMS Smart OTP delivery error: ${msg}`);
     }
 
@@ -152,7 +157,7 @@ async function sendViaFast2SMS(
     };
   }
 
-  const route = process.env.FAST2SMS_ROUTE || "otp";
+  const route = (process.env.FAST2SMS_ROUTE || "otp").trim().replace(/^["']|["']$/g, "").toLowerCase();
   const url = "https://www.fast2sms.com/dev/bulkV2";
 
   let body: Record<string, unknown>;
@@ -176,7 +181,7 @@ async function sendViaFast2SMS(
     {
       method: "POST",
       headers: {
-        authorization: apiKey,
+        authorization: cleanKey,
         "Content-Type": "application/json",
         Accept: "application/json",
       },
@@ -187,17 +192,28 @@ async function sendViaFast2SMS(
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new Error(`Fast2SMS HTTP ${res.status}: ${errText}`);
+    let extra = "";
+    try {
+      const parsed = JSON.parse(errText);
+      if (parsed.message) extra = `: ${Array.isArray(parsed.message) ? parsed.message.join(", ") : parsed.message}`;
+    } catch {}
+    throw new Error(`Fast2SMS HTTP ${res.status}${extra || `: ${errText}`}`);
   }
 
   const json = (await res.json()) as {
     return?: boolean;
     request_id?: string;
     message?: string[];
+    status_code?: number;
   };
 
   if (!json.return) {
-    const msg = Array.isArray(json.message) ? json.message.join(", ") : "Fast2SMS rejected request";
+    let msg = Array.isArray(json.message) ? json.message.join(", ") : "Fast2SMS rejected request";
+    if (json.status_code === 996) {
+      msg = "Fast2SMS website verification required: Log in to fast2sms.com -> OTP Message menu and add orderkingpay.com";
+    } else if (json.status_code === 999) {
+      msg = "Fast2SMS account recharge required: Fast2SMS requires one-time ₹100 recharge to unlock API routes";
+    }
     throw new Error(`Fast2SMS delivery error: ${msg}`);
   }
 
@@ -387,7 +403,9 @@ async function sendViaTwilio(
 export function getAvailableSmsProviders(): TelecomProvider[] {
   const providers: TelecomProvider[] = [];
 
-  const fast2SmsKey = process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY;
+  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
   if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
     providers.push("fast2sms");
   }

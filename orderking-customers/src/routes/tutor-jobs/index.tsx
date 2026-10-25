@@ -11,7 +11,7 @@ export const Route = createFileRoute("/tutor-jobs/")({
 
 function TutorJobsIndexPage() {
   return (
-    <CustomerShell>
+    <CustomerShell dark maxWidth="max-w-7xl">
       <div className="min-h-screen bg-slate-950 text-white pb-28 pt-2">
         {/* Quick Nav Bar */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-2 flex items-center justify-between text-xs text-slate-400">

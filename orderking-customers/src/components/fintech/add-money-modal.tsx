@@ -116,7 +116,7 @@ export function AddMoneyModal({
                 <Wallet className="size-4" />
               </span>
               <span className="text-[11px] font-black uppercase tracking-wider text-amber-400">
-                Sovereign KingPay Vault
+                KingPay Wallet
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white">
@@ -124,7 +124,7 @@ export function AddMoneyModal({
             </h2>
             <p className="text-xs text-slate-300 mt-0.5 flex items-center gap-1.5">
               <ShieldCheck className="size-3.5 text-emerald-400 inline" />
-              <span>Zero Convenience Markup • 100% Sovereign Safety</span>
+              <span>Zero Convenience Markup</span>
             </p>
           </div>
 
@@ -141,7 +141,7 @@ export function AddMoneyModal({
         <div className="p-5 sm:p-6 space-y-5">
           {/* Current Balance Bar */}
           <div className="flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/10 border border-amber-400/30">
-            <span className="text-xs text-amber-200 font-medium">Available Sovereign Balance:</span>
+            <span className="text-xs text-amber-200 font-medium">Available Balance:</span>
             <span className="text-base font-black text-amber-300 font-mono">
               {formatPaise(currentBalancePaise)}
             </span>
@@ -258,7 +258,7 @@ export function AddMoneyModal({
             {isProcessing ? (
               <span className="flex items-center gap-2">
                 <span className="size-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                <span>Crediting Sovereign Vault...</span>
+                <span>Adding to Wallet...</span>
               </span>
             ) : (
               <>

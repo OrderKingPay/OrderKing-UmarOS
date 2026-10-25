@@ -53,7 +53,9 @@ export function DiningOutReservationModal({
       toast.error("Please enter guest name");
       return;
     }
-    const code = `TB-${Math.floor(100000 + Math.random() * 900000)}`;
+    const tbBuf = new Uint32Array(1);
+    crypto.getRandomValues(tbBuf);
+    const code = `TB-${100000 + (tbBuf[0] % 900000)}`;
     setBookingRef(code);
     setIsConfirmed(true);
     toast.success("Table reservation confirmed! SMS sent.");

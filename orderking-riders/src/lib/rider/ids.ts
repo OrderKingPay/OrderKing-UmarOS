@@ -3,6 +3,8 @@ export function nid(): string {
 }
 
 export function orderCode(): string {
-  const n = Math.floor(1000 + Math.random() * 9000);
+  const buf = new Uint16Array(1);
+  crypto.getRandomValues(buf);
+  const n = 1000 + (buf[0] % 9000);
   return `RSH-${n}`;
 }

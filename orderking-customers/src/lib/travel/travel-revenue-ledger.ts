@@ -45,7 +45,9 @@ export async function recordTravelCommissionLedger(
 ): Promise<TravelRevenueLedgerRecord> {
   const bps = input.partnerCommissionBps ?? DEFAULT_TRAVEL_COMMISSION_BPS[input.travelMode];
   const commissionPaise = calculateTravelCommissionPaise(input.grossAmountPaise, bps);
-  const transactionId = `TRV-COMM-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const trvBuf = new Uint32Array(1);
+  crypto.getRandomValues(trvBuf);
+  const transactionId = `TRV-COMM-${Date.now()}-${1000 + (trvBuf[0] % 9000)}`;
   const now = new Date().toISOString();
 
   const record: TravelRevenueLedgerRecord = {

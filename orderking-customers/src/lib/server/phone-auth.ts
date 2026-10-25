@@ -47,8 +47,10 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       throw new Error("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
     }
 
-    // Generate secure 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate cryptographically secure 6-digit OTP
+    const randomBuffer = new Uint32Array(1);
+    crypto.getRandomValues(randomBuffer);
+    const otp = (100000 + (randomBuffer[0] % 900000)).toString();
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
     // 1. Cache in memory

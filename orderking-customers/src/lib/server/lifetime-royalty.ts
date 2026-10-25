@@ -323,7 +323,9 @@ export const withdrawRoyaltyToUPI = createServerFn({ method: "POST" })
     await ensureTables(sql);
 
     const payoutId = `payout_${randomUUID().slice(0, 8)}`;
-    const utr = `UTR${Date.now()}${Math.floor(100 + Math.random() * 900)}`;
+    const utrBuf = new Uint32Array(1);
+    crypto.getRandomValues(utrBuf);
+    const utr = `UTR${Date.now()}${100 + (utrBuf[0] % 900)}`;
 
     await sql.transaction(async (tx: any) => {
       const walletRows = await tx<{ balance_paise: number }>`
