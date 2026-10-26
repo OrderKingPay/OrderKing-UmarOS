@@ -226,7 +226,7 @@ export function AiMediaStudioModal({
                   Advanced AI Video & Image Creation Studio
                 </h3>
                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-400/40 text-[9px] font-mono">
-                  #1 IN WORLD · 100% REALISTIC · 0 COST
+                  STUDIO QUALITY · 8K UHD · REAL-TIME
                 </Badge>
               </div>
               <p className="text-xs text-slate-400">
@@ -317,7 +317,7 @@ export function AiMediaStudioModal({
               <div className="space-y-2">
                 <label className="text-xs font-bold text-amber-300 flex items-center justify-between">
                   <span>Enter Photorealistic Prompt:</span>
-                  <span className="text-[10px] text-muted font-normal">8K UHD · Octane Raytracing · Zero Cost</span>
+                  <span className="text-[10px] text-muted font-normal">8K UHD · Octane Raytracing · Native Production</span>
                 </label>
                 <div className="flex gap-2">
                   <Input

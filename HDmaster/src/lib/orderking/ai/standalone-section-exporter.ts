@@ -55,7 +55,7 @@ export class StandaloneSectionExporter {
     },
     {
       id: "kingpay",
-      title: "King Pay 0% Fee UPI Gateway & Sovereign Soundbox",
+      title: "King Pay Direct UPI Gateway & Sovereign Soundbox",
       category: "Fintech & Payments",
       description: "Separate the zero-fee UPI collection engine, QR code matrices, and audio soundbox into a standalone payment portal.",
       icon: "QrCode",
@@ -114,7 +114,7 @@ export class StandaloneSectionExporter {
       description: "Complete hospital outpatient, triage queue, doctor tele-care, and ABDM digital health records portal.",
       icon: "Activity",
       suggestedDomain: "hospital.orderking.in",
-      features: ["ABDM Compliant", "Real-Time OPD Queue", "Doctor Tele-Consult", "0% Fee Medical Billing"],
+      features: ["ABDM Compliant", "Real-Time OPD Queue", "Doctor Tele-Consult", "Direct Medical Billing"],
     },
     {
       id: "marketplace",
@@ -123,7 +123,7 @@ export class StandaloneSectionExporter {
       description: "Autonomous customer ordering, merchant kitchen dashboard, and 15-min delivery fleet dispatch system.",
       icon: "ShoppingBag",
       suggestedDomain: "market.orderking.in",
-      features: ["0% Commission", "True Price Parity", "Fleet Telematics", "1-Tap King Pay Checkout"],
+      features: ["Direct Merchant Ordering", "True Price Parity", "Fleet Telematics", "1-Tap King Pay Checkout"],
     },
   ];
 

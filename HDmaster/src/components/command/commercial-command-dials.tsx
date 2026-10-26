@@ -206,7 +206,7 @@ export function CommercialCommandDials() {
           {
             id: "travel_governance" as DialTabKey,
             label: "7. Travel Governance",
-            subtitle: "Travelpayouts, OTAs, ₹0 Markup",
+            subtitle: "Travelpayouts, OTAs, Dynamic Net Rates",
             icon: Globe,
             color: "sky",
           },
@@ -369,7 +369,7 @@ function PlatformFeeDialSection({
                 className="w-full h-3 bg-surface-2 rounded-lg appearance-none cursor-pointer accent-amber-500 shadow-inner"
               />
               <div className="flex justify-between text-[11px] font-mono text-muted mt-2">
-                <span>₹0 (Zero Fee)</span>
+                <span>Standard Gateway Rate</span>
                 <span>₹5</span>
                 <span>₹10 (Tier-1 Parity)</span>
                 <span>₹15</span>
@@ -1736,7 +1736,7 @@ function TravelPartnerGovernanceSection() {
           <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
             <div>
               <div className="font-bold text-xs text-white">Travelpayouts Domestic Network (Aviasales)</div>
-              <div className="text-[11px] text-muted">Indian domestic air corridors, ₹0 convenience fee routing</div>
+              <div className="text-[11px] text-muted">Indian domestic air corridors, direct carrier routing</div>
             </div>
             <Button
               size="sm"
@@ -1873,7 +1873,7 @@ function TravelPartnerGovernanceSection() {
           <div className="flex items-center justify-between p-3 rounded-lg bg-black/40 border border-border/60">
             <div>
               <div className="font-bold text-xs text-white">RedBus Interstate Ticketing</div>
-              <div className="text-[11px] text-muted">Over 3,500 bus operators with ₹0 convenience fee comparison</div>
+              <div className="text-[11px] text-muted">Over 3,500 bus operators with live carrier comparison</div>
             </div>
             <Button
               size="sm"

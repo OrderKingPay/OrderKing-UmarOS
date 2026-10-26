@@ -1187,7 +1187,7 @@ You can **separate, extract, and deploy ANY part of HDmaster** into an independe
 
 1. 🎬 **4K Video & Image Studio**: Standalone video creation & editing web app (\`studio.orderking.in\`)
 2. 🌐 **Universal Platform Enforcer**: Standalone API integration & task enforcement bridge (\`enforcer.orderking.in\`)
-3. 💳 **King Pay UPI Terminal**: Standalone 0% fee billing & escrow web portal (\`pay.orderking.in\`)
+3. 💳 **King Pay UPI Terminal**: Standalone direct UPI billing & escrow web portal (\`pay.orderking.in\`)
 4. 🎯 **Client Acquisition Machine**: Standalone sales radar & proposal app (\`sales.orderking.in\`)
 5. 🏥 **Hospital Management ERP**: Full healthcare patient portal (\`hospital.orderking.in\`)
 6. 🛍️ **Hyperlocal Multi-Vendor Marketplace**: Standalone food/grocery delivery app (\`market.orderking.in\`)
@@ -1357,20 +1357,20 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
 - **Active Coordinates**: \`24.8688° N, 92.3511° E\`
 - **Pan-India Inactive Zone Rule**:
   - Customers outside the active 12km delivery zone **NEVER** see open restaurants or food delivery listings.
-  - Across all other Indian cities, users experience **King Pay** exclusively (0% fee instant payment network).
+  - Across all other Indian cities, users experience **King Pay** exclusively (instant payment network).
 - **Zero-Fee Infrastructure**: Direct bank settlements with zero gateway commissions and IT Act §79 intermediary protection.`;
 
     return {
       intent: "general_executive",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `Geofence rules are strictly active. Food delivery is confined to a 12 kilometer radius around Karimganj and Sribhumi. In all other parts of India, restaurants are hidden and customers only see King Pay with zero fees.`,
+      voiceSpokenText: `Geofence rules are strictly active. Food delivery is confined to a 12 kilometer radius around Karimganj and Sribhumi. In all other parts of India, restaurants are hidden and customers access King Pay digital payments.`,
       executionSteps,
       actionCard: {
         type: "geofence_status",
         data: {
           activeZone,
-          rules: "Strict 12km Karimganj zone for food; 100% Pan-India King Pay 0% fee ecosystem outside.",
+          rules: "Strict 12km Karimganj zone for food; Pan-India King Pay digital payment ecosystem outside.",
         },
       },
     };

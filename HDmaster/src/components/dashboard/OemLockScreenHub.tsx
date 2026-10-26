@@ -178,7 +178,7 @@ export function OemLockScreenHub({
           contactPhone: advPhone.trim() || "+91 98000 00000",
           businessCategory: advCategory,
           adHeadline: adHeadline.trim(),
-          adSubtext: adSubtext.trim() || "Order direct with ₹0 markups via OrderKing.",
+          adSubtext: adSubtext.trim() || "Order direct from top local kitchens via OrderKing.",
           ctaDeepLink: adDeepLink.trim(),
           adFormat,
           budgetInr: Number(campaignBudget),

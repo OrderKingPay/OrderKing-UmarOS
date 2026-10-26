@@ -423,7 +423,7 @@ export function KingPayWealthHub() {
               partner="Unity SFB · Suryoday · Shriram · Bajaj"
               badge="Up to 9.50% p.a."
               description="Lock in high yields with RBI-regulated Scheduled Commercial Banks. Deposits insured up to ₹5 Lakhs by DICGC (RBI Subsidiary)."
-              statLabel="Max Guaranteed APY"
+              statLabel="Current Indicative APY"
               statValue="9.50% p.a."
               onClick={() => setSelectedCategory("fixed_deposits")}
             />

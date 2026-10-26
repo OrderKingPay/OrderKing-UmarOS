@@ -123,8 +123,8 @@ export function CentralPricingSwitch() {
         commPct: 14,
       },
       free: {
-        badge: "0% Commission",
-        detail: "Zero commission promo for onboarding new restaurants.",
+        badge: "Direct Ordering Model",
+        detail: "Dynamic take-rate model configured per merchant partnership.",
         commPct: 0,
       },
       trial: {

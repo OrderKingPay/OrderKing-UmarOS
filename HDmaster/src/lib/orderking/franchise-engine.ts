@@ -81,7 +81,7 @@ export const TIER_CONFIGS: Record<
       "Dedicated OrderKing Merchant Partner Web/Tablet Console License & Staff Operational Guide",
       "Standard Thermal Kitchen Display System (KDS) Driver Integration Protocol",
       "Pre-Launch FSSAI Hygiene Audit & Official Digital Verification Crest on Consumer App",
-      "Introductory 30-Day Zero Commission Take-Rate Waiver (Subsidized on First ₹50,000 GMV)",
+      "Introductory 30-Day Dynamic Take-Rate Waiver (Subsidized on First ₹50,000 GMV)",
     ],
   },
   PRIORITY_PARTNER: {

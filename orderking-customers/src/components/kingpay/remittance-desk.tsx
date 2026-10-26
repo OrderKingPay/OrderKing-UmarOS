@@ -165,7 +165,7 @@ export function RemittanceDesk() {
     const timer = setInterval(() => {
       setSecondsRemaining((prev) => {
         if (prev <= 1) {
-          return 900; // Reset rate guarantee lock
+          return 900; // Reset rate quote lock
         }
         return prev - 1;
       });
@@ -279,11 +279,11 @@ export function RemittanceDesk() {
             </p>
           </div>
 
-          {/* 15-Min Guaranteed Rate Lock Timer */}
+          {/* 15-Min FX Rate Quote Lock Timer */}
           <div className="rounded-2xl border border-amber-400/30 bg-black/60 p-3 sm:p-4 text-center sm:text-right shrink-0">
             <div className="flex items-center justify-center sm:justify-end gap-1.5 text-[10px] font-black uppercase text-amber-400 tracking-wider">
               <Clock className="size-3.5" />
-              Guaranteed FX Lock
+              Live FX Quote Lock
             </div>
             <div className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
               {formatTimer(secondsRemaining)}
@@ -313,7 +313,7 @@ export function RemittanceDesk() {
               1. Transfer Corridor &amp; Source Amount
             </h2>
             <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
-              Zero Hidden Margin
+              Transparent Interbank Rate
             </span>
           </div>
 
@@ -464,7 +464,7 @@ export function RemittanceDesk() {
             </div>
 
             <div className="border-t border-slate-800 pt-2 flex justify-between items-center text-sm">
-              <span className="font-black text-white">Guaranteed Effective Rate:</span>
+              <span className="font-black text-white">Effective Exchange Rate:</span>
               <span className="font-mono font-black text-amber-400">
                 1 {sourceCurrency} = {targetCurrencySymbol}{effectiveRate.toFixed(4)}
               </span>
@@ -479,7 +479,7 @@ export function RemittanceDesk() {
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black uppercase tracking-wider text-emerald-300 flex items-center gap-1">
                 <CheckCircle2 className="size-3.5 text-emerald-400" />
-                Guaranteed Recipient Payout
+                Net Recipient Payout
               </span>
               <span className="text-[10px] font-bold text-slate-400">
                 Speed: &lt;60 Seconds

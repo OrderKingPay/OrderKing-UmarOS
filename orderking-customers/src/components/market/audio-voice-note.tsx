@@ -13,14 +13,14 @@ interface AudioVoiceNoteProps {
   target: VoiceNoteTarget;
   onVoiceNoteChange?: (note: VoiceNoteItem | null) => void;
   className?: string;
-  samplePlaceholder?: string;
+  instructionPrompt?: string;
 }
 
 export function AudioVoiceNote({
   target,
   onVoiceNoteChange,
   className = "",
-  samplePlaceholder,
+  instructionPrompt,
 }: AudioVoiceNoteProps) {
   const storeNote = useVoiceNoteStore((s) => s.notes[target]);
   const setStoreNote = useVoiceNoteStore((s) => s.setVoiceNote);
@@ -37,7 +37,7 @@ export function AudioVoiceNote({
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
   const defaultSample =
-    samplePlaceholder ||
+    instructionPrompt ||
     (target === "delivery"
       ? "Ghar ke gate par black bell hai, bell mat bajana baby so raha hai"
       : "Please make the gravy extra spicy and don't add chopped onions");
@@ -87,7 +87,6 @@ export function AudioVoiceNote({
             audioUrl,
             durationSeconds: duration,
             recordedAt: new Date().toISOString(),
-            sampleTranscript: defaultSample,
           };
           setStoreNote(target, newNote);
           toast.success("Voice note recorded successfully! 🎙️");
@@ -105,37 +104,14 @@ export function AudioVoiceNote({
           }
         }, 200);
       } else {
-        // Fallback for environments without mic permissions or automated browser sessions
-        recordSynthesizedVoiceNote();
+        toast.error("Microphone access is not supported by your browser.");
+        setIsRecording(false);
       }
     } catch (err) {
-      console.warn("Microphone access unavailable, using synthesized audio note:", err);
-      recordSynthesizedVoiceNote();
+      console.warn("Microphone access unavailable:", err);
+      toast.error("Microphone access denied. Please enable microphone permissions.");
+      setIsRecording(false);
     }
-  };
-
-  const recordSynthesizedVoiceNote = () => {
-    setIsRecording(true);
-    setRecordingSeconds(0);
-    let sec = 0;
-    timerIntervalRef.current = setInterval(() => {
-      sec += 1;
-      setRecordingSeconds(sec);
-      if (sec >= 5) {
-        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-        setIsRecording(false);
-        const newNote: VoiceNoteItem = {
-          id: `vn-${Date.now()}`,
-          target,
-          audioUrl: "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=",
-          durationSeconds: 5,
-          recordedAt: new Date().toISOString(),
-          sampleTranscript: defaultSample,
-        };
-        setStoreNote(target, newNote);
-        toast.success("Voice note recorded! 🎙️");
-      }
-    }, 400);
   };
 
   const stopRecording = () => {
@@ -252,7 +228,7 @@ export function AudioVoiceNote({
                   </span>
                 </div>
                 <p className="text-[11px] text-muted line-clamp-1 italic max-w-[200px] sm:max-w-xs">
-                  &ldquo;{storeNote.sampleTranscript || defaultSample}&rdquo;
+                  {storeNote.transcript ? `“${storeNote.transcript}”` : "Voice instruction recorded"}
                 </p>
               </div>
             </div>

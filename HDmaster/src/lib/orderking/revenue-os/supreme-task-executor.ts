@@ -59,7 +59,7 @@ export class PremiumTaskExecutor {
       },
       {
         pillar: "BUSINESS_MODEL",
-        title: "Define 0% Commission Direct Ordering + ₹14,999/mo Retainer Model",
+        title: "Define Direct Merchant Ordering + ₹14,999/mo Retainer Model",
         status: "COMPLETED",
         automatedArtifacts: ["Financial-Model.xlsx", "Unit-Economics.md"],
         outputSummary: "Projected 88% gross margin with 14-day payback period.",
@@ -122,7 +122,7 @@ export class PremiumTaskExecutor {
       },
       {
         pillar: "SALES",
-        title: "Queue Personalized ROI Pitches with 0% Fee Demonstration",
+        title: "Queue Personalized ROI Pitches with Dynamic Take-Rate Demonstration",
         status: "PENDING",
       },
       {

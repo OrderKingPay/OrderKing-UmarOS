@@ -695,7 +695,7 @@ function CheckoutPage() {
                 {/* 1-Tap 15-Second Delivery Partner Audio Note */}
                 <AudioVoiceNote
                   target="delivery"
-                  samplePlaceholder="Ghar ke gate par black bell hai, bell mat bajana baby so raha hai"
+                  instructionPrompt="Ghar ke gate par black bell hai, bell mat bajana baby so raha hai"
                   className="mt-3"
                 />
               </section>

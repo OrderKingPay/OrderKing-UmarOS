@@ -85,10 +85,10 @@ export const TRUST_TIER_CONFIGS: Record<TrustTier, TrustTierConfig> = {
     badgeTone: "online",
     perks: [
       "₹5,000 Maximum Cash Holding Limit",
-      "Unlimited Free Instant IMPS Cashouts (₹0 fee)",
+      "Instant IMPS Cashouts via RazorpayX",
       "Maximum ₹3.50/L Petrocard Cashback",
       "Top-Tier VIP Dispatch Priority (1.5x)",
-      "Family Health OPD Card Included (₹0 cost)",
+      "Family Health OPD Card Access",
     ],
   },
 };

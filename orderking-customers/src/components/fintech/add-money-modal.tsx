@@ -163,7 +163,7 @@ export function AddMoneyModal({
                 className="w-full bg-transparent px-2 text-2xl font-black text-white focus:outline-none"
               />
               <span className="pr-3 text-[11px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/15 border border-emerald-400/30 px-2 py-0.5 rounded-md">
-                ₹0 Fee
+                Direct UPI
               </span>
             </div>
 
@@ -264,7 +264,7 @@ export function AddMoneyModal({
               <>
                 <Sparkles className="size-4.5" />
                 <span>
-                  Add ₹{amountRupees.toLocaleString("en-IN")} Instantly • ₹0 Fee
+                  Add ₹{amountRupees.toLocaleString("en-IN")} Instantly
                 </span>
                 <ArrowRight className="size-4.5" />
               </>

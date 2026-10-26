@@ -33,7 +33,7 @@ export class CostControlOptimizer {
       monthlyCostInr: 12500,
       provider: "Razorpay / Stripe",
       optimizationRecommendation: {
-        cheaperAlternative: "King Pay Direct UPI (0% fee Section 79 deep links)",
+        cheaperAlternative: "King Pay Direct UPI (Section 79 direct merchant deep links)",
         estimatedSavingsInr: 12500,
         qualityImpact: "ZERO_IMPACT",
         action: "Route all Indian direct merchant orders through King Pay UPI to eliminate 100% of gateway cuts.",

@@ -488,7 +488,7 @@ export function ScanQrModal({
                       className="w-full bg-transparent px-2 text-xl font-black text-white focus:outline-none"
                     />
                     <span className="pr-2 text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/15 border border-emerald-400/30 px-2 py-0.5 rounded-md">
-                      ₹0 Fee
+                      Instant Transfer
                     </span>
                   </div>
                 </div>
@@ -539,7 +539,7 @@ export function ScanQrModal({
                     <>
                       <Sparkles className="size-4" />
                       <span>
-                        Pay ₹{Number(amountRupees || 0).toLocaleString("en-IN")} Instant • ₹0 Fee
+                        Pay ₹{Number(amountRupees || 0).toLocaleString("en-IN")} Instant
                       </span>
                       <ArrowRight className="size-4" />
                     </>

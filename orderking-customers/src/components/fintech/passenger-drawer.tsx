@@ -193,7 +193,7 @@ export function PassengerDrawer({
       });
 
       toast.success(
-        `🎉 Booking Confirmed! PNR ${ticket.pnr} issued with ₹0 convenience fee!`
+        `🎉 Booking Confirmed! PNR ${ticket.pnr} issued successfully!`
       );
 
       onBookingSuccess(ticket);
@@ -225,7 +225,7 @@ export function PassengerDrawer({
               Sign In to Book Trip
             </h3>
             <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-              To reserve verified carrier seats with ₹0 convenience fee and sovereign digital gold rebates, please sign in to your OrderKing account. Guest checkout without verified KYC is not permitted.
+              To reserve verified carrier seats with direct digital ticketing and sovereign digital gold rebates, please sign in to your OrderKing account. Guest checkout without verified KYC is not permitted.
             </p>
           </div>
           <div className="pt-2 flex flex-col gap-2.5">
@@ -604,7 +604,7 @@ export function PassengerDrawer({
             <div className="flex items-center justify-between font-bold text-slate-700 border-b border-slate-200 pb-2">
               <span>Transparent Fare Breakdown ({fareCalc.passengerCount} Pax)</span>
               <span className="text-emerald-600 bg-emerald-100/70 px-2 py-0.5 rounded-full font-black">
-                ₹0 Convenience Fee Guaranteed
+                Convenience Fee (Dynamic)
               </span>
             </div>
 
@@ -619,7 +619,7 @@ export function PassengerDrawer({
               </div>
               <div className="flex justify-between text-emerald-700 font-bold">
                 <span>OrderKing Convenience Platform Fee</span>
-                <span className="font-mono font-black">₹0.00 (Zero Fee)</span>
+                <span className="font-mono font-black">₹{(fareCalc.convenienceFeePaise / 100).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Commercial OTA Surcharge (Avoided)</span>
@@ -666,7 +666,7 @@ export function PassengerDrawer({
                 </>
               ) : (
                 <>
-                  Pay {formatPaise(fareCalc.totalCheckoutPaise)} &amp; Issue E-Ticket (0% Fee)
+                  Pay {formatPaise(fareCalc.totalCheckoutPaise)} &amp; Issue E-Ticket
                   <ArrowRight className="size-4" />
                 </>
               )}

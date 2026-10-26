@@ -136,7 +136,7 @@ export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
       "Guaranteed Minimum Base Fare floor: ₹35 per delivery",
       "Distance Pay: ₹10/km beyond base radius",
       "Wait-Time Allowance for kitchen prep delays >5 minutes",
-      "100% pass-through of customer tips with zero commission",
+      "100% direct pass-through of customer tips to staff",
       "Automated T+0 / weekly direct bank & UPI settlements",
       "Transparent Section 194-O / 194C TDS compliance with Form 16A"
     ]

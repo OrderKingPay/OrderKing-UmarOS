@@ -148,7 +148,7 @@ export function CookingInstructionsModal({
         </div>
 
         {/* 1-Tap 15-Second Kitchen Chef Voice Note */}
-        <AudioVoiceNote target="kitchen" samplePlaceholder="Make it extra spicy and please don't add onions" />
+        <AudioVoiceNote target="kitchen" instructionPrompt="Make it extra spicy and please don't add onions" />
 
         {/* Restaurant Kitchen Disclaimer */}
         <p className="text-[10px] text-muted leading-tight">

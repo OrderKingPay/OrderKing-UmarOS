@@ -170,10 +170,10 @@ export function CustomerConciergeDrawer({
       }
     }
 
-    // 1. Food Delays & Late Delivery SLA (On-Time Guarantee)
+    // 1. Food Delays & Late Delivery SLA (Dispatch Resolution Policy)
     if (q.includes("late") || q.includes("delay") || q.includes("stuck") || q.includes("deri") || q.includes("kahan") || q.includes("kothay") || q.includes("slow")) {
       return {
-        reply: `Under OrderKing's Sovereign On-Time Guarantee, if your order is delayed by more than 10 minutes past the committed ETA, you will automatically receive an instant ₹50 compensation credit in your KingPay wallet. We have transmitted an urgent priority dispatch ping to your rider and kitchen chef!`,
+        reply: `Under OrderKing's delivery SLA policy, if your order is delayed past the committed ETA, our dispatch engine reviews the transit delay and applies resolution credit to your KingPay wallet. We have transmitted an urgent priority dispatch ping to your rider and kitchen chef!`,
         action: { type: "TRACK_DELIVERY", label: "📦 Track Live Rider GPS & ETA", url: "/orders" },
       };
     }
@@ -509,7 +509,7 @@ export function CustomerConciergeDrawer({
 
           <p className="mt-2 flex items-center justify-between text-[10px] text-slate-400">
             <span className="flex items-center gap-1">
-              <ShieldCheck className="size-3 text-emerald-400" /> 100% Intermediary Safe Harbor &amp; SLA Guarantee
+              <ShieldCheck className="size-3 text-emerald-400" /> Intermediary Safe Harbor &amp; Operational SLA
             </span>
             <Link to="/support" className="text-amber-300 underline">
               Founder Review Desk

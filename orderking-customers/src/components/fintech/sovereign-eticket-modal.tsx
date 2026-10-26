@@ -84,7 +84,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
       `*Route:* ${ticket.origin.city} ➔ ${ticket.destination.city}\n` +
       `*Departure:* ${ticket.origin.departureDate} at ${ticket.origin.departureTime}\n` +
       `*Passengers:* ${ticket.passengers.map(p => `${p.fullName} (${p.allocatedSeat})`).join(", ")}\n` +
-      `*Amount Paid:* ₹${(ticket.fareBreakdown.totalCheckoutPaise / 100).toFixed(2)} (₹0 Convenience Fee)\n` +
+      `*Amount Paid:* ₹${(ticket.fareBreakdown.totalCheckoutPaise / 100).toFixed(2)} (Direct Carrier Fare)\n` +
       `*Status:* 100% Confirmed & Ready for Boarding`;
 
     try {
@@ -125,7 +125,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
                 SOVEREIGN CONFIRMED E-TICKET
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-sky-400/20 text-sky-300 border border-sky-400/30 text-[10px] font-extrabold uppercase">
-                ₹0 Convenience Fee
+                Verified E-Ticket
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">

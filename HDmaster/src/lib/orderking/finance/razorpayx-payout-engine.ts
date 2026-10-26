@@ -177,19 +177,9 @@ export async function executeRazorpayXPayout(
   const idempotencyKey = input.idempotencyKey || input.referenceId;
 
   if (!creds.isLiveReady) {
-    console.warn(
-      `[RazorpayX Payout Engine] Live credentials not found in env. Operating in OFFLINE_SAFE mode for reference ${input.referenceId}.`,
+    throw new Error(
+      `[RazorpayX Payout Engine] GATEWAY_NOT_CONFIGURED: Live RazorpayX banking credentials are not configured on the server. Payout for ${input.referenceId} halted fail-closed.`,
     );
-    return {
-      success: true,
-      payoutId: `pout_sim_${input.referenceId}`,
-      status: "queued",
-      utr: `SIM${Date.now().toString().slice(-8)}`,
-      amountPaise: input.amountPaise,
-      mode,
-      referenceId: input.referenceId,
-      rawResponse: { mode: "OFFLINE_TEST_READY" },
-    };
   }
 
   try {

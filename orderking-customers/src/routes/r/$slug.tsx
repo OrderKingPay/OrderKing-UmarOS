@@ -610,7 +610,7 @@ function RestaurantPage() {
               {/* 1-Tap 15-Second Kitchen Audio Voice Note */}
               <AudioVoiceNote
                 target="kitchen"
-                samplePlaceholder="Please make it extra spicy and don't add chopped onions"
+                instructionPrompt="Cooking instructions (e.g. less spicy, extra napkins)"
                 className="mt-3.5"
               />
 

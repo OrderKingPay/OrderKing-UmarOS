@@ -305,7 +305,7 @@ export class OpportunityEngine {
     const timeToClientValueDays = effort <= 80 ? 7 : 14;
     const timeToInvoiceDays = 1; // Immediate 50% advance invoice on contract signing
     const knownPaymentProcess = isDirectUpi
-      ? "King Pay Direct UPI (0% fee, instant bank deposit, Section 79 compliant)"
+      ? "King Pay Direct UPI (instant bank deposit, Section 79 compliant)"
       : "Stripe Milestone / International Wire Escrow (Net 7)";
 
     let frictionScore = 2; // base low

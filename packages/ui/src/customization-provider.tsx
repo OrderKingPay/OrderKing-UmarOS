@@ -410,7 +410,7 @@ export const DEFAULT_CUSTOMIZATION_STATE: DynamicCustomizationState = {
         bps: 0,
         percentage: 0,
         label: "0% Dine-In Sovereign",
-        description: "0% commission for dine-in & customer pickup (self-fulfillment)",
+        description: "Direct ordering for dine-in & customer pickup (self-fulfillment)",
       },
       {
         key: "ENTERPRISE",

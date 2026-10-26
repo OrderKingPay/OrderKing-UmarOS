@@ -72,7 +72,7 @@ export function ExpiringViralShareModal({ open, onClose }: ExpiringViralShareMod
           <div>
             <span className="flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-amber-700">
               <Sparkles className="size-3 text-amber-500" />
-              100% Guaranteed Reward
+              Verified Referral Incentive
             </span>
             <h3 className="text-base font-black text-gray-900 leading-tight">
               Gift ₹{GIFT_REWARD_RUPEES} to Friends

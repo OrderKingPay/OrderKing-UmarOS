@@ -11,6 +11,7 @@ export type VoiceNoteItem = {
   durationSeconds: number;
   recordedAt: string;
   label?: string;
+  transcript?: string;
   sampleTranscript?: string;
 };
 
@@ -59,7 +60,8 @@ export const useVoiceNoteStore = create<VoiceNoteState>((set, get) => ({
     const note = get().notes[target];
     if (!note) return "";
     const prefix = target === "delivery" ? "🛵 Delivery Voice Note" : "👨‍🍳 Kitchen Voice Note";
-    const transcript = note.sampleTranscript ? `: "${note.sampleTranscript}"` : "";
+    const transcriptText = note.transcript || note.sampleTranscript;
+    const transcript = transcriptText ? `: "${transcriptText}"` : "";
     return `[${prefix} (${note.durationSeconds}s)${transcript}]`;
   },
 }));

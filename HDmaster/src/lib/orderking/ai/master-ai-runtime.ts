@@ -2450,7 +2450,7 @@ export async function executeTool(
           { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Conquering Remote Towns", honorarium: "Plaque & Honorarium" },
           { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Advanced-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },
           { institution: "BITS Pilani Conquest", topic: "Zero-MDR FinTech & 2G Resilient Edge Delivery Networks", honorarium: "Honorarium & Syndicate Access" },
-          { institution: "IIM Calcutta Innovation Park", topic: "Empowering 500+ Kitchens with 0% Markup Aggregation", honorarium: "Institutional Mentorship" },
+          { institution: "IIM Calcutta Innovation Park", topic: "Empowering 500+ Kitchens with Direct Hyperlocal Logistics", honorarium: "Institutional Mentorship" },
         ],
         nationalAwardsRegistry: [
           { title: "National Startup Awards", authority: "DPIIT, Govt of India", prize: "₹10,00,000 Cash + Trophy" },
@@ -2519,7 +2519,7 @@ export async function executeTool(
           targetRadiusKm: 5.0,
           estimatedDailyReach: "3,200 active local mobile users",
           placements: ["instagram_reels", "instagram_feed", "facebook_feed", "facebook_stories"],
-          adCreativeHeadline: "Karimganj's Own Food App: 0% Markup + 24K Gold 👑",
+          adCreativeHeadline: "Karimganj's Own Food App: Direct Kitchen Prices + 24K Gold 👑",
         },
         googleAdsPMaxPayload: {
           advertisingChannelType: "PERFORMANCE_MAX",

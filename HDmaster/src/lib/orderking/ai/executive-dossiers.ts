@@ -199,7 +199,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
         sectionTitle: "Seed Fund Justification",
         fields: [
           { label: "Target Market Size", value: "North-East India Tier-2/3 food delivery and local logistics market estimated at ₹1,400 Crore annually." },
-          { label: "Direct Competitor Analysis", value: "Dominant Legacy Aggregators suffer from high delivery partner churn (due to low pay) and merchant rebellion (due to 30% cuts). OrderKing solves both with fair pay and 0% markup." },
+          { label: "Direct Competitor Analysis", value: "Dominant Legacy Aggregators suffer from high delivery partner churn (due to low pay) and merchant rebellion (due to 30% cuts). OrderKing solves both with fair pay and direct merchant pricing." },
           { label: "Capital Allocation", value: "₹8L for rider safety & delivery fleet gear, ₹6L for server scaling & GPS infrastructure, ₹6L for working capital & merchant POS tablets." },
         ],
       },
@@ -440,7 +440,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
         },
         {
           timestamp: "0:08 - 0:20",
-          visual: "She holds OrderKing partner tablet, receiving orders seamlessly with 0% extra customer fee.",
+          visual: "She holds OrderKing partner tablet, receiving orders seamlessly with direct customer pricing.",
           audioScript: "Big apps charged her 30% commission, but OrderKing empowered her to start her online kitchen with zero hassles.",
         },
         {

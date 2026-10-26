@@ -44,7 +44,7 @@ export class ApplicationEngine {
     },
     {
       projectName: "King Pay UPI Section 79 Escrow Gateway",
-      verifiedMetric: "Direct 0% fee peer-to-merchant UPI deep linking with instant webhook verification and bank UTR reconciliation.",
+      verifiedMetric: "Direct peer-to-merchant UPI deep linking with instant webhook verification and bank UTR reconciliation.",
       techStack: ["TypeScript", "UPI Deep Links", "Webhook Signatures", "PostgreSQL"],
       repositoryReference: "OrderKing/HDmaster/src/lib/orderking/payments",
     },

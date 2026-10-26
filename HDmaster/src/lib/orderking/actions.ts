@@ -2380,7 +2380,7 @@ export const createOemLockScreenCampaignFn = createServerFn({ method: "POST" })
         cityCircle = "DELHI_NCR",
         pincode = "110001",
         adHeadline,
-        adSubtext = "Order direct for ₹0 commission and authentic kitchen rates.",
+        adSubtext = "Order direct for authentic kitchen rates and fast delivery.",
         ctaText = "Swipe Up to Order • 20% OFF",
         ctaDeepLink,
         targetXiaomi = true,

@@ -45,7 +45,7 @@ export function PremiumCreatorEngine() {
 
   const PRESET_PROMPTS = [
     "Build a complete multi-vendor organic grocery marketplace with 15-min delivery and UPI soundbox",
-    "Create a high-converting luxury hotel booking website with zero commission and instant PNR generation",
+    "Create a high-converting luxury hotel booking website with dynamic pricing and instant PNR generation",
     "Generate an AI-powered automated digital agency client portal with invoicing and contract signing",
     "Build a course and webinar sales page with instant Razorpay/UPI payment and locked video vault",
   ];
