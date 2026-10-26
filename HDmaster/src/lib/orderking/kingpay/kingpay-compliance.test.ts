@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { KingPayComplianceMaster } from './compliance-flags';
-import { RegulatoryAuditLogger } from './regulatory-audit';
+import { KingPayComplianceMaster } from './compliance-flags.ts';
+import { RegulatoryAuditLogger } from './regulatory-audit.ts';
 
 test('KingPayComplianceMaster - All features default to false', () => {
   const compliance = new KingPayComplianceMaster();

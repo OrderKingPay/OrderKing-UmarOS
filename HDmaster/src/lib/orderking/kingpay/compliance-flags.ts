@@ -1,4 +1,4 @@
-import { RegulatoryAuditLogger, ActivationAttempt } from './regulatory-audit';
+import { RegulatoryAuditLogger, type ActivationAttempt } from './regulatory-audit.ts';
 
 export type KingPayFeature = 
   | 'upi' 
