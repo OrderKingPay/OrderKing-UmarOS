@@ -22,8 +22,8 @@ if (-not (Test-Path $nodeExe)) {
 
 switch ($Action.ToLower()) {
     "start" {
-        Write-Host "Starting OrderKing Unified Gateway..." -ForegroundColor Cyan
-        & $nodeExe server.js
+        Write-Host "Starting All OrderKing Production Preview Servers..." -ForegroundColor Cyan
+        & "$PSScriptRoot\START_ALL_PREVIEWS.ps1"
     }
     "dev" {
         Write-Host "Starting Development Mode..." -ForegroundColor Cyan
@@ -106,11 +106,10 @@ switch ($Action.ToLower()) {
         Write-Host "   Preview:                https://apps-integration.pages.dev" -ForegroundColor Gray
         Write-Host ""
         Write-Host " Available PowerShell Actions:" -ForegroundColor Yellow
-        Write-Host "   .\deploy.ps1 -Action deploy  -> Redeploy all 5 apps to Cloudflare" -ForegroundColor Cyan
-        Write-Host "   .\deploy.ps1 -Action build   -> Rebuild all apps sequentially" -ForegroundColor Cyan
-        Write-Host "   .\deploy.ps1 -Action start   -> Run local unified gateway (node server.js)" -ForegroundColor Cyan
+        Write-Host "   .\deploy.ps1 -Action deploy  -> Redeploy all apps live to Cloudflare Pages" -ForegroundColor Cyan
         Write-Host "   .\deploy.ps1 -Action build   -> Rebuild all 4 production bundles" -ForegroundColor Cyan
-        Write-Host "   .\deploy.ps1 -Action dev     -> Run all apps in dev mode" -ForegroundColor Cyan
+        Write-Host "   .\deploy.ps1 -Action start   -> Launch all 4 local preview servers" -ForegroundColor Cyan
+        Write-Host "   .\deploy.ps1 -Action dev     -> Run apps in dev mode" -ForegroundColor Cyan
         Write-Host "==========================================================" -ForegroundColor Cyan
     }
 }
