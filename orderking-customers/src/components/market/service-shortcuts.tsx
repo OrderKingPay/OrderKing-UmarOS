@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Plane, GraduationCap, Briefcase } from "lucide-react";
+import { Crown, ShoppingBag, Plane, GraduationCap, Briefcase } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCustomization } from "@orderking/ui";
 import { useLocationStore } from "@/lib/stores/location";

@@ -169,8 +169,7 @@ export function JoinFleetPage() {
                     <p className="text-xs text-zinc-400">Next Step: Verification &amp; Bag Handover at Local Dispatch Hub</p>
                     <div className="flex flex-col sm:flex-row gap-2 justify-center">
                       <Link
-                        to="/tutor"
-                        search={{ tab: "my-applications" }}
+                        to="/support"
                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-black text-black hover:bg-zinc-200 transition"
                       >
                         Track Application Status ➔

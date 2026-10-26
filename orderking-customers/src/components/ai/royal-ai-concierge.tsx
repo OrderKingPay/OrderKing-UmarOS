@@ -211,6 +211,7 @@ export function RoyalAiConcierge({
   onPayElectricity,
   onMobileRecharge,
   onOpenGarage,
+  onOpenTravel,
   hideFloatingTrigger = true,
 }: {
   onOpenScanner?: () => void;
@@ -220,7 +221,8 @@ export function RoyalAiConcierge({
   onCheckBalance?: () => void;
   onPayElectricity?: () => void;
   onMobileRecharge?: () => void;
-  onOpenGarage?: () => void;: () => void;
+  onOpenGarage?: () => void;
+  onOpenTravel?: () => void;
   hideFloatingTrigger?: boolean;
 } = {}) {
   const { lang: userGeoLang } = useT();
@@ -841,9 +843,6 @@ export function RoyalAiConcierge({
       };
     }
 
-    ;
-    }
-
     // 8. Instant Micro-Loans / Sovereign Credit Line
     if (
       q.includes("loan") ||
@@ -1036,7 +1035,8 @@ export function RoyalAiConcierge({
       setIsOpen(false);
       onOpenGarage?.();
     } else if (action.type === "OPEN_TRAVEL") {
-      setIsOpen(false);.();
+      setIsOpen(false);
+      onOpenTravel?.();
     }
   };
 
@@ -1198,7 +1198,8 @@ export function RoyalAiConcierge({
                 <button
                   type="button"
                   onClick={() => {
-                    setIsOpen(false);.();
+                    setIsOpen(false);
+      onOpenTravel?.();
                   }}
                   className="shrink-0 rounded-xl bg-gradient-to-r from-sky-500/15 to-blue-500/5 border border-sky-500/30 px-3 py-1.5 text-xs font-bold text-sky-800 dark:text-sky-300 hover:scale-105 active:scale-95 transition flex items-center gap-1.5 shadow-2xs"
                 >

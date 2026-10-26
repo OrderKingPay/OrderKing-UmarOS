@@ -63,7 +63,7 @@ import { AirportAutoSuggest, StationAutoSuggest } from "@/components/fintech/tra
 const searchAirportOptions = (raw: string) => queryAirports(raw, 20);
 const searchStationOptions = (raw: string) => queryStations(raw, 20);
 
-export const Route = createFileRoute("/travel")({
+export const Route = createFileRoute("/travel/")({
   component: TravelPage,
   pendingComponent: TravelSkeleton,
   errorComponent: AppErrorComponent,

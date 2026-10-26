@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { resilientLazy, ModalErrorBoundary, ResilientModalFallback } from "@/components/common/resilient-lazy";
+import { routeTree } from "../routeTree.gen";
 
 describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
   describe("1. Top-Level Route & Tab Map Invariants", () => {
@@ -30,6 +31,18 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
         expect(found).toBeDefined();
         expect(found?.category).toBeDefined();
       });
+    });
+
+    it("verifies generated TanStack routeTree contains /travel/ and /travel/trips as distinct routes", () => {
+      const children = (routeTree as any).children ?? [];
+      const travelIndexRoute = children.find(
+        (c: any) => c.options?.path === "/travel/" || c.options?.id === "/travel/" || c.id === "/travel/" || c.path === "/travel"
+      );
+      const travelTripsRoute = children.find(
+        (c: any) => c.options?.path === "/travel/trips" || c.options?.id === "/travel/trips" || c.id === "/travel/trips" || c.path === "/travel/trips"
+      );
+      expect(travelIndexRoute).toBeDefined();
+      expect(travelTripsRoute).toBeDefined();
     });
   });
 

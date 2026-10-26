@@ -29,7 +29,6 @@ import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SupportRouteImport } from './routes/support'
-import { Route as TravelRouteImport } from './routes/travel'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as ApiCrmRouteImport } from './routes/api/crm'
 import { Route as ApiOgRouteImport } from './routes/api/og'
@@ -53,6 +52,7 @@ import { Route as OrdersIndexRouteImport } from './routes/orders/index'
 import { Route as OrdersIdRouteImport } from './routes/orders/$id'
 import { Route as RSlugRouteImport } from './routes/r/$slug'
 import { Route as TrackingDispatchJobIdRouteImport } from './routes/tracking.$dispatchJobId'
+import { Route as TravelIndexRouteImport } from './routes/travel/index'
 import { Route as TravelTripsRouteImport } from './routes/travel/trips'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
 import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
@@ -173,11 +173,6 @@ const SupportRoute = SupportRouteImport.update({
   path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TravelRoute = TravelRouteImport.update({
-  id: '/travel',
-  path: '/travel',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AccountIndexRoute = AccountIndexRouteImport.update({
   id: '/account/',
   path: '/account/',
@@ -293,10 +288,15 @@ const TrackingDispatchJobIdRoute = TrackingDispatchJobIdRouteImport.update({
   path: '/tracking/$dispatchJobId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TravelIndexRoute = TravelIndexRouteImport.update({
+  id: '/travel/',
+  path: '/travel/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TravelTripsRoute = TravelTripsRouteImport.update({
-  id: '/trips',
-  path: '/trips',
-  getParentRoute: () => TravelRoute,
+  id: '/travel/trips',
+  path: '/travel/trips',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   id: '/api/admin/settings',
@@ -412,7 +412,6 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
-  '/travel': typeof TravelRouteWithChildren
   '/api/crm': typeof ApiCrmRoute
   '/api/og': typeof ApiOgRoute
   '/api/qr': typeof ApiQrRoute
@@ -437,6 +436,7 @@ export interface FileRoutesByFullPath {
   '/delivery/': typeof DeliveryIndexRoute
   '/kingpay/': typeof KingpayIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/travel/': typeof TravelIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -477,7 +477,6 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
-  '/travel': typeof TravelRouteWithChildren
   '/api/crm': typeof ApiCrmRoute
   '/api/og': typeof ApiOgRoute
   '/api/qr': typeof ApiQrRoute
@@ -502,6 +501,7 @@ export interface FileRoutesByTo {
   '/delivery': typeof DeliveryIndexRoute
   '/kingpay': typeof KingpayIndexRoute
   '/orders': typeof OrdersIndexRoute
+  '/travel': typeof TravelIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -543,7 +543,6 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
-  '/travel': typeof TravelRouteWithChildren
   '/api/crm': typeof ApiCrmRoute
   '/api/og': typeof ApiOgRoute
   '/api/qr': typeof ApiQrRoute
@@ -568,6 +567,7 @@ export interface FileRoutesById {
   '/delivery/': typeof DeliveryIndexRoute
   '/kingpay/': typeof KingpayIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/travel/': typeof TravelIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -610,7 +610,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
-    | '/travel'
     | '/api/crm'
     | '/api/og'
     | '/api/qr'
@@ -635,6 +634,7 @@ export interface FileRouteTypes {
     | '/delivery/'
     | '/kingpay/'
     | '/orders/'
+    | '/travel/'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
@@ -675,7 +675,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
-    | '/travel'
     | '/api/crm'
     | '/api/og'
     | '/api/qr'
@@ -700,6 +699,7 @@ export interface FileRouteTypes {
     | '/delivery'
     | '/kingpay'
     | '/orders'
+    | '/travel'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
@@ -740,7 +740,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
-    | '/travel'
     | '/api/crm'
     | '/api/og'
     | '/api/qr'
@@ -765,6 +764,7 @@ export interface FileRouteTypes {
     | '/delivery/'
     | '/kingpay/'
     | '/orders/'
+    | '/travel/'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
@@ -806,7 +806,6 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
-  TravelRoute: typeof TravelRouteWithChildren
   ApiCrmRoute: typeof ApiCrmRoute
   ApiOgRoute: typeof ApiOgRoute
   ApiQrRoute: typeof ApiQrRoute
@@ -825,10 +824,12 @@ export interface RootRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
   RSlugRoute: typeof RSlugRoute
   TrackingDispatchJobIdRoute: typeof TrackingDispatchJobIdRoute
+  TravelTripsRoute: typeof TravelTripsRoute
   AccountIndexRoute: typeof AccountIndexRoute
   DeliveryIndexRoute: typeof DeliveryIndexRoute
   KingpayIndexRoute: typeof KingpayIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
+  TravelIndexRoute: typeof TravelIndexRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminTestConnectionRoute: typeof ApiAdminTestConnectionRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
@@ -988,13 +989,6 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/travel': {
-      id: '/travel'
-      path: '/travel'
-      fullPath: '/travel'
-      preLoaderRoute: typeof TravelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/': {
@@ -1158,12 +1152,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackingDispatchJobIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/travel/': {
+      id: '/travel/'
+      path: '/travel'
+      fullPath: '/travel/'
+      preLoaderRoute: typeof TravelIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/travel/trips': {
       id: '/travel/trips'
-      path: '/trips'
+      path: '/travel/trips'
       fullPath: '/travel/trips'
       preLoaderRoute: typeof TravelTripsRouteImport
-      parentRoute: typeof TravelRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/settings': {
       id: '/api/admin/settings'
@@ -1305,17 +1306,6 @@ const KingPayRouteChildren: KingPayRouteChildren = {
 const KingPayRouteWithChildren =
   KingPayRoute._addFileChildren(KingPayRouteChildren)
 
-interface TravelRouteChildren {
-  TravelTripsRoute: typeof TravelTripsRoute
-}
-
-const TravelRouteChildren: TravelRouteChildren = {
-  TravelTripsRoute: TravelTripsRoute,
-}
-
-const TravelRouteWithChildren =
-  TravelRoute._addFileChildren(TravelRouteChildren)
-
 interface ApiSyncCustomizationsRouteChildren {
   ApiSyncCustomizationsLatestRoute: typeof ApiSyncCustomizationsLatestRoute
 }
@@ -1350,7 +1340,6 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
-  TravelRoute: TravelRouteWithChildren,
   ApiCrmRoute: ApiCrmRoute,
   ApiOgRoute: ApiOgRoute,
   ApiQrRoute: ApiQrRoute,
@@ -1369,10 +1358,12 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersIdRoute: OrdersIdRoute,
   RSlugRoute: RSlugRoute,
   TrackingDispatchJobIdRoute: TrackingDispatchJobIdRoute,
+  TravelTripsRoute: TravelTripsRoute,
   AccountIndexRoute: AccountIndexRoute,
   DeliveryIndexRoute: DeliveryIndexRoute,
   KingpayIndexRoute: KingpayIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
+  TravelIndexRoute: TravelIndexRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminTestConnectionRoute: ApiAdminTestConnectionRoute,
   ApiAiChatRoute: ApiAiChatRoute,
