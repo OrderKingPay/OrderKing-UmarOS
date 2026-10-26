@@ -54,7 +54,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     description: "100% waiver on doorstep delivery fees for food and grocery orders.",
     code: "KINGFREEDEL",
     coinsRequired: 150,
-    valueLabel: "Free Delivery",
+    valueLabel: "fast delivery",
     badge: "🛵 Fast Delivery",
     icon: "🚀",
     terms: "Valid on orders above ₹199 across active delivery zones.",

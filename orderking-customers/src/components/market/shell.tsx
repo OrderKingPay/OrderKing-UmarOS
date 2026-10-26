@@ -58,7 +58,7 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   { id: "food", name: "Food", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
     match: (p: string) => p === "/" || ["/delivery", "/r/", "/search", "/cart", "/checkout", "/dining", "/offers"].some((v) => p.startsWith(v)) },
   { id: "kingpay", name: "KingPay", icon: Crown, iconGradient: "from-yellow-400 to-amber-700", to: "/kingpay",
-    match: (p: string) => ["/kingpay", "/king-pay", "/travel", "/tutor", "/news", "/earn"].some((v) => p.startsWith(v)) },
+    match: (p: string) => ["/kingpay", "/king-pay", "/news", "/earn"].some((v) => p.startsWith(v)) },
   { id: "orders", name: "Orders & Passes", icon: ShoppingBag, iconGradient: "from-rose-500 to-rose-800", to: "/orders",
     match: (p: string) => p.startsWith("/orders") },
 ];
@@ -242,55 +242,55 @@ export function CustomerShell({
             </button>
           </div>
 
-          {/* Row 1 Center: Sovereign Top Navigation (Travel, AI Tutor, Jobs) matching visual screenshot */}
-          <nav aria-label="OrderKing Sovereign Services" className="hidden sm:flex items-center gap-1.5 md:gap-2">
+          {/* Row 1 Center: Core Navigation (Food, KingPay, Orders) */}
+          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1 sm:gap-2">
             <Link
-              to="/travel"
+              to="/"
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
-                path.startsWith("/travel")
+                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-bold transition shadow-2xs no-underline",
+                path === "/" || path.startsWith("/r/") || path.startsWith("/delivery")
                   ? isDark
-                    ? "border-sky-400 bg-sky-500/20 text-sky-200 font-black ring-1 ring-sky-400/40"
+                    ? "border-amber-400 bg-amber-500/20 text-amber-200 font-black ring-1 ring-amber-400/40"
                     : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
                   : isDark
                     ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
                     : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
               )}
             >
-              <Plane className={cn("size-3.5", isDark ? "text-sky-400" : "text-amber-600")} />
-              <span>Travel</span>
+              <UtensilsCrossed className={cn("size-3.5", isDark ? "text-amber-400" : "text-amber-600")} />
+              <span>Food Delivery</span>
             </Link>
             <Link
-              to="/tutor"
+              to="/kingpay"
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
-                path.startsWith("/tutor")
+                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-bold transition shadow-2xs no-underline",
+                path.startsWith("/kingpay") || path.startsWith("/king-pay")
                   ? isDark
-                    ? "border-purple-400 bg-purple-500/20 text-purple-200 font-black ring-1 ring-purple-400/40"
+                    ? "border-yellow-400 bg-yellow-500/20 text-yellow-200 font-black ring-1 ring-yellow-400/40"
                     : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
                   : isDark
                     ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
                     : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
               )}
             >
-              <GraduationCap className={cn("size-3.5", isDark ? "text-purple-400" : "text-amber-600")} />
-              <span>AI Tutor</span>
+              <Crown className={cn("size-3.5", isDark ? "text-yellow-400" : "text-amber-600")} />
+              <span>KingPay UPI</span>
             </Link>
             <Link
-              to="/tutor-jobs"
+              to="/orders"
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition shadow-2xs no-underline",
-                path.startsWith("/tutor-jobs")
+                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-bold transition shadow-2xs no-underline",
+                path.startsWith("/orders")
                   ? isDark
-                    ? "border-emerald-400 bg-emerald-500/20 text-emerald-200 font-black ring-1 ring-emerald-400/40"
+                    ? "border-rose-400 bg-rose-500/20 text-rose-200 font-black ring-1 ring-rose-400/40"
                     : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
                   : isDark
                     ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
                     : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
               )}
             >
-              <Briefcase className={cn("size-3.5", isDark ? "text-emerald-400" : "text-amber-600")} />
-              <span>Jobs</span>
+              <ShoppingBag className={cn("size-3.5", isDark ? "text-rose-400" : "text-amber-600")} />
+              <span>Orders</span>
             </Link>
           </nav>
 
@@ -426,15 +426,6 @@ export function CustomerShell({
                       >
                         <CreditCard className="size-4 text-amber-600" />
                         <span>KingPay &amp; Crowns</span>
-                      </Link>
-
-                      <Link
-                        to="/travel"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
-                      >
-                        <Plane className="size-4 text-amber-600" />
-                        <span>Travel &amp; Bookings</span>
                       </Link>
 
                       <Link

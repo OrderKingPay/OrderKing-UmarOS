@@ -3,7 +3,6 @@ packages:
   - 'orderking-customers'
   - 'orderking-partners'
   - 'orderking-riders'
-  - 'Apps-integration-'
   - 'packages/*'
 allowBuilds:
   '@google/genai': true

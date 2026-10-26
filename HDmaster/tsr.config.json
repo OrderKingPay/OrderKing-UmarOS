@@ -1,0 +1,4 @@
+{
+  "$schema": "https://json.schemastore.org/tsr-config.json",
+  "routeFileIgnorePattern": "(\\.test\\.ts$)|(run-settlement\\.ts$)|(run-auto-dispatch\\.ts$)|(escalations\\.ts$)|(loyalty\\.ts$)|(execute\\.ts$)|(subscription\\.ts$)|(jobs\\.ts$)|(travel\\.ts$)|(openai\\.ts$)|(kingpay-compliance\\.ts$)|(pr-nominations\\.ts$)|(rider-transition\\.ts$)|(agent-cron\\.ts$)"
+}

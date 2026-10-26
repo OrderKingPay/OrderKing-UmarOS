@@ -20,7 +20,7 @@ import {
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { detectLanguage } from "@/lib/ai-lang-detect";
 
-export type ConciergeArea = "food" | "kingpay" | "travel";
+export type ConciergeArea = "food" | "kingpay";
 
 export interface SupportedDialect {
   code: string;
@@ -38,7 +38,7 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
     nativeName: "English",
     voiceLang: "en-IN",
     honorific: "Valued Patron",
-    welcome: "Greetings! I am your VIP Food & Travel Concierge. Craving authentic biryani, planning a trip, or need instant refund support? Ask me with voice or text!",
+    welcome: "Greetings! I am your VIP Food & Order Concierge. Craving authentic biryani, planning a trip, or need instant refund support? Ask me with voice or text!",
   },
   {
     code: "hi",
@@ -72,7 +72,7 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
 ];
 
 export type ActionPayload = {
-  type: "NAVIGATE" | "CLAIM_REFUND" | "TRACK_DELIVERY" | "BOOK_TRAVEL";
+  type: "NAVIGATE" | "CLAIM_REFUND" | "TRACK_DELIVERY";
   label: string;
   url?: string;
 };
@@ -186,14 +186,6 @@ export function CustomerConciergeDrawer({
       };
     }
 
-    // 3. Travel, Flights, Trains & Cab Bookings
-    if (q.includes("travel") || q.includes("flight") || q.includes("train") || q.includes("pnr") || q.includes("ticket") || q.includes("hotel") || q.includes("cab") || q.includes("safar")) {
-      return {
-        reply: `Welcome to OrderKing Travel VIP Desk! You can verify live PNR statuses, book domestic flights with 0% markup fees, reserve inter-city train berths, and book certified local airport cabs with zero surge pricing.`,
-        action: { type: "BOOK_TRAVEL", label: "✈️ Open Travel & Booking Portal", url: "/travel" },
-      };
-    }
-
     // 4. KingPay, UPI QR Scanner & Utility Bills
     if (q.includes("pay") || q.includes("kingpay") || q.includes("bill") || q.includes("recharge") || q.includes("balance") || q.includes("electricity") || q.includes("wallet")) {
       return {
@@ -205,14 +197,14 @@ export function CustomerConciergeDrawer({
     // 5. Biryani & Food Cravings
     if (q.includes("biryani") || q.includes("food") || q.includes("hungry") || q.includes("order") || q.includes("khana") || q.includes("veg") || q.includes("non-veg")) {
       return {
-        reply: `Craving a feast? OrderKing delivers genuine restaurant-priced dishes with 0% aggregator markups. Our local Master Chef Dum Biryani, Kebab platters, and 100% Pure Veg kitchens are ready for 25-minute fast dispatch.`,
-        action: { type: "NAVIGATE", label: "🍗 Browse Royal Dum Biryani", url: "/search?q=biryani" },
+        reply: `Craving a feast? OrderKing delivers genuine restaurant dishes. Our local Dum Biryani, Kebab platters, and Pure Veg kitchens are ready for fast dispatch.`,
+        action: { type: "NAVIGATE", label: "🍗 Browse Dum Biryani", url: "/search?q=biryani" },
       };
     }
 
     // Default Empathetic Assistant
     return {
-      reply: `I am your OrderKing VIP Food & Travel sovereign concierge. I can guide you through authentic local feasts, track active deliveries with our on-time guarantee (+₹50 late credits), resolve spilled or missing item disputes with 100% instant refunds, or assist with flights, trains, and KingPay bills. How may I serve you today?`,
+      reply: `I am your OrderKing Food & Dining concierge. I can guide you through authentic local feasts, track active deliveries, resolve order inquiries, or assist with KingPay. How may I assist you today?`,
       action: { type: "NAVIGATE", label: "✨ View Daily Specials", url: "/offers" },
     };
   }
@@ -330,7 +322,7 @@ export function CustomerConciergeDrawer({
       <section
         role="dialog"
         aria-modal={!embedded}
-        aria-label="OrderKing VIP Food & Travel Concierge"
+        aria-label="OrderKing VIP Food & Dining Concierge"
         className={
           embedded
             ? "flex h-[min(76dvh,680px)] w-full flex-col overflow-hidden rounded-3xl border border-amber-300/30 bg-slate-950 text-white shadow-xl"
@@ -351,7 +343,7 @@ export function CustomerConciergeDrawer({
                     Sovereign
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400">Natural Voice · 10 Languages · 0% Fee Protection</p>
+                <p className="text-[11px] text-slate-400">Natural Voice · 10 Languages · standard fee Protection</p>
               </div>
             </div>
             {!embedded && (
@@ -391,7 +383,7 @@ export function CustomerConciergeDrawer({
           <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3.5 text-xs leading-relaxed text-slate-100 flex items-start gap-2.5">
             <Sparkles className="size-4 shrink-0 text-amber-300 mt-0.5" />
             <span>
-              Autonomous VIP concierge for food recommendations, ₹50 late delay compensation, 100% instant refunds on damaged dishes, and 0% markup travel bookings.
+              Autonomous concierge for food recommendations, live order tracking, and travel booking assistance.
             </span>
           </div>
 
@@ -460,7 +452,7 @@ export function CustomerConciergeDrawer({
           {[
             { label: "📦 Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
             { label: "🍗 Order Dum Biryani", text: "Recommend the best authentic Royal Dum Biryani." },
-            { label: "✈️ Travel & Flights", text: "Help me book a travel flight ticket or check PNR." },
+            { label: "👑 KingPay UPI", text: "How do I pay with Direct UPI or scan BharatQR?" },
             { label: "🛡️ Report Spilled/Late Food", text: "My food arrived cold and leaked. I need a refund." },
           ].map((chip) => (
             <button

@@ -121,7 +121,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
 
   describe("4. Searchable Knowledge Engine & Layered Memory (§20, §21)", () => {
     it("should tokenize text and extract keywords", () => {
-      const tokens = tokenize("OrderKing provides 0% commission food delivery!");
+      const tokens = tokenize("OrderKing provides custom commission food delivery!");
       assert.ok(tokens.includes("orderking"));
       assert.ok(tokens.includes("provides"));
       assert.ok(tokens.includes("commission"));
@@ -345,7 +345,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
       assert.ok(res!.actionCard.data.handoffCredentials.databaseUrl.includes("postgresql"));
     });
 
-    it("should generate 0% fee direct KingPay UPI invoice card", async () => {
+    it("should generate standard fee direct KingPay UPI invoice card", async () => {
       const res = await parseFounderQuery("generate invoice for client ₹250000", "9395065587@ybl");
       assert.strictEqual(res!.intent, "invoice_pay");
       assert.ok(res!.actionCard);

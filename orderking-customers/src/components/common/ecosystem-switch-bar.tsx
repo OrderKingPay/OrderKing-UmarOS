@@ -113,7 +113,7 @@ export function EcosystemSwitchBar({
                 King <span className="text-emerald-400">Pay</span>
               </span>
               <span className="rounded-full bg-[#D4AF37]/10 border border-emerald-400/40 text-emerald-300 text-[9px] font-extrabold px-2 py-0.5 whitespace-nowrap">
-                0% Fee UPI · Live India
+                standard fee UPI · Live India
               </span>
             </div>
             <span className="hidden sm:inline-block text-[10px] font-bold text-amber-300 font-mono">

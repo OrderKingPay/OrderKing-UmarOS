@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Bell, MapPin, Zap } from "lucide-react";
 
 const REAL_EVENTS = [
-  { user: "Rajesh S.", area: "Local", action: "unlocked Lifetime Free Delivery via 5 Invites", time: "2 min ago" },
+  { user: "Rajesh S.", area: "Local", action: "unlocked Lifetime fast delivery via 5 Invites", time: "2 min ago" },
   { user: "Priya M.", area: "Local", action: "saved ₹142 on Dum Biryani with OrderKing Black", time: "4 min ago" },
   { user: "Rahul K.", area: "Nearby", action: "just claimed a ₹500 Courtesy Credit", time: "just now" },
   { user: "Sneha V.", area: "Local", action: "gifted a VIP Invite to a friend", time: "7 min ago" },

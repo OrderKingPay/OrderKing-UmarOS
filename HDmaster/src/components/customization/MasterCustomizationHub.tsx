@@ -167,16 +167,16 @@ export function MasterCustomizationHub({
     initialConfig.dynamic_branding?.customAccentColor ?? initialConfig.dynamicBranding?.customAccentColor ?? "#D97706"
   );
   const [announcementEnabled, setAnnouncementEnabled] = useState<boolean>(
-    Boolean(initialConfig.dynamic_branding?.announcementBanner?.enabled ?? initialConfig.dynamicBranding?.announcementBanner?.enabled ?? true)
+    Boolean(initialConfig.dynamic_branding?.announcementBanner?.enabled ?? initialConfig.dynamicBranding?.announcementBanner?.enabled ?? false)
   );
   const [announcementText, setAnnouncementText] = useState<string>(
-    initialConfig.dynamic_branding?.announcementBanner?.text ?? initialConfig.dynamicBranding?.announcementBanner?.text ?? "⚡ FESTIVE FEAST: Flat 20% OFF on all orders above ₹299! Code: UMAR20"
+    initialConfig.dynamic_branding?.announcementBanner?.text ?? initialConfig.dynamicBranding?.announcementBanner?.text ?? ""
   );
   const [announcementLink, setAnnouncementLink] = useState<string>(
-    initialConfig.dynamic_branding?.announcementBanner?.linkUrl ?? initialConfig.dynamicBranding?.announcementBanner?.linkUrl ?? "/offers"
+    initialConfig.dynamic_branding?.announcementBanner?.linkUrl ?? initialConfig.dynamicBranding?.announcementBanner?.linkUrl ?? ""
   );
   const [announcementBadge, setAnnouncementBadge] = useState<string>(
-    initialConfig.dynamic_branding?.announcementBanner?.badgeText ?? initialConfig.dynamicBranding?.announcementBanner?.badgeText ?? "LIMITED TIME"
+    initialConfig.dynamic_branding?.announcementBanner?.badgeText ?? initialConfig.dynamicBranding?.announcementBanner?.badgeText ?? ""
   );
   const [featuredHubs, setFeaturedHubs] = useState<Array<{ id: string; name: string; active: boolean; tier: string }>>(
     initialConfig.dynamic_branding?.featuredCityHubs ?? initialConfig.dynamicBranding?.featuredCityHubs ?? [

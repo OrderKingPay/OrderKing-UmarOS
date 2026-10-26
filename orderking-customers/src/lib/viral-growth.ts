@@ -542,7 +542,7 @@ export const PRESTIGE_AWARDS_REGISTRY: FounderAwardProgram[] = [
     prestigeLevel: "INDUSTRY_LEADERSHIP",
     category: "Ethical Commerce & Fair-Pay Marketplace Leadership",
     impactMetricsRequired: [
-      "Zero commission exploitation vs 30% aggregator norm",
+      "custom commission exploitation vs 30% aggregator norm",
       "Algorithmic instant tip pass-through to delivery partners",
     ],
     nominationWindow: "September – November",
@@ -590,7 +590,7 @@ export const ACADEMIC_INVITATIONS_REGISTRY: AcademicInstitutionInvite[] = [
     institution: "IIM Calcutta Innovation Park (IIMCIP)",
     cellOrDepartment: "North-East Startup Conclave",
     eventType: "Panelist & Showcase Champion",
-    topic: "Empowering 500+ Kitchens with 0% Markup Food Aggregation",
+    topic: "Empowering 500+ Kitchens with direct menu pricing Food Aggregation",
     invitationStatus: "READY_FOR_FOUNDER_PITCH",
     perksAndHonorarium: "Direct institutional mentorship, investor introductions, and matching grant fast-track.",
   },
@@ -638,7 +638,7 @@ export function generateViralShareUrl(payload: ViralSharePayload, platform: Vira
     ? `🎁 I just won ${payload.goldMgWon}mg 24K Pure Digital Gold on OrderKing!`
     : payload.jackpotRewardText
     ? `🎁 I just unlocked a ${payload.jackpotRewardText} on OrderKing!`
-    : `🍗 Just ordered delicious food at 0% markup on OrderKing!`;
+    : `🍗 Just ordered delicious food at direct menu pricing on OrderKing!`;
 
   const savingsSnippet = payload.savingsPaise && payload.savingsPaise > 0
     ? ` Saved ₹${(payload.savingsPaise / 100).toFixed(0)} with Fair Pricing!`
@@ -697,13 +697,13 @@ export function generateMetaAdCampaignSpec(
     dailyBudgetInr,
     adCreatives: [
       {
-        headline: `${townName}'s Own Food App: 0% Markup + 24K Gold 👑`,
+        headline: `${townName}'s Own Food App: direct menu pricing + 24K Gold 👑`,
         primaryText: `Why pay extra on every food order? Order from ${townName}'s top restaurants with 0% menu markup and sub-25 min delivery. Win pure 24K Digital Gold on every order above ₹299!`,
         callToAction: "ORDER_NOW",
         targetUrl: `https://orderking.in?utm_source=meta_ads&utm_medium=instagram_feed&utm_campaign=${townName.toLowerCase()}_launch`,
       },
       {
-        headline: `Hot Biryani in 20 Mins · Free Delivery Pass Available`,
+        headline: `Hot Biryani in 20 Mins · fast delivery Pass Available`,
         primaryText: `Craving delicious food? Order on OrderKing & get guaranteed scratch cards. Support your local ${townName} kitchens!`,
         callToAction: "ORDER_NOW",
         targetUrl: `https://orderking.in?utm_source=meta_ads&utm_medium=instagram_reels&utm_campaign=${townName.toLowerCase()}_reels`,
@@ -804,7 +804,7 @@ export const OPPORTUNITY_RADAR_REGISTRY: OpportunityRadarItem[] = [
       categoryCode: "SCALE_MATCHING_GRANT",
       formIdentifier: "MAS_FORM_A1",
       requiredDocuments: ["Udyam Certificate", "DPIIT Recognition", "Assam PRC", "Pitch Deck"],
-      pitchSummary: "OrderKing provides 0% commission food delivery and 2G offline resilience in Assam, employing 50+ local youth.",
+      pitchSummary: "OrderKing provides custom commission food delivery and 2G offline resilience in Assam, employing 50+ local youth.",
     },
   },
   {
@@ -994,7 +994,7 @@ export const OPPORTUNITY_RADAR_REGISTRY: OpportunityRadarItem[] = [
       categoryCode: "IITG_KEYNOTE_SPEAKER",
       formIdentifier: "IITG_EC_CONCLAVE",
       requiredDocuments: ["Founder Profile", "Lecture Abstract", "Technical Architecture Overview"],
-      pitchSummary: "How sovereign technology and 0% markup beat multinational monopolies in Northeast India.",
+      pitchSummary: "How sovereign technology and direct menu pricing beat multinational monopolies in Northeast India.",
     },
   },
   {
@@ -1335,7 +1335,7 @@ export function generateGoogleAdsPMaxPayload(
         `Sub-25 Mins Hot Food Delivery`,
       ],
       descriptions: [
-        `Save ₹50 to ₹150 on every meal with 0% markup. Support local ${townName} kitchens.`,
+        `Save ₹50 to ₹150 on every meal with direct menu pricing. Support local ${townName} kitchens.`,
         `Guaranteed 24K Gold scratch cards on every order above ₹299. Order now!`,
       ],
       call_to_actions: ["ORDER_NOW", "GET_OFFER"],
@@ -1371,7 +1371,7 @@ export function generateViralReelsScripts(townName: string = "Karimganj"): Viral
       title: "Why All Local Restaurants Love OrderKing",
       durationSeconds: 25,
       visualHook: "Fast montage of local restaurant chefs cooking and smiling, showing OrderKing soundbox announcing orders.",
-      audioHook: `${townName}'s restaurant owners have united! Traditional apps charge up to 30% commission, but OrderKing supports local kitchens with fair 10% rates and 0% menu markup!`,
+      audioHook: `${townName}'s restaurant owners have united! Traditional apps charge up to 3custom commission, but OrderKing supports local kitchens with fair 10% rates and 0% menu markup!`,
       callToAction: `Support your local town food heroes. Order on OrderKing today!`,
     },
   ];

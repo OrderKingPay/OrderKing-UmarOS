@@ -1,4 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+
+vi.mock("../../db.ts", () => ({
+  getSql: vi.fn().mockImplementation(() => { throw new Error("DB offline for unit test"); }),
+}));
 import {
   EscrowTpapEngine,
   MilestoneEscrowEngine,
@@ -444,3 +448,4 @@ describe("Fintech Escrow & TPAP Architecture (Council Domains 3 & 7)", () => {
     });
   });
 });
+

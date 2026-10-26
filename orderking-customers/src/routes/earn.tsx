@@ -210,20 +210,8 @@ function CrownOpportunitiesPage() {
                 <span>Explore food menus</span>
                 <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link
-                to="/travel"
-                className="group flex items-center justify-between rounded-2xl border border-amber-300/80 bg-gradient-to-r from-amber-50/80 to-amber-50/30 p-4 text-sm font-black text-amber-950 no-underline shadow-2xs hover:border-amber-500 transition-all"
-              >
-                <span>Explore travel</span>
-                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                to="/tutor"
-                className="group flex items-center justify-between rounded-2xl border border-sky-300/80 bg-gradient-to-r from-sky-50/80 to-sky-50/30 p-4 text-sm font-black text-sky-950 no-underline shadow-2xs hover:border-sky-500 transition-all"
-              >
-                <span>Study &amp; careers</span>
-                <BriefcaseBusiness className="size-4 group-hover:scale-110 transition-transform" />
-              </Link>
+              
+              
             </div>
             <p className="mt-4 flex items-start gap-2 text-xs text-stone-500">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" />

@@ -390,7 +390,7 @@ describe("NPCI UPI Intent & Dynamic BharatQR Engine", () => {
       expect(msg).toContain("2x Dum Biryani Handi");
       expect(msg).toContain("4x Garlic Butter Naan");
       expect(msg).toContain("₹950.00");
-      expect(msg).toContain("0% Fee");
+      expect(msg).toContain("standard fee");
       expect(msg).toContain("28.6315, 77.2167");
       expect(msg).toContain("https://www.google.com/maps?q=28.6315,77.2167");
 

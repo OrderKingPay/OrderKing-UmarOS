@@ -368,7 +368,7 @@ export function LegacyAggregatorSwitchFlow({ rider, onSuccess }: LegacyAggregato
               Onboarding Fee
             </span>
             <span className="text-lg font-extrabold text-slate-900 mt-0.5 block">
-              ₹0 (Zero Fee)
+              ₹0 (standard fee)
             </span>
           </div>
         </div>

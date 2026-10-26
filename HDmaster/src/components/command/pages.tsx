@@ -113,11 +113,7 @@ import { lazy, Suspense } from "react";
 import { lazyWithRetry } from "@/lib/lazy-retry";
 import { AdminErrorBoundary } from "@/components/error-boundary";
 import { WorldSkeleton } from "@/components/skeletons/world-skeleton";
-import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
 
-const EducationDashboard = lazyWithRetry(() => import("../education/EducationDashboard"), "EducationDashboard");
-const TravelPage = lazyWithRetry(() => import("../travel/TravelPage"), "TravelPage");
-const WorkMarketplaceControlCenter = lazyWithRetry(() => import("../jobs/WorkMarketplaceControlCenter"), "WorkMarketplaceControlCenter");
 const EcosystemCMS = lazyWithRetry(() => import("../dashboard/EcosystemCMS"), "EcosystemCMS");
 const PluginConnectors = lazyWithRetry(() => import("../dashboard/PluginConnectors"), "PluginConnectors");
 const WorldTechCommandCenter = lazyWithRetry(() => import("../dashboard/WorldTechCommandCenter"), "WorldTechCommandCenter");
@@ -166,14 +162,11 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "audit") return <AuditPage />;
   if (module === "health") return <HealthPage />;
   if (module === "tech-registry" || module === "world-tech") return <AdminErrorBoundary inline sectionName="World Tech Command"><Suspense fallback={<WorldSkeleton world="tech" />}><WorldTechCommandCenter /></Suspense></AdminErrorBoundary>;
-  if (module === "travel") return <AdminErrorBoundary inline sectionName="Travel Engine"><Suspense fallback={<TravelSkeleton />}><TravelPage /></Suspense></AdminErrorBoundary>;
-  if (module === "education") return <AdminErrorBoundary inline sectionName="Education Dashboard"><Suspense fallback={<WorldSkeleton world="education" />}><EducationDashboard /></Suspense></AdminErrorBoundary>;
-  if (module === "jio-airtel") return <AdminErrorBoundary inline sectionName="Jio Airtel Connector"><Suspense fallback={<WorldSkeleton world="growth" />}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense></AdminErrorBoundary>;
+      if (module === "jio-airtel") return <AdminErrorBoundary inline sectionName="Jio Airtel Connector"><Suspense fallback={<WorldSkeleton world="growth" />}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense></AdminErrorBoundary>;
   if (module === "meta-dm") return <AdminErrorBoundary inline sectionName="Meta Omnichannel"><Suspense fallback={<WorldSkeleton world="omnichannel" />}><PluginConnectors forcedTab="metaOmnichannel" /></Suspense></AdminErrorBoundary>;
   if (module === "wifi-portal" || module === "captive-portal") return <AdminErrorBoundary inline sectionName="WiFi Captive Portal"><Suspense fallback={<WorldSkeleton world="captive" />}><PluginConnectors forcedTab="wifiCaptivePortal" /></Suspense></AdminErrorBoundary>;
   if (module === "oem-lockscreen") return <AdminErrorBoundary inline sectionName="OEM LockScreen"><Suspense fallback={<WorldSkeleton world="oem" />}><PluginConnectors forcedTab="oemLockScreen" /></Suspense></AdminErrorBoundary>;
-  if (module === "jobs") return <AdminErrorBoundary inline sectionName="Work Marketplace"><Suspense fallback={<WorldSkeleton world="jobs" />}><WorkMarketplaceControlCenter jobs={[]} workers={[]} /></Suspense></AdminErrorBoundary>;
-  return <DashboardPage />;
+    return <DashboardPage />;
 }
 
 export function DashboardPage() {

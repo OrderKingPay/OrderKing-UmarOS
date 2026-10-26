@@ -239,10 +239,7 @@ function resolveWorldFromPath(pathname: string): BottomNavWorld {
     return UMAR_OS_10_WORLDS[2]!;
   }
   if (
-    pathname.startsWith("/app/travel") ||
-    pathname.startsWith("/app/education") ||
-    pathname.startsWith("/app/jobs") ||
-    pathname.startsWith("/app/employees")
+                pathname.startsWith("/app/employees")
   ) {
     return UMAR_OS_10_WORLDS[3]!;
   }

@@ -75,7 +75,7 @@ describe("1. Pre-Order Delivery Partner Tip Selector (100% to Rider)", () => {
     expect(presetTip.platformCommissionBps).toBe(0);
     expect(presetTip.riderPayoutPaise).toBe(3000);
     expect(presetTip.note).toContain("100% of your tip goes directly to your delivery partner");
-    expect(presetTip.note).toContain("0% commission or fee on tips");
+    expect(presetTip.note).toContain("custom commission or fee on tips");
 
     const customTip = calculateTipPayout(7500); // ₹75 custom tip
     expect(customTip.tipPaise).toBe(7500);

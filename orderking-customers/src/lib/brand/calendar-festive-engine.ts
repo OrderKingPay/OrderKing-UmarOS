@@ -45,13 +45,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "🎉",
       theme: "crimson",
       orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
+      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
       orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍗 0% Menu Markup · Save ₹200+ · 25 Min Delivery",
+      orderKingHighlight: "🍗 25 Min Delivery",
       kingPayHeadline: "King Pay",
-      kingPayTagline: "Send festive gifts, scan any shop QR code with zero fee, clear vehicle challans & earn 24K pure digital gold!",
+      kingPayTagline: "Send festive gifts, scan any shop QR code directly, clear vehicle challans!",
       kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 0% Fee UPI · Send Gifts · 24K Gold Cashbacks",
+      kingPayHighlight: "⚡ Instant UPI · Send Gifts Cashbacks",
     };
   }
 
@@ -65,13 +65,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "✨",
       theme: "gold",
       orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
+      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
       orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍗 0% Markup · Authentic Kitchens · 24K Gold Coin",
+      orderKingHighlight: "🍗 Authentic Kitchens",
       kingPayHeadline: "King Pay",
-      kingPayTagline: "Send digital gifts to loved ones, pay any market QR with zero convenience fee & double your 24K gold rewards.",
+      kingPayTagline: "Send digital gifts to loved ones, pay any market QR directly.",
       kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 0% Fee Payments · 24K Gold Doubled · Instant UPI",
+      kingPayHighlight: "⚡ standard fee Payments Doubled · Instant UPI",
     };
   }
 
@@ -85,13 +85,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "🎁",
       theme: "emerald",
       orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
+      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
       orderKingCta: "Open Order King - FOODS",
       orderKingHighlight: "🍔 0% Price Markup · Party Platters · Lightning Fast",
       kingPayHeadline: "King Pay",
       kingPayTagline: "Split party bills with friends in 1 tap, pay any shop QR code with 0 fees & manage all vehicle garage renewals.",
       kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 1-Tap Bill Split · Zero Extra Fee · Vehicle Garage",
+      kingPayHighlight: "⚡ 1-Tap Bill Split · Instant UPI · Vehicle Garage",
     };
   }
 
@@ -105,13 +105,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "💼",
       theme: "gold",
       orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
+      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
       orderKingCta: "Open Order King - FOODS",
       orderKingHighlight: "🍗 Save ₹150–₹300 Per Order · Zero Inflated Prices",
       kingPayHeadline: "King Pay",
       kingPayTagline: "Clear monthly electricity & broadband bills, top up FASTag, check vehicle police challans & earn 24K digital gold.",
       kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 0% Convenience Fee · BBPS Instant Bills · 24K Gold",
+      kingPayHighlight: "⚡ Quick Payments · BBPS Instant Bills",
     };
   }
 
@@ -125,11 +125,11 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "🍗",
       theme: "amber",
       orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
+      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
       orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍗 0% Menu Markup · 25 Min Delivery · Free Delivery > ₹149",
+      orderKingHighlight: "🍗 25 Min Delivery · fast delivery > ₹149",
       kingPayHeadline: "King Pay",
-      kingPayTagline: "Scan & pay at any restaurant or local bazaar with 0% extra fee. Instant 1-tap UPI with secure safety.",
+      kingPayTagline: "Scan & pay at any restaurant or local bazaar instantly. Instant 1-tap UPI with secure safety.",
       kingPayCta: "Open King Pay",
       kingPayHighlight: "⚡ 1-Tap Scan & Pay · 0% Charges · Instant Soundbox",
     };
@@ -146,11 +146,11 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "🍱",
       theme: "amber",
       orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
+      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
       orderKingCta: "Open Order King - FOODS",
       orderKingHighlight: "🍱 25-Min Delivery · 0% Price Markup · Hot Gourmet Specials",
       kingPayHeadline: "King Pay",
-      kingPayTagline: "Pay for lunch at any cafe or stall with 1-tap QR scan. Completely zero convenience fee & instant cashback.",
+      kingPayTagline: "Pay for lunch at any cafe or stall with 1-tap QR scan. Fast and secure payments.",
       kingPayCta: "Open King Pay",
       kingPayHighlight: "⚡ 1-Tap Lunch Pay · Zero Extra Fees · Instant UPI",
     };
@@ -166,13 +166,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "🍲",
       theme: "crimson",
       orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
+      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
       orderKingCta: "Open Order King - FOODS",
       orderKingHighlight: "🍗 Authentic Taste · 0% Price Markup · Live GPS Tracking",
       kingPayHeadline: "King Pay",
-      kingPayTagline: "Split tonight's dinner bill with friends in 1 tap, pay any shop QR code with zero fees & earn gold rewards.",
+      kingPayTagline: "Split tonight's dinner bill with friends in 1 tap, pay any shop QR code directlys & earn gold rewards.",
       kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 1-Tap Bill Split · Zero Extra Fee · 24K Gold Coin",
+      kingPayHighlight: "⚡ 1-Tap Bill Split · Instant UPI",
     };
   }
 
@@ -185,12 +185,12 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
     icon: "👑",
     theme: "gold",
     orderKingHeadline: "Order King",
-    orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
+    orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
     orderKingCta: "Open Order King - FOODS",
-    orderKingHighlight: "🍗 0% Menu Markup · Save ₹150+ Per Meal · 25 Min Delivery",
+    orderKingHighlight: "🍗 Save ₹150+ Per Meal · 25 Min Delivery",
     kingPayHeadline: "King Pay",
-    kingPayTagline: "Scan any shop QR code, clear vehicle police challans, pay electricity & mobile bills with 0% extra fee & earn 24K gold.",
+    kingPayTagline: "Scan any shop QR code, clear vehicle police challans, pay electricity & mobile bills instantly.",
     kingPayCta: "Open King Pay",
-    kingPayHighlight: "⚡ 0% Convenience Fee · Vehicle Garage · 24K Digital Gold",
+    kingPayHighlight: "⚡ Quick Payments · Vehicle Garage · 24K Digital Gold",
   };
 }

@@ -8,6 +8,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 const WORKER_PATH = path.join(DIST, '_worker.js', 'index.js');
+// Automatically load .env and .env.local for authentic database & auth credentials
+for (const envFile of ['.env', '.env.local']) {
+  const p = path.join(ROOT, envFile);
+  if (fs.existsSync(p)) {
+    try { process.loadEnvFile(p); } catch {}
+  }
+}
 
 const portArgIdx = process.argv.indexOf('--port');
 const cliPort = portArgIdx !== -1 && process.argv[portArgIdx + 1] ? Number(process.argv[portArgIdx + 1]) : null;

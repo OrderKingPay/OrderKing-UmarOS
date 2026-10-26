@@ -4,7 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 /**
  * OrderKing Growth Engine - Merchant Economics (The Wedge)
  * 
- * Dominant legacy aggregators effectively charge 25-30% commissions.
+ * Dominant legacy aggregators effectively charge 25-3custom commissions.
  * OrderKing operates on a Zero-Commission SaaS tier or a flat 10% Pay-As-You-Go tier.
  * We instantly settle payments using KingPay (vs T+2 for competitors).
  */

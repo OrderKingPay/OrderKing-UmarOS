@@ -160,7 +160,7 @@ function AccountPage() {
                       Tier-1 Luxury
                     </span>
                   </div>
-                  <p className="text-xs text-stone-800 font-medium">Free Delivery • Zero Surge • VIP Priority Support</p>
+                  <p className="text-xs text-stone-800 font-medium">fast delivery • Zero Surge • VIP Priority Support</p>
                 </div>
               </div>
               <Button
@@ -298,7 +298,7 @@ function AccountPage() {
             <div className="mt-4 grid grid-cols-3 gap-2 border-t border-amber-500/20 pt-3 text-center">
               <div className="rounded-lg bg-surface/70 p-2">
                 <span className="text-base">🚀</span>
-                <p className="mt-0.5 text-[11px] font-bold">Free Delivery</p>
+                <p className="mt-0.5 text-[11px] font-bold">fast delivery</p>
                 <p className="text-[10px] text-muted">Orders &gt; ₹299</p>
               </div>
               <div className="rounded-lg bg-surface/70 p-2">
@@ -620,7 +620,7 @@ function AccountPage() {
                 💳
               </div>
               <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
-                KingPay (Wallet, Bills &amp; Travel)
+                KingPay (Wallet, UPI &amp; Bills)
               </span>
             </div>
             <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">

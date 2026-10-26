@@ -1134,7 +1134,7 @@ export function KingPayWealthHub() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-blue-500" /> Top Performing Index Funds</li>
                   <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-blue-500" /> Automated SIPs via KingPay</li>
-                  <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-blue-500" /> Zero Commission Direct Plans</li>
+                  <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-blue-500" /> custom commission Direct Plans</li>
                 </ul>
               </div>
               <Button 

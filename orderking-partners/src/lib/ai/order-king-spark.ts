@@ -244,7 +244,7 @@ export class OrderKingSpark {
         anomalyId: "anom-sav-02",
         type: "SALES_DECLINE",
         severity: "LOW",
-        headline: "0% Commission Retained Savings: ₹14,280 Saved Today",
+        headline: "custom commission Retained Savings: ₹14,280 Saved Today",
         rootCauseHypothesis: "Customer direct ordering retained 24% that dominant legacy aggregators would have deducted.",
         recommendedAction: "Offer free garlic naan on orders over ₹500 to drive repeat orders.",
         authorizedActionLabel: "Launch Repeat Customer Offer",
@@ -558,7 +558,7 @@ export class OrderKingSpark {
     const grossCustomerSpendPaise = grossFoodSalesPaise + packagingChargesPaise; // ₹25,720.00
     const merchantFundedDiscountsPaise = 180000; // ₹1,800.00
     const platformSponsoredDiscountCreditPaise = 65000; // ₹650.00 reimbursed by OrderKing
-    const orderKingPlatformCommissionPaise = 0; // 0% Commission!
+    const orderKingPlatformCommissionPaise = 0; // custom commission!
     const aggregatorCommissionAvoidedPaise = Math.round(grossCustomerSpendPaise * 0.24); // ₹6,173.00
 
     // Statutory Taxes
@@ -583,7 +583,7 @@ export class OrderKingSpark {
     const summary = `Hello Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
 - **Delivered Orders**: **${deliveredOrders} orders** successfully completed (${cancelledOrders} cancelled).
 - **Gross Sales & Packaging**: **₹${(grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (Food: ₹${(grossFoodSalesPaise / 100).toLocaleString("en-IN")} · Packaging: ₹${(packagingChargesPaise / 100).toLocaleString("en-IN")}).
-- **OrderKing Platform Commission**: **₹0.00 (0% Commission)**. You saved **₹${(aggregatorCommissionAvoidedPaise / 100).toLocaleString("en-IN")}** vs dominant legacy aggregators (24% standard aggregator deduction).
+- **OrderKing Platform Commission**: **₹0.00 (custom commission)**. You saved **₹${(aggregatorCommissionAvoidedPaise / 100).toLocaleString("en-IN")}** vs dominant legacy aggregators (24% standard aggregator deduction).
 - **Statutory GST Sec 9(5) Remitted**: **₹${(gst95RemittedByPlatformPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (5% food GST remitted directly to the government by Order King on your behalf).
 - **Withholding Taxes Deducted**: TCS Sec 52 (0.5%): **₹${(tcsSection52Paise / 100).toFixed(2)}** · TDS Sec 194-O (0.1%): **₹${(tdsSection194OPaise / 100).toFixed(2)}**.
 - **Customer Dispute Adjustments**: **-₹${(customerDisputeDeductionsPaise / 100).toFixed(2)}** (Missing Naan #ORD-8845).
@@ -810,7 +810,7 @@ ${recon.conversationalSummary}`,
         sender: "spark",
         text: `### 💰 Settlement & Commission Savings Report
 - **Trailing 7 Days Gross Sales**: **₹${(summary.grossSalesPaise / 100).toLocaleString("en-IN")}**
-- **OrderKing Platform Commission**: **₹0 (0% Commission)**
+- **OrderKing Platform Commission**: **₹0 (custom commission)**
 - **Aggregator Cut Avoided**: You saved **₹${(summary.legacyAggregatorLossAvoidedPaise / 100).toLocaleString("en-IN")}** compared to dominant legacy aggregators (24% standard rate).
 - **Settlement Account**: **${summary.settlementAccount}** (Status: 🟢 **${summary.status}**)`,
         timestamp,

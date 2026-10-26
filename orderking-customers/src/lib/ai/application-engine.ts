@@ -56,7 +56,7 @@ export interface ApplicationDraft {
 export const VERIFIED_FOUNDER_PORTFOLIO = [
   {
     id: "PORT-ORDERKING",
-    title: "OrderKing — 0% Commission Food Delivery & Logistics Platform",
+    title: "OrderKing — custom commission Food Delivery & Logistics Platform",
     description: "Full-stack React, TypeScript, TanStack Router, PGlite SQL, and Vite architecture with King Pay UPI escrow settlement.",
     liveUrl: "https://orderking-customers.pages.dev/",
     verifiedMetric: "14 Cloud Kitchens, Geodesic Rider Dispatch, 0% Platform Fee Guarantee",

@@ -184,7 +184,7 @@ export function CancellationGraceWindow({
             </div>
             <p className="text-xs text-stone-600 mt-1 max-w-md">
               Changed your mind or placed by mistake? Cancel within the grace window for an
-              <span className="font-extrabold text-stone-900"> instant 100% refund</span>. Zero fees, zero kitchen dispute.
+              <span className="font-extrabold text-stone-900"> instant 100% refund</span>. standard fees, zero kitchen dispute.
             </p>
           </div>
         </div>

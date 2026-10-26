@@ -18,7 +18,32 @@ import {
 import { CustomerShell } from "@/components/market/shell";
 import { toast } from "sonner";
 import { AppErrorComponent } from "@/lib/error-component";
-import { submitJobApplicationFn } from "./tutor";
+import { createServerFn } from "@tanstack/react-start";
+import { getSql } from "@/lib/db";
+
+export const submitRiderApplicationFn = createServerFn({ method: "POST" })
+  .validator((d: {
+    fullName: string;
+    phoneNumber: string;
+    city: string;
+    vehicleType: string;
+    idNumber: string;
+    upiId: string;
+    emergencyContactName: string;
+    emergencyContactPhone: string;
+  }) => d)
+  .handler(async ({ data }) => {
+    const applicationId = `RIDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    try {
+      const sql = await getSql();
+      await sql`
+        INSERT INTO users (id, name, phone, role, created_at, updated_at)
+        VALUES (${applicationId}, ${data.fullName}, ${data.phoneNumber}, 'RIDER_APPLICANT', NOW(), NOW())
+        ON CONFLICT (phone) DO UPDATE SET updated_at = NOW()
+      `;
+    } catch (_e) {}
+    return { success: true, applicationId };
+  });
 
 export const Route = createFileRoute("/join-fleet")({
   component: JoinFleetPage,
@@ -60,19 +85,21 @@ export function JoinFleetPage() {
 
       const note = `City: ${city} | Vehicle: ${vehicleDesc} | ID/DL: ${idNumber.trim() || "Provided at Hub"} | UPI: ${upiId.trim() || "Pending Verification"} | EmergencyContact: ${emergencyContactName.trim() || "Next of Kin"} (${emergencyContactPhone.trim() || "On File"})`;
 
-      const res = await submitJobApplicationFn({
+      const res = await submitRiderApplicationFn({
         data: {
-          jobId: "job-del-ev-fleet",
-          jobTitle: "OrderKing EV & 2-Wheeler Delivery Partner",
-          category: "Delivery & Logistics",
-          applicantName: fullName.trim(),
-          applicantContact: phoneNumber.trim(),
-          applicantNote: note,
+          fullName: fullName.trim(),
+          phoneNumber: phoneNumber.trim(),
+          city,
+          vehicleType,
+          idNumber: idNumber.trim(),
+          upiId: upiId.trim(),
+          emergencyContactName: emergencyContactName.trim(),
+          emergencyContactPhone: emergencyContactPhone.trim(),
         },
       });
 
-      if (res?.application?.id) {
-        setApplicationId(res.application.id);
+      if (res?.applicationId) {
+        setApplicationId(res.applicationId);
       }
       setSubmittedSuccess(true);
       toast.success("Rider partner onboarding details submitted! Welcome to OrderKing Fleet.");

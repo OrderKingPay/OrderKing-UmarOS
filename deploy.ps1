@@ -45,19 +45,21 @@ switch ($Action.ToLower()) {
         Write-Host "`n[3/5] Deploying orderking-riders -> rider.orderkingpay.com..." -ForegroundColor Cyan
         & $nodeExe $wranglerJs pages deploy orderking-riders/dist --project-name=orderking-riders --branch=main --commit-dirty=true
 
-        Write-Host "`n[4/5] Deploying HDmaster -> admin.orderkingpay.com..." -ForegroundColor Cyan
+        Write-Host "`n[4/4] Deploying HDmaster -> admin.orderkingpay.com & hdmaster.pages.dev..." -ForegroundColor Cyan
         & $nodeExe $wranglerJs pages deploy HDmaster/dist --project-name=orderking-hdmaster --branch=main --commit-dirty=true
+        & $nodeExe $wranglerJs pages deploy HDmaster/dist --project-name=hdmaster --branch=main --commit-dirty=true
 
-        Write-Host "`n[5/5] Deploying Apps-integration -> api.orderkingpay.com..." -ForegroundColor Cyan
-        & $nodeExe $wranglerJs pages deploy Apps-integration-/dist --project-name=apps-integration --branch=main --commit-dirty=true
+        if (Test-Path "Apps-integration-/dist") {
+            Write-Host "`n[5/5] Deploying Apps-integration -> api.orderkingpay.com..." -ForegroundColor Cyan
+            & $nodeExe $wranglerJs pages deploy Apps-integration-/dist --project-name=apps-integration --branch=main --commit-dirty=true
+        }
 
         Write-Host "`n==========================================================" -ForegroundColor Green
-        Write-Host " All 5 Platforms Successfully Deployed Live to Cloudflare!" -ForegroundColor Green
+        Write-Host " All Production Platforms Successfully Deployed Live to Cloudflare!" -ForegroundColor Green
         Write-Host " 1. Customers: https://orderkingpay.com" -ForegroundColor Green
         Write-Host " 2. Partners:  https://partner.orderkingpay.com" -ForegroundColor Green
         Write-Host " 3. Riders:    https://rider.orderkingpay.com" -ForegroundColor Green
         Write-Host " 4. Umar OS:   https://admin.orderkingpay.com" -ForegroundColor Green
-        Write-Host " 5. API/Engine:https://api.orderkingpay.com" -ForegroundColor Green
         Write-Host "==========================================================" -ForegroundColor Green
     }
     "build" {

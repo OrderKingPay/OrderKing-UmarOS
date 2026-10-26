@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type ActivePlatform = "delivery" | "kingpay" | "travel" | "tutor";
-export type ActiveVertical = "orderking" | "tutor-jobs" | "kingpay" | "travel";
+export type ActivePlatform = "delivery" | "kingpay";
+export type ActiveVertical = "orderking" | "kingpay";
 
 /**
  * Resolves the active vertical category from current pathname or router state.
@@ -24,17 +24,12 @@ export function resolveActiveVertical(
   state?: { platform?: string }
 ): ActiveVertical {
   if (state?.platform) {
-    if (state.platform === "tutor-jobs" || state.platform === "tutor") return "tutor-jobs";
-    if (state.platform === "kingpay") return "kingpay";
-    if (state.platform === "travel") return "travel";
-    if (state.platform === "orderking" || state.platform === "delivery") return "orderking";
+        if (state.platform === "kingpay") return "kingpay";
+        if (state.platform === "orderking" || state.platform === "delivery") return "orderking";
   }
   if (!pathname || typeof pathname !== "string") return "orderking";
   const p = pathname.toLowerCase();
-  if (p.startsWith("/tutor-jobs") || p.startsWith("/tutor")) {
-    return "tutor-jobs";
-  }
-  if (
+    if (
     p.startsWith("/king-pay") ||
     p.startsWith("/kingpay") ||
     p.startsWith("/wallet") ||
@@ -42,10 +37,7 @@ export function resolveActiveVertical(
   ) {
     return "kingpay";
   }
-  if (p.startsWith("/travel")) {
-    return "travel";
-  }
-  return "orderking";
+    return "orderking";
 }
 
 /**
@@ -132,28 +124,14 @@ export const DYNAMIC_HISTORY_CONFIG: Record<ActiveVertical, DynamicHistoryTabCon
     badge: "Food & Mart",
     icon: ShoppingBag,
   },
-  "tutor-jobs": {
-    id: "classes-jobs",
-    label: "My Classes & Jobs",
-    to: "/tutor-jobs/history",
-    badge: "Applied & Booked",
-    icon: Briefcase,
-  },
-  kingpay: {
+    kingpay: {
     id: "passbook",
     label: "Passbook",
     to: "/kingpay/passbook",
     badge: "UPI & Remit",
     icon: Receipt,
   },
-  travel: {
-    id: "trips",
-    label: "My Trips",
-    to: "/travel/trips",
-    badge: "PNR & Tickets",
-    icon: Ticket,
-  },
-};
+  };
 
 export interface FloatingBottomNavProps {
   className?: string;

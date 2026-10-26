@@ -55,7 +55,7 @@ export function ClientPortalHub({
       percentage: 40,
       amountInr: 60000,
       status: "COMPLETED",
-      deliverables: ["Kitchen Order Console", "Customer PWA App", "KingPay UPI 0% Fee Integration"],
+      deliverables: ["Kitchen Order Console", "Customer PWA App", "KingPay UPI standard fee Integration"],
     },
     {
       id: "M3",

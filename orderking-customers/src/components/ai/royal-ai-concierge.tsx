@@ -163,7 +163,7 @@ export const ROYAL_VOICE_PERSONAS: VoicePersona[] = [
     label: "⚡ Aanya (Vibrant & Quick)",
     pitch: 1.34,
     rate: 1.05,
-    encouragement: "Instant 1-tap speed and zero fees every single time!",
+    encouragement: "Instant 1-tap speed and standard fees every single time!",
   },
   {
     id: "shanti",
@@ -189,7 +189,6 @@ type ChatMessage = {
       | "PAY_ELECTRICITY"
       | "MOBILE_RECHARGE"
       | "OPEN_GARAGE"
-      | "OPEN_TRAVEL"
       | "SUBMIT_FINANCIAL_DISPUTE";
     label: string;
   };
@@ -212,7 +211,6 @@ export function RoyalAiConcierge({
   onPayElectricity,
   onMobileRecharge,
   onOpenGarage,
-  onOpenTravel,
   hideFloatingTrigger = true,
 }: {
   onOpenScanner?: () => void;
@@ -222,8 +220,7 @@ export function RoyalAiConcierge({
   onCheckBalance?: () => void;
   onPayElectricity?: () => void;
   onMobileRecharge?: () => void;
-  onOpenGarage?: () => void;
-  onOpenTravel?: () => void;
+  onOpenGarage?: () => void;: () => void;
   hideFloatingTrigger?: boolean;
 } = {}) {
   const { lang: userGeoLang } = useT();
@@ -706,7 +703,7 @@ export function RoyalAiConcierge({
           `শ্রদ্ধেয় গ্রাহক, নিচে 'ওপেন কিউআর স্ক্যানার' বাটনে ট্যাপ করুন। আমাদের ক্যামেরা অটো-ফোকাস ও লো-লাইট ফ্ল্যাশলাইট সহ অবিলম্বে চালু হবে। PhonePe, GPay বা Paytm-এর যেকোনো কিউআর কোড ০.২ সেকেন্ডে স্ক্যান করে ০% ফিতে টাকা পাঠাতে পারবেন। কিউআর কোড ক্ষতিগ্রস্ত হলে সরাসরি ইউপিআই আইডি দিয়েও পাঠাতে পারবেন। ${selectedPersona.encouragement}`;
       } else {
         replyText =
-          `Respected Patron, tap 'Open QR Scanner' below. Our high-precision scanner activates instantly with auto-focus and low-light torch support. It scans any merchant QR (PhonePe, Google Pay, Paytm, BharatPe) in under 0.2 seconds with 0% convenience fee. If the QR code is damaged, you can also enter the merchant's UPI ID or mobile number directly! ${selectedPersona.encouragement}`;
+          `Respected Patron, tap 'Open QR Scanner' below. Our high-precision scanner activates instantly with auto-focus and low-light torch support. It scans any merchant QR (PhonePe, Google Pay, Paytm, BharatPe) in under 0.2 seconds with transparent platform fee. If the QR code is damaged, you can also enter the merchant's UPI ID or mobile number directly! ${selectedPersona.encouragement}`;
       }
       return {
         text: replyText,
@@ -836,7 +833,7 @@ export function RoyalAiConcierge({
           `শ্রদ্ধেয় গ্রাহক, কিংপে ভেহিকেল গ্যারেজ সরাসরি কেন্দ্রীয় MoRTH ডাটাবেসের সাথে সংযুক্ত। আপনার গাড়ির সমস্ত ট্রাফিক চালান ০% কনভিনিয়েন্স ফিতে চেক ও কোর্টে যাওয়ার আগেই পরিশোধ করুন। সাথে জিরো-কমিশন ইন্স্যুরেন্স ও ফাস্ট্যাগ রিচার্জ! ${selectedPersona.encouragement}`;
       } else {
         replyText =
-          `Respected Patron, KingPay Vehicle Garage provides 360° RTO compliance linked directly with MoRTH Vahan & Sarathi national databases. Check live traffic police e-challans with 0% convenience fee, settle before court summons, renew 1-tap zero-commission vehicle insurance, track PUC validity, and recharge FASTag instantly! ${selectedPersona.encouragement}`;
+          `Respected Patron, KingPay Vehicle Garage provides 360° RTO compliance linked directly with MoRTH Vahan & Sarathi national databases. Check live traffic police e-challans with transparent platform fee, settle before court summons, renew 1-tap zero-commission vehicle insurance, track PUC validity, and recharge FASTag instantly! ${selectedPersona.encouragement}`;
       }
       return {
         text: replyText,
@@ -844,37 +841,7 @@ export function RoyalAiConcierge({
       };
     }
 
-    // 7. Flight & Travel Hub (Zero Convenience Fee + 2x Price Match)
-    if (
-      q.includes("flight") ||
-      q.includes("air") ||
-      q.includes("ticket") ||
-      q.includes("plane") ||
-      q.includes("tatkal") ||
-      q.includes("train") ||
-      q.includes("bus") ||
-      q.includes("irctc") ||
-      q.includes("travel") ||
-      q.includes("kolkata") ||
-      q.includes("delhi") ||
-      q.includes("हवाई") ||
-      q.includes("ফ্লাইট")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `आदरणीय अतिथि, किंगपे ट्रैवल पर आपको पूरे भारत में सबसे न्यूनतम मूल्य पर फ्लाइट टिकटें मिलती हैं। हम ₹0 सुविधा शुल्क (Convenience Fee) लेते हैं—जिससे आपके प्रति यात्री ₹499 से ₹799 सीधे बचते हैं (MakeMyTrip / EaseMyTrip के मुक़ाबले)। साथ ही 2x प्राइस मैच गारंटी और IRCTC तत्काल ट्रेन टिकटें भी उपलब्ध हैं! ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `শ্রদ্ধেয় গ্রাহক, কিংপে ট্রাভেলসে সারা ভারতের সর্বনিম্ন মূল্যে বিমানের টিকিট কাটুন। আমরা কোনো কনভিনিয়েন্স ফি নিই না (সরাসরি ₹৪৯৯–₹৭৯৯ সাশ্রয়)। সাথে ২x প্রাইস ম্যাচ গ্যারান্টি এবং আইআরসিটিসি তৎকাল ট্রেন টিকিটও সহজে বুক করতে পারবেন! ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `Respected Patron, KingPay Travel guarantees the lowest flight fares in India with ₹0 Convenience Fee (saving you ₹499–₹799 per passenger vs MakeMyTrip / EaseMyTrip), backed by our 2x Price Match Guarantee on all domestic flights (IndiGo, Air India, SpiceJet, Akasa). IRCTC Tatkal train tickets and luxury intercity buses are also ready! ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "OPEN_TRAVEL", label: "✈️ Book ₹0 Convenience Fee Flights" },
-      };
+    ;
     }
 
     // 8. Instant Micro-Loans / Sovereign Credit Line
@@ -1069,8 +1036,7 @@ export function RoyalAiConcierge({
       setIsOpen(false);
       onOpenGarage?.();
     } else if (action.type === "OPEN_TRAVEL") {
-      setIsOpen(false);
-      onOpenTravel?.();
+      setIsOpen(false);.();
     }
   };
 
@@ -1232,8 +1198,7 @@ export function RoyalAiConcierge({
                 <button
                   type="button"
                   onClick={() => {
-                    setIsOpen(false);
-                    onOpenTravel?.();
+                    setIsOpen(false);.();
                   }}
                   className="shrink-0 rounded-xl bg-gradient-to-r from-sky-500/15 to-blue-500/5 border border-sky-500/30 px-3 py-1.5 text-xs font-bold text-sky-800 dark:text-sky-300 hover:scale-105 active:scale-95 transition flex items-center gap-1.5 shadow-2xs"
                 >

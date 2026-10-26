@@ -694,7 +694,7 @@ function PromotionsPage() {
                   <option value="percent">Percentage Off (%)</option>
                   <option value="fixed">Flat Amount Off (₹)</option>
                   <option value="bogo">Buy 1 Get 1 Free (BOGO)</option>
-                  <option value="free_delivery">Free Delivery Offer</option>
+                  <option value="free_delivery">fast delivery Offer</option>
                 </select>
               </div>
 

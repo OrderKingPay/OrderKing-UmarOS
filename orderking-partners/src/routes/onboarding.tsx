@@ -1404,7 +1404,7 @@ function OnboardingPage() {
                     { id: "ALL", label: "All Clauses" },
                     { id: "SETTLEMENT", label: "1. Integer Settlement" },
                     { id: "TAX", label: "2. CGST §9(5) Tax" },
-                    { id: "COMMISSION", label: "3. 0% Commission" },
+                    { id: "COMMISSION", label: "3. custom commission" },
                     { id: "SAFETY", label: "4. FSSAI Food Safety" },
                     { id: "PRIVACY", label: "5. DPDP Privacy" },
                     { id: "SLAS", label: "6. SLAs & Disputes" },
@@ -1460,7 +1460,7 @@ function OnboardingPage() {
                         Clause 3: Delivery Fulfillment Commission &amp; 0% Dine-In Commission
                       </h4>
                       <p className="text-slate-400 leading-relaxed pl-3">
-                        Order King applies an honest standard 28% delivery fulfillment commission (customizable per outlet down to negotiated partner rates) that directly funds delivery fleet payouts, dispatch logistics, and customer support. Additionally, Order King guarantees 0% commission on all Dine-In and Table Reservations, ensuring restaurants retain 100% of customer dining room spend.
+                        Order King applies an honest standard 28% delivery fulfillment commission (customizable per outlet down to negotiated partner rates) that directly funds delivery fleet payouts, dispatch logistics, and customer support. Additionally, Order King guarantees custom commission on all Dine-In and Table Reservations, ensuring restaurants retain 100% of customer dining room spend.
                       </p>
                     </div>
                   )}

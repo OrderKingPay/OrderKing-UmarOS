@@ -168,7 +168,7 @@ export class EnsembleConsensusEngine {
 
 #### 📋 Core Consensus Recommendations:
 1. **Architectural Determinism**: Structure systems with strict TypeScript interfaces, bounded memory, and explicit error domains.
-2. **Financial Efficiency**: Route customer payments directly via 0% commission King Pay UPI rails under Section 79 IT Act to eliminate intermediary margin leakage.
+2. **Financial Efficiency**: Route customer payments directly via custom commission King Pay UPI rails under Section 79 IT Act to eliminate intermediary margin leakage.
 3. **Execution Clarity**: Isolate operational boundaries (e.g. 15-minute food delivery geofenced strictly to local fleet density, while software products operate Pan-India).
 
 *Status: ${connectedModels.length} models actively cross-verified. Cloud providers can be toggled by adding keys in Settings.*`;

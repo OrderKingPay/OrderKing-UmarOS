@@ -1883,7 +1883,7 @@ function OfferCard({
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
           <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Guaranteed</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-emerald-500 dark:text-emerald-300">{formatPaise(offer.expectedPayoutPaise)}</p>
-          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">0% Commission</p>
+          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">custom commission</p>
         </div>
       </div>
 

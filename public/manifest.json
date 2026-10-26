@@ -1,9 +1,0 @@
-{
-  "name": "OrderKingPay Super-App",
-  "short_name": "OrderKingPay",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#050811",
-  "theme_color": "#f59e0b",
-  "description": "Food Delivery, Direct Flights, BBPS Bill Pay, Express Pharmacy, AI Tutor & Jobs"
-}

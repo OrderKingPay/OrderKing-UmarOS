@@ -204,7 +204,7 @@ export function ScanQrModal({
             </h2>
             <p className="text-xs text-slate-300 mt-0.5 flex items-center gap-1.5">
               <ShieldCheck className="size-3.5 text-emerald-400 inline" />
-              <span>Zero Convenience Fee</span>
+              <span>Instant UPI Payment</span>
             </p>
           </div>
 

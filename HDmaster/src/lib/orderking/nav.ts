@@ -53,8 +53,7 @@ export const NAV: NavGroup[] = [
       { id: "commercial-dials", path: "/app/commercial-dials", i18n: "Commercial Master Dials", permission: "access_CEO_dashboard", icon: "activity" },
       { id: "founder-command", path: "/app/founder-command", i18n: "nav.founderCommand", permission: "access_CEO_dashboard", icon: "spark" },
       { id: "approvals", path: "/app/approvals", i18n: "nav.approvals", permission: "manage_ai_workforce", icon: "shield" },
-      { id: "education", path: "/app/education", i18n: "nav.education", permission: "access_CEO_dashboard", icon: "spark" },
-    ],
+          ],
   },
   {
     id: "operations",

@@ -22,7 +22,7 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
     subtitle: "Pay any merchant or person via UPI (0% PG fee)",
     category: "upi",
     icon: "📷",
-    badge: "0% Fee",
+    badge: "standard fee",
     actionType: "scanner",
   },
   {
@@ -41,16 +41,16 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
     subtitle: "Transfer between your own linked bank accounts",
     category: "upi",
     icon: "🔄",
-    badge: "0% Fee",
+    badge: "standard fee",
     actionType: "self_transfer",
   },
   {
     id: "add_money",
     title: "Add Money to KingPay Wallet",
-    subtitle: "Top-up balance instantly with zero convenience charges",
+    subtitle: "Top-up balance instantly with transparent convenience charges",
     category: "upi",
     icon: "💳",
-    badge: "Zero Fee",
+    badge: "standard fee",
     actionType: "add_money",
   },
   {
@@ -143,7 +143,7 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
     subtitle: "Set up auto-debit for electricity, SIP, OTT & credit cards",
     category: "autopay",
     icon: "🔄",
-    badge: "Auto 0% Fee",
+    badge: "Auto standard fee",
     actionType: "toast",
     actionPayload: "UPI Autopay active: Zero bounce fees and 100% on-time guarantee.",
   },
@@ -291,7 +291,7 @@ export function KingPayFinanceSearch({
 
 
 
-    { id: "wealth", label: "Travel & Financial Services", icon: "🔗" },
+    { id: "wealth", label: "Financial Services", icon: "🔗" },
   ];
 
   const filteredItems = useMemo(() => {

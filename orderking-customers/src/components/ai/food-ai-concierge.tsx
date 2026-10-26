@@ -25,7 +25,7 @@ export const FOOD_SUPPORTED_LANGUAGES: IndianLanguage[] = [
     voiceLang: "en-IN",
     honorific: "Food Lover",
     welcomeMessage:
-      "Greetings! I am your OrderKing AI Food Concierge. Craving authentic Royal Biryani, local master chef delicacies, or looking for 0% marked-up dishes? Ask me anything with your voice or text!",
+      "Greetings! I am your OrderKing AI Food Concierge. Craving authentic Biryani, local delicacies, or specific cuisines? Ask me anything with your voice or text!",
     voiceIntro:
       "Greetings! I am your OrderKing Food Assistant. What delicious dish would you like to enjoy today?",
   },
@@ -849,7 +849,7 @@ export function FoodAiConcierge({
       };
     }
 
-    // 7. Discounts / Offers / Coupons / 0% Markup vs Dominant Legacy Aggregators
+    // 7. Discounts / Offers / Coupons / direct menu pricing vs Dominant Legacy Aggregators
     if (
       q.includes("discount") ||
       q.includes("offer") ||
@@ -1131,7 +1131,7 @@ export function FoodAiConcierge({
                       OrderKing AI Food Concierge
                     </h3>
                     <span className="rounded-full bg-amber-400 px-2 py-0.2 text-[9px] font-black text-black">
-                      0% Markup
+                      AI Assist
                     </span>
                   </div>
                   <p className="text-xs text-emerald-200">

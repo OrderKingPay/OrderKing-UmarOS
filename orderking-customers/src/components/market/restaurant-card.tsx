@@ -224,7 +224,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
           </span>
         </div>
 
-        {/* Location + Free Delivery Emerald Badge */}
+        {/* Location + fast delivery Emerald Badge */}
         <div className="flex items-center justify-between pt-1.5 border-t border-gray-100 text-xs">
           <div className="flex items-center gap-1.5 text-gray-500 truncate max-w-[65%]">
             <span className="truncate">{restaurant.zoneName || "Local Delivery Area"}</span>
@@ -248,7 +248,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
             {Number(restaurant.deliveryFeePaise || 0) === 0 ? (
               <span className="inline-flex items-center gap-1 text-emerald-800 bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/70 px-2 py-0.5 rounded-md text-[10.5px] font-black border border-emerald-300/80 shadow-[0_1px_4px_rgba(16,185,129,0.15)]">
                 <Sparkles className="size-2.5 text-emerald-600 fill-emerald-500" />
-                FREE Delivery
+                fast delivery
               </span>
             ) : (
               <span className="text-gray-600">

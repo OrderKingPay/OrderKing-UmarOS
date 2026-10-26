@@ -189,8 +189,8 @@ export function buildRestaurantJsonLd(
       itemListElement: [
         {
           "@type": "Offer",
-          name: "OrderKing VIP Free Delivery",
-          description: "Free Delivery on orders above ₹199 with OrderKing VIP Member pass",
+          name: "OrderKing VIP fast delivery",
+          description: "fast delivery on orders above ₹199 with OrderKing VIP Member pass",
           priceCurrency: "INR",
           price: "0",
           availability: "https://schema.org/InStock",

@@ -714,11 +714,11 @@ function CheckoutPage() {
                         </span>
                         <BillTooltip
                           title="Feeding India Initiative"
-                          text="100% of your ₹2 micro-donation goes directly to Feeding India hunger relief programs supporting daily wage earners and underprivileged children. OrderKing retains 0%."
+                          text="Your ₹2 micro-donation goes directly to Feeding India hunger relief programs supporting daily wage earners and underprivileged children."
                         />
                       </div>
                       <span className="block text-xs text-zinc-500">
-                        Transparent micro-donation · 100% meal funding · 0% platform deduction
+                        Transparent micro-donation · Direct hunger relief program
                       </span>
                     </div>
                   </div>
@@ -740,7 +740,7 @@ function CheckoutPage() {
                       <span>Tip your delivery partner</span>
                     </h2>
                     <p className="text-xs text-zinc-500 mt-0.5">
-                      100% of your tip goes directly to your delivery partner. OrderKing charges 0% commission or fee on tips.
+                      Dispatched directly to your assigned delivery partner.
                     </p>
                   </div>
                   <span className="text-2xl">🛵</span>
@@ -885,7 +885,7 @@ function CheckoutPage() {
                   </span>
                 </div>
 
-                {/* 0% Direct NPCI UPI Intent link & Live Dynamic BharatQR */}
+                {/* Direct NPCI UPI Intent link & Live Dynamic BharatQR */}
                 <div
                   className={`rounded-2xl border-2 transition-all p-4 duration-300 ${
                     method === "DIRECT_UPI"
@@ -908,7 +908,7 @@ function CheckoutPage() {
                             ⚡
                           </span>
                           <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
-                            0% Fee Direct NPCI UPI Intent &amp; Live QR
+                            Direct NPCI UPI Intent &amp; Live QR
                           </span>
                         </div>
                         <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300 self-start sm:self-auto">

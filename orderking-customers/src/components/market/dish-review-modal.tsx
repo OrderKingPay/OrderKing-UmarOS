@@ -285,7 +285,7 @@ export function DishReviewModal({
 
         {/* Footer */}
         <div className="border-t border-border bg-surface px-5 py-3.5 flex items-center justify-between">
-          <span className="text-[11px] text-muted">Earns 24K Gold reward</span>
+          <span className="text-[11px] text-muted">Earns reward points</span>
           <Button onClick={handleSubmit} disabled={submitting}>
             {submitting ? "Posting..." : "Submit Review"}
           </Button>

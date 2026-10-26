@@ -883,7 +883,7 @@ function localHumanMentorAnswer(
       `   • 2.0 km to 5.0 km: ₹12.00 per km\n` +
       `   • Beyond 5.0 km: ₹15.00 per km (long-haul progressive booster)\n` +
       `3. Kitchen Wait-Time Pay: EXACTLY ₹1.00/min (100 paise) credited after 6 mins grace period.\n` +
-      `4. 100% Customer Tips: Zero commission pass-through directly to your bank account.\n` +
+      `4. 100% Customer Tips: custom commission pass-through directly to your bank account.\n` +
       `5. Daily Milestone Incentives: 8 Trips (+₹100) | 14 Trips (+₹220) | 20 Trips (+₹400).\n` +
       `• Today's Shift Snapshot: ${formatPaise(s.todayEarningsPaise)} across ${s.completedToday} deliveries (Delivery Pay: ${formatPaise(s.payoutTotals.payout)} | Tips: ${formatPaise(s.payoutTotals.tip)} | Incentives: ${formatPaise(s.payoutTotals.incentive)}).`
     );

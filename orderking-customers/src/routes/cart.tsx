@@ -87,7 +87,7 @@ function CartPage() {
             OrderKing Foods is not yet active in {location.cityName || "your region"}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
-            Food delivery is currently restricted to active operational hubs. Enjoy 0% fee UPI and nationwide bill payments on KingPay!
+            Food delivery is currently restricted to active operational hubs. Enjoy standard fee UPI and nationwide bill payments on KingPay!
           </p>
           <Button asChild className="bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition">
             <Link to="/king-pay">Open KingPay 👑</Link>

@@ -575,7 +575,7 @@ export function computeQuote(input: QuoteInput): Quote {
       reason:
         baseDeliveryFeePaise === 0
           ? deliveryDiscountPaise > 0
-            ? (input.promo?.name ?? "Free delivery offer applied.")
+            ? (input.promo?.name ?? "fast delivery offer applied.")
             : "Delivery waived because the order crossed the free-delivery threshold."
           : "Base distance slab fee for this zone.",
     });

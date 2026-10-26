@@ -82,7 +82,7 @@ describe("Order King Spark - Partner AI Assistant", () => {
   test("calculates 0% platform commission settlement with legacy aggregator avoided loss", () => {
     const summary = orderKingSpark.getSettlementSummary();
 
-    assert.equal(summary.commissionPaidPaise, 0); // 0% commission!
+    assert.equal(summary.commissionPaidPaise, 0); // custom commission!
     assert.ok(summary.grossSalesPaise > 0);
     assert.equal(summary.netSettlementPaise, summary.grossSalesPaise);
     assert.equal(summary.legacyAggregatorLossAvoidedPaise, Math.round(summary.grossSalesPaise * 0.24));
@@ -170,21 +170,21 @@ describe("Order King Spark - Partner AI Assistant", () => {
     const recon = orderKingSpark.generateDailyShiftRecon("Today");
 
     assert.ok(recon.totalDeliveredOrders > 0);
-    assert.equal(recon.orderKingPlatformCommissionPaise, 0); // 0% commission
+    assert.equal(recon.orderKingPlatformCommissionPaise, 0); // custom commission
     assert.ok(recon.aggregatorCommissionAvoidedPaise > 0);
     assert.ok(recon.gst95RemittedByPlatformPaise > 0); // 5% CGST Sec 9(5)
     assert.ok(recon.tcsSection52Paise > 0); // 0.5% TCS
     assert.ok(recon.tdsSection194OPaise > 0); // 0.1% TDS
     assert.ok(recon.netPayoutAccruedPaise > 0);
     assert.ok(recon.conversationalSummary.includes("GST Sec 9(5)"));
-    assert.ok(recon.conversationalSummary.includes("0% Commission"));
+    assert.ok(recon.conversationalSummary.includes("custom commission"));
   });
 
   test("handles natural language queries with context-aware action cards", () => {
     // 1. Settlement query
     const settlementReply = orderKingSpark.handleRestaurantQuery("How much money did I save on commission?");
     assert.equal(settlementReply.sender, "spark");
-    assert.ok(settlementReply.text.includes("0% Commission"));
+    assert.ok(settlementReply.text.includes("custom commission"));
     assert.equal(settlementReply.actionCard?.type, "settlement_breakdown");
 
     // 2. Menu query

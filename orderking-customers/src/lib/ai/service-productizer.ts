@@ -35,7 +35,7 @@ export const PRODUCTIZED_SERVICES: ProductizedService[] = [
       "Custom Branded PWA Customer App (iOS/Android compatible)",
       "Kitchen Order Management Terminal & Tablet Console",
       "WhatsApp & SMS Real-Time Order Dispatch",
-      "KingPay 0% Fee Direct UPI Soundbox & QR Integration",
+      "KingPay standard fee Direct UPI Soundbox & QR Integration",
       "Customer Database Ownership (zero platform lock-in)",
     ],
     timeline: "3 to 5 Days to Live Production",

@@ -12,7 +12,7 @@ import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bott
 import { ErrorBoundary } from "@/components/error-boundary";
 import { formatPaise } from "@/lib/money";
 
-export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "passbook" | "account" | "wealth";
+export type KingPaySection = "pay" | "garage" | "loan" | "bills" | "passbook" | "account" | "wealth";
 
 type Props = {
   children: ReactNode;
@@ -45,8 +45,7 @@ export function KingPayShell({
     { label: "Passbook & Statement", keywords: "history passbook ledger entries statement", section: "passbook" },
     { label: "Wealth & Rewards", keywords: "wealth features products crown rewards", section: "wealth" },
     { label: "Account & Security", keywords: "profile details kyc bank settings", section: "account" },
-    { label: "Travel & Bookings", keywords: "flights trains hotels travel booking", section: "travel" },
-  ];
+      ];
   const matchedFeatures = searchableFeatures.filter((feature) =>
     (feature.label + " " + feature.keywords)
       .toLocaleLowerCase()
@@ -105,23 +104,7 @@ export function KingPayShell({
               </span>
             </button>
 
-            {/* Travel / Flights Quick Pill */}
-            <button
-              type="button"
-              onClick={() => onSelectSection("travel")}
-              className={`hidden sm:flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold transition shadow-xs ${
-                activeSection === "travel"
-                  ? "border-cyan-500/50 bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-500/30"
-                  : "border-border bg-surface-2 text-muted hover:text-fg"
-              }`}
-            >
-              <Plane className="size-3.5 text-cyan-500" />
-              <span>Travel</span>
-              <span className="rounded-full bg-[#D4AF37]/10 text-emerald-600 dark:text-emerald-300 px-1 py-0.2 text-[9px] font-extrabold">
-                Check terms
-              </span>
-            </button>
-
+            
             {/* Hide QR scan and wallet top-up until provider authorization is verified. Original controls retained. */}
             {false && (
               <>
@@ -195,7 +178,7 @@ export function KingPayShell({
             value={serviceQuery}
             autoComplete="off"
             onChange={(e) => setServiceQuery(e.target.value)}
-            placeholder="Search payments, bills, FASTag, passbook, wealth, travel..."
+            placeholder="Search payments, bills, FASTag, passbook, wealth..."
             aria-label="Search King Pay services"
             className="h-10 min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
           />

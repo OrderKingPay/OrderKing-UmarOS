@@ -1,5 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const appDir = path.resolve(__dirname, '..');
 
 function copyDir(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -64,5 +68,4 @@ function run(appDir) {
   }
 }
 
-const appDir = process.cwd();
 run(appDir);

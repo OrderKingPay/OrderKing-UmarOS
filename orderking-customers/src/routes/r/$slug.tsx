@@ -487,7 +487,7 @@ function RestaurantPage() {
                     <span className="block text-[10px] uppercase font-bold text-zinc-400">Delivery Fee</span>
                     <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
                       {restaurant.card.deliveryFeePaise === 0
-                        ? "FREE Delivery"
+                        ? "fast delivery"
                         : formatPaise(restaurant.card.deliveryFeePaise, { locale })}
                     </span>
                   </div>
@@ -529,7 +529,7 @@ function RestaurantPage() {
                         </span>
                       </div>
                       <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-0.5">
-                        Free Delivery on orders above ₹199 + Extra 15% OFF (use code{" "}
+                        fast delivery on orders above ₹199 + Extra 15% OFF (use code{" "}
                         <strong className="font-mono text-amber-700 dark:text-amber-300 font-extrabold">VIPGOLD</strong>)
                       </p>
                     </div>

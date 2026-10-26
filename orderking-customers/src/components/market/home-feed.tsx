@@ -19,6 +19,11 @@ import {
   Sparkles,
   Store,
   ExternalLink,
+  Crown,
+  CreditCard,
+  Plane,
+  GraduationCap,
+  Briefcase,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { CuratedCollections } from "@/components/market/curated-collections";
@@ -401,6 +406,8 @@ export function HomeFeed({
 
   return (
     <div className="space-y-4 px-3 py-2 sm:px-4 sm:py-3 bg-[#FCFAF7] text-gray-900">
+
+
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
       {!q && list.data?.deliveryAvailable !== false && (
         <section aria-label="Food Categories" className="pt-0.5">

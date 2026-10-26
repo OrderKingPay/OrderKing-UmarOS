@@ -844,7 +844,7 @@ export function TableReservationManager({
             )}
           >
             <Receipt className="size-4" />
-            <span>Dining Settlement Ledger (0% Commission)</span>
+            <span>Dining Settlement Ledger (custom commission)</span>
             <span className="rounded-full bg-slate-950/20 px-1.5 py-0.5 text-[11px] font-black">
               ₹{totalDeposits.toLocaleString("en-IN")}
             </span>

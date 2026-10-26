@@ -293,7 +293,7 @@ export const PARTNER_ACADEMY_MODULES: SopModule[] = [
       },
       {
         stepNumber: 2,
-        title: "0% Commission Model & Direct Savings",
+        title: "custom commission Model & Direct Savings",
         instruction:
           "OrderKing does not take 22-28% commission cuts on food sales. You retain 100% of your food value and 100% of your packaging charges, saving ₹25,000 to ₹1,50,000 monthly compared to legacy aggregators.",
       },

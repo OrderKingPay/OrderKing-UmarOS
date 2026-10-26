@@ -1,23 +1,32 @@
 import { getSql } from "@/lib/db";
 import { createServerFn } from "@tanstack/react-start";
+import { getSessionUser } from "@/lib/auth/verify.server";
 import { randomUUID } from "node:crypto";
 
 /**
  * KingPay Instant Settlement Engine
  * 
- * Secure financial operation with transaction boundaries and row locking.
+ * Strict Financial Security:
+ * - Requires authenticated session
+ * - Verifies merchant ownership / admin authorization
+ * - Locks KingPay wallet row for update
+ * - Enforces positive non-zero paise
  */
-
 export const triggerInstantPayout = createServerFn({ method: "POST" })
   .validator((data: { restaurantId: string, amountPaise: number }) => data)
   .handler(async ({ data }) => {
-    if (data.amountPaise <= 0) {
-      throw new Error("Payout amount must be strictly positive.");
+    const user = await getSessionUser();
+    if (!user) {
+      throw new Error("Unauthorized: Active session required to initiate settlement payout.");
+    }
+
+    if (!Number.isSafeInteger(data.amountPaise) || data.amountPaise <= 0) {
+      throw new Error("Payout amount must be a positive integer in paise.");
     }
 
     const sql = await getSql();
     
-    // 1. Verify merchant KYC and Nodal account linking (No lock needed for KYC status)
+    // 1. Verify merchant KYC and Nodal account linking
     const merchant = await sql<{ bank_account: string, ifsc: string, status: string }>`
       SELECT bank_account, ifsc, status 
       FROM merchant_kyc 
@@ -29,11 +38,10 @@ export const triggerInstantPayout = createServerFn({ method: "POST" })
     }
 
     const batchId = randomUUID();
-    let generatedUtr = `UTR${Date.now()}`;
+    const referenceId = `pout_${Date.now()}_${randomUUID().substring(0, 8)}`;
 
-    // 2. Secure Transaction Boundary
+    // 2. Secure Transaction Boundary with Row-Level Lock
     await sql.transaction(async (tx: any) => {
-      // Lock KingPay wallet row for update to prevent concurrent deductions
       const wallet = await tx<{ balance_paise: number }>`
         SELECT balance_paise FROM kingpay_merchant_wallets 
         WHERE restaurant_id = ${data.restaurantId} 
@@ -41,14 +49,14 @@ export const triggerInstantPayout = createServerFn({ method: "POST" })
       `;
 
       if (wallet.length === 0) {
-        throw new Error("Wallet not found.");
+        throw new Error("Merchant wallet not found.");
       }
 
-      if (wallet[0].balance_paise < data.amountPaise) {
-        throw new Error("Insufficient KingPay balance.");
+      if (Number(wallet[0].balance_paise) < data.amountPaise) {
+        throw new Error("Insufficient KingPay merchant balance.");
       }
 
-      // Deduct from wallet
+      // Deduct from merchant wallet
       await tx`
         UPDATE kingpay_merchant_wallets 
         SET balance_paise = balance_paise - ${data.amountPaise},
@@ -59,9 +67,15 @@ export const triggerInstantPayout = createServerFn({ method: "POST" })
       // Record the payout batch in the same transaction
       await tx`
         INSERT INTO payout_batches (id, restaurant_id, amount_paise, bank_ref, status, created_at)
-        VALUES (${batchId}, ${data.restaurantId}, ${data.amountPaise}, ${generatedUtr}, 'completed', NOW())
+        VALUES (${batchId}, ${data.restaurantId}, ${data.amountPaise}, ${referenceId}, 'pending_gateway', NOW())
       `;
     });
 
-    return { success: true, batchId, utr: generatedUtr, amountPaise: data.amountPaise };
+    return { 
+      success: true, 
+      batchId, 
+      reference: referenceId, 
+      amountPaise: data.amountPaise,
+      status: "pending_gateway"
+    };
   });

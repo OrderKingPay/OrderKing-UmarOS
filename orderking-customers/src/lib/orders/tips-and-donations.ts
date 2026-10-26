@@ -57,7 +57,7 @@ export function calculateTipPayout(tipPaise: number): {
     platformFeePaise: 0,
     platformCommissionBps: 0,
     riderPayoutPaise: safeTip,
-    note: "100% of your tip goes directly to your delivery partner. OrderKing charges 0% commission or fee on tips.",
+    note: "100% of your tip goes directly to your delivery partner. OrderKing charges custom commission or fee on tips.",
   };
 }
 

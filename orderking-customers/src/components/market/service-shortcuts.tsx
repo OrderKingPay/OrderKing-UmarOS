@@ -10,9 +10,8 @@ import { useLocationStore } from "@/lib/stores/location";
  * Every service remains hidden unless the administrator explicitly verifies it\n * and enables nationwide access or an exact supported zone. Provider eligibility\n * is still rechecked at the destination; clicks are preferences, not demand.
  */
 const OPTIONS = [
-  { key: "travel", label: "Travel", detail: "Explore travel options", to: "/travel", Icon: Plane },
-  { key: "tutor", label: "AI Tutor", detail: "Explore learning", to: "/tutor", Icon: GraduationCap },
-  { key: "jobs", label: "Jobs", detail: "Explore opportunities", to: "/tutor-jobs", Icon: Briefcase },
+  { key: "kingpay", label: "KingPay", detail: "Direct UPI & BharatQR", to: "/kingpay", Icon: Crown },
+  { key: "orders", label: "My Orders", detail: "Live delivery tracking", to: "/orders", Icon: ShoppingBag },
 ] as const;
 
 type Variant = "header" | "compact" | "tiles";

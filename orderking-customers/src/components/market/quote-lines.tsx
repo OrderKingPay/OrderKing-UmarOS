@@ -45,7 +45,7 @@ export function QuoteLines({ lines, locale }: { lines: QuoteLine[]; locale: stri
               {isFreeDelivery ? (
                 <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-2 py-0.5 rounded-md shadow-2xs">
                   <Sparkles className="size-2.5 text-emerald-600 fill-emerald-500" />
-                  FREE
+                  WAIVED
                 </span>
               ) : (
                 <p

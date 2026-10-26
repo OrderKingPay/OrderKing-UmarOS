@@ -426,10 +426,10 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
               customAccentColor: String(bag.dynamicBranding?.customAccentColor ?? bag.brand?.accentColor ?? "#D97706"),
               announcementBanner: bag.dynamicBranding?.announcementBanner ?? {
                 enabled: true,
-                text: "⚡ FESTIVE FEAST: Flat 20% OFF on all orders above ₹299! Code: UMAR20",
-                linkUrl: "/offers",
+                text: "",
+                linkUrl: "",
                 bgGradient: "from-amber-600 via-orange-600 to-amber-700",
-                badgeText: "LIMITED TIME",
+                badgeText: "",
               },
               featuredCityHubs: bag.dynamicBranding?.featuredCityHubs ?? [
                 { id: "city_cp", name: "Connaught Place, New Delhi", state: "Delhi", active: true, tier: "TIER_1" },

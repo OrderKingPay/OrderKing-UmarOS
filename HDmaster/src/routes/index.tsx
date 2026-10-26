@@ -64,7 +64,6 @@ import { MediaProductionStudio } from "@/components/dashboard/MediaProductionStu
 import { SocialPublishingStudio } from "@/components/dashboard/SocialPublishingStudio";
 import { MultimodelBenchmarkDashboard } from "@/components/dashboard/MultimodelBenchmarkDashboard";
 import { GigWorkerComplianceCenter } from "@/components/dashboard/GigWorkerComplianceCenter";
-import { TravelPage } from "@/components/travel/TravelPage";
 import { lazyWithRetry } from "@/lib/lazy-retry";
 import { AdminErrorBoundary } from "@/components/error-boundary";
 import { AppErrorComponent } from "@/lib/error-component";
@@ -317,7 +316,6 @@ export type WorldId =
   | "home"
   | "orderking"
   | "kingpay"
-  | "travel"
   | "b2b"
   | "umarai"
   | "design"
@@ -706,7 +704,7 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
 • Customer Profiles: ${liveCounts.users} registered in PostgreSQL
 • Total Orders: ${liveCounts.orders} orders processed so far.
 
-All 10 Worlds (Home, OrderKing, King Pay, Travel & Work, B2B & CRM, UMAR AI, App & Design, Connections, Alerts, Settings) are configured and live. You can tell me to approve restaurants, adjust fees or commissions, calculate profits, or log alerts anytime!`,
+All 9 Worlds (Home, OrderKing, King Pay, B2B & CRM, UMAR AI, App & Design, Connections, Alerts, Settings) are configured and live. You can tell me to approve restaurants, adjust fees or commissions, calculate profits, or log alerts anytime!`,
       appliedAction: {
         type: "ADVISORY",
         detail: "Live PostgreSQL status verified",
@@ -968,69 +966,8 @@ const TEN_WORLDS: WorldDefinition[] = [
     ],
   },
   {
-    id: "travel",
-    number: 4,
-    navLabel: "Travel & Work",
-    emoji: "✈️",
-    icon: Plane,
-    title: "4. Travel & Work — Travel Affiliate Hub, My Trips, Tutor & Jobs",
-    explanation:
-      "Manage flights, hotels, trains & bus affiliate bookings, customer trip support, AI language tutor courses, and local job hiring.",
-    tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "travel-hub", label: "✈️ Travel Affiliate Hub" },
-      { id: "my-trips", label: "🧳 My Trips & Bookings" },
-      { id: "ai-tutor", label: "🎓 AI Tutor & Learning" },
-      { id: "jobs", label: "💼 Jobs & Gig Hiring" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
-    ],
-    defaultSettings: {
-      enableTravelTabInCustomerApp: true,
-      enableAiTutorForRiders: true,
-      enableLocalJobsBoard: true,
-      flightAffiliateMarkupPct: 1.5,
-      hotelAffiliateCommissionPct: 6,
-      defaultTutorLanguage: "Hindi & English",
-    },
-    settingsFields: [
-      {
-        key: "enableTravelTabInCustomerApp",
-        label: "Show Travel Hub in Customer App",
-        type: "toggle",
-        description: "Let customers search flights, hotels, trains, and buses.",
-        defaultValue: true,
-      },
-      {
-        key: "enableAiTutorForRiders",
-        label: "Enable 10-Language AI Tutor for Riders & Youth",
-        type: "toggle",
-        description: "Free spoken English and skill lessons for riders & users.",
-        defaultValue: true,
-      },
-      {
-        key: "enableLocalJobsBoard",
-        label: "Enable Local Delivery & Kitchen Jobs Board",
-        type: "toggle",
-        description: "Allow restaurants to post cook/helper jobs and hire riders.",
-        defaultValue: true,
-      },
-      {
-        key: "hotelAffiliateCommissionPct",
-        label: "Expected Hotel Affiliate Partner Share (%)",
-        type: "number",
-        unit: "%",
-        description: "Target affiliate commission percentage on hotel bookings.",
-        defaultValue: 6,
-      },
-    ],
-  },
-  {
     id: "b2b",
-    number: 5,
-    navLabel: "B2B & CRM",
-    emoji: "💼",
-    icon: Briefcase,
-    title: "5. B2B & CRM — B2B SaaS Sales, ROI Calculator & 15-Stage CRM",
+    number: 4, navLabel: "B2B & CRM", emoji: "💼", icon: Briefcase, title: "4. B2B & CRM — B2B SaaS Sales, ROI Calculator & 15-Stage CRM",
     explanation:
       "Create B2B franchise proposals, calculate restaurant savings, onboard city franchise partners, and track leads across 15 CRM stages.",
     tabs: [
@@ -1081,11 +1018,7 @@ const TEN_WORLDS: WorldDefinition[] = [
   },
   {
     id: "umarai",
-    number: 6,
-    navLabel: "UMAR AI",
-    emoji: "🤖",
-    icon: Bot,
-    title: "6. UMAR AI — Simple AI Command & 16 Specialist Teams",
+    number: 5, navLabel: "UMAR AI", emoji: "🤖", icon: Bot, title: "5. UMAR AI — Simple AI Command & 16 Specialist Teams",
     explanation:
       "Give plain-English instructions to UMAR AI, inspect all 16 specialist platform teams, and compare AI model speed and cost.",
     tabs: [
@@ -1142,11 +1075,7 @@ const TEN_WORLDS: WorldDefinition[] = [
   },
   {
     id: "design",
-    number: 7,
-    navLabel: "App & Design",
-    emoji: "🎨",
-    icon: Palette,
-    title: "7. App & Design — Customer App Look, Banners, Design & Media",
+    number: 6, navLabel: "App & Design", emoji: "🎨", icon: Palette, title: "6. App & Design — Customer App Look, Banners, Design & Media",
     explanation:
       "Customize the Customer App colors and layout, publish home screen banners, and create dish photos, videos, and social posts.",
     tabs: [
@@ -1204,11 +1133,7 @@ const TEN_WORLDS: WorldDefinition[] = [
   },
   {
     id: "connections",
-    number: 8,
-    navLabel: "Connections",
-    emoji: "🔌",
-    icon: Plug,
-    title: "8. Connections — Payment Keys, SMS/WhatsApp, AI Keys & Map Zones",
+    number: 7, navLabel: "Connections", emoji: "🔌", icon: Plug, title: "7. Connections — Payment Keys, SMS/WhatsApp, AI Keys & Map Zones",
     explanation:
       "Connect Razorpay/UPI gateways, WhatsApp/SMS OTP providers, AI API keys, and manage live city delivery map zones.",
     tabs: [
@@ -1410,15 +1335,7 @@ export const SUB_CATEGORY_TABS: Record<WorldId, string[]> = {
     "commissions",
     "settings",
   ],
-  travel: [
-    "dashboard",
-    "travel-hub",
-    "my-trips",
-    "ai-tutor",
-    "jobs",
-    "settings",
-  ],
-  b2b: ["dashboard", "sales-deck", "franchise", "crm-pipeline", "settings"],
+    b2b: ["dashboard", "sales-deck", "franchise", "crm-pipeline", "settings"],
   umarai: ["dashboard", "ask-ai", "teams", "benchmarks", "settings"],
   design: [
     "dashboard",
@@ -1451,8 +1368,7 @@ export const DEFAULT_WORLD_TAB: Record<WorldId, string> = {
   home: "dashboard",
   orderking: "dashboard",
   kingpay: "dashboard",
-  travel: "travel-hub",
-  b2b: "dashboard",
+    b2b: "dashboard",
   umarai: "dashboard",
   design: "dashboard",
   connections: "dashboard",
@@ -1552,33 +1468,12 @@ const SIXTEEN_SPECIALIST_TEAMS = [
   },
   {
     id: "team-06",
-    name: "Team 6: UMAR OS 10-World Founder Command Center",
+    name: "Team 6: UMAR OS 9-World Founder Command Center",
     role: "Clean 10-World bottom navigation, live dashboards, and PostgreSQL settings.",
     worldId: "home" as WorldId,
     tabId: "dashboard",
   },
-  {
-    id: "team-07",
-    name: "Team 7: Travel Affiliate Hub (Flights, Hotels, Trains & Buses)",
-    role: "Zero-inventory travel booking affiliate engine inside the super-app.",
-    worldId: "travel" as WorldId,
-    tabId: "travel-hub",
-  },
-  {
-    id: "team-08",
-    name: "Team 8: 10-Language AI Tutor & Skill Academy",
-    role: "Spoken English and delivery/hospitality training across 10 Indian benchmark languages.",
-    worldId: "travel" as WorldId,
-    tabId: "ai-tutor",
-  },
-  {
-    id: "team-09",
-    name: "Team 9: Local Jobs & Rider Hiring Board",
-    role: "Direct hiring for kitchen chefs, helpers, and delivery partners.",
-    worldId: "travel" as WorldId,
-    tabId: "jobs",
-  },
-  {
+        {
     id: "team-10",
     name: "Team 10: B2B SaaS Sales Deck & ROI Calculator",
     role: "Shows restaurants and franchises exact savings vs 30% commission apps.",
@@ -1746,59 +1641,9 @@ function UmarOSDashboard() {
     return Array.isArray(saved) ? saved : [];
   });
 
-  // World 4: Saved Travel Itineraries & Trips State (Persisted in localStorage)
-  const [savedTrips, setSavedTrips] = useState<
-    Array<{
-      id: string;
-      mode: string;
-      pnr: string;
-      passenger: string;
-      date: string;
-      route: string;
-    }>
-  >(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("orderking_saved_trips_v1");
-        if (raw) return JSON.parse(raw);
-      } catch (_e) {}
-    }
-    return [];
-  });
-  const [newTripMode, setNewTripMode] = useState("✈️ Flight");
-  const [newTripPnr, setNewTripPnr] = useState("");
-  const [newTripPassenger, setNewTripPassenger] = useState("");
-  const [newTripRoute, setNewTripRoute] = useState("");
-
-  // World 4: Local Kitchen & Rider Jobs Board State
-  const [localJobs, setLocalJobs] = useState<
-    Array<{
-      id: string;
-      title: string;
-      salary: string;
-      city: string;
-      vacancies: number;
-      postedDate: string;
-    }>
-  >(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("orderking_local_jobs_v1");
-        if (raw) return JSON.parse(raw);
-      } catch (_e) {}
-    }
-    return [];
-  });
-  const [newJobTitle, setNewJobTitle] = useState("");
-  const [newJobSalary, setNewJobSalary] = useState("");
-  const [newJobCity, setNewJobCity] = useState("Sribhumi / Karimganj");
-  const [newJobVacancies, setNewJobVacancies] = useState("5");
-
-  // World 4: AI Tutor Interactive Audio & Completion State
-  const [selectedTutorLang, setSelectedTutorLang] = useState("English");
-  const [speakingLessonId, setSpeakingLessonId] = useState<string | null>(null);
-  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-
+  
+  
+  
   // World 8: API Keys Verification & Test Ping State
   const [testedServices, setTestedServices] = useState<
     Record<string, { status: "OK" | "NOT_CONFIGURED"; latencyMs: number }>
@@ -1853,11 +1698,9 @@ function UmarOSDashboard() {
       : "home";
     setActiveWorldId(validWorld);
     const validTabs = SUB_CATEGORY_TABS[validWorld] || ["dashboard"];
-    const targetDefault = DEFAULT_WORLD_TAB[validWorld] || (validWorld === "travel" ? "travel-hub" : "dashboard");
+    const targetDefault = DEFAULT_WORLD_TAB[validWorld] || "dashboard";
     const resolvedTab =
-      validWorld === "travel" && (!tabId || tabId === "dashboard")
-        ? "travel-hub"
-        : tabId && validTabs.includes(tabId)
+      tabId && validTabs.includes(tabId)
         ? tabId
         : activeTabs[validWorld] && validTabs.includes(activeTabs[validWorld])
         ? activeTabs[validWorld]
@@ -2295,94 +2138,12 @@ function UmarOSDashboard() {
     window.speechSynthesis.speak(utterance);
   };
 
-  // World 4: Add New Trip Reference
-  const handleAddTrip = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTripPnr.trim() || !newTripRoute.trim()) return;
-    const trip = {
-      id: `trip-${Date.now()}`,
-      mode: newTripMode,
-      pnr: newTripPnr.trim().toUpperCase(),
-      passenger: newTripPassenger.trim() || "Passenger",
-      date: new Date().toLocaleDateString(),
-      route: newTripRoute.trim(),
-    };
-    const next = [trip, ...savedTrips];
-    setSavedTrips(next);
-    setNewTripPnr("");
-    setNewTripPassenger("");
-    setNewTripRoute("");
-    try {
-      localStorage.setItem("orderking_saved_trips_v1", JSON.stringify(next));
-    } catch (_e) {}
-    recordLog(`Saved travel booking reference: ${trip.pnr} (${trip.mode})`);
-  };
-
-  const handleDeleteTrip = (id: string) => {
-    const next = savedTrips.filter((t) => t.id !== id);
-    setSavedTrips(next);
-    try {
-      localStorage.setItem("orderking_saved_trips_v1", JSON.stringify(next));
-    } catch (_e) {}
-  };
-
-  // World 4: Post New Local Job
-  const handlePostJob = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newJobTitle.trim() || !newJobSalary.trim()) return;
-    const job = {
-      id: `job-${Date.now()}`,
-      title: newJobTitle.trim(),
-      salary: newJobSalary.trim(),
-      city: newJobCity.trim(),
-      vacancies: Number(newJobVacancies) || 1,
-      postedDate: "Just now",
-    };
-    const next = [job, ...localJobs];
-    setLocalJobs(next);
-    setNewJobTitle("");
-    setNewJobSalary("");
-    try {
-      localStorage.setItem("orderking_local_jobs_v1", JSON.stringify(next));
-    } catch (_e) {}
-    recordLog(`Posted new hiring opening: ${job.title} (${job.city})`);
-  };
-
-  const handleDeleteJob = (id: string) => {
-    const next = localJobs.filter((j) => j.id !== id);
-    setLocalJobs(next);
-    try {
-      localStorage.setItem("orderking_local_jobs_v1", JSON.stringify(next));
-    } catch (_e) {}
-    recordLog("Removed job opening from board");
-  };
-
-  const handleSpeakLesson = (lessonId: string, text: string) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    if (speakingLessonId === lessonId) {
-      window.speechSynthesis.cancel();
-      setSpeakingLessonId(null);
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.0;
-    utterance.onend = () => setSpeakingLessonId(null);
-    utterance.onerror = () => setSpeakingLessonId(null);
-    setSpeakingLessonId(lessonId);
-    window.speechSynthesis.speak(utterance);
-    recordLog(`Playing audio lesson: ${lessonId}`);
-  };
-
-  const handleToggleLessonComplete = (lessonId: string) => {
-    setCompletedLessons((prev) =>
-      prev.includes(lessonId)
-        ? prev.filter((id) => id !== lessonId)
-        : [...prev, lessonId]
-    );
-  };
-
+  
+  
+  
+  
+  
+  
   // World 8: Test Plugin / Service Connection
   const handleTestServiceConnection = async (serviceName: string) => {
     setTestingService(serviceName);
@@ -2679,35 +2440,7 @@ function UmarOSDashboard() {
                 </div>
               )}
 
-              {activeWorldId === "travel" && (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <ResultMetricCard
-                    label="Travel Affiliate Hub"
-                    value={
-                      currentSettings.enableTravelTabInCustomerApp
-                        ? "Active"
-                        : "Paused"
-                    }
-                    sub="Flights, Hotels, IRCTC & Buses"
-                  />
-                  <ResultMetricCard
-                    label="Affiliate Commission"
-                    value={`${currentSettings.flightAffiliateMarkupPct || 1.5}% / ${currentSettings.hotelAffiliateCommissionPct || 6}%`}
-                    sub="Flight Markup & Hotel Share"
-                  />
-                  <ResultMetricCard
-                    label="Saved Itineraries"
-                    value={`${savedTrips.length} Bookings`}
-                    sub={`${savedTrips.filter((t) => t.mode.includes("Flight")).length} Flights · ${savedTrips.filter((t) => t.mode.includes("Train")).length} Trains`}
-                  />
-                  <ResultMetricCard
-                    label="Jobs & Spoken Tutor"
-                    value={`${localJobs.length} Jobs · ${completedLessons.length}/4 Done`}
-                    sub="Local hiring & 23-lang audio"
-                  />
-                </div>
-              )}
-
+              
               {activeWorldId === "b2b" && (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <ResultMetricCard
@@ -2981,198 +2714,10 @@ function UmarOSDashboard() {
                   </>
                 )}
 
-                {activeWorldId === "travel" && (
-                  <>
-                    <ActionCard
-                      title="Travel Provider Orchestration"
-                      description="Search live flight & Indian Rail routes, monitor provider quotes, and calculate affiliate revenue."
-                      buttonLabel="Open Travel Orchestrator"
-                      onClick={() => selectSubTab("travel-hub")}
-                    />
-                    <ActionCard
-                      title="Manage Saved Trips & PNRs"
-                      description={`Track ${savedTrips.length} active customer booking(s) with 1-click live PNR status verification.`}
-                      buttonLabel="Open My Trips"
-                      onClick={() => selectSubTab("my-trips")}
-                    />
-                    <ActionCard
-                      title="Post Jobs & Spoken English Tutor"
-                      description={`${localJobs.length} active job opening(s) and 10-language voice hospitality lessons for fleet.`}
-                      buttonLabel="Open Jobs & Tutor"
-                      onClick={() => selectSubTab("jobs")}
-                    />
-                  </>
-                )}
+                
 
-                {activeWorldId === "b2b" && (
-                  <>
-                    <ActionCard
-                      title="Generate B2B Sales Deck & ROI"
-                      description="Show restaurant owners how much they save with OrderKing vs high commissions."
-                      buttonLabel="Open ROI Calculator"
-                      onClick={() => selectSubTab("sales-deck")}
-                    />
-                    <ActionCard
-                      title="Onboard City Franchise Partner"
-                      description="Set up city territory rights, revenue share, and partner onboarding steps."
-                      buttonLabel="Open Franchise Engine"
-                      onClick={() => selectSubTab("franchise")}
-                    />
-                    <ActionCard
-                      title="Add & Track B2B Client Leads"
-                      description={`You have ${b2bLeads.length} lead(s) in your 15-Stage B2B CRM pipeline.`}
-                      buttonLabel="Open 15-Stage CRM"
-                      onClick={() => selectSubTab("crm-pipeline")}
-                    />
-                  </>
-                )}
-
-                {activeWorldId === "umarai" && (
-                  <>
-                    <ActionCard
-                      title="Give UMAR AI a Plain-English Command"
-                      description="Type a simple instruction or run a 1-click preset command."
-                      buttonLabel="Ask UMAR AI"
-                      onClick={() => selectSubTab("ask-ai")}
-                    />
-                    <ActionCard
-                      title="Review All 16 Specialist Teams"
-                      description="See what each of the 16 specialist platform teams does and jump to its tool."
-                      buttonLabel="View 16 Specialist Teams"
-                      onClick={() => selectSubTab("teams")}
-                    />
-                    <ActionCard
-                      title="Compare AI Model Speed & Cost"
-                      description="Check latency and accuracy across AI models powering menu OCR and support."
-                      buttonLabel="Open Model Benchmarks"
-                      onClick={() => selectSubTab("benchmarks")}
-                    />
-                  </>
-                )}
-
-                {activeWorldId === "design" && (
-                  <>
-                    <ActionCard
-                      title="Customize Customer App Look"
-                      description="Update brand colors, layout cards, and checkout appearance."
-                      buttonLabel="Open App Look & Theme"
-                      onClick={() => selectSubTab("app-look")}
-                    />
-                    <ActionCard
-                      title="Publish Home Banners & Offers"
-                      description="Manage promotional banners and festival announcements on the Customer App."
-                      buttonLabel="Open Banners CMS"
-                      onClick={() => selectSubTab("banners")}
-                    />
-                    <ActionCard
-                      title="Create Dish Posters & Videos"
-                      description="Use the built-in Design, Video, and Social studios for marketing."
-                      buttonLabel="Open Design Studio"
-                      onClick={() => selectSubTab("design-studio")}
-                    />
-                  </>
-                )}
-
-                {activeWorldId === "connections" && (
-                  <>
-                    <ActionCard
-                      title="Connect Payment, SMS & AI Keys"
-                      description="Configure Razorpay/UPI gateways, WhatsApp OTP, and AI API keys."
-                      buttonLabel="Open Plugin Keys"
-                      onClick={() => selectSubTab("plugins")}
-                    />
-                    <ActionCard
-                      title="Inspect Live Delivery Zones Map"
-                      description="View city delivery coverage, active pins, and zone boundaries."
-                      buttonLabel="Open Delivery Map"
-                      onClick={() => selectSubTab("map-zones")}
-                    />
-                    <ActionCard
-                      title="Set Delivery Radius & Privacy"
-                      description={`Current radius is ${currentSettings.maxDeliveryRadiusKm} km with customer phone masking enabled.`}
-                      buttonLabel="Customize Connections"
-                      onClick={() => selectSubTab("settings")}
-                    />
-                  </>
-                )}
-
-                {activeWorldId === "alerts" && (
-                  <>
-                    <ActionCard
-                      title="Triage Live 6-Tier Alerts"
-                      description={`${activeUnresolvedAlerts.length} unresolved alert(s) from your PostgreSQL database and operations.`}
-                      buttonLabel="Open 6-Tier Action Center"
-                      onClick={() => selectSubTab("action-center")}
-                      urgent={activeUnresolvedAlerts.length > 0}
-                    />
-                    <ActionCard
-                      title="Log a New Operational Alert"
-                      description="Record an issue or reminder under Emergency, Danger, Critical, High, Medium, or Low."
-                      buttonLabel="Log New Alert"
-                      onClick={() => selectSubTab("create-alert")}
-                    />
-                    <ActionCard
-                      title="Review Fair Partner Protection"
-                      description="Ensure restaurants and riders receive helpful advisories instead of unfair blocks."
-                      buttonLabel="View Protection Rules"
-                      onClick={() => selectSubTab("fair-policy")}
-                    />
-                  </>
-                )}
-
-                {activeWorldId === "settings" && (
-                  <>
-                    <ActionCard
-                      title="Edit All 10 Worlds in One Place"
-                      description="Review and save customizations for every World from the Master Controls tab."
-                      buttonLabel="Open All 10 Worlds Controls"
-                      onClick={() => selectSubTab("all-worlds")}
-                    />
-                    <ActionCard
-                      title="Configure 10 Indian Languages"
-                      description="Enable native script and voice support across all 10 benchmark languages."
-                      buttonLabel="Open 10 Languages"
-                      onClick={() => selectSubTab("languages")}
-                    />
-                    <ActionCard
-                      title="Open Full Platform Settings Page"
-                      description="Need the dedicated standalone settings route? Open `/settings` anytime."
-                      buttonLabel="View Activity Log"
-                      onClick={() => selectSubTab("activity-log")}
-                    />
-                  </>
-                )}
-              </div>
+                          </div>
             </section>
-
-            {/* Travel World Live Provider Orchestration inside Dashboard */}
-            {activeWorldId === "travel" && (
-              <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                  <div>
-                    <h2 className="text-base font-black text-slate-900">
-                      ✈️ Live Travel Provider Orchestration &amp; Affiliate Commission Engine
-                    </h2>
-                    <p className="text-xs text-slate-600">
-                      Real-time inventory lookup and provider handoff with 0% balance-sheet inventory risk.
-                    </p>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Live Engine Ready
-                  </span>
-                </div>
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Travel Provider Orchestration"
-                      emoji="✈️"
-                    />
-                  }
-                >
-                  <TravelPage />
-                </Suspense>
-              </section>
-            )}
 
             {/* BOX 3: QUICK SETTINGS & CUSTOMIZATIONS (Wired to PostgreSQL `saveUmarOsSettingsFn` + `localStorage`) */}
             <WorldSettingsPanel
@@ -3738,527 +3283,6 @@ function UmarOSDashboard() {
           >
             <CentralPricingSwitch />
           </Suspense>
-        )}
-
-        {/* ===================================================================
-            WORLD 4 (`travel`) SUB-CATEGORY TABS
-        =================================================================== */}
-        {activeWorldId === "travel" && currentTabId === "travel-hub" && (
-          <div className="space-y-5">
-            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <div>
-                  <h2 className="text-base font-black text-slate-900">
-                    ✈️ Travel Affiliate Hub & Provider Orchestration
-                  </h2>
-                  <p className="text-xs text-slate-600">
-                    Earn affiliate commissions on customer travel bookings without holding inventory or balance-sheet risk.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Affiliate Engine Active
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  {
-                    mode: "✈️ Flights",
-                    partner: "Domestic & International Flight Search",
-                    share: `${currentSettings.flightAffiliateMarkupPct || 1.5}% Affiliate Fee`,
-                  },
-                  {
-                    mode: "🏨 Hotels & Stays",
-                    partner: "Pan-India Budget & Business Hotels",
-                    share: `${currentSettings.hotelAffiliateCommissionPct || 6}% Partner Commission`,
-                  },
-                  {
-                    mode: "🚆 Trains (IRCTC Rail)",
-                    partner: "Authorized Rail Partner Redirect",
-                    share: "Zero Hidden Markup",
-                  },
-                  {
-                    mode: "🚌 Intercity Buses",
-                    partner: "AC Sleeper & State Bus Aggregator",
-                    share: "Instant Seat Confirmation",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.mode}
-                    className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
-                  >
-                    <h3 className="text-sm font-black text-slate-900">
-                      {item.mode}
-                    </h3>
-                    <p className="text-xs text-slate-600">{item.partner}</p>
-                    <p className="text-xs font-bold text-emerald-700 pt-1">
-                      {item.share}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Live Travel Provider Orchestration & Commission Engine */}
-            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-              <Suspense
-                fallback={
-                  <WorldSuspenseShield
-                    worldTitle="Travel Provider Orchestration"
-                    emoji="✈️"
-                  />
-                }
-              >
-                <TravelPage />
-              </Suspense>
-            </section>
-          </div>
-        )}
-
-        {activeWorldId === "travel" && currentTabId === "my-trips" && (
-          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <h2 className="text-base font-black text-slate-900">
-                  🧳 Customer Trips & Booking Support ({savedTrips.length} Saved Itineraries)
-                </h2>
-                <p className="text-xs text-slate-600 mt-0.5">
-                  Save and track customer flight, train, hotel, and bus PNR bookings with 1-click live status lookups. Persisted in `localStorage`.
-                </p>
-              </div>
-            </div>
-
-            {/* Quick Add Trip Form */}
-            <form
-              onSubmit={handleAddTrip}
-              className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
-            >
-              <div>
-                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                  Mode
-                </label>
-                <select
-                  value={newTripMode}
-                  onChange={(e) => setNewTripMode(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                >
-                  <option value="✈️ Flight">✈️ Flight</option>
-                  <option value="🏨 Hotel">🏨 Hotel</option>
-                  <option value="🚆 Train">🚆 Train</option>
-                  <option value="🚌 Bus">🚌 Bus</option>
-                  <option value="🚗 Cab">🚗 Cab</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                  PNR / Booking ID
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. 6E-2849 / 2481938210"
-                  value={newTripPnr}
-                  onChange={(e) => setNewTripPnr(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                  Route / Property
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. BLR → IXS or Hotel Radisson"
-                  value={newTripRoute}
-                  onChange={(e) => setNewTripRoute(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                  Passenger / Guest Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Umar (Founder)"
-                  value={newTripPassenger}
-                  onChange={(e) => setNewTripPassenger(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                />
-              </div>
-
-              <div className="flex items-end">
-                <button
-                  type="submit"
-                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Save Itinerary</span>
-                </button>
-              </div>
-            </form>
-
-            {/* Saved Trips List */}
-            {savedTrips.length === 0 ? (
-              <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                <p className="text-xs text-slate-500 font-medium">
-                  Awaiting live store telemetry · No customer travel itineraries or PNR bookings saved yet.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                {savedTrips.map((trip) => (
-                  <div
-                    key={trip.id}
-                    className="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-500 transition-all space-y-2.5 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-black text-slate-900">
-                          {trip.mode}
-                        </span>
-                        <span className="font-mono text-xs font-black px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
-                          {trip.pnr}
-                        </span>
-                      </div>
-                      <p className="text-xs font-bold text-slate-800 mt-2">
-                        {trip.route}
-                      </p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        Passenger: {trip.passenger} · Date: {trip.date}
-                      </p>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
-                      <a
-                        href={`https://www.google.com/search?q=${encodeURIComponent(
-                          trip.pnr + " live status"
-                        )}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
-                      >
-                        <span>Check Live Status</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteTrip(trip.id)}
-                        className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
-
-        {activeWorldId === "travel" && currentTabId === "ai-tutor" && (
-          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🎓</span>
-                  <h2 className="text-base font-black text-slate-900">
-                    10-Language AI Tutor & Voice Lessons
-                  </h2>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    {completedLessons.length}/4 Completed
-                  </span>
-                </div>
-                <p className="text-xs text-slate-600 mt-0.5">
-                  Interactive voice training for delivery riders and kitchen teams. Click "Listen to Lesson" to play natural spoken audio via browser speech synthesis.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-600">Language:</span>
-                <select
-                  value={selectedTutorLang}
-                  onChange={(e) => setSelectedTutorLang(e.target.value)}
-                  className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-800"
-                >
-                  <option value="English">English</option>
-                  <option value="Hindi">हिंदी (Hindi)</option>
-                  <option value="Bengali">বাংলা (Bengali)</option>
-                  <option value="Gujarati">ગુજરાતી (Gujarati)</option>
-                  <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
-                  <option value="Malayalam">മലയാളം (Malayalam)</option>
-                  <option value="Marathi">मराठी (Marathi)</option>
-                  <option value="Punjabi">ਪੰਜਾਬੀ (Punjabi)</option>
-                  <option value="Tamil">தமிழ் (Tamil)</option>
-                  <option value="Telugu">తెలుగు (Telugu)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                {
-                  id: "lesson-1",
-                  title: "Polite Customer Delivery Greeting & Hospitality",
-                  audience: "Delivery Fleet Riders",
-                  duration: "2 mins",
-                  speechText:
-                    "Always greet the customer with a respectful Hello or Good afternoon. Ensure the insulated delivery hot-bag is sealed. Hand over the package carefully with both hands, confirm the order number, and politely wish them an enjoyable meal.",
-                  summary:
-                    "Standard doorstep etiquette: 2-hand handover, insulated bag check, respectful greeting, and zero tip coercion.",
-                },
-                {
-                  id: "lesson-2",
-                  title: "FSSAI Food Hygiene & Tamper-Proof Packaging",
-                  audience: "Restaurant Kitchen Teams",
-                  duration: "3 mins",
-                  speechText:
-                    "Before handing food to the rider, inspect the tamper-evident seal on every container. Keep cold drinks strictly separate from hot meals. Check that the itemized GST tax invoice with FSSAI license number is securely attached.",
-                  summary:
-                    "Spill-proof sealing protocol, cold beverage separation, and statutory FSSAI invoice attachment standards.",
-                },
-                {
-                  id: "lesson-3",
-                  title: "Billing, GST INV-1 & UPI Soundbox Reconciliation",
-                  audience: "Store Managers & Cashiers",
-                  duration: "3 mins",
-                  speechText:
-                    "Ensure every order receipt clearly shows 5% CGST under Section 9(5) and zero hidden delivery markups. Listen for the voice chime on your UPI soundbox before marking cash or digital payments collected.",
-                  summary:
-                    "Itemized 5% CGST Sec 9(5) tax isolation, UPI soundbox payment confirmation, and daily cash drawer reconciliation.",
-                },
-                {
-                  id: "lesson-4",
-                  title: "Two-Wheeler Road Safety & Monsoon Protocol",
-                  audience: "Delivery Fleet Riders",
-                  duration: "2 mins",
-                  speechText:
-                    "Fasten your ISI-certified helmet securely. During rain or slippery road conditions, maintain a maximum speed of 25 kilometers per hour. In case of a flat tire or mechanical breakdown, use the one-tap emergency button in the Rider app immediately.",
-                  summary:
-                    "ISI helmet chin-lock compliance, 25 km/h wet weather speed limits, and 1-tap in-app breakdown assistance.",
-                },
-              ].map((lesson) => {
-                const isSpeaking = speakingLessonId === lesson.id;
-                const isCompleted = completedLessons.includes(lesson.id);
-
-                return (
-                  <div
-                    key={lesson.id}
-                    className={`p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${
-                      isCompleted
-                        ? "border-emerald-300 bg-emerald-50/50"
-                        : "border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-400"
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                          {lesson.audience} · {lesson.duration}
-                        </span>
-                        {isCompleted && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white flex items-center gap-1">
-                            <Check className="h-3 w-3" /> Done
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-sm font-black text-slate-900 mt-1">
-                        {lesson.title}
-                      </h3>
-                      <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                        {lesson.summary}
-                      </p>
-                    </div>
-
-                    <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleSpeakLesson(lesson.id, lesson.speechText)
-                        }
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
-                          isSpeaking
-                            ? "bg-rose-600 text-white animate-pulse"
-                            : "bg-slate-900 hover:bg-slate-800 text-white"
-                        }`}
-                      >
-                        {isSpeaking ? (
-                          <>
-                            <VolumeX className="h-3.5 w-3.5" />
-                            <span>Stop Audio</span>
-                          </>
-                        ) : (
-                          <>
-                            <Volume2 className="h-3.5 w-3.5 text-emerald-400" />
-                            <span>Listen to Lesson</span>
-                          </>
-                        )}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleToggleLessonComplete(lesson.id)}
-                        className={`text-xs font-bold px-2.5 py-1 rounded-md transition-colors ${
-                          isCompleted
-                            ? "text-emerald-800 hover:underline"
-                            : "text-slate-600 hover:text-slate-900"
-                        }`}
-                      >
-                        {isCompleted ? "Completed ✓" : "Mark as Done"}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {activeWorldId === "travel" && currentTabId === "jobs" && (
-          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <h2 className="text-base font-black text-slate-900">
-                  💼 Local Jobs & Gig Hiring Board ({localJobs.length} Active Openings)
-                </h2>
-                <p className="text-xs text-slate-600 mt-0.5">
-                  Post and discover verified openings for delivery riders, cooks, and franchise operations with zero middleman agency cut.
-                </p>
-              </div>
-            </div>
-
-            {/* Quick Post Job Form */}
-            <form
-              onSubmit={handlePostJob}
-              className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
-            >
-              <div>
-                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                  Job Role / Title
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Delivery Partner or Cook"
-                  value={newJobTitle}
-                  onChange={(e) => setNewJobTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                  Monthly Salary / Rate
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. ₹18,000–₹24,000/mo"
-                  value={newJobSalary}
-                  onChange={(e) => setNewJobSalary(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                  City / Location
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Sribhumi / Karimganj"
-                  value={newJobCity}
-                  onChange={(e) => setNewJobCity(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                  Open Vacancies
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  value={newJobVacancies}
-                  onChange={(e) => setNewJobVacancies(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                />
-              </div>
-
-              <div className="flex items-end">
-                <button
-                  type="submit"
-                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Post Job Opening</span>
-                </button>
-              </div>
-            </form>
-
-            {/* Active Jobs List */}
-            {localJobs.length === 0 ? (
-              <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                <p className="text-xs text-slate-500 font-medium">
-                  Awaiting live store telemetry · No active local job postings currently recorded.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                {localJobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-500 transition-all space-y-2.5 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="text-sm font-black text-slate-900">
-                          {job.title}
-                        </h3>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                          {job.vacancies} Openings
-                        </span>
-                      </div>
-                      <p className="text-xs font-bold text-emerald-700 mt-1">
-                        {job.salary}
-                      </p>
-                      <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        <span>{job.city} · Posted {job.postedDate}</span>
-                      </p>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
-                      <a
-                        href={`https://wa.me/?text=Hi%2C%20I%20am%20interested%20in%20the%20${encodeURIComponent(
-                          job.title
-                        )}%20opening%20in%20${encodeURIComponent(job.city)}.`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
-                      >
-                        <span>Apply via WhatsApp</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteJob(job.id)}
-                        className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
         )}
 
         {/* ===================================================================

@@ -6,8 +6,6 @@ import {
   ArrowRight,
   MapPin,
   Crown,
-  Plane,
-  GraduationCap,
   Store,
 } from "lucide-react";
 import { useCartStore, cartCount } from "@/lib/stores/cart";
@@ -95,7 +93,7 @@ export function ContextualCrossSellBar({ className = "" }: ContextualCrossSellBa
               <span>
                 <strong className="font-bold text-amber-900">Food delivery not in {cityName}</strong>
                 <span className="text-amber-800/90 hidden sm:inline">
-                  {" "}— KingPay UPI, Travel, Tutor &amp; Jobs, and Mart are active nationwide.
+                  {" "}— KingPay UPI and Mart Grocery are active nationwide.
                 </span>
               </span>
             ) : count > 0 ? (
@@ -118,14 +116,14 @@ export function ContextualCrossSellBar({ className = "" }: ContextualCrossSellBa
               <span>
                 <strong className="font-bold text-sky-200">Night service active:</strong>
                 <span className="text-stone-300">
-                  {" "}24/7 KingPay UPI recharges, live IRCTC train PNR tracking, and outstation rides.
+                  {" "}24/7 KingPay UPI transfers, dynamic BharatQR, and Mart deliveries.
                 </span>
               </span>
             ) : (
               <span>
                 <strong className="font-bold text-stone-900">Morning routine:</strong>
                 <span className="text-stone-600">
-                  {" "}Instant bill payments, travel bookings, and direct tutor connections active across India.
+                  {" "}Instant bill payments, KingPay UPI transfers, and local restaurant delivery.
                 </span>
               </span>
             )}
@@ -143,20 +141,7 @@ export function ContextualCrossSellBar({ className = "" }: ContextualCrossSellBa
                 <Crown className="size-3 text-amber-600" />
                 <span>KingPay UPI</span>
               </Link>
-              <Link
-                to="/travel"
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white border border-amber-300 hover:border-amber-400 text-stone-900 text-[10.5px] font-bold shadow-2xs no-underline transition"
-              >
-                <Plane className="size-3 text-sky-600" />
-                <span>Travel Concierge</span>
-              </Link>
-              <Link
-                to="/tutor"
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white border border-amber-300 hover:border-amber-400 text-stone-900 text-[10.5px] font-bold shadow-2xs no-underline transition"
-              >
-                <GraduationCap className="size-3 text-purple-600" />
-                <span>Tutor &amp; Jobs</span>
-              </Link>
+              
               <Link
                 to="/search"
                 search={{ q: "mart" } as any}
@@ -178,13 +163,7 @@ export function ContextualCrossSellBar({ className = "" }: ContextualCrossSellBa
             </Link>
           ) : isNightHour ? (
             <>
-              <Link
-                to="/travel"
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sky-200 text-[10.5px] font-bold shadow-2xs no-underline transition"
-              >
-                <Plane className="size-3 text-sky-400" />
-                <span>Train PNR &amp; Travel</span>
-              </Link>
+              
               <Link
                 to="/king-pay"
                 className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10.5px] font-bold shadow-2xs no-underline transition"

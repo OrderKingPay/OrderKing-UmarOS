@@ -10,8 +10,7 @@
         "lint": "turbo run lint",
         "test": "turbo run test",
         "typecheck": "turbo run typecheck",
-        "deploy:customers": "pnpm --filter orderking-customers run deploy",
-        "start:superapp": "node server.js"
+        "deploy:customers": "pnpm --filter orderking-customers run deploy"
     },
     "devDependencies": {
         "turbo": "latest",
@@ -19,11 +18,7 @@
     },
     "dependencies": {
         "@google/genai": "^2.27.0",
-        "@types/express": "^5.0.6",
-        "cors": "^2.8.5",
-        "dotenv": "^16.4.5",
-        "ethers": "^6.17.0",
-        "express": "^5.2.1"
+        "dotenv": "^16.4.5"
     },
     "resolutions": {
         "nanostores": "1.5.4"

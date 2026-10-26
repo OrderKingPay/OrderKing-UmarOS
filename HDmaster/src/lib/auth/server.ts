@@ -131,8 +131,6 @@ const baseURL = explicitBaseURL ?? {
       "orderking.in",
       "*.orderking.in",
       "*.pages.dev",
-      "*.vercel.app",
-      "*.netlify.app",
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
@@ -170,8 +168,6 @@ const trustedOrigins: string[] = [
   "https://*.orderking.in",
   "http://*.orderking.in",
   "https://*.pages.dev",
-  "https://*.vercel.app",
-  "https://*.netlify.app",
 ];
 
 const databaseUrl = env("DATABASE_URL");

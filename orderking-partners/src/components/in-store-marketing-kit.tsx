@@ -94,7 +94,7 @@ export function InStoreMarketingKit({
           <div className="rounded-lg bg-slate-950/60 p-2.5 border border-slate-800">
             <span className="text-[10px] font-mono text-slate-400 uppercase">Aggregator Cut Avoided</span>
             <div className="font-bold text-emerald-400 mt-0.5 text-sm">Save ~24% per Order</div>
-            <p className="text-[10px] text-slate-400">Zero commission on orders placed via table QR</p>
+            <p className="text-[10px] text-slate-400">custom commission on orders placed via table QR</p>
           </div>
           <div className="rounded-lg bg-slate-950/60 p-2.5 border border-slate-800">
             <span className="text-[10px] font-mono text-slate-400 uppercase">Diner Retention &amp; Cashback</span>

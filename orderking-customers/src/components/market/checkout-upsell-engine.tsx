@@ -20,7 +20,7 @@ export function CheckoutUpsellEngine({
   restaurantName,
   locale = "en-IN",
   deliveryFeePaise,
-  freeDeliveryThresholdPaise = 29900, // ₹299 standard free delivery tier
+  freeDeliveryThresholdPaise = 29900,
   currentSubtotalPaise = 0,
 }: CheckoutUpsellEngineProps) {
   const items = useCartStore((s) => s.items);
@@ -60,7 +60,7 @@ export function CheckoutUpsellEngine({
     return null;
   }
 
-  // Calculate progress toward Free Delivery
+  // Calculate progress toward fast delivery
   const diffToFreeDelivery = freeDeliveryThresholdPaise - currentSubtotalPaise;
   const showFreeDeliveryGamification = diffToFreeDelivery > 0 && diffToFreeDelivery <= 15000;
   const freeDeliveryUnlocked = currentSubtotalPaise >= freeDeliveryThresholdPaise && freeDeliveryThresholdPaise > 0;
@@ -121,13 +121,13 @@ export function CheckoutUpsellEngine({
           </div>
         </div>
 
-        {/* Free Delivery Gamification Progress */}
+        {/* fast delivery Gamification Progress */}
         {showFreeDeliveryGamification && (
           <div className="flex flex-col gap-1 rounded-xl bg-amber-500/15 border border-amber-400/40 px-3 py-1.5 text-xs">
             <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
               <Zap className="size-3.5 text-amber-600 fill-amber-500" />
               <span>
-                Add <strong className="text-amber-950 dark:text-amber-100">{formatPaise(diffToFreeDelivery, { locale })}</strong> for FREE Delivery!
+                Add <strong className="text-amber-950 dark:text-amber-100">{formatPaise(diffToFreeDelivery, { locale })}</strong> for fast delivery!
               </span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-amber-200/60 dark:bg-zinc-700 overflow-hidden">
@@ -142,7 +142,7 @@ export function CheckoutUpsellEngine({
         {freeDeliveryUnlocked && (
           <div className="flex items-center gap-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/40 px-3 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
             <Sparkles className="size-3.5 text-emerald-600" />
-            <span>🎉 FREE Delivery Unlocked!</span>
+            <span>🎉 Priority Delivery Unlocked!</span>
           </div>
         )}
       </div>

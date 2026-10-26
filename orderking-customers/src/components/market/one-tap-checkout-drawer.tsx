@@ -254,7 +254,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
               </div>
             </div>
             <span className="font-mono font-black text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded text-xs">
-              ₹0.00 ZERO FEE
+              ₹0.00 standard fee
             </span>
           </div>
 
@@ -317,7 +317,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             >
               <Crown className="size-4 text-amber-800 mb-1" />
               <span className="text-xs font-black text-gray-950 leading-tight">KingPay UPI</span>
-              <span className="text-[9px] font-bold text-amber-800 mt-0.5">24K Gold Back</span>
+              <span className="text-[9px] font-bold text-amber-800 mt-0.5">Instant Pay</span>
             </button>
 
             <button

@@ -702,7 +702,7 @@ export function FounderCommandPage() {
                     <span>₹25 Base (0–3km) + ₹8/km</span>
                   </div>
                   <p className="text-[11px] text-slate-300">
-                    Average delivery time: <strong>25–32 mins</strong>. Orders above ₹399 get Free Delivery funded by platform logistics margin.
+                    Average delivery time: <strong>25–32 mins</strong>. Orders above ₹399 get fast delivery funded by platform logistics margin.
                   </p>
                 </div>
               </div>
@@ -789,7 +789,7 @@ export function FounderCommandPage() {
 
               <div className="space-y-3">
                 <div className="rounded-xl border border-border bg-surface-2 p-3 space-y-2">
-                  <span className="text-xs font-bold text-fg block">The 0% Commission Merchant Proposition:</span>
+                  <span className="text-xs font-bold text-fg block">The custom commission Merchant Proposition:</span>
                   <ul className="text-xs text-slate-300 space-y-1 list-disc list-inside">
                     <li><strong>0% Introductory Commission</strong> for first 90 days on partner onboarding.</li>
                     <li><strong>True Dine-In Price Parity</strong>: Customers pay standard restaurant menu prices.</li>

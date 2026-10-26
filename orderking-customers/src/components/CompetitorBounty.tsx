@@ -30,7 +30,7 @@ const WELCOME_SWITCH_COUPONS = [
     code: "FREEDEL",
     title: "Zero Delivery Fee Pass",
     subtitle: "100% delivery fee waiver on orders above ₹199",
-    badge: "Free Delivery",
+    badge: "fast delivery",
   },
   {
     id: "bogo_feast",

@@ -29,7 +29,7 @@ export function VipGoldPassHub({
   const BENEFITS = [
     {
       icon: <Truck className="size-5 text-amber-500" />,
-      title: "Free Delivery Always",
+      title: "fast delivery Always",
       description: "On all food orders above ₹199 within 10 km radius with zero distance markup",
     },
     {

@@ -30,13 +30,21 @@ for (const targetDir of targets) {
     ]
   ]);
 
-  // 2. Patch ssr2.mjs / ssr.mjs cookie exports
+  // 2. Patch ssr2.mjs / ssr.mjs cookie exports and better-auth kysely adapter
   for (const ssrFile of ['_ssr/ssr2.mjs', '_ssr/ssr.mjs']) {
     const ssrPath = path.join(targetDir, ssrFile);
     patchFile(ssrPath, [
       [
         /__exportAll\$[0-9]+\(\{\s*setCookie:\s*\(\)\s*=>\s*setCookie\$[0-9]+\s*\}\)/g,
         '{ setCookie: () => setCookie$1, [Symbol.toStringTag]: "Module" }'
+      ],
+      [
+        /const \{ createKyselyAdapter, kyselyAdapter \} = await Promise\.resolve\(\)\.then\(\(\) => kysely_adapter_exports\);/g,
+        'const { createKyselyAdapter: _cKa, kyselyAdapter = () => () => ({}) } = await Promise.resolve().then(() => kysely_adapter_exports); const _actualCreateKysely = _cKa || (typeof createKyselyAdapter !== "undefined" ? createKyselyAdapter : async () => ({ kysely: {}, databaseType: "postgres" }));'
+      ],
+      [
+        /const \{ kysely, databaseType, transaction \} = await createKyselyAdapter\(opts\);/g,
+        'const { kysely = {}, databaseType = "postgres", transaction = async (cb) => cb() } = await _actualCreateKysely(opts);'
       ]
     ]);
   }

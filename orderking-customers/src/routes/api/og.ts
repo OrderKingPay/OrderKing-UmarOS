@@ -86,10 +86,10 @@ export const Route = createFileRoute("/api/og")({
       : ""
   }
 
-  <!-- Footer Banner: 24K Gold & Zero Markup Guarantee -->
+  <!-- Footer Banner: 24K Gold & direct menu pricing Guarantee -->
   <g transform="translate(80, 500)">
     <rect width="1040" height="60" rx="16" fill="#18181B" stroke="#3F3F46" />
-    <text x="30" y="37" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#FBBF24">👑 0% MENU MARKUP · FAIR PRICING GUARANTEE</text>
+    <text x="30" y="37" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#FBBF24">👑 AUTHENTIC FOOD · VERIFIED KITCHENS</text>
     <text x="1010" y="37" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#71717A" text-anchor="end">OrderKing ${safeArea}</text>
   </g>
 </svg>`.trim();

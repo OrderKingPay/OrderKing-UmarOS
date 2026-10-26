@@ -29,7 +29,7 @@ import { toast } from "sonner";
 
 export function EnterpriseTaskExecutorHub() {
   const [goalPrompt, setGoalPrompt] = useState(
-    "Build me a legitimate online business around 0% commission food delivery and King Pay UPI settlement in Karimganj"
+    "Build me a legitimate online business around custom commission food delivery and King Pay UPI settlement in Karimganj"
   );
   const [plan, setPlan] = useState<EnterpriseExecutionPlan>(() =>
     decomposeFounderGoal(goalPrompt)
@@ -40,7 +40,7 @@ export function EnterpriseTaskExecutorHub() {
   );
 
   const PRESET_GOALS = [
-    "Build me a legitimate online business around 0% commission food delivery in Karimganj",
+    "Build me a legitimate online business around custom commission food delivery in Karimganj",
     "Launch an autonomous AI voice receptionist SaaS for local clinics & restaurants",
     "Deploy a white-label hyperlocal logistics engine with UPI escrow settlement",
   ];

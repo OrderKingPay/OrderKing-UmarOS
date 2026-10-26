@@ -134,11 +134,11 @@ export const DEFAULT_FEATURED_CITY_HUBS: FeaturedCityHub[] = [
 export const DEFAULT_DYNAMIC_BRANDING: DynamicBrandingConfig = {
   customAccentColor: "#D97706",
   announcementBanner: {
-    enabled: true,
-    text: "⚡ FESTIVE FEAST: Flat 20% OFF on all orders above ₹299! Code: UMAR20",
-    linkUrl: "/offers",
+    enabled: false,
+    text: "",
+    linkUrl: "",
     bgGradient: "from-amber-600 via-orange-600 to-amber-700",
-    badgeText: "LIMITED TIME",
+    badgeText: "",
   },
   featuredCityHubs: DEFAULT_FEATURED_CITY_HUBS,
 };

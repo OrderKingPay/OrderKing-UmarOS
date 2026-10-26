@@ -108,7 +108,7 @@ const TRADITIONAL_BANK_SPREAD_PERCENT = 3.8;
 
 // Founder's Transparent PA-CB Markup (Only 0.45%)
 export const FOUNDER_FX_MARKUP_PERCENT = 0.45;
-export const PACB_REGULATORY_FEE = 0.0; // Promotional zero fee under PA-CB
+export const PACB_REGULATORY_FEE = 0.0; // Promotional standard fee under PA-CB
 
 export type PayoutMethodIndia = "UPI" | "BANK";
 export type PayoutMethodBangladesh = "BKASH" | "BANK";

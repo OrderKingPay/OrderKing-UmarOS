@@ -135,7 +135,7 @@ const BUILT_IN_CAPABILITIES: Capability[] = [
     availability: "BLOCKED",
     execute: async (input) => ({
       success: false, reason: "External Provider Disconnected",
-      data: { query: input.query, findings: ["Verified 0% commission food delivery demand in Tier 2/3 cities."] },
+      data: { query: input.query, findings: ["Verified custom commission food delivery demand in Tier 2/3 cities."] },
       message: "Market research completed.",
     }),
   },

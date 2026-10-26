@@ -1,11 +1,9 @@
-﻿
 import { getSql } from "../db.ts";
 import { z } from "zod";
-
-
+import { randomUUID } from "node:crypto";
 
 export const TopUpSchema = z.object({
-  customerId: z.string().uuid(),
+  customerId: z.string(),
   amountPaise: z.number().int().positive(),
   idempotencyKey: z.string(),
 });
@@ -15,10 +13,10 @@ export const walletEngine = {
     const sql = await getSql();
     const result = await sql<{ balance_paise: number }>`
       SELECT balance_paise 
-      FROM customer_wallets 
-      WHERE customer_id = ${customerId}
+      FROM kingpay_wallets 
+      WHERE user_id = ${customerId}
     `;
-    return result[0]?.balance_paise || 0;
+    return Number(result[0]?.balance_paise || 0);
   },
 
   async createTopUpOrder(input: z.infer<typeof TopUpSchema>) {
@@ -50,37 +48,38 @@ export const walletEngine = {
   async creditWallet(customerId: string, amountPaise: number, idempotencyKey: string) {
     const sql = await getSql();
     return await sql.transaction(async (tx) => {
-      // Idempotency check
+      // Idempotency check via transaction table
       const existing = await tx`
-        SELECT 1 FROM wallet_transactions 
-        WHERE idempotency_key = ${idempotencyKey}
+        SELECT 1 FROM kingpay_transactions 
+        WHERE id = ${idempotencyKey} OR description LIKE ${'%' + idempotencyKey + '%'}
+        LIMIT 1
       `;
       if (existing.length > 0) return { status: "already_processed" };
 
       // Row-level lock on the wallet
-      const wallets = await tx<{ customer_id: string }>`
-        SELECT customer_id FROM customer_wallets 
-        WHERE customer_id = ${customerId} FOR UPDATE
+      const wallets = await tx<{ user_id: string }>`
+        SELECT user_id FROM kingpay_wallets 
+        WHERE user_id = ${customerId} FOR UPDATE
       `;
 
       if (wallets.length === 0) {
-        // Create wallet if it doesn't exist
         await tx`
-          INSERT INTO customer_wallets (customer_id, balance_paise)
-          VALUES (${customerId}, 0)
+          INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins)
+          VALUES (${customerId}, 0, 0)
+          ON CONFLICT (user_id) DO NOTHING
         `;
       }
 
       await tx`
-        UPDATE customer_wallets 
+        UPDATE kingpay_wallets 
         SET balance_paise = balance_paise + ${amountPaise}, 
             updated_at = NOW()
-        WHERE customer_id = ${customerId}
+        WHERE user_id = ${customerId}
       `;
 
       await tx`
-        INSERT INTO wallet_transactions (customer_id, type, amount_paise, idempotency_key)
-        VALUES (${customerId}, 'CREDIT', ${amountPaise}, ${idempotencyKey})
+        INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+        VALUES (${idempotencyKey || randomUUID()}, ${customerId}, ${amountPaise}, 'CREDIT', ${'Top-Up: ' + idempotencyKey})
       `;
 
       return { status: "success" };
@@ -91,36 +90,34 @@ export const walletEngine = {
     const sql = await getSql();
     return await sql.transaction(async (tx) => {
       const existing = await tx`
-        SELECT 1 FROM wallet_transactions 
-        WHERE idempotency_key = ${idempotencyKey}
+        SELECT 1 FROM kingpay_transactions 
+        WHERE id = ${idempotencyKey} OR description LIKE ${'%' + idempotencyKey + '%'}
+        LIMIT 1
       `;
       if (existing.length > 0) return { status: "already_processed" };
 
       const wallets = await tx<{ balance_paise: number }>`
-        SELECT balance_paise FROM customer_wallets 
-        WHERE customer_id = ${customerId} FOR UPDATE
+        SELECT balance_paise FROM kingpay_wallets 
+        WHERE user_id = ${customerId} FOR UPDATE
       `;
 
-      if (wallets.length === 0 || wallets[0].balance_paise < amountPaise) {
+      if (wallets.length === 0 || Number(wallets[0].balance_paise) < amountPaise) {
         throw new Error("Insufficient wallet balance");
       }
 
       await tx`
-        UPDATE customer_wallets 
+        UPDATE kingpay_wallets 
         SET balance_paise = balance_paise - ${amountPaise}, 
             updated_at = NOW()
-        WHERE customer_id = ${customerId}
+        WHERE user_id = ${customerId}
       `;
 
       await tx`
-        INSERT INTO wallet_transactions (customer_id, type, amount_paise, idempotency_key)
-        VALUES (${customerId}, 'DEBIT', ${amountPaise}, ${idempotencyKey})
+        INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+        VALUES (${idempotencyKey || randomUUID()}, ${customerId}, ${amountPaise}, 'DEBIT', ${'Payment: ' + idempotencyKey})
       `;
 
       return { status: "success" };
     });
   }
 };
-
-
-

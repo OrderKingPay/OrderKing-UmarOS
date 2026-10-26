@@ -421,7 +421,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                 </span>
               </div>
               <p className="text-[10px] text-emerald-100">
-                Multi-Scale Auto-Focus · Instant 0% Fee UPI Pay
+                Multi-Scale Auto-Focus · Instant standard fee UPI Pay
               </p>
             </div>
           </div>
@@ -605,7 +605,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
             </div>
 
             <p className="text-[11px] text-muted text-center leading-relaxed">
-              Point camera at any shop, merchant, or banking QR code. Decodes instantly from far distance with 0% fee.
+              Point camera at any shop, merchant, or banking QR code. Decodes instantly from far distance with standard fee.
             </p>
           </div>
         ) : (

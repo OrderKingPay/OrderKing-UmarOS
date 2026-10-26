@@ -825,7 +825,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<EnterpriseAiMe
             size="sm"
             className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md"
             onClick={() => {
-              const pitch = `Respected Management at ${lead.businessName},\n\nTired of losing high margins to aggregator commissions? OrderKing provides you with a turnkey white-label direct ordering app with 0% commission and direct UPI settlements.\n\nReview your custom solution and 50% advance invoice (₹${invoice.advanceRequiredInr.toLocaleString("en-IN")}) here:\n${invoice.upiPaymentLink}\n\nLet's schedule a 10-minute setup call today.`;
+              const pitch = `Respected Management at ${lead.businessName},\n\nTired of losing high margins to aggregator commissions? OrderKing provides you with a turnkey white-label direct ordering app with custom commission and direct UPI settlements.\n\nReview your custom solution and 50% advance invoice (₹${invoice.advanceRequiredInr.toLocaleString("en-IN")}) here:\n${invoice.upiPaymentLink}\n\nLet's schedule a 10-minute setup call today.`;
               void navigator.clipboard?.writeText(pitch);
               EnterpriseAudioDsp.playTone("interruption_ping");
               toast.success("Client WhatsApp pitch & invoice link copied to clipboard!");

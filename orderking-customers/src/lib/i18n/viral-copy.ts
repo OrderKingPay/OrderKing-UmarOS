@@ -228,7 +228,7 @@ export const VIRAL_COPY_MATRIX: Record<
     },
     en: (ctx, url) => {
       const total = ctx.orderTotalRupees || 350;
-      const msg = `🍔 *I just ordered a delicious meal worth ₹${total} on OrderKing!* 🚀\n\nTracking live with 25-min delivery. Use my invite link to get an instant ₹500 welcome credit for your meal: ${url}\n\nZero markups, genuine local kitchens! 👑`;
+      const msg = `🍔 *I just ordered a delicious meal worth ₹${total} on OrderKing!* 🚀\n\nTracking live with 25-min delivery. Use my invite link to get an instant ₹500 welcome credit for your meal: ${url}\n\ndirect menu pricings, genuine local kitchens! 👑`;
       return {
         title: `Piped hot food on the way via OrderKing`,
         text: msg,

@@ -264,7 +264,7 @@ describe("Phase 4: End-to-End Fintech Payment & Settlement Engine Lifecycle", ()
   // TEST 4: Settlement Reconciliation Engine on Delivered Orders
   // =========================================================================
   describe("Test 4: Merchant Settlement & Payout Engine", () => {
-    it("reconciles delivered orders: net restaurant payout matches Gross - 10% commission to exact integer paise", () => {
+    it("reconciles delivered orders: net restaurant payout matches Gross - 1custom commission to exact integer paise", () => {
       // 5 real delivered orders: ₹15,000.00 gross sales
       const deliveredOrders = [
         { id: "ord_01", status: "DELIVERED", foodSubtotalPaise: 250000, packagingPaise: 10000 },
@@ -295,14 +295,14 @@ describe("Phase 4: End-to-End Fintech Payment & Settlement Engine Lifecycle", ()
         accountNumber: TEST_RESTAURANT.bankAccount,
         ifscCode: TEST_RESTAURANT.bankIfsc,
         amountPaise: netMerchantSettlementPaise,
-        narration: `SETTLEMENT FOR ${deliveredOrders.length} DELIVERED ORDERS (10% COMMISSION)`,
+        narration: `SETTLEMENT FOR ${deliveredOrders.length} DELIVERED ORDERS (1custom commission)`,
         referenceId: `PAY-${Date.now()}-${TEST_RESTAURANT.id}`,
       };
 
       expect(payoutTransaction.accountNumber).toBe("98765432101234");
       expect(payoutTransaction.ifscCode).toBe("HDFC0001234");
       expect(payoutTransaction.amountPaise).toBe(1350000);
-      expect(payoutTransaction.narration).toContain("10% COMMISSION");
+      expect(payoutTransaction.narration).toContain("1custom commission");
     });
   });
 

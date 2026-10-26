@@ -6,9 +6,7 @@ import {
   Zap,
   UtensilsCrossed,
   CreditCard,
-  Plane,
-  GraduationCap,
-  Wine,
+      Wine,
   ArrowRight,
   CheckCircle2,
   Lock,
@@ -63,7 +61,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
                 <UtensilsCrossed className="size-5" />
               </div>
               <span className="rounded-full bg-gradient-to-r from-emerald-500/25 via-emerald-400/35 to-teal-500/25 border border-emerald-400/70 px-2.5 py-0.5 text-[10px] font-black text-emerald-300 uppercase tracking-wider shadow-2xs">
-                👑 0% Markup
+                👑 Verified Kitchens
               </span>
             </div>
             <div className="mt-3">
@@ -107,61 +105,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             </div>
           </Link>
 
-          {/* 3. SOVEREIGN TRAVEL (3D Supersonic Aircraft & Sapphire Jewel) */}
-          <Link
-            to="/travel"
-            className="group relative overflow-hidden rounded-2xl border border-sky-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-sky-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-sky-300 hover:shadow-[0_12px_32px_rgba(14,165,233,0.35)] no-underline shadow-lg"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-900 text-white shadow-[0_6px_16px_rgba(14,165,233,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
-                <Plane className="size-5" />
-              </div>
-              <span className="rounded-full bg-gradient-to-r from-sky-500/25 via-sky-400/30 to-blue-500/25 border border-sky-400/70 px-2.5 py-0.5 text-[10px] font-black text-sky-200 uppercase tracking-wider shadow-2xs">
-                👑 ₹0 Fee vs MMT
-              </span>
-            </div>
-            <div className="mt-3">
-              <h3 className="text-sm font-black text-white group-hover:text-sky-300 transition-colors">
-                Sovereign Travel
-              </h3>
-              <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
-                Direct flights, Vande Bharat trains, interstate luxury buses & airport cabs with digital boarding passes.
-              </p>
-            </div>
-            <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-sky-400 group-hover:translate-x-1 transition-transform">
-              <span>Book flights & trains</span>
-              <ArrowRight className="size-3" />
-            </div>
-          </Link>
-
-          {/* 4. AI MASTER TUTOR (3D Quantum Neural Core & Amethyst Jewel) */}
-          <Link
-            to="/tutor"
-            className="group relative overflow-hidden rounded-2xl border border-purple-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-purple-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-purple-300 hover:shadow-[0_12px_32px_rgba(168,85,247,0.35)] no-underline shadow-lg"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 via-purple-600 to-slate-900 text-white shadow-[0_6px_16px_rgba(99,102,241,0.5),inset_0_1px_2px_rgba(255,255,255,0.9)] group-hover:scale-105 transition-transform">
-                <GraduationCap className="size-5" />
-              </div>
-              <span className="rounded-full bg-gradient-to-r from-purple-500/25 via-purple-400/30 to-indigo-500/25 border border-purple-400/70 px-2.5 py-0.5 text-[10px] font-black text-purple-200 uppercase tracking-wider shadow-2xs">
-                👑 CBSE • NCERT
-              </span>
-            </div>
-            <div className="mt-3">
-              <h3 className="text-sm font-black text-white group-hover:text-purple-300 transition-colors">
-                AI Master Tutor & Earn
-              </h3>
-              <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
-                Step-by-step academic solutions, native voice guidance, marking tips & verified micro-task payouts.
-              </p>
-            </div>
-            <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-purple-400 group-hover:translate-x-1 transition-transform">
-              <span>Ask AI Tutor</span>
-              <ArrowRight className="size-3" />
-            </div>
-          </Link>
-
-          {/* 5. ROYAL DINING & EXPERIENCES (3D Crystal Goblet & Ruby Jewel) */}
+          {/* 3. ROYAL DINING & EXPERIENCES (3D Crystal Goblet & Ruby Jewel) */}
           <Link
             to="/dining"
             className="group relative overflow-hidden rounded-2xl border border-rose-500/40 bg-gradient-to-br from-slate-900/95 via-slate-900/80 to-rose-950/40 p-4 transition-all duration-300 hover:scale-[1.02] hover:border-rose-300 hover:shadow-[0_12px_32px_rgba(244,63,94,0.35)] no-underline shadow-lg"

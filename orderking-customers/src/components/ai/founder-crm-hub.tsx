@@ -362,7 +362,7 @@ export function FounderCrmHub({
                     variant="outline"
                     className="text-xs font-bold justify-start"
                     onClick={() => {
-                      const pitch = `Subject: Eliminating aggregator commissions for ${selectedLead.businessName}\n\nHi ${selectedLead.contactPerson},\n\nWe noticed you are currently losing significant margins to delivery platforms. We have deployed OrderKing White-Label which allows direct 0% commission ordering and 1-tap UPI payments.\n\nCould we schedule a 10-minute demo this week?\n\nBest regards,\nOrderKing Founder Operations`;
+                      const pitch = `Subject: Eliminating aggregator commissions for ${selectedLead.businessName}\n\nHi ${selectedLead.contactPerson},\n\nWe noticed you are currently losing significant margins to delivery platforms. We have deployed OrderKing White-Label which allows direct custom commission ordering and 1-tap UPI payments.\n\nCould we schedule a 10-minute demo this week?\n\nBest regards,\nOrderKing Founder Operations`;
                       void navigator.clipboard?.writeText(pitch);
                       toast.success("Personalized outreach email copied to clipboard!");
                     }}

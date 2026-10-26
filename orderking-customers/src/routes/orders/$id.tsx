@@ -542,7 +542,7 @@ function OrderDetailPage() {
                       <span className="text-lg">👑</span>
                       <div>
                         <span className="text-xs font-bold text-foreground block">Order King App</span>
-                        <span className="text-[10px] text-muted">0% markup, ease &amp; speed</span>
+                        <span className="text-[10px] text-muted">Ease &amp; speed</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-1">

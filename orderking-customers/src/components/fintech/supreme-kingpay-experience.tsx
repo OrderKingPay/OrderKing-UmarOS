@@ -13,16 +13,14 @@ import {
   ChevronRight,
   Receipt,
   PlusCircle,
-  Plane,
-  GraduationCap,
-  Briefcase,
-  Train,
-  Check,
+          Check,
   MapPin,
   Sparkles,
   Crown,
   CreditCard,
   Send,
+  ScanLine,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
@@ -31,32 +29,8 @@ import { useLocationStore } from "@/lib/stores/location";
 import { ScanQrModal } from "@/components/fintech/scan-qr-modal";
 import { AddMoneyModal } from "@/components/fintech/add-money-modal";
 import { OrderKingPassbookReceipts } from "@/components/fintech/orderking-passbook-receipts";
-import {
-  ALL_INDIAN_BOARDS,
-  CORE_SUBJECTS,
-  CLASS_LEVELS,
-  AcademicSolutionCard,
-} from "@/components/tutor/academic-solution-card";
-import { cn } from "@/lib/utils";
-import {
-  AirportAutoSuggest,
-  StationAutoSuggest,
-  queryAirports,
-  queryStations,
-} from "./travel-autosuggest";
-import { TP_MARKER, TP_WL_DOMAIN } from "@/lib/travel/travelpayouts-config";
 
-// Real query lookups for Indian transport nodes (contractually preserved for test suites)
-export const searchAirportOptions = (raw: string) => queryAirports(raw, 20);
-export const searchStationOptions = (raw: string) => queryStations(raw, 20);
 
-export const extractStationCode = (value: string): string | null => {
-  const v = value.trim().toUpperCase();
-  const code =
-    v.match(/\(([A-Z0-9]{2,5})\)\s*$/)?.[1] ??
-    (/^[A-Z0-9]{2,5}$/.test(v) ? v : null);
-  return code && /^[A-Z0-9]{2,5}$/.test(code) ? code : null;
-};
 
 // Privacy-guarded sovereign routing constants
 const ROUTING_SOVEREIGN_VPA = "9395065587@ybl";
@@ -77,14 +51,7 @@ export function SupremeKingPayExperience() {
       : "New Delhi";
   const currentZone = location?.zoneName || "Connaught Place";
 
-  // Quick Station State for contract compatibility
-  const [trainFrom, setTrainFrom] = useState("New Delhi (NDLS)");
-  const [trainTo, setTrainTo] = useState("Varanasi Jn (BSB)");
-
-  // Contract verification references
-  const trainFromCode = extractStationCode(trainFrom) || "NDLS";
-  const trainToCode = extractStationCode(trainTo) || "BSB";
-
+  
   // Direct Pay Anyone (Scan / UPI) State
   const [customPayeeVpa, setCustomPayeeVpa] = useState("");
   const [useCustomVpa, setUseCustomVpa] = useState(false);
@@ -247,68 +214,70 @@ export function SupremeKingPayExperience() {
             </div>
           </a>
 
-          {/* Pillar 2: Book Travel */}
-          <Link
-            to="/travel"
-            className="group rounded-2xl border border-sky-500/30 bg-[#0d111a]/90 hover:border-sky-400/70 p-4 transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between min-h-[110px] sm:min-h-[125px] shadow-sm no-underline"
+          {/* Action 2: Scan BharatQR */}
+          <button
+            type="button"
+            onClick={() => setIsScannerOpen(true)}
+            className="group rounded-2xl border border-sky-500/30 bg-[#0d111a]/90 hover:border-sky-400/70 p-4 transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between min-h-[110px] sm:min-h-[125px] shadow-sm text-left cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <div className="size-10 rounded-xl bg-sky-400/15 border border-sky-400/30 flex items-center justify-center text-sky-400 group-hover:scale-105 transition">
-                <Plane className="size-5" />
+                <ScanLine className="size-5" />
               </div>
               <ChevronRight className="size-4 text-slate-600 group-hover:text-sky-400 transition" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-white group-hover:text-sky-300 transition">
-                Book Travel
+                Scan BharatQR
               </h3>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                Flights &amp; Trains
+                Instant Camera Scanner
               </p>
             </div>
-          </Link>
+          </button>
 
-          {/* Pillar 3: AI Tutor */}
-          <Link
-            to="/tutor"
-            className="group rounded-2xl border border-purple-500/30 bg-[#0d111a]/90 hover:border-purple-400/70 p-4 transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between min-h-[110px] sm:min-h-[125px] shadow-sm no-underline"
-          >
-            <div className="flex items-center justify-between">
-              <div className="size-10 rounded-xl bg-purple-400/15 border border-purple-400/30 flex items-center justify-center text-purple-400 group-hover:scale-105 transition">
-                <GraduationCap className="size-5" />
-              </div>
-              <ChevronRight className="size-4 text-slate-600 group-hover:text-purple-400 transition" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white group-hover:text-purple-300 transition">
-                Academic Tutor
-              </h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                CBSE &amp; JEE Doubt Solver
-              </p>
-            </div>
-          </Link>
-
-          {/* Pillar 4: Jobs & Careers */}
-          <Link
-            to="/tutor-jobs"
-            className="group rounded-2xl border border-emerald-500/30 bg-[#0d111a]/90 hover:border-emerald-400/70 p-4 transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between min-h-[110px] sm:min-h-[125px] shadow-sm no-underline"
+          {/* Action 3: Add Money */}
+          <button
+            type="button"
+            onClick={() => setIsAddMoneyOpen(true)}
+            className="group rounded-2xl border border-emerald-500/30 bg-[#0d111a]/90 hover:border-emerald-400/70 p-4 transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between min-h-[110px] sm:min-h-[125px] shadow-sm text-left cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <div className="size-10 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition">
-                <Briefcase className="size-5" />
+                <Plus className="size-5" />
               </div>
               <ChevronRight className="size-4 text-slate-600 group-hover:text-emerald-400 transition" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-white group-hover:text-emerald-300 transition">
-                Jobs &amp; Careers
+                Load Wallet
               </h3>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                Verified Gigs &amp; Hiring
+                UPI / NetBanking / Cards
               </p>
             </div>
-          </Link>
+          </button>
+
+          {/* Action 4: Passbook & Ledger */}
+          <a
+            href="#live-ledger"
+            className="group rounded-2xl border border-purple-500/30 bg-[#0d111a]/90 hover:border-purple-400/70 p-4 transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between min-h-[110px] sm:min-h-[125px] shadow-sm no-underline"
+          >
+            <div className="flex items-center justify-between">
+              <div className="size-10 rounded-xl bg-purple-400/15 border border-purple-400/30 flex items-center justify-center text-purple-400 group-hover:scale-105 transition">
+                <Receipt className="size-5" />
+              </div>
+              <ChevronRight className="size-4 text-slate-600 group-hover:text-purple-400 transition" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white group-hover:text-purple-300 transition">
+                Passbook & Ledger
+              </h3>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Real-time Audit Ledger
+              </p>
+            </div>
+          </a>
         </div>
       </section>
 

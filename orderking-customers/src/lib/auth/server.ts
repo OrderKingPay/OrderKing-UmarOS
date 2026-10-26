@@ -136,8 +136,6 @@ const baseURL = explicitBaseURL ?? {
       "orderking.in",
       "*.orderking.in",
       "*.pages.dev",
-      "*.vercel.app",
-      "*.netlify.app",
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
@@ -153,30 +151,17 @@ const trustedOrigins: string[] = [
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
   "https://orderkingpay.com",
-  "http://orderkingpay.com",
   "https://www.orderkingpay.com",
-  "http://www.orderkingpay.com",
   "https://partner.orderkingpay.com",
-  "http://partner.orderkingpay.com",
   "https://partners.orderkingpay.com",
-  "http://partners.orderkingpay.com",
   "https://rider.orderkingpay.com",
-  "http://rider.orderkingpay.com",
   "https://riders.orderkingpay.com",
-  "http://riders.orderkingpay.com",
   "https://admin.orderkingpay.com",
-  "http://admin.orderkingpay.com",
   "https://ops.orderkingpay.com",
-  "http://ops.orderkingpay.com",
   "https://*.orderkingpay.com",
-  "http://*.orderkingpay.com",
   "https://orderking.in",
-  "http://orderking.in",
   "https://*.orderking.in",
-  "http://*.orderking.in",
   "https://*.pages.dev",
-  "https://*.vercel.app",
-  "https://*.netlify.app",
 ];
 
 
@@ -193,8 +178,7 @@ const grokUserInfoUrl = `${issuerBase}/api/auth/oauth2/userinfo`;
 
 
 
-// Real Postgres when `DATABASE_URL` is set (deployed apps), else clean fallback
-// adapter so Better Auth never attempts to invoke tree-shaken memory/kysely adapters.
+// Self-hosted fallback adapter so Better Auth never attempts to invoke tree-shaken memory/kysely adapters.
 const fallbackNoopAdapter = () => ({
   id: "noop",
   create: async () => null,
@@ -207,9 +191,7 @@ const fallbackNoopAdapter = () => ({
   count: async () => 0,
 });
 
-let pool = databaseUrl ? new Pool({ connectionString: databaseUrl }) : undefined;
-
-let database: any = pool || fallbackNoopAdapter;
+let database: any = fallbackNoopAdapter;
 
 /** Session token cookie name — also read by the live-preview popup completion page. */
 export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";

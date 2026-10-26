@@ -8,6 +8,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 const WORKER_PATH = path.join(DIST, '_worker.js', 'index.js');
+// Automatically load .env and .env.local for authentic database & auth credentials
+for (const envFile of ['.env', '.env.local']) {
+  const p = path.join(ROOT, envFile);
+  if (fs.existsSync(p)) {
+    try { process.loadEnvFile(p); } catch {}
+  }
+}
 
 const portArgIdx = process.argv.indexOf('--port');
 const cliPort = portArgIdx !== -1 && process.argv[portArgIdx + 1] ? Number(process.argv[portArgIdx + 1]) : null;
@@ -99,7 +106,21 @@ const server = http.createServer(async (req, res) => {
         body
       });
 
-      const webRes = await worker.fetch(webReq, process.env, { waitUntil: () => {} });
+      let webRes;
+      try {
+        webRes = await worker.fetch(webReq, process.env, { waitUntil: () => {} });
+      } catch (workerErr) {
+        console.warn('[preview-server] Worker SSR exception, falling back to client SPA:', workerErr.message);
+        const indexPath = path.join(DIST, 'index.html');
+        if (fs.existsSync(indexPath)) {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          fs.createReadStream(indexPath).pipe(res);
+          return;
+        }
+        res.statusCode = 500;
+        res.end('SSR Error: ' + workerErr.message);
+        return;
+      }
       res.statusCode = webRes.status;
       webRes.headers.forEach((val, key) => {
         if (key.toLowerCase() !== 'transfer-encoding') {

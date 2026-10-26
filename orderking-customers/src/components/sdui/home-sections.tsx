@@ -239,7 +239,7 @@ export function BannerCarouselSection({
     },
     {
       id: "gold_crown_rewards",
-      title: "24K Gold Crown Rewards",
+      title: "Crown Rewards",
       subtitle: "View available rewards and eligibility",
       tag: "Reward information",
       cta: "View Rewards",
@@ -248,18 +248,7 @@ export function BannerCarouselSection({
       bgClass: "from-slate-950 via-amber-950 to-slate-900",
       accent: "text-amber-200",
     },
-    {
-      id: "travel_zero_fee",
-      title: "Sovereign Travel Booking",
-      subtitle: "Check supplier availability before booking",
-      tag: "Travel information",
-      cta: "Book Travel",
-      link: "/travel",
-      gradient: "from-blue-500 via-indigo-500 to-cyan-500",
-      bgClass: "from-blue-950 via-slate-900 to-indigo-950",
-      accent: "text-blue-300",
-    },
-  ];
+      ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 

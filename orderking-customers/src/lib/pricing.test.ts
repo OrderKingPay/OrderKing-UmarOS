@@ -221,7 +221,7 @@ describe("pricing", () => {
     assert.equal(q.savingsPaise, 25000);
   });
 
-  it("applies free delivery coupon correctly", () => {
+  it("applies fast delivery coupon correctly", () => {
     const q = computeQuote({
       lines: [line(10000)],
       packagingPaise: 0,
@@ -231,7 +231,7 @@ describe("pricing", () => {
       promo: {
         id: "freedel",
         code: "FREEDEL",
-        name: "Free Delivery Offer",
+        name: "fast delivery Offer",
         kind: "free_delivery",
         percentBps: null,
         amountPaise: null,
@@ -682,7 +682,7 @@ describe("pricing", () => {
     });
   });
 
-  describe("commercial economics: delivery take-rate, Table QR 0% commission & payment gateway pass-through", () => {
+  describe("commercial economics: delivery take-rate, Table QR custom commission & payment gateway pass-through", () => {
     it("enforces 28% standard delivery take-rate (2800 bps) by default when commission is omitted", () => {
       const q = computeQuote({
         lines: [line(50000)], // ₹500 food
@@ -750,7 +750,7 @@ describe("pricing", () => {
       });
 
       assert.equal(qTableQr.orderType, "TABLE_QR");
-      assert.equal(qTableQr.commissionBps, 0); // 0% commission
+      assert.equal(qTableQr.commissionBps, 0); // custom commission
       assert.equal(qTableQr.commissionPaise, 0); // 0 paise platform cut
       assert.equal(qTableQr.deliveryFeePaise, 0); // No delivery fee for table dine-in
       assert.equal(qTableQr.restaurantPayablePaise, 80000); // 100% of food bill paid to restaurant

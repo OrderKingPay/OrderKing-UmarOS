@@ -4,16 +4,12 @@ import {
   Sparkles,
   Clock,
   Crown,
-  Plane,
-  GraduationCap,
-  Store,
+      Store,
   ArrowRight,
   ShieldCheck,
   ShoppingBag,
   CreditCard,
-  Briefcase,
-  Train,
-} from "lucide-react";
+    } from "lucide-react";
 import { useCartStore, cartCount } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 
@@ -71,7 +67,7 @@ export function SmartZeroDeliveryFallbackCard({
             OrderKing Services Available in {currentCity}
           </h3>
           <p className="text-xs sm:text-sm text-stone-600 max-w-2xl mx-auto leading-relaxed font-medium">
-            Hot food delivery from local restaurants is not currently active in this location. You can order non-perishable regional pantry goods, or use our financial, travel, and learning services below.
+            Hot food delivery from local restaurants is not currently active in this location. You can order non-perishable regional pantry goods, or use our fintech and grocery services below.
           </p>
         </div>
 
@@ -87,12 +83,10 @@ export function SmartZeroDeliveryFallbackCard({
               </p>
             ) : isNightHour ? (
               <p>
-                <strong className="font-bold text-stone-900">22:00–06:00 Night Desk:</strong> Live IRCTC train PNR tracking, outstation cab comparisons, and 24/7 instant live fee & instant cashback UPI transfers and mobile recharges are fully active.
-              </p>
+                <strong className="font-bold text-stone-900">24/7 KingPay UPI:</strong> Instant dynamic BharatQR, peer-to-peer transfers, and instant cashback wallet settlements.</p>
             ) : (
               <p>
-                <strong className="font-bold text-stone-900">Morning Essentials:</strong> Recharge utility accounts, settle pending bills via KingPay UPI, or search for verified subject tutors and verified local job postings.
-              </p>
+                <strong className="font-bold text-stone-900">Mart Groceries:</strong> Essential pantry goods, groceries, and packaged foods shipped across verified zones.</p>
             )}
           </div>
         </div>
@@ -154,63 +148,7 @@ export function SmartZeroDeliveryFallbackCard({
             </Link>
           </div>
 
-          {/* Service 2: Travel Concierge */}
-          <div className="flex flex-col justify-between p-5 rounded-2xl border border-sky-200/90 bg-white hover:border-sky-400 hover:shadow-md transition-all duration-200">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/15 text-sky-700">
-                  <Plane className="size-5" />
-                </div>
-                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-sky-100 text-sky-900 border border-sky-300">
-                  LIVE TRACKING
-                </span>
-              </div>
-              <h4 className="font-black text-base text-stone-900">
-                Travel Concierge &amp; Live PNR
-              </h4>
-              <p className="text-xs text-stone-500 mt-1.5 leading-relaxed font-medium">
-                Outstation rides, intercity buses, trains with live IRCTC PNR status, and real-time flight tracking.
-              </p>
-            </div>
-            <Link
-              to="/travel"
-              className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-xl bg-sky-700 hover:bg-sky-800 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all no-underline"
-            >
-              <Train className="size-3.5" />
-              <span>Explore Travel Concierge</span>
-              <ArrowRight className="size-3.5" />
-            </Link>
-          </div>
-
-          {/* Service 3: Tutor & Direct Jobs Desk */}
-          <div className="flex flex-col justify-between p-5 rounded-2xl border border-purple-200/90 bg-white hover:border-purple-400 hover:shadow-md transition-all duration-200">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-purple-500/15 text-purple-700">
-                  <GraduationCap className="size-5" />
-                </div>
-                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300">
-                  VERIFIED DESK
-                </span>
-              </div>
-              <h4 className="font-black text-base text-stone-900">
-                Tutor &amp; Direct Jobs Desk
-              </h4>
-              <p className="text-xs text-stone-500 mt-1.5 leading-relaxed font-medium">
-                Verified local tutors, skill certification, and direct local job postings with zero intermediary commissions.
-              </p>
-            </div>
-            <Link
-              to="/tutor"
-              className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-xl bg-purple-700 hover:bg-purple-800 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all no-underline"
-            >
-              <Briefcase className="size-3.5" />
-              <span>View Tutors &amp; Jobs</span>
-              <ArrowRight className="size-3.5" />
-            </Link>
-          </div>
-
-          {/* Service 4: Mart / Essentials */}
+          {/* Service 2: Mart / Essentials */}
           <div className="flex flex-col justify-between p-5 rounded-2xl border border-emerald-200/90 bg-white hover:border-emerald-400 hover:shadow-md transition-all duration-200">
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -249,8 +187,7 @@ export function SmartZeroDeliveryFallbackCard({
           <span>·</span>
           <span>Official IRCTC PNR tracking</span>
           <span>·</span>
-          <span>Direct verified tutor profiles</span>
-          <span>·</span>
+          
           <span>₹0 extra delivery fee with active cart</span>
         </div>
       </div>
