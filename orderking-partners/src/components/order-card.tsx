@@ -9,7 +9,7 @@ import { formatINR, mulBps } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { REJECT_REASONS, type OrderState } from "@/lib/orders/state-machine";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
-import { delayOrderPrep } from "@/lib/server/api-orders";
+import { delayOrderPrep, requestRiderDispatch } from "@/lib/server/api-orders";
 import { enqueueMutation } from "@/lib/offline/durable-queue";
 import { StructuredRejectionModal } from "@/components/orders/structured-rejection-modal";
 import { CourierRadarMap } from "@/components/orders/courier-radar-map";
@@ -107,6 +107,26 @@ export function OrderCard({
   const [localPrepMinutes, setLocalPrepMinutes] = useState(order.prepMinutes);
   const [selectedPrepMinutes, setSelectedPrepMinutes] = useState<number>(order.prepMinutes || 25);
   const [delaying, setDelaying] = useState(false);
+  const [requestingRider, setRequestingRider] = useState(false);
+
+  async function handleRequestRider() {
+    if (requestingRider || !restaurantId) return;
+    setRequestingRider(true);
+    try {
+      await requestRiderDispatch({
+        data: {
+          restaurantId,
+          orderId: order.id,
+        },
+      });
+      toast.success("⚡ Autonomous Rider Dispatch Requested! Closest active couriers pinged via Haversine dispatch.");
+      onChanged?.();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to ping rider dispatch.");
+    } finally {
+      setRequestingRider(false);
+    }
+  }
 
   useEffect(() => {
     setLocalPrepMinutes(order.prepMinutes);
@@ -744,6 +764,19 @@ export function OrderCard({
               🤝 Handover to Rider (Verify OTP / Barcode)
             </Button>
           ) : null}
+          {order.state === "READY" && (
+            <Button
+              size={large ? "lg" : "sm"}
+              variant="secondary"
+              disabled={busy || requestingRider}
+              type="button"
+              onClick={() => void handleRequestRider()}
+              className="border-sky-500/40 bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 text-xs font-bold"
+              title="Trigger immediate algorithmic auto-dispatch ping to closest online delivery partner"
+            >
+              ⚡ {requestingRider ? "Broadcasting..." : "Ping Nearby Couriers"}
+            </Button>
+          )}
         </div>
 
       {/* 80mm Thermal KOT + Itemized GST §9(5) Receipt Modal */}

@@ -50,11 +50,17 @@ import {
   Wifi,
   Database,
   Sliders,
+  Bot,
+  Terminal,
 } from "lucide-react";
 
 export type ConnectorTab =
   | "all"
   | "supabase"
+  | "openai"
+  | "gemini"
+  | "xai"
+  | "antigravity"
   | "openaiGemini"
   | "globalAdSyndicate"
   | "oemLockScreen"
@@ -338,20 +344,54 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
       return;
     }
 
-    if (service === "openaiGemini") {
-      const hasKey =
-        !!extraConfig.openaiGemini.geminiApiKey.trim() ||
-        !!extraConfig.openaiGemini.openaiApiKey.trim();
-      setTestResults((prev) => ({
-        ...prev,
-        openaiGemini: {
-          ok: hasKey,
-          message: hasKey
-            ? "AI API key format verified. Click Save Keys to persist."
-            : "Not Connected — Enter a Gemini or OpenAI API Key first.",
-          timestamp: nowStr,
-        },
-      }));
+    if (
+      service === "openai" ||
+      service === "gemini" ||
+      service === "xai" ||
+      service === "antigravity" ||
+      service === "openaiGemini"
+    ) {
+      try {
+        setTestingService(service);
+        let payload = (config as any)[service];
+        if (service === "openaiGemini") {
+          payload = {
+            geminiApiKey: config.gemini?.apiKey || extraConfig.openaiGemini?.geminiApiKey,
+            openaiApiKey: config.openai?.apiKey || extraConfig.openaiGemini?.openaiApiKey,
+          };
+        }
+        const res = await testPluginConnectorFn({ data: { service: service as any, payload } });
+        if (res && res.ok) {
+          setTestResults((prev) => ({
+            ...prev,
+            [service]: {
+              ok: true,
+              message: res.message || "Connection verified.",
+              timestamp: nowStr,
+            },
+          }));
+        } else {
+          setTestResults((prev) => ({
+            ...prev,
+            [service]: {
+              ok: false,
+              message: (res as { error?: string })?.error || "Connection test failed.",
+              timestamp: nowStr,
+            },
+          }));
+        }
+      } catch (err: unknown) {
+        setTestResults((prev) => ({
+          ...prev,
+          [service]: {
+            ok: false,
+            message: err instanceof Error ? err.message : "Connection test failed.",
+            timestamp: nowStr,
+          },
+        }));
+      } finally {
+        setTestingService(null);
+      }
       return;
     }
 
@@ -417,8 +457,16 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
           return !!cfg.whatsapp.phoneNumberId.trim() && !!cfg.whatsapp.systemAccessToken.trim();
         case "mapbox":
           return !!cfg.mapbox.publicAccessToken.trim();
+        case "openai":
+          return !!cfg.openai?.apiKey?.trim();
+        case "gemini":
+          return !!cfg.gemini?.apiKey?.trim();
+        case "xai":
+          return !!cfg.xai?.apiKey?.trim();
+        case "antigravity":
+          return !!cfg.antigravity?.enabled;
         case "openaiGemini":
-          return !!ext.openaiGemini.geminiApiKey.trim() || !!ext.openaiGemini.openaiApiKey.trim();
+          return !!cfg.gemini?.apiKey?.trim() || !!cfg.openai?.apiKey?.trim() || !!ext.openaiGemini?.geminiApiKey?.trim() || !!ext.openaiGemini?.openaiApiKey?.trim();
         case "fssai":
           return !!cfg.fssai.clientId.trim() && !!cfg.fssai.authorizationToken.trim();
         case "cleartax":
@@ -504,9 +552,12 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
   const coreServices: ConnectorTab[] = [
     "razorpay",
     "supabase",
+    "openai",
+    "gemini",
+    "xai",
+    "antigravity",
     "whatsapp",
     "mapbox",
-    "openaiGemini",
     "fssai",
     "cleartax",
     "stripeAtlas",
@@ -746,11 +797,14 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
           {(
             [
               { id: "all", label: "All Essential Keys", icon: Layers },
+              { id: "openai", label: "OpenAI / ChatGPT", icon: Bot },
+              { id: "gemini", label: "Google Gemini", icon: Sparkles },
+              { id: "xai", label: "xAI Grok", icon: Zap },
+              { id: "antigravity", label: "Antigravity Swarm", icon: Terminal },
               { id: "razorpay", label: "Razorpay Payments", icon: CreditCard },
               { id: "supabase", label: "Supabase / Postgres", icon: Database },
               { id: "whatsapp", label: "WhatsApp / SMS", icon: MessageSquare },
               { id: "mapbox", label: "Google Maps / Mapbox", icon: Navigation },
-              { id: "openaiGemini", label: "OpenAI / Gemini", icon: Sparkles },
               { id: "fssai", label: "FSSAI Verification", icon: ShieldAlert },
               { id: "cleartax", label: "GST & ClearTax", icon: Calculator },
               { id: "stripeAtlas", label: "Stripe USD", icon: Globe },
@@ -1355,8 +1409,151 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
             </div>
           )}
 
-          {/* 5. OPENAI & GEMINI AI KEYS */}
-          {(activeTab === "all" || activeTab === "openaiGemini") && (
+          {/* 5A. OPENAI / CHATGPT CONNECTOR */}
+          {(activeTab === "all" || activeTab === "openai" || activeTab === "openaiGemini") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600">
+                    <Bot className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-foreground">
+                        OpenAI / ChatGPT Omnimodal
+                      </h3>
+                      {renderStatusBadge("openai")}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Powers GPT-4o conversational customer triage, menu catalog translation, and o1 deep reasoning escalations.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-foreground">
+                    <span>Enable OpenAI</span>
+                    <input
+                      type="checkbox"
+                      checked={config.openai.enabled}
+                      onChange={(e) =>
+                        setConfig((p) => ({
+                          ...p,
+                          openai: { ...p.openai, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    disabled={testingService === "openai"}
+                    onClick={() => handleTestConnection("openai")}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary disabled:opacity-50"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-emerald-600" />
+                    {testingService === "openai" ? "Testing Ping..." : "Test Connection"}
+                  </button>
+                </div>
+              </div>
+
+              {renderTestBanner("openai")}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="lg:col-span-2">
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    OpenAI API Secret Key
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type={visibleSecrets["openaiKey"] ? "text" : "password"}
+                      value={config.openai.apiKey}
+                      onChange={(e) =>
+                        setConfig((p) => ({
+                          ...p,
+                          openai: { ...p.openai, apiKey: e.target.value },
+                        }))
+                      }
+                      placeholder="sk-proj-..."
+                      className="w-full h-9 rounded-lg border border-border bg-background pl-3 pr-16 text-xs font-mono"
+                    />
+                    <div className="absolute right-1.5 flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => toggleSecretVisibility("openaiKey")}
+                        className="p-1 text-muted-foreground hover:text-foreground"
+                        title={visibleSecrets["openaiKey"] ? "Hide" : "Show"}
+                      >
+                        {visibleSecrets["openaiKey"] ? (
+                          <EyeOff className="h-3.5 w-3.5" />
+                        ) : (
+                          <Eye className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(config.openai.apiKey, "openaiKey")}
+                        className="p-1 text-muted-foreground hover:text-foreground"
+                        title="Copy Key"
+                      >
+                        {copiedKey === "openaiKey" ? (
+                          <Check className="h-3.5 w-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    Organization ID (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={config.openai.organizationId || ""}
+                    onChange={(e) =>
+                      setConfig((p) => ({
+                        ...p,
+                        openai: { ...p.openai, organizationId: e.target.value },
+                      }))
+                    }
+                    placeholder="org-..."
+                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    Default Model
+                  </label>
+                  <select
+                    value={config.openai.defaultModel}
+                    onChange={(e) =>
+                      setConfig((p) => ({
+                        ...p,
+                        openai: {
+                          ...p.openai,
+                          defaultModel: e.target.value as any,
+                        },
+                      }))
+                    }
+                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-medium"
+                  >
+                    <option value="gpt-4o">GPT-4o (Production Flagship)</option>
+                    <option value="gpt-4o-mini">GPT-4o-mini (Fast Triage)</option>
+                    <option value="o1">o1 (Deep Reasoning)</option>
+                    <option value="o1-mini">o1-mini (Reasoning Math)</option>
+                    <option value="gpt-4.5-preview">GPT-4.5 Preview</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5B. GOOGLE GEMINI 2.5 FLASH CONNECTOR */}
+          {(activeTab === "all" || activeTab === "gemini" || activeTab === "openaiGemini") && (
             <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                 <div className="flex items-center gap-3">
@@ -1366,26 +1563,26 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-bold text-foreground">
-                        OpenAI & Google Gemini AI
+                        Google Gemini 2.5 Flash & Pro
                       </h3>
-                      {renderStatusBadge("openaiGemini")}
+                      {renderStatusBadge("gemini")}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Power automated customer support replies, menu descriptions, and daily business summaries.
+                      Powers KingPay Academic AI Tutor, real-time regional voice transcription, and high-throughput vision.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-foreground">
-                    <span>Enable AI Assistant</span>
+                    <span>Enable Gemini</span>
                     <input
                       type="checkbox"
-                      checked={extraConfig.openaiGemini.enabled}
+                      checked={config.gemini.enabled}
                       onChange={(e) =>
-                        setExtraConfig((p) => ({
+                        setConfig((p) => ({
                           ...p,
-                          openaiGemini: { ...p.openaiGemini, enabled: e.target.checked },
+                          gemini: { ...p.gemini, enabled: e.target.checked },
                         }))
                       }
                       className="h-4 w-4 rounded border-border"
@@ -1393,52 +1590,368 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                   </label>
                   <button
                     type="button"
-                    onClick={() => handleTestConnection("openaiGemini")}
-                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
+                    disabled={testingService === "gemini"}
+                    onClick={() => handleTestConnection("gemini")}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary disabled:opacity-50"
                   >
                     <Zap className="h-3.5 w-3.5 text-purple-600" />
-                    Test Key
+                    {testingService === "gemini" ? "Pinging Gemini..." : "Test Connection"}
                   </button>
                 </div>
               </div>
 
-              {renderTestBanner("openaiGemini")}
+              {renderTestBanner("gemini")}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="lg:col-span-2">
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    Google AI Studio Key (GEMINI_API_KEY)
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type={visibleSecrets["geminiKey"] ? "text" : "password"}
+                      value={config.gemini.apiKey}
+                      onChange={(e) =>
+                        setConfig((p) => ({
+                          ...p,
+                          gemini: { ...p.gemini, apiKey: e.target.value },
+                        }))
+                      }
+                      placeholder="AIzaSy..."
+                      className="w-full h-9 rounded-lg border border-border bg-background pl-3 pr-16 text-xs font-mono"
+                    />
+                    <div className="absolute right-1.5 flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => toggleSecretVisibility("geminiKey")}
+                        className="p-1 text-muted-foreground hover:text-foreground"
+                        title={visibleSecrets["geminiKey"] ? "Hide" : "Show"}
+                      >
+                        {visibleSecrets["geminiKey"] ? (
+                          <EyeOff className="h-3.5 w-3.5" />
+                        ) : (
+                          <Eye className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(config.gemini.apiKey, "geminiKey")}
+                        className="p-1 text-muted-foreground hover:text-foreground"
+                        title="Copy Key"
+                      >
+                        {copiedKey === "geminiKey" ? (
+                          <Check className="h-3.5 w-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <label className="text-xs font-semibold text-foreground block mb-1">
-                    Google Gemini API Key
+                    Generative Model Engine
                   </label>
-                  <input
-                    type="password"
-                    value={extraConfig.openaiGemini.geminiApiKey}
+                  <select
+                    value={config.gemini.defaultModel}
                     onChange={(e) =>
-                      setExtraConfig((p) => ({
+                      setConfig((p) => ({
                         ...p,
-                        openaiGemini: { ...p.openaiGemini, geminiApiKey: e.target.value },
+                        gemini: {
+                          ...p.gemini,
+                          defaultModel: e.target.value as any,
+                        },
                       }))
                     }
-                    placeholder="AIzaSy..."
+                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-medium"
+                  >
+                    <option value="gemini-2.5-flash">Gemini 2.5 Flash (Supercharged Low Latency)</option>
+                    <option value="gemini-2.5-pro">Gemini 2.5 Pro (Deep Multimodal)</option>
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    Daily Safety Cap (₹ INR)
+                  </label>
+                  <input
+                    type="number"
+                    value={config.gemini.dailySpendCapInr}
+                    onChange={(e) =>
+                      setConfig((p) => ({
+                        ...p,
+                        gemini: {
+                          ...p.gemini,
+                          dailySpendCapInr: Number(e.target.value) || 500,
+                        },
+                      }))
+                    }
+                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5C. XAI GROK CONNECTOR */}
+          {(activeTab === "all" || activeTab === "xai") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
+                    <Zap className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-foreground">
+                        xAI Grok Truth Engine
+                      </h3>
+                      {renderStatusBadge("xai")}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Real-time market intelligence, adversarial fraud prevention, and uninhibited business reasoning.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-foreground">
+                    <span>Enable Grok</span>
+                    <input
+                      type="checkbox"
+                      checked={config.xai.enabled}
+                      onChange={(e) =>
+                        setConfig((p) => ({
+                          ...p,
+                          xai: { ...p.xai, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    disabled={testingService === "xai"}
+                    onClick={() => handleTestConnection("xai")}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary disabled:opacity-50"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-amber-600" />
+                    {testingService === "xai" ? "Validating Grok..." : "Test Connection"}
+                  </button>
+                </div>
+              </div>
+
+              {renderTestBanner("xai")}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="lg:col-span-2">
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    xAI API Key (XAI_API_KEY)
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type={visibleSecrets["xaiKey"] ? "text" : "password"}
+                      value={config.xai.apiKey}
+                      onChange={(e) =>
+                        setConfig((p) => ({
+                          ...p,
+                          xai: { ...p.xai, apiKey: e.target.value },
+                        }))
+                      }
+                      placeholder="xai-..."
+                      className="w-full h-9 rounded-lg border border-border bg-background pl-3 pr-16 text-xs font-mono"
+                    />
+                    <div className="absolute right-1.5 flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => toggleSecretVisibility("xaiKey")}
+                        className="p-1 text-muted-foreground hover:text-foreground"
+                        title={visibleSecrets["xaiKey"] ? "Hide" : "Show"}
+                      >
+                        {visibleSecrets["xaiKey"] ? (
+                          <EyeOff className="h-3.5 w-3.5" />
+                        ) : (
+                          <Eye className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(config.xai.apiKey, "xaiKey")}
+                        className="p-1 text-muted-foreground hover:text-foreground"
+                        title="Copy Key"
+                      >
+                        {copiedKey === "xaiKey" ? (
+                          <Check className="h-3.5 w-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    Reasoning Engine
+                  </label>
+                  <select
+                    value={config.xai.defaultModel}
+                    onChange={(e) =>
+                      setConfig((p) => ({
+                        ...p,
+                        xai: {
+                          ...p.xai,
+                          defaultModel: e.target.value as any,
+                        },
+                      }))
+                    }
+                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-medium"
+                  >
+                    <option value="grok-2">Grok-2 (High Reasoning)</option>
+                    <option value="grok-2-vision">Grok-2 Vision (Image & UI)</option>
+                    <option value="grok-3">Grok-3 (Frontier)</option>
+                    <option value="grok-beta">Grok Beta</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    Daily Safety Cap ($ USD)
+                  </label>
+                  <input
+                    type="number"
+                    value={config.xai.dailySpendCapUsd}
+                    onChange={(e) =>
+                      setConfig((p) => ({
+                        ...p,
+                        xai: {
+                          ...p.xai,
+                          dailySpendCapUsd: Number(e.target.value) || 25,
+                        },
+                      }))
+                    }
+                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5D. ANTIGRAVITY NATIVE MULTI-AGENT SWARM */}
+          {(activeTab === "all" || activeTab === "antigravity") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600">
+                    <Terminal className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-foreground">
+                        Antigravity Native Multi-Agent Swarm
+                      </h3>
+                      {renderStatusBadge("antigravity")}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Autonomous local multi-agent runtime executing code, git sync, cloud deployment, and system diagnostics.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-foreground">
+                    <span>Enable Swarm</span>
+                    <input
+                      type="checkbox"
+                      checked={config.antigravity.enabled}
+                      onChange={(e) =>
+                        setConfig((p) => ({
+                          ...p,
+                          antigravity: { ...p.antigravity, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    disabled={testingService === "antigravity"}
+                    onClick={() => handleTestConnection("antigravity")}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary disabled:opacity-50"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-sky-600" />
+                    {testingService === "antigravity" ? "Auditing Swarm..." : "Test Swarm"}
+                  </button>
+                </div>
+              </div>
+
+              {renderTestBanner("antigravity")}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="lg:col-span-2">
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    Workspace Root Path
+                  </label>
+                  <input
+                    type="text"
+                    value={config.antigravity.workspacePath}
+                    onChange={(e) =>
+                      setConfig((p) => ({
+                        ...p,
+                        antigravity: { ...p.antigravity, workspacePath: e.target.value },
+                      }))
+                    }
+                    placeholder="C:\\Users\\hasan\\OrderKing"
                     className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
                   />
                 </div>
 
                 <div>
                   <label className="text-xs font-semibold text-foreground block mb-1">
-                    OpenAI API Key (Optional)
+                    Swarm Operational Mode
                   </label>
-                  <input
-                    type="password"
-                    value={extraConfig.openaiGemini.openaiApiKey}
+                  <select
+                    value={config.antigravity.agentMode}
                     onChange={(e) =>
-                      setExtraConfig((p) => ({
+                      setConfig((p) => ({
                         ...p,
-                        openaiGemini: { ...p.openaiGemini, openaiApiKey: e.target.value },
+                        antigravity: {
+                          ...p.antigravity,
+                          agentMode: e.target.value as any,
+                        },
                       }))
                     }
-                    placeholder="sk-proj-..."
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
+                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-medium"
+                  >
+                    <option value="autonomous_swarm">Autonomous Swarm (Self-Directing)</option>
+                    <option value="supervised_gate">Supervised Gate (Founder Approval)</option>
+                    <option value="read_only_auditor">Read-Only Auditor</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1">
+                    Tool Execution Policy
+                  </label>
+                  <select
+                    value={config.antigravity.toolExecutionPolicy}
+                    onChange={(e) =>
+                      setConfig((p) => ({
+                        ...p,
+                        antigravity: {
+                          ...p.antigravity,
+                          toolExecutionPolicy: e.target.value as any,
+                        },
+                      }))
+                    }
+                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-medium"
+                  >
+                    <option value="full_execution">Full Execution (Build, Test, Deploy)</option>
+                    <option value="safe_sandbox">Safe Sandbox (Read & Lint Only)</option>
+                  </select>
                 </div>
               </div>
             </div>

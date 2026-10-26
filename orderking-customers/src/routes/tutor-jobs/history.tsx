@@ -189,10 +189,10 @@ function TutorJobsHistoryPage() {
                 <span>Applied &amp; Booked History</span>
               </div>
               <h1 className="text-2xl font-black text-stone-950 tracking-tight sm:text-3xl">
-                My Classes &amp; Jobs
+                My King Tutor &amp; King Job History
               </h1>
               <p className="text-xs text-stone-600 mt-1 font-medium">
-                Track your active tutoring sessions, scheduled classes, and employer job applications.
+                Track your active King Tutor sessions, scheduled classes, and King Job employer applications.
               </p>
             </div>
 
@@ -201,7 +201,7 @@ function TutorJobsHistoryPage() {
               className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 text-xs font-bold transition no-underline shadow-xs shrink-0"
             >
               <BookOpen className="size-3.5" />
-              <span>Explore Tutors &amp; Jobs</span>
+              <span>Explore King Tutor &amp; King Job</span>
               <ArrowRight className="size-3.5" />
             </Link>
           </div>
@@ -218,7 +218,7 @@ function TutorJobsHistoryPage() {
               }`}
             >
               <GraduationCap className="size-4" />
-              <span>Booked Classes ({classes.length})</span>
+              <span>King Tutor Classes ({classes.length})</span>
             </button>
             <button
               type="button"
@@ -230,7 +230,7 @@ function TutorJobsHistoryPage() {
               }`}
             >
               <Briefcase className="size-4" />
-              <span>Job Applications ({applications.length})</span>
+              <span>King Job Applications ({applications.length})</span>
             </button>
           </div>
 

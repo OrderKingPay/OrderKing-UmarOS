@@ -57,9 +57,9 @@ const SEARCH_PLACEHOLDERS = [
 export const SOVEREIGN_ECOSYSTEM_TABS = [
   { id: "food", name: "Food Delivery", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
     match: (p: string) => p === "/" || ["/delivery", "/r/", "/search", "/cart", "/checkout", "/dining", "/offers"].some((v) => p.startsWith(v)) },
-  { id: "tutor", name: "AI Tutor", icon: GraduationCap, iconGradient: "from-emerald-400 to-emerald-700", to: "/tutor",
+  { id: "tutor", name: "King Tutor", icon: GraduationCap, iconGradient: "from-emerald-400 to-emerald-700", to: "/tutor",
     match: (p: string) => p.startsWith("/tutor") && !p.startsWith("/tutor-jobs") },
-  { id: "jobs", name: "Jobs", icon: Briefcase, iconGradient: "from-purple-400 to-purple-700", to: "/tutor-jobs",
+  { id: "jobs", name: "King Job", icon: Briefcase, iconGradient: "from-purple-400 to-purple-700", to: "/tutor-jobs",
     match: (p: string) => p.startsWith("/tutor-jobs") },
   { id: "travel", name: "Travel", icon: Plane, iconGradient: "from-sky-400 to-sky-700", to: "/travel",
     match: (p: string) => p.startsWith("/travel") },
@@ -283,7 +283,7 @@ export function CustomerShell({
               )}
             >
               <GraduationCap className={cn("size-3.5 shrink-0", isDark ? "text-emerald-400" : "text-emerald-600")} />
-              <span className="whitespace-nowrap">AI Tutor</span>
+              <span className="whitespace-nowrap">King Tutor</span>
             </Link>
 
             {/* 3. Jobs */}
@@ -301,7 +301,7 @@ export function CustomerShell({
               )}
             >
               <Briefcase className={cn("size-3.5 shrink-0", isDark ? "text-purple-400" : "text-purple-600")} />
-              <span className="whitespace-nowrap">Jobs</span>
+              <span className="whitespace-nowrap">King Job</span>
             </Link>
 
             {/* 4. Travel */}
@@ -463,7 +463,16 @@ export function CustomerShell({
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
                       >
                         <GraduationCap className="size-4 text-amber-600" />
-                        <span>AI Tutor &amp; Solutions</span>
+                        <span>King Tutor &amp; Solutions</span>
+                      </Link>
+
+                      <Link
+                        to="/tutor-jobs"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                      >
+                        <Briefcase className="size-4 text-amber-600" />
+                        <span>King Job &amp; Careers</span>
                       </Link>
 
                       <Link

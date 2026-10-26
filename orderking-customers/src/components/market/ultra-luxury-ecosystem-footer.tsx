@@ -220,7 +220,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
           </div>
           <div className="flex items-center gap-1.5">
             <GraduationCap className="size-4 text-indigo-400" />
-            <span>AI assistance when available</span>
+            <span>King Tutor &amp; King Job</span>
           </div>
         </div>
 

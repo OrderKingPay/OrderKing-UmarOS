@@ -118,6 +118,8 @@ import { systemMasterController } from "@/lib/orderking/ai/system-master-control
 import { universalPlatformManager } from "@/lib/orderking/ai/universal-platform-manager";
 import { standaloneSectionExporter } from "@/lib/orderking/ai/standalone-section-exporter";
 import { getVerifiedModelRegistry, type VerifiedModelRecord } from "@/lib/orderking/ai/real-model-registry";
+import { findUmarAiMatches } from "@/lib/orderking/ai/umar-ai-directory";
+import { UmarAiJumpCard } from "./UmarAiJumpCard";
 
 interface PremiumFounderAiChatProps {
   founderUpiVpa?: string;
@@ -3551,6 +3553,7 @@ export function PremiumFounderAiChat({
     stopSpeaking();
 
     const aiMsgId = `msg-ai-${Date.now()}`;
+    const matchedJumpCards = text ? findUmarAiMatches(text) : [];
     const initialAiMsg: PremiumAiMessage = {
       id: aiMsgId,
       sender: "ai",
@@ -3558,6 +3561,7 @@ export function PremiumFounderAiChat({
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       modelUsed: selectedModel,
       executionSteps: [],
+      jumpCards: matchedJumpCards.length > 0 ? matchedJumpCards : undefined,
     };
     setMessages((prev) => [...prev, initialAiMsg]);
 
@@ -3688,6 +3692,7 @@ export function PremiumFounderAiChat({
                 executionSteps,
                 actionCard,
                 mediaCard,
+                jumpCards: matchedJumpCards.length > 0 ? matchedJumpCards : m.jumpCards,
               }
             : m
         )
@@ -3719,6 +3724,7 @@ export function PremiumFounderAiChat({
                 text: "I couldn't reach the AI service. Please check your network connection and API key configuration in Settings.",
                 modelUsed: "sovereign-ultra" as any,
                 executionSteps: [],
+                jumpCards: matchedJumpCards.length > 0 ? matchedJumpCards : m.jumpCards,
               }
             : m
         )
@@ -4688,6 +4694,18 @@ export function PremiumFounderAiChat({
                             {m.actionCard && (
                               <div className="mt-4 w-full max-w-xl">
                                 <ActionCardView card={m.actionCard} />
+                              </div>
+                            )}
+
+                            {m.jumpCards && m.jumpCards.length > 0 && (
+                              <div className="mt-3.5 flex flex-col gap-2.5 w-full max-w-xl">
+                                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">
+                                  <Sparkles className="size-3 text-emerald-400" />
+                                  <span>Umar OS Screen Deep-Links & Direct Actions</span>
+                                </div>
+                                {m.jumpCards.map((card) => (
+                                  <UmarAiJumpCard key={card.id} card={card} />
+                                ))}
                               </div>
                             )}
                           </div>

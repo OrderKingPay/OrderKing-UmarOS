@@ -36,6 +36,8 @@ import {
   type FounderActor,
   DEFAULT_FOUNDER_ACTOR,
 } from "@/lib/orderking/ai/umar-ai-omnibar-controller";
+import { findUmarAiMatches } from "@/lib/orderking/ai/umar-ai-directory";
+import { UmarAiJumpCard } from "./UmarAiJumpCard";
 import {
   UmarAiCustomizationCompiler,
   getUmarAiCompiler,
@@ -233,6 +235,7 @@ export function UmarAiOmnibar({
 
   const staged = state.stagedPreview;
   const receipt = state.executionReceipt;
+  const liveJumpCards = state.prompt ? findUmarAiMatches(state.prompt, 2) : [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 sm:pt-20 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-fadeIn">
@@ -398,6 +401,27 @@ export function UmarAiOmnibar({
         {/* BODY VIEWPORT (PREVIEW DIFF / RECEIPT / IDLE) */}
         {/* ================================================================= */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Live Matching Umar OS Screens & Jump Cards */}
+          {liveJumpCards.length > 0 && (
+            <div className="space-y-2 pb-1">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 uppercase tracking-wider px-1">
+                <Sparkles className="size-3 text-emerald-400" />
+                <span>Matching Umar OS Screens & Direct Controls</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {liveJumpCards.map((card) => (
+                  <UmarAiJumpCard
+                    key={card.id}
+                    card={card}
+                    onExecuted={() => {
+                      controller.setPrompt("");
+                      controller.clearPreview();
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
           {/* 1. STAGED BEFORE/AFTER VISUAL DIFF MODAL SECTION */}
           {staged && (
             <div className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">

@@ -573,7 +573,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
               )}
             >
               <Briefcase className="size-4" />
-              <span>Jobs &amp; Career Gigs</span>
+              <span>King Job (Careers &amp; Gigs)</span>
             </button>
             <button
               type="button"
@@ -586,7 +586,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
               )}
             >
               <GraduationCap className="size-4" />
-              <span>Tutors &amp; Academics</span>
+              <span>King Tutor (Academics)</span>
             </button>
           </div>
         </div>
@@ -1074,7 +1074,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                     <GraduationCap className="size-10 text-slate-500 mx-auto" />
                     <p className="text-sm font-bold text-white">No mentors matching this exact filter combination</p>
                     <p className="text-xs text-slate-400 max-w-md mx-auto">
-                      All verified mentors are active across standard subjects. You can reset filters to view all faculty or use our instant AI Tutor solver.
+                      All verified mentors are active across standard subjects. You can reset filters to view all faculty or use our instant King Tutor solver.
                     </p>
                     <div className="flex items-center justify-center gap-2 pt-2">
                       <button
@@ -1093,7 +1093,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                         className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs cursor-pointer inline-flex items-center gap-1.5"
                       >
                         <Sparkles className="size-3.5 text-amber-400" />
-                        <span>Ask AI Tutor Instant Doubt</span>
+                        <span>Ask King Tutor Instant Doubt</span>
                       </Link>
                     </div>
                   </div>
@@ -1176,7 +1176,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                           to="/tutor"
                           search={{ tab: "tutor" }}
                           className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
-                          title="Ask instant question to AI Tutor"
+                          title="Ask instant question to King Tutor"
                         >
                           <Sparkles className="size-4 text-amber-400" />
                         </Link>

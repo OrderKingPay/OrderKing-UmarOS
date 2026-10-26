@@ -143,6 +143,7 @@ export type PremiumAiMessage = {
   modelUsed?: AiModelId;
   attachments?: ChatAttachment[];
   executionSteps?: AgentExecutionStep[];
+  jumpCards?: UmarAiJumpCardData[];
   mediaCard?: {
     type: "image" | "video";
     prompt: string;

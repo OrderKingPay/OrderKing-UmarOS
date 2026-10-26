@@ -31,6 +31,7 @@ export default defineConfig({
       "src/routes/customization-studio.test.ts",
       "src/lib/orderking/playbook/**/*.test.ts",
       "src/lib/orderking/finance/escrow-tpap-engine.test.ts",
+      "src/lib/orderking/ai-connectors.test.ts",
     ],
     environment: "node",
   },

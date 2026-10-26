@@ -28,6 +28,7 @@ export default defineConfig({
     testTimeout: 60000,
     hookTimeout: 60000,
     fileParallelism: false,
+    isolate: true,
     include: [
       "src/test/micro-task-earn.test.ts",
       "src/test/checkout-unavailable.test.ts",

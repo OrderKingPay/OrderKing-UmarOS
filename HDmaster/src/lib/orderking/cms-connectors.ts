@@ -1,4 +1,4 @@
-import { getSql } from "@/lib/db";
+import { getSql } from "../db.ts";
 
 export interface EcosystemCmsConfig {
   // 1. Homepage & Global Branding
@@ -825,6 +825,48 @@ export interface WifiCaptivePortalConnector {
   lastSyncAt: string | null;
 }
 
+// ==========================================
+// 18. AI & AUTONOMOUS AGENT CONNECTORS
+// ==========================================
+export interface OpenAIConnector {
+  enabled: boolean;
+  apiKey: string;
+  defaultModel: "gpt-4o" | "gpt-4o-mini" | "o1" | "o1-mini" | "gpt-4.5-preview";
+  organizationId: string;
+  dailySpendCapUsd: number;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
+export interface GeminiConnector {
+  enabled: boolean;
+  apiKey: string;
+  defaultModel: "gemini-2.5-flash" | "gemini-2.5-pro" | "gemini-2.0-flash" | "gemini-1.5-pro";
+  dailySpendCapInr: number;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
+export interface XAIConnector {
+  enabled: boolean;
+  apiKey: string;
+  defaultModel: "grok-2" | "grok-2-vision" | "grok-3" | "grok-beta";
+  dailySpendCapUsd: number;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
+export interface AntigravityConnector {
+  enabled: boolean;
+  workspacePath: string;
+  agentMode: "autonomous_swarm" | "supervised_gate" | "read_only_auditor";
+  activeAgentsCount: number;
+  toolExecutionPolicy: "full_execution" | "safe_sandbox";
+  maxConcurrentTasks: number;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
 export interface PluginConnectorsConfig {
   razorpay: RazorpayConnector;
   stripeAtlas: StripeAtlasConnector;
@@ -842,6 +884,10 @@ export interface PluginConnectorsConfig {
   globalAdSyndicate: GlobalAdSyndicateConnector;
   oemLockScreen: OemLockScreenConnector;
   wifiCaptivePortal: WifiCaptivePortalConnector;
+  openai: OpenAIConnector;
+  gemini: GeminiConnector;
+  xai: XAIConnector;
+  antigravity: AntigravityConnector;
 }
 
 export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
@@ -1260,6 +1306,41 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     lastTestedAt: null,
     lastSyncAt: null,
   },
+  openai: {
+    enabled: false,
+    apiKey: "",
+    defaultModel: "gpt-4o",
+    organizationId: "",
+    dailySpendCapUsd: 25,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  gemini: {
+    enabled: true,
+    apiKey: "",
+    defaultModel: "gemini-2.5-flash",
+    dailySpendCapInr: 500,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  xai: {
+    enabled: false,
+    apiKey: "",
+    defaultModel: "grok-2",
+    dailySpendCapUsd: 25,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  antigravity: {
+    enabled: true,
+    workspacePath: "C:\\Users\\hasan\\OrderKing",
+    agentMode: "autonomous_swarm",
+    activeAgentsCount: 4,
+    toolExecutionPolicy: "full_execution",
+    maxConcurrentTasks: 8,
+    status: "CONNECTED",
+    lastTestedAt: null,
+  },
 };
 
 /** Load the full configuration bag from platform_settings */
@@ -1455,6 +1536,45 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     ? (wifiCaptivePortal.enabled ? "CONNECTED" : "DEGRADED")
     : "NOT_CONFIGURED";
 
+  const openai: OpenAIConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.openai,
+    ...(raw.openai || {}),
+  };
+  if (!openai.apiKey && process.env.OPENAI_API_KEY) {
+    openai.apiKey = process.env.OPENAI_API_KEY;
+  }
+  openai.status = openai.apiKey && openai.apiKey.trim().length > 0
+    ? (openai.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  const gemini: GeminiConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.gemini,
+    ...(raw.gemini || {}),
+  };
+  if (!gemini.apiKey && (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY)) {
+    gemini.apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
+  }
+  gemini.status = gemini.apiKey && gemini.apiKey.trim().length > 0
+    ? (gemini.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  const xai: XAIConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.xai,
+    ...(raw.xai || {}),
+  };
+  if (!xai.apiKey && process.env.XAI_API_KEY) {
+    xai.apiKey = process.env.XAI_API_KEY;
+  }
+  xai.status = xai.apiKey && xai.apiKey.trim().length > 0
+    ? (xai.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  const antigravity: AntigravityConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.antigravity,
+    ...(raw.antigravity || {}),
+  };
+  antigravity.status = antigravity.enabled ? "CONNECTED" : "NOT_CONFIGURED";
+
   return {
     razorpay,
     stripeAtlas,
@@ -1472,6 +1592,10 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     globalAdSyndicate,
     oemLockScreen,
     wifiCaptivePortal,
+    openai,
+    gemini,
+    xai,
+    antigravity,
   };
 }
 
@@ -1495,6 +1619,10 @@ export async function savePluginConnectorsData(connectorsUpdates: Partial<Plugin
     globalAdSyndicate: { ...current.globalAdSyndicate, ...(connectorsUpdates.globalAdSyndicate || {}) },
     oemLockScreen: { ...current.oemLockScreen, ...(connectorsUpdates.oemLockScreen || {}) },
     wifiCaptivePortal: { ...current.wifiCaptivePortal, ...(connectorsUpdates.wifiCaptivePortal || {}) },
+    openai: { ...current.openai, ...(connectorsUpdates.openai || {}) },
+    gemini: { ...current.gemini, ...(connectorsUpdates.gemini || {}) },
+    xai: { ...current.xai, ...(connectorsUpdates.xai || {}) },
+    antigravity: { ...current.antigravity, ...(connectorsUpdates.antigravity || {}) },
   };
 
   await updatePlatformSettingsBag({ plugin_connectors: next });

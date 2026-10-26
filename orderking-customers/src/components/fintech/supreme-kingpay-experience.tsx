@@ -330,10 +330,10 @@ export function SupremeKingPayExperience() {
             </div>
             <div className="min-w-0 mt-2">
               <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate">
-                Academic Tutor
+                King Tutor · Academic Tutor
               </h2>
               <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
-                Step Derivations &amp; Doubts
+                CBSE, ICSE &amp; State Boards
               </p>
             </div>
           </Link>
@@ -351,10 +351,10 @@ export function SupremeKingPayExperience() {
             </div>
             <div className="min-w-0 mt-2">
               <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-purple-300 transition truncate">
-                Jobs
+                King Job
               </h2>
               <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
-                Local Jobs &amp; Careers
+                Verified Careers &amp; Gigs
               </p>
             </div>
           </Link>

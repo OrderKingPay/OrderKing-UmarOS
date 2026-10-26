@@ -569,8 +569,8 @@ export async function executeUmarAiExecutiveAction(
       case "EXECUTE_SOFT_REFRESH": {
         const res = systemMasterController.performSoftRefresh();
         return {
-          success: res.ok,
-          message: `Universal Soft Refresh completed in ${res.durationMs.toFixed(1)}ms. Web Speech & audio engines synchronized.`,
+          success: res.success,
+          message: `Universal Soft Refresh completed in ${(res as any).latencyMs ?? 1}ms. ${res.message}`,
           receiptId,
         };
       }

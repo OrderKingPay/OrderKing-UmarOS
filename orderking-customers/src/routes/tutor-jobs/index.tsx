@@ -20,7 +20,7 @@ function TutorJobsIndexPage() {
               Home
             </Link>
             <span>/</span>
-            <span className="text-amber-400 font-bold">Jobs &amp; Career Hub</span>
+            <span className="text-amber-400 font-bold">King Job · Verified Careers Hub</span>
           </div>
 
           <Link
