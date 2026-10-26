@@ -55,8 +55,14 @@ const SEARCH_PLACEHOLDERS = [
 ];
 
 export const SOVEREIGN_ECOSYSTEM_TABS = [
-  { id: "food", name: "Food", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
+  { id: "food", name: "Food Delivery", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
     match: (p: string) => p === "/" || ["/delivery", "/r/", "/search", "/cart", "/checkout", "/dining", "/offers"].some((v) => p.startsWith(v)) },
+  { id: "tutor", name: "AI Tutor", icon: GraduationCap, iconGradient: "from-emerald-400 to-emerald-700", to: "/tutor",
+    match: (p: string) => p.startsWith("/tutor") && !p.startsWith("/tutor-jobs") },
+  { id: "jobs", name: "Jobs", icon: Briefcase, iconGradient: "from-purple-400 to-purple-700", to: "/tutor-jobs",
+    match: (p: string) => p.startsWith("/tutor-jobs") },
+  { id: "travel", name: "Travel", icon: Plane, iconGradient: "from-sky-400 to-sky-700", to: "/travel",
+    match: (p: string) => p.startsWith("/travel") },
   { id: "kingpay", name: "KingPay", icon: Crown, iconGradient: "from-yellow-400 to-amber-700", to: "/kingpay",
     match: (p: string) => ["/kingpay", "/king-pay", "/news", "/earn"].some((v) => p.startsWith(v)) },
   { id: "orders", name: "Orders & Passes", icon: ShoppingBag, iconGradient: "from-rose-500 to-rose-800", to: "/orders",
@@ -242,55 +248,78 @@ export function CustomerShell({
             </button>
           </div>
 
-          {/* Row 1 Center: Core Navigation (Food, KingPay, Orders) */}
-          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1 sm:gap-2">
+          {/* Row 1 Center: Core Navigation (Food Delivery, AI Tutor, Jobs, Travel) */}
+          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-none py-0.5">
+            {/* 1. Food Delivery */}
             <Link
               to="/"
               className={cn(
-                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-bold transition shadow-2xs no-underline",
+                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0",
                 path === "/" || path.startsWith("/r/") || path.startsWith("/delivery")
                   ? isDark
-                    ? "border-amber-400 bg-amber-500/20 text-amber-200 font-black ring-1 ring-amber-400/40"
-                    : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                    ? "border-amber-400 bg-gradient-to-b from-amber-500/30 to-amber-600/20 text-amber-200 ring-1 ring-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
+                    : "border-amber-500 bg-gradient-to-b from-amber-100 to-amber-200/80 text-amber-950 ring-1 ring-amber-400 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
                   : isDark
-                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
-                    : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-amber-400/40"
+                    : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400/60"
               )}
             >
-              <UtensilsCrossed className={cn("size-3.5", isDark ? "text-amber-400" : "text-amber-600")} />
-              <span>Food Delivery</span>
+              <UtensilsCrossed className={cn("size-3.5 shrink-0", isDark ? "text-amber-400" : "text-amber-600")} />
+              <span>Food<span className="hidden xs:inline"> Delivery</span></span>
             </Link>
+
+            {/* 2. AI Tutor */}
             <Link
-              to="/kingpay"
+              to="/tutor"
               className={cn(
-                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-bold transition shadow-2xs no-underline",
-                path.startsWith("/kingpay") || path.startsWith("/king-pay")
+                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0",
+                path.startsWith("/tutor") && !path.startsWith("/tutor-jobs")
                   ? isDark
-                    ? "border-yellow-400 bg-yellow-500/20 text-yellow-200 font-black ring-1 ring-yellow-400/40"
-                    : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                    ? "border-emerald-400 bg-gradient-to-b from-emerald-500/30 to-emerald-600/20 text-emerald-200 ring-1 ring-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
+                    : "border-emerald-500 bg-gradient-to-b from-emerald-100 to-emerald-200/80 text-emerald-950 ring-1 ring-emerald-400 shadow-[0_2px_8px_rgba(16,185,129,0.2)]"
                   : isDark
-                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
-                    : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-emerald-400/40"
+                    : "border-slate-200 bg-white/90 hover:bg-emerald-50/80 text-gray-800 hover:border-emerald-400/60"
               )}
             >
-              <Crown className={cn("size-3.5", isDark ? "text-yellow-400" : "text-amber-600")} />
-              <span>KingPay UPI</span>
+              <GraduationCap className={cn("size-3.5 shrink-0", isDark ? "text-emerald-400" : "text-emerald-600")} />
+              <span>AI Tutor</span>
             </Link>
+
+            {/* 3. Jobs */}
             <Link
-              to="/orders"
+              to="/tutor-jobs"
               className={cn(
-                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-bold transition shadow-2xs no-underline",
-                path.startsWith("/orders")
+                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0",
+                path.startsWith("/tutor-jobs")
                   ? isDark
-                    ? "border-rose-400 bg-rose-500/20 text-rose-200 font-black ring-1 ring-rose-400/40"
-                    : "border-amber-500 bg-amber-50 text-amber-950 font-black shadow-xs ring-1 ring-amber-400"
+                    ? "border-purple-400 bg-gradient-to-b from-purple-500/30 to-purple-600/20 text-purple-200 ring-1 ring-purple-400/50 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
+                    : "border-purple-500 bg-gradient-to-b from-purple-100 to-purple-200/80 text-purple-950 ring-1 ring-purple-400 shadow-[0_2px_8px_rgba(168,85,247,0.2)]"
                   : isDark
-                    ? "border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-white/30"
-                    : "border-amber-300/80 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400"
+                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-purple-400/40"
+                    : "border-slate-200 bg-white/90 hover:bg-purple-50/80 text-gray-800 hover:border-purple-400/60"
               )}
             >
-              <ShoppingBag className={cn("size-3.5", isDark ? "text-rose-400" : "text-amber-600")} />
-              <span>Orders</span>
+              <Briefcase className={cn("size-3.5 shrink-0", isDark ? "text-purple-400" : "text-purple-600")} />
+              <span>Jobs</span>
+            </Link>
+
+            {/* 4. Travel */}
+            <Link
+              to="/travel"
+              className={cn(
+                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0",
+                path.startsWith("/travel")
+                  ? isDark
+                    ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-sky-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
+                    : "border-sky-500 bg-gradient-to-b from-sky-100 to-sky-200/80 text-sky-950 ring-1 ring-sky-400 shadow-[0_2px_8px_rgba(14,165,233,0.2)]"
+                  : isDark
+                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-sky-400/40"
+                    : "border-slate-200 bg-white/90 hover:bg-sky-50/80 text-gray-800 hover:border-sky-400/60"
+              )}
+            >
+              <Plane className={cn("size-3.5 shrink-0", isDark ? "text-sky-400" : "text-sky-600")} />
+              <span>Travel</span>
             </Link>
           </nav>
 
