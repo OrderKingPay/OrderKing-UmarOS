@@ -21,6 +21,36 @@ if (-not (Test-Path $nodeExe)) {
 }
 
 switch ($Action.ToLower()) {
+    "test" {
+        Write-Host "==========================================================" -ForegroundColor Cyan
+        Write-Host " Qualifying OrderKing Ecosystem (Running Test Suites)..." -ForegroundColor Yellow
+        Write-Host "==========================================================" -ForegroundColor Cyan
+        
+        Write-Host "`n[1/4] Testing HDmaster..." -ForegroundColor Cyan
+        Push-Location HDmaster; pnpm test; Pop-Location
+
+        Write-Host "`n[2/4] Testing OrderKing Customers..." -ForegroundColor Cyan
+        Push-Location orderking-customers; pnpm test; Pop-Location
+
+        Write-Host "`n[3/4] Testing OrderKing Partners..." -ForegroundColor Cyan
+        Push-Location orderking-partners; pnpm test; Pop-Location
+
+        Write-Host "`n[4/4] Testing OrderKing Riders..." -ForegroundColor Cyan
+        Push-Location orderking-riders; pnpm test; Pop-Location
+
+        Write-Host "`n==========================================================" -ForegroundColor Green
+        Write-Host " All Ecosystem Tests Qualified Successfully!" -ForegroundColor Green
+        Write-Host "==========================================================" -ForegroundColor Green
+    }
+    "all" {
+        Write-Host "==========================================================" -ForegroundColor Cyan
+        Write-Host " OrderKing Full Qualification & Live Deployment Pipeline" -ForegroundColor Yellow
+        Write-Host "==========================================================" -ForegroundColor Cyan
+        
+        & "$PSScriptRoot\deploy.ps1" -Action test
+        & "$PSScriptRoot\deploy.ps1" -Action build
+        & "$PSScriptRoot\deploy.ps1" -Action deploy
+    }
     "start" {
         Write-Host "Starting All OrderKing Production Preview Servers..." -ForegroundColor Cyan
         & "$PSScriptRoot\START_ALL_PREVIEWS.ps1"
@@ -106,8 +136,10 @@ switch ($Action.ToLower()) {
         Write-Host "   Preview:                https://apps-integration.pages.dev" -ForegroundColor Gray
         Write-Host ""
         Write-Host " Available PowerShell Actions:" -ForegroundColor Yellow
+        Write-Host "   .\deploy.ps1 -Action all     -> Test, qualify, build, and deploy live to websites" -ForegroundColor Green
         Write-Host "   .\deploy.ps1 -Action deploy  -> Redeploy all apps live to Cloudflare Pages" -ForegroundColor Cyan
         Write-Host "   .\deploy.ps1 -Action build   -> Rebuild all 4 production bundles" -ForegroundColor Cyan
+        Write-Host "   .\deploy.ps1 -Action test    -> Run all test suites across the ecosystem" -ForegroundColor Cyan
         Write-Host "   .\deploy.ps1 -Action start   -> Launch all 4 local preview servers" -ForegroundColor Cyan
         Write-Host "   .\deploy.ps1 -Action dev     -> Run apps in dev mode" -ForegroundColor Cyan
         Write-Host "==========================================================" -ForegroundColor Cyan
