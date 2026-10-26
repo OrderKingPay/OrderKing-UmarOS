@@ -114,7 +114,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
                   1-Tap Instant Checkout
                 </h2>
                 <span className="rounded-full bg-emerald-100 border border-emerald-300 px-2 py-0.2 text-[9px] font-black uppercase text-emerald-800">
-                  0% Hidden Fee
+                  Itemized Pricing
                 </span>
               </div>
               <p className="text-[11px] text-gray-600 font-medium mt-0.5">
@@ -244,7 +244,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             </span>
           </div>
 
-          {/* 4. Platform Fee (Guaranteed Zero Hidden Fee) */}
+          {/* 4. Platform Fee (Itemized Standard Fee) */}
           <div className="flex items-center justify-between text-xs bg-emerald-50/70 p-2 rounded-xl border border-emerald-200/60">
             <div className="flex items-center gap-1.5">
               <Crown className="size-3 text-emerald-700 shrink-0" />
@@ -374,7 +374,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
 
           <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-stone-500">
             <ShieldCheck className="size-3 text-emerald-600" />
-            <span>256-Bit SSL Encrypted · 100% Chef Direct Handover Guarantee</span>
+            <span>256-Bit SSL Encrypted · Direct Chef Handover</span>
           </div>
         </div>
       </div>

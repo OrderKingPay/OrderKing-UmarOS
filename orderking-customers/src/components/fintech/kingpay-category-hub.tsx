@@ -96,7 +96,7 @@ function UpiQrGeneratorTool() {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-black uppercase bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2.5 py-1 rounded-full">
-            0% Gateway Surcharge
+            Direct NPCI UPI Transfer
           </span>
         </div>
       </div>

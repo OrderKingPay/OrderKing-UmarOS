@@ -129,7 +129,7 @@ export function AiMediaStudioModal({
   const [multiScenes, setMultiScenes] = useState<Array<{ title: string; prompt: string; duration: number }>>([
     { title: "Scene 1: The Problem", prompt: "Frustrated customer waiting 60 minutes for cold food delivery from traditional apps in rain", duration: 15 },
     { title: "Scene 2: OrderKing Hero", prompt: "Golden futuristic OrderKing drone descends with steaming hot food in under 12 minutes", duration: 25 },
-    { title: "Scene 3: KingPay Zero Fees", prompt: "Restaurant owner checks phone showing ₹0 commission fee and instant UPI bank settlement", duration: 20 },
+    { title: "Scene 3: KingPay Direct UPI", prompt: "Restaurant owner checks phone showing direct instant UPI bank settlement", duration: 20 },
     { title: "Scene 4: Call To Action", prompt: "Family enjoying feast together, OrderKing logo floating in 8K gold with 50% off first order banner", duration: 20 },
   ]);
 
@@ -752,7 +752,7 @@ export function AiMediaStudioModal({
                   className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs py-5 shadow-xl"
                 >
                   {isGenerating ? <RefreshCw className="size-4 mr-2 animate-spin" /> : <Film className="size-4 mr-2" />}
-                  <span>{isGenerating ? "Stitching Multi-Scene Masterpiece..." : "Stitch & Render Long Commercial Video (100% Free)"}</span>
+                  <span>{isGenerating ? "Stitching Multi-Scene Masterpiece..." : "Stitch & Render Long Commercial Video"}</span>
                 </Button>
               </div>
 

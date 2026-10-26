@@ -113,14 +113,14 @@ export function BusBookingEngine({
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-300">
                 <Sparkles className="size-3 text-rose-400" />
-                Volvo Multi-Axle · Scania Diamond · NueGo Electric · 0% OTA Markups
+                Volvo Multi-Axle · Scania Diamond · NueGo Electric · Verified Carrier Fleet
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
             <ShieldCheck className="size-4" />
-            <span>₹0 Booking Surcharge Guaranteed</span>
+            <span>Standard Road Tariff</span>
           </div>
         </div>
 
@@ -242,7 +242,7 @@ export function BusBookingEngine({
               Verified Luxury Buses ({quotes.length})
             </h3>
             <span className="text-xs text-emerald-700 font-bold bg-emerald-100 px-2.5 py-0.5 rounded-full">
-              ₹0 RedBus Convenience Fee
+              Standard Bus Ticket Tariff
             </span>
           </div>
 
@@ -439,7 +439,7 @@ export function BusBookingEngine({
                 </span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-slate-600">Total Billed (0% Fee):</span>
+                <span className="font-bold text-slate-600">Total Billed:</span>
                 <span className="font-mono font-black text-slate-900 text-sm">
                   {formatPaise((currentQuote.baseFarePaise + currentQuote.carrierTaxesPaise) * selectedSeatIds.length)}
                 </span>

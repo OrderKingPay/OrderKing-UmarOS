@@ -71,7 +71,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
                 Royal Gastronomy
               </h3>
               <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
-                Curated dining & 100% direct chef handover with real-time temperature tracking at 82°C.
+                Curated dining & 100% direct chef handover with insulated thermal transport.
               </p>
             </div>
             <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-amber-400 group-hover:translate-x-1 transition-transform">

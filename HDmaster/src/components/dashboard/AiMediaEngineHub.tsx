@@ -163,17 +163,17 @@ const BOUNTY_SCRIPT_PRESETS = [
   },
   {
     id: "bounty_b2b_margin_liberation",
-    title: "Restaurant Owner Margin Liberation (0% Commission)",
+    title: "Restaurant Owner Direct Ordering Spotlight",
     targetAudience: "Restaurant Owners bleeding 28-32% margins",
     rewardInr: 0,
-    script: `Attention all restaurant owners bleeding 28% to 32% of your hard-earned revenue to Dominant Legacy Aggregators: Stop funding your competitor's marketing! OrderKing gives you ₹0 setup fee, 0% commission, and direct instant UPI payouts deposited directly into your bank account. Keep 100% of your earnings. Claim your verified kitchen listing on OrderKing in 60 seconds at the link below.`,
+    script: `Attention all restaurant owners bleeding 28% to 32% of your hard-earned revenue to Dominant Legacy Aggregators: Stop funding your competitor's marketing! OrderKing gives you direct online ordering and instant UPI payouts deposited directly into your bank account. Transparent settlement. Claim your verified kitchen listing on OrderKing in 60 seconds at the link below.`,
   },
   {
     id: "bounty_receipt_shock",
     title: "Aggregator Receipt Shock (Viral Expose)",
     targetAudience: "Smart Consumers looking for bill transparency",
     rewardInr: 150,
-    script: `Did you know that a Butter Chicken on Dominant Legacy Aggregators costs ₹380, but the exact same restaurant only sells it for ₹280? Where did that extra ₹100 go? Straight to corporate aggregator pockets. OrderKing connects you directly with the kitchen at actual menu prices with zero markup, plus a ₹150 welcome bounty. Choose OrderKing today and order direct!`,
+    script: `Did you know that a Butter Chicken on Dominant Legacy Aggregators costs ₹380, but the exact same restaurant only sells it for ₹280? Where did that extra ₹100 go? Straight to corporate aggregator pockets. OrderKing connects you directly with the kitchen at authentic menu prices. Choose OrderKing today and order direct!`,
   },
 ];
 

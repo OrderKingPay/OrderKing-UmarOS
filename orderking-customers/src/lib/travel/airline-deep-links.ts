@@ -195,7 +195,7 @@ export function buildOfficialAirlineDeepLink({
         departureDate: dateIso,
         passengers: paxCount,
         cabinClass,
-        disclaimer: "Opens official SpiceJet portal with direct airline fare options and zero convenience markup.",
+        disclaimer: "Opens official SpiceJet portal with direct airline fare options and direct airline fare options.",
       };
 
     default:

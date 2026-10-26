@@ -1353,7 +1353,7 @@ function OnboardingPage() {
               <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
                 <div className="flex items-center gap-1.5 font-semibold text-xs text-emerald-400">
                   <BadgeCheck className="size-4" />
-                  <span>0% Dine-In Commission</span>
+                  <span>Table Reservation Model</span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-relaxed">
                   100% of customer spend retained for table orders &amp; dining room. Honest 28% delivery fulfillment.
@@ -1457,7 +1457,7 @@ function OnboardingPage() {
                     <div className="space-y-1">
                       <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
                         <span className="size-1.5 rounded-full bg-emerald-400" />
-                        Clause 3: Delivery Fulfillment Commission &amp; 0% Dine-In Commission
+                        Clause 3: Delivery Fulfillment Commission &amp; Table Reservation Policy
                       </h4>
                       <p className="text-slate-400 leading-relaxed pl-3">
                         Order King applies an honest standard 28% delivery fulfillment commission (customizable per outlet down to negotiated partner rates) that directly funds delivery fleet payouts, dispatch logistics, and customer support. Additionally, Order King guarantees custom commission on all Dine-In and Table Reservations, ensuring restaurants retain 100% of customer dining room spend.

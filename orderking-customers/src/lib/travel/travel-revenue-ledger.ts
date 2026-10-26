@@ -4,7 +4,7 @@
  * and Platform Convenience Fees in Supabase & Local Database.
  *
  * Guarantees:
- * - 0% Platform Convenience Markup to the end-user (OrderKing Sovereign Travel Mandate)
+ * - Standard Sovereign Travel Desk Fee Structure
  * - Dynamic Partner Affiliate / B2B Commission (200 - 600 bps) credited to PLATFORM_FEE_REVENUE
  * - Double-entry balanced ledger entries (DEBIT from Clearing / Partner Receivable, CREDIT to Revenue)
  */

@@ -373,6 +373,19 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
               </>
             )}
           </div>
+
+          {/* Statutory Tax Compliance (Trade Name: Orderkingpay) */}
+          <div className="rounded-xl border border-slate-200 bg-slate-100/90 p-3 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-600 gap-1.5">
+            <div className="flex items-center gap-2">
+              <span className="font-black text-slate-800">Orderkingpay</span>
+              <span className="px-1.5 py-0.5 rounded bg-white border border-slate-300 font-mono text-[10px] font-bold text-slate-900">
+                GSTIN: 18AFXPH9838M1Z9
+              </span>
+            </div>
+            <div className="text-right text-[10px] text-slate-500">
+              Tax Invoice CGST/SGST Act · Sribhumi, Assam - 788710
+            </div>
+          </div>
         </div>
 
         {/* Footer Actions */}

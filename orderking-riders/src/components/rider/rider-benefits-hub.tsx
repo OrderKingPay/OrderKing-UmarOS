@@ -145,7 +145,7 @@ export function PeriodLeaveModal({
 
         <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-200 leading-relaxed space-y-1">
           <p className="font-semibold text-rose-300">
-            🌸 100% Protected Welfare Guarantee
+            🌸 Welfare Protection Policy
           </p>
           <p className="text-[11px] text-rose-200/90">
             Take time off during your cycle without any penalty. Zero impact on your acceptance rate, streak multipliers, or tier ranking.
@@ -614,7 +614,7 @@ export function RiderBenefitsHub({
               </div>
             </div>
             <Badge tone="online" className="shrink-0">
-              Statutory 100% Protection
+              Statutory Welfare Protection
             </Badge>
           </div>
 
@@ -647,7 +647,7 @@ export function RiderBenefitsHub({
                 {RIDER_AFFILIATE_PARTNERS.insurance.opdHealthCard}
               </p>
               <p className="text-[11px] text-muted-foreground">
-                Unlimited 24/7 tele-consultations + 20% pharmacy discount
+                Tele-consultation benefit + pharmacy discount
               </p>
             </div>
           </div>
@@ -768,7 +768,7 @@ export function RiderBenefitsHub({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 p-3 space-y-1">
               <span className="font-bold text-emerald-800 dark:text-emerald-300">
-                1. Scheduled Weekly Payout (100% Free)
+                1. Scheduled Weekly Payout
               </span>
               <p className="text-muted-foreground">
                 {RIDER_AFFILIATE_PARTNERS.instantCashout.scheduledSettlement}. standard fees or commissions deducted.
@@ -795,7 +795,7 @@ export function RiderBenefitsHub({
               <Coffee className="size-4 text-amber-600" />
               <span>Designated Rider Rest Points &amp; Fast Charging Hubs</span>
             </h3>
-            <Badge tone="online" className="text-[10.5px]">100% Free Amenities</Badge>
+            <Badge tone="online" className="text-[10.5px]">Partner Hub Amenities</Badge>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

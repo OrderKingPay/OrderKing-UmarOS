@@ -390,7 +390,7 @@ function SelfServicePayoutCalculator() {
               </div>
             ) : null}
             <div className="flex justify-between border-t border-border pt-1.5 font-bold text-sm text-foreground">
-              <dt>Guaranteed Order Payout (excl. Customer Tip)</dt>
+              <dt>Base Floor Order Payout (excl. Customer Tip)</dt>
               <dd className="font-mono text-emerald-600 dark:text-emerald-400">
                 {formatPaise(totalEstimatedPaise)}
               </dd>
@@ -1826,7 +1826,7 @@ function OfferCard({
         </div>
       </div>
 
-      {/* Guaranteed Earnings Headline Banner in Obsidian Gold */}
+      {/* Standard Earnings Floor Banner in Obsidian Gold */}
       <div className="rounded-2xl border border-[#E5A93C]/40 bg-gradient-to-r from-amber-500/15 via-[#E5A93C]/20 to-amber-700/15 p-4 shadow-inner">
         <div className="flex items-center justify-between">
           <div>
@@ -1881,7 +1881,7 @@ function OfferCard({
           <p className="text-[9px] text-muted-foreground">Kitchen SLA</p>
         </div>
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Guaranteed</p>
+          <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Floor Fare</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-emerald-500 dark:text-emerald-300">{formatPaise(offer.expectedPayoutPaise)}</p>
           <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">custom commission</p>
         </div>

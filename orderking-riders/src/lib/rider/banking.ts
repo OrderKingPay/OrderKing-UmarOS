@@ -64,17 +64,13 @@ export async function executeRiderRazorpayXPayout(
     ? "IMPS"
     : "NEFT";
 
-  // When live API credentials are not provided (e.g. mock test environment), return safe simulation
+  // Strict Fail-Closed Zero-Simulation Gate
   if (!keyId || !keySecret) {
-    const simRef = `SIM-${Date.now().toString(36).toUpperCase()}`;
-    return {
-      success: true,
-      status: "processed",
-      payoutId: `pout_sim_${req.referenceId}`,
-      utr: simRef,
-      reference: req.referenceId,
-      mode,
-    };
+    throw new RiderError(
+      "GATEWAY_NOT_CONFIGURED",
+      "RazorpayX banking payout gateway credentials are not configured on the server",
+      503
+    );
   }
 
   const fundAccount = isUpi

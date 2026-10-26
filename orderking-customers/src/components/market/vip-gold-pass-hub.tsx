@@ -39,7 +39,7 @@ export function VipGoldPassHub({
     },
     {
       icon: <Zap className="size-5 text-amber-500" />,
-      title: "No Surge Fee Guarantee",
+      title: "Standard Delivery Priority",
       description: "Zero rain surge and zero peak festival surge charges regardless of weather",
     },
     {
@@ -176,7 +176,7 @@ export function VipGoldPassHub({
         <div className="border-t border-border bg-surface px-5 py-3.5 flex items-center justify-between">
           <div>
             <p className="text-[11px] text-muted">Instant Activation</p>
-            <p className="font-bold text-xs text-fg">100% Money-Back in 7 Days</p>
+            <p className="font-bold text-xs text-fg">7-Day Satisfaction Review</p>
           </div>
           <Button onClick={handleSubscribe} className="bg-amber-600 hover:bg-amber-700 text-white font-bold gap-1.5">
             <Crown className="size-4" /> {isMember ? "Renew VIP Pass" : "Join VIP Gold"}

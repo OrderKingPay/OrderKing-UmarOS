@@ -394,7 +394,7 @@ export function MetaOmnichannelHub({
             <p className="text-sm text-slate-600 max-w-3xl">
               Automated geospatial restaurant acquisition radar. Forcefully reaches restaurant owners across
               Instagram Direct, Facebook Messenger, and WhatsApp Cloud API within targeted GPS perimeters to pitch
-              OrderKing's Zero-Fee and 0% Commission direct ordering infrastructure.
+              OrderKing direct ordering infrastructure.
             </p>
           </div>
 
@@ -1349,7 +1349,7 @@ export function MetaOmnichannelHub({
                   </div>
                   <div className="flex items-center gap-1.5 text-slate-700">
                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                    <span>0% Commission (Keep 100% GMV)</span>
+                    <span>Direct Ordering (Direct GMV Settlement)</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-slate-700">
                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
@@ -1475,7 +1475,7 @@ export function MetaOmnichannelHub({
                         rel="noreferrer"
                         className="block text-center rounded-md bg-blue-600 text-white py-1.5 text-xs font-bold hover:bg-blue-700 shadow-xs transition-colors"
                       >
-                        Claim 0% Commission Portal &rarr;
+                        Claim Direct Ordering Portal &rarr;
                       </a>
                     </div>
                   </div>

@@ -259,7 +259,7 @@ export function CheckoutUpsellEngine({
           <ShieldCheck className="size-3.5" />
           1-Click Instant Addition • Live Bill Calculation
         </span>
-        <span className="font-medium">100% Kitchen Fresh • Zero Artificial Pricing</span>
+        <span className="font-medium">Kitchen Fresh • Authentic Menu Rates</span>
       </div>
     </section>
   );

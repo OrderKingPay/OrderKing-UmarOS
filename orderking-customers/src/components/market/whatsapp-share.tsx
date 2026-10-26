@@ -29,7 +29,7 @@ export function WhatsAppShare({
     if (variant === "restaurant") {
       const restName = restaurantName || "OrderKing Partner Kitchen";
       const restUrl = restaurantSlug ? `${origin}/r/${restaurantSlug}?ref=${referralCode}` : `${origin}?ref=${referralCode}`;
-      const message = `🔥 Check out *${restName}*${cuisine ? ` (${cuisine})` : ""} on OrderKing!\n\nOrder with my link to get 50% OFF (up to ₹100) on your first order: ${restUrl}\n\nFast delivery in ~20 mins, 0% menu markup! 🚀`;
+      const message = `🔥 Check out *${restName}*${cuisine ? ` (${cuisine})` : ""} on OrderKing!\n\nOrder with my link to get 50% OFF (up to ₹100) on your first order: ${restUrl}\n\nFast direct delivery from top kitchens! 🚀`;
       return {
         title: `Order from ${restName} on OrderKing`,
         text: message,

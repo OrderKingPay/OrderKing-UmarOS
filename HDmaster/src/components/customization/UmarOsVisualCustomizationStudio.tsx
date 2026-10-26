@@ -1827,7 +1827,7 @@ export function UmarOsVisualCustomizationStudio({
                   )}
                   style={{ backgroundColor: palette.background }}
                 >
-                  {/* Phone Status Bar Mock */}
+                  {/* Phone Status Bar Frame */}
                   <div className="h-6 bg-slate-900 flex items-center justify-between px-4 text-[10px] text-white font-mono">
                     <span>9:41 AM</span>
                     <div className="flex items-center gap-1.5">
@@ -2396,7 +2396,7 @@ export function UmarOsVisualCustomizationStudio({
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-slate-900">Free Delivery Cart Threshold</span>
-                      <p className="text-[10px] text-slate-500">Orders above this amount receive 100% free delivery</p>
+                      <p className="text-[10px] text-slate-500">Orders above this amount receive complimentary delivery</p>
                     </div>
                     <span className="font-mono text-sm font-black text-emerald-600">₹{freeDeliveryCartThresholdRupees}</span>
                   </div>

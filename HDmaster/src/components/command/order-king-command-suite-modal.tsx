@@ -293,7 +293,7 @@ export function OrderKingCommandSuiteModal({
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900">
                     <span>Ranking Engine Weighting</span>
-                    <span className="font-mono font-bold text-white">40% Speed + 30% Rating + 30% 0% Markup</span>
+                    <span className="font-mono font-bold text-white">40% Speed + 30% Rating + 30% Customer Value</span>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900">
                     <span>Zero-Markup Enforcement</span>

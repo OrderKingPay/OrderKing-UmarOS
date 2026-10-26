@@ -189,7 +189,7 @@ function OrderDetailPage() {
     ON_THE_WAY: t("orders.onTheWay"),
     DELIVERED: t("orders.delivered"),
     CANCELLED: t("orders.cancelled"),
-    CANCELLED_BY_CUSTOMER: "Cancelled (100% Refunded)",
+    CANCELLED_BY_CUSTOMER: "Cancelled (Wallet Refund Credited)",
   };
 
   return (
@@ -364,7 +364,7 @@ function OrderDetailPage() {
                   🛵
                 </span>
                 <span className="text-sm font-black text-stone-900">
-                  Live Resilient Tracking (Zero API Keys)
+                  Live Map Tracking
                 </span>
               </div>
               <span className="rounded-full bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 text-[10px] font-black text-emerald-800 uppercase tracking-wider">
@@ -402,7 +402,7 @@ function OrderDetailPage() {
               <span className="text-base">📸</span>
               <span>Review Dishes &amp; Earn ₹25 Gold Reward</span>
               <span className="rounded-full bg-stone-950 text-amber-300 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider">
-                ₹25 Free
+                ₹25 Discount
               </span>
             </Button>
             <DishReviewModal
@@ -574,7 +574,7 @@ function OrderDetailPage() {
                       "Polite & helpful rider 🛵",
                       "Leak-proof packaging 📦",
                       "Authentic royal taste 🍗",
-                      "0% menu markup savings 💰",
+                      "Direct kitchen savings 💰",
                     ].map((tag) => {
                       const isSelected = selectedTags.includes(tag);
                       return (
@@ -793,8 +793,8 @@ function OrderDetailPage() {
                   </label>
                   <div className="grid grid-cols-3 gap-1.5">
                     {[
-                      { id: "REFUND", label: "⚡ 100% Instant Refund", desc: "Credited to KingPay Wallet" },
-                      { id: "REDELIVERY", label: "🛵 Free Priority Redelivery", desc: "Fresh hot dish in 15m" },
+                      { id: "REFUND", label: "⚡ Instant Wallet Refund", desc: "Credited to KingPay Wallet" },
+                      { id: "REDELIVERY", label: "🛵 Priority Redelivery", desc: "Fresh hot dish priority dispatch" },
                       { id: "HDMASTER", label: "👑 HDmaster Escalation", desc: "Direct Founder Review" },
                     ].map((res) => (
                       <button
@@ -844,7 +844,7 @@ function OrderDetailPage() {
               </div>
             </div>
             <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-              Zero Friction
+              Direct Resolution
             </span>
           </div>
           <div className="flex items-center gap-2">

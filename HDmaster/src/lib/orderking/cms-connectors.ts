@@ -192,7 +192,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
 
   // 6. Growth, Referrals & Loyalty
   referralHeadline: "Invite Neighborhood Friends & Earn Cash Credits",
-  referralShareBodyTemplate: "Order authentic food with zero markup and zero surge pricing on OrderKing: {LINK}",
+  referralShareBodyTemplate: "Order authentic food directly from local kitchens on OrderKing: {LINK}",
   goldPassMembershipTitle: "Gold Priority Pass: Zero-Surge Guarantee & Priority Dispatch Allocation",
   dailySpecialsSectionTitle: "Curated Chef Specials & Direct-from-Kitchen Selections",
 
@@ -253,7 +253,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
 
   // 11. AI Telemarketing Connector (Bland.ai / Twilio Voice Autonomous Restaurant Pitching)
   connectorTelemarketingTitle: "Bland.ai / Twilio Voice (Autonomous Restaurant Pitching)",
-  connectorTelemarketingSubtitle: "Autonomous AI sales force that dials Indian restaurant owners, pitches the Zero-Setup-Fee and 0% commission direct ordering platform, handles common aggregator objections, and books onboarding walkthroughs without human sales reps.",
+  connectorTelemarketingSubtitle: "Autonomous AI sales force that dials Indian restaurant owners, pitches the direct ordering platform, handles common aggregator objections, and books onboarding walkthroughs without human sales reps.",
   connectorTelemarketingToggleLabel: "AI Sales Engine Active",
   connectorTelemarketingTestBtnText: "Test AI Voice Dial Probe",
   connectorTelemarketingPolicyTitle: "TRAI Telemarketing & DND Regulatory Compliance Guard",
@@ -271,7 +271,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
 
   // 13. Meta Omnichannel Geo-Blast Engine (Meta Graph API v21.0 & WhatsApp Cloud API)
   connectorMetaOmnichannelTitle: "Official Meta Graph API & WhatsApp Cloud API Engine",
-  connectorMetaOmnichannelSubtitle: "Omnichannel automated restaurant acquisition radar. Direct Messaged geo-blasts across Instagram Direct, Facebook Messenger, and WhatsApp Cloud API to onboard kitchens with Zero-Fee and 0% commission propositions.",
+  connectorMetaOmnichannelSubtitle: "Omnichannel automated restaurant acquisition radar. Direct Messaged geo-blasts across Instagram Direct, Facebook Messenger, and WhatsApp Cloud API to onboard kitchens with direct ordering propositions.",
   connectorMetaOmnichannelToggleLabel: "Meta Omnichannel Geo-Blast Active",
   connectorMetaOmnichannelTestBtnText: "Verify Meta Graph API Handshake",
   connectorMetaOmnichannelPolicyTitle: "Meta Platform Terms & Commercial Business Messaging Compliance",
@@ -1027,12 +1027,12 @@ export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
     voiceTemperature: 0.7,
     pitchObjective: "zero_setup_fee_acquisition",
     firstSentence: "Hello! Am I speaking with the restaurant owner or general manager? Quick question regarding your online delivery commission rates.",
-    systemPrompt: `You are Kabir, Senior Restaurant Growth Director at OrderKing (India's premier 0% commission direct restaurant ordering network).
+    systemPrompt: `You are Kabir, Senior Restaurant Growth Director at OrderKing (India's premier direct restaurant ordering network).
 You are calling Indian independent restaurant owners, cloud kitchens, and QSR managers to pitch OrderKing's Zero-Setup-Fee direct online ordering platform.
 
 CORE VALUE PROPOSITION:
 1. ZERO SETUP FEE: ₹0 onboarding cost, ₹0 upfront software fee, ₹0 tablet hardware lock-in.
-2. 0% COMMISSION: Unlike legacy aggregators charging 28% to 32% on every single order, OrderKing charges 0% commission. The restaurant keeps 100% of their food revenue.
+2. DIRECT SETTLEMENT: Unlike legacy aggregators charging 28% to 32% on every single order, OrderKing provides transparent low take-rates and instant UPI settlement. The restaurant keeps their hard-earned revenue.
 3. DIRECT INSTANT UPI SETTLEMENTS: Payments settle directly into the restaurant's ICICI/HDFC/SBI bank account within seconds via NPCI UPI rails—no 7-day aggregator withholding.
 4. FREE DIGITAL MENU & QR SYSTEM: OrderKing generates dynamic QR table menus, WhatsApp order drops, and a branded white-label ordering portal in under 15 minutes.
 5. RESTAURANT OWNS CUSTOMER DATA: Full access to diner phone numbers and order history for repeat marketing, unlike aggregators who hide customer identities.
@@ -1043,7 +1043,7 @@ OBJECTION HANDLING PROTOCOL:
 - If owner says "Is there any hidden monthly fee or AMC?":
   Respond: "Absolutely zero hidden fees. There is no monthly rental, no setup charge, and no annual maintenance contract. We only make money when you thrive through optional micro-fees on value-added marketing tools."
 - If owner says "Who delivers the food?":
-  Respond: "You can either use your existing staff riders, or toggle our 1-click on-demand fleet integration powered by Tier-1 Hyperlocal Fleet Network at direct pass-through rates with zero markup."
+  Respond: "You can either use your existing staff riders, or toggle our 1-click on-demand fleet integration powered by Tier-1 Hyperlocal Fleet Network at direct pass-through rates."
 - If owner is busy:
   Respond: "I completely understand you are managing service right now. Can I send a 2-minute overview video and sample digital menu directly to your WhatsApp number right now?"
 
@@ -1090,7 +1090,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     targetLocationLabel: "Connaught Place, New Delhi (Central Circle)",
     firstOrderGiftIncentiveInr: 150.0,
     campaignHeadline: "₹150 Fresh Food Credit Just Landed on Your Smartphone!",
-    campaignBody: "OrderKing direct from local kitchens with 0% markups. Use your ₹150 pre-loaded welcome voucher now.",
+    campaignBody: "OrderKing direct from local kitchens. Use your pre-loaded welcome voucher now.",
     ctaDeepLink: "orderking://order?gift=150&ref=carpet_bombing",
     adNetworkMode: "commercial_ad_network",
     thirdPartyAdvertiserMonetization: true,
@@ -1128,7 +1128,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     targetMessenger: true,
     targetWhatsapp: true,
     acquisitionHeadline: "Eliminate 30% Aggregator Commission • ₹0 Setup Fee Onboarding",
-    acquisitionPitchBody: "Hello {{restaurant_name}} Team! Why sacrifice 28-32% margins to dominant legacy aggregators? OrderKing delivers 0% commission direct online ordering with ₹0 setup fee and direct instant UPI bank settlements. We have pre-configured a branded digital menu for your kitchen at {{portal_claim_url}}. Claim your verified owner profile in 60 seconds.",
+    acquisitionPitchBody: "Hello {{restaurant_name}} Team! Why sacrifice 28-32% margins to dominant legacy aggregators? OrderKing delivers direct online ordering and direct instant UPI bank settlements. We have pre-configured a branded digital menu for your kitchen at {{portal_claim_url}}. Claim your verified owner profile in 60 seconds.",
     acquisitionCtaUrl: "https://orderking.delivery/partner-claim?ref=omnichannel_geoblast",
     acquisitionOfferCode: "ZERO_FEE_DIRECT_2026",
     dailyDmQuota: 500,
@@ -1190,7 +1190,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
         durationSeconds: 52,
         mp4Url: "https://assets.orderking.delivery/media/ai-renders/restaurant_owner_liberation_16x9.mp4",
         thumbnailUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
-        scriptSnippet: "Why hand over 32% of your hard-earned restaurant revenue? OrderKing offers ₹0 setup and 0% commission...",
+        scriptSnippet: "Why hand over 32% of your hard-earned restaurant revenue? OrderKing offers direct ordering and instant settlements...",
         bountyOfferInr: 0,
         status: "completed",
         createdAt: "2026-10-09T18:15:00.000Z",

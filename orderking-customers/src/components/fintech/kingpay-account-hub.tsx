@@ -199,7 +199,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
           <p className="text-xl font-black text-cyan-600 dark:text-cyan-400 mt-1 font-mono">
             ₹50,000
           </p>
-          <span className="text-[10px] text-emerald-600 font-bold">0% Interest 30 Days</span>
+          <span className="text-[10px] text-emerald-600 font-bold">30-Day Pay Later</span>
         </div>
       </div>
 

@@ -19,7 +19,7 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
   {
     id: "scan_qr",
     title: "Scan Any QR Code",
-    subtitle: "Pay any merchant or person via UPI (0% PG fee)",
+    subtitle: "Pay any merchant or person via UPI (Direct Bank Transfer)",
     category: "upi",
     icon: "📷",
     badge: "standard fee",
@@ -98,7 +98,7 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
   {
     id: "dth_recharge",
     title: "DTH Recharge (Tata Play, Airtel, Dish)",
-    subtitle: "Instant television pack renewal with zero charges",
+    subtitle: "Instant television pack renewal",
     category: "bills",
     icon: "📺",
     badge: "BBPS",
@@ -133,7 +133,7 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
     icon: "🌐",
     badge: "Fast Pay",
     actionType: "toast",
-    actionPayload: "Broadband biller ready with zero platform fees.",
+    actionPayload: "Broadband biller ready for instant recharge.",
   },
 
   // Autopay & Mandates
@@ -145,7 +145,7 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
     icon: "🔄",
     badge: "Auto standard fee",
     actionType: "toast",
-    actionPayload: "UPI Autopay active: Zero bounce fees and 100% on-time guarantee.",
+    actionPayload: "UPI Autopay active with automated bank execution.",
   },
   {
     id: "active_mandates",
@@ -202,10 +202,10 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
   {
     id: "pay_later",
     title: "KingPay Later (₹2,500 Instant Limit)",
-    subtitle: "0% interest for 30 days on food, grocery & recharges",
+    subtitle: "30-day revolving credit on food, grocery & recharges",
     category: "loans",
     icon: "⚡",
-    badge: "0% Interest",
+    badge: "30-Day PayLater",
     actionType: "pay_later",
   },
   {
@@ -214,7 +214,7 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
     subtitle: "Check your detailed credit report with zero impact on score",
     category: "loans",
     icon: "📊",
-    badge: "100% Free",
+    badge: "Verified Score",
     actionType: "toast",
     actionPayload: "Free credit score audit initiated. Score: 785 (Excellent).",
   },
@@ -232,10 +232,10 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
   {
     id: "train_tickets",
     title: "Train Tickets (IRCTC Authorized)",
-    subtitle: "Zero payment gateway fee on ConfirmTkt & IRCTC bookings",
+    subtitle: "Direct ticketing on ConfirmTkt & IRCTC bookings",
     category: "wealth",
     icon: "🚆",
-    badge: "Zero PG Fee",
+    badge: "IRCTC Authorized",
     actionType: "url",
     actionPayload: "https://confirmtkt.com?utm_source=orderking_affiliate",
   },

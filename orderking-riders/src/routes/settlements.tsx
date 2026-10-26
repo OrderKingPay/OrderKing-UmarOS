@@ -597,7 +597,7 @@ export function SettlementsDesk() {
             </p>
             <ul className="space-y-1.5 text-xs text-muted-foreground list-disc pl-4">
               <li>
-                <strong>Zero Platform Commission on Rider Earnings:</strong> 100% of your calculated delivery fare, incentives, and customer tips are remitted without platform service fee deductions.
+                <strong>Direct Rider Remittance:</strong> 100% of your calculated delivery fare, incentives, and customer tips are remitted without platform service fee deductions.
               </li>
               <li>
                 <strong>Income Proof for Bank Loans &amp; ITR-4:</strong> Use the{" "}

@@ -324,7 +324,7 @@ function SettlementsPage() {
                 <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
                   <Info className="size-3.5 text-slate-500" />
                   {selectedCycle === "STANDARD_WEEKLY"
-                    ? "Disbursed weekly on Wednesday for Monday 00:00:00 to Sunday 23:59:59 orders (0% early fee)."
+                    ? "Disbursed weekly on Wednesday for Monday 00:00:00 to Sunday 23:59:59 orders (Standard settlement)."
                     : "Available for instant T+1 payout of yesterday's net earnings for a nominal 0.5% liquidity fee."}
                 </p>
               </div>

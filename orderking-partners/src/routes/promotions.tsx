@@ -236,7 +236,7 @@ function PromotionsPage() {
             >
               <span>🍽️ Table QR Dine-In Ordering &amp; Viral Marketing Kit</span>
               <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-mono text-emerald-300">
-                0% Comm. Dine-In
+                Dine-In Desk
               </span>
             </button>
           </div>
@@ -693,7 +693,7 @@ function PromotionsPage() {
                 >
                   <option value="percent">Percentage Off (%)</option>
                   <option value="fixed">Flat Amount Off (₹)</option>
-                  <option value="bogo">Buy 1 Get 1 Free (BOGO)</option>
+                  <option value="bogo">Buy 1 Get 1 (BOGO)</option>
                   <option value="free_delivery">fast delivery Offer</option>
                 </select>
               </div>

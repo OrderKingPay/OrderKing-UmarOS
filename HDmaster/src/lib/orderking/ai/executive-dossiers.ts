@@ -345,7 +345,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     },
     ad_creative: {
       title: "OrderKing — Karimganj's Food Advanced-App 👑",
-      body: "🔥 Zero Markup on Food! Enjoy delicious Mutton Biryani, Fish Thali & Momos at exact restaurant prices + Win Real 24K Digital Gold on every order! Tap to Order Now.",
+      body: "🔥 Authentic Food at Direct Kitchen Rates! Enjoy delicious Mutton Biryani, Fish Thali & Momos at exact restaurant prices + Win Real 24K Digital Gold on every order! Tap to Order Now.",
       call_to_action_type: "ORDER_NOW",
       link: "https://orderking.in",
     },
@@ -357,7 +357,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     location_ids: ["1007787"], // Assam, India
     headlines: [
       "OrderKing Food Delivery",
-      "0% Markup on Food",
+      "Authentic Menu Pricing",
       "Karimganj Local Advanced-App",
       "Hot Biryani in 20 Mins",
       "Win 24K Gold Every Order",
@@ -387,7 +387,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
         },
         {
           timestamp: "0:05 - 0:15",
-          visual: "Zoom into screen comparison showing 0% markup and exact dine-in rates on OrderKing.",
+          visual: "Zoom into screen comparison showing exact dine-in rates on OrderKing.",
           audioScript: "Dominant Legacy Aggregators charge ₹320 for the exact same Biryani, but OrderKing gives it to you for ₹220 — original restaurant price!",
         },
         {

@@ -153,7 +153,7 @@ export function GrowthVaultView() {
             <div className="rounded-xl border border-purple-500/40 bg-purple-500/10 p-4 space-y-1">
               <span className="text-muted font-medium">Corporate Catering Margin</span>
               <p className="text-xl font-bold font-mono text-purple-300">
-                15.0% Guaranteed
+                15.0% Target Margin
               </p>
               <p className="text-[11px] text-muted">NIT Silchar, Assam Univ &amp; DC Office</p>
             </div>
@@ -283,7 +283,7 @@ export function GrowthVaultView() {
               <Panel title="Institutional Bulk Catering Pipeline">
                 <div className="space-y-3 text-xs">
                   <p className="text-muted text-[11px]">
-                    Direct corporate contracts yielding 15% guaranteed platform margin with zero food inflation.
+                    Direct corporate contracts yielding 15% target platform margin with transparent food tariffs.
                   </p>
 
                   <div className="space-y-1.5">

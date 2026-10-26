@@ -204,7 +204,7 @@ export function OrderKingPassbookReceipts({
             ₹0.00
           </span>
           <span className={`text-[10px] block mt-1 ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-            0% Gateway Fee on Direct UPI
+            Direct NPCI UPI Transfer
           </span>
         </div>
       </div>

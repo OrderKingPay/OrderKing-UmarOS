@@ -95,7 +95,7 @@ export function CabBookingEngine({
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
             <ShieldCheck className="size-4" />
-            <span>0% Surge Guarantee</span>
+            <span>Regulated Taxi Tariff</span>
           </div>
         </div>
 

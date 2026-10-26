@@ -2063,7 +2063,7 @@ function MarketingPage() {
                               dpiit: "DIPP123456",
                               bank: "SBI Karimganj (RTGS Direct Disbursal)",
                             },
-                            pitch: "0% commission food delivery & 2G offline resilience employing 50+ local youth.",
+                            pitch: "Direct food delivery & 2G offline resilience employing 50+ local youth.",
                           },
                           null,
                           2
@@ -4141,16 +4141,13 @@ function SettingsPage() {
           </span>
         </div>
         <p className="text-xs text-muted">
-          Toggle live verification mode to strip all "Sample" tags across customer apps for verified kitchens and display genuine operational hours and real GPS kitchen locations.
+          All verified kitchens display genuine operational hours, real GPS kitchen locations, and live authentic menus.
         </p>
         <div className="flex flex-wrap items-center gap-4">
-          <Button
-            size="sm"
-            variant={cur.sampleCatalogueBanner === false ? "primary" : "secondary"}
-            onClick={() => set("sampleCatalogueBanner" as any, !cur.sampleCatalogueBanner)}
-          >
-            Sample Banner: {cur.sampleCatalogueBanner === false ? "DISABLED (Live Clean)" : "ENABLED (Sample)"}
-          </Button>
+          <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
+            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Live Authentic Catalogue Active</span>
+          </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted">Launch Mode:</span>
             {(["development", "pilot", "live"] as const).map((mode) => (

@@ -34,7 +34,7 @@ export function GeoViralWidget() {
           Pool Orders in <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">{areaName}</span>!
         </h4>
         <p className="mt-2 text-sm text-gray-300 max-w-sm font-medium leading-relaxed">
-          Order food together with neighbors or office colleagues to enjoy <strong className="text-white">₹0 Delivery Fee</strong> on orders over ₹499 with 0% menu markup.
+          Order food together with neighbors or office colleagues to enjoy <strong className="text-white">Fast Delivery</strong> on orders over ₹499 with authentic menu rates.
         </p>
 
         <button 

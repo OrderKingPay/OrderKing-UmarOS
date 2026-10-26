@@ -1197,7 +1197,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
         </div>
 
         <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[9px] font-mono">
-          FREE &amp; UNLIMITED
+          AI Studio
         </Badge>
       </div>
 
@@ -2091,7 +2091,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
             size="sm"
             className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md"
             onClick={() => {
-              const pitch = `Respected Management at ${lead.businessName},\n\nTired of losing 28% margins to aggregators? OrderKing provides you with a turnkey white-label direct ordering app with 0% commission and direct UPI settlements.\n\nReview your custom solution and 50% advance invoice (₹${invoice.advanceRequiredInr.toLocaleString("en-IN")}) here:\n${invoice.upiPaymentLink}\n\nLet's schedule a 10-minute setup call today.`;
+              const pitch = `Respected Management at ${lead.businessName},\n\nTired of losing margins to aggregators? OrderKing provides you with a direct ordering app and instant direct UPI settlements.\n\nReview your custom solution and 50% advance invoice (₹${invoice.advanceRequiredInr.toLocaleString("en-IN")}) here:\n${invoice.upiPaymentLink}\n\nLet's schedule a 10-minute setup call today.`;
               void navigator.clipboard?.writeText(pitch);
               playAudioTone("ping");
               toast.success("Client WhatsApp pitch & invoice link copied to clipboard!");
@@ -2274,7 +2274,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
               Enterprise AI Studio {data.type === "image" ? "Image" : "Video"}
             </span>
           </div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">100% Free &amp; Unlimited</Badge>
+          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">AI Engine Active</Badge>
         </div>
         
         <div className="rounded-lg bg-surface-2 p-2 border border-border flex items-center justify-center min-h-[160px] overflow-hidden bg-black">
@@ -4182,7 +4182,7 @@ export function PremiumFounderAiChat({
               variant="ghost"
               onClick={() => setIsMediaStudioOpen(true)}
               className="h-8 px-3 rounded-full text-[12px] font-medium text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 transition-colors hidden sm:flex items-center gap-1.5"
-              title="Open Free Unlimited AI Image & Video Studio"
+              title="Open AI Image & Video Studio"
             >
               <Sparkles className="size-3.5" />
               <span>AI Studio</span>

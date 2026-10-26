@@ -124,7 +124,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
   );
   const [campaignBody, setCampaignBody] = useState<string>(
     activeConfig.campaignBody ||
-      "OrderKing direct from local master kitchens with 0% markup. Pre-loaded welcome dining balance activated."
+      "OrderKing direct from local master kitchens with authentic pricing. Welcome dining balance activated."
   );
   const [campaignDeepLink, setCampaignDeepLink] = useState<string>(
     activeConfig.ctaDeepLink || "orderking://order?gift=150&ref=carpet_bombing"

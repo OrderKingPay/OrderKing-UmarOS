@@ -107,7 +107,7 @@ export function FlightBookingEngine({
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Direct Airline Fare Comparison · Zero Convenience Fee Markup
+                Direct Airline Fare Comparison · Official Carrier Schedules
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-300">
                 <Sparkles className="size-3 text-sky-400" />
@@ -125,7 +125,7 @@ export function FlightBookingEngine({
             )}
             <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 rounded-full text-emerald-300 text-xs font-extrabold">
               <ShieldCheck className="size-4" />
-              <span>₹0 Platform Desk Fee Guaranteed</span>
+              <span>Official Air Tariff Standard</span>
             </div>
           </div>
         </div>
@@ -298,7 +298,7 @@ export function FlightBookingEngine({
           <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
             <span>Available Domestic Flights ({quotes.length})</span>
             <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-              Zero OTA Convenience Markup
+              Direct Carrier Net Tariff
             </span>
           </h3>
           <span className="text-xs text-slate-500 font-bold hidden sm:inline">
@@ -396,7 +396,7 @@ export function FlightBookingEngine({
                       {q.baggageAllowance}
                     </span>
                     <span className="flex items-center gap-1 text-emerald-600 font-bold">
-                      <CheckCircle2 className="size-3.5" /> ₹0 OrderKing Convenience Fee
+                      <CheckCircle2 className="size-3.5" /> Official Carrier Fare
                     </span>
                     <span className="flex items-center gap-1 text-amber-600 font-bold">
                       <Coins className="size-3.5" /> Earn 24K Gold or Food Cashback

@@ -105,7 +105,7 @@ export function DailyPerformanceLedgerCard({
             {summary.deliveredOrdersCount} <span className="text-xs font-normal text-slate-400">orders</span>
           </div>
           <div className="text-[11px] text-emerald-400/90 flex items-center gap-1 font-mono">
-            <span>● 100% On-Time Fulfillment</span>
+            <span>● Verified On-Time Fulfillment</span>
           </div>
         </div>
 

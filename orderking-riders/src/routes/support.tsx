@@ -227,7 +227,7 @@ function Page() {
         ],
         resolutionAdvice: activeOrder
           ? eligibleForFreeReturn
-            ? "✅ 3 call attempts and 10+ minutes doorstep wait verified! You qualify for 100% Base + Distance payout with zero cancellation penalty. Log this Order King audit and tap 'Customer Unavailable' on the delivery screen."
+            ? "✅ 3 call attempts and 10+ minutes doorstep wait verified! You qualify for 100% Base + Distance payout under standard cancellation policy exception. Log this Order King audit and tap 'Customer Unavailable' on the delivery screen."
             : `⚠️ Policy requires ${Math.max(0, 3 - attempts)} more call attempt(s) and ${Math.max(0, 10 - customerWaitMins)} more wait minute(s) at the drop pin to unlock automatic zero-penalty return.`
           : "ℹ️ No active customer drop in progress. Log an audit ticket below if you are disputing a past unreachable-customer trip.",
         auditHeader: `[FLEET_AUTO_AUDIT | WORKFLOW=CUSTOMER_UNREACHABLE | RIDER=${riderId.slice(0, 8)} | ORDER=${orderCode} | DROP=${activeOrder?.customer.area ?? "NA"} | CALLS=${attempts}/3 | WAIT_MINS=${customerWaitMins}]`,

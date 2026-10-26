@@ -119,7 +119,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
         name: "Culinary Viceroy",
         badge: "Tier II • Viceroy",
         color: "text-emerald-700 bg-emerald-50 border-emerald-200",
-        payoutDesc: "100% Free daily meals on OrderKing for life",
+        payoutDesc: "Daily dining credits on OrderKing",
         icon: Award,
       };
     }

@@ -444,7 +444,7 @@ function Login() {
                 <span>Password</span>
               </button>
             </div>
-            <span className="text-[10px] text-slate-500 font-mono">100% Zero-Lockout</span>
+            <span className="text-[10px] text-slate-500 font-mono">Active Merchant Access</span>
           </div>
 
           {/* Method 1: 1-Tap OTP Flow (Firebase + Fast2SMS Smart OTP + WhatsApp Zero-Lockout) */}

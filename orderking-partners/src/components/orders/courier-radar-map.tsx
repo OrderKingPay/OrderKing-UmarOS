@@ -514,7 +514,7 @@ export function CourierRadarMap({
               </div>
 
               <div className="absolute top-2 right-2 rounded-md border border-emerald-500/50 bg-slate-950/90 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-300">
-                100% KEYLESS OPENSTREETMAP ROAD TILES
+                OpenStreetMap Cartographic Dispatch View
               </div>
             </div>
           )}

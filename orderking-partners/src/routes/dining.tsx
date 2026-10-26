@@ -454,10 +454,10 @@ function DiningPage() {
 
                 <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-[11px] text-amber-300 space-y-1.5">
                   <div className="font-bold flex items-center gap-1.5 text-amber-200">
-                    <ShieldCheck className="size-3.5 text-amber-400" /> Order King 0% Dine-In Commission Guarantee
+                    <ShieldCheck className="size-3.5 text-amber-400" /> Order King Table Reservation Management
                   </div>
                   <p className="text-slate-300 leading-relaxed">
-                    Order King proudly offers <strong className="text-emerald-400">0% merchant commission</strong> on all dine-in reservations. Guests pay a nominal 5% platform convenience fee for instant table confirmation and automated concierge SMS. 100% of your net cover deposit (95% of total cover charge) is credited straight into the guest&apos;s food &amp; beverage bill settlement.
+                    Order King manages table reservations directly with verified guests. Guests pay a nominal platform fee for instant table confirmation and automated concierge SMS. Net cover deposits are credited straight into guest dining settlements.
                   </p>
                 </div>
               </div>

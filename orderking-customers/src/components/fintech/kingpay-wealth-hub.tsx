@@ -96,7 +96,7 @@ export const LEGAL_AFFILIATE_CATEGORIES: LegalAffiliateCategoryOption[] = [
   { id: "digital_gold", label: "Digital Gold", icon: "🪙", badge: "24K 99.9%" },
   { id: "fixed_deposits", label: "Fixed Deposits", icon: "🏛️", badge: "Up to 9.10%" },
   { id: "credit_cards", label: "Credit Cards", icon: "💳", badge: "Pre-Approved" },
-  { id: "micro_loans", label: "Micro Loans", icon: "⚡", badge: "0% Interest" },
+  { id: "micro_loans", label: "Micro Loans", icon: "⚡", badge: "Short-Term Micro" },
   { id: "investments", label: "Mutual Funds & Protection", icon: "🛡️" },
   { id: "franchise", label: "Territory Franchise", icon: "📍", badge: "1% Royalty" },
   { id: "merchant_capital", label: "Merchant Capital", icon: "🏪", badge: "14% APY" },
@@ -115,7 +115,7 @@ export const DIGITAL_GOLD_PRODUCTS: DigitalGoldOption[] = [
     features: [
       "1:1 physical gold stored in institutional Brink's vaults",
       "Instant buy and sell at live market rates 24x7",
-      "Zero making charges on digital accumulation",
+      "Secure digital gold accumulation via Augmont",
       "Home delivery of BIS hallmarked coins and bars",
     ],
     affiliateUrl: "https://www.safegold.com?utm_source=orderking_affiliate",
@@ -226,9 +226,9 @@ export const CREDIT_CARD_PRODUCTS: CreditCardOption[] = [
     tag: "INVITE ONLY",
     colorTheme: "indigo",
     features: [
-      "Unlimited Lounge Access",
+      "Domestic Lounge Access Program",
       "5% Cashback on OrderKing",
-      "Zero Forex Markup",
+      "Competitive Forex Rates",
     ],
     buttonText: "Apply Now",
     affiliateUrl: "https://www.hdfcbank.com/personal/pay/cards/credit-cards?utm_source=orderking_affiliate",
@@ -241,7 +241,7 @@ export const CREDIT_CARD_PRODUCTS: CreditCardOption[] = [
     features: [
       "₹5,000 Welcome Voucher",
       "2.5% Reward Rate",
-      "Free Movie Tickets Monthly",
+      "Entertainment Card Privileges",
     ],
     buttonText: "Claim Card",
     affiliateUrl: "https://www.sbicard.com/en/personal/credit-cards.page?utm_source=orderking_affiliate",
@@ -433,20 +433,20 @@ export function KingPayWealthHub() {
               icon="💳"
               title="Pre-Approved Credit Cards"
               partner="HDFC Bank · SBI Card"
-              badge="Lifetime Free"
+              badge="Pre-Approved"
               description="Pre-approved credit limits up to ₹10 Lakhs. 5% cashback on food delivery, zero forex markup, and complimentary airport lounge access."
               statLabel="Instant Limit"
               statValue="Up to ₹10 Lakhs"
               onClick={() => setSelectedCategory("credit_cards")}
             />
 
-            {/* 4. Zero-Interest Micro Loans */}
+            {/* 4. Emergency Short-Term Micro Credit */}
             <FatherSwitchCard
               icon="⚡"
               title="Instant Emergency Micro-Loans"
               partner="RBI-Registered NBFC Partners"
-              badge="0% Interest 30 Days"
-              description="Instant emergency cash disbursal up to ₹50,000 credited directly to your KingPay wallet. 60-second paperless approval with zero hidden charges."
+              badge="30-Day Repayment"
+              description="Instant emergency cash disbursal up to ₹50,000 credited directly to your KingPay wallet. 60-second paperless approval with transparent terms."
               statLabel="Available Credit"
               statValue="₹50,000"
               onClick={() => setSelectedCategory("micro_loans")}
@@ -482,7 +482,7 @@ export function KingPayWealthHub() {
               title="Verified Merchant Capital"
               partner="Verified Local Kitchens & Cafes"
               badge="12% - 14% APY"
-              description="Fund verified restaurant kitchen equipment and expansion outlets in your city. Earn guaranteed fixed monthly APY cash distributions."
+              description="Fund verified restaurant kitchen equipment and expansion outlets in your city. Earn periodic distributions based on verified store performance."
               statLabel="Annual Yield"
               statValue="14% APY Fixed"
               onClick={() => setSelectedCategory("merchant_capital")}
@@ -689,7 +689,7 @@ export function KingPayWealthHub() {
                     </div>
                     <div className="flex justify-between items-center text-[10px] text-muted mt-0.5">
                       <span>Storage Charges</span>
-                      <span className="font-semibold text-emerald-400">₹0 (Free for 5 Years)</span>
+                      <span className="font-semibold text-emerald-400">Vault Custody Included</span>
                     </div>
                   </div>
                 </div>
@@ -732,7 +732,7 @@ export function KingPayWealthHub() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 px-3 py-1 text-xs font-bold text-sky-400 border border-sky-500/30 mb-2">
-                  <Landmark className="size-3.5" /> Guaranteed Wealth Growth
+                  <Landmark className="size-3.5" /> Regulated Fixed Deposit Growth
                 </div>
                 <h3 className="text-2xl font-black text-fg flex items-center gap-2">
                   High-Yield Fixed Deposits
@@ -1026,7 +1026,7 @@ export function KingPayWealthHub() {
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-500">
               <Zap className="size-3.5" /> Instant Liquidity
             </div>
-            <h3 className="text-2xl font-black text-emerald-400">Zero-Interest Micro Loans</h3>
+            <h3 className="text-2xl font-black text-emerald-400">Emergency Short-Term Micro Credit</h3>
             <p className="text-sm text-muted">
               Need cash fast? Get up to ₹50,000 instantly credited to your KingPay wallet. Repay in 30 days with <strong className="text-fg">0% interest</strong> and zero hidden fees.
             </p>
@@ -1262,7 +1262,7 @@ export function KingPayWealthHub() {
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-orange-500" /> New Branch Capital</li>
                   <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-orange-500" /> 12-Month Lock-in</li>
-                  <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-orange-500" /> KingPay Guaranteed</li>
+                  <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-orange-500" /> KingPay Escrow Protected</li>
                 </ul>
               </div>
               <Button 

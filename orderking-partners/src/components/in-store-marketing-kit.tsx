@@ -344,7 +344,7 @@ export function InStoreMarketingKit({
                       <span>{cashbackOffer}</span>
                     </div>
                     <p className="text-[11px] text-emerald-800">
-                      Order directly from your phone. Zero queue, fastest table delivery, and cashbacks credited instantly to your KingPay Wallet.
+                      Order directly from your phone. Order directly from your phone. Table delivery and digital payments enabled.
                     </p>
                   </div>
 

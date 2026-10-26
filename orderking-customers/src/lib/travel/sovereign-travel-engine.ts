@@ -30,7 +30,7 @@ export const VIP_TRAVEL_CATEGORIES: readonly VIPCharterCategoryConfig[] = [
     id: "private_aviation",
     title: "Private Aviation & Jet Charters",
     subtitle: "On-demand midsize & super-mid jets with dedicated VIP FBO terminals",
-    badge: "0% Broker Fee",
+    badge: "Direct Corridor",
     iconName: "Plane",
     leadTime: "2-4 Hours Notice",
     fleetOptions: [
@@ -99,7 +99,7 @@ export const VIP_TRAVEL_CATEGORIES: readonly VIPCharterCategoryConfig[] = [
       "Toyota Vellfire (VIP Captain Chairs)",
       "Range Rover Autobiography (Armored Available)",
     ],
-    benchmarkPricingText: "Flat Airport Pickup from ₹3,500 · Zero Surge Guaranteed",
+    benchmarkPricingText: "Flat Airport Pickup from ₹3,500 · Regulated Corridor",
     popularSectors: [
       { from: "IGI Airport T3 FBO", to: "Lutyens Delhi / Gurugram", flightTime: "45m Drive", estFarePaise: 450_000 },
       { from: "CSMIA T2 VIP Gate", to: "BKC / Nariman Point", flightTime: "35m Drive", estFarePaise: 400_000 },

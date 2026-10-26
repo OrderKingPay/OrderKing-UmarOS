@@ -756,7 +756,7 @@ export function WifiCaptivePortalHub({
                     {adHeadline || "Get ₹150 Instant Cash • Order Direct via OrderKing"}
                   </div>
                   <div className="text-[9px] text-slate-500 mt-0.5">
-                    0% commissions. Authentic restaurant prices.
+                    Direct ordering. Authentic restaurant prices.
                   </div>
                 </div>
               </div>
@@ -901,7 +901,7 @@ export function WifiCaptivePortalHub({
                   <span className="font-semibold text-slate-900">₹{config.costPerImpressionInr.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1">
-                  <span>Guaranteed Wi-Fi Unlocks:</span>
+                  <span>Verified Wi-Fi Unlocks:</span>
                   <span className="text-blue-600">
                     {Math.floor(adBudget / config.costPerImpressionInr).toLocaleString("en-IN")} Unlocks
                   </span>

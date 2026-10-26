@@ -333,7 +333,7 @@ export function LocationDialog({
           </div>
 
           <p className="mt-2 text-xs text-stone-600 leading-relaxed font-medium">
-            Explore authentic kitchens with <span className="font-bold text-amber-900">0% menu markup</span> and <span className="font-bold text-emerald-800">sub-25 minute direct chef delivery</span>.
+            Explore authentic kitchens with <span className="font-bold text-amber-900">authentic menus</span> and <span className="font-bold text-emerald-800">direct chef delivery</span>.
           </p>
 
           {/* 1-Tap High-Accuracy GPS Auto-Detect Button */}
@@ -715,7 +715,7 @@ export function LocationDialog({
               <span className="size-1.5 rounded-full bg-emerald-500" />
               100% FSSAI-Licensed Partner Kitchens
             </span>
-            <span className="text-amber-900 font-bold">0% Menu Markups</span>
+            <span className="text-amber-900 font-bold">Direct Kitchen Menu</span>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

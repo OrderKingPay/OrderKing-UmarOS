@@ -75,7 +75,7 @@ export function LiveChatSupportModal({
       setIsTyping(false);
       let reply = "I understand completely. Let me check the real-time telemetry with our kitchen and delivery fleet.";
       if (text.toLowerCase().includes("where") || text.toLowerCase().includes("delay") || text.toLowerCase().includes("late")) {
-        reply = "I checked with our delivery partner who is 1.4 km away. If your delivery exceeds our estimated time, ₹50 will be auto-credited to your account instantly under our On-Time Guarantee!";
+        reply = "I checked with our delivery partner who is 1.4 km away. If your delivery exceeds our estimated time, ₹50 will be credited to your account upon verified delivery SLA delay.";
       } else if (text.toLowerCase().includes("cancel")) {
         reply = "I've flagged this to the restaurant station. If food preparation has not commenced, 100% refund will be credited instantly to your original payment mode.";
       } else if (text.toLowerCase().includes("spill") || text.toLowerCase().includes("damage") || text.toLowerCase().includes("cold")) {

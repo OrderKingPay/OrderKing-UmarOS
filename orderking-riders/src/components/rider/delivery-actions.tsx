@@ -933,7 +933,7 @@ export function DeliveryActions({
                   {isJustifiedOperationalReason(reason) && (
                     <div className="flex items-center gap-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 p-2 text-[11px] text-emerald-300 font-medium">
                       <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
-                      <span>Zero penalty guaranteed · Instant reassignment to nearest partner</span>
+                      <span>Standard order reassignment to nearest partner</span>
                     </div>
                   )}
                 </div>
