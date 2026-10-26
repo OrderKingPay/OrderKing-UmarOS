@@ -11,6 +11,7 @@ import { useLocationStore } from "@/lib/stores/location";
  */
 const OPTIONS = [
   { key: "kingpay", label: "KingPay", detail: "Direct UPI & BharatQR", to: "/kingpay", Icon: Crown },
+  { key: "tutor", label: "AI Tutor", detail: "NCERT & Board Solutions", to: "/tutor", Icon: GraduationCap },
   { key: "orders", label: "My Orders", detail: "Live delivery tracking", to: "/orders", Icon: ShoppingBag },
 ] as const;
 

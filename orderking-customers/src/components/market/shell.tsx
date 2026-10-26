@@ -429,6 +429,15 @@ export function CustomerShell({
                       </Link>
 
                       <Link
+                        to="/tutor"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                      >
+                        <GraduationCap className="size-4 text-amber-600" />
+                        <span>AI Tutor &amp; Solutions</span>
+                      </Link>
+
+                      <Link
                         to="/settings"
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline border-b border-gray-100 pb-2 mb-1"

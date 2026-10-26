@@ -32,6 +32,7 @@ import { Route as V1AdminMasterAiRouteImport } from './routes/v1/admin/master-ai
 import { Route as V1AdminRiderOffersRouteImport } from './routes/v1/admin/rider-offers'
 import { Route as V1AdminSettlementEscalationsRouteImport } from './routes/v1/admin/settlement-escalations'
 import { Route as V1PaymentsSplatRouteImport } from './routes/v1/payments/$'
+import { Route as V1TravelSplatRouteImport } from './routes/v1/travel/$'
 import { Route as ApiSyncCustomizationsLatestRouteImport } from './routes/api/sync/customizations/latest'
 import { Route as ApiV1AdminSettingsRouteImport } from './routes/api/v1/admin/settings'
 import { Route as ApiV1FounderSweepRouteImport } from './routes/api/v1/founder/sweep'
@@ -39,6 +40,8 @@ import { Route as ApiV1KingpayPayoneerWebhookRouteImport } from './routes/api/v1
 import { Route as ApiV1KingpayRazorpayWebhookRouteImport } from './routes/api/v1/kingpay/razorpay-webhook'
 import { Route as ApiV1KingpayStripeWebhookRouteImport } from './routes/api/v1/kingpay/stripe-webhook'
 import { Route as ApiV1KingpayTransferRouteImport } from './routes/api/v1/kingpay/transfer'
+import { Route as ApiV1TravelBookRouteImport } from './routes/api/v1/travel/book'
+import { Route as ApiV1TravelSearchRouteImport } from './routes/api/v1/travel/search'
 import { Route as V1AdminResourceIdRouteImport } from './routes/v1/admin/$resource.$id'
 import { Route as V1AdminCustomerOrdersIdRouteImport } from './routes/v1/admin/customer-orders/$id'
 import { Route as V1AdminDispatchReassignRouteImport } from './routes/v1/admin/dispatch/reassign'
@@ -160,6 +163,11 @@ const V1PaymentsSplatRoute = V1PaymentsSplatRouteImport.update({
   path: '/v1/payments/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const V1TravelSplatRoute = V1TravelSplatRouteImport.update({
+  id: '/v1/travel/$',
+  path: '/v1/travel/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSyncCustomizationsLatestRoute =
   ApiSyncCustomizationsLatestRouteImport.update({
     id: '/latest',
@@ -197,6 +205,16 @@ const ApiV1KingpayStripeWebhookRoute =
 const ApiV1KingpayTransferRoute = ApiV1KingpayTransferRouteImport.update({
   id: '/api/v1/kingpay/transfer',
   path: '/api/v1/kingpay/transfer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1TravelBookRoute = ApiV1TravelBookRouteImport.update({
+  id: '/api/v1/travel/book',
+  path: '/api/v1/travel/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1TravelSearchRoute = ApiV1TravelSearchRouteImport.update({
+  id: '/api/v1/travel/search',
+  path: '/api/v1/travel/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const V1AdminResourceIdRoute = V1AdminResourceIdRouteImport.update({
@@ -245,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/v1/admin/rider-offers': typeof V1AdminRiderOffersRoute
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
+  '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
@@ -252,6 +271,8 @@ export interface FileRoutesByFullPath {
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
   '/api/v1/kingpay/stripe-webhook': typeof ApiV1KingpayStripeWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
+  '/api/v1/travel/book': typeof ApiV1TravelBookRoute
+  '/api/v1/travel/search': typeof ApiV1TravelSearchRoute
   '/v1/admin/$resource/$id': typeof V1AdminResourceIdRoute
   '/v1/admin/customer-orders/$id': typeof V1AdminCustomerOrdersIdRouteWithChildren
   '/v1/admin/dispatch/reassign': typeof V1AdminDispatchReassignRoute
@@ -280,6 +301,7 @@ export interface FileRoutesByTo {
   '/v1/admin/rider-offers': typeof V1AdminRiderOffersRoute
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
+  '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
@@ -287,6 +309,8 @@ export interface FileRoutesByTo {
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
   '/api/v1/kingpay/stripe-webhook': typeof ApiV1KingpayStripeWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
+  '/api/v1/travel/book': typeof ApiV1TravelBookRoute
+  '/api/v1/travel/search': typeof ApiV1TravelSearchRoute
   '/v1/admin/$resource/$id': typeof V1AdminResourceIdRoute
   '/v1/admin/customer-orders/$id': typeof V1AdminCustomerOrdersIdRouteWithChildren
   '/v1/admin/dispatch/reassign': typeof V1AdminDispatchReassignRoute
@@ -317,6 +341,7 @@ export interface FileRoutesById {
   '/v1/admin/rider-offers': typeof V1AdminRiderOffersRoute
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
+  '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
@@ -324,6 +349,8 @@ export interface FileRoutesById {
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
   '/api/v1/kingpay/stripe-webhook': typeof ApiV1KingpayStripeWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
+  '/api/v1/travel/book': typeof ApiV1TravelBookRoute
+  '/api/v1/travel/search': typeof ApiV1TravelSearchRoute
   '/v1/admin/$resource/$id': typeof V1AdminResourceIdRoute
   '/v1/admin/customer-orders/$id': typeof V1AdminCustomerOrdersIdRouteWithChildren
   '/v1/admin/dispatch/reassign': typeof V1AdminDispatchReassignRoute
@@ -355,6 +382,7 @@ export interface FileRouteTypes {
     | '/v1/admin/rider-offers'
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
+    | '/v1/travel/$'
     | '/api/sync/customizations/latest'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
@@ -362,6 +390,8 @@ export interface FileRouteTypes {
     | '/api/v1/kingpay/razorpay-webhook'
     | '/api/v1/kingpay/stripe-webhook'
     | '/api/v1/kingpay/transfer'
+    | '/api/v1/travel/book'
+    | '/api/v1/travel/search'
     | '/v1/admin/$resource/$id'
     | '/v1/admin/customer-orders/$id'
     | '/v1/admin/dispatch/reassign'
@@ -390,6 +420,7 @@ export interface FileRouteTypes {
     | '/v1/admin/rider-offers'
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
+    | '/v1/travel/$'
     | '/api/sync/customizations/latest'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
@@ -397,6 +428,8 @@ export interface FileRouteTypes {
     | '/api/v1/kingpay/razorpay-webhook'
     | '/api/v1/kingpay/stripe-webhook'
     | '/api/v1/kingpay/transfer'
+    | '/api/v1/travel/book'
+    | '/api/v1/travel/search'
     | '/v1/admin/$resource/$id'
     | '/v1/admin/customer-orders/$id'
     | '/v1/admin/dispatch/reassign'
@@ -426,6 +459,7 @@ export interface FileRouteTypes {
     | '/v1/admin/rider-offers'
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
+    | '/v1/travel/$'
     | '/api/sync/customizations/latest'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
@@ -433,6 +467,8 @@ export interface FileRouteTypes {
     | '/api/v1/kingpay/razorpay-webhook'
     | '/api/v1/kingpay/stripe-webhook'
     | '/api/v1/kingpay/transfer'
+    | '/api/v1/travel/book'
+    | '/api/v1/travel/search'
     | '/v1/admin/$resource/$id'
     | '/v1/admin/customer-orders/$id'
     | '/v1/admin/dispatch/reassign'
@@ -460,12 +496,15 @@ export interface RootRouteChildren {
   V1AdminRiderOffersRoute: typeof V1AdminRiderOffersRoute
   V1AdminSettlementEscalationsRoute: typeof V1AdminSettlementEscalationsRoute
   V1PaymentsSplatRoute: typeof V1PaymentsSplatRoute
+  V1TravelSplatRoute: typeof V1TravelSplatRoute
   ApiV1AdminSettingsRoute: typeof ApiV1AdminSettingsRoute
   ApiV1FounderSweepRoute: typeof ApiV1FounderSweepRoute
   ApiV1KingpayPayoneerWebhookRoute: typeof ApiV1KingpayPayoneerWebhookRoute
   ApiV1KingpayRazorpayWebhookRoute: typeof ApiV1KingpayRazorpayWebhookRoute
   ApiV1KingpayStripeWebhookRoute: typeof ApiV1KingpayStripeWebhookRoute
   ApiV1KingpayTransferRoute: typeof ApiV1KingpayTransferRoute
+  ApiV1TravelBookRoute: typeof ApiV1TravelBookRoute
+  ApiV1TravelSearchRoute: typeof ApiV1TravelSearchRoute
   V1AdminResourceIdRoute: typeof V1AdminResourceIdRoute
   V1AdminDispatchReassignRoute: typeof V1AdminDispatchReassignRoute
 }
@@ -633,6 +672,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof V1PaymentsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/v1/travel/$': {
+      id: '/v1/travel/$'
+      path: '/v1/travel/$'
+      fullPath: '/v1/travel/$'
+      preLoaderRoute: typeof V1TravelSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/sync/customizations/latest': {
       id: '/api/sync/customizations/latest'
       path: '/latest'
@@ -680,6 +726,20 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/kingpay/transfer'
       fullPath: '/api/v1/kingpay/transfer'
       preLoaderRoute: typeof ApiV1KingpayTransferRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/travel/book': {
+      id: '/api/v1/travel/book'
+      path: '/api/v1/travel/book'
+      fullPath: '/api/v1/travel/book'
+      preLoaderRoute: typeof ApiV1TravelBookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/travel/search': {
+      id: '/api/v1/travel/search'
+      path: '/api/v1/travel/search'
+      fullPath: '/api/v1/travel/search'
+      preLoaderRoute: typeof ApiV1TravelSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/v1/admin/$resource/$id': {
@@ -800,12 +860,15 @@ const rootRouteChildren: RootRouteChildren = {
   V1AdminRiderOffersRoute: V1AdminRiderOffersRoute,
   V1AdminSettlementEscalationsRoute: V1AdminSettlementEscalationsRoute,
   V1PaymentsSplatRoute: V1PaymentsSplatRoute,
+  V1TravelSplatRoute: V1TravelSplatRoute,
   ApiV1AdminSettingsRoute: ApiV1AdminSettingsRoute,
   ApiV1FounderSweepRoute: ApiV1FounderSweepRoute,
   ApiV1KingpayPayoneerWebhookRoute: ApiV1KingpayPayoneerWebhookRoute,
   ApiV1KingpayRazorpayWebhookRoute: ApiV1KingpayRazorpayWebhookRoute,
   ApiV1KingpayStripeWebhookRoute: ApiV1KingpayStripeWebhookRoute,
   ApiV1KingpayTransferRoute: ApiV1KingpayTransferRoute,
+  ApiV1TravelBookRoute: ApiV1TravelBookRoute,
+  ApiV1TravelSearchRoute: ApiV1TravelSearchRoute,
   V1AdminResourceIdRoute: V1AdminResourceIdRoute,
   V1AdminDispatchReassignRoute: V1AdminDispatchReassignRoute,
 }
