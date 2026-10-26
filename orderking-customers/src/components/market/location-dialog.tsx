@@ -161,37 +161,97 @@ export function LocationDialog({
     }
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocating(false);
+      async (pos) => {
         const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+
+        // 1. Live reverse geocode to real locality and city via BigDataCloud client API
+        try {
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${here.lat}&longitude=${here.lng}&localityLanguage=en`
+          );
+          if (res.ok) {
+            const geo = await res.json();
+            const locality = geo.locality || geo.city || geo.principalSubdivision || "Local Area";
+            const city = geo.city || geo.principalSubdivision || "India";
+            const state = geo.principalSubdivision || "";
+            const country = geo.countryName || "India";
+            const label = locality !== city && city ? `${locality}, ${city}` : locality;
+            const lineParts = [locality, city, state, country].filter(Boolean);
+            const line1 = lineParts.filter((v, i, a) => a.indexOf(v) === i).join(", ");
+
+            const zones = zonesData?.zones ?? [];
+            const nearbyZone = zones.find((z) => distanceKm(here, { lat: z.lat, lng: z.lng }) <= 25);
+
+            setLocating(false);
+            pickLocation({
+              cityId: nearbyZone ? nearbyZone.cityId : (geo.city || "in").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 8),
+              cityName: city,
+              zoneId: nearbyZone ? nearbyZone.id : `geo-${locality.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+              zoneName: locality,
+              label: label,
+              line1: line1,
+              lat: here.lat,
+              lng: here.lng,
+            });
+            return;
+          }
+        } catch {
+          // Network issue or offline: fallback to catalog zones or regional centroids
+        }
+
+        // 2. Check catalog zones if nearby (within 50 km)
         const zones = zonesData?.zones ?? [];
         if (zones.length > 0) {
           const nearest = [...zones].sort(
             (a, b) => distanceKm(here, { lat: a.lat, lng: a.lng }) - distanceKm(here, { lat: b.lat, lng: b.lng }),
           )[0]!;
-          pickLocation({
-            cityId: nearest.cityId,
-            cityName: nearest.cityName,
-            zoneId: nearest.id,
-            zoneName: nearest.name,
-            label: nearest.name,
-            line1: nearest.name,
-            lat: here.lat,
-            lng: here.lng,
-          });
-        } else {
-          // Instant GPS resolve with high accuracy coordinates
-          pickLocation({
-            cityId: "del",
-            cityName: "Detected Location",
-            zoneId: "geo-gps",
-            zoneName: "Current GPS Position",
-            label: "Current GPS Location",
-            line1: `Lat ${here.lat.toFixed(4)}, Lng ${here.lng.toFixed(4)}`,
-            lat: here.lat,
-            lng: here.lng,
-          });
+          if (distanceKm(here, { lat: nearest.lat, lng: nearest.lng }) <= 50) {
+            setLocating(false);
+            pickLocation({
+              cityId: nearest.cityId,
+              cityName: nearest.cityName,
+              zoneId: nearest.id,
+              zoneName: nearest.name,
+              label: nearest.name,
+              line1: nearest.name,
+              lat: here.lat,
+              lng: here.lng,
+            });
+            return;
+          }
         }
+
+        // 3. Intelligent regional geographic resolution
+        let resolvedCity = "Local Area";
+        let resolvedZone = "Current Location";
+        if (here.lat >= 24.0 && here.lat <= 26.5 && here.lng >= 91.5 && here.lng <= 94.0) {
+          resolvedCity = "Assam";
+          resolvedZone = "Barak Valley / Karimganj";
+        } else if (here.lat >= 28.3 && here.lat <= 28.9 && here.lng >= 76.8 && here.lng <= 77.5) {
+          resolvedCity = "Delhi NCR";
+          resolvedZone = "Central Delhi";
+        } else if (here.lat >= 18.8 && here.lat <= 19.3 && here.lng >= 72.7 && here.lng <= 73.1) {
+          resolvedCity = "Mumbai";
+          resolvedZone = "Mumbai Suburban";
+        } else if (here.lat >= 12.8 && here.lat <= 13.2 && here.lng >= 77.4 && here.lng <= 77.8) {
+          resolvedCity = "Bengaluru";
+          resolvedZone = "Bengaluru Urban";
+        } else if (here.lat >= 22.4 && here.lat <= 22.8 && here.lng >= 88.2 && here.lng <= 88.6) {
+          resolvedCity = "Kolkata";
+          resolvedZone = "Greater Kolkata";
+        }
+
+        setLocating(false);
+        pickLocation({
+          cityId: resolvedCity.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 8),
+          cityName: resolvedCity,
+          zoneId: `geo-${resolvedZone.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+          zoneName: resolvedZone,
+          label: `${resolvedZone}, ${resolvedCity}`,
+          line1: `${resolvedZone}, ${resolvedCity}, India`,
+          lat: here.lat,
+          lng: here.lng,
+        });
       },
       () => {
         setLocating(false);
@@ -207,7 +267,7 @@ export function LocationDialog({
           lng: 77.2167,
         });
       },
-      { enableHighAccuracy: true, timeout: 6000 },
+      { enableHighAccuracy: true, timeout: 8000 },
     );
   };
 

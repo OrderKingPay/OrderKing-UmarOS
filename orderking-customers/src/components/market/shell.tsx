@@ -249,12 +249,12 @@ export function CustomerShell({
           </div>
 
           {/* Row 1 Center: Core Navigation (Food Delivery, AI Tutor, Jobs, Travel) */}
-          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-none py-0.5">
+          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 overflow-x-auto scrollbar-none py-0.5">
             {/* 1. Food Delivery */}
             <Link
               to="/"
               className={cn(
-                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0",
+                "inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
                 path === "/" || path.startsWith("/r/") || path.startsWith("/delivery")
                   ? isDark
                     ? "border-amber-400 bg-gradient-to-b from-amber-500/30 to-amber-600/20 text-amber-200 ring-1 ring-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
@@ -265,14 +265,14 @@ export function CustomerShell({
               )}
             >
               <UtensilsCrossed className={cn("size-3.5 shrink-0", isDark ? "text-amber-400" : "text-amber-600")} />
-              <span>Food<span className="hidden xs:inline"> Delivery</span></span>
+              <span className="whitespace-nowrap">Food<span className="hidden xs:inline"> Delivery</span></span>
             </Link>
 
             {/* 2. AI Tutor */}
             <Link
               to="/tutor"
               className={cn(
-                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0",
+                "inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
                 path.startsWith("/tutor") && !path.startsWith("/tutor-jobs")
                   ? isDark
                     ? "border-emerald-400 bg-gradient-to-b from-emerald-500/30 to-emerald-600/20 text-emerald-200 ring-1 ring-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
@@ -283,14 +283,14 @@ export function CustomerShell({
               )}
             >
               <GraduationCap className={cn("size-3.5 shrink-0", isDark ? "text-emerald-400" : "text-emerald-600")} />
-              <span>AI Tutor</span>
+              <span className="whitespace-nowrap">AI Tutor</span>
             </Link>
 
             {/* 3. Jobs */}
             <Link
               to="/tutor-jobs"
               className={cn(
-                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0",
+                "inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
                 path.startsWith("/tutor-jobs")
                   ? isDark
                     ? "border-purple-400 bg-gradient-to-b from-purple-500/30 to-purple-600/20 text-purple-200 ring-1 ring-purple-400/50 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
@@ -301,14 +301,14 @@ export function CustomerShell({
               )}
             >
               <Briefcase className={cn("size-3.5 shrink-0", isDark ? "text-purple-400" : "text-purple-600")} />
-              <span>Jobs</span>
+              <span className="whitespace-nowrap">Jobs</span>
             </Link>
 
             {/* 4. Travel */}
             <Link
               to="/travel"
               className={cn(
-                "inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0",
+                "inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
                 path.startsWith("/travel")
                   ? isDark
                     ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-sky-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
@@ -319,7 +319,7 @@ export function CustomerShell({
               )}
             >
               <Plane className={cn("size-3.5 shrink-0", isDark ? "text-sky-400" : "text-sky-600")} />
-              <span>Travel</span>
+              <span className="whitespace-nowrap">Travel</span>
             </Link>
           </nav>
 
