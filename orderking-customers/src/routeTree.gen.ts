@@ -29,6 +29,7 @@ import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as TravelRouteImport } from './routes/travel'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as ApiCrmRouteImport } from './routes/api/crm'
 import { Route as ApiOgRouteImport } from './routes/api/og'
@@ -52,6 +53,7 @@ import { Route as OrdersIndexRouteImport } from './routes/orders/index'
 import { Route as OrdersIdRouteImport } from './routes/orders/$id'
 import { Route as RSlugRouteImport } from './routes/r/$slug'
 import { Route as TrackingDispatchJobIdRouteImport } from './routes/tracking.$dispatchJobId'
+import { Route as TravelTripsRouteImport } from './routes/travel/trips'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
 import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
@@ -60,6 +62,13 @@ import { Route as ApiPushSubscribeRouteImport } from './routes/api/push/subscrib
 import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
 import { Route as ApiRazorpayVerifyRouteImport } from './routes/api/razorpay/verify'
 import { Route as ApiSyncCustomizationsRouteImport } from './routes/api/sync/customizations'
+import { Route as ApiTravelBusSearchRouteImport } from './routes/api/travel/bus-search'
+import { Route as ApiTravelFlightSearchRouteImport } from './routes/api/travel/flight-search'
+import { Route as ApiTravelFlightTrackerRouteImport } from './routes/api/travel/flight-tracker'
+import { Route as ApiTravelHotelSearchRouteImport } from './routes/api/travel/hotel-search'
+import { Route as ApiTravelPartnerHandshakeRouteImport } from './routes/api/travel/partner-handshake'
+import { Route as ApiTravelPnrStatusRouteImport } from './routes/api/travel/pnr-status'
+import { Route as ApiTravelTrainSearchRouteImport } from './routes/api/travel/train-search'
 import { Route as DeliveryTownAreaRouteImport } from './routes/delivery/$town.$area'
 import { Route as ApiOrdersOrderIdStreamRouteImport } from './routes/api/orders/$orderId/stream'
 import { Route as ApiSyncCustomizationsLatestRouteImport } from './routes/api/sync/customizations/latest'
@@ -162,6 +171,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TravelRoute = TravelRouteImport.update({
+  id: '/travel',
+  path: '/travel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountIndexRoute = AccountIndexRouteImport.update({
@@ -279,6 +293,11 @@ const TrackingDispatchJobIdRoute = TrackingDispatchJobIdRouteImport.update({
   path: '/tracking/$dispatchJobId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TravelTripsRoute = TravelTripsRouteImport.update({
+  id: '/trips',
+  path: '/trips',
+  getParentRoute: () => TravelRoute,
+} as any)
 const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   id: '/api/admin/settings',
   path: '/api/admin/settings',
@@ -319,6 +338,42 @@ const ApiSyncCustomizationsRoute = ApiSyncCustomizationsRouteImport.update({
   path: '/api/sync/customizations',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTravelBusSearchRoute = ApiTravelBusSearchRouteImport.update({
+  id: '/api/travel/bus-search',
+  path: '/api/travel/bus-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTravelFlightSearchRoute = ApiTravelFlightSearchRouteImport.update({
+  id: '/api/travel/flight-search',
+  path: '/api/travel/flight-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTravelFlightTrackerRoute = ApiTravelFlightTrackerRouteImport.update({
+  id: '/api/travel/flight-tracker',
+  path: '/api/travel/flight-tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTravelHotelSearchRoute = ApiTravelHotelSearchRouteImport.update({
+  id: '/api/travel/hotel-search',
+  path: '/api/travel/hotel-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTravelPartnerHandshakeRoute =
+  ApiTravelPartnerHandshakeRouteImport.update({
+    id: '/api/travel/partner-handshake',
+    path: '/api/travel/partner-handshake',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiTravelPnrStatusRoute = ApiTravelPnrStatusRouteImport.update({
+  id: '/api/travel/pnr-status',
+  path: '/api/travel/pnr-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTravelTrainSearchRoute = ApiTravelTrainSearchRouteImport.update({
+  id: '/api/travel/train-search',
+  path: '/api/travel/train-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DeliveryTownAreaRoute = DeliveryTownAreaRouteImport.update({
   id: '/delivery/$town/$area',
   path: '/delivery/$town/$area',
@@ -357,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/travel': typeof TravelRouteWithChildren
   '/api/crm': typeof ApiCrmRoute
   '/api/og': typeof ApiOgRoute
   '/api/qr': typeof ApiQrRoute
@@ -376,6 +432,7 @@ export interface FileRoutesByFullPath {
   '/orders/$id': typeof OrdersIdRoute
   '/r/$slug': typeof RSlugRoute
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
+  '/travel/trips': typeof TravelTripsRoute
   '/account/': typeof AccountIndexRoute
   '/delivery/': typeof DeliveryIndexRoute
   '/kingpay/': typeof KingpayIndexRoute
@@ -388,6 +445,13 @@ export interface FileRoutesByFullPath {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
+  '/api/travel/bus-search': typeof ApiTravelBusSearchRoute
+  '/api/travel/flight-search': typeof ApiTravelFlightSearchRoute
+  '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
+  '/api/travel/hotel-search': typeof ApiTravelHotelSearchRoute
+  '/api/travel/partner-handshake': typeof ApiTravelPartnerHandshakeRoute
+  '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
+  '/api/travel/train-search': typeof ApiTravelTrainSearchRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
@@ -413,6 +477,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/travel': typeof TravelRouteWithChildren
   '/api/crm': typeof ApiCrmRoute
   '/api/og': typeof ApiOgRoute
   '/api/qr': typeof ApiQrRoute
@@ -432,6 +497,7 @@ export interface FileRoutesByTo {
   '/orders/$id': typeof OrdersIdRoute
   '/r/$slug': typeof RSlugRoute
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
+  '/travel/trips': typeof TravelTripsRoute
   '/account': typeof AccountIndexRoute
   '/delivery': typeof DeliveryIndexRoute
   '/kingpay': typeof KingpayIndexRoute
@@ -444,6 +510,13 @@ export interface FileRoutesByTo {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
+  '/api/travel/bus-search': typeof ApiTravelBusSearchRoute
+  '/api/travel/flight-search': typeof ApiTravelFlightSearchRoute
+  '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
+  '/api/travel/hotel-search': typeof ApiTravelHotelSearchRoute
+  '/api/travel/partner-handshake': typeof ApiTravelPartnerHandshakeRoute
+  '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
+  '/api/travel/train-search': typeof ApiTravelTrainSearchRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
@@ -470,6 +543,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/travel': typeof TravelRouteWithChildren
   '/api/crm': typeof ApiCrmRoute
   '/api/og': typeof ApiOgRoute
   '/api/qr': typeof ApiQrRoute
@@ -489,6 +563,7 @@ export interface FileRoutesById {
   '/orders/$id': typeof OrdersIdRoute
   '/r/$slug': typeof RSlugRoute
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
+  '/travel/trips': typeof TravelTripsRoute
   '/account/': typeof AccountIndexRoute
   '/delivery/': typeof DeliveryIndexRoute
   '/kingpay/': typeof KingpayIndexRoute
@@ -501,6 +576,13 @@ export interface FileRoutesById {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
+  '/api/travel/bus-search': typeof ApiTravelBusSearchRoute
+  '/api/travel/flight-search': typeof ApiTravelFlightSearchRoute
+  '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
+  '/api/travel/hotel-search': typeof ApiTravelHotelSearchRoute
+  '/api/travel/partner-handshake': typeof ApiTravelPartnerHandshakeRoute
+  '/api/travel/pnr-status': typeof ApiTravelPnrStatusRoute
+  '/api/travel/train-search': typeof ApiTravelTrainSearchRoute
   '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
@@ -528,6 +610,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/travel'
     | '/api/crm'
     | '/api/og'
     | '/api/qr'
@@ -547,6 +630,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/r/$slug'
     | '/tracking/$dispatchJobId'
+    | '/travel/trips'
     | '/account/'
     | '/delivery/'
     | '/kingpay/'
@@ -559,6 +643,13 @@ export interface FileRouteTypes {
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
     | '/api/sync/customizations'
+    | '/api/travel/bus-search'
+    | '/api/travel/flight-search'
+    | '/api/travel/flight-tracker'
+    | '/api/travel/hotel-search'
+    | '/api/travel/partner-handshake'
+    | '/api/travel/pnr-status'
+    | '/api/travel/train-search'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
     | '/api/sync/customizations/latest'
@@ -584,6 +675,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/travel'
     | '/api/crm'
     | '/api/og'
     | '/api/qr'
@@ -603,6 +695,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/r/$slug'
     | '/tracking/$dispatchJobId'
+    | '/travel/trips'
     | '/account'
     | '/delivery'
     | '/kingpay'
@@ -615,6 +708,13 @@ export interface FileRouteTypes {
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
     | '/api/sync/customizations'
+    | '/api/travel/bus-search'
+    | '/api/travel/flight-search'
+    | '/api/travel/flight-tracker'
+    | '/api/travel/hotel-search'
+    | '/api/travel/partner-handshake'
+    | '/api/travel/pnr-status'
+    | '/api/travel/train-search'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
     | '/api/sync/customizations/latest'
@@ -640,6 +740,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/travel'
     | '/api/crm'
     | '/api/og'
     | '/api/qr'
@@ -659,6 +760,7 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/r/$slug'
     | '/tracking/$dispatchJobId'
+    | '/travel/trips'
     | '/account/'
     | '/delivery/'
     | '/kingpay/'
@@ -671,6 +773,13 @@ export interface FileRouteTypes {
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
     | '/api/sync/customizations'
+    | '/api/travel/bus-search'
+    | '/api/travel/flight-search'
+    | '/api/travel/flight-tracker'
+    | '/api/travel/hotel-search'
+    | '/api/travel/partner-handshake'
+    | '/api/travel/pnr-status'
+    | '/api/travel/train-search'
     | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
     | '/api/sync/customizations/latest'
@@ -697,6 +806,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
+  TravelRoute: typeof TravelRouteWithChildren
   ApiCrmRoute: typeof ApiCrmRoute
   ApiOgRoute: typeof ApiOgRoute
   ApiQrRoute: typeof ApiQrRoute
@@ -727,6 +837,13 @@ export interface RootRouteChildren {
   ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
   ApiRazorpayVerifyRoute: typeof ApiRazorpayVerifyRoute
   ApiSyncCustomizationsRoute: typeof ApiSyncCustomizationsRouteWithChildren
+  ApiTravelBusSearchRoute: typeof ApiTravelBusSearchRoute
+  ApiTravelFlightSearchRoute: typeof ApiTravelFlightSearchRoute
+  ApiTravelFlightTrackerRoute: typeof ApiTravelFlightTrackerRoute
+  ApiTravelHotelSearchRoute: typeof ApiTravelHotelSearchRoute
+  ApiTravelPartnerHandshakeRoute: typeof ApiTravelPartnerHandshakeRoute
+  ApiTravelPnrStatusRoute: typeof ApiTravelPnrStatusRoute
+  ApiTravelTrainSearchRoute: typeof ApiTravelTrainSearchRoute
   DeliveryTownAreaRoute: typeof DeliveryTownAreaRoute
   ApiOrdersOrderIdStreamRoute: typeof ApiOrdersOrderIdStreamRoute
 }
@@ -871,6 +988,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/travel': {
+      id: '/travel'
+      path: '/travel'
+      fullPath: '/travel'
+      preLoaderRoute: typeof TravelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/': {
@@ -1034,6 +1158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackingDispatchJobIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/travel/trips': {
+      id: '/travel/trips'
+      path: '/trips'
+      fullPath: '/travel/trips'
+      preLoaderRoute: typeof TravelTripsRouteImport
+      parentRoute: typeof TravelRoute
+    }
     '/api/admin/settings': {
       id: '/api/admin/settings'
       path: '/api/admin/settings'
@@ -1090,6 +1221,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSyncCustomizationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/travel/bus-search': {
+      id: '/api/travel/bus-search'
+      path: '/api/travel/bus-search'
+      fullPath: '/api/travel/bus-search'
+      preLoaderRoute: typeof ApiTravelBusSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel/flight-search': {
+      id: '/api/travel/flight-search'
+      path: '/api/travel/flight-search'
+      fullPath: '/api/travel/flight-search'
+      preLoaderRoute: typeof ApiTravelFlightSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel/flight-tracker': {
+      id: '/api/travel/flight-tracker'
+      path: '/api/travel/flight-tracker'
+      fullPath: '/api/travel/flight-tracker'
+      preLoaderRoute: typeof ApiTravelFlightTrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel/hotel-search': {
+      id: '/api/travel/hotel-search'
+      path: '/api/travel/hotel-search'
+      fullPath: '/api/travel/hotel-search'
+      preLoaderRoute: typeof ApiTravelHotelSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel/partner-handshake': {
+      id: '/api/travel/partner-handshake'
+      path: '/api/travel/partner-handshake'
+      fullPath: '/api/travel/partner-handshake'
+      preLoaderRoute: typeof ApiTravelPartnerHandshakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel/pnr-status': {
+      id: '/api/travel/pnr-status'
+      path: '/api/travel/pnr-status'
+      fullPath: '/api/travel/pnr-status'
+      preLoaderRoute: typeof ApiTravelPnrStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel/train-search': {
+      id: '/api/travel/train-search'
+      path: '/api/travel/train-search'
+      fullPath: '/api/travel/train-search'
+      preLoaderRoute: typeof ApiTravelTrainSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/delivery/$town/$area': {
       id: '/delivery/$town/$area'
       path: '/delivery/$town/$area'
@@ -1125,6 +1305,17 @@ const KingPayRouteChildren: KingPayRouteChildren = {
 const KingPayRouteWithChildren =
   KingPayRoute._addFileChildren(KingPayRouteChildren)
 
+interface TravelRouteChildren {
+  TravelTripsRoute: typeof TravelTripsRoute
+}
+
+const TravelRouteChildren: TravelRouteChildren = {
+  TravelTripsRoute: TravelTripsRoute,
+}
+
+const TravelRouteWithChildren =
+  TravelRoute._addFileChildren(TravelRouteChildren)
+
 interface ApiSyncCustomizationsRouteChildren {
   ApiSyncCustomizationsLatestRoute: typeof ApiSyncCustomizationsLatestRoute
 }
@@ -1159,6 +1350,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
+  TravelRoute: TravelRouteWithChildren,
   ApiCrmRoute: ApiCrmRoute,
   ApiOgRoute: ApiOgRoute,
   ApiQrRoute: ApiQrRoute,
@@ -1189,6 +1381,13 @@ const rootRouteChildren: RootRouteChildren = {
   ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,
   ApiRazorpayVerifyRoute: ApiRazorpayVerifyRoute,
   ApiSyncCustomizationsRoute: ApiSyncCustomizationsRouteWithChildren,
+  ApiTravelBusSearchRoute: ApiTravelBusSearchRoute,
+  ApiTravelFlightSearchRoute: ApiTravelFlightSearchRoute,
+  ApiTravelFlightTrackerRoute: ApiTravelFlightTrackerRoute,
+  ApiTravelHotelSearchRoute: ApiTravelHotelSearchRoute,
+  ApiTravelPartnerHandshakeRoute: ApiTravelPartnerHandshakeRoute,
+  ApiTravelPnrStatusRoute: ApiTravelPnrStatusRoute,
+  ApiTravelTrainSearchRoute: ApiTravelTrainSearchRoute,
   DeliveryTownAreaRoute: DeliveryTownAreaRoute,
   ApiOrdersOrderIdStreamRoute: ApiOrdersOrderIdStreamRoute,
 }
