@@ -10,9 +10,6 @@ export function getDatabaseUrl() {
   const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
   let url = raw && raw.trim() ? raw : undefined;
   if (url && url.includes('your_supabase_pooler')) url = undefined;
-  if (!url || !url.startsWith("postgres")) {
-    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
-  }
   return url;
 }
 export function getDbSource() { return 'neon'; }

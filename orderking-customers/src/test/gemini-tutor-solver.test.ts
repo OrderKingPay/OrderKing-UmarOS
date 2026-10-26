@@ -281,24 +281,34 @@ describe("Universal AI Tutor — Gemini 2.5 Flash & Curriculum Engine", () => {
 
   describe("3. solveAcademicProblem Integration", () => {
     it("returns deterministic curriculum solution when API keys are absent or invalid", async () => {
-      const params: AcademicSolveParams = {
-        message: "Derive Pythagoras theorem",
-        board: "CBSE (Central Board)",
-        stdClass: "Class 10",
-        subject: "Mathematics",
-      };
+      const origGoogle = process.env.GOOGLE_API_KEY;
+      const origGemini = process.env.GEMINI_API_KEY;
+      delete process.env.GOOGLE_API_KEY;
+      delete process.env.GEMINI_API_KEY;
 
-      const result = await solveAcademicProblem(params, generateCurriculumFallback);
+      try {
+        const params: AcademicSolveParams = {
+          message: "Derive Pythagoras theorem",
+          board: "CBSE (Central Board)",
+          stdClass: "Class 10",
+          subject: "Mathematics",
+        };
 
-      expect(result.text).toBeTruthy();
-      expect(result.board).toBe("CBSE (Central Board)");
-      expect(result.stdClass).toBe("Class 10");
-      expect(result.subject).toBe("Mathematics");
+        const result = await solveAcademicProblem(params, generateCurriculumFallback);
 
-      const parsed = parseStructuredAcademicSolution(result.text);
-      expect(parsed.formula).toContain("Pythagoras Theorem");
-      expect(parsed.derivation).toContain("Similarity");
-      expect(parsed.finalAnswer).toContain("a^2 + b^2 = c^2");
+        expect(result.text).toBeTruthy();
+        expect(result.board).toBe("CBSE (Central Board)");
+        expect(result.stdClass).toBe("Class 10");
+        expect(result.subject).toBe("Mathematics");
+
+        const parsed = parseStructuredAcademicSolution(result.text);
+        expect(parsed.formula).toContain("Pythagoras Theorem");
+        expect(parsed.derivation).toContain("Similarity");
+        expect(parsed.finalAnswer).toContain("a^2 + b^2 = c^2");
+      } finally {
+        if (origGoogle) process.env.GOOGLE_API_KEY = origGoogle;
+        if (origGemini) process.env.GEMINI_API_KEY = origGemini;
+      }
     });
   });
 

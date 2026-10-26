@@ -181,13 +181,13 @@ export class UniversalPlatformManager {
         id: "supabase",
         name: "Supabase & PostgreSQL Cloud",
         category: "database",
-        status: getEnvOrStorage("SUPABASE_SERVICE_ROLE_KEY") ? "ONLINE" : "STANDBY",
+        status: getEnvOrStorage("SUPABASE_ANON_KEY") ? "ONLINE" : "STANDBY",
         description: "Direct SQL migrations, table schema generation, row-level security (RLS), and realtime feeds.",
         icon: "Database",
         latencyMs: 32,
         lastSyncAt: new Date().toISOString(),
         capabilities: ["run_migrations", "execute_sql", "export_snapshot", "configure_rls"],
-        credentialRequired: "SUPABASE_SERVICE_ROLE_KEY",
+        credentialRequired: "SUPABASE_ANON_KEY",
       },
       {
         id: "shopify",
@@ -429,12 +429,12 @@ export class UniversalPlatformManager {
       }
 
       case "supabase": {
-        const supabaseKey = getEnvOrStorage("SUPABASE_SERVICE_ROLE_KEY");
+        const supabaseKey = getEnvOrStorage("SUPABASE_ANON_KEY");
         outputData = {
           tablesRecommended: ["merchants", "orders", "settlements", "loyalty_wallets"],
           rlsPolicyRecommended: "ALTER TABLE orders ENABLE ROW LEVEL SECURITY;",
           status: supabaseKey ? "CONNECTED_CLOUD" : "STANDBY_DDL_READY",
-          credentialRequired: "SUPABASE_SERVICE_ROLE_KEY",
+          credentialRequired: "SUPABASE_ANON_KEY",
         };
         summary = supabaseKey
           ? "Supabase cloud credentials active."

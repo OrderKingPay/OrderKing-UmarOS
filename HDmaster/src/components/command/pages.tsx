@@ -70,7 +70,8 @@ import {
   calculatePayoutFn,
   verifySettlementBatchFn,
 } from "@/lib/orderking/actions";
-import { CheckCircle2, XCircle, ShieldAlert, Sparkles, TrendingUp, Bot, Clock, ArrowUpRight, DollarSign, RefreshCw } from "lucide-react";
+import { CheckCircle2, XCircle, ShieldAlert, Sparkles, TrendingUp, Bot, Clock, ArrowUpRight, DollarSign, RefreshCw, AlertTriangle, Percent, Wallet, ArrowRight, ShieldCheck } from "lucide-react";
+import { calculatePromoUnitEconomics } from "@/lib/orderking/finance/promo-economics";
 import { DEFAULT_GOLIVE_CONFIG } from "@/lib/orderking/golive/golive-engine";
 import type { MasterGoLiveConfig } from "@/lib/orderking/golive/types";
 import { ROLE_LABELS, SYSTEM_ROLES, PERMISSIONS } from "@/lib/orderking/permissions";
@@ -1255,16 +1256,57 @@ function PromosPage() {
   const [cap, setCap] = useState(200);
   const [status, setStatus] = useState("DRAFT");
   const [category, setCategory] = useState("lunch");
+
+  // P&L Unit Economics Calculator State
+  const [aovRupees, setAovRupees] = useState(350);
+  const [commissionPercent, setCommissionPercent] = useState(15);
+  const [platformFeeRupees, setPlatformFeeRupees] = useState(10);
+  const [discountKind, setDiscountKind] = useState<"PERCENT" | "FLAT">("PERCENT");
+  const [discountPercent, setDiscountPercent] = useState(10);
+  const [maxDiscountRupees, setMaxDiscountRupees] = useState(80);
+  const [flatDiscountRupees, setFlatDiscountRupees] = useState(50);
+  const [isPostBookingCashback, setIsPostBookingCashback] = useState(false);
+  const [riderPayoutRupees, setRiderPayoutRupees] = useState(35);
+  const [pgPercent, setPgPercent] = useState(1.0);
+
+  // Real-time calculation of Unit Economics
+  const econ = useMemo(() => {
+    return calculatePromoUnitEconomics({
+      aovPaise: Math.round((Number(aovRupees) || 0) * 100),
+      commissionBps: Math.round((Number(commissionPercent) || 0) * 100),
+      platformFeePaise: Math.round((Number(platformFeeRupees) || 0) * 100),
+      discountKind,
+      discountPercentBps: Math.round((Number(discountPercent) || 0) * 100),
+      maxDiscountPaise: Math.round((Number(maxDiscountRupees) || 0) * 100),
+      flatDiscountPaise: Math.round((Number(flatDiscountRupees) || 0) * 100),
+      isPostBookingCashback,
+      riderPayoutPaise: Math.round((Number(riderPayoutRupees) || 0) * 100),
+      paymentGatewayBps: Math.round((Number(pgPercent) || 0) * 100),
+    });
+  }, [
+    aovRupees,
+    commissionPercent,
+    platformFeeRupees,
+    discountKind,
+    discountPercent,
+    maxDiscountRupees,
+    flatDiscountRupees,
+    isPostBookingCashback,
+    riderPayoutRupees,
+    pgPercent,
+  ]);
+
   const save = useMutation({
     mutationFn: () =>
       savePromoFn({
         data: {
           name,
-          kind: "PERCENT",
+          kind: discountKind,
           funding: "PLATFORM",
-          percentBps: 1000,
-          minOrderPaise: 20000,
-          maxDiscountPaise: 8000,
+          percentBps: discountKind === "PERCENT" ? Math.round((Number(discountPercent) || 0) * 100) : null,
+          fixedPaise: discountKind === "FLAT" ? Math.round((Number(flatDiscountRupees) || 0) * 100) : undefined,
+          minOrderPaise: econ.breakEvenAovPaise ? Math.max(10000, econ.breakEvenAovPaise) : 20000,
+          maxDiscountPaise: discountKind === "PERCENT" ? Math.round((Number(maxDiscountRupees) || 0) * 100) : undefined,
           capCount: cap,
           firstOrderOnly: firstOnly,
           status,
@@ -1272,16 +1314,301 @@ function PromosPage() {
         },
       }),
     onSuccess: (r) => {
-      if (r.ok) { toast.message(`Estimated cost ${formatInrExact(r.estimatedCostPaise)}`); inv(); }
-      else toast.error(r.error);
+      if (r.ok) {
+        toast.message(`Estimated cost ${formatInrExact(r.estimatedCostPaise)}`);
+        inv();
+      } else {
+        toast.error(r.error);
+      }
     },
   });
+
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const d = q.data && q.data.ok ? q.data.data : null;
+
   return (
-    <div className="space-y-4">
-      <h1 className="font-display text-3xl">Promotions</h1>
-      <p className="text-sm text-muted">Unlimited ACTIVE discounts are blocked. Cost figures are ESTIMATE. Target first-order, category, and cap before going live.</p>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">
+          Promotions & Unit Economics Simulator
+        </h1>
+        <p className="text-sm text-muted">
+          Mandatory unit margin guardrails active. Calculates Net Contribution Margin per transaction before publishing.
+        </p>
+      </div>
+
+      {/* P&L UNIT ECONOMICS SIMULATOR & MANDATORY LOSS WARNING */}
+      <Panel title="P&L Unit Economics Simulator & Mandatory Loss Warning">
+        <div className="space-y-5">
+          {/* Quick Presets Toolbar */}
+          <div className="flex flex-wrap items-center gap-2 border-b border-border/40 pb-3">
+            <span className="text-xs font-semibold text-muted uppercase tracking-wider">Presets:</span>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="text-xs h-7"
+              onClick={() => {
+                setAovRupees(350);
+                setCommissionPercent(18);
+                setPlatformFeeRupees(10);
+                setDiscountKind("PERCENT");
+                setDiscountPercent(10);
+                setMaxDiscountRupees(40);
+                setIsPostBookingCashback(false);
+              }}
+            >
+              Zomato Standard (10% Capped / +₹12)
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="text-xs h-7 border-red-500/30 text-red-400 hover:bg-red-950/20"
+              onClick={() => {
+                setAovRupees(250);
+                setCommissionPercent(12);
+                setPlatformFeeRupees(5);
+                setDiscountKind("FLAT");
+                setFlatDiscountRupees(60);
+                setIsPostBookingCashback(false);
+              }}
+            >
+              Simulate Loss Maker (-₹56 Warning)
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="text-xs h-7 border-amber-500/30 text-amber-400 hover:bg-amber-950/20"
+              onClick={() => {
+                setAovRupees(350);
+                setCommissionPercent(15);
+                setPlatformFeeRupees(10);
+                setDiscountKind("PERCENT");
+                setDiscountPercent(20);
+                setMaxDiscountRupees(70);
+                setIsPostBookingCashback(true);
+              }}
+            >
+              Goibibo Wallet Float (20% Cashback)
+            </Button>
+          </div>
+
+          {/* Simulator Inputs Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <div>
+              <label className="text-[11px] font-semibold text-muted block mb-1">Average Order Value (₹)</label>
+              <Input
+                type="number"
+                value={aovRupees}
+                onChange={(e) => setAovRupees(Number(e.target.value))}
+                className="h-9 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-muted block mb-1">Partner Commission (%)</label>
+              <Input
+                type="number"
+                value={commissionPercent}
+                onChange={(e) => setCommissionPercent(Number(e.target.value))}
+                className="h-9 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-muted block mb-1">Platform Fee (₹)</label>
+              <Input
+                type="number"
+                value={platformFeeRupees}
+                onChange={(e) => setPlatformFeeRupees(Number(e.target.value))}
+                className="h-9 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-muted block mb-1">Rider Payout (₹)</label>
+              <Input
+                type="number"
+                value={riderPayoutRupees}
+                onChange={(e) => setRiderPayoutRupees(Number(e.target.value))}
+                className="h-9 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-muted block mb-1">Payment Gateway (%)</label>
+              <Input
+                type="number"
+                step="0.1"
+                value={pgPercent}
+                onChange={(e) => setPgPercent(Number(e.target.value))}
+                className="h-9 text-sm"
+              />
+            </div>
+
+            {/* Discount Configuration */}
+            <div>
+              <label className="text-[11px] font-semibold text-muted block mb-1">Discount Type</label>
+              <select
+                className="w-full h-9 rounded-[10px] border border-border bg-elevated px-2 text-sm"
+                value={discountKind}
+                onChange={(e) => setDiscountKind(e.target.value as "PERCENT" | "FLAT")}
+              >
+                <option value="PERCENT">Percentage (%)</option>
+                <option value="FLAT">Flat Rupee (₹)</option>
+              </select>
+            </div>
+            {discountKind === "PERCENT" ? (
+              <>
+                <div>
+                  <label className="text-[11px] font-semibold text-muted block mb-1">Discount Rate (%)</label>
+                  <Input
+                    type="number"
+                    value={discountPercent}
+                    onChange={(e) => setDiscountPercent(Number(e.target.value))}
+                    className="h-9 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-muted block mb-1">Max Discount Cap (₹)</label>
+                  <Input
+                    type="number"
+                    value={maxDiscountRupees}
+                    onChange={(e) => setMaxDiscountRupees(Number(e.target.value))}
+                    className="h-9 text-sm"
+                  />
+                </div>
+              </>
+            ) : (
+              <div>
+                <label className="text-[11px] font-semibold text-muted block mb-1">Flat Discount Amount (₹)</label>
+                <Input
+                  type="number"
+                  value={flatDiscountRupees}
+                  onChange={(e) => setFlatDiscountRupees(Number(e.target.value))}
+                  className="h-9 text-sm"
+                />
+              </div>
+            )}
+
+            {/* Goibibo Style Cashback Toggle */}
+            <div className="flex flex-col justify-end">
+              <button
+                type="button"
+                onClick={() => setIsPostBookingCashback(!isPostBookingCashback)}
+                className={cn(
+                  "h-9 px-3 rounded-[10px] border text-xs font-semibold flex items-center justify-between transition-colors",
+                  isPostBookingCashback
+                    ? "border-amber-500/50 bg-amber-950/40 text-amber-300"
+                    : "border-border bg-elevated text-muted hover:text-foreground",
+                )}
+              >
+                <span className="flex items-center gap-1.5">
+                  <Wallet className="h-3.5 w-3.5" />
+                  Post-Booking Cashback
+                </span>
+                <span className="text-[10px] font-mono px-1 rounded bg-background/50">
+                  {isPostBookingCashback ? "ON" : "OFF"}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* MANDATORY LOSS WARNING OR PROFIT INDICATOR BANNER */}
+          {econ.isLossMaking ? (
+            <div className="rounded-xl border-2 border-red-500/80 bg-red-950/60 p-4 text-red-200 shadow-lg shadow-red-950/50 animate-pulse">
+              <div className="flex items-start gap-3">
+                <ShieldAlert className="h-6 w-6 text-red-400 shrink-0 mt-0.5" />
+                <div className="space-y-1.5 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sm tracking-wide text-red-300 uppercase">
+                      ⚠️ MANDATORY LOSS WARNING: NEGATIVE UNIT ECONOMICS DETECTED
+                    </span>
+                    <Badge variant="destructive" className="bg-red-600 text-white font-mono text-xs">
+                      -₹{(econ.lossAmountPaise / 100).toFixed(2)} / Order
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-red-200/90 leading-relaxed">
+                    Subsidy of <span className="font-semibold text-white">₹{(econ.nominalSubsidyPaise / 100).toFixed(2)}</span> exceeds revenue of <span className="font-semibold text-white">₹{(econ.grossRevenuePaise / 100).toFixed(2)}</span>. Platform treasury will lose <span className="font-bold text-red-300">₹{(econ.lossAmountPaise / 100).toFixed(2)}</span> per order. Adjustment required.
+                  </p>
+                  {econ.breakEvenAovPaise !== null && (
+                    <div className="rounded-md bg-red-900/40 border border-red-500/40 px-3 py-1.5 text-xs text-red-300 font-mono">
+                      💡 Minimum break-even order value needed: <span className="font-bold text-white">₹{(econ.breakEvenAovPaise / 100).toFixed(2)}</span> (at {(econ.commissionBps / 100).toFixed(1)}% take-rate)
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-4 text-emerald-200 shadow-md">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="space-y-1 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sm text-emerald-300">
+                      ✅ PROFITABLE CAMPAIGN: Net platform margin of ₹{(econ.netUnitMarginPaise / 100).toFixed(2)} per transaction ({econ.netYieldPercent.toFixed(1)}% net yield).
+                    </span>
+                    <Badge className="bg-emerald-600 text-white font-mono text-xs">
+                      +₹{(econ.netUnitMarginPaise / 100).toFixed(2)} Yield
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-emerald-300/80">
+                    Gross revenue of ₹{(econ.grossRevenuePaise / 100).toFixed(2)} covers rider payout (₹{(econ.riderPayoutPaise / 100).toFixed(2)}), payment gateway (₹{(econ.paymentGatewayCostPaise / 100).toFixed(2)}), and customer discount (₹{(econ.nominalSubsidyPaise / 100).toFixed(2)}).
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Unit Economics Breakdown Stat Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+            <div className="rounded-lg border border-border/60 bg-elevated/40 p-3">
+              <span className="text-[11px] font-medium text-muted block">Gross Platform Inflow</span>
+              <span className="text-base font-bold text-foreground font-mono">
+                ₹{(econ.grossRevenuePaise / 100).toFixed(2)}
+              </span>
+              <span className="text-[10px] text-muted block mt-0.5">
+                ₹{(econ.commissionRevenuePaise / 100).toFixed(2)} comm + ₹{(econ.platformFeePaise / 100).toFixed(2)} fee
+              </span>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-elevated/40 p-3">
+              <span className="text-[11px] font-medium text-muted block">Promotional Subsidy</span>
+              <span className="text-base font-bold text-foreground font-mono">
+                ₹{(econ.nominalSubsidyPaise / 100).toFixed(2)}
+              </span>
+              <span className="text-[10px] text-muted block mt-0.5">
+                {isPostBookingCashback ? "Post-booking wallet credit" : "Upfront instant discount"}
+              </span>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-elevated/40 p-3">
+              <span className="text-[11px] font-medium text-muted block">Delivery & Processing</span>
+              <span className="text-base font-bold text-foreground font-mono">
+                ₹{((econ.riderPayoutPaise + econ.paymentGatewayCostPaise) / 100).toFixed(2)}
+              </span>
+              <span className="text-[10px] text-muted block mt-0.5">
+                ₹{(econ.riderPayoutPaise / 100).toFixed(2)} rider + ₹{(econ.paymentGatewayCostPaise / 100).toFixed(2)} PG
+              </span>
+            </div>
+            <div className={cn(
+              "rounded-lg border p-3",
+              econ.isProfitable
+                ? "border-emerald-500/40 bg-emerald-950/20"
+                : "border-red-500/40 bg-red-950/20",
+            )}>
+              <span className="text-[11px] font-medium text-muted block">Net Contribution Margin</span>
+              <span className={cn(
+                "text-base font-bold font-mono",
+                econ.isProfitable ? "text-emerald-400" : "text-red-400",
+              )}>
+                {econ.netUnitMarginPaise >= 0 ? "+" : ""}₹{(econ.netUnitMarginPaise / 100).toFixed(2)}
+              </span>
+              <span className="text-[10px] text-muted block mt-0.5 font-mono">
+                {econ.netYieldPercent >= 0 ? "+" : ""}{econ.netYieldPercent.toFixed(1)}% on AOV
+              </span>
+            </div>
+          </div>
+        </div>
+      </Panel>
+
+      {/* EXISTING PROMOTIONS TABLE */}
       <DataTable
         columns={[
           { key: "name", label: "Name" },
@@ -1300,11 +1627,13 @@ function PromosPage() {
           cap: p.capCount ?? "none",
         }))}
       />
-      <Panel title="Create (always capped)">
+
+      {/* CREATE PROMO PANEL */}
+      <Panel title="Create Promo (Enforces Cap & Margin Safety)">
         <div className="flex flex-wrap gap-2">
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Promotion Name" />
           <Input placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} />
-          <Input type="number" value={cap} onChange={(e) => setCap(Number(e.target.value))} />
+          <Input type="number" value={cap} onChange={(e) => setCap(Number(e.target.value))} placeholder="Cap Count" />
           <select className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="DRAFT">Draft</option>
             <option value="ACTIVE">Active</option>
@@ -1312,7 +1641,13 @@ function PromosPage() {
           <Button size="sm" variant={firstOnly ? "primary" : "secondary"} onClick={() => setFirstOnly(!firstOnly)}>
             First order {firstOnly ? "ON" : "OFF"}
           </Button>
-          <Button onClick={() => save.mutate()}>Save</Button>
+          <Button
+            onClick={() => save.mutate()}
+            disabled={save.isPending}
+            className={cn(econ.isLossMaking && "border border-amber-500/60")}
+          >
+            {save.isPending ? "Saving..." : econ.isLossMaking ? "Publish Promo (Loss Warning Active)" : "Publish Promo"}
+          </Button>
         </div>
       </Panel>
     </div>

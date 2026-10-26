@@ -135,7 +135,7 @@ export function FlightBookingEngine({
           {isDomesticIndianRoute(originCode, destinationCode) ? (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-300">
               <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              🇮🇳 Domestic Indian Route · Travelpayouts Direct INR Settlement (0% Platform Fee · Marker #{TP_MARKER})
+              🇮🇳 Domestic Indian Route · Travelpayouts Direct INR Settlement (Verified Airline Fares · Marker #{TP_MARKER})
             </div>
           ) : (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 px-3 py-1 text-xs font-bold text-sky-300">

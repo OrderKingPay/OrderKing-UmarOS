@@ -41,6 +41,7 @@ push_all_env.ps1
 *.secret.ps1
 
 # Temporary artifacts & inspection dumps
+scratch/
 api_matches.txt
 search_results.json
 todos.txt
@@ -58,3 +59,8 @@ Thumbs.db
 apply_keys_oneshot.ps1
 GEMINI_API_KEY.txt
 RAZORPAY_KEY.txt
+
+scripts/inspect-*.cjs
+scripts/verify-*.cjs
+scripts/scratch/
+

@@ -8,6 +8,7 @@ import { instantDeployEngine } from "./instant-deploy-engine.ts";
 import { founderPrivacyShield } from "./founder-privacy-shield.ts";
 import { autonomousModelUpdater } from "./autonomous-model-updater.ts";
 import { ACTIVE_DELIVERY_ZONES, isDeliveryActiveInLocation } from "../geo/geofence-guard.ts";
+import type { UmarAiJumpCardData } from "./umar-ai-directory";
 
 export type AiModelId =
   | "auto-supreme-orchestrator"

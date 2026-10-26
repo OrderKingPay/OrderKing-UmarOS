@@ -196,8 +196,7 @@ export const ALLOWED_PARTNER_HOSTS: readonly string[] = [
 function getPartnerSecret(): string {
   return (
     process.env.TRAVEL_PARTNER_SECRET ||
-    process.env.BETTER_AUTH_SECRET ||
-    process.env.AUTH_SECRET ||
+        process.env.AUTH_SECRET ||
     "orderking_sovereign_partner_crypto_key_2026"
   );
 }

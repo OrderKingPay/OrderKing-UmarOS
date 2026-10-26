@@ -128,6 +128,13 @@ async function transitionRestaurantOrder(
     { reason: input.reason ?? "" }
   ).catch(err => console.error("[NotificationError]", err));
 
+  // Trigger autonomous algorithmic rider auto-dispatch without founder manual intervention
+  if (input.to === "READY" || input.to === "PREPARING") {
+    import("./auto-dispatch-engine.server.ts")
+      .then(m => m.runAlgorithmicAutoDispatch())
+      .catch(err => console.error("[AutoDispatchError]", err));
+  }
+
   const result = {
     ok: true as const,
     contractVersion: ORDER_CONTRACT_VERSION,
@@ -229,6 +236,13 @@ export async function handleAdminHttp(
       if (body.contractVersion !== ORDER_CONTRACT_VERSION) return json({ error: "Unsupported order contract version", code: "CONTRACT_VERSION_UNSUPPORTED" }, 409);
       if (!body.restaurantId || !body.from || !body.to) return json({ error: "restaurantId, from and to are required", code: "INVALID_REQUEST" }, 400);
       return json({ data: await transitionRestaurantOrder(ws, { orderId, restaurantId: body.restaurantId, from: body.from, to: body.to, reason: body.reason, idempotencyKey, correlationId: body.correlationId }) });
+    }
+
+    if (method === "POST" && /^orders\/.+\/dispatch-rider$/.test(path)) {
+      const orderId = path.split("/")[1]!;
+      const { runAlgorithmicAutoDispatch } = await import("./auto-dispatch-engine.server.ts");
+      const result = await runAlgorithmicAutoDispatch();
+      return json({ ok: true, orderId, autoDispatchResult: result });
     }
 
     if (method === "POST" && /^restaurants\/.+\/approve$/.test(path)) {

@@ -224,7 +224,7 @@ export function OrderCard({
         };
       });
 
-      toast.success(`✅ Rider Handover Verified! Food handed over to Rider Rajesh Kumar.`);
+      toast.success(`✅ Rider Handover Verified! Food handed over for Order #${order.orderNumber}.`);
       setHandoverModalOpen(false);
       onChanged?.();
     } catch {

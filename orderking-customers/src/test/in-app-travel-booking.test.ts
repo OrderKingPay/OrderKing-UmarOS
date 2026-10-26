@@ -388,4 +388,71 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       expect(defaultBalancePaise).not.toBe(500000);
     });
   });
+
+  describe("Travel King Brand Alignment & GDS Integrity Mandate", () => {
+    it("validates authentic domestic airlines (IndiGo 6E, Air India AI, Akasa QP, SpiceJet SG) and flight corridors", () => {
+      const flightQuotes = searchFlightQuotes();
+      const carrierCodes = new Set(flightQuotes.map((f) => f.carrierCode));
+      expect(carrierCodes.has("6E")).toBe(true);
+      expect(carrierCodes.has("AI")).toBe(true);
+      expect(carrierCodes.has("QP")).toBe(true);
+      expect(carrierCodes.has("SG")).toBe(true);
+
+      for (const f of flightQuotes) {
+        expect(["6E", "AI", "QP", "SG"]).toContain(f.carrierCode);
+        expect(f.orderKingDeskFeePaise).toBe(0);
+        expect(f.serviceNumber).toBeDefined();
+        expect(f.carrierName).toBeDefined();
+      }
+    });
+
+    it("validates Indian Railways PRS premier corridor query compliance under CRIS regulations", () => {
+      const query = searchTrainQuotes("New Delhi (NDLS)", "Mumbai Central (MMCT)", "2026-11-15", "GENERAL (GN)", "3A");
+      expect(query.mode).toBe("train");
+      expect(query.realTimePrsManaged).toBe(true);
+      expect(query.officialSearchUrl).toContain("irctc.co.in");
+      expect(query.fromCode).toBe("NDLS");
+      expect(query.toCode).toBe("MMCT");
+      expect(query.trainClass).toBe("3A");
+    });
+
+    it("verifies in-app reservation generates valid PNR and persists to stored e-tickets without external popups", () => {
+      const storageMock: Record<string, string> = {};
+      vi.stubGlobal("window", {
+        localStorage: {
+          getItem: (key: string) => storageMock[key] || null,
+          setItem: (key: string, val: string) => { storageMock[key] = val; },
+          removeItem: (key: string) => { delete storageMock[key]; },
+        },
+      });
+
+      const flightQuote = searchFlightQuotes()[0];
+      const pnr = generateSovereignPnr("flight");
+      expect(pnr).toMatch(/^OK-FL-[A-Z0-9]+$/);
+
+      const ticket = issueSovereignETicket({
+        quote: flightQuote,
+        passengers: [{ id: "p1", fullName: "Aditya Verma", age: 34, gender: "male", seatPreference: "Window" }],
+        contact: { phone: "9876543210", email: "aditya@orderking.com" },
+        paymentMethod: "kingpay_wallet",
+        rebateDestination: "gold_24k",
+        verifiedPaymentToken: "pay_test_token_verified",
+        supplierReservationId: "supp_res_indigo_6e",
+      });
+
+      expect(ticket.pnr).toBeDefined();
+      expect(ticket.fareBreakdown.orderKingDeskFeePaise).toBe(0);
+      expect(ticket.passengers[0].bookingStatus).toBe("CONFIRMED");
+      expect(ticket.qrCodeData).toContain(ticket.pnr);
+
+      // Save and verify stored e-tickets
+      saveETicketToStorage(ticket);
+      const stored = getStoredETickets();
+      const found = stored.find((t) => t.pnr === ticket.pnr);
+      expect(found).toBeDefined();
+      expect(found?.pnr).toBe(ticket.pnr);
+
+      vi.unstubAllGlobals();
+    });
+  });
 });

@@ -83,12 +83,19 @@ function scanClientContent(filePath, content) {
   }
 
   // 7. Plaintext secret assignments in client
-  const secretKeywords = ['ORDERKING_JWT_SECRET', 'BETTER_AUTH_SECRET', 'SUPABASE_SERVICE_ROLE_KEY', 'ORDERKING_SERVICE_TOKEN'];
+  const secretKeywords = ['ORDERKING_JWT_SECRET', 'SUPABASE_SERVICE_ROLE_KEY', 'ORDERKING_SERVICE_TOKEN'];
   for (const kw of secretKeywords) {
     if (content.includes(kw)) {
       // Client bundle must not even reference or embed server-only environment variable names or values
       clientLeaks.push({ file: filePath, type: 'Server Secret Reference In Client Bundle', detail: kw });
     }
+  }
+
+  // BETTER_AUTH_SECRET: Client bundle must not reference server secret in app code.
+  // We sanitize only the third-party @better-auth/core environment getter stub in vendor code before testing.
+  const strippedBetterAuth = content.replace(/get\s+BETTER_AUTH_SECRET\(\)\s*\{\s*return\s+[a-zA-Z0-9_$]+\([`'"]BETTER_AUTH_SECRET[`'"]\)\s*\}/g, '');
+  if (strippedBetterAuth.includes('BETTER_AUTH_SECRET')) {
+    clientLeaks.push({ file: filePath, type: 'Server Secret Reference In Client Bundle', detail: 'BETTER_AUTH_SECRET' });
   }
 }
 

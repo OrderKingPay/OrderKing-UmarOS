@@ -13,11 +13,11 @@ const OPTIONS: TravelGroup[] = [
     icon: Plane,
     connected: true,
     options: [
-      { name: "Domestic Flights", detail: "IndiGo, Air India, Akasa & SpiceJet with 0% platform fee" },
+      { name: "Domestic Flights", detail: "IndiGo, Air India, Akasa & SpiceJet with verified airline fares" },
       { name: "International", detail: "Direct & connecting long-haul sectors with live GDS fares" },
       { name: "Student & Defence", detail: "Concession fares with eligible baggage allowance" },
       { name: "Web Check-In", detail: "Official airline web check-in & boarding pass retrieval" },
-      { name: "Round-Trip", detail: "Multi-sector air itineraries with zero convenience markup" },
+      { name: "Round-Trip", detail: "Multi-sector air itineraries with live corridor tariffs" },
     ],
   },
   {

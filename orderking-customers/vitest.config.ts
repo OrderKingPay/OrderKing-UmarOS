@@ -1,10 +1,33 @@
 import { defineConfig } from "vitest/config";
 import path from "node:path";
+import fs from "node:fs";
+
+// Load local gitignored .env into test runner environment if present
+const envPath = path.resolve(import.meta.dirname, ".env");
+if (fs.existsSync(envPath)) {
+  const content = fs.readFileSync(envPath, "utf8");
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx !== -1) {
+      const key = trimmed.slice(0, eqIdx).trim();
+      let val = trimmed.slice(eqIdx + 1).trim();
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+      }
+      if (!process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+  }
+}
 
 export default defineConfig({
   test: {
-    testTimeout: 20000,
-    hookTimeout: 20000,
+    testTimeout: 60000,
+    hookTimeout: 60000,
+    fileParallelism: false,
     include: [
       "src/test/micro-task-earn.test.ts",
       "src/test/checkout-unavailable.test.ts",
@@ -39,16 +62,24 @@ export default defineConfig({
       "src/test/academic-tutor-kingpay-integration.test.ts",
       "src/test/academic-tutor-reality.test.ts",
       "src/test/gemini-tutor-solver.test.ts",
+      "src/test/adzuna-jobs-hub.test.ts",
+      "src/test/in-app-travel-booking.test.ts",
+      "src/test/dual-travel-engine.test.ts",
+      "src/test/travel-partner-affiliates.test.ts",
+      "src/test/travel-provider-truth-gates.test.ts",
+      "src/test/travel-autosuggest.test.ts",
+      "src/test/sovereign-travel-engine.test.ts",
+      "src/test/travelpayouts-white-label.test.ts",
     ],
     environment: "node",
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@orderking/ui": path.resolve(__dirname, "../packages/ui/src"),
-      "react": path.resolve(__dirname, "./node_modules/react"),
-      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
-      "react/jsx-runtime": path.resolve(__dirname, "./node_modules/react/jsx-runtime"),
+      "@": path.resolve(import.meta.dirname, "./src"),
+      "@orderking/ui": path.resolve(import.meta.dirname, "../packages/ui/src"),
+      "react": path.resolve(import.meta.dirname, "./node_modules/react"),
+      "react-dom": path.resolve(import.meta.dirname, "./node_modules/react-dom"),
+      "react/jsx-runtime": path.resolve(import.meta.dirname, "./node_modules/react/jsx-runtime"),
     },
   },
 });

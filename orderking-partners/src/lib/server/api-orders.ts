@@ -451,6 +451,56 @@ export const processCustomerChargeback = createServerFn({ method: "POST" })
 
 
 
+export const requestRiderDispatch = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; orderId: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
+      const rows = await sql<{ id: string; status: string; state: string; rider_id: string | null; order_number: string }>`
+        SELECT id, status, state, rider_id, order_number FROM orders
+        WHERE id = ${data.orderId} AND restaurant_id = ${ctx.restaurantId}
+        LIMIT 1
+      `;
+      if (!rows[0]) throw new Error("Order not found or unauthorized");
+
+      let dispatchResult: any = null;
+      try {
+        const res = await fetch(`${coreUrl()}/v1/admin/orders/${encodeURIComponent(data.orderId)}/dispatch-rider`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            authorization: `Bearer ${serviceToken()}`,
+          },
+          body: JSON.stringify({ restaurantId: ctx.restaurantId }),
+        });
+        if (res.ok) {
+          dispatchResult = await res.json();
+        }
+      } catch (err) {
+        console.warn("[requestRiderDispatch] Core dispatch call:", err);
+      }
+
+      await notifyInApp(sql, {
+        restaurantId: ctx.restaurantId,
+        type: "order_status",
+        title: `Rider Dispatch Pinged for Order #${rows[0].order_number}`,
+        body: "Nearby active delivery couriers alerted for immediate pickup.",
+      });
+
+      await sql`
+        insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
+        values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, ${rows[0].state || rows[0].status || 'READY'}, ${rows[0].state || rows[0].status || 'READY'}, 'restaurant', ${context.userId}, 'Partner requested autonomous rider dispatch')
+      `;
+
+      return {
+        ok: true,
+        orderId: data.orderId,
+        orderNumber: rows[0].order_number,
+        dispatchResult,
+      };
+    });
+  });
+
 export async function setOrderStatus(params: {
   orderId: string;
   status: "ACCEPTED" | "PREPARING" | "READY" | "REJECTED";

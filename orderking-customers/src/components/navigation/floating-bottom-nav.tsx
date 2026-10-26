@@ -172,12 +172,19 @@ export const THREE_TAB_CUSTOMER_NAV = [
 ] as const;
 
 export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps) {
-  const pathname = useRouterState({ select: (s) => s?.location?.pathname ?? "/" });
+  const pathname = (useRouterState({ select: (s) => s?.location?.pathname }) as unknown as string) ?? "/";
+  const search = (useRouterState({ select: (s) => (s?.location?.search as any)?.tab }) as unknown as string | undefined) ?? "";
   const inKingPay = /^\/(?:kingpay|king-pay)(?:\/|$)/.test(pathname);
-  const inActivity = pathname.startsWith("/orders") || pathname.startsWith("/kingpay/passbook");
+  const inTravel = pathname.startsWith("/travel");
+  const inActivity =
+    (inTravel && (search === "trips" || pathname.includes("/trips"))) ||
+    pathname.startsWith("/orders") ||
+    pathname.startsWith("/kingpay/passbook");
   const inFood = pathname === "/" || ["/delivery", "/r/", "/restaurants", "/menu", "/dining", "/search", "/cart", "/checkout", "/offers", "/rewards"].some((p) => pathname.startsWith(p));
   const activeId = inActivity ? "activity" : inKingPay ? "kingpay" : inFood ? "food" : null;
-  const rightTab = inKingPay
+  const rightTab = inTravel
+    ? { id: "activity", label: "MY TRIPS", to: "/travel?tab=trips", icon: Ticket }
+    : inKingPay
     ? { id: "activity", label: "HISTORY", to: "/kingpay/passbook", icon: Receipt }
     : { id: "activity", label: "ORDERS", to: "/orders", icon: ShoppingBag };
   const tabs = [...THREE_TAB_CUSTOMER_NAV, rightTab] as const;

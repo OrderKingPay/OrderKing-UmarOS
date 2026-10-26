@@ -1668,7 +1668,7 @@ function IntelligencePage() {
 
   const [history, setHistory] = useState<{role: 'user' | 'assistant', content: string, billingStatus?: any}[]>([
 
-    { role: 'assistant', content: "Academic Tutor initialized for Central & 28 State Boards. Select your Board, Class Level, and Core Subject. Enter your question to receive step-by-step solutions formatted into: Given Formula / Concept, Step-by-Step Derivation & Solution, and Final Answer." }
+    { role: 'assistant', content: "King Tutor (Academic Tutor) initialized for Central & 28 State Boards. Select your Board, Class Level, and Core Subject. Enter your question to receive step-by-step solutions formatted into: Given Formula / Concept, Step-by-Step Derivation & Solution, and Final Answer." }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -1873,14 +1873,17 @@ function IntelligencePage() {
               <div className="flex items-center gap-2 mb-1">
                 <span className="inline-flex items-center gap-1 rounded-full bg-purple-400/20 border border-purple-400/40 px-2 py-0.5 text-[10px] font-black text-purple-300">
                   <span>🎓</span>
-                  <span>Academic Tutor</span>
+                  <span>King Tutor · Academic Tutor</span>
                 </span>
                 <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
                   28 State Boards
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Academic Tutor
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                <span>King Tutor</span>
+                <span className="text-xs font-semibold text-purple-300 bg-purple-900/60 px-2 py-0.5 rounded-md border border-purple-500/30">
+                  Academic Tutor
+                </span>
               </h1>
             </div>
 
@@ -1908,7 +1911,7 @@ function IntelligencePage() {
                 }`}
               >
                 <GraduationCap className="size-3.5" />
-                <span>Academic Tutor</span>
+                <span>King Tutor (Academic Tutor)</span>
               </button>
               <button
                 type="button"
@@ -1920,7 +1923,7 @@ function IntelligencePage() {
                 }`}
               >
                 <Briefcase className="size-3.5" />
-                <span>Available Jobs</span>
+                <span>King Job (Careers)</span>
                 <span className="rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] px-1.5 py-0.2 font-extrabold ml-0.5">
                   {VERIFIED_JOB_OPENINGS.length}
                 </span>

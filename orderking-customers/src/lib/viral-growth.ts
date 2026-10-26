@@ -18,7 +18,7 @@ export const ViralGrowthEngine = {
    * Format: OK-{4 chars from hash}-{3 random chars}
    */
   generateReferralCode(userId: string): string {
-    const secret = typeof process !== "undefined" && process.env.BETTER_AUTH_SECRET ? process.env.BETTER_AUTH_SECRET : "default_secret";
+    const secret = typeof process !== "undefined" && process.env.ORDERKING_REFERRAL_SECRET ? process.env.ORDERKING_REFERRAL_SECRET : "orderking_referral_salt_v1";
     const hash = createHash("sha256").update(userId + secret).digest("hex").substring(0, 4).toUpperCase();
     const entropy = randomBytes(2).toString("hex").substring(0, 3).toUpperCase();
     return `OK-${hash}${entropy}`;

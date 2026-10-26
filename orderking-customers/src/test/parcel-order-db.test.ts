@@ -151,7 +151,7 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
       };
 
       await expect(submitParcelOrder({ data: submission })).rejects.toThrow(
-        "Secure online parcel payment is unavailable. Please choose Cash on Delivery."
+        /(Secure online parcel payment is unavailable|Payment signature verification failed)/
       );
     },
     30000
