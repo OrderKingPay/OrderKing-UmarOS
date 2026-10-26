@@ -1,3 +1,5 @@
+import { RiderError } from "./types.ts";
+
 /**
  * OrderKing Rider Banking & Instant RazorpayX Payout Service
  *

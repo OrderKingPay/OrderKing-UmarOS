@@ -10,8 +10,35 @@ describe("OrderKing Rider RazorpayX Banking & T+1 Instant Payout Suite", () => {
   let store: MemoryStore;
   let engine: RiderEngine;
   const testUserId = "rider-payout-user-1";
+  let origKeyId: string | undefined;
+  let origKeySecret: string | undefined;
 
   beforeEach(async () => {
+    origKeyId = process.env.RAZORPAYX_KEY_ID;
+    origKeySecret = process.env.RAZORPAYX_KEY_SECRET;
+    process.env.RAZORPAYX_KEY_ID = "rzp_test_payout_key";
+    process.env.RAZORPAYX_KEY_SECRET = "rzp_test_payout_secret";
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: "pout_test_rzpx_123",
+          entity: "payout",
+          fund_account_id: "fa_test_456",
+          amount: 2500,
+          currency: "INR",
+          status: "processing",
+          purpose: "payout",
+          utr: "RZPXUTR9876543210",
+          mode: "UPI",
+          reference_id: "REF-TEST-123",
+        }),
+      }),
+    );
+
     store = new MemoryStore();
     engine = new RiderEngine(store);
 
@@ -21,6 +48,16 @@ describe("OrderKing Rider RazorpayX Banking & T+1 Instant Payout Suite", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    if (origKeyId !== undefined) {
+      process.env.RAZORPAYX_KEY_ID = origKeyId;
+    } else {
+      delete process.env.RAZORPAYX_KEY_ID;
+    }
+    if (origKeySecret !== undefined) {
+      process.env.RAZORPAYX_KEY_SECRET = origKeySecret;
+    } else {
+      delete process.env.RAZORPAYX_KEY_SECRET;
+    }
   });
 
   it("verifies platform default payout configuration is T+1 Daily", () => {
@@ -157,6 +194,23 @@ describe("OrderKing Rider RazorpayX Banking & T+1 Instant Payout Suite", () => {
       if (prevKeySecret) process.env.RAZORPAYX_KEY_SECRET = prevKeySecret;
       else delete process.env.RAZORPAYX_KEY_SECRET;
     }
+  });
+
+  it("enforces fail-closed gate when RazorpayX gateway credentials are missing", async () => {
+    delete process.env.RAZORPAYX_KEY_ID;
+    delete process.env.RAZORPAYX_KEY_SECRET;
+    delete process.env.RAZORPAY_KEY_ID;
+    delete process.env.RAZORPAY_KEY_SECRET;
+
+    await expect(
+      executeRiderRazorpayXPayout({
+        riderId: "RIDER-1",
+        riderName: "Suresh Courier",
+        amountPaise: 50000,
+        vpa: "suresh@okhdfcbank",
+        referenceId: "REF-TEST-FAILCLOSED",
+      }),
+    ).rejects.toThrow("RazorpayX banking payout gateway credentials are not configured");
   });
 
   it("calculates next-day daily settlement schedule with 10:00 AM window", () => {
