@@ -56,7 +56,7 @@ export const Route = createFileRoute("/travel/")({
   errorComponent: AppErrorComponent,
 });
 
-export type TravelTab = "flights" | "trains" | "buses" | "hotels" | "cabs" | "fastag" | "trips";
+export type TravelTab = "flights" | "trains" | "buses" | "hotels" | "cabs" | "fastag" | "trips" | "pilgrimage";
 
 export interface PopularRoute {
   id: string;
@@ -212,7 +212,7 @@ export const POPULAR_ROUTES: readonly PopularRoute[] = [
 
 export interface SavedTripReference {
   id: string;
-  bookingType: "Flight" | "Train" | "Bus" | "Hotel" | "Cab";
+  bookingType: "Flight" | "Train" | "Bus" | "Hotel" | "Cab" | "Tour";
   providerName: string;
   bookingRef: string;
   travelDate: string;
@@ -561,6 +561,7 @@ export function TravelPage() {
     else if (target === "hotels") setActiveTab("hotels");
     else if (target === "cabs") setActiveTab("cabs");
     else if (target === "trips") setActiveTab("trips");
+    else if (target === "pilgrimage" || target === "tours" || target === "umrah") setActiveTab("pilgrimage");
   }, [sectionHash, searchTab]);
 
   // Flight Search State
@@ -622,6 +623,11 @@ export function TravelPage() {
   const [cabVehicleClass, setCabVehicleClass] = useState<"mini" | "sedan" | "suv">("sedan");
   const [cabDistanceKm, setCabDistanceKm] = useState(35);
 
+  // Pilgrimage & High-Margin Tour Desk State
+  const [pilgrimPromoCode, setPilgrimPromoCode] = useState("");
+  const [appliedPilgrimPromo, setAppliedPilgrimPromo] = useState<string | null>("PILGRIM3000");
+  const [pilgrimSearchQuery, setPilgrimSearchQuery] = useState("");
+
   // Saved Trips State (persisted in localStorage)
   const [savedTrips, setSavedTrips] = useState<SavedTripReference[]>([]);
   const [tripType, setTripType] = useState<SavedTripReference["bookingType"]>("Flight");
@@ -635,7 +641,7 @@ export function TravelPage() {
 
   // In-App Seamless Booking Flow State (Eliminating external popups)
   const [inAppBookingModal, setInAppBookingModal] = useState<{
-    type: "flight" | "train" | "hotel";
+    type: "flight" | "train" | "hotel" | "pilgrimage";
     data: any;
     selectedClass?: string;
   } | null>(null);
@@ -898,7 +904,14 @@ export function TravelPage() {
       // Record in saved trips
       const newTripRecord: SavedTripReference = {
         id: `trip-${Date.now()}`,
-        bookingType: modalType === "flight" ? "Flight" : modalType === "train" ? "Train" : "Hotel",
+        bookingType:
+          modalType === "flight"
+            ? "Flight"
+            : modalType === "train"
+              ? "Train"
+              : modalType === "hotel"
+                ? "Hotel"
+                : "Tour",
         providerName: modalData.carrierName || modalData.trainName || modalData.name,
         bookingRef: pnrGenerated,
         travelDate: createdTicket.origin.departureDate,
@@ -1036,6 +1049,19 @@ export function TravelPage() {
             >
               <Car className="size-4 text-emerald-400" />
               <span>Cabs &amp; Airport</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("pilgrimage")}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all ${
+                activeTab === "pilgrimage"
+                  ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md ring-2 ring-amber-400"
+                  : "bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100"
+              }`}
+            >
+              <Crown className="size-4 text-amber-500" />
+              <span>Pilgrimage &amp; Tours (Umrah, Kashi, Dubai)</span>
             </button>
 
             <button
@@ -2288,6 +2314,287 @@ export function TravelPage() {
                 >
                   Save Cab to My Trips
                 </Button>
+              </div>
+
+            </div>
+          )}
+
+          {/* =====================================================================
+              CATEGORY 7: PILGRIMAGE & SACRED HIGH-MARGIN TOURS (TBO GDS POWERHOUSE)
+             ===================================================================== */}
+          {activeTab === "pilgrimage" && (
+            <div className="space-y-6">
+              
+              {/* Luxury Promotional Header & Up to ₹5,000 Closed-Loop Cashback Banner */}
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950 via-slate-900 to-amber-900 p-6 text-white border border-amber-500/30 shadow-lg">
+                <div className="relative z-10 max-w-2xl space-y-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-[11px] font-black uppercase tracking-wider text-amber-300">
+                    <Crown className="size-3.5 text-amber-400" /> TBO Agency #187051 Wholesale Gateway
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                    Sovereign Pilgrimage &amp; Curated Holiday Tours
+                  </h3>
+                  <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed">
+                    Direct wholesale packages for Umrah, Kashi Vishwanath, Ayodhya Ram Mandir, Dubai, and Kashmir.
+                    Earn <span className="font-bold text-amber-300">up to ₹5,000 instant cashback</span> credited directly to your closed-loop KingPay Food Wallet.
+                  </p>
+                </div>
+
+                {/* Vouchers Bar */}
+                <div className="relative z-10 mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-bold text-amber-200 uppercase tracking-wider">
+                    Instant Voucher Codes:
+                  </span>
+                  {[
+                    { code: "PILGRIM3000", label: "₹3,000 Off Umrah / Kashi" },
+                    { code: "GLOBAL5000", label: "₹5,000 Off Dubai & International" },
+                    { code: "HOLIDAY1500", label: "₹1,500 Off Domestic Tours" },
+                    { code: "KASHMIR2500", label: "₹2,500 Off Kashmir Valley" },
+                  ].map((v) => (
+                    <button
+                      key={v.code}
+                      type="button"
+                      onClick={() => {
+                        setAppliedPilgrimPromo(v.code);
+                        toast.success(`Coupon ${v.code} Applied! ${v.label}`);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-all flex items-center gap-1.5 ${
+                        appliedPilgrimPromo === v.code
+                          ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-105"
+                          : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+                      }`}
+                    >
+                      <span>🏷️ {v.code}</span>
+                      <span className="text-[10px] opacity-80">({v.label})</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Curated Package Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  {
+                    id: "pkg-umrah-15d",
+                    title: "Umrah 15-Day Premium Spiritual Journey",
+                    destination: "Makkah & Madinah (Saudi Arabia)",
+                    duration: "14 Nights / 15 Days",
+                    category: "Islamic Pilgrimage",
+                    badgeColor: "bg-emerald-600",
+                    image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=600&auto=format&fit=crop&q=80",
+                    inclusions: [
+                      "Direct Flights: CCU / GAU / DEL ➔ JED / MED",
+                      "5 Nights in Makkah (4-Star Clock Tower Facing)",
+                      "5 Nights in Madinah (Near Prophet's Mosque)",
+                      "Rawdah Permit & E-Visa Processing",
+                      "Private AC Coach Ziyarat & Transfers",
+                    ],
+                    publishedMrp: 10500000,
+                    orderkingPrice: 8850000,
+                    wholesaleMargin: 1800000,
+                    eligiblePromo: "PILGRIM3000",
+                    cashbackPaise: 300000,
+                    departureCity: "Guwahati / Kolkata / Delhi",
+                  },
+                  {
+                    id: "pkg-dubai-5d",
+                    title: "Dubai 5D/4N Luxury Oasis Tour",
+                    destination: "Dubai & Abu Dhabi (UAE)",
+                    duration: "4 Nights / 5 Days",
+                    category: "International Leisure",
+                    badgeColor: "bg-sky-600",
+                    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&auto=format&fit=crop&q=80",
+                    inclusions: [
+                      "Return Flights via Emirates / IndiGo",
+                      "5-Star Marina Hotel with Daily Breakfast",
+                      "Desert Safari with Dune Bashing & BBQ",
+                      "Burj Khalifa 124th Floor Observation Deck",
+                      "Private Marina Dhow Cruise Dinner",
+                    ],
+                    publishedMrp: 5900000,
+                    orderkingPrice: 4800000,
+                    wholesaleMargin: 1250000,
+                    eligiblePromo: "GLOBAL5000",
+                    cashbackPaise: 500000,
+                    departureCity: "Guwahati / Kolkata / Mumbai / Delhi",
+                  },
+                  {
+                    id: "pkg-kashi-ayodhya-4d",
+                    title: "Sacred Kashi, Ayodhya & Prayagraj Express",
+                    destination: "Varanasi, Ayodhya & Prayagraj",
+                    duration: "3 Nights / 4 Days",
+                    category: "Sacred Hindu Circuit",
+                    badgeColor: "bg-orange-600",
+                    image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=600&auto=format&fit=crop&q=80",
+                    inclusions: [
+                      "Express Vande Bharat / Rajdhani Rail Berths",
+                      "Ram Janmabhoomi VIP Darshan Pass",
+                      "Kashi Vishwanath Corridor Darshan",
+                      "Ganga Aarti Boat Ride at Dashashwamedh Ghat",
+                      "Heritage Haveli Stay with Satvik Meals",
+                    ],
+                    publishedMrp: 2400000,
+                    orderkingPrice: 1850000,
+                    wholesaleMargin: 650000,
+                    eligiblePromo: "HOLIDAY1500",
+                    cashbackPaise: 150000,
+                    departureCity: "Delhi / Patna / Guwahati",
+                  },
+                  {
+                    id: "pkg-kashmir-6d",
+                    title: "Kashmir Valley Paradise (Srinagar & Gulmarg)",
+                    destination: "Srinagar, Gulmarg, Pahalgam & Sonamarg",
+                    duration: "5 Nights / 6 Days",
+                    category: "Mountain Escape",
+                    badgeColor: "bg-teal-600",
+                    image: "https://images.unsplash.com/photo-1566837945700-30057527ade0?w=600&auto=format&fit=crop&q=80",
+                    inclusions: [
+                      "Return Flights to Srinagar (SXR)",
+                      "Luxury Dal Lake Houseboat with Shikara Ride",
+                      "Gulmarg Gondola Phase 1 & 2 Passes Included",
+                      "Pahalgam Betaab Valley Sightseeing",
+                      "Dedicated Chauffeur Driven Private Cab",
+                    ],
+                    publishedMrp: 3400000,
+                    orderkingPrice: 2650000,
+                    wholesaleMargin: 1400000,
+                    eligiblePromo: "KASHMIR2500",
+                    cashbackPaise: 250000,
+                    departureCity: "All Major Indian Airports",
+                  },
+                  {
+                    id: "pkg-shillong-meghalaya-4d",
+                    title: "Shillong & Meghalaya Northeast Sacred Circuit",
+                    destination: "Guwahati, Shillong, Cherrapunji & Dawki",
+                    duration: "3 Nights / 4 Days",
+                    category: "Northeast Flagship",
+                    badgeColor: "bg-indigo-600",
+                    image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&auto=format&fit=crop&q=80",
+                    inclusions: [
+                      "Maa Kamakhya Devi Temple VIP Darshan",
+                      "Umiam Lake & Nohkalikai Waterfalls Sightseeing",
+                      "Dawki Crystal Clear Umngot River Boat Ride",
+                      "Eco-Resort Stay in Shillong Pine Woods",
+                      "Doorstep Pickup from Sribhumi / Silchar / Guwahati",
+                    ],
+                    publishedMrp: 2200000,
+                    orderkingPrice: 1650000,
+                    wholesaleMargin: 800000,
+                    eligiblePromo: "HOLIDAY1500",
+                    cashbackPaise: 150000,
+                    departureCity: "Assam / Northeast / Kolkata",
+                  },
+                ].map((pkg) => {
+                  const hasPromo = appliedPilgrimPromo === pkg.eligiblePromo;
+                  const finalPayablePaise = pkg.orderkingPrice;
+                  const cashbackAwarded = hasPromo ? pkg.cashbackPaise : 0;
+                  const netPlatformRetained = pkg.wholesaleMargin - cashbackAwarded;
+
+                  return (
+                    <div
+                      key={pkg.id}
+                      className="group flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs hover:shadow-xl transition-all duration-300"
+                    >
+                      <div className="space-y-3">
+                        <div className="relative h-44 rounded-2xl overflow-hidden shadow-inner">
+                          <img
+                            src={pkg.image}
+                            alt={pkg.title}
+                            className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                            <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase text-white shadow-xs ${pkg.badgeColor}`}>
+                              {pkg.category}
+                            </span>
+                            <span className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-slate-900/80 text-white backdrop-blur-xs">
+                              {pkg.duration}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="text-base font-black text-slate-900 leading-snug group-hover:text-amber-700 transition-colors">
+                            {pkg.title}
+                          </h4>
+                          <span className="text-xs font-semibold text-slate-500 flex items-center gap-1 mt-1">
+                            <MapPin className="size-3 text-amber-500 shrink-0" />
+                            {pkg.destination}
+                          </span>
+                        </div>
+
+                        <ul className="space-y-1 text-xs text-slate-600 bg-slate-50 rounded-2xl p-3 border border-slate-100">
+                          {pkg.inclusions.map((item, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="mt-4 pt-3 border-t border-slate-100 space-y-2.5">
+                        <div className="flex items-baseline justify-between">
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-400 line-through mr-1.5">
+                              {formatPaise(pkg.publishedMrp)}
+                            </span>
+                            <span className="text-lg font-black text-slate-900">
+                              {formatPaise(finalPayablePaise)}
+                            </span>
+                            <span className="text-[10px] text-slate-500 block font-medium">
+                              All inclusive per person
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg block">
+                              Profit: {formatPaise(netPlatformRetained)}
+                            </span>
+                            {cashbackAwarded > 0 && (
+                              <span className="text-[10px] font-black text-amber-700 block mt-0.5">
+                                +{formatPaise(cashbackAwarded)} Food Cashback
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            setInAppBookingModal({
+                              type: "pilgrimage",
+                              data: {
+                                carrierName: "OrderKing Wholesale Travel Desk (#187051)",
+                                name: pkg.title,
+                                baseFarePaise: pkg.orderkingPrice,
+                                totalFarePaise: pkg.orderkingPrice,
+                                taxesPaise: 0,
+                                departureDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
+                                origin: {
+                                  city: pkg.departureCity.split("/")[0].trim(),
+                                  airportCode: "GAU",
+                                  departureTime: "08:00 AM",
+                                  departureDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
+                                },
+                                destination: {
+                                  city: pkg.destination.split("(")[0].trim(),
+                                  airportCode: "JED",
+                                  arrivalTime: "04:30 PM",
+                                  arrivalDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
+                                },
+                              },
+                              selectedClass: "Deluxe AC Sovereign",
+                            });
+                          }}
+                          className="w-full h-11 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
+                        >
+                          <Crown className="size-4 text-amber-200" />
+                          <span>Book Tour with KingPay UPI</span>
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
             </div>

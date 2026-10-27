@@ -22,6 +22,9 @@ import {
   Crown,
   CreditCard,
   Plane,
+  Train,
+  Package,
+  ShieldCheck,
   GraduationCap,
   Briefcase,
 } from "lucide-react";
@@ -426,6 +429,153 @@ export function HomeFeed({
             Next: {activeShift.nextShiftTime}
           </span>
         </div>
+      )}
+
+      {/* ONE-TAP SUPER-APP GATEWAY: FLIGHTS, TRAINS, PILGRIMAGE, KINGPAY, TUTOR & PARCEL */}
+      {!q && list.data?.deliveryAvailable !== false && (
+        <section aria-label="Ecosystem Services" className="pt-0.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
+            {/* 1. Flights & Stays */}
+            <Link
+              to="/travel"
+              className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-sky-50 via-white to-sky-100/40 border border-sky-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95"
+            >
+              <div className="flex items-center justify-between w-full mb-1">
+                <span className="size-8 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-600 group-hover:scale-110 transition-transform">
+                  <Plane className="size-4" />
+                </span>
+                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-sky-500 text-white">
+                  ₹0 Fee
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-black text-slate-900 block leading-tight">
+                  Flights &amp; Stays
+                </span>
+                <span className="text-[10px] font-semibold text-sky-700 block mt-0.5">
+                  Up to ₹5,000 Back
+                </span>
+              </div>
+            </Link>
+
+            {/* 2. Indian Railways */}
+            <Link
+              to="/travel"
+              search={{ tab: "trains" }}
+              className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-indigo-50 via-white to-indigo-100/40 border border-indigo-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95"
+            >
+              <div className="flex items-center justify-between w-full mb-1">
+                <span className="size-8 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+                  <Train className="size-4" />
+                </span>
+                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-indigo-600 text-white">
+                  ConfirmTkt
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-black text-slate-900 block leading-tight">
+                  Trains &amp; PNR
+                </span>
+                <span className="text-[10px] font-semibold text-indigo-700 block mt-0.5">
+                  Quota Guarantee
+                </span>
+              </div>
+            </Link>
+
+            {/* 3. Pilgrimage & Sacred Tours */}
+            <Link
+              to="/travel"
+              search={{ tab: "pilgrimage" }}
+              className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-amber-50 via-white to-amber-100/40 border border-amber-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95"
+            >
+              <div className="flex items-center justify-between w-full mb-1">
+                <span className="size-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+                  <Crown className="size-4" />
+                </span>
+                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-amber-600 text-white">
+                  Umrah &amp; Kashi
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-black text-slate-900 block leading-tight">
+                  Pilgrimage Desk
+                </span>
+                <span className="text-[10px] font-semibold text-amber-700 block mt-0.5">
+                  Wholesale Tours
+                </span>
+              </div>
+            </Link>
+
+            {/* 4. KingPay Wallet & UPI */}
+            <Link
+              to="/kingpay"
+              className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-emerald-50 via-white to-emerald-100/40 border border-emerald-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95"
+            >
+              <div className="flex items-center justify-between w-full mb-1">
+                <span className="size-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                  <CreditCard className="size-4" />
+                </span>
+                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-600 text-white">
+                  Instant UPI
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-black text-slate-900 block leading-tight">
+                  KingPay Wallet
+                </span>
+                <span className="text-[10px] font-semibold text-emerald-700 block mt-0.5">
+                  Cashback &amp; Passbook
+                </span>
+              </div>
+            </Link>
+
+            {/* 5. AI Academic Tutor */}
+            <Link
+              to="/tutor"
+              className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-purple-50 via-white to-purple-100/40 border border-purple-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95"
+            >
+              <div className="flex items-center justify-between w-full mb-1">
+                <span className="size-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
+                  <GraduationCap className="size-4" />
+                </span>
+                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-purple-600 text-white">
+                  CBSE 9-12
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-black text-slate-900 block leading-tight">
+                  AI STEM Solver
+                </span>
+                <span className="text-[10px] font-semibold text-purple-700 block mt-0.5">
+                  Formula &amp; Steps
+                </span>
+              </div>
+            </Link>
+
+            {/* 6. Express Courier & Parcel */}
+            <Link
+              to="/parcel"
+              className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-orange-50 via-white to-orange-100/40 border border-orange-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95"
+            >
+              <div className="flex items-center justify-between w-full mb-1">
+                <span className="size-8 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-600 group-hover:scale-110 transition-transform">
+                  <Package className="size-4" />
+                </span>
+                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-orange-600 text-white">
+                  30m Fleet
+                </span>
+              </div>
+              <div>
+                <span className="text-xs font-black text-slate-900 block leading-tight">
+                  Send Packages
+                </span>
+                <span className="text-[10px] font-semibold text-orange-700 block mt-0.5">
+                  Door-to-Door Courier
+                </span>
+              </div>
+            </Link>
+          </div>
+        </section>
       )}
 
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
