@@ -28,6 +28,7 @@ import { quoteCart, trackAnalytics } from "@/lib/server/quote";
 import { useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
+import { getCurrentEcosystemShift } from "@orderking/ui";
 import { CartPageSkeleton } from "@/components/skeletons/route-skeletons";
 import { AppErrorComponent } from "@/lib/error-component";
 
@@ -98,7 +99,9 @@ function CartPage() {
   }
 
   const totalPayablePaise = quote.data?.quote.totalPaise ?? 0;
+  const currentShift = getCurrentEcosystemShift();
   const isMinOrderBlocked = quote.data?.quote.blockers.includes("MIN_ORDER");
+  const isRadiusBlocked = quote.data?.quote.blockers.some((b: string) => ["EXCEEDS_MAX_RADIUS", "EVENING_DISTANCE_LIMIT", "NIGHT_SAFETY_CURFEW"].includes(b));
 
   return (
     <CustomerShell>
@@ -133,6 +136,18 @@ function CartPage() {
                 <span>{scheduledTime ? `${scheduledTime.date} (${scheduledTime.timeSlot})` : "Schedule Delivery"}</span>
               </button>
             </div>
+          </div>
+          {/* Dynamic Ecosystem Shift Delivery Availability Banner */}
+          <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 dark:bg-amber-950/20 px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold text-amber-950 dark:text-amber-200">
+            <div className="flex items-center gap-2">
+              <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span>
+                {currentShift.type === "DAY" ? "☀️ Day Shift" : currentShift.type === "EVENING" ? "🌆 Evening Shift" : "🌙 Late-Night Shift"}: Dynamic Radius &le; {currentShift.maxRadiusKm} km
+              </span>
+            </div>
+            <span className="text-[11px] font-medium text-amber-800 dark:text-amber-300">
+              {currentShift.name} ({currentShift.startHour}:00 - {currentShift.endHour}:00 IST)
+            </span>
           </div>
 
           {!items.length ? (
@@ -380,6 +395,13 @@ function CartPage() {
                 ) : null}
               </div>
 
+
+              {isRadiusBlocked && (
+                <div className="rounded-2xl bg-rose-500/15 border border-rose-400/50 p-4 text-xs font-bold text-rose-900 dark:text-rose-200">
+                  🚫 Outside Active Shift Delivery Radius: Currently in {currentShift.name} with delivery radius capped at {currentShift.maxRadiusKm} km. Please select a closer address or schedule for Day Shift (up to 12.0 km).
+                </div>
+              )}
+
               {isMinOrderBlocked && (
                 <div className="rounded-2xl bg-amber-500/15 border border-amber-400/50 p-4 text-xs font-bold text-amber-900 dark:text-amber-200">
                   ⚠️ {t("cart.minOrder", { amount: formatPaise(quote.data?.quote.minOrderPaise ?? 0, { locale }) })}
@@ -390,7 +412,7 @@ function CartPage() {
               <div className="sticky bottom-4 z-40">
                 <button
                   type="button"
-                  disabled={!quote.data || isMinOrderBlocked}
+                  disabled={!quote.data || isMinOrderBlocked || isRadiusBlocked}
                   onClick={() => void navigate({ to: "/checkout" })}
                   className="w-full h-16 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black shadow-[0_10px_35px_rgba(245,158,11,0.5)] flex items-center justify-between px-6 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                 >

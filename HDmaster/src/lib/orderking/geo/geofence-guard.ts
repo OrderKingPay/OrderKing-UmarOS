@@ -106,3 +106,100 @@ export function getCityWaitlistInfo(cityName: string): CityWaitlistEntry {
     estimatedLaunchDays: 90,
   };
 }
+
+import type { ThreatZonePolygon, PlatformSettings } from "../types";
+
+/**
+ * Standard Ray-Casting Point-in-Polygon Algorithm.
+ * Returns true if [lat, lng] is strictly inside the specified polygon vertices.
+ */
+export function isPointInPolygon(point: [number, number], polygon: [number, number][]): boolean {
+  if (!polygon || polygon.length < 3) return false;
+  const [x, y] = point; // [lat, lng]
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+/**
+ * Evaluates Indian Standard Time (IST: UTC + 5:30)
+ */
+export function getIstCurrentTime(now: Date = new Date()): {
+  hour: number;
+  minute: number;
+  timeDecimal: number;
+  timeString: string;
+} {
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const ist = new Date(utc + 5.5 * 3600000);
+  const hour = ist.getHours();
+  const minute = ist.getMinutes();
+  const timeDecimal = hour + minute / 60;
+  const timeString = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+  return { hour, minute, timeDecimal, timeString };
+}
+
+/**
+ * Resolves current active dispatch mode and radius based on IST time of day:
+ * - DAY Mode: 06:00 to 18:00 IST (default 12.0 km)
+ * - EVENING_RUSH Mode: 18:00 to 22:30 IST (default 7.5 km)
+ * - LATE_NIGHT Mode: 22:30 to 06:00 IST (default 3.5 km)
+ */
+export function resolveActiveGeofenceMode(settings: Partial<PlatformSettings>, now: Date = new Date()): {
+  mode: "DAY" | "EVENING_RUSH" | "LATE_NIGHT";
+  activeRadiusKm: number;
+  isLateNightCodLocked: boolean;
+  timeString: string;
+} {
+  const { timeDecimal, timeString } = getIstCurrentTime(now);
+
+  const dayRadius = Number(settings.dayModeRadiusKm) || 12.0;
+  const eveningRushRadius = Number(settings.eveningModeRadiusKm) || 7.5;
+  const nightRadius = Number(settings.nightModeRadiusKm) || 3.5;
+  const codLockout = settings.lateNightCodSafetyLockout ?? true;
+
+  if (timeDecimal >= 6.0 && timeDecimal < 18.0) {
+    return {
+      mode: "DAY",
+      activeRadiusKm: dayRadius,
+      isLateNightCodLocked: false,
+      timeString,
+    };
+  } else if (timeDecimal >= 18.0 && timeDecimal < 22.5) {
+    return {
+      mode: "EVENING_RUSH",
+      activeRadiusKm: eveningRushRadius,
+      isLateNightCodLocked: false,
+      timeString,
+    };
+  } else {
+    return {
+      mode: "LATE_NIGHT",
+      activeRadiusKm: nightRadius,
+      isLateNightCodLocked: codLockout,
+      timeString,
+    };
+  }
+}
+
+/**
+ * Evaluates whether a destination coordinate falls within any active threat exclusion polygon.
+ */
+export function checkThreatZoneExclusion(
+  lat: number,
+  lng: number,
+  threatZones: ThreatZonePolygon[] = []
+): { isExcluded: boolean; matchedZone?: ThreatZonePolygon } {
+  for (const zone of threatZones) {
+    if (!zone.active || !zone.polygon || zone.polygon.length < 3) continue;
+    if (isPointInPolygon([lat, lng], zone.polygon)) {
+      return { isExcluded: true, matchedZone: zone };
+    }
+  }
+  return { isExcluded: false };
+}

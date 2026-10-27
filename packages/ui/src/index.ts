@@ -8,3 +8,4 @@ export * from "./supabase-sync-client";
 export * from "./tax";
 export * from "./fssai";
 export * from "./dpdp";
+export * from "./ecosystem-shifts";

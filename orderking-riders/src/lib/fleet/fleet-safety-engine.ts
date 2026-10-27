@@ -4,6 +4,8 @@
  */
 
 import { sha256Hex, safeTimingSafeEqual } from "@/lib/rider/crypto-util";
+import { haversineKm } from "@/lib/rider/eta";
+import type { GeoPoint } from "@/lib/rider/types";
 
 export const STANDARD_GPS_INTERVAL_MS = 3_000; // 3 seconds standard
 export const LOW_BATTERY_GPS_INTERVAL_MS = 10_000; // 10 seconds power saver (<20% battery)
@@ -407,4 +409,215 @@ export class FleetSafetyEngine {
   public getIncidentLog(): SosDialerResult[] {
     return [...this.incidentLog];
   }
+
+  public getShiftRadius(dateOrHour?: Date | number): ShiftRadiusRule {
+    return getDynamicShiftRadius(dateOrHour);
+  }
+
+  public evaluateThreatZone(
+    destination: GeoPoint,
+    threatZones?: ThreatZone[],
+  ): ThreatZoneEvaluation {
+    return evaluateThreatZoneRisk(destination, threatZones);
+  }
+
+  public getTwoWheelerNavigationLinks(
+    point: GeoPoint,
+    label?: string,
+  ): TwoWheelerNavigationLinks {
+    return buildTwoWheelerNavigationLinks(point, label);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 5. DYNAMIC TIME-OF-DAY SHIFT RADII (DAY 12km / EVE 7.5km / LATE-NIGHT 3.5km)
+// ─────────────────────────────────────────────────────────────
+export type ShiftWindow = "DAY" | "EVENING" | "LATE_NIGHT";
+
+export interface ShiftRadiusRule {
+  shift: ShiftWindow;
+  startHour: number;
+  endHour: number;
+  maxRadiusKm: number;
+  label: string;
+  rationale: string;
+}
+
+export const DYNAMIC_SHIFT_RADII: Record<ShiftWindow, ShiftRadiusRule> = {
+  DAY: {
+    shift: "DAY",
+    startHour: 6,
+    endHour: 19,
+    maxRadiusKm: 12.0,
+    label: "Day Shift (06:00 - 19:00)",
+    rationale: "Standard high-velocity operating radius for daylight traffic conditions (12.0km)",
+  },
+  EVENING: {
+    shift: "EVENING",
+    startHour: 19,
+    endHour: 23,
+    maxRadiusKm: 7.5,
+    label: "Evening Peak (19:00 - 23:00)",
+    rationale: "Congestion and fatigue mitigation radius limit (7.5km)",
+  },
+  LATE_NIGHT: {
+    shift: "LATE_NIGHT",
+    startHour: 23,
+    endHour: 6,
+    maxRadiusKm: 3.5,
+    label: "Late-Night Defense (23:00 - 06:00)",
+    rationale: "Fatigue mitigation and anti-robbery perimeter restriction for nocturnal shifts (3.5km)",
+  },
+};
+
+/**
+ * Resolves the active dynamic shift radius based on local time or specified hour.
+ * - Day (06:00 - 19:00): 12.0 km
+ * - Evening (19:00 - 23:00): 7.5 km
+ * - Late-Night (23:00 - 06:00): 3.5 km
+ */
+export function getDynamicShiftRadius(dateOrHour: Date | number = new Date()): ShiftRadiusRule {
+  const hour = typeof dateOrHour === "number" ? dateOrHour : dateOrHour.getHours();
+  if (hour >= 6 && hour < 19) {
+    return DYNAMIC_SHIFT_RADII.DAY;
+  }
+  if (hour >= 19 && hour < 23) {
+    return DYNAMIC_SHIFT_RADII.EVENING;
+  }
+  return DYNAMIC_SHIFT_RADII.LATE_NIGHT;
+}
+
+// ─────────────────────────────────────────────────────────────
+// 6. THREAT-ZONE EXCLUSION & HAZARD LOCKDOWN
+// ─────────────────────────────────────────────────────────────
+export type ThreatZonePolicy = "BLOCK_ORDER" | "LOCK_COD_ONLINE_ONLY";
+
+export interface ThreatZone {
+  id: string;
+  name: string;
+  center: GeoPoint;
+  radiusMeters: number;
+  riskLevel: "HIGH" | "CRITICAL";
+  policy: ThreatZonePolicy;
+  reason: string;
+}
+
+export interface ThreatZoneEvaluation {
+  isThreatZone: boolean;
+  zone: ThreatZone | null;
+  orderBlocked: boolean;
+  codLocked: boolean;
+  distanceToCenterMeters: number | null;
+  policyEnforced: ThreatZonePolicy | "SAFE";
+  rationale: string;
+}
+
+export const REGISTERED_THREAT_ZONES: ThreatZone[] = [
+  {
+    id: "TZ_UNLIT_HIGHWAY_CORRIDOR",
+    name: "Isolated Outer Ring Road Cut",
+    center: { lat: 28.7041, lng: 77.1025 },
+    radiusMeters: 1500,
+    riskLevel: "CRITICAL",
+    policy: "BLOCK_ORDER",
+    reason: "Zero streetlight coverage, repeated violent two-wheeler hijackings reported. Delivery prohibited.",
+  },
+  {
+    id: "TZ_HIGH_DISPUTE_SLUM_POCKET",
+    name: "Industrial Canal Border Pocket",
+    center: { lat: 19.1136, lng: 72.8697 },
+    radiusMeters: 1200,
+    riskLevel: "HIGH",
+    policy: "LOCK_COD_ONLINE_ONLY",
+    reason: "History of physical intimidation and cash robbery during doorstep COD delivery. Mandatory prepaid online payment.",
+  },
+  {
+    id: "TZ_RAILWAY_DEADEND_UNDERPASS",
+    name: "Marshy Railway Dead-End Underpass",
+    center: { lat: 12.9352, lng: 77.6245 },
+    radiusMeters: 800,
+    riskLevel: "HIGH",
+    policy: "LOCK_COD_ONLINE_ONLY",
+    reason: "Narrow dead-end alley with zero escape route. Cash-on-Delivery locked to safeguard courier.",
+  },
+];
+
+/**
+ * Evaluates whether a destination coordinate falls within any registered threat or hazard zones.
+ * If in CRITICAL zone: blocks the order from being dispatched.
+ * If in HIGH risk zone: enforces LOCK_COD_ONLINE_ONLY to eliminate robbery incentives.
+ */
+export function evaluateThreatZoneRisk(
+  destination?: GeoPoint | null,
+  threatZones: ThreatZone[] = REGISTERED_THREAT_ZONES,
+): ThreatZoneEvaluation {
+  const destLat = Number(destination?.lat) || 0;
+  const destLng = Number(destination?.lng) || 0;
+  if (!destLat && !destLng) {
+    return {
+      isThreatZone: false,
+      zone: null,
+      orderBlocked: false,
+      codLocked: false,
+      distanceToCenterMeters: null,
+      policyEnforced: "SAFE",
+      rationale: "No destination coordinates provided; default standard safety perimeter applies.",
+    };
+  }
+
+  for (const zone of threatZones) {
+    const distKm = haversineKm({ lat: destLat, lng: destLng }, zone.center);
+    const distMeters = Math.round(distKm * 1000);
+
+    if (distMeters <= zone.radiusMeters) {
+      const isCritical = zone.riskLevel === "CRITICAL" || zone.policy === "BLOCK_ORDER";
+      return {
+        isThreatZone: true,
+        zone,
+        orderBlocked: isCritical,
+        codLocked: true, // COD is locked on both CRITICAL and HIGH
+        distanceToCenterMeters: distMeters,
+        policyEnforced: zone.policy,
+        rationale: `Threat Zone Triggered (${zone.name}, ${distMeters}m from epicenter): ${zone.reason}`,
+      };
+    }
+  }
+
+  return {
+    isThreatZone: false,
+    zone: null,
+    orderBlocked: false,
+    codLocked: false,
+    distanceToCenterMeters: null,
+    policyEnforced: "SAFE",
+    rationale: "Destination is clear of registered threat hazard zones.",
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+// 7. NATIVE TWO-WHEELER GOOGLE MAPS NAVIGATION DEEP LINKS
+// ─────────────────────────────────────────────────────────────
+export interface TwoWheelerNavigationLinks {
+  androidIntentUri: string;
+  geoUri: string;
+  webUrl: string;
+}
+
+/**
+ * Builds native two-wheeler Google Maps navigation deep links:
+ * - androidIntentUri: `google.navigation:q=${lat},${lng}&mode=b` (mode=b for two-wheeler)
+ * - geoUri: `geo:${lat},${lng}?q=${lat},${lng}&mode=b`
+ * - webUrl: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=two-wheeler`
+ */
+export function buildTwoWheelerNavigationLinks(
+  point?: GeoPoint | null,
+  label = "Destination",
+): TwoWheelerNavigationLinks {
+  const lat = Number(point?.lat) || 0;
+  const lng = Number(point?.lng) || 0;
+  return {
+    androidIntentUri: `google.navigation:q=${lat},${lng}&mode=b`,
+    geoUri: `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(label)})&mode=b`,
+    webUrl: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=two-wheeler`,
+  };
 }

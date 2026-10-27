@@ -68,6 +68,16 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     }
     
     if (input.paymentMethod === "UPI_SANDBOX" && ws.dataMode === "PRODUCTION") return json({ error: "Sandbox payment is not permitted in PRODUCTION", code: "PAYMENT_MODE_INVALID" }, 409);
+    if (input.paymentMethod === "COD") {
+      const nowIst = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+      const hour = nowIst.getHours();
+      if (hour >= 23 || hour < 4) {
+        return json({
+          error: "Cash on Delivery is locked out between 23:00 and 04:00 IST for rider safety. Only verified NPCI UPI (orderking@ybl) and prepaid payments are permitted.",
+          code: "LATE_NIGHT_COD_LOCKOUT",
+        }, 403);
+      }
+    }
     if (input.totalPaise < 0 || input.foodPaise < 0 || input.lines.some((line) => line.qty <= 0 || line.unitPaise < 0)) return json({ error: "Invalid monetary or quantity values", code: "INVALID_AMOUNT" }, 400);
     const sql = await getSql();
     const duplicate = await sql<{ response_json: string }>`select response_json from idempotency_keys where key=${idempotencyKey} and org_id=${ws.ctx.orgId} limit 1`;

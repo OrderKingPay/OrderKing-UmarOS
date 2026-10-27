@@ -2,7 +2,8 @@ import { getSql } from "@/lib/db";
 import { ForbiddenError, requireHighRisk, requirePermission, type AccessContext } from "@/lib/orderking/rbac";
 import { appendAudit, nid, type Workspace } from "./workspace.server";
 import { getSettings } from "./queries.server";
-import { DEFAULT_SETTINGS, type PlatformSettings } from "@/lib/orderking/types";
+import { DEFAULT_SETTINGS, DEFAULT_THREAT_ZONES, type PlatformSettings, type ThreatZonePolygon } from "@/lib/orderking/types";
+import { resolveActiveGeofenceMode, getIstCurrentTime } from "@/lib/orderking/geo/geofence-guard";
 import {
   getWeeklyCycle,
   getDailyTPlus1Cycle,
@@ -1276,4 +1277,267 @@ export async function updateTravelPartnerGovernance(
   });
 
   return { ok: true, state: next };
+}
+
+
+// --------------------------------------------------------------------------
+// 8. Dynamic Geofencing & Threat Zone Exclusion Dials
+// --------------------------------------------------------------------------
+
+export type GeofencingThreatDialsState = {
+  dayRadiusKm: number;
+  eveningRushRadiusKm: number;
+  lateNightSecurityRadiusKm: number;
+  lateNightCodSafetyLockout: boolean;
+  lateNightCodCutoffTime: string;
+  currentActiveMode: "DAY" | "EVENING_RUSH" | "LATE_NIGHT";
+  currentActiveRadiusKm: number;
+  isCodCurrentlyAllowed: boolean;
+  currentTimeIst: string;
+  threatZones: ThreatZonePolygon[];
+  activeThreatCount: number;
+  totalExcludedAreaSqKm: number;
+};
+
+export type UpdateGeofencingThreatInput = {
+  dayRadiusKm?: number;
+  eveningRushRadiusKm?: number;
+  lateNightSecurityRadiusKm?: number;
+  lateNightCodSafetyLockout?: boolean;
+  lateNightCodCutoffTime?: string;
+  threatZones?: ThreatZonePolygon[];
+};
+
+export async function getGeofencingThreatDials(ctx: AccessContext): Promise<GeofencingThreatDialsState> {
+  requirePermission(ctx, "manage_platform_settings");
+  const settings = await getSettings(ctx);
+
+  const dayRadius = n(settings.dayModeRadiusKm) || 12.0;
+  const eveningRushRadius = n(settings.eveningModeRadiusKm) || 7.5;
+  const lateNightRadius = n(settings.nightModeRadiusKm) || 3.5;
+  const codSafetyLockout = settings.lateNightCodSafetyLockout !== false;
+  const codCutoff = str(settings.lateNightCodCutoffTime) || "22:30";
+  const threatZones: ThreatZonePolygon[] = Array.isArray(settings.threatZones) && settings.threatZones.length > 0
+    ? settings.threatZones
+    : DEFAULT_THREAT_ZONES;
+
+  const modeInfo = resolveActiveGeofenceMode({
+    dayModeRadiusKm: dayRadius,
+    eveningModeRadiusKm: eveningRushRadius,
+    nightModeRadiusKm: lateNightRadius,
+    lateNightCodSafetyLockout: codSafetyLockout,
+  });
+
+  const activeThreatCount = threatZones.filter((z) => z.active).length;
+  // Approximated safe estimate of sector exclusion area
+  const totalExcludedAreaSqKm = Number((activeThreatCount * 4.2).toFixed(1));
+
+  return {
+    dayRadiusKm: dayRadius,
+    eveningRushRadiusKm: eveningRushRadius,
+    lateNightSecurityRadiusKm: lateNightRadius,
+    lateNightCodSafetyLockout: codSafetyLockout,
+    lateNightCodCutoffTime: codCutoff,
+    currentActiveMode: modeInfo.mode,
+    currentActiveRadiusKm: modeInfo.activeRadiusKm,
+    isCodCurrentlyAllowed: !modeInfo.isLateNightCodLocked,
+    currentTimeIst: modeInfo.timeString,
+    threatZones,
+    activeThreatCount,
+    totalExcludedAreaSqKm,
+  };
+}
+
+export async function updateGeofencingThreatDials(
+  ws: Workspace,
+  input: UpdateGeofencingThreatInput,
+  reason: string = "Founder central geofencing & threat perimeter update",
+): Promise<{ ok: true; state: GeofencingThreatDialsState }> {
+  requireHighRisk(ws.ctx, "manage_platform_settings", reason);
+  const sql = await getSql();
+  const currentSettings = await getSettings(ws.ctx);
+
+  // Clamping guardrails for operational stability
+  const clampedDayRadius = input.dayRadiusKm !== undefined
+    ? Math.max(1.0, Math.min(50.0, Number(input.dayRadiusKm)))
+    : (n(currentSettings.dayModeRadiusKm) || 12.0);
+
+  const clampedEveningRushRadius = input.eveningRushRadiusKm !== undefined
+    ? Math.max(1.0, Math.min(30.0, Number(input.eveningRushRadiusKm)))
+    : (n(currentSettings.eveningModeRadiusKm) || 7.5);
+
+  const clampedNightRadius = input.lateNightSecurityRadiusKm !== undefined
+    ? Math.max(1.0, Math.min(15.0, Number(input.lateNightSecurityRadiusKm)))
+    : (n(currentSettings.nightModeRadiusKm) || 3.5);
+
+  const updatedSettings: PlatformSettings = {
+    ...currentSettings,
+    dayModeRadiusKm: clampedDayRadius,
+    eveningModeRadiusKm: clampedEveningRushRadius,
+    nightModeRadiusKm: clampedNightRadius,
+    lateNightCodSafetyLockout: input.lateNightCodSafetyLockout !== undefined
+      ? Boolean(input.lateNightCodSafetyLockout)
+      : (currentSettings.lateNightCodSafetyLockout !== false),
+    lateNightCodCutoffTime: input.lateNightCodCutoffTime || currentSettings.lateNightCodCutoffTime || "22:30",
+    threatZones: input.threatZones !== undefined
+      ? input.threatZones
+      : (currentSettings.threatZones || DEFAULT_THREAT_ZONES),
+  };
+
+  await sql.query(
+    `UPDATE platform_settings SET settings_json = $2, updated_at = now(), updated_by_employee_id = $3 WHERE org_id = $1`,
+    [ws.ctx.orgId, JSON.stringify(updatedSettings), ws.ctx.employeeId],
+  );
+
+  await appendAudit({
+    orgId: ws.ctx.orgId,
+    employeeId: ws.ctx.employeeId,
+    userId: ws.ctx.userId,
+    roleKey: ws.ctx.actingRoleKey,
+    action: "commercial_dial.geofencing_threat_updated",
+    targetType: "platform_settings",
+    targetId: ws.ctx.orgId,
+    previous: {
+      dayModeRadiusKm: currentSettings.dayModeRadiusKm,
+      eveningModeRadiusKm: currentSettings.eveningModeRadiusKm,
+      nightModeRadiusKm: currentSettings.nightModeRadiusKm,
+      lateNightCodSafetyLockout: currentSettings.lateNightCodSafetyLockout,
+    },
+    next: {
+      dayModeRadiusKm: clampedDayRadius,
+      eveningModeRadiusKm: clampedEveningRushRadius,
+      nightModeRadiusKm: clampedNightRadius,
+      lateNightCodSafetyLockout: updatedSettings.lateNightCodSafetyLockout,
+    },
+    reason,
+  });
+
+  const nextState = await getGeofencingThreatDials(ws.ctx);
+  return { ok: true, state: nextState };
+}
+
+export async function addThreatZoneExclusion(
+  ws: Workspace,
+  zone: Omit<ThreatZonePolygon, "id" | "createdAt">,
+  reason: string = "Founder threat zone perimeter addition",
+): Promise<{ ok: true; threatZone: ThreatZonePolygon }> {
+  requireHighRisk(ws.ctx, "manage_platform_settings", reason);
+  const sql = await getSql();
+  const currentSettings = await getSettings(ws.ctx);
+
+  if (!zone.name?.trim()) throw new Error("Threat zone name is required.");
+  if (!Array.isArray(zone.polygon) || zone.polygon.length < 3) {
+    throw new Error("Threat zone requires at least 3 valid polygon coordinates [lat, lng].");
+  }
+
+  const newZone: ThreatZonePolygon = {
+    id: nid("threat"),
+    name: zone.name.trim(),
+    severity: zone.severity || "HIGH",
+    reason: (zone.reason || "Hazardous corridor exclusion").trim(),
+    polygon: zone.polygon,
+    active: zone.active !== false,
+    createdAt: new Date().toISOString(),
+  };
+
+  const existingZones = Array.isArray(currentSettings.threatZones) ? currentSettings.threatZones : DEFAULT_THREAT_ZONES;
+  const updatedZones = [newZone, ...existingZones];
+
+  const updatedSettings: PlatformSettings = {
+    ...currentSettings,
+    threatZones: updatedZones,
+  };
+
+  await sql.query(
+    `UPDATE platform_settings SET settings_json = $2, updated_at = now(), updated_by_employee_id = $3 WHERE org_id = $1`,
+    [ws.ctx.orgId, JSON.stringify(updatedSettings), ws.ctx.employeeId],
+  );
+
+  await appendAudit({
+    orgId: ws.ctx.orgId,
+    employeeId: ws.ctx.employeeId,
+    userId: ws.ctx.userId,
+    roleKey: ws.ctx.actingRoleKey,
+    action: "commercial_dial.threat_zone_added",
+    targetType: "threat_zone",
+    targetId: newZone.id,
+    next: newZone,
+    reason,
+  });
+
+  return { ok: true, threatZone: newZone };
+}
+
+export async function removeThreatZoneExclusion(
+  ws: Workspace,
+  zoneId: string,
+  reason: string = "Founder threat zone exclusion deletion",
+): Promise<{ ok: true; zoneId: string }> {
+  requireHighRisk(ws.ctx, "manage_platform_settings", reason);
+  const sql = await getSql();
+  const currentSettings = await getSettings(ws.ctx);
+
+  const existingZones = Array.isArray(currentSettings.threatZones) ? currentSettings.threatZones : DEFAULT_THREAT_ZONES;
+  const updatedZones = existingZones.filter((z) => z.id !== zoneId);
+
+  const updatedSettings: PlatformSettings = {
+    ...currentSettings,
+    threatZones: updatedZones,
+  };
+
+  await sql.query(
+    `UPDATE platform_settings SET settings_json = $2, updated_at = now(), updated_by_employee_id = $3 WHERE org_id = $1`,
+    [ws.ctx.orgId, JSON.stringify(updatedSettings), ws.ctx.employeeId],
+  );
+
+  await appendAudit({
+    orgId: ws.ctx.orgId,
+    employeeId: ws.ctx.employeeId,
+    userId: ws.ctx.userId,
+    roleKey: ws.ctx.actingRoleKey,
+    action: "commercial_dial.threat_zone_removed",
+    targetType: "threat_zone",
+    targetId: zoneId,
+    reason,
+  });
+
+  return { ok: true, zoneId };
+}
+
+export async function toggleThreatZoneActive(
+  ws: Workspace,
+  zoneId: string,
+  active: boolean,
+  reason: string = "Founder threat zone active status toggle",
+): Promise<{ ok: true; zoneId: string; active: boolean }> {
+  requireHighRisk(ws.ctx, "manage_platform_settings", reason);
+  const sql = await getSql();
+  const currentSettings = await getSettings(ws.ctx);
+
+  const existingZones = Array.isArray(currentSettings.threatZones) ? currentSettings.threatZones : DEFAULT_THREAT_ZONES;
+  const updatedZones = existingZones.map((z) => (z.id === zoneId ? { ...z, active } : z));
+
+  const updatedSettings: PlatformSettings = {
+    ...currentSettings,
+    threatZones: updatedZones,
+  };
+
+  await sql.query(
+    `UPDATE platform_settings SET settings_json = $2, updated_at = now(), updated_by_employee_id = $3 WHERE org_id = $1`,
+    [ws.ctx.orgId, JSON.stringify(updatedSettings), ws.ctx.employeeId],
+  );
+
+  await appendAudit({
+    orgId: ws.ctx.orgId,
+    employeeId: ws.ctx.employeeId,
+    userId: ws.ctx.userId,
+    roleKey: ws.ctx.actingRoleKey,
+    action: "commercial_dial.threat_zone_toggled",
+    targetType: "threat_zone",
+    targetId: zoneId,
+    next: { active },
+    reason,
+  });
+
+  return { ok: true, zoneId, active };
 }

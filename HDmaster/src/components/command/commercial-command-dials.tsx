@@ -33,6 +33,11 @@ import {
   Lock,
   Plane,
   Globe,
+  MapPin,
+  ShieldAlert,
+  Plus,
+  Trash2,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +57,11 @@ import {
   updateFeaturedAdBidFn,
   loadTravelPartnerGovernanceFn,
   updateTravelPartnerGovernanceFn,
+  loadGeofencingThreatDialsFn,
+  updateGeofencingThreatDialsFn,
+  addThreatZoneExclusionFn,
+  removeThreatZoneExclusionFn,
+  toggleThreatZoneActiveFn,
 } from "@/lib/orderking/actions";
 import type {
   CommercialDialsState,
@@ -64,7 +74,9 @@ import type {
   FeaturedAdCampaignItem,
   AdAuctionStudioState,
   TravelPartnerGovernanceState,
+  GeofencingThreatDialsState,
 } from "@/lib/orderking/server/commercial-dials.server";
+import type { ThreatZonePolygon } from "@/lib/orderking/types";
 
 export type DialTabKey =
   | "platform_fee"
@@ -73,7 +85,8 @@ export type DialTabKey =
   | "penalties"
   | "wednesday_payout"
   | "ad_auction"
-  | "travel_governance";
+  | "travel_governance"
+  | "geofencing_threat";
 
 export function CommercialCommandDials() {
   const qc = useQueryClient();
@@ -159,7 +172,7 @@ export function CommercialCommandDials() {
       </div>
 
       {/* 2. Navigation Tabs for the 7 Master Operational Dials */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8">
         {[
           {
             id: "platform_fee" as DialTabKey,
@@ -272,6 +285,7 @@ export function CommercialCommandDials() {
 
         {activeTab === "ad_auction" && <FeaturedAdAuctionStudioSection />}
         {activeTab === "travel_governance" && <TravelPartnerGovernanceSection />}
+        {activeTab === "geofencing_threat" && <GeofencingThreatDialsSection />}
       </div>
     </div>
   );
@@ -1953,6 +1967,618 @@ function TravelPartnerGovernanceSection() {
         <div className="flex items-center justify-between border-t border-border/60 pt-3 text-[11px] text-muted">
           <span>Last Updated: {state?.updatedAt ? new Date(state.updatedAt).toLocaleString("en-IN") : "Just now"}</span>
           <span>Operator: {state?.updatedBy || "Founder"}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ==========================================================================
+// 8. DYNAMIC GEOFENCING & THREAT ZONE EXCLUSION DIALS
+// ==========================================================================
+
+function GeofencingThreatDialsSection() {
+  const qc = useQueryClient();
+
+  const dialsQ = useQuery({
+    queryKey: ["geofencing-threat-dials"],
+    queryFn: () => loadGeofencingThreatDialsFn(),
+  });
+
+  const data: GeofencingThreatDialsState | null =
+    dialsQ.data && dialsQ.data.ok ? dialsQ.data.data : null;
+
+  // Local state for sliders and levers
+  const [dayRadius, setDayRadius] = useState<number>(12.0);
+  const [eveningRushRadius, setEveningRushRadius] = useState<number>(7.5);
+  const [lateNightRadius, setLateNightRadius] = useState<number>(3.5);
+  const [codLockout, setCodLockout] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Threat Zone creation state
+  const [showAddZone, setShowAddZone] = useState(false);
+  const [newZoneName, setNewZoneName] = useState("");
+  const [newZoneSeverity, setNewZoneSeverity] = useState<"HIGH" | "CRITICAL" | "BLOCKED">("CRITICAL");
+  const [newZoneReason, setNewZoneReason] = useState("");
+  const [newZoneCoords, setNewZoneCoords] = useState("24.8900, 92.3100\n24.9100, 92.3300\n24.9050, 92.3600\n24.8750, 92.3350");
+  const [isAddingZone, setIsAddingZone] = useState(false);
+
+  // Sync state from server on load
+  useEffect(() => {
+    if (data) {
+      setDayRadius(data.dayRadiusKm);
+      setEveningRushRadius(data.eveningRushRadiusKm);
+      setLateNightRadius(data.lateNightSecurityRadiusKm);
+      setCodLockout(data.lateNightCodSafetyLockout);
+    }
+  }, [data]);
+
+  const handleSaveDials = async () => {
+    setIsSaving(true);
+    try {
+      const res = await updateGeofencingThreatDialsFn({
+        data: {
+          input: {
+            dayRadiusKm: dayRadius,
+            eveningRushRadiusKm: eveningRushRadius,
+            lateNightSecurityRadiusKm: lateNightRadius,
+            lateNightCodSafetyLockout: codLockout,
+          },
+          reason: "Founder updated central geofencing radii & late-night COD lockout",
+        },
+      });
+
+      if (res && res.ok) {
+        toast.success(
+          `Geofencing Levers Deployed: Day ${dayRadius}km | Evening ${eveningRushRadius}km | Late-Night ${lateNightRadius}km`
+        );
+        qc.invalidateQueries({ queryKey: ["geofencing-threat-dials"] });
+      } else {
+        toast.error((res as any)?.error || "Failed to update geofencing dials");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update geofencing dials");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleZone = async (zoneId: string, currentActive: boolean) => {
+    try {
+      const res = await toggleThreatZoneActiveFn({
+        data: {
+          zoneId,
+          active: !currentActive,
+          reason: `Founder ${!currentActive ? "activated" : "deactivated"} threat zone exclusion [${zoneId}]`,
+        },
+      });
+      if (res && res.ok) {
+        toast.success(`Threat Zone ${!currentActive ? "Activated" : "Deactivated"}`);
+        qc.invalidateQueries({ queryKey: ["geofencing-threat-dials"] });
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to toggle threat zone");
+    }
+  };
+
+  const handleDeleteZone = async (zoneId: string) => {
+    try {
+      const res = await removeThreatZoneExclusionFn({
+        data: {
+          zoneId,
+          reason: `Founder deleted threat zone exclusion [${zoneId}]`,
+        },
+      });
+      if (res && res.ok) {
+        toast.success("Threat Zone Deleted from Sector Exclusions");
+        qc.invalidateQueries({ queryKey: ["geofencing-threat-dials"] });
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to delete threat zone");
+    }
+  };
+
+  const handleCreateZone = async () => {
+    if (!newZoneName.trim()) {
+      toast.error("Please enter a threat zone name");
+      return;
+    }
+    const lines = newZoneCoords.split(/[;\n]+/).map((l) => l.trim()).filter(Boolean);
+    const polygon: [number, number][] = [];
+    for (const line of lines) {
+      const parts = line.split(/[\s,]+/).map(Number);
+      if (parts.length >= 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        polygon.push([parts[0], parts[1]]);
+      }
+    }
+
+    if (polygon.length < 3) {
+      toast.error("Please provide at least 3 valid [lat, lng] coordinates for polygon perimeter");
+      return;
+    }
+
+    setIsAddingZone(true);
+    try {
+      const res = await addThreatZoneExclusionFn({
+        data: {
+          zone: {
+            name: newZoneName.trim(),
+            severity: newZoneSeverity,
+            reason: (newZoneReason || "Hazardous sector exclusion").trim(),
+            polygon,
+            active: true,
+          },
+          reason: `Founder added threat zone exclusion: ${newZoneName.trim()}`,
+        },
+      });
+      if (res && res.ok) {
+        toast.success(`Threat Zone Added: ${newZoneName.trim()} (${polygon.length} vertices)`);
+        setNewZoneName("");
+        setNewZoneReason("");
+        setShowAddZone(false);
+        qc.invalidateQueries({ queryKey: ["geofencing-threat-dials"] });
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to add threat zone");
+    } finally {
+      setIsAddingZone(false);
+    }
+  };
+
+  const loadPresetZone = (name: string, severity: "HIGH" | "CRITICAL", reason: string, coords: string) => {
+    setNewZoneName(name);
+    setNewZoneSeverity(severity);
+    setNewZoneReason(reason);
+    setNewZoneCoords(coords);
+    setShowAddZone(true);
+  };
+
+  const threatZones = data?.threatZones || [];
+
+  return (
+    <div className="space-y-6 rounded-xl border border-amber-500/40 bg-black/60 p-5 sm:p-6 shadow-xl">
+      {/* 1. Header Banner */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-4">
+        <div>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <ShieldAlert className="size-5 text-amber-400" />
+            Dynamic Geofencing & Threat Zones
+          </h2>
+          <p className="text-xs text-muted">
+            Three-tier time-varying dispatch radius, late-night COD safety lockout, and hazardous sector polygon exclusions.
+          </p>
+        </div>
+
+        {/* Live IST Status Radar Pill */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge className="bg-zinc-900 border border-zinc-700 text-zinc-300 font-mono text-xs gap-1.5 py-1">
+            <Clock className="size-3 text-amber-400" />
+            <span>IST: {data?.currentTimeIst || "Active"}</span>
+          </Badge>
+
+          <Badge
+            className={cn(
+              "font-mono text-xs gap-1.5 py-1 uppercase",
+              data?.currentActiveMode === "DAY" && "bg-emerald-950/60 border-emerald-500/40 text-emerald-300",
+              data?.currentActiveMode === "EVENING_RUSH" && "bg-amber-950/60 border-amber-500/40 text-amber-300",
+              data?.currentActiveMode === "LATE_NIGHT" && "bg-rose-950/60 border-rose-500/40 text-rose-300"
+            )}
+          >
+            <span className="size-1.5 rounded-full bg-current animate-pulse" />
+            <span>
+              {data?.currentActiveMode === "DAY" && `Day Mode: ${data.currentActiveRadiusKm} km`}
+              {data?.currentActiveMode === "EVENING_RUSH" && `Evening Rush: ${data.currentActiveRadiusKm} km`}
+              {data?.currentActiveMode === "LATE_NIGHT" && `Late-Night: ${data.currentActiveRadiusKm} km`}
+              {!data && "Mode: Active"}
+            </span>
+          </Badge>
+
+          <Badge
+            className={cn(
+              "font-mono text-xs gap-1 py-1",
+              data?.isCodCurrentlyAllowed
+                ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
+                : "bg-rose-950/40 border-rose-500/40 text-rose-300"
+            )}
+          >
+            {data?.isCodCurrentlyAllowed ? "COD Allowed" : "COD Locked Out (Night Safety)"}
+          </Badge>
+        </div>
+      </div>
+
+      {/* 2. Core Radius Sliders (Day, Evening, Late-Night) */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Lever 1: Day Radius */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950/80 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Sun className="size-3.5 text-amber-400" />
+              Day Radius (06:00 – 18:00)
+            </span>
+            <span className="font-mono text-base font-black text-amber-400 bg-amber-950/40 border border-amber-500/30 px-2 py-0.5 rounded">
+              {dayRadius.toFixed(1)} km
+            </span>
+          </div>
+          <p className="text-[11px] text-zinc-400">
+            Broad daytime delivery perimeter across core urban commercial hub.
+          </p>
+          <input
+            type="range"
+            min="1.0"
+            max="50.0"
+            step="0.5"
+            value={dayRadius}
+            onChange={(e) => setDayRadius(Number(e.target.value))}
+            className="w-full accent-amber-500 cursor-pointer"
+          />
+          <div className="flex items-center gap-1.5 flex-wrap pt-1">
+            {[8.0, 10.0, 12.0, 15.0, 20.0].map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setDayRadius(v)}
+                className={cn(
+                  "px-2 py-0.5 text-[10px] rounded font-mono border transition",
+                  dayRadius === v
+                    ? "bg-amber-500 text-black border-amber-400 font-bold"
+                    : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                )}
+              >
+                {v}km{v === 12.0 ? " (Default)" : ""}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Lever 2: Evening Rush Radius */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950/80 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Zap className="size-3.5 text-yellow-400" />
+              Evening Rush (18:00 – 22:30)
+            </span>
+            <span className="font-mono text-base font-black text-yellow-400 bg-yellow-950/40 border border-yellow-500/30 px-2 py-0.5 rounded">
+              {eveningRushRadius.toFixed(1)} km
+            </span>
+          </div>
+          <p className="text-[11px] text-zinc-400">
+            Contracted delivery perimeter to protect 30-min SLA during peak traffic rush.
+          </p>
+          <input
+            type="range"
+            min="1.0"
+            max="25.0"
+            step="0.5"
+            value={eveningRushRadius}
+            onChange={(e) => setEveningRushRadius(Number(e.target.value))}
+            className="w-full accent-yellow-500 cursor-pointer"
+          />
+          <div className="flex items-center gap-1.5 flex-wrap pt-1">
+            {[5.0, 6.5, 7.5, 9.0, 12.0].map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setEveningRushRadius(v)}
+                className={cn(
+                  "px-2 py-0.5 text-[10px] rounded font-mono border transition",
+                  eveningRushRadius === v
+                    ? "bg-yellow-500 text-black border-yellow-400 font-bold"
+                    : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                )}
+              >
+                {v}km{v === 7.5 ? " (Default)" : ""}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Lever 3: Late-Night Security Radius */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950/80 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Moon className="size-3.5 text-rose-400" />
+              Late-Night Security (22:30 – 06:00)
+            </span>
+            <span className="font-mono text-base font-black text-rose-400 bg-rose-950/40 border border-rose-500/30 px-2 py-0.5 rounded">
+              {lateNightRadius.toFixed(1)} km
+            </span>
+          </div>
+          <p className="text-[11px] text-zinc-400">
+            Tight security radius focused strictly on well-lit urban center.
+          </p>
+          <input
+            type="range"
+            min="1.0"
+            max="15.0"
+            step="0.5"
+            value={lateNightRadius}
+            onChange={(e) => setLateNightRadius(Number(e.target.value))}
+            className="w-full accent-rose-500 cursor-pointer"
+          />
+          <div className="flex items-center gap-1.5 flex-wrap pt-1">
+            {[2.0, 2.5, 3.5, 5.0, 7.0].map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setLateNightRadius(v)}
+                className={cn(
+                  "px-2 py-0.5 text-[10px] rounded font-mono border transition",
+                  lateNightRadius === v
+                    ? "bg-rose-500 text-white border-rose-400 font-bold"
+                    : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                )}
+              >
+                {v}km{v === 3.5 ? " (Default)" : ""}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Late-Night COD Safety Lockout & Deploy Levers Bar */}
+      <div className="rounded-xl border border-zinc-800 bg-zinc-950/90 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-white flex items-center gap-1.5">
+              <Lock className="size-4 text-amber-400" />
+              Late-Night Cash on Delivery (COD) Safety Lockout
+            </span>
+            <Badge
+              className={cn(
+                "text-[10px] font-mono",
+                codLockout
+                  ? "bg-emerald-950/50 text-emerald-300 border-emerald-500/40"
+                  : "bg-rose-950/50 text-rose-300 border-rose-500/40"
+              )}
+            >
+              {codLockout ? "FAIL-SAFE ACTIVE (After 22:30 IST)" : "LOCKOUT DISABLED (Cash Allowed)"}
+            </Badge>
+          </div>
+          <p className="text-xs text-zinc-400 max-w-2xl">
+            Rider Protection Gate: Automatic cash-on-delivery cutoff after 22:30 IST. Customers must pay via Direct NPCI UPI or Card. Completely eliminates late-night cash robbery targets on riders.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setCodLockout(!codLockout)}
+            className={cn(
+              "font-mono text-xs border h-9 px-3 gap-1.5 transition",
+              codLockout
+                ? "border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/40"
+                : "border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-white"
+            )}
+          >
+            <ShieldCheck className="size-3.5 text-emerald-400" />
+            <span>{codLockout ? "Lockout Enabled" : "Enable Lockout"}</span>
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={handleSaveDials}
+            disabled={isSaving}
+            className="h-9 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs gap-1.5 px-4 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer"
+          >
+            <CheckCircle2 className="size-3.5" />
+            <span>{isSaving ? "Deploying..." : "Save & Deploy Levers"}</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* 4. Threat-Zone Polygon Exclusion Editor */}
+      <div className="space-y-4 pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-zinc-800 pb-3">
+          <div>
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <MapPin className="size-4 text-rose-400" />
+              Threat-Zone Sector Exclusions ({threatZones.length} Sectors Defined)
+            </h3>
+            <p className="text-xs text-zinc-400">
+              Hazardous neighborhood and highway exclusion polygons. Any order with delivery coordinates inside these perimeters is fail-closed rejected.
+            </p>
+          </div>
+
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowAddZone(!showAddZone)}
+            className="border-zinc-700 bg-zinc-900 text-zinc-200 hover:text-white text-xs gap-1.5 h-8"
+          >
+            <Plus className="size-3 text-amber-400" />
+            <span>{showAddZone ? "Cancel Add" : "Add Exclusion Zone"}</span>
+          </Button>
+        </div>
+
+        {/* Add Threat Zone Form (Collapsible) */}
+        {showAddZone && (
+          <div className="rounded-xl border border-rose-500/30 bg-zinc-950/90 p-4 space-y-4 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+              <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldAlert className="size-3.5 text-amber-400" />
+                Define Threat Zone Polygon Perimeter
+              </h4>
+              <span className="text-[11px] text-zinc-500">Ray-Casting Point-in-Polygon Engine</span>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <label className="text-xs text-zinc-400 block mb-1">Zone Name</label>
+                <Input
+                  value={newZoneName}
+                  onChange={(e) => setNewZoneName(e.target.value)}
+                  placeholder="e.g. NH-37 Border Ambush Stretch"
+                  className="bg-zinc-900 border-zinc-700 text-xs h-8"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-zinc-400 block mb-1">Severity Level</label>
+                <select
+                  value={newZoneSeverity}
+                  onChange={(e) => setNewZoneSeverity(e.target.value as any)}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-md text-xs h-8 px-2 text-zinc-200"
+                >
+                  <option value="CRITICAL">CRITICAL (Zero Dispatch / Blocked)</option>
+                  <option value="HIGH">HIGH (High Risk / Police Alert)</option>
+                  <option value="BLOCKED">BLOCKED (Infrastructure Outage)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-zinc-400 block mb-1">Threat Reason / Description</label>
+                <Input
+                  value={newZoneReason}
+                  onChange={(e) => setNewZoneReason(e.target.value)}
+                  placeholder="e.g. Zero street lighting, ambush reports"
+                  className="bg-zinc-900 border-zinc-700 text-xs h-8"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs text-zinc-400 block mb-1">
+                Polygon Coordinates (lat, lng pairs - 1 per line or semicolon-separated)
+              </label>
+              <textarea
+                value={newZoneCoords}
+                onChange={(e) => setNewZoneCoords(e.target.value)}
+                rows={4}
+                placeholder="24.8900, 92.3100&#10;24.9100, 92.3300&#10;24.9050, 92.3600&#10;24.8750, 92.3350"
+                className="w-full bg-zinc-900 border border-zinc-700 rounded-md text-xs font-mono p-2 text-zinc-200 focus:outline-none focus:border-amber-500"
+              />
+            </div>
+
+            {/* Quick Presets */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">Quick Presets:</span>
+              <button
+                type="button"
+                onClick={() =>
+                  loadPresetZone(
+                    "NH-37 Forest Border Corridor",
+                    "CRITICAL",
+                    "Zero street lighting, reported late-night ambushes and zero police coverage.",
+                    "24.8900, 92.3100\n24.9100, 92.3300\n24.9050, 92.3600\n24.8750, 92.3350"
+                  )
+                }
+                className="text-[10px] bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-zinc-300 hover:text-amber-300"
+              >
+                + NH-37 Forest Stretch
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  loadPresetZone(
+                    "Old Canal Embankment Route",
+                    "HIGH",
+                    "Unpaved single-lane terrain with high monsoon waterlogging and poor cellular reception.",
+                    "24.8400, 92.3400\n24.8550, 92.3650\n24.8450, 92.3800\n24.8300, 92.3550"
+                  )
+                }
+                className="text-[10px] bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-zinc-300 hover:text-amber-300"
+              >
+                + Canal Embankment Route
+              </button>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-800">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAddZone(false)}
+                className="h-8 text-xs border-zinc-700 bg-zinc-900"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleCreateZone}
+                disabled={isAddingZone}
+                className="h-8 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs gap-1"
+              >
+                {isAddingZone ? "Adding..." : "Add Threat Zone Perimeter"}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Threat Zone Cards Grid */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          {threatZones.map((zone) => {
+            const vertexCount = Array.isArray(zone.polygon) ? zone.polygon.length : 0;
+            return (
+              <div
+                key={zone.id}
+                className={cn(
+                  "rounded-xl border p-3.5 space-y-2.5 transition-all bg-zinc-950/80",
+                  zone.active
+                    ? "border-rose-500/40 shadow-[0_0_15px_rgba(244,63,94,0.1)]"
+                    : "border-zinc-800 opacity-60"
+                )}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-white">{zone.name}</span>
+                      <Badge
+                        className={cn(
+                          "text-[9px] font-mono uppercase px-1.5 py-0.2",
+                          zone.severity === "CRITICAL" && "bg-rose-950/60 text-rose-300 border-rose-500/40",
+                          zone.severity === "HIGH" && "bg-amber-950/60 text-amber-300 border-amber-500/40",
+                          zone.severity === "BLOCKED" && "bg-zinc-800 text-zinc-300 border-zinc-700"
+                        )}
+                      >
+                        {zone.severity}
+                      </Badge>
+                    </div>
+                    <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">
+                      {zone.reason}
+                    </p>
+                  </div>
+
+                  <span className="font-mono text-[10px] text-zinc-500 shrink-0">
+                    {vertexCount} vertices
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-zinc-800/80 text-xs">
+                  <span
+                    className={cn(
+                      "font-mono text-[10px]",
+                      zone.active ? "text-emerald-400" : "text-zinc-500"
+                    )}
+                  >
+                    Status: {zone.active ? "EXCLUSION ACTIVE" : "DISABLED"}
+                  </span>
+
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleToggleZone(zone.id, zone.active)}
+                      className="h-6 text-[10px] border-zinc-700 bg-zinc-900 hover:text-white px-2"
+                    >
+                      {zone.active ? "Deactivate" : "Activate"}
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDeleteZone(zone.id)}
+                      className="h-6 text-[10px] border-zinc-800 bg-zinc-900 text-rose-400 hover:bg-rose-950/40 px-2"
+                      title="Delete Exclusion Zone"
+                    >
+                      <Trash2 className="size-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

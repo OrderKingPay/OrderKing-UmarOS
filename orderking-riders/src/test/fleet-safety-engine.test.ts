@@ -6,6 +6,11 @@ import {
   verifyDynamicDeliveryQr,
   verifyDoorstepDelivery,
   triggerSosSafetyDialer,
+  getDynamicShiftRadius,
+  DYNAMIC_SHIFT_RADII,
+  evaluateThreatZoneRisk,
+  REGISTERED_THREAT_ZONES,
+  buildTwoWheelerNavigationLinks,
   STANDARD_GPS_INTERVAL_MS,
   LOW_BATTERY_GPS_INTERVAL_MS,
   LOW_BATTERY_THRESHOLD,
@@ -292,6 +297,175 @@ describe("Sovereign Fleet Safety & Doorstep Handover Engine", () => {
       expect(updatedLog.length).toBe(initialCount + 1);
       expect(updatedLog[0]!.targetNumber).toBe("112");
       expect(updatedLog[0]!.deliveryId).toBe("del_audit_test");
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // 5. DYNAMIC TIME-OF-DAY SHIFT RADII (DAY: 12km / EVE: 7.5km / LATE-NIGHT: 3.5km)
+  // ─────────────────────────────────────────────────────────────
+  describe("5. Dynamic Time-of-Day Shift Radius Controls", () => {
+    it("enforces 12.0km max radius for Day Shift (06:00 - 19:00)", () => {
+      // 06:00 Morning boundary
+      const morningRule = getDynamicShiftRadius(6);
+      expect(morningRule.shift).toBe("DAY");
+      expect(morningRule.maxRadiusKm).toBe(12.0);
+      expect(morningRule.maxRadiusKm).toBe(DYNAMIC_SHIFT_RADII.DAY.maxRadiusKm);
+
+      // 12:00 Midday
+      const middayRule = getDynamicShiftRadius(12);
+      expect(middayRule.shift).toBe("DAY");
+      expect(middayRule.maxRadiusKm).toBe(12.0);
+
+      // 18:59 Late afternoon
+      const lateAfternoon = new Date("2026-10-27T18:59:00");
+      const afternoonRule = getDynamicShiftRadius(lateAfternoon);
+      expect(afternoonRule.shift).toBe("DAY");
+      expect(afternoonRule.maxRadiusKm).toBe(12.0);
+    });
+
+    it("enforces 7.5km max radius for Evening Peak Shift (19:00 - 23:00) to mitigate traffic & fatigue", () => {
+      // 19:00 Evening start
+      const eveRule19 = getDynamicShiftRadius(19);
+      expect(eveRule19.shift).toBe("EVENING");
+      expect(eveRule19.maxRadiusKm).toBe(7.5);
+      expect(eveRule19.maxRadiusKm).toBe(DYNAMIC_SHIFT_RADII.EVENING.maxRadiusKm);
+
+      // 21:30 Dinner rush
+      const dinnerRush = new Date("2026-10-27T21:30:00");
+      const eveRuleDinner = getDynamicShiftRadius(dinnerRush);
+      expect(eveRuleDinner.shift).toBe("EVENING");
+      expect(eveRuleDinner.maxRadiusKm).toBe(7.5);
+
+      // 22:59 Last evening minute
+      const lateEve = new Date("2026-10-27T22:59:59");
+      const eveRuleLate = getDynamicShiftRadius(lateEve);
+      expect(eveRuleLate.shift).toBe("EVENING");
+      expect(eveRuleLate.maxRadiusKm).toBe(7.5);
+    });
+
+    it("enforces 3.5km strict max perimeter for Late-Night Shift (23:00 - 06:00) against fatigue and attacks", () => {
+      // 23:00 Nocturnal start
+      const nightRule23 = getDynamicShiftRadius(23);
+      expect(nightRule23.shift).toBe("LATE_NIGHT");
+      expect(nightRule23.maxRadiusKm).toBe(3.5);
+      expect(nightRule23.maxRadiusKm).toBe(DYNAMIC_SHIFT_RADII.LATE_NIGHT.maxRadiusKm);
+
+      // 02:00 Midnight graveyard shift
+      const midnightDate = new Date("2026-10-27T02:00:00");
+      const midnightRule = getDynamicShiftRadius(midnightDate);
+      expect(midnightRule.shift).toBe("LATE_NIGHT");
+      expect(midnightRule.maxRadiusKm).toBe(3.5);
+
+      // 05:59 Pre-dawn boundary
+      const preDawnDate = new Date("2026-10-27T05:59:59");
+      const preDawnRule = getDynamicShiftRadius(preDawnDate);
+      expect(preDawnRule.shift).toBe("LATE_NIGHT");
+      expect(preDawnRule.maxRadiusKm).toBe(3.5);
+    });
+
+    it("interfaces through the FleetSafetyEngine singleton getShiftRadius method", () => {
+      const engine = FleetSafetyEngine.getInstance();
+      const dayRule = engine.getShiftRadius(14);
+      expect(dayRule.shift).toBe("DAY");
+      expect(dayRule.maxRadiusKm).toBe(12.0);
+
+      const nightRule = engine.getShiftRadius(1);
+      expect(nightRule.shift).toBe("LATE_NIGHT");
+      expect(nightRule.maxRadiusKm).toBe(3.5);
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // 6. THREAT-ZONE EXCLUSION & ANTI-ROBBERY COD LOCKOUT
+  // ─────────────────────────────────────────────────────────────
+  describe("6. Threat-Zone Hazard Exclusion & Anti-Robbery Lockout", () => {
+    it("strictly blocks order dispatch when customer destination is inside a CRITICAL hazard zone", () => {
+      // Epicenter of Isolated Outer Ring Road Cut (CRITICAL zone: radius 1500m)
+      const criticalPoint = { lat: 28.7041, lng: 77.1025 };
+      const evalResult = evaluateThreatZoneRisk(criticalPoint);
+
+      expect(evalResult.isThreatZone).toBe(true);
+      expect(evalResult.orderBlocked).toBe(true);
+      expect(evalResult.codLocked).toBe(true);
+      expect(evalResult.policyEnforced).toBe("BLOCK_ORDER");
+      expect(evalResult.zone?.id).toBe("TZ_UNLIT_HIGHWAY_CORRIDOR");
+      expect(evalResult.distanceToCenterMeters).toBeLessThanOrEqual(50);
+      expect(evalResult.rationale).toContain("Threat Zone Triggered");
+    });
+
+    it("locks COD (Online Prepaid Only) when customer destination is inside a HIGH-risk dispute zone", () => {
+      // Near center of Industrial Canal Border Pocket (HIGH risk zone: radius 1200m)
+      const highRiskPoint = { lat: 19.1136, lng: 72.8697 };
+      const evalResult = evaluateThreatZoneRisk(highRiskPoint);
+
+      expect(evalResult.isThreatZone).toBe(true);
+      expect(evalResult.orderBlocked).toBe(false); // Order not blocked, but COD prohibited
+      expect(evalResult.codLocked).toBe(true);
+      expect(evalResult.policyEnforced).toBe("LOCK_COD_ONLINE_ONLY");
+      expect(evalResult.zone?.id).toBe("TZ_HIGH_DISPUTE_SLUM_POCKET");
+      expect(evalResult.rationale).toContain("Mandatory prepaid online payment");
+    });
+
+    it("permits standard dispatch and allows COD when destination is in a safe residential area", () => {
+      // Safe point: Connaught Place, New Delhi (far from highway threat zone)
+      const safePoint = { lat: 28.6315, lng: 77.2167 };
+      const evalResult = evaluateThreatZoneRisk(safePoint);
+
+      expect(evalResult.isThreatZone).toBe(false);
+      expect(evalResult.orderBlocked).toBe(false);
+      expect(evalResult.codLocked).toBe(false);
+      expect(evalResult.policyEnforced).toBe("SAFE");
+      expect(evalResult.zone).toBeNull();
+      expect(evalResult.rationale).toContain("clear of registered threat hazard zones");
+    });
+
+    it("evaluates custom threat zones passed into the evaluator", () => {
+      const customZones = [
+        {
+          id: "CUSTOM_FLOOD_AREA",
+          name: "Monsoon Riverbank Submersion",
+          center: { lat: 26.1445, lng: 91.7362 },
+          radiusMeters: 500,
+          riskLevel: "CRITICAL" as const,
+          policy: "BLOCK_ORDER" as const,
+          reason: "Active flash flood inundation",
+        },
+      ];
+
+      const floodedDest = { lat: 26.1447, lng: 91.7364 }; // ~30m from custom center
+      const evalResult = evaluateThreatZoneRisk(floodedDest, customZones);
+
+      expect(evalResult.isThreatZone).toBe(true);
+      expect(evalResult.orderBlocked).toBe(true);
+      expect(evalResult.zone?.id).toBe("CUSTOM_FLOOD_AREA");
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // 7. NATIVE TWO-WHEELER GOOGLE MAPS NAVIGATION DEEP LINKS
+  // ─────────────────────────────────────────────────────────────
+  describe("7. Native Two-Wheeler Google Maps Deep Links (mode=b)", () => {
+    it("generates exact android intent URI with mode=b for native motorcycle/scooter turn-by-turn", () => {
+      const destination = { lat: 28.6315, lng: 77.2167 };
+      const links = buildTwoWheelerNavigationLinks(destination, "Connaught Place Hub");
+
+      // Mandatory intent scheme: google.navigation:q=lat,lng&mode=b
+      expect(links.androidIntentUri).toBe("google.navigation:q=28.6315,77.2167&mode=b");
+
+      // Geo URI with two-wheeler mode
+      expect(links.geoUri).toContain("geo:28.6315,77.2167");
+      expect(links.geoUri).toContain("mode=b");
+
+      // Web fallback with two-wheeler travel mode
+      expect(links.webUrl).toContain("https://www.google.com/maps/dir/");
+      expect(links.webUrl).toContain("destination=28.6315,77.2167");
+      expect(links.webUrl).toContain("travelmode=two-wheeler");
+    });
+
+    it("handles zero or null coordinates safely with zero drift", () => {
+      const links = buildTwoWheelerNavigationLinks(null);
+      expect(links.androidIntentUri).toBe("google.navigation:q=0,0&mode=b");
+      expect(links.webUrl).toContain("destination=0,0");
     });
   });
 });

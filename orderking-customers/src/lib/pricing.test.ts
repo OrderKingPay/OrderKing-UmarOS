@@ -791,5 +791,71 @@ describe("pricing", () => {
       assert.equal(pgLine.amountPaise, 217);
     });
   });
-});
 
+  describe("Quad-Core Dynamic Delivery Availability (IST Shifts: Day 12km, Evening 7.5km, Late-Night 3.5km)", () => {
+    it("enforces dynamic default shift boundaries when specific overrides are omitted", () => {
+      // 1. Day Shift: up to 12.0 km allowed, 12.5 km blocked
+      const qDay12 = computeQuote({
+        lines: [line(50000)],
+        packagingPaise: 0,
+        distanceKm: 12.0,
+        fees,
+        promo: null,
+        isFirstOrder: false,
+      });
+      assert.equal(qDay12.blockers.includes("EXCEEDS_MAX_RADIUS"), false);
+
+      const qDayExceeded = computeQuote({
+        lines: [line(50000)],
+        packagingPaise: 0,
+        distanceKm: 12.5,
+        fees,
+        promo: null,
+        isFirstOrder: false,
+      });
+      assert.ok(qDayExceeded.blockers.includes("EXCEEDS_MAX_RADIUS"));
+
+      // 2. Evening Shift: up to 7.5 km allowed, 8.0 km blocked
+      const qEvening75 = computeQuote({
+        lines: [line(50000)],
+        packagingPaise: 0,
+        distanceKm: 7.5,
+        fees: { ...fees, eveningModeActive: true },
+        promo: null,
+        isFirstOrder: false,
+      });
+      assert.equal(qEvening75.blockers.includes("EVENING_DISTANCE_LIMIT"), false);
+
+      const qEveningExceeded = computeQuote({
+        lines: [line(50000)],
+        packagingPaise: 0,
+        distanceKm: 8.0,
+        fees: { ...fees, eveningModeActive: true },
+        promo: null,
+        isFirstOrder: false,
+      });
+      assert.ok(qEveningExceeded.blockers.includes("EVENING_DISTANCE_LIMIT"));
+
+      // 3. Late-Night Shift: up to 3.5 km allowed, 4.0 km blocked
+      const qNight35 = computeQuote({
+        lines: [line(50000)],
+        packagingPaise: 0,
+        distanceKm: 3.5,
+        fees: { ...fees, nightModeActive: true },
+        promo: null,
+        isFirstOrder: false,
+      });
+      assert.equal(qNight35.blockers.includes("NIGHT_SAFETY_CURFEW"), false);
+
+      const qNightExceeded = computeQuote({
+        lines: [line(50000)],
+        packagingPaise: 0,
+        distanceKm: 4.0,
+        fees: { ...fees, nightModeActive: true },
+        promo: null,
+        isFirstOrder: false,
+      });
+      assert.ok(qNightExceeded.blockers.includes("NIGHT_SAFETY_CURFEW"));
+    });
+  });
+});

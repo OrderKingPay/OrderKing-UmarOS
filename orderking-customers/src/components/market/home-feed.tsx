@@ -38,6 +38,7 @@ import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
+import { getActiveDeliveryRadius } from "@/lib/geo/dynamic-radius";
 
 // Curated high-resolution categories with distinct gradient colors (Biryani, Pizza, Rolls, Thali, Burgers, Desserts)
 const CURATED_FOOD_CATEGORIES = [
@@ -337,6 +338,7 @@ export function HomeFeed({
     )
   );
 
+  const activeShift = useMemo(() => getActiveDeliveryRadius(), []);
   const isDeliveryActive = location
     ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId)
     : true;
@@ -407,6 +409,24 @@ export function HomeFeed({
   return (
     <div className="space-y-4 px-3 py-2 sm:px-4 sm:py-3 bg-[#FCFAF7] text-gray-900">
 
+
+      {/* Dynamic Time-Based Operational Delivery Shift Banner */}
+      {!q && list.data?.deliveryAvailable !== false && (
+        <div className="flex items-center justify-between gap-2 rounded-2xl border border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent px-3 py-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-extrabold text-stone-900 tracking-tight">
+              {activeShift.shiftName}
+            </span>
+            <span className="rounded-full bg-stone-900/5 border border-stone-300 px-2 py-0.5 text-[10px] font-bold text-stone-700">
+              {activeShift.radiusKm} km Radius
+            </span>
+          </div>
+          <span className="text-[10px] font-mono text-stone-500 hidden sm:inline">
+            Next: {activeShift.nextShiftTime}
+          </span>
+        </div>
+      )}
 
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
       {!q && list.data?.deliveryAvailable !== false && (

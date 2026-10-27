@@ -10,6 +10,7 @@
  */
 
 import { haversineKm } from "./eta.ts";
+import { evaluateThreatZoneRisk } from "../fleet/fleet-safety-engine.ts";
 import type {
   AvailabilityStatus,
   CustomerSlice,
@@ -199,6 +200,7 @@ export type EligibilityInput = {
   candidateOrder?: BatchOrderProfile;
   hasOpenOffer: boolean;
   pickup: GeoPoint;
+  dropLocation?: GeoPoint;
   restaurantArea: string;
   maxRadiusKm: number;
   isCod?: boolean;
@@ -326,6 +328,25 @@ export function evaluateRiderEligibilityAndScore(input: EligibilityInput): Dispa
   let effectiveMaxRadius = input.maxRadiusKm;
   if (input.rider.vehicleType === "BICYCLE") effectiveMaxRadius = Math.min(3, input.maxRadiusKm);
   if (input.environment?.weatherCondition === "STORM") effectiveMaxRadius *= 0.7;
+
+  // Dynamic time-of-day shift radius controls (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)
+  if (input.environment?.timeOfDay === "LATE_NIGHT") {
+    effectiveMaxRadius = Math.min(effectiveMaxRadius, 3.5);
+  } else if (input.environment?.timeOfDay === "RUSH_HOUR") {
+    effectiveMaxRadius = Math.min(effectiveMaxRadius, 7.5);
+  }
+
+  // Threat-Zone Safety Exclusion (Founder Mandate: Block Orders or Lock COD in Hazard Corridors)
+  const destinationPoint = input.candidateOrder?.dropLocation ?? input.dropLocation;
+  if (destinationPoint) {
+    const threatCheck = evaluateThreatZoneRisk(destinationPoint);
+    if (threatCheck.orderBlocked) {
+      return failResult(`Safety Lockout: ${threatCheck.rationale}`);
+    }
+    if (threatCheck.codLocked && input.isCod) {
+      return failResult(`COD Locked in Hazard Zone: ${threatCheck.rationale}`);
+    }
+  }
 
   // 1. Proximity Score (40% Weight)
   let proximityScore = 50;

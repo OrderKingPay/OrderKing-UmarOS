@@ -1,3 +1,4 @@
+import { isNightModeActive as isLateNightCurfew } from "@/lib/pricing";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -209,7 +210,9 @@ function CheckoutPage() {
     donateFeedingIndia
   );
 
-  const isCodEligible = totalPayable > 0 && totalPayable <= codMaxPaise;
+  const isLateNight =
+    checkoutCtx.data?.isLateNightLockout ?? isLateNightCurfew();
+  const isCodEligible = totalPayable > 0 && totalPayable <= codMaxPaise && !isLateNight;
   const isKingPaySufficient = walletBalancePaise >= totalPayable && totalPayable > 0;
 
   const submit = async () => {
@@ -1158,38 +1161,56 @@ function CheckoutPage() {
                   )}
                 </div>
 
-                {/* Cash on Delivery (COD) */}
-                <label
-                  className={`flex cursor-pointer items-start gap-3.5 rounded-2xl border-2 p-4 transition-all ${
-                    method === "COD"
-                      ? "border-amber-400 bg-amber-500/15"
-                      : "border-zinc-200 dark:border-zinc-800 bg-surface"
-                  } ${!isCodEligible ? "opacity-50" : ""}`}
-                >
-                  <input
-                    type="radio"
-                    name="pay"
-                    className="mt-1 size-5 text-amber-500"
-                    checked={method === "COD"}
-                    disabled={!isCodEligible}
-                    onChange={() => setMethod("COD")}
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-display font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-50">
-                        {t("checkout.cod") || "Cash on Delivery"}
-                      </span>
-                      <span className="text-xs font-semibold text-zinc-500">
-                        Max {formatPaise(codMaxPaise, { locale })}
-                      </span>
+                {/* Cash on Delivery (COD) with Late-Night Lockout Protection */}
+                <div className="space-y-2">
+                  {isLateNight && (
+                    <div className="flex items-start gap-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 p-3.5 text-xs text-amber-900 dark:text-amber-200">
+                      <Moon className="size-4 text-amber-500 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="font-bold block">🌙 Late-Night Rider Safety Lockout Active (11:00 PM – 04:00 AM IST)</strong>
+                        <span>Cash on Delivery is locked at night to ensure delivery partner physical safety. Direct NPCI UPI (<strong className="font-mono font-bold text-amber-800 dark:text-amber-300">orderking@ybl</strong>) and KingPay Royal Wallet are 100% active.</span>
+                      </div>
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500">
-                      {isCodEligible
-                        ? "Pay cash or scan rider's QR code upon delivery"
-                        : `Cash on Delivery is unavailable for orders above ${formatPaise(codMaxPaise, { locale })}.`}
-                    </p>
-                  </div>
-                </label>
+                  )}
+                  <label
+                    className={`flex cursor-pointer items-start gap-3.5 rounded-2xl border-2 p-4 transition-all ${
+                      method === "COD"
+                        ? "border-amber-400 bg-amber-500/15"
+                        : "border-zinc-200 dark:border-zinc-800 bg-surface"
+                    } ${!isCodEligible ? "opacity-50" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="pay"
+                      className="mt-1 size-5 text-amber-500"
+                      checked={method === "COD"}
+                      disabled={!isCodEligible}
+                      onChange={() => setMethod("COD")}
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-display font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                          {t("checkout.cod") || "Cash on Delivery"}
+                          {isLateNight && (
+                            <span className="text-[10px] font-black uppercase tracking-wider rounded-md bg-amber-500/20 text-amber-800 dark:text-amber-300 px-1.5 py-0.5">
+                              Night Curfew
+                            </span>
+                          )}
+                        </span>
+                        <span className="text-xs font-semibold text-zinc-500">
+                          Max {formatPaise(codMaxPaise, { locale })}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-zinc-500">
+                        {isLateNight
+                          ? "Locked for rider safety between 11:00 PM and 4:00 AM IST. Verified NPCI UPI & prepaid rails 100% active."
+                          : isCodEligible
+                            ? "Pay cash or scan rider's QR code upon delivery"
+                            : `Cash on Delivery is unavailable for orders above ${formatPaise(codMaxPaise, { locale })}.`}
+                      </p>
+                    </div>
+                  </label>
+                </div>
               </section>
 
               {/* 3. ORDER SUMMARY WITH CRISP LUXURY BILL BREAKDOWN */}

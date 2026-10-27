@@ -11,6 +11,12 @@ import { buildQuote } from "./quote";
 import { cancelOrderViaHDmaster } from "./hdmaster-orders";
 
 export const COD_MAX_PAISE = 200_000; // ₹2,000.00 statutory COD risk ceiling
+
+export function isLateNightCurfew(date = new Date()) {
+  const istDate = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+  const hour = istDate.getHours();
+  return hour >= 23 || hour < 4;
+} // ₹2,000.00 statutory COD risk ceiling
 export const TIP_MAX_PAISE = 100_000; // ₹1,000.00 maximum tip ceiling
 
 export type RazorpayVerificationInput = {
@@ -92,10 +98,13 @@ export const getCheckoutContext = createServerFn({ method: "GET" })
       }
     }
 
+    const isLateNight = isLateNightCurfew();
     return {
       walletBalancePaise,
       restaurantOpen,
       codMaxPaise: COD_MAX_PAISE,
+      isLateNightLockout: isLateNight,
+      isCodAvailable: !isLateNight,
     };
   });
 
@@ -274,8 +283,15 @@ export const placeOrder = createServerFn({ method: "POST" })
     const method = data.paymentMethod;
 
     // Enforce payment method rules & cryptographic verification
-    if (method === "COD" && finalTotalPaise > COD_MAX_PAISE) {
-      throw new Error("Cash on Delivery is only eligible for orders up to ₹2,000.00. Please pay via UPI or KingPay.");
+    if (method === "COD") {
+      if (isLateNightCurfew()) {
+        throw new Error(
+          "Cash on Delivery is locked out between 23:00 and 04:00 IST for rider safety. Please pay via verified NPCI UPI (orderking@ybl) or KingPay."
+        );
+      }
+      if (finalTotalPaise > COD_MAX_PAISE) {
+        throw new Error("Cash on Delivery is only eligible for orders up to ₹2,000.00. Please pay via UPI or KingPay.");
+      }
     }
 
     if (method === "RAZORPAY_ONLINE") {

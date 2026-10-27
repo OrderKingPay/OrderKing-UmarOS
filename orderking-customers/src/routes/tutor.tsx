@@ -1772,7 +1772,7 @@ function IntelligencePage() {
         toast.success("KingPay micro-transaction settled: ₹1.00");
       }
     } catch (e) {
-      setHistory([...newHistory, { role: 'assistant', content: "Network anomaly detected..." }]);
+      setHistory([...newHistory, { role: 'assistant', content: "Unable to retrieve academic solution. Please check your network connection and retry." }]);
     } finally {
       setIsLoading(false);
     }

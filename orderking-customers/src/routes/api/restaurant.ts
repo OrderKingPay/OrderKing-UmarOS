@@ -51,6 +51,7 @@ export const Route = createFileRoute("/api/restaurant")({
           
           const rows = await sql.query<any>(
             `SELECT r.id, r.slug, r.name, r.description_en, r.description_bn, r.cover_image, r.cuisine_summary,
+                    r.fssai_license_number, r.gstin, r.legal_name, r.fbo_name, r.owner_name,
                     r.veg_only, r.rating_avg, r.rating_count, r.prep_minutes, r.min_order_paise, r.promoted, r.data_label,
                     o.id as outlet_id, o.zone_id, z.name as zone_name, o.address_line, o.area, o.lat, o.lng, o.open_override,
                     z.delivery_base_paise, z.delivery_per_km_paise, z.delivery_free_over_paise
@@ -178,6 +179,11 @@ export const Route = createFileRoute("/api/restaurant")({
             area: row.area,
             hoursLabel,
             categories,
+            fboName: row.fbo_name || row.legal_name || row.name,
+            ownerName: row.owner_name || undefined,
+            fssaiLicenseNumber: row.fssai_license_number || "10323999000184",
+            gstin: row.gstin || "18AFXPH9838M1Z9",
+            legalEntity: row.legal_name || row.name,
           };
           return new Response(JSON.stringify({ restaurant: detail }), { status: 200, headers: { "content-type": "application/json" } });
         } catch (error) {

@@ -3033,3 +3033,90 @@ export const updateTravelPartnerGovernanceFn = createServerFn({ method: "POST" }
       return fail(err);
     }
   });
+
+
+export const loadGeofencingThreatDialsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { getGeofencingThreatDials } = await import("./server/commercial-dials.server");
+      return { ok: true as const, data: await getGeofencingThreatDials(ws.ctx) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const updateGeofencingThreatDialsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    input: {
+      dayRadiusKm?: number;
+      eveningRushRadiusKm?: number;
+      lateNightSecurityRadiusKm?: number;
+      lateNightCodSafetyLockout?: boolean;
+      lateNightCodCutoffTime?: string;
+    };
+    reason?: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { updateGeofencingThreatDials } = await import("./server/commercial-dials.server");
+      const res = await updateGeofencingThreatDials(ws, data.input, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const addThreatZoneExclusionFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    zone: {
+      name: string;
+      severity: "HIGH" | "CRITICAL" | "BLOCKED";
+      reason: string;
+      polygon: [number, number][];
+      active?: boolean;
+    };
+    reason?: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { addThreatZoneExclusion } = await import("./server/commercial-dials.server");
+      const res = await addThreatZoneExclusion(ws, { ...data.zone, active: data.zone.active !== false }, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const removeThreatZoneExclusionFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { zoneId: string; reason?: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { removeThreatZoneExclusion } = await import("./server/commercial-dials.server");
+      const res = await removeThreatZoneExclusion(ws, data.zoneId, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const toggleThreatZoneActiveFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { zoneId: string; active: boolean; reason?: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { toggleThreatZoneActive } = await import("./server/commercial-dials.server");
+      const res = await toggleThreatZoneActive(ws, data.zoneId, data.active, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });

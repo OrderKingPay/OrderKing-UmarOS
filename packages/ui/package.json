@@ -23,6 +23,6 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test --test-force-exit src/utils.test.ts src/supabase-sync-client.test.ts src/tax.test.ts src/fssai.test.ts src/dpdp.test.ts"
+    "test": "node --experimental-strip-types --test --test-force-exit src/utils.test.ts src/supabase-sync-client.test.ts src/tax.test.ts src/fssai.test.ts src/dpdp.test.ts src/ecosystem-shifts.test.ts"
   }
 }

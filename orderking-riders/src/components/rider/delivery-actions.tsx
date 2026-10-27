@@ -17,7 +17,7 @@ import { ConfirmDialog } from "./confirm-dialog";
 import { SwipeSlider } from "./swipe-slider";
 import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
 import { JUSTIFIED_OPERATIONAL_REASONS, isJustifiedOperationalReason } from "@/lib/rider/discipline";
-import { verifyDoorstepDelivery, generateDynamicDeliveryQr } from "@/lib/fleet/fleet-safety-engine";
+import { verifyDoorstepDelivery, generateDynamicDeliveryQr, evaluateThreatZoneRisk } from "@/lib/fleet/fleet-safety-engine";
 
 export function DeliveryActions({
   delivery,
@@ -232,8 +232,24 @@ export function DeliveryActions({
       ? Math.max(0, Math.floor((now - new Date(d.waitStartedAt).getTime()) / 1000))
       : 0;
 
+  const threatEvaluation = evaluateThreatZoneRisk(d.dropLocation);
+
   return (
     <Card className="space-y-3">
+      {threatEvaluation.isThreatZone ? (
+        <div className="flex items-start gap-2 rounded-lg border border-red-500/50 bg-red-500/10 p-2.5 text-xs text-red-900 dark:text-red-200">
+          <ShieldAlert className="size-4 shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
+          <div className="space-y-0.5">
+            <p className="font-bold">
+              {threatEvaluation.orderBlocked ? "🚨 Critical Hazard Zone Lockout" : "⚠️ High-Risk Hazard Zone Warning"}
+            </p>
+            <p className="text-[11px] leading-relaxed opacity-90">
+              {threatEvaluation.rationale}
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       <div className="flex items-center justify-between gap-2">
         <div>
           <p className="font-display text-lg font-bold">

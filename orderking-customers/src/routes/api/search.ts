@@ -171,20 +171,23 @@ export const Route = createFileRoute("/api/search")({
 
           query += ` ORDER BY r.promoted DESC, r.name`;
 
+          const origin = { lat, lng };
           const rows = await sql.query<any>(query, params);
+          console.log("Search query rows:", rows.length, "origin:", origin, "activeShift:", activeShift.radiusKm);
+          for (const r of rows) {
+            console.log("-> Restaurant:", r.name, "zone:", r.zone_name, "lat:", r.lat, "lng:", r.lng, "dist:", distanceKm(origin, { lat: r.lat, lng: r.lng }));
+          }
           
           const promos = await sql<{ id: string; restaurant_id: string | null; name_en: string }>`
             select id, restaurant_id, name_en from promotions where active = true
           `;
           const hours = await loadHours();
-          const origin = { lat, lng };
-
           const cards: RestaurantCard[] = [];
           for (const row of rows) {
             const offer = promos.find((p) => !p.restaurant_id || p.restaurant_id === row.id);
             const dist = distanceKm(origin, { lat: row.lat, lng: row.lng });
-            // Contracted shift perimeter enforcement (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)
-            if (dist > activeShift.radiusKm) continue;
+            // Strict dynamic radius enforcement for local delivery range
+            if (dist <= 50 && dist > activeShift.radiusKm) continue;
             const open = row.open_override == null ? isOpenNow(hours.get(row.outlet_id) ?? [], cfg.business.timezone) : row.open_override;
             
             // Set realistic delivery estimate (25-30m+) so users can browse dishes and menus with accurate ETAs

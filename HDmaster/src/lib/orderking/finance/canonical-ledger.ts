@@ -2,6 +2,17 @@ import { fraudShield, type OrderRiskContext } from '../security/fraud-shield.ts'
 import { getSql, type Sql } from '../../db.ts';
 import * as crypto from 'crypto';
 
+export const SOVEREIGN_NPCI_UPI_VPA = "orderking@ybl";
+export const SECONDARY_NPCI_UPI_VPA = "9395065587@ybl";
+export const LATE_NIGHT_START_HOUR_IST = 23; // 11:00 PM IST
+export const LATE_NIGHT_END_HOUR_IST = 4;   // 04:00 AM IST
+
+export function isLateNightCurfewIst(date = new Date()) {
+  const istDate = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+  const hour = istDate.getHours();
+  return hour >= LATE_NIGHT_START_HOUR_IST || hour < LATE_NIGHT_END_HOUR_IST;
+}
+
 export type LedgerAccountType =
   | "RESTAURANT_PAYABLE"
   | "RIDER_PAYABLE"
@@ -352,6 +363,50 @@ export class CanonicalLedger {
     };
   }
 
+  public static readonly SOVEREIGN_NPCI_UPI_VPA = SOVEREIGN_NPCI_UPI_VPA;
+  public static readonly SECONDARY_NPCI_UPI_VPA = SECONDARY_NPCI_UPI_VPA;
+
+  public static evaluatePaymentMethodSafety(params: {
+    paymentMethod?: string;
+    timestamp?: string | Date;
+    isThreatZone?: boolean;
+    zoneId?: string;
+  }): {
+    allowed: boolean;
+    isLateNight: boolean;
+    isThreatZone: boolean;
+    reason?: string;
+  } {
+    const method = (params.paymentMethod || "NPCI_UPI").toUpperCase();
+    const isLateNight = isLateNightCurfewIst(params.timestamp ? new Date(params.timestamp) : new Date());
+    const isThreatZone = Boolean(params.isThreatZone);
+
+    if (method === "COD") {
+      if (isLateNight) {
+        return {
+          allowed: false,
+          isLateNight: true,
+          isThreatZone,
+          reason: `LATE_NIGHT_COD_LOCKOUT: Cash on Delivery is strictly locked out between 23:00 and 04:00 IST for rider safety. Only verified NPCI UPI (${SOVEREIGN_NPCI_UPI_VPA}) and online prepaid flows are permitted.`,
+        };
+      }
+      if (isThreatZone) {
+        return {
+          allowed: false,
+          isLateNight,
+          isThreatZone: true,
+          reason: `THREAT_ZONE_COD_LOCKOUT: Cash on Delivery is locked out in high-risk zones for rider physical safety. Only verified NPCI UPI (${SOVEREIGN_NPCI_UPI_VPA}) and online prepaid flows are permitted.`,
+        };
+      }
+    }
+
+    return {
+      allowed: true,
+      isLateNight,
+      isThreatZone,
+    };
+  }
+
   public async captureOrderPayment(params: {
     orderId: string;
     totalAmountPaise: number;
@@ -361,8 +416,43 @@ export class CanonicalLedger {
     restaurantId: string;
     idempotencyKey: string;
     orderRiskContext?: OrderRiskContext;
+    paymentMethod?: "COD" | "DIRECT_UPI" | "NPCI_UPI" | "KING_PAY" | "RAZORPAY_ONLINE" | "UPI_SANDBOX";
+    riderId?: string;
+    customerId?: string;
+    isThreatZone?: boolean;
+    timestamp?: string | Date;
+    npciUpiVpa?: string;
   }): Promise<LedgerTransaction> {
+    const method = (params.paymentMethod || "NPCI_UPI").toUpperCase();
+
+    // Rider safety & late-night lockout enforcement
+    const safety = CanonicalLedger.evaluatePaymentMethodSafety({
+      paymentMethod: method,
+      timestamp: params.timestamp,
+      isThreatZone: params.isThreatZone,
+    });
+    if (!safety.allowed) {
+      throw new Error(safety.reason);
+    }
+
+    // Strict SafeInteger paise verification
+    if (!Number.isInteger(params.totalAmountPaise) || params.totalAmountPaise <= 0) {
+      throw new Error(`Total amount must be a positive integer in paise, received: ${params.totalAmountPaise}`);
+    }
+    if (!Number.isInteger(params.platformFeePaise) || params.platformFeePaise < 0) {
+      throw new Error(`Platform fee must be a non-negative integer in paise, received: ${params.platformFeePaise}`);
+    }
+    if (!Number.isInteger(params.deliveryFeePaise) || params.deliveryFeePaise < 0) {
+      throw new Error(`Delivery fee must be a non-negative integer in paise, received: ${params.deliveryFeePaise}`);
+    }
+    if (!Number.isInteger(params.gstPaise) || params.gstPaise < 0) {
+      throw new Error(`GST liability must be a non-negative integer in paise, received: ${params.gstPaise}`);
+    }
+
     const netFoodPaise = params.totalAmountPaise - params.platformFeePaise - params.deliveryFeePaise - params.gstPaise;
+    if (!Number.isInteger(netFoodPaise) || netFoodPaise < 0) {
+      throw new Error(`Net food payable must be non-negative integer paise. Computed ${netFoodPaise} from total ${params.totalAmountPaise}`);
+    }
 
     let isFraudSuspicious = false;
     let fraudReasons: string[] = [];
@@ -375,20 +465,57 @@ export class CanonicalLedger {
       fraudScore = evaluation.riskScore;
     }
 
+    let debitAccount: LedgerAccountType = "BANK_CLEARING";
+    let debitEntityId = "GATEWAY";
+    let debitMemo = `Customer online capture for order #${params.orderId}`;
+
+    if (method === "COD") {
+      debitAccount = "CUSTOMER_CASH_IN";
+      debitEntityId = params.riderId || "RIDER_POCKET_HOLDING";
+      debitMemo = `Rider doorstep cash collection for COD order #${params.orderId}`;
+    } else if (method === "DIRECT_UPI" || method === "NPCI_UPI") {
+      debitAccount = "BANK_CLEARING";
+      const vpa = params.npciUpiVpa || SOVEREIGN_NPCI_UPI_VPA;
+      debitEntityId = `NPCI_UPI:${vpa}`;
+      debitMemo = `Direct NPCI UPI collection via ${vpa} for order #${params.orderId}`;
+    } else if (method === "KING_PAY") {
+      debitAccount = "CUSTOMER_WALLET";
+      debitEntityId = params.customerId || "KINGPAY_USER_WALLET";
+      debitMemo = `KingPay wallet payment debit for order #${params.orderId}`;
+    }
+
     return this.postTransaction({
       idempotencyKey: params.idempotencyKey,
-      eventType: "ORDER_PAYMENT_CAPTURED",
+      eventType: method === "COD" ? "ORDER_COD_COLLECTION_RECORDED" : "ORDER_PAYMENT_CAPTURED",
       orderId: params.orderId,
       isFraudSuspicious,
       fraudReasons,
       fraudScore,
       entries: [
-        { account: "BANK_CLEARING", direction: "DEBIT", amountPaise: params.totalAmountPaise, entityId: "GATEWAY", memo: `Customer UPI capture for order #${params.orderId}` },
+        { account: debitAccount, direction: "DEBIT", amountPaise: params.totalAmountPaise, entityId: debitEntityId, memo: debitMemo },
         { account: "RESTAURANT_PAYABLE", direction: "CREDIT", amountPaise: netFoodPaise, entityId: params.restaurantId, memo: `Net food sales payable for order #${params.orderId}` },
         { account: "PLATFORM_FEE_REVENUE", direction: "CREDIT", amountPaise: params.platformFeePaise, entityId: "PLATFORM", memo: `Convenience fee revenue on order #${params.orderId}` },
-        { account: "RIDER_PAYABLE", direction: "CREDIT", amountPaise: params.deliveryFeePaise, entityId: "RIDER_POOL", memo: `Delivery fee allocated to rider on order #${params.orderId}` },
+        { account: "RIDER_PAYABLE", direction: "CREDIT", amountPaise: params.deliveryFeePaise, entityId: params.riderId || "RIDER_POOL", memo: `Delivery fee allocated to rider on order #${params.orderId}` },
         { account: "GST_OUTPUT_LIABILITY", direction: "CREDIT", amountPaise: params.gstPaise, entityId: "GOVT_TAX", memo: `18% GST output tax liability on order #${params.orderId}` },
       ],
+    });
+  }
+
+  public async recordNpciUpiDirectCollection(params: {
+    orderId: string;
+    totalAmountPaise: number;
+    platformFeePaise: number;
+    deliveryFeePaise: number;
+    gstPaise: number;
+    restaurantId: string;
+    riderId?: string;
+    idempotencyKey: string;
+    vpa?: string;
+  }): Promise<LedgerTransaction> {
+    return this.captureOrderPayment({
+      ...params,
+      paymentMethod: "NPCI_UPI",
+      npciUpiVpa: params.vpa || SOVEREIGN_NPCI_UPI_VPA,
     });
   }
 

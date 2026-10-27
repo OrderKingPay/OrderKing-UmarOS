@@ -102,6 +102,11 @@ export type RestaurantDetail = {
   area: string;
   hoursLabel: string;
   categories: MenuCategoryView[];
+  fboName?: string;
+  ownerName?: string;
+  fssaiLicenseNumber?: string;
+  gstin?: string;
+  legalEntity?: string;
 };
 
 export type CartLineInput = {
