@@ -22,6 +22,7 @@ export type OrderView = {
   state: string;
   placedAt: string;
   customerArea: string | null;
+  deliveryDistanceKm?: number;
   paymentMethod: string;
   isCod: boolean;
   specialInstructions: string | null;

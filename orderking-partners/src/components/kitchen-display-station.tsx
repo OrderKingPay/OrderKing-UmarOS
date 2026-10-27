@@ -1,3 +1,4 @@
+import { getCurrentEcosystemShift } from "@orderking/ui";
 import { useState, useEffect } from "react";
 import { Clock, ChefHat, CheckSquare, Square, AlertTriangle, ArrowRight, Flame, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,10 @@ function inferStation(name: string): "GRILL" | "TANDOOR" | "FRYER" | "CURRY" | "
   return "PACKING";
 }
 
-function mapOrdersToKotTickets(orders?: OrderView[]): KotTicket[] {
+function mapOrdersToKotTickets(orders?: OrderView[], activeRadiusKm?: number): KotTicket[] {
+  if (!orders || orders.length === 0) return [];
+  const shift = getCurrentEcosystemShift();
+  const radiusCap = activeRadiusKm ?? shift.maxRadiusKm;
   if (!orders || orders.length === 0) return [];
   return orders
     .filter((o) => ["PLACED", "ACCEPTED", "CONFIRMED", "PREPARING"].includes(o.state))
@@ -66,6 +70,10 @@ export function KitchenDisplayStation({
   orders?: OrderView[];
   prepThrottleBuffer?: number;
 }) {
+  const currentShift = getCurrentEcosystemShift();
+  const outOfRadiusOrders = (orders || []).filter(
+    (o) => o.deliveryDistanceKm && o.deliveryDistanceKm > currentShift.maxRadiusKm
+  );
   const [activeStationFilter, setActiveStationFilter] = useState<string>("ALL");
   const [tickets, setTickets] = useState<KotTicket[]>(() => mapOrdersToKotTickets(orders));
 
@@ -134,6 +142,34 @@ export function KitchenDisplayStation({
 
   return (
     <div className="space-y-4">
+      {/* Dynamic Ecosystem Shift & Radius Status Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl bg-muted/40 border border-border p-3 text-xs">
+        <div className="flex items-center gap-2">
+          <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+          <span className="font-bold text-fg">
+            Active Shift: {currentShift.name}
+          </span>
+          <span className="rounded-full bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 text-[10px] font-extrabold">
+            KDS Radius Cap: &le; {currentShift.maxRadiusKm} km
+          </span>
+        </div>
+        <div className="text-[11px] text-muted font-medium">
+          {currentShift.description} ({currentShift.startHour}:00 - {currentShift.endHour}:00 IST)
+        </div>
+      </div>
+
+      {outOfRadiusOrders.length > 0 && (
+        <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs font-semibold text-destructive flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="size-4 shrink-0" />
+            <span>
+              {outOfRadiusOrders.length} order(s) exceed current {currentShift.name} boundary (&gt; {currentShift.maxRadiusKm} km) and are quarantined from active kitchen dispatch.
+            </span>
+          </div>
+          <span className="font-mono text-[10px] uppercase font-bold tracking-wider">Shift Curfew Guard</span>
+        </div>
+      )}
+
       {/* Header & Station Selector */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
         <div>
