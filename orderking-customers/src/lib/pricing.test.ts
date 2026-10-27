@@ -364,7 +364,7 @@ describe("pricing", () => {
       fees: {
         ...fees,
         eveningModeActive: true,
-        eveningModeRadiusKm: 8.0,
+        eveningModeRadiusKm: 7.5,
       },
       promo: null,
       isFirstOrder: false,
@@ -379,7 +379,7 @@ describe("pricing", () => {
       fees: {
         ...fees,
         eveningModeActive: true,
-        eveningModeRadiusKm: 8.0,
+        eveningModeRadiusKm: 7.5,
       },
       promo: null,
       isFirstOrder: false,

@@ -102,19 +102,16 @@ export function PeriodLeaveModal({
   if (!isOpen) return null;
 
   const handleClaim = () => {
-    setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      const claimedDates =
-        selectedOption === "2days"
-          ? [todayStr, tomorrowStr]
-          : selectedOption === "today"
-            ? [todayStr]
-            : [tomorrowStr];
-      onClaimed(claimedDates);
-      toast.success("Period leave approved for 2 days. Rest well partner! Ratings & tier are 100% protected.");
-      onClose();
-    }, 500);
+    setSubmitting(false);
+    const claimedDates =
+      selectedOption === "2days"
+        ? [todayStr, tomorrowStr]
+        : selectedOption === "today"
+          ? [todayStr]
+          : [tomorrowStr];
+    onClaimed(claimedDates);
+    toast.success("Period leave approved for 2 days. Rest well partner! Ratings & tier are 100% protected.");
+    onClose();
   };
 
   return (

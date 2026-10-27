@@ -200,15 +200,15 @@ export function getDeliveryTimeWindow(date: Date = new Date()): DeliveryTimeWind
   const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
   const ist = new Date(utc + (3600000 * 5.5));
   const hour = ist.getHours();
-  // 11:00 PM (23) until 04:00 AM (4): NIGHT (3 to 4 km)
-  if (hour >= 23 || hour < 4) {
+  // 11:00 PM (23) until 06:00 AM (6): LATE-NIGHT SHIFT (3.5 km safe town radius)
+  if (hour >= 23 || hour < 6) {
     return "NIGHT";
   }
-  // 06:00 PM (18) until 11:00 PM (23): EVENING (7 to 8 km)
+  // 06:00 PM (18) until 11:00 PM (23): EVENING SHIFT (7.5 km core urban radius)
   if (hour >= 18 && hour < 23) {
     return "EVENING";
   }
-  // 04:00 AM until 06:00 PM (18): DAY (up to 25 km)
+  // 06:00 AM until 06:00 PM (18): DAY SHIFT (12.0 km metropolis radius)
   return "DAY";
 }
 
@@ -342,20 +342,20 @@ export function computeQuote(input: QuoteInput): Quote {
   if (input.lines.length === 0) blockers.push("EMPTY_CART");
   if (foodSubtotalPaise < effectiveMinOrder) blockers.push("MIN_ORDER");
 
-  // Max Daytime Radius (up to 25 km until 6:00 PM)
-  const maxDayRadius = input.fees.dayModeRadiusKm ?? 25.0;
+  // Max Daytime Radius (Day Shift: 12.0 km)
+  const maxDayRadius = input.fees.dayModeRadiusKm ?? 12.0;
   if (input.distanceKm > maxDayRadius) {
     blockers.push("EXCEEDS_MAX_RADIUS");
   }
 
-  // Evening Window Limit (7 to 8 km from 6:00 PM till 11:00 PM)
-  const eveningLimit = input.fees.eveningModeRadiusKm ?? 8.0;
+  // Contracted Evening Window Limit (Evening Shift: 7.5 km)
+  const eveningLimit = input.fees.eveningModeRadiusKm ?? 7.5;
   if (input.fees.eveningModeActive && input.distanceKm > eveningLimit) {
     blockers.push("EVENING_DISTANCE_LIMIT");
   }
 
-  // Night Curfew Limit (3 to 4 km from 11:00 PM until 4:00 AM)
-  const nightLimit = input.fees.nightModeRadiusKm ?? 4.0;
+  // Night Curfew Limit (Late-Night Shift: 3.5 km)
+  const nightLimit = input.fees.nightModeRadiusKm ?? 3.5;
   if (input.fees.nightModeActive && input.distanceKm > nightLimit) {
     blockers.push("NIGHT_SAFETY_CURFEW");
   }

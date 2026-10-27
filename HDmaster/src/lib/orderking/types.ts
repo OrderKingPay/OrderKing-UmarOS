@@ -8,6 +8,48 @@ export type Metric<T = number> = {
 
 export type AlertSeverity = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "INFORMATION";
 
+export type ThreatZonePolygon = {
+  id: string;
+  name: string;
+  severity: "HIGH" | "CRITICAL" | "BLOCKED";
+  reason: string;
+  polygon: [number, number][]; // [lat, lng]
+  active: boolean;
+  createdAt: string;
+  updatedAt?: string;
+};
+
+export const DEFAULT_THREAT_ZONES: ThreatZonePolygon[] = [
+  {
+    id: "threat_nh37_unlit",
+    name: "NH-37 Forest Border Corridor",
+    severity: "CRITICAL",
+    reason: "Zero street lighting, reported late-night ambushes and zero police coverage.",
+    polygon: [
+      [24.8900, 92.3100],
+      [24.9100, 92.3300],
+      [24.9050, 92.3600],
+      [24.8750, 92.3350],
+    ],
+    active: true,
+    createdAt: "2026-10-27T00:00:00.000Z",
+  },
+  {
+    id: "threat_canal_isolated",
+    name: "Old Canal Embankment Route",
+    severity: "HIGH",
+    reason: "Unpaved single-lane terrain with high monsoon waterlogging and poor cellular reception.",
+    polygon: [
+      [24.8400, 92.3400],
+      [24.8550, 92.3650],
+      [24.8450, 92.3800],
+      [24.8300, 92.3550],
+    ],
+    active: true,
+    createdAt: "2026-10-27T00:00:00.000Z",
+  },
+];
+
 export const DEFAULT_ORG_ID = "org_orderking";
 export const DEFAULT_CITY_ID = "city_karimganj";
 export const DEFAULT_CITY_NAME = "Karimganj";
@@ -52,7 +94,10 @@ export type PlatformSettings = {
   demandSurgeMultiplier?: number;
   modules?: PlatformModulesConfig;
   pricingDeliveryRules?: PricingDeliveryRulesConfig;
-  dynamicBranding?: DynamicBrandingConfig;
+    dynamicBranding?: DynamicBrandingConfig;
+  lateNightCodSafetyLockout?: boolean;
+  lateNightCodCutoffTime?: string;
+  threatZones?: ThreatZonePolygon[];
 };
 
 export type PlatformModulesConfig = {
@@ -180,9 +225,9 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   riderBasePaise: 2500, // ₹25
   riderDistancePaise: 800, // ₹8/km
   riderLongDistanceBonusPaise: 6000, // ₹60 bonus for trips > 6km
-  dayModeRadiusKm: 25.0, // up to 25.0 km until 6:00 PM
-  eveningModeRadiusKm: 8.0, // 7 to 8.0 km from 6:00 PM till 11:00 PM
-  nightModeRadiusKm: 4.0, // 3 to 4.0 km from 11:00 PM until 4:00 AM
+  dayModeRadiusKm: 12.0, // 12.0 km Day radius (approved by founder) // up to 25.0 km until 6:00 PM
+  eveningModeRadiusKm: 7.5, // Contracted evening delivery radius (7.5 km) from 6:00 PM till 11:00 PM
+  nightModeRadiusKm: 3.5, // 3.5 km Late-Night Security radius (approved by founder) // 3 to 4.0 km from 11:00 PM until 4:00 AM
   dayModeStartHour: 4, // 04:00 AM
   eveningModeStartHour: 18, // 06:00 PM
   nightModeStartHour: 23, // 11:00 PM
@@ -211,7 +256,10 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   demandSurgeMultiplier: 1.0,
   modules: DEFAULT_PLATFORM_MODULES,
   pricingDeliveryRules: DEFAULT_PRICING_DELIVERY_RULES,
-  dynamicBranding: DEFAULT_DYNAMIC_BRANDING,
+    dynamicBranding: DEFAULT_DYNAMIC_BRANDING,
+  lateNightCodSafetyLockout: true,
+  lateNightCodCutoffTime: "22:30",
+  threatZones: DEFAULT_THREAT_ZONES,
 };
 
 export type BrandingConfig = {

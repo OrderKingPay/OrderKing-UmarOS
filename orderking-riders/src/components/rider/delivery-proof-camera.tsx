@@ -53,13 +53,10 @@ export function DeliveryProofCamera({
       toast.error("Please snap a photo of the delivered food package at the door");
       return;
     }
-    setIsUploading(true);
-    setTimeout(() => {
-      setIsUploading(false);
-      onProofCaptured?.(photoPreview);
-      toast.success("Contactless delivery proof verified!");
-      onComplete?.();
-    }, 700);
+    setIsUploading(false);
+    onProofCaptured?.(photoPreview);
+    toast.success("Contactless delivery proof verified!");
+    onComplete?.();
   };
 
   return (

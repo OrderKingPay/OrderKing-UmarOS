@@ -448,7 +448,7 @@ export const AutoSettlementEngine = {
         rd.bank_ifsc,
         rd.cash_collected_paise,
         COUNT(o.id) as total_trips,
-        COALESCE(SUM(o.delivery_fee_paise), 0) as gross_delivery_paise
+        COALESCE(SUM(CASE WHEN o.rider_payout_paise > 0 THEN o.rider_payout_paise ELSE o.delivery_fee_paise END), 0) as gross_delivery_paise
       FROM riders rd
       JOIN orders o ON o.rider_id = rd.id
       WHERE o.status = 'DELIVERED'

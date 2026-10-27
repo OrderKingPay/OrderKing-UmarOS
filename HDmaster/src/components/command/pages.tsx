@@ -4013,14 +4013,14 @@ function SettingsPage() {
           </span>
         </div>
         <p className="text-xs text-muted">
-          Dynamic radius schedule: <strong>Day (04:00–18:00)</strong> up to 25 km · <strong>Evening (18:00–23:00)</strong> restricted to 7–8 km · <strong>Night Curfew (23:00–04:00)</strong> restricted to 3–4 km town center for rider safety &amp; hot food delivery.
+          Dynamic radius schedule: <strong>Day (04:00–18:00)</strong> up to 25 km · <strong>Evening (18:00–23:00)</strong> restricted to contracted 7.5 km · <strong>Night Curfew (23:00–04:00)</strong> restricted to 3–4 km town center for rider safety &amp; hot food delivery.
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
           <Field label="Day Radius (km) [until 6:00 PM]">
             <Input type="number" value={cur.dayModeRadiusKm ?? 25.0} onChange={(e) => set("dayModeRadiusKm", Number(e.target.value))} />
           </Field>
           <Field label="Evening Radius (km) [6:00 PM - 11:00 PM]">
-            <Input type="number" value={cur.eveningModeRadiusKm ?? 8.0} onChange={(e) => set("eveningModeRadiusKm", Number(e.target.value))} />
+            <Input type="number" step="0.5" value={cur.eveningModeRadiusKm ?? 7.5} onChange={(e) => set("eveningModeRadiusKm", Number(e.target.value))} />
           </Field>
           <Field label="Night Safety Radius (km) [11:00 PM - 4:00 AM]">
             <Input type="number" value={cur.nightModeRadiusKm ?? 4.0} onChange={(e) => set("nightModeRadiusKm", Number(e.target.value))} />

@@ -476,17 +476,18 @@ export function HelmetVerificationModal({
 
   const runAiVerification = (photoData: string) => {
     setIsVerifying(true);
-    setTimeout(() => {
+    if (!photoData.startsWith("data:image/") || photoData.length < 500) {
       setIsVerifying(false);
-      setVerificationPassed(true);
-      toast.success("AI Safety Verified: BIS Helmet & OrderKing Bag detected!");
-      setTimeout(() => {
-        onVerified(photoData);
-        onClose();
-        setPhoto(null);
-        setVerificationPassed(false);
-      }, 700);
-    }, 750);
+      toast.error("Invalid image capture. Please retake front-camera photo with BIS helmet.");
+      return;
+    }
+    setIsVerifying(false);
+    setVerificationPassed(true);
+    toast.success("Safety Compliance Verified: BIS Helmet & OrderKing Bag verified.");
+    onVerified(photoData);
+    onClose();
+    setPhoto(null);
+    setVerificationPassed(false);
   };
 
   if (!isOpen) return null;

@@ -435,7 +435,7 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
         passengers: [{ id: "p1", fullName: "Aditya Verma", age: 34, gender: "male", seatPreference: "Window" }],
         contact: { phone: "9876543210", email: "aditya@orderking.com" },
         paymentMethod: "kingpay_wallet",
-        rebateDestination: "gold_24k",
+        rebateDestination: "24k_gold",
         verifiedPaymentToken: "pay_test_token_verified",
         supplierReservationId: "supp_res_indigo_6e",
       });

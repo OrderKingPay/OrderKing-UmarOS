@@ -619,7 +619,7 @@ export function PassengerDrawer({
               </div>
               <div className="flex justify-between text-emerald-700 font-bold">
                 <span>OrderKing Convenience Platform Fee</span>
-                <span className="font-mono font-black">₹{(fareCalc.convenienceFeePaise / 100).toFixed(2)}</span>
+                <span className="font-mono font-black">₹{(fareCalc.orderKingDeskFeePaise / 100).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Commercial OTA Surcharge (Avoided)</span>

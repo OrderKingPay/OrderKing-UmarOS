@@ -2333,7 +2333,7 @@ export async function executeTool(
       const activeRadiusKm = isNight
         ? (ws.settings?.nightModeRadiusKm ?? 4.0)
         : isEvening
-        ? (ws.settings?.eveningModeRadiusKm ?? 8.0)
+        ? (ws.settings?.eveningModeRadiusKm ?? 7.5)
         : (ws.settings?.dayModeRadiusKm ?? 25.0);
 
       return {
@@ -2345,12 +2345,12 @@ export async function executeTool(
           isNightSafetyCurfewActive: isNight,
           isEveningActive: isEvening,
           dayModeRadiusKm: ws.settings?.dayModeRadiusKm ?? 25.0,
-          eveningModeRadiusKm: ws.settings?.eveningModeRadiusKm ?? 8.0,
+          eveningModeRadiusKm: ws.settings?.eveningModeRadiusKm ?? 7.5,
           nightModeRadiusKm: ws.settings?.nightModeRadiusKm ?? 4.0,
           activeRadiusKm,
           schedule: {
             day: `04:00 to 18:00 IST (up to ${ws.settings?.dayModeRadiusKm ?? 25.0} km)`,
-            evening: `18:00 to 23:00 IST (up to ${ws.settings?.eveningModeRadiusKm ?? 8.0} km)`,
+            evening: `18:00 to 23:00 IST (contracted up to ${ws.settings?.eveningModeRadiusKm ?? 7.5} km)`,
             nightCurfew: `23:00 to 04:00 IST (up to ${ws.settings?.nightModeRadiusKm ?? 4.0} km Town Center)`,
           },
         },

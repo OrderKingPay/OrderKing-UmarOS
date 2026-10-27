@@ -46,6 +46,38 @@ function Login() {
     return () => clearInterval(interval);
   }, [resendTimer]);
 
+  // WebOTP API auto-credential detection (Zero-Tap OTP fill on mobile)
+  useEffect(() => {
+    if (!otpSent || typeof window === "undefined" || !("OTPCredential" in window)) return;
+
+    const ac = new AbortController();
+    navigator.credentials
+      .get({
+        otp: { transport: ["sms"] },
+        signal: ac.signal,
+      } as any)
+      .then((otpCredential: any) => {
+        if (otpCredential && otpCredential.code) {
+          setOtp(otpCredential.code);
+          setSuccessMsg("SMS OTP auto-detected securely via WebOTP.");
+        }
+      })
+      .catch((err) => {
+        console.debug("[WebOTP] Auto-detection skipped or timed out:", err);
+      });
+
+    return () => {
+      ac.abort();
+    };
+  }, [otpSent]);
+
+  // Auto-verify when 6 digits are reached (via WebOTP auto-fill or direct entry)
+  useEffect(() => {
+    if (otpSent && otp.trim().length === 6 && !busy) {
+      void onVerifyOtp();
+    }
+  }, [otp, otpSent]);
+
   // Request Phone OTP via SMS or WhatsApp
   const onSendOtp = async (channel: "sms" | "whatsapp" = "sms") => {
     const cleanNumber = phone.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
@@ -258,6 +290,8 @@ function Login() {
                           type="tel"
                           inputMode="numeric"
                           maxLength={10}
+                          autoComplete="tel-national"
+                          autoFocus
                           value={phone}
                           onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                           placeholder="98765 43210"
@@ -334,10 +368,20 @@ function Login() {
                       <label className="text-[11px] font-black uppercase tracking-wider text-stone-500 text-center block">
                         Enter 6-Digit OTP
                       </label>
+                      {/* WebOTP 1-Tap Auto-Detection Listening Indicator */}
+                      <div className="flex items-center justify-center gap-2 rounded-2xl bg-amber-500/10 border border-amber-400/30 px-3 py-2 text-xs text-amber-950 font-bold">
+                        <span className="relative flex size-2">
+                          <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+                        </span>
+                        <span>Listening for incoming SMS OTP (WebOTP 1-Tap Auto-Fill)</span>
+                      </div>
+
                       <Input
                         type="text"
                         inputMode="numeric"
                         maxLength={6}
+                        autoComplete="one-time-code"
                         autoFocus
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}

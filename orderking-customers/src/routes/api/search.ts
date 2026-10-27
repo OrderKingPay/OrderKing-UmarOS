@@ -8,6 +8,7 @@ import type { RestaurantCard } from "@/lib/market-types";
 import { searchLimiter } from "@/lib/security/rate-limiter";
 
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
+import { getActiveDeliveryRadius, checkHazardZone } from "@/lib/geo/dynamic-radius";
 
 
 // Helper functions (same logic as catalog.ts)
@@ -89,6 +90,15 @@ export const Route = createFileRoute("/api/search")({
           if (!deliveryActive) {
             return unavailable("Verified food delivery is not available at this location yet.");
           }
+
+          // Threat-Zone Exclusion: Block delivery if customer falls inside active hazard sector
+          const hazardCheck = checkHazardZone({ lat, lng });
+          if (hazardCheck.inHazardZone && hazardCheck.deliveryBlocked) {
+            return unavailable(hazardCheck.reason || "Deliveries currently paused in this sector for fleet safety.");
+          }
+
+          // Evaluate Active Operational Shift Delivery Radius (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)
+          const activeShift = getActiveDeliveryRadius();
 
           // Non-blocking telemetry check for platform launch controls
           let publicLaunchAllowed = true;
@@ -173,6 +183,8 @@ export const Route = createFileRoute("/api/search")({
           for (const row of rows) {
             const offer = promos.find((p) => !p.restaurant_id || p.restaurant_id === row.id);
             const dist = distanceKm(origin, { lat: row.lat, lng: row.lng });
+            // Contracted shift perimeter enforcement (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)
+            if (dist > activeShift.radiusKm) continue;
             const open = row.open_override == null ? isOpenNow(hours.get(row.outlet_id) ?? [], cfg.business.timezone) : row.open_override;
             
             // Set realistic delivery estimate (25-30m+) so users can browse dishes and menus with accurate ETAs
@@ -228,6 +240,13 @@ export const Route = createFileRoute("/api/search")({
             restaurants: finalCards,
             dishes,
             deliveryAvailable: finalCards.length > 0,
+            activeShift: {
+              tier: activeShift.tier,
+              shiftName: activeShift.shiftName,
+              radiusKm: activeShift.radiusKm,
+              codAllowed: activeShift.codAllowed && !hazardCheck.codBlocked,
+              maxDeliveryEtaMinutes: activeShift.maxDeliveryEtaMinutes,
+            },
             marketContext,
             sections: {
               offers: finalCards.filter((c) => c.hasOffer).slice(0, 8),
