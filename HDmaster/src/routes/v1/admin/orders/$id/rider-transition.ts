@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 import type { CanonicalOrderStatus } from "@/lib/orderking/orders/canonical-contract";
 
 const CONTRACT_VERSION = "1" as const;
@@ -12,7 +12,7 @@ function isCanonicalStatus(value: string): value is CanonicalOrderStatus {
   ].includes(value);
 }
 
-export const Route = createFileRoute("/v1/admin/orders/$id/rider-transition")({
+export const Route = createAPIFileRoute("/v1/admin/orders/$id/rider-transition")({
   
   server: {
     handlers: {

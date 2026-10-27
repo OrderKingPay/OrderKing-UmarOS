@@ -1,3 +1,4 @@
+import { getCurrentEcosystemShift, checkThreatZoneIntersections } from "../../../../../packages/ui/src/ecosystem-shifts.ts";
 import { getSql, type Sql } from "../../db.ts";
 import { militaryAntiFraudShield } from "../security/military-anti-fraud-shield.ts";
 
@@ -75,6 +76,8 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
       `;
 
       // 3. AI Dispatch Matching (Closest Proximity + Capacity)
+      const currentShift = getCurrentEcosystemShift();
+      const maxDispatchRadius = currentShift.maxRadiusKm;
       for (const order of unassignedOrders) {
         // If the restaurant is missing coordinates, fallback to Karimganj core center
         const rstLat = order.rst_lat || 24.8688;
@@ -106,7 +109,9 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
           const loadPenaltyKm = rider.active_count > 0 ? 1.5 : 0; 
           const effectiveDistance = distanceKm + loadPenaltyKm;
 
-          if (effectiveDistance < bestDistance && distanceKm <= 7.0) { // Max 7km dispatch radius
+          // Honor dynamic active shift radius (Day: 12km, Evening: 7.5km, Late-Night: 3.5km) & safety exclusion zones
+          const inCurfewExclusion = checkThreatZoneIntersections(rider.lat, rider.lng).some(z => z.threatLevel === "EXCLUSION_CURFEW");
+          if (!inCurfewExclusion && effectiveDistance < bestDistance && distanceKm <= maxDispatchRadius) {
             bestDistance = distanceKm;
             bestRiderId = rider.id;
           }

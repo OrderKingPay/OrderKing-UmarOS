@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 import { OpenAIProvider } from "@/lib/orderking/ai/providers/openai-provider";
 import type { ToolDefinition } from "@/lib/orderking/ai/providers/provider-interface";
 import { getSessionUser } from "@/lib/auth/verify.server";
 import { getSql } from "@/lib/db";
 
-export const Route = createFileRoute("/api/test-openai")({
+export const Route = createAPIFileRoute("/api/test-openai")({
   server: {
     handlers: {
       GET: async () => {

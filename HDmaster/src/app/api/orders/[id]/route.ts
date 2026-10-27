@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { transitionOrder, OrderStatus } from '../../../../lib/orderking/order-ops/order-state-machine';
-import { getSql } from '../../../../lib/db';
+import { assertTransition, type OrderStatus, ORDER_STATUSES } from '../../../../lib/orderking/orders/state-machine.ts';
+import { getSql } from '../../../../lib/db.ts';
 
 export const runtime = 'edge';
+
+async function transitionOrder(orderId: string, newStatus: OrderStatus) {
+  const sql = await getSql();
+  const [order] = await sql<{ status: string }>`SELECT status FROM orders WHERE id = ${orderId}`;
+  if (!order) throw new Error('Order not found');
+  assertTransition(order.status as OrderStatus, newStatus);
+  await sql`UPDATE orders SET status = ${newStatus}, updated_at = NOW() WHERE id = ${orderId}`;
+}
 
 export async function GET(request: NextRequest, context: any) {
   try {
@@ -26,7 +34,7 @@ export async function PATCH(request: NextRequest, context: any) {
     const { action } = await request.json();
     let newStatus: OrderStatus;
     
-    if (Object.values(OrderStatus).includes(action)) {
+    if ((ORDER_STATUSES as readonly string[]).includes(action)) {
       newStatus = action as OrderStatus;
     } else {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });

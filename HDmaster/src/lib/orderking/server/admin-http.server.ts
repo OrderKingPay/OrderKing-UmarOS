@@ -214,6 +214,25 @@ export async function handleAdminHttp(
     if (method === "GET" && path === "feature-flags") return json({ data: await q.listFlags(ws.ctx) });
     if (method === "GET" && path === "branding") return json({ data: await q.getBranding(ws.ctx) });
     if (method === "GET" && path === "health") return json({ data: await q.systemHealth(ws.ctx) });
+    if (method === "GET" && path === "spatial/ecosystem-shift") {
+      const { getCurrentEcosystemShift, getShiftRemainingMinutes, CANONICAL_THREAT_ZONES, getCurrentIstTime } = await import("../../../../../packages/ui/src/ecosystem-shifts.ts");
+      const currentShift = getCurrentEcosystemShift();
+      const remainingMinutes = getShiftRemainingMinutes();
+      const istTime = getCurrentIstTime();
+      const activeThreatZones = CANONICAL_THREAT_ZONES.filter(z => z.activeShifts.includes(currentShift.type));
+      return json({
+        data: {
+          currentShift,
+          remainingMinutes,
+          istTime,
+          activeThreatZones,
+          timestamp: new Date().toISOString(),
+          status: "ARMED_AND_SYNCHRONIZED",
+          synchronizedEcosystem: ["orderking-customers", "orderking-partners", "orderking-riders", "HDmaster"]
+        }
+      });
+    }
+
     if (method === "POST" && path === "ai") return json({ error: "Use the Command assistant surface for AI. HTTP AI is reserved for Window 5." }, 501);
 
     if (method === "POST" && /^orders\/.+\/transition$/.test(path)) {
