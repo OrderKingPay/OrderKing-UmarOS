@@ -248,14 +248,14 @@ export function CustomerShell({
             </button>
           </div>
 
-          {/* Row 1 Center: Core Navigation (Food Delivery, AI Tutor, Jobs, Travel) */}
-          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 overflow-x-auto scrollbar-none py-0.5">
-            {/* 1. Food Delivery */}
+          {/* Row 1 Center: Minimal Luxury Two-Tap Navigation (Food vs KingPay) */}
+          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 py-0.5">
+            {/* 1. Food Delivery Mode */}
             <Link
               to="/"
               className={cn(
-                "inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
-                path === "/" || path.startsWith("/r/") || path.startsWith("/delivery")
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
+                path === "/" || path.startsWith("/r/") || path.startsWith("/delivery") || path.startsWith("/dining")
                   ? isDark
                     ? "border-amber-400 bg-gradient-to-b from-amber-500/30 to-amber-600/20 text-amber-200 ring-1 ring-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
                     : "border-amber-500 bg-gradient-to-b from-amber-100 to-amber-200/80 text-amber-950 ring-1 ring-amber-400 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
@@ -265,62 +265,42 @@ export function CustomerShell({
               )}
             >
               <UtensilsCrossed className={cn("size-3.5 shrink-0", isDark ? "text-amber-400" : "text-amber-600")} />
-              <span className="whitespace-nowrap">Food<span className="hidden xs:inline"> Delivery</span></span>
+              <span>Food</span>
             </Link>
 
-            {/* 2. AI Tutor */}
-            <Link
-              to="/tutor"
-              className={cn(
-                "inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
-                path.startsWith("/tutor") && !path.startsWith("/tutor-jobs")
-                  ? isDark
-                    ? "border-emerald-400 bg-gradient-to-b from-emerald-500/30 to-emerald-600/20 text-emerald-200 ring-1 ring-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
-                    : "border-emerald-500 bg-gradient-to-b from-emerald-100 to-emerald-200/80 text-emerald-950 ring-1 ring-emerald-400 shadow-[0_2px_8px_rgba(16,185,129,0.2)]"
-                  : isDark
-                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-emerald-400/40"
-                    : "border-slate-200 bg-white/90 hover:bg-emerald-50/80 text-gray-800 hover:border-emerald-400/60"
-              )}
-            >
-              <GraduationCap className={cn("size-3.5 shrink-0", isDark ? "text-emerald-400" : "text-emerald-600")} />
-              <span className="whitespace-nowrap">King Tutor</span>
-            </Link>
-
-            {/* 3. Jobs */}
-            <Link
-              to="/tutor-jobs"
-              className={cn(
-                "inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
-                path.startsWith("/tutor-jobs")
-                  ? isDark
-                    ? "border-purple-400 bg-gradient-to-b from-purple-500/30 to-purple-600/20 text-purple-200 ring-1 ring-purple-400/50 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
-                    : "border-purple-500 bg-gradient-to-b from-purple-100 to-purple-200/80 text-purple-950 ring-1 ring-purple-400 shadow-[0_2px_8px_rgba(168,85,247,0.2)]"
-                  : isDark
-                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-purple-400/40"
-                    : "border-slate-200 bg-white/90 hover:bg-purple-50/80 text-gray-800 hover:border-purple-400/60"
-              )}
-            >
-              <Briefcase className={cn("size-3.5 shrink-0", isDark ? "text-purple-400" : "text-purple-600")} />
-              <span className="whitespace-nowrap">King Job</span>
-            </Link>
-
-            {/* 4. Travel */}
+            {/* 2. Unified KingPay Super-App Mode (Flights, Trains, AI Tutor, Wallet) */}
             <Link
               to="/travel"
               className={cn(
-                "inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border text-[11px] sm:text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
-                path.startsWith("/travel")
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 whitespace-nowrap",
+                path.startsWith("/travel") || path.startsWith("/kingpay") || path.startsWith("/king-pay") || path.startsWith("/tutor")
                   ? isDark
-                    ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-sky-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
-                    : "border-sky-500 bg-gradient-to-b from-sky-100 to-sky-200/80 text-sky-950 ring-1 ring-sky-400 shadow-[0_2px_8px_rgba(14,165,233,0.2)]"
+                    ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-indigo-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
+                    : "border-sky-500 bg-gradient-to-b from-sky-100 to-indigo-100 text-sky-950 ring-1 ring-sky-400 shadow-[0_2px_8px_rgba(14,165,233,0.2)]"
                   : isDark
                     ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-sky-400/40"
                     : "border-slate-200 bg-white/90 hover:bg-sky-50/80 text-gray-800 hover:border-sky-400/60"
               )}
             >
-              <Plane className={cn("size-3.5 shrink-0", isDark ? "text-sky-400" : "text-sky-600")} />
-              <span className="whitespace-nowrap">Travel</span>
+              <Crown className={cn("size-3.5 shrink-0", isDark ? "text-amber-400" : "text-amber-600")} />
+              <span>KingPay <span className="text-[10px] opacity-80 font-normal hidden sm:inline">(✈️ 🚆 🎓)</span></span>
             </Link>
+
+            {/* Desktop Quick Shortcuts (Visible on lg/desktop screens) */}
+            <div className="hidden lg:flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-white/10">
+              <Link
+                to="/tutor"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-emerald-500 px-2 py-1 rounded-lg"
+              >
+                AI Tutor
+              </Link>
+              <Link
+                to="/tutor-jobs"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-purple-500 px-2 py-1 rounded-lg"
+              >
+                Jobs
+              </Link>
+            </div>
           </nav>
 
           {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
