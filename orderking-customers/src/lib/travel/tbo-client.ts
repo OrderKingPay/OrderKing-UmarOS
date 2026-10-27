@@ -985,3 +985,171 @@ export async function searchTboRail(
     return { success: false, trains: [], error: err?.message || "TBO Rail search error" };
   }
 }
+
+// ============================================================================
+// HIGH-YIELD OTA PRICING & TRIP GUARANTEE ENGINES (MMT/GOIBIBO PARITY)
+// ============================================================================
+
+export interface OtaHighYieldFareParams {
+  serviceType: "FLIGHT" | "TRAIN" | "HOTEL";
+  wholesaleNetPaise: number;      // TBO B2B net cost
+  publishedMrpPaise: number;      // Airline/Rail/Hotel published MRP
+  passengerCount?: number;
+  promoCode?: string;             // Optional user-entered promo voucher
+  optInTripProtection?: boolean;  // Optional flight delay/trip insurance
+}
+
+export interface OtaHighYieldFareResult {
+  serviceType: "FLIGHT" | "TRAIN" | "HOTEL";
+  passengerCount: number;
+  wholesaleNetPaiseTotal: number;
+  publishedMrpPaiseTotal: number;
+  strikethroughBenchmarkPaise: number;
+  mandatoryConvenienceFeePaise: number;
+  tripProtectionPaise: number;
+  promoCodeApplied: string | null;
+  promoCashbackFoodWalletPaise: number;
+  customerPayablePaiseTotal: number;
+  platformRetainedMarginPaise: number;
+  guaranteedUpfrontCashFloatPaise: number;
+}
+
+/**
+ * Calculates high-yield OTA fare structure following MakeMyTrip/Goibibo fee architecture:
+ * - Flights: Mandatory ₹399/pax convenience fee (39,900 paise)
+ * - Trains: Mandatory ₹40/ticket convenience fee (4,000 paise)
+ * - Hotels: Mandatory ₹250/room convenience fee (25,000 paise)
+ * - Strikethrough pricing displays elevated competitor rates
+ * - Opt-in promo voucher: maximum ₹150 (15,000 paise) credited to KingPay Food Wallet,
+ *   strictly preserving minimum ₹249 net upfront cash convenience fee float.
+ */
+export function calculateOtaHighYieldFare(params: OtaHighYieldFareParams): OtaHighYieldFareResult {
+  const count = Math.max(1, Math.floor(params.passengerCount || 1));
+  const wholesaleNetUnit = Math.max(0, Math.floor(params.wholesaleNetPaise));
+  const publishedMrpUnit = Math.max(wholesaleNetUnit, Math.floor(params.publishedMrpPaise));
+
+  const wholesaleNetTotal = wholesaleNetUnit * count;
+  const publishedMrpTotal = publishedMrpUnit * count;
+
+  let feePerUnitPaise = 39_900; // Default domestic flight: ₹399
+  if (params.serviceType === "TRAIN") feePerUnitPaise = 4_000;  // Train: ₹40
+  if (params.serviceType === "HOTEL") feePerUnitPaise = 25_000; // Hotel: ₹250
+
+  const mandatoryConvenienceFeePaise = feePerUnitPaise * count;
+  const tripProtectionPaise = params.optInTripProtection ? 14_900 * count : 0; // ₹149/pax
+
+  // Strikethrough psychological benchmark: ~15% higher than published MRP + standard OTA fee
+  const strikethroughBenchmarkPaise = Math.round(publishedMrpTotal * 1.15) + (54_900 * count);
+
+  // Opt-in promo code logic
+  let promoCodeApplied: string | null = null;
+  let promoCashbackFoodWalletPaise = 0;
+
+  if (params.promoCode && typeof params.promoCode === "string") {
+    const code = params.promoCode.trim().toUpperCase();
+    if (code === "FLYKING" || code === "ORDERKING" || code === "KINGTRAVEL") {
+      promoCodeApplied = code;
+      // Cap at ₹150 (15,000 paise) per booking, funded into closed-loop food wallet
+      promoCashbackFoodWalletPaise = Math.min(15_000, Math.floor(mandatoryConvenienceFeePaise * 0.40));
+    }
+  }
+
+  // Customer pays published MRP + Convenience Fee + Trip Protection
+  const customerPayablePaiseTotal = publishedMrpTotal + mandatoryConvenienceFeePaise + tripProtectionPaise;
+
+  // Wholesale margin = published MRP - wholesale net
+  const wholesaleCommissionPaise = publishedMrpTotal - wholesaleNetTotal;
+
+  // Total platform retained margin (Cash profit + B2B commission + Trip protection fee - food wallet credit)
+  const platformRetainedMarginPaise =
+    mandatoryConvenienceFeePaise + wholesaleCommissionPaise + tripProtectionPaise - promoCashbackFoodWalletPaise;
+
+  // Upfront cash float captured at checkout before food wallet burn
+  const guaranteedUpfrontCashFloatPaise = mandatoryConvenienceFeePaise + wholesaleCommissionPaise + tripProtectionPaise;
+
+  return {
+    serviceType: params.serviceType,
+    passengerCount: count,
+    wholesaleNetPaiseTotal: wholesaleNetTotal,
+    publishedMrpPaiseTotal: publishedMrpTotal,
+    strikethroughBenchmarkPaise,
+    mandatoryConvenienceFeePaise,
+    tripProtectionPaise,
+    promoCodeApplied,
+    promoCashbackFoodWalletPaise,
+    customerPayablePaiseTotal,
+    platformRetainedMarginPaise,
+    guaranteedUpfrontCashFloatPaise,
+  };
+}
+
+export interface TrainTripGuaranteeParams {
+  pnrOrTrainNo: string;
+  travelClass: "1A" | "2A" | "3A" | "SL" | "2S" | "CC" | "EC";
+  quota: "GN" | "TQ" | "PT" | "LD";
+  currentWaitlistNumber: number;
+  daysUntilJourney: number;
+  baseFarePaise: number;
+}
+
+export interface TrainTripGuaranteeResult {
+  pnrOrTrainNo: string;
+  travelClass: string;
+  confirmationProbabilityScore: number; // 0-100 percentage
+  probabilityTier: "VERY_HIGH" | "HIGH" | "MEDIUM" | "LOW";
+  guaranteeFeePaise: number;             // Non-refundable fee (e.g. ₹99 or ₹199)
+  isNonRefundableFee: boolean;
+  unconfirmedRefundDestination: "KINGPAY_FOOD_WALLET";
+  unconfirmedFoodWalletRefundPaise: number;
+  platformExpectedProfitPaise: number;
+}
+
+/**
+ * Calculates ixigo/ConfirmTkt style Trip Guarantee for Waitlisted (WL/RAC) train tickets.
+ * Fee is strictly non-refundable. If unconfirmed, ticket fare is refunded directly into
+ * the closed-loop KingPay Food Wallet to drive meal orders and preserve platform cash float.
+ */
+export function calculateTrainTripGuarantee(params: TrainTripGuaranteeParams): TrainTripGuaranteeResult {
+  const wl = Math.max(1, Math.floor(params.currentWaitlistNumber));
+  const days = Math.max(0, Math.floor(params.daysUntilJourney));
+
+  // Heuristic confirmation probability model:
+  // Starts at 95%, decays by WL depth and increases with lead days available for cancellations
+  let score = 95 - (wl * 3) + (days * 2);
+  if (params.travelClass === "SL" || params.travelClass === "2S") {
+    // Sleeper has larger berth pool (higher churn)
+    score += 5;
+  } else if (params.travelClass === "1A") {
+    // 1A has minimal berths (lower churn)
+    score -= 15;
+  }
+  if (params.quota === "TQ") {
+    // Tatkal waitlists rarely clear
+    score -= 25;
+  }
+
+  const boundedScore = Math.min(99, Math.max(10, Math.round(score)));
+
+  let tier: "VERY_HIGH" | "HIGH" | "MEDIUM" | "LOW" = "LOW";
+  if (boundedScore >= 80) tier = "VERY_HIGH";
+  else if (boundedScore >= 60) tier = "HIGH";
+  else if (boundedScore >= 40) tier = "MEDIUM";
+
+  // Fee: ₹99 for SL/2S, ₹199 for AC classes
+  const isAc = ["1A", "2A", "3A", "CC", "EC"].includes(params.travelClass);
+  const guaranteeFeePaise = isAc ? 19_900 : 9_900; // ₹199 or ₹99
+
+  const baseFarePaise = Math.max(0, Math.floor(params.baseFarePaise));
+
+  return {
+    pnrOrTrainNo: params.pnrOrTrainNo,
+    travelClass: params.travelClass,
+    confirmationProbabilityScore: boundedScore,
+    probabilityTier: tier,
+    guaranteeFeePaise,
+    isNonRefundableFee: true,
+    unconfirmedRefundDestination: "KINGPAY_FOOD_WALLET",
+    unconfirmedFoodWalletRefundPaise: baseFarePaise,
+    platformExpectedProfitPaise: guaranteeFeePaise,
+  };
+}

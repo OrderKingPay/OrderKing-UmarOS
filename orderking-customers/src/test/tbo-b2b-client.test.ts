@@ -19,6 +19,8 @@ import {
   serializeTboTicketRequest,
   serializeTboGetBookingDetailsRequest,
   calculateTboFounderMargin,
+  calculateOtaHighYieldFare,
+  calculateTrainTripGuarantee,
   authenticateTbo,
   searchTboFlights,
   fareQuoteTbo,
@@ -437,6 +439,109 @@ describe("TBO B2B Wholesale Client (#187051) & Production Serializers", () => {
       expect(res.pnr).toBe("6E-CONF-1234");
       expect(res.bookingId).toBe(984512);
       expect(res.ticketStatus).toBe("CONFIRMED");
+    });
+  });
+
+  describe("9. High-Yield OTA Convenience Fee & Psychological Pricing Engine", () => {
+    it("applies mandatory ₹399/pax fee on domestic flights with zero promo code", () => {
+      const quote = calculateOtaHighYieldFare({
+        serviceType: "FLIGHT",
+        wholesaleNetPaise: 480_000, // ₹4,800 net TBO
+        publishedMrpPaise: 520_000, // ₹5,200 airline MRP
+        passengerCount: 2,
+      });
+
+      expect(quote.passengerCount).toBe(2);
+      expect(quote.wholesaleNetPaiseTotal).toBe(960_000);   // ₹9,600
+      expect(quote.publishedMrpPaiseTotal).toBe(1_040_000); // ₹10,400
+      expect(quote.mandatoryConvenienceFeePaise).toBe(79_800); // 2 * ₹399 = ₹798
+      expect(quote.tripProtectionPaise).toBe(0);
+      expect(quote.promoCodeApplied).toBeNull();
+      expect(quote.promoCashbackFoodWalletPaise).toBe(0);
+      expect(quote.customerPayablePaiseTotal).toBe(1_119_800); // ₹10,400 + ₹798 = ₹11,198
+      // Platform gross retained: Wholesale commission (₹800) + Convenience fee (₹798) = ₹1,598
+      expect(quote.platformRetainedMarginPaise).toBe(159_800);
+      expect(quote.guaranteedUpfrontCashFloatPaise).toBe(159_800);
+      expect(quote.strikethroughBenchmarkPaise).toBeGreaterThan(quote.customerPayablePaiseTotal);
+    });
+
+    it("applies opt-in promo code FLYKING credited strictly to KingPay Food Wallet without diluting cash fee below ₹249", () => {
+      const quote = calculateOtaHighYieldFare({
+        serviceType: "FLIGHT",
+        wholesaleNetPaise: 480_000, // ₹4,800
+        publishedMrpPaise: 520_000, // ₹5,200
+        passengerCount: 1,
+        promoCode: "FLYKING",
+        optInTripProtection: true, // ₹149 trip protection
+      });
+
+      expect(quote.passengerCount).toBe(1);
+      expect(quote.mandatoryConvenienceFeePaise).toBe(39_900); // ₹399
+      expect(quote.tripProtectionPaise).toBe(14_900);          // ₹149
+      expect(quote.promoCodeApplied).toBe("FLYKING");
+      // Max 40% of fee capped at 15,000 paise (₹150): floor(39900 * 0.40) = 15,960 -> capped at 15,000 paise
+      expect(quote.promoCashbackFoodWalletPaise).toBe(15_000); // ₹150 in food wallet
+      expect(quote.customerPayablePaiseTotal).toBe(520_000 + 39_900 + 14_900); // ₹5,748
+      // Retained margin: ₹399 fee + ₹400 wholesale + ₹149 trip protection - ₹150 food cashback = ₹798
+      expect(quote.platformRetainedMarginPaise).toBe(39_900 + 40_000 + 14_900 - 15_000);
+      // Upfront cash collected remains 100% intact before food delivery order
+      expect(quote.guaranteedUpfrontCashFloatPaise).toBe(39_900 + 40_000 + 14_900);
+    });
+
+    it("enforces ₹40 train convenience fee and ₹250 hotel fee", () => {
+      const train = calculateOtaHighYieldFare({
+        serviceType: "TRAIN",
+        wholesaleNetPaise: 120_000, // ₹1,200
+        publishedMrpPaise: 120_000,
+        passengerCount: 3,
+      });
+      expect(train.mandatoryConvenienceFeePaise).toBe(12_000); // 3 * ₹40 = ₹120
+
+      const hotel = calculateOtaHighYieldFare({
+        serviceType: "HOTEL",
+        wholesaleNetPaise: 300_000, // ₹3,000
+        publishedMrpPaise: 350_000, // ₹3,500
+        passengerCount: 1,
+      });
+      expect(hotel.mandatoryConvenienceFeePaise).toBe(25_000); // ₹250
+    });
+  });
+
+  describe("10. ixigo/ConfirmTkt Style Train Trip Guarantee Engine", () => {
+    it("charges non-refundable ₹99 for Sleeper and calculates high confirmation probability for low WL", () => {
+      const guarantee = calculateTrainTripGuarantee({
+        pnrOrTrainNo: "12345",
+        travelClass: "SL",
+        quota: "GN",
+        currentWaitlistNumber: 3,
+        daysUntilJourney: 10,
+        baseFarePaise: 45_000, // ₹450
+      });
+
+      expect(guarantee.isNonRefundableFee).toBe(true);
+      expect(guarantee.guaranteeFeePaise).toBe(9_900); // ₹99
+      expect(guarantee.confirmationProbabilityScore).toBeGreaterThanOrEqual(80);
+      expect(guarantee.probabilityTier).toBe("VERY_HIGH");
+      expect(guarantee.unconfirmedRefundDestination).toBe("KINGPAY_FOOD_WALLET");
+      expect(guarantee.unconfirmedFoodWalletRefundPaise).toBe(45_000);
+      expect(guarantee.platformExpectedProfitPaise).toBe(9_900);
+    });
+
+    it("charges ₹199 for 3A AC class and decreases probability for high WL in Tatkal quota", () => {
+      const guarantee = calculateTrainTripGuarantee({
+        pnrOrTrainNo: "22436",
+        travelClass: "3A",
+        quota: "TQ", // Tatkal waitlist
+        currentWaitlistNumber: 25,
+        daysUntilJourney: 1,
+        baseFarePaise: 165_000, // ₹1,650
+      });
+
+      expect(guarantee.guaranteeFeePaise).toBe(19_900); // ₹199 for AC
+      expect(guarantee.confirmationProbabilityScore).toBeLessThan(50);
+      expect(guarantee.probabilityTier).toMatch(/LOW|MEDIUM/);
+      expect(guarantee.isNonRefundableFee).toBe(true);
+      expect(guarantee.unconfirmedFoodWalletRefundPaise).toBe(165_000);
     });
   });
 });
