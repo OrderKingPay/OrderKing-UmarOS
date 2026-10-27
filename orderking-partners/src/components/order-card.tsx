@@ -488,9 +488,9 @@ export function OrderCard({
             </div>
           </div>
           <div class="footer" style="border-top:2px dashed #000;padding-top:8px;margin-top:8px;text-align:center">
-            <div style="font-weight:bold;font-size:12px;margin-bottom:4px">SCAN TO REORDER &amp; GET ₹20 DISCOUNT</div>
+            <div style="font-weight:bold;font-size:12px;margin-bottom:4px">SCAN TO REORDER DIRECTLY FROM KITCHEN</div>
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`https://orderkingpay.com/checkout?reorder=${order.orderNumber}&src=receipt_qr`)}" style="width:34mm;height:34mm;margin:4px auto;display:block" alt="Reorder QR" />
-            <div style="font-size:10px;font-weight:bold">Save ₹40-₹80 vs other apps on every meal</div>
+            <div style="font-size:10px;font-weight:bold">Authentic Kitchen Pricing • Transparent Itemized Billing</div>
             <div style="font-size:9px;color:#444;margin-top:2px">OrderKing • FSSAI &amp; CGST Sec 9(5) Compliant</div>
           </div>
         </body>

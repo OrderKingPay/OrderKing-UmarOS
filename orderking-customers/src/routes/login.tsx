@@ -218,7 +218,7 @@ function Login() {
         <div className="flex items-center justify-between">
           <Wordmark />
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950">
-            👑 VIP Access
+            🔒 Account Access
           </span>
         </div>
 
@@ -244,7 +244,7 @@ function Login() {
                   setSuccessMsg(null);
                 }}
               >
-                📱 Mobile OTP (Fast)
+                📱 Mobile OTP
               </button>
               <button
                 type="button"
@@ -328,7 +328,7 @@ function Login() {
                             Dispatching SMS OTP...
                           </span>
                         ) : (
-                          "🚀 Send Real SMS OTP"
+                          "Send SMS Verification Code"
                         )}
                       </Button>
 
@@ -412,13 +412,13 @@ function Login() {
                           }}
                           className="w-full h-11 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border-2 border-amber-400 text-amber-950 font-black text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
                         >
-                          <span className="text-sm">⚡</span>
-                          <span>1-Tap Auto-Fill Code ({debugOtpCode})</span>
+                          <span className="text-sm">🔑</span>
+                          <span>Auto-Fill Verification Code ({debugOtpCode})</span>
                         </Button>
                       </div>
                     ) : null}
 
-                    {/* Prominent 1-Tap WhatsApp Deep Link Button */}
+                    {/* Prominent WhatsApp Verification Button */}
                     <a
                       href={whatsAppUrl || `https://wa.me/919395065587?text=${encodeURIComponent(`VERIFY ${phone}`)}`}
                       target="_blank"
@@ -426,7 +426,7 @@ function Login() {
                       className="w-full h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 transition"
                     >
                       <span className="text-sm">💬</span>
-                      <span>1-Tap WhatsApp Verification Code</span>
+                      <span>Receive Verification via WhatsApp</span>
                     </a>
 
                     <Button
@@ -441,7 +441,7 @@ function Login() {
                           Verifying OTP...
                         </span>
                       ) : (
-                        "👑 Verify & Sign In"
+                        "Verify & Sign In"
                       )}
                     </Button>
 

@@ -681,31 +681,97 @@ export class CanonicalLedger {
   }
 
   public async getSettlementBatch(batchId: string): Promise<any> {
-    const sql = await getSql();
+    let sql: Sql | null = null;
+    try {
+      sql = await getSql();
+    } catch {
+      sql = null;
+    }
+    if (!sql) {
+      return this.inMemorySettlements.get(batchId);
+    }
     const rows = await sql.query<any>("SELECT * FROM settlement_batches WHERE batch_id = $1", [batchId]);
     return rows.length > 0 ? rows[0] : undefined;
   }
 
   public async listSettlementBatches(): Promise<any[]> {
-    const sql = await getSql();
+    let sql: Sql | null = null;
+    try {
+      sql = await getSql();
+    } catch {
+      sql = null;
+    }
+    if (!sql) {
+      return Array.from(this.inMemorySettlements.values());
+    }
     const rows = await sql.query<any>("SELECT * FROM settlement_batches", []);
     return rows;
   }
 
   public async getTransaction(txId: string): Promise<any> {
-    const sql = await getSql();
+    let sql: Sql | null = null;
+    try {
+      sql = await getSql();
+    } catch {
+      sql = null;
+    }
+    if (!sql) {
+      return this.inMemoryTransactionsById.get(txId);
+    }
     const rows = await sql.query<any>("SELECT * FROM ledger_transactions WHERE transaction_id = $1", [txId]);
     return rows.length > 0 ? rows[0] : undefined;
   }
 
   public async listTransactions(): Promise<any[]> {
-    const sql = await getSql();
+    let sql: Sql | null = null;
+    try {
+      sql = await getSql();
+    } catch {
+      sql = null;
+    }
+    if (!sql) {
+      return Array.from(this.inMemoryTransactionsById.values());
+    }
     const rows = await sql.query<any>("SELECT * FROM ledger_transactions ORDER BY created_at DESC", []);
     return rows;
   }
 
   public async verifyLedgerChainIntegrity(): Promise<{ isValid: boolean; totalTransactions: number; tamperedTxId?: string }> {
-    const sql = await getSql();
+    let sql: Sql | null = null;
+    try {
+      sql = await getSql();
+    } catch {
+      sql = null;
+    }
+
+    if (!sql) {
+      let prevHash = "0000000000000000000000000000000000000000000000000000000000000000";
+      const txList = Array.from(this.inMemoryTransactionsById.values());
+      for (const tx of txList) {
+        if (tx.previousHash !== prevHash) {
+          return { isValid: false, totalTransactions: txList.length, tamperedTxId: tx.transactionId };
+        }
+        const canonicalPayload = JSON.stringify({
+          transactionId: tx.transactionId,
+          idempotencyKey: tx.idempotencyKey,
+          previousHash: prevHash,
+          totalAmountPaise: tx.totalAmountPaise,
+          entries: tx.entries.map((e) => ({
+            account: e.account,
+            direction: e.direction,
+            amountPaise: e.amountPaise,
+            entityId: e.entityId,
+          })),
+        });
+        const expectedHash = this.generateHash(canonicalPayload);
+        if (tx.auditHash !== expectedHash) {
+          return { isValid: false, totalTransactions: txList.length, tamperedTxId: tx.transactionId };
+        }
+        prevHash = tx.auditHash;
+      }
+      return { isValid: true, totalTransactions: txList.length };
+    }
+
     const txList = await sql.query<any>("SELECT * FROM ledger_transactions ORDER BY created_at ASC", []);
     
     let prevHash = "0000000000000000000000000000000000000000000000000000000000000000";

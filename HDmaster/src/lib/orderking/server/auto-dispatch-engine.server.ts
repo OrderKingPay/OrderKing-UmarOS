@@ -59,7 +59,7 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
         WHERE o.status IN ('PREPARING', 'READY', 'placed', 'confirmed')
           AND o.rider_id IS NULL
         ORDER BY o.placed_at ASC
-        FOR UPDATE SKIP LOCKED
+        FOR UPDATE OF o SKIP LOCKED
       `;
 
       if (unassignedOrders.length === 0) return;
@@ -144,9 +144,9 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
 
           // Insert audit log
           await tx`
-            INSERT INTO order_events (id, org_id, order_id, action, note, created_at)
+            INSERT INTO order_events (id, org_id, order_id, from_status, to_status, action, note, created_at)
             VALUES (
-              ${crypto.randomUUID()}, ${order.org_id}, ${order.id}, 'AUTO_DISPATCH', 
+              ${crypto.randomUUID()}, ${order.org_id}, ${order.id}, ${order.status}, 'RIDER_ASSIGNED', 'AUTO_DISPATCH', 
               ${`AI assigned Rider ${bestRiderId} via Haversine Math. Dist: ${bestDistance.toFixed(2)}km, ETA: ${etaMinutes}m`}, NOW()
             )
           `;

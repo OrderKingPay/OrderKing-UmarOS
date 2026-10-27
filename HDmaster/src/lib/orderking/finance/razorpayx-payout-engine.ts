@@ -14,7 +14,9 @@
 
 import { resilientFetch } from "../sre/resilient-fetch.ts";
 import { canonicalLedger } from "./canonical-ledger.ts";
-import { getSql } from "@/lib/db";
+import { getSql } from "../../db.ts";
+import { validateIndianBankIFSC } from "../compliance/india-marketplace-engine.ts";
+import { verifyWebhookSignature } from "../payments/razorpay.server.ts";
 
 const RAZORPAY_API_BASE = "https://api.razorpay.com/v1";
 
@@ -130,7 +132,38 @@ export async function executeRazorpayXPayout(
   }
 
   const isUpi = "vpa" in input.beneficiary && Boolean(input.beneficiary.vpa);
-  const mode: PayoutMode = input.mode || (isUpi ? "UPI" : input.amountPaise <= 50000000 ? "IMPS" : "NEFT");
+  
+  // Enforce RBI Statutory Routing Thresholds:
+  // IMPS upper limit is strictly ₹5,00,000 (50,000,000 paise).
+  // Amounts exceeding ₹5 Lakhs must route via NEFT to prevent bank switch rejection.
+  let mode: PayoutMode;
+  if (isUpi) {
+    mode = "UPI";
+  } else if (input.mode === "IMPS" && input.amountPaise > 50000000) {
+    console.warn(`[RazorpayX Payout Engine] Amount ₹${(input.amountPaise / 100).toFixed(2)} exceeds ₹5 Lakhs IMPS ceiling. Auto-escalating to NEFT rail.`);
+    mode = "NEFT";
+  } else if (input.mode) {
+    mode = input.mode;
+  } else {
+    mode = input.amountPaise <= 50000000 ? "IMPS" : "NEFT";
+  }
+
+  // Pre-flight statutory Bank IFSC validation for non-UPI bank transfers
+  if (!isUpi) {
+    const bankBeneficiary = input.beneficiary as BankAccountBeneficiary;
+    const ifscValidation = validateIndianBankIFSC(bankBeneficiary.ifsc);
+    if (!ifscValidation.isValid) {
+      console.error(`[RazorpayX Payout Engine] Payout halted fail-closed: Invalid IFSC "${bankBeneficiary.ifsc}". ${ifscValidation.error}`);
+      return {
+        success: false,
+        status: "failed",
+        amountPaise: input.amountPaise,
+        mode,
+        referenceId: input.referenceId,
+        failureReason: `INVALID_IFSC: ${ifscValidation.error || "Malformed 11-char Bank IFSC"}`,
+      };
+    }
+  }
 
   // Build fund_account composite structure
   const fundAccount: Record<string, unknown> = isUpi
@@ -307,11 +340,23 @@ export async function verifyRazorpayXPayoutOtp(
  * Handles incoming RazorpayX Webhook events for Payouts.
  * Transitions settlement status: PENDING -> INITIATED -> PROCESSING -> PAID (or FAILED).
  * Automatically writes double-entry ledger transactions upon confirmation.
+ * Enforces cryptographic signature verification, batch matching, and double-spend guards.
  */
 export async function handleRazorpayXPayoutWebhook(
   payload: Record<string, unknown>,
-): Promise<{ handled: boolean; event: string; status: string; batchId?: string }> {
+  options?: { rawBody?: string; signature?: string; webhookSecret?: string },
+): Promise<{ handled: boolean; event: string; status: string; batchId?: string; error?: string }> {
   const event = String(payload.event || "");
+
+  // Webhook Cryptographic Signature Tampering Defense
+  if (options?.signature && options?.rawBody) {
+    const isCryptoValid = verifyWebhookSignature(options.rawBody, options.signature, options.webhookSecret);
+    if (!isCryptoValid) {
+      console.error(`[RazorpayX Webhook Engine] FORGERY_DETECTED: Invalid HMAC signature for event ${event}.`);
+      return { handled: false, event, status: "REJECTED_SIGNATURE_TAMPERED", error: "Cryptographic HMAC signature mismatch" };
+    }
+  }
+
   const payoutObj = ((payload.payload as Record<string, unknown>)?.payout as Record<string, unknown>)?.entity as Record<string, unknown> | undefined;
 
   if (!payoutObj) {
@@ -337,9 +382,35 @@ export async function handleRazorpayXPayoutWebhook(
   );
 
   const batch = matchingBatches[0];
-  const targetId = String(batch?.id || batch?.batch_id || referenceId);
-  const entityType = String(batch?.party_type || batch?.entity_type || "RESTAURANT");
-  const entityId = String(batch?.party_id || batch?.entity_id || "VENDOR");
+  if (!batch) {
+    console.warn(`[RazorpayX Webhook Engine] Unmatched payout reference ${referenceId}. Halting fail-closed with 0% unbacked ledger impact.`);
+    return { handled: false, event, status: "SKIPPED_UNMATCHED_BATCH" };
+  }
+
+  const targetId = String(batch.id || batch.batch_id || referenceId);
+  const entityType = String(batch.party_type || batch.entity_type || "RESTAURANT");
+  const entityId = String(batch.party_id || batch.entity_id || "VENDOR");
+
+  // Duplicate Delivery & Replay Defense
+  if (batch.status === "PAID" || batch.state === "PAID") {
+    return { handled: true, event, status: "ALREADY_PAID", batchId: targetId };
+  }
+
+  // Value Discrepancy Gate: Ensure webhook amount matches expected batch net payout
+  const expectedAmountPaise = Number(batch.net_paise || batch.net_payout_paise || 0);
+  if (expectedAmountPaise > 0 && amountPaise > 0 && amountPaise !== expectedAmountPaise) {
+    console.error(`[RazorpayX Webhook Engine] TAMPERING_OR_DISCREPANCY: Webhook amount ${amountPaise} != batch expected ${expectedAmountPaise}. Escalating.`);
+    await sql.query(
+      `UPDATE settlement_batches
+       SET status = 'ESCALATED',
+           state = 'ESCALATED_AMOUNT_MISMATCH',
+           failure_reason = $1,
+           updated_at = NOW()
+       WHERE id = $2 OR batch_id = $2`,
+      [`Webhook amount (${amountPaise} paise) does not match batch payable (${expectedAmountPaise} paise). Held for review.`, targetId],
+    );
+    return { handled: true, event, status: "ESCALATED_AMOUNT_MISMATCH", batchId: targetId };
+  }
 
   if (event === "payout.processed" || status === "processed") {
     // Payout successfully credited to beneficiary account

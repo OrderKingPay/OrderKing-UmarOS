@@ -32,6 +32,32 @@ describe("Umar OS AI Tutor & Academic Specialist Certification Suite", () => {
       expect(blockedCheck.resetMs).toBeGreaterThan(0);
     });
 
+    it("withstands concurrent flood of 100 requests, strictly allowing exactly 20 and blocking 80", async () => {
+      const limiter = new AcademicRateLimiter(60_000, 20);
+      const studentId = "flood-victim-101";
+
+      const results = await Promise.all(
+        Array.from({ length: 100 }, async (_, idx) => {
+          // slight async microtask offset
+          await new Promise((resolve) => setTimeout(resolve, Math.random() * 5));
+          return limiter.isAllowed(studentId);
+        })
+      );
+
+      const allowed = results.filter((r) => r.allowed);
+      const blocked = results.filter((r) => !r.allowed);
+
+      expect(allowed.length).toBe(20);
+      expect(blocked.length).toBe(80);
+
+      // Verify all blocked requests have 0 remaining and valid reset time
+      for (const b of blocked) {
+        expect(b.remaining).toBe(0);
+        expect(b.resetMs).toBeGreaterThan(0);
+        expect(b.resetMs).toBeLessThanOrEqual(60_000);
+      }
+    });
+
     it("enforces rate limit inside AITutor.resolveAcademicDoubtWithGemini", async () => {
       const restrictiveLimiter = new AcademicRateLimiter(60_000, 2);
       const tutor = new AITutor(curriculumManager, restrictiveLimiter);
@@ -97,9 +123,72 @@ describe("Umar OS AI Tutor & Academic Specialist Certification Suite", () => {
       expect(solution.derivation).toContain("Equate coefficients");
       expect(solution.finalAnswer).toContain("\\alpha + \\beta = -\\frac{b}{a}");
     });
+
+    it("derives Newton's three equations of motion according to NCERT Class 9 & Class 11 Physics", async () => {
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        testStudentId,
+        "Derive kinematics three equations of motion v = u + at"
+      );
+
+      expect(solution.formula).toContain("v = u + at");
+      expect(solution.formula).toContain("s = ut + \\frac{1}{2}at^2");
+      expect(solution.formula).toContain("v^2 = u^2 + 2as");
+      expect(solution.derivation).toContain("First Equation");
+      expect(solution.derivation).toContain("Second Equation");
+      expect(solution.derivation).toContain("Third Equation");
+      expect(solution.finalAnswer).toContain("v = u + at");
+    });
+
+    it("derives Bernoulli's equation from work-energy theorem according to NCERT Class 11 Physics Chapter 10", async () => {
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        testStudentId,
+        "Derive Bernoulli's equation for streamline fluid flow"
+      );
+
+      expect(solution.formula).toContain("P + \\frac{1}{2} \\rho v^2 + \\rho g h = \\text{Constant}");
+      expect(solution.derivation).toContain("Work Done by Pressure Forces");
+      expect(solution.derivation).toContain("Work-Energy Equivalence");
+      expect(solution.finalAnswer).toContain("Bernoulli Invariant");
+    });
+
+    it("derives microscopic Ohm's law and resistivity according to NCERT Class 10 & 12 Physics", async () => {
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        testStudentId,
+        "Explain Ohm's law and derive relation R = rho L / A with drift velocity"
+      );
+
+      expect(solution.formula).toContain("V = I \\cdot R");
+      expect(solution.formula).toContain("R = \\rho \\frac{L}{A}");
+      expect(solution.derivation).toContain("Electron Drift Velocity");
+      expect(solution.derivation).toContain("relaxation time");
+      expect(solution.finalAnswer).toContain("\\rho = \\frac{m}{n e^2 \\tau}");
+    });
+
+    it("derives thin lens equation according to NCERT Class 10 & 12 Optics", async () => {
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        testStudentId,
+        "Derive thin lens formula and Snell's law"
+      );
+
+      expect(solution.formula).toContain("\\frac{1}{f} = \\frac{1}{v} - \\frac{1}{u}");
+      expect(solution.formula).toContain("n_1 \\sin(i) = n_2 \\sin(r)");
+      expect(solution.derivation).toContain("Similar Triangles");
+      expect(solution.finalAnswer).toContain("\\frac{1}{f} = \\frac{1}{v} - \\frac{1}{u}");
+    });
+
+    it("evaluates calculus integral of sin^2(x) using power-reduction according to NCERT Class 12 Chapter 7", async () => {
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        testStudentId,
+        "Evaluate indefinite integration of sin^2(x) dx"
+      );
+
+      expect(solution.formula).toContain("\\cos(2x) = 1 - 2\\sin^2(x)");
+      expect(solution.derivation).toContain("Decompose into linear integral terms");
+      expect(solution.finalAnswer).toContain("\\frac{x}{2} - \\frac{\\sin(2x)}{4} + C");
+    });
   });
 
-  describe("3. 3-Part Pedagogical Standard Parser", () => {
+  describe("3. 3-Part Pedagogical Standard Parser & LaTeX String Integrity", () => {
     it("parses valid 3-part markdown responses into formula, derivation, and finalAnswer", () => {
       const sampleText = `### 1. Given Formula / Concept
 - Principle: Ohm's Law V = I * R.
@@ -115,6 +204,42 @@ describe("Umar OS AI Tutor & Academic Specialist Certification Suite", () => {
       expect(parsed.formula).toContain("V = I * R");
       expect(parsed.derivation).toContain("R = 12 / 2 = 6 Ohms");
       expect(parsed.finalAnswer).toContain("R = 6");
+    });
+
+    it("verifies LaTeX syntax delimiter balance and absence of unescaped control chars across all generated solutions", () => {
+      const testQueries = [
+        "quadratic equation completing square",
+        "irrationality of sqrt(2)",
+        "zeroes of polynomial",
+        "kinematics equations of motion",
+        "bernoulli streamline fluid flow",
+        "ohm's law drift velocity resistance",
+        "snell lens formula refraction",
+        "integration of sin^2(x)",
+      ];
+
+      for (const query of testQueries) {
+        const solution = aiTutor.generateDeterministicNCERTSolution(query, "CBSE", 10);
+        
+        // 1. Must contain all 3 sections
+        expect(solution).toContain("### 1. Given Formula / Concept");
+        expect(solution).toContain("### 2. Step-by-Step Derivation & Solution");
+        expect(solution).toContain("### 3. Final Answer");
+
+        // 2. Check balanced inline math \( and \)
+        const openParen = (solution.match(/\\\(/g) || []).length;
+        const closeParen = (solution.match(/\\\)/g) || []).length;
+        expect(openParen).toBe(closeParen);
+
+        // 3. Check balanced display math \[ and \]
+        const openBracket = (solution.match(/\\\[/g) || []).length;
+        const closeBracket = (solution.match(/\\\]/g) || []).length;
+        expect(openBracket).toBe(closeBracket);
+
+        // 4. Ensure no corrupted backspace (\x08) or form-feed (\x0c) control characters
+        expect(solution).not.toContain("\x08");
+        expect(solution).not.toContain("\x0c");
+      }
     });
   });
 });

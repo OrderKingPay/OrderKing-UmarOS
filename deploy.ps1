@@ -1,4 +1,5 @@
 # OrderKing Unified Enterprise Deployment Script (PowerShell)
+# Supreme Engineer OMEGA (183f728c) - Production Deployment Architecture
 # Automatically sets working directory to repository root
 
 param (
@@ -14,10 +15,43 @@ Write-Host " OrderKing Quad-Core Ecosystem Deployment" -ForegroundColor Yellow
 Write-Host " Working Directory: $(Get-Location)" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-# Find Node executable
+# Find Node executable (prefer real standalone Node over Antigravity Electron runner)
 $nodeExe = "C:\Program Files\nodejs\node.exe"
 if (-not (Test-Path $nodeExe)) {
     $nodeExe = (Get-Command node -ErrorAction SilentlyContinue).Source
+}
+
+if (-not (Test-Path $nodeExe)) {
+    throw "Fatal: Node.js executable not located. Please install Node.js v22+."
+}
+
+# Fail-Closed Command Runner with Configurable Retries
+function Invoke-CheckedStep {
+    param (
+        [string]$Description,
+        [scriptblock]$Script,
+        [int]$MaxRetries = 1
+    )
+    $attempt = 1
+    while ($attempt -le $MaxRetries) {
+        if ($MaxRetries -gt 1) {
+            Write-Host "`n>>> $Description (Attempt $attempt/$MaxRetries)..." -ForegroundColor Cyan
+        } else {
+            Write-Host "`n>>> $Description..." -ForegroundColor Cyan
+        }
+        & $Script
+        if ($LASTEXITCODE -eq 0) {
+            return
+        }
+        Write-Host "Warning: $Description failed on attempt $attempt with exit code $LASTEXITCODE" -ForegroundColor Yellow
+        if ($attempt -lt $MaxRetries) {
+            Write-Host "Retrying in 4 seconds..." -ForegroundColor Gray
+            Start-Sleep -Seconds 4
+        }
+        $attempt++
+    }
+    Write-Host "FAILED: $Description terminated after $MaxRetries attempt(s) with exit code $LASTEXITCODE" -ForegroundColor Red
+    throw "Pipeline failure: $Description terminated with exit code $LASTEXITCODE"
 }
 
 switch ($Action.ToLower()) {
@@ -26,17 +60,25 @@ switch ($Action.ToLower()) {
         Write-Host " Qualifying OrderKing Ecosystem (Running Test Suites)..." -ForegroundColor Yellow
         Write-Host "==========================================================" -ForegroundColor Cyan
         
-        Write-Host "`n[1/4] Testing HDmaster..." -ForegroundColor Cyan
-        Push-Location HDmaster; pnpm test; Pop-Location
+        Invoke-CheckedStep "[1/4] Testing HDmaster (Umar OS)" {
+            Push-Location HDmaster
+            try { pnpm test } finally { Pop-Location }
+        }
 
-        Write-Host "`n[2/4] Testing OrderKing Customers..." -ForegroundColor Cyan
-        Push-Location orderking-customers; pnpm test; Pop-Location
+        Invoke-CheckedStep "[2/4] Testing OrderKing Customers" {
+            Push-Location orderking-customers
+            try { pnpm test } finally { Pop-Location }
+        }
 
-        Write-Host "`n[3/4] Testing OrderKing Partners..." -ForegroundColor Cyan
-        Push-Location orderking-partners; pnpm test; Pop-Location
+        Invoke-CheckedStep "[3/4] Testing OrderKing Partners" {
+            Push-Location orderking-partners
+            try { pnpm test } finally { Pop-Location }
+        }
 
-        Write-Host "`n[4/4] Testing OrderKing Riders..." -ForegroundColor Cyan
-        Push-Location orderking-riders; pnpm test; Pop-Location
+        Invoke-CheckedStep "[4/4] Testing OrderKing Riders" {
+            Push-Location orderking-riders
+            try { pnpm test } finally { Pop-Location }
+        }
 
         Write-Host "`n==========================================================" -ForegroundColor Green
         Write-Host " All Ecosystem Tests Qualified Successfully!" -ForegroundColor Green
@@ -65,23 +107,43 @@ switch ($Action.ToLower()) {
         Write-Host "==========================================================" -ForegroundColor Cyan
 
         $wranglerJs = "$PSScriptRoot\node_modules\wrangler\bin\wrangler.js"
+        if (-not (Test-Path $wranglerJs)) {
+            throw "Fatal: Wrangler binary not found at $wranglerJs"
+        }
 
-        Write-Host "`n[1/5] Deploying orderking-customers -> orderkingpay.com..." -ForegroundColor Cyan
-        & $nodeExe $wranglerJs pages deploy orderking-customers/dist --project-name=orderking-customers --branch=main --commit-dirty=true
+        Invoke-CheckedStep "[1/5] Deploying orderking-customers -> orderkingpay.com" {
+            & $nodeExe $wranglerJs pages deploy orderking-customers/dist --project-name=orderking-customers --branch=main --commit-dirty=true
+        } -MaxRetries 3
 
-        Write-Host "`n[2/5] Deploying orderking-partners -> partner.orderkingpay.com..." -ForegroundColor Cyan
-        & $nodeExe $wranglerJs pages deploy orderking-partners/dist --project-name=orderking-partners --branch=main --commit-dirty=true
+        Invoke-CheckedStep "[2/5] Deploying orderking-partners -> partner.orderkingpay.com" {
+            & $nodeExe $wranglerJs pages deploy orderking-partners/dist --project-name=orderking-partners --branch=main --commit-dirty=true
+        } -MaxRetries 3
 
-        Write-Host "`n[3/5] Deploying orderking-riders -> rider.orderkingpay.com..." -ForegroundColor Cyan
-        & $nodeExe $wranglerJs pages deploy orderking-riders/dist --project-name=orderking-riders --branch=main --commit-dirty=true
+        Invoke-CheckedStep "[3/5] Deploying orderking-riders -> rider.orderkingpay.com" {
+            & $nodeExe $wranglerJs pages deploy orderking-riders/dist --project-name=orderking-riders --branch=main --commit-dirty=true
+        } -MaxRetries 3
 
-        Write-Host "`n[4/4] Deploying HDmaster -> admin.orderkingpay.com & hdmaster.pages.dev..." -ForegroundColor Cyan
-        & $nodeExe $wranglerJs pages deploy HDmaster/dist --project-name=orderking-hdmaster --branch=main --commit-dirty=true
-        & $nodeExe $wranglerJs pages deploy HDmaster/dist --project-name=hdmaster --branch=main --commit-dirty=true
+        Invoke-CheckedStep "[4/5] Deploying HDmaster -> admin.orderkingpay.com & hdmaster.pages.dev" {
+            & $nodeExe $wranglerJs pages deploy HDmaster/dist --project-name=orderking-hdmaster --branch=main --commit-dirty=true
+            if ($LASTEXITCODE -eq 0) {
+                & $nodeExe $wranglerJs pages deploy HDmaster/dist --project-name=hdmaster --branch=main --commit-dirty=true
+            }
+        } -MaxRetries 3
 
-        if (Test-Path "Apps-integration-/dist") {
-            Write-Host "`n[5/5] Deploying Apps-integration -> api.orderkingpay.com..." -ForegroundColor Cyan
-            & $nodeExe $wranglerJs pages deploy Apps-integration-/dist --project-name=apps-integration --branch=main --commit-dirty=true
+        $appsIntegrationDir = $null
+        foreach ($cand in @("apps-integration", "Apps-integration", "Apps-integration-")) {
+            if (Test-Path "$cand/dist") {
+                $appsIntegrationDir = "$cand/dist"
+                break
+            }
+        }
+
+        if ($appsIntegrationDir) {
+            Invoke-CheckedStep "[5/5] Deploying Apps-integration -> api.orderkingpay.com" {
+                & $nodeExe $wranglerJs pages deploy $appsIntegrationDir --project-name=apps-integration --branch=main --commit-dirty=true
+            } -MaxRetries 3
+        } else {
+            Write-Host "`n[5/5] Apps-integration local build not detected; skipping edge upload for api.orderkingpay.com." -ForegroundColor Yellow
         }
 
         Write-Host "`n==========================================================" -ForegroundColor Green
@@ -90,28 +152,31 @@ switch ($Action.ToLower()) {
         Write-Host " 2. Partners:  https://partner.orderkingpay.com" -ForegroundColor Green
         Write-Host " 3. Riders:    https://rider.orderkingpay.com" -ForegroundColor Green
         Write-Host " 4. Umar OS:   https://admin.orderkingpay.com" -ForegroundColor Green
+        if ($appsIntegrationDir) {
+            Write-Host " 5. Core API:  https://api.orderkingpay.com" -ForegroundColor Green
+        }
         Write-Host "==========================================================" -ForegroundColor Green
     }
     "build" {
-        Write-Host "[1/4] Building HDmaster (Command Center)..." -ForegroundColor Cyan
-        Push-Location HDmaster
-        pnpm build
-        Pop-Location
+        Invoke-CheckedStep "[1/4] Building HDmaster (Umar OS Command Center)" {
+            Push-Location HDmaster
+            try { pnpm build } finally { Pop-Location }
+        }
 
-        Write-Host "[2/4] Building OrderKing Partners..." -ForegroundColor Cyan
-        Push-Location orderking-partners
-        pnpm build
-        Pop-Location
+        Invoke-CheckedStep "[2/4] Building OrderKing Partners" {
+            Push-Location orderking-partners
+            try { pnpm build } finally { Pop-Location }
+        }
 
-        Write-Host "[3/4] Building OrderKing Riders..." -ForegroundColor Cyan
-        Push-Location orderking-riders
-        pnpm build
-        Pop-Location
+        Invoke-CheckedStep "[3/4] Building OrderKing Riders" {
+            Push-Location orderking-riders
+            try { pnpm build } finally { Pop-Location }
+        }
 
-        Write-Host "[4/4] Building OrderKing Customers..." -ForegroundColor Cyan
-        Push-Location orderking-customers
-        pnpm build
-        Pop-Location
+        Invoke-CheckedStep "[4/4] Building OrderKing Customers" {
+            Push-Location orderking-customers
+            try { pnpm build } finally { Pop-Location }
+        }
 
         Write-Host "==========================================================" -ForegroundColor Green
         Write-Host " All 4 Platforms Built Successfully!" -ForegroundColor Green

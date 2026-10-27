@@ -1,11 +1,15 @@
 import { defineConfig } from "vitest/config";
 import path from "node:path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 export default defineConfig({
   test: {
     testTimeout: 60000,
     hookTimeout: 60000,
     fileParallelism: false,
+    isolate: false,
     include: [
       "src/lib/orderking/tech-registry/catalog.test.ts",
       "src/lib/orderking/finance/merchant-contracts.test.ts",
@@ -33,6 +37,7 @@ export default defineConfig({
       "src/lib/orderking/finance/escrow-tpap-engine.test.ts",
       "src/lib/orderking/ai-connectors.test.ts",
       "src/lib/orderking/education/ai-tutor.test.ts",
+      "src/lib/orderking/server/auto-dispatch-engine.test.ts",
     ],
     environment: "node",
   },

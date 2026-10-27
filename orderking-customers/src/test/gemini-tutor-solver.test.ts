@@ -341,4 +341,100 @@ describe("Universal AI Tutor — Gemini 2.5 Flash & Curriculum Engine", () => {
       expect(CORE_SUBJECTS).toContain("Environmental Studies / EVS");
     });
   });
+
+  describe("5. STEM LaTeX Rendering String Rigor & Balanced Syntax Verification", () => {
+    it("verifies mathematical and physical LaTeX delimiter balance across NCERT Class 9-12 curriculum solutions", () => {
+      const stemQueries = [
+        { query: "quadratic equation completing square ax^2", subject: "Mathematics" },
+        { query: "integration of sin^2(x) dx", subject: "Mathematics" },
+        { query: "bernoulli equation fluid streamline flow", subject: "Physics" },
+        { query: "ohm's law microscopic drift velocity resistance", subject: "Physics" },
+        { query: "newton second law equations of motion v = u + at", subject: "Physics" },
+        { query: "pythagoras theorem right triangle", subject: "Mathematics" },
+        { query: "trigonometric fundamental identity sin^2 + cos^2", subject: "Mathematics" },
+        { query: "photosynthesis chemical equation light dark reaction", subject: "Biology" },
+        { query: "national income gdp expenditure method", subject: "Economics" },
+        { query: "law of demand price elasticity of demand", subject: "Economics" },
+        { query: "chemical kinetics first order rate law arrhenius", subject: "Chemistry" },
+        { query: "chemical equilibrium Le Chatelier Kp = Kc(RT)^delta n", subject: "Chemistry" },
+        { query: "mendel monohybrid dihybrid cross punnett square", subject: "Biology" },
+        { query: "snell refraction lens formula mirror", subject: "Physics" },
+        { query: "circle area and perimeter mensuration", subject: "Mathematics" },
+        { query: "simple interest and unitary method percentage", subject: "Mathematics" },
+      ];
+
+      for (const item of stemQueries) {
+        const text = generateCurriculumFallback({
+          message: item.query,
+          board: "CBSE (Central Board)",
+          stdClass: "Class 10",
+          subject: item.subject,
+        });
+
+        // 1. Mandatory 3-part pedagogical layout
+        expect(text).toContain("### 1. Given Formula / Concept");
+        expect(text).toContain("### 2. Step-by-Step Derivation & Solution");
+        expect(text).toContain("### 3. Final Answer");
+
+        // 2. Check balanced inline math \( and \)
+        const inlineOpen = (text.match(/\\\(/g) || []).length;
+        const inlineClose = (text.match(/\\\)/g) || []).length;
+        expect(inlineOpen).toBe(inlineClose);
+
+        // 3. Check balanced display block math \[ and \]
+        const displayOpen = (text.match(/\\\[/g) || []).length;
+        const displayClose = (text.match(/\\\]/g) || []).length;
+        expect(displayOpen).toBe(displayClose);
+
+        // 4. Ensure zero accidental control characters (\x08 backspace, \x0c form feed)
+        expect(text).not.toContain("\x08");
+        expect(text).not.toContain("\x0c");
+      }
+    });
+  });
+
+  describe("6. Strict 20 req/min Rate Limiter Resilience Against Concurrent Floods", () => {
+    it("resists 100 concurrent requests, permitting strictly 20 and blocking 80", async () => {
+      const { MemorySafeRateLimiter } = await import("../lib/security/rate-limiter");
+      const limiter = new MemorySafeRateLimiter({ windowMs: 60_000, maxRequests: 20 });
+      const targetUser = "concurrent-flood-attacker-42";
+
+      // Fire 100 concurrent requests simultaneously
+      const results = await Promise.all(
+        Array.from({ length: 100 }, async () => {
+          await new Promise((resolve) => setTimeout(resolve, Math.random() * 5));
+          return limiter.isAllowed(targetUser);
+        })
+      );
+
+      const allowed = results.filter((r) => r.allowed);
+      const blocked = results.filter((r) => !r.allowed);
+
+      expect(allowed.length).toBe(20);
+      expect(blocked.length).toBe(80);
+
+      // Verify all blocked attempts fail closed with remaining = 0 and valid positive resetMs
+      for (const b of blocked) {
+        expect(b.remaining).toBe(0);
+        expect(b.resetMs).toBeGreaterThan(0);
+        expect(b.resetMs).toBeLessThanOrEqual(60_000);
+      }
+    });
+
+    it("prevents memory exhaustion under distributed key flood via LRU eviction", async () => {
+      const { MemorySafeRateLimiter } = await import("../lib/security/rate-limiter");
+      const maxEntries = 500;
+      const limiter = new MemorySafeRateLimiter({ windowMs: 60_000, maxRequests: 20, maxEntries });
+
+      // Attempt to flood with 2,500 distinct client keys
+      for (let i = 0; i < 2500; i++) {
+        limiter.isAllowed(`rotating-client-ip-${i}`);
+      }
+
+      // @ts-ignore
+      const cacheSize = limiter.cache.size;
+      expect(cacheSize).toBeLessThanOrEqual(maxEntries);
+    });
+  });
+
 });

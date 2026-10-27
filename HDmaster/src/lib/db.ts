@@ -10,6 +10,9 @@ export function getDatabaseUrl() {
   const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
   let url = raw && raw.trim() ? raw : undefined;
   if (url && url.includes('your_supabase_pooler')) url = undefined;
+  if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
+    url = url.replace('sslmode=require', 'sslmode=no-verify');
+  }
   return url;
 }
 export function getDbSource() { return 'neon'; }

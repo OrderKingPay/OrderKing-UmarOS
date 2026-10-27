@@ -329,12 +329,10 @@ export function validateStateTransition(from: OrderStatus, to: OrderStatus) {
  */
 export async function getUmarOSOrderMetrics() {
   const sql = await getSql();
-  const [countRes, recentRes] = await Promise.all([
-    sql<{ count: number }>`SELECT COUNT(*) as count FROM orders`,
-    sql<{ id: string; status: string; total_paise: number }>`
-      SELECT id, status, total_paise FROM orders ORDER BY id DESC LIMIT 10
-    `,
-  ]);
+  const countRes = await sql<{ count: number }>`SELECT COUNT(*) as count FROM orders`;
+  const recentRes = await sql<{ id: string; status: string; total_paise: number }>`
+    SELECT id, status, total_paise FROM orders ORDER BY id DESC LIMIT 10
+  `;
 
   return {
     todayOrders: Number(countRes[0]?.count || 0),

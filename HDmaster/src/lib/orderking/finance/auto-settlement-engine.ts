@@ -1,4 +1,4 @@
-import { getSql, type Sql } from '@/lib/db';
+import { getSql, type Sql } from '../../db.ts';
 import {
   getWeeklyCycle,
   getExpressDailyCycle,
@@ -8,6 +8,7 @@ import {
 } from "./weekly-settlement";
 import { executeRazorpayXPayout } from "./razorpayx-payout-engine";
 import { canonicalLedger } from "./canonical-ledger";
+import { validateIndianBankIFSC } from "../compliance/india-marketplace-engine";
 
 /**
  * 👑 ORDERKING AUTONOMOUS TIER-1 LEGACY COMPATIBLE SETTLEMENT ENGINE
@@ -346,12 +347,33 @@ export const AutoSettlementEngine = {
       let payoutState = "READY_FOR_PAYOUT";
       let escalationReason: string | null = null;
 
-      if (stat.payout_status === "SUSPENDED") {
+      // 🛡️ FOUNDER PROTECTION ALGORITHM: 0% RISK OF UNBACKED DISBURSEMENT 🛡️
+      const totalExpectedPlatformRetained = settlement.platformCommissionPaise + settlement.gstOnCommissionPaise;
+      const totalCollected = parseInt(stat.total_collected || "0", 10);
+      const deliveryFees = parseInt(stat.expected_delivery_fees || "0", 10);
+      const mathematicallySafe = (totalCollected - deliveryFees) >= (netPayablePaise + totalExpectedPlatformRetained);
+
+      const hasVpa = Boolean(stat.payout_vpa?.trim());
+      const hasBank = Boolean(stat.bank_account?.trim() && stat.bank_ifsc?.trim());
+
+      if (!mathematicallySafe) {
+        payoutState = "ESCALATED_DEFICIT";
+        escalationReason = `Mathematical Deficit Detected: Total Collected (₹${(totalCollected / 100).toFixed(2)}) minus Delivery Fees (₹${(deliveryFees / 100).toFixed(2)}) is LESS than Net Payable (₹${(netPayablePaise / 100).toFixed(2)}) + Platform Commission (₹${(totalExpectedPlatformRetained / 100).toFixed(2)}). Payout halted to protect Founder capital.`;
+      } else if (stat.payout_status === "SUSPENDED") {
         payoutState = "ESCALATED_SUSPENDED";
         escalationReason = "Restaurant payout is manually suspended by Admin.";
       } else if (netPayablePaise <= 0) {
         payoutState = "ESCALATED_ZERO";
         escalationReason = "Net payable is zero after statutory deductions.";
+      } else if (!hasVpa && !hasBank) {
+        payoutState = "ESCALATED_NO_BANK_DETAILS";
+        escalationReason = "Restaurant partner has not provided active Bank Account/IFSC or UPI VPA.";
+      } else if (!hasVpa && stat.bank_ifsc?.trim()) {
+        const ifscCheck = validateIndianBankIFSC(stat.bank_ifsc);
+        if (!ifscCheck.isValid) {
+          payoutState = "ESCALATED_INVALID_IFSC";
+          escalationReason = `Invalid Bank IFSC (${stat.bank_ifsc}): ${ifscCheck.error || "Malformed 11-char IFSC code"}`;
+        }
       }
 
       const batchId = `stl-dly-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
@@ -397,7 +419,7 @@ export const AutoSettlementEngine = {
       restaurantCount++;
       totalProcessed++;
 
-      // Automated Disbursement via RazorpayX
+      // Automated Disbursement via RazorpayX with Partial Failure Isolation
       if (autoDisburse && netPayablePaise > 0) {
         let beneficiaryInput: any = null;
         if (stat.payout_vpa?.trim()) {
@@ -421,17 +443,30 @@ export const AutoSettlementEngine = {
             notes: { restaurantId: stat.restaurant_id, cycle: cycle.cycleId },
           });
 
-          const finalStatus = payoutRes.status === "processed" ? "PAID" : "PROCESSING";
-          await sql.query(`
-            UPDATE settlement_batches
-            SET status = $1, state = $1,
-                external_reference = $2, provider_reference = $3,
-                paid_at = CASE WHEN $1 = 'PAID' THEN NOW() ELSE paid_at END,
-                updated_at = NOW()
-            WHERE id = $4
-          `, [finalStatus, payoutRes.payoutId || batchId, payoutRes.utr || null, batchId]);
+          if (payoutRes.success) {
+            const finalStatus = payoutRes.status === "processed" ? "PAID" : "PROCESSING";
+            await sql.query(`
+              UPDATE settlement_batches
+              SET status = $1, state = $1,
+                  external_reference = $2, provider_reference = $3,
+                  paid_at = CASE WHEN $1 = 'PAID' THEN NOW() ELSE paid_at END,
+                  updated_at = NOW()
+              WHERE id = $4
+            `, [finalStatus, payoutRes.payoutId || batchId, payoutRes.utr || null, batchId]);
 
-          totalDisbursedPaise += netPayablePaise;
+            totalDisbursedPaise += netPayablePaise;
+          } else {
+            // Partial bank failure isolated: batch marked FAILED, money NOT disbursed, founder funds protected
+            console.error(`[AutoSettlementEngine] Restaurant payout ${batchId} failed: ${payoutRes.failureReason}`);
+            await sql.query(`
+              UPDATE settlement_batches
+              SET status = 'FAILED', state = 'FAILED',
+                  failure_reason = $1,
+                  updated_at = NOW()
+              WHERE id = $2
+            `, [payoutRes.failureReason || "RazorpayX dispatch rejected", batchId]);
+            totalEscalated++;
+          }
         }
       }
     }
@@ -480,6 +515,22 @@ export const AutoSettlementEngine = {
         continue;
       }
 
+      const hasRiderUpi = Boolean(rStat.payout_upi?.trim());
+      const hasRiderBank = Boolean(rStat.bank_account?.trim() && rStat.bank_ifsc?.trim());
+      let riderPayoutState = "READY_FOR_PAYOUT";
+      let riderEscalationReason: string | null = null;
+
+      if (!hasRiderUpi && !hasRiderBank) {
+        riderPayoutState = "ESCALATED_NO_BANK_DETAILS";
+        riderEscalationReason = "Fleet rider has not registered a verified UPI VPA or active Bank Account.";
+      } else if (!hasRiderUpi && rStat.bank_ifsc?.trim()) {
+        const ifscCheck = validateIndianBankIFSC(rStat.bank_ifsc);
+        if (!ifscCheck.isValid) {
+          riderPayoutState = "ESCALATED_INVALID_IFSC";
+          riderEscalationReason = `Invalid Rider Bank IFSC (${rStat.bank_ifsc}): ${ifscCheck.error || "Malformed 11-char IFSC code"}`;
+        }
+      }
+
       const batchId = `stl-rdr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
       const destinationMasked = rStat.payout_upi || (rStat.bank_account ? `A/C ${String(rStat.bank_account).slice(-4)}` : "NO_UPI_REGISTERED");
 
@@ -493,10 +544,11 @@ export const AutoSettlementEngine = {
           $1, $1, 'default', 'RIDER', 'RIDER', $2, $2, $3,
           $4::timestamptz, $5::timestamptz, $6, $6, 0, 0,
           0, 0, $7, $7, $7,
-          'READY_FOR_PAYOUT', 'READY_FOR_PAYOUT', $8, $9, 0, 'Rider T+1 Daily Delivery Settlement', 'Autonomous Payout', NOW(), NOW()
+          $8, $8, $9, $10, 0, $11, $11, NOW(), NOW()
         )
         ON CONFLICT (id) DO UPDATE SET
-          net_paise = $7, net_payout_paise = $7, payable_paise = $7, updated_at = NOW()
+          net_paise = $7, net_payout_paise = $7, payable_paise = $7,
+          status = $8, updated_at = NOW()
       `, [
         batchId,
         rStat.rider_id,
@@ -505,9 +557,16 @@ export const AutoSettlementEngine = {
         periodEnd,
         grossDeliveryPaise,
         netRiderPaise,
+        riderPayoutState,
         idempotencyKey,
         destinationMasked,
+        riderEscalationReason,
       ]);
+
+      if (riderPayoutState.startsWith("ESCALATED")) {
+        totalEscalated++;
+        continue;
+      }
 
       riderCount++;
       totalProcessed++;
@@ -536,17 +595,29 @@ export const AutoSettlementEngine = {
             notes: { riderId: rStat.rider_id, cycle: cycle.cycleId },
           });
 
-          const finalStatus = payoutRes.status === "processed" ? "PAID" : "PROCESSING";
-          await sql.query(`
-            UPDATE settlement_batches
-            SET status = $1, state = $1,
-                external_reference = $2, provider_reference = $3,
-                paid_at = CASE WHEN $1 = 'PAID' THEN NOW() ELSE paid_at END,
-                updated_at = NOW()
-            WHERE id = $4
-          `, [finalStatus, payoutRes.payoutId || batchId, payoutRes.utr || null, batchId]);
+          if (payoutRes.success) {
+            const finalStatus = payoutRes.status === "processed" ? "PAID" : "PROCESSING";
+            await sql.query(`
+              UPDATE settlement_batches
+              SET status = $1, state = $1,
+                  external_reference = $2, provider_reference = $3,
+                  paid_at = CASE WHEN $1 = 'PAID' THEN NOW() ELSE paid_at END,
+                  updated_at = NOW()
+              WHERE id = $4
+            `, [finalStatus, payoutRes.payoutId || batchId, payoutRes.utr || null, batchId]);
 
-          totalDisbursedPaise += netRiderPaise;
+            totalDisbursedPaise += netRiderPaise;
+          } else {
+            console.error(`[AutoSettlementEngine] Rider payout ${batchId} failed: ${payoutRes.failureReason}`);
+            await sql.query(`
+              UPDATE settlement_batches
+              SET status = 'FAILED', state = 'FAILED',
+                  failure_reason = $1,
+                  updated_at = NOW()
+              WHERE id = $2
+            `, [payoutRes.failureReason || "RazorpayX dispatch rejected", batchId]);
+            totalEscalated++;
+          }
         }
       }
     }

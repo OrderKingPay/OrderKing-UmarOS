@@ -11,6 +11,7 @@ import {
   createMerchantContract,
   generateMerchantWeeklySettlementStatement,
   postMerchantSettlementToLedger,
+  generateComprehensiveSettlementJournal,
 } from "./merchant-contracts.ts";
 import {
   canonicalLedger,
@@ -88,7 +89,14 @@ describe("👑 SPECIALIST MISSION CERTIFICATION: FINTECH & SETTLEMENTS AUDIT", (
       const sumCredits = credits.reduce((s, e) => s + e.amountPaise, 0);
 
       assert.strictEqual(sumDebits, sumCredits);
-      assert.strictEqual(sumDebits, statement.financials.totalCreditsPaise);
+      assert.strictEqual(sumDebits, statement.reconciledNetPayoutPaise);
+
+      // Verify comprehensive statutory settlement journal balancing
+      const journalEntries = generateComprehensiveSettlementJournal(statement);
+      const journalDebits = journalEntries.filter((e) => e.direction === "DEBIT").reduce((s, e) => s + e.amountPaise, 0);
+      const journalCredits = journalEntries.filter((e) => e.direction === "CREDIT").reduce((s, e) => s + e.amountPaise, 0);
+      assert.strictEqual(journalDebits, journalCredits);
+      assert.strictEqual(journalDebits, statement.financials.totalCreditsPaise);
     });
 
     test("Rider Net Earnings exact calculation enforcing ₹35 base floor and 100% tip pass-through", async () => {

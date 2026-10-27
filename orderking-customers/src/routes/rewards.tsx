@@ -111,7 +111,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     category: "ecommerce",
     brand: "Meesho",
     title: "Wholesale Prices + Extra 15% OFF",
-    description: "Lowest prices on trending fashion, home decor, and daily lifestyle items.",
+    description: "Direct wholesale pricing on trending fashion, home decor, and daily lifestyle items.",
     code: "MEESHOKING",
     coinsRequired: 150,
     valueLabel: "15% Extra OFF",

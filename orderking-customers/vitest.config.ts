@@ -71,6 +71,7 @@ export default defineConfig({
       "src/test/travel-autosuggest.test.ts",
       "src/test/sovereign-travel-engine.test.ts",
       "src/test/travelpayouts-white-label.test.ts",
+      "src/test/tbo-b2b-client.test.ts",
       "src/test/dynamic-radius.test.ts",
     ],
     environment: "node",

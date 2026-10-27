@@ -317,6 +317,125 @@ export class AITutor {
 - \\(\\Delta < 0\\): No real roots (complex conjugates).`;
     }
 
+    // Kinematics & Newton's Equations of Motion (NCERT Class 9 Chapter 8 & Class 11 Chapter 3)
+    if (q.includes("kinematic") || q.includes("v = u + at") || q.includes("newton") || q.includes("f = ma") || q.includes("equation of motion") || q.includes("equations of motion")) {
+      return `### 1. Given Formula / Concept
+- **Newton's Second Law of Motion:** The rate of change of linear momentum is directly proportional to applied unbalanced external force:
+  \\[\\vec{F} = \\frac{d\\vec{p}}{dt} = \\frac{d(m\\vec{v})}{dt} = m\\vec{a}\\]
+- **Three Standard Equations of Uniformly Accelerated Motion:**
+  1. \\[v = u + at\\]
+  2. \\[s = ut + \\frac{1}{2}at^2\\]
+  3. \\[v^2 = u^2 + 2as\\]
+- **Curriculum Standard:** NCERT Class 9 & Class 11 Physics (${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (First Equation \\(v = u + at\\)):** By definition of instantaneous acceleration, \\(a = \\frac{dv}{dt} \\implies dv = a \\, dt\\). Integrating both sides from \\(t = 0\\) (velocity \\(u\\)) to \\(t\\) (velocity \\(v\\)):
+  \\[\\int_{u}^{v} dv = a \\int_{0}^{t} dt \\implies v - u = at \\implies v = u + at\\]
+- **Step 2 (Second Equation \\(s = ut + \\frac{1}{2}at^2\\)):** By definition of velocity, \\(v = \\frac{ds}{dt} = u + at \\implies ds = (u + at) \\, dt\\). Integrating from \\(s=0\\) to \\(s\\):
+  \\[\\int_{0}^{s} ds = \\int_{0}^{t} (u + at) \\, dt \\implies s = ut + \\frac{1}{2}at^2\\]
+- **Step 3 (Third Equation \\(v^2 = u^2 + 2as\\)):** By chain rule, \\(a = v \\frac{dv}{ds} \\implies v \\, dv = a \\, ds\\). Integrating both sides:
+  \\[\\int_{u}^{v} v \\, dv = a \\int_{0}^{s} ds \\implies \\frac{v^2 - u^2}{2} = as \\implies v^2 = u^2 + 2as\\]
+
+### 3. Final Answer
+**Equations of Motion:**
+\\[v = u + at, \\quad s = ut + \\frac{1}{2}at^2, \\quad v^2 = u^2 + 2as, \\quad \\vec{F} = m\\vec{a}\\]`;
+    }
+
+    // Fluid Dynamics: Bernoulli's Equation (NCERT Class 11 Chapter 10)
+    if (q.includes("bernoulli") || q.includes("fluid dynamics") || q.includes("streamline flow")) {
+      return `### 1. Given Formula / Concept
+- **Bernoulli's Principle:** For an incompressible, non-viscous fluid undergoing steady streamline flow, the total mechanical energy remains constant along a streamline:
+  \\[P + \\frac{1}{2} \\rho v^2 + \\rho g h = \\text{Constant}\\]
+- **Total Head Formulation:**
+  \\[\\frac{P}{\\rho g} + \\frac{v^2}{2g} + h = H_{\\text{total}} \\; (\\text{m})\\]
+- **Curriculum Standard:** NCERT Class 11 Physics Chapter 10 (Mechanical Properties of Fluids, ${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Work Done by Pressure Forces):** Consider fluid volume element moving from section 1 to section 2 in time \\(\\Delta t\\):
+  \\[W = P_1 A_1 (v_1 \\Delta t) - P_2 A_2 (v_2 \\Delta t) = (P_1 - P_2) \\Delta V\\]
+  (by continuity equation \\(\\Delta V = A_1 v_1 \\Delta t = A_2 v_2 \\Delta t\\)).
+- **Step 2 (Kinetic & Potential Energy Increments):**
+  \\[\\Delta K = \\frac{1}{2} \\Delta m (v_2^2 - v_1^2) = \\frac{1}{2} (\\rho \\Delta V)(v_2^2 - v_1^2)\\]
+  \\[\\Delta U = \\Delta m g (h_2 - h_1) = (\\rho \\Delta V) g (h_2 - h_1)\\]
+- **Step 3 (Work-Energy Equivalence \\(W = \\Delta K + \\Delta U\\)):**
+  \\[(P_1 - P_2) \\Delta V = \\frac{1}{2} \\rho \\Delta V (v_2^2 - v_1^2) + \\rho \\Delta V g (h_2 - h_1)\\]
+- **Step 4 (Divide throughout by \\(\\Delta V\\) and rearrange initial vs final states):**
+  \\[P_1 + \\frac{1}{2} \\rho v_1^2 + \\rho g h_1 = P_2 + \\frac{1}{2} \\rho v_2^2 + \\rho g h_2\\]
+
+### 3. Final Answer
+**Bernoulli Invariant:**
+\\[P + \\frac{1}{2} \\rho v^2 + \\rho g h = \\text{Constant}\\]`;
+    }
+
+    // Ohm's Law & Circuit Resistance (NCERT Class 10 Chapter 12 & Class 12 Chapter 3)
+    if (q.includes("ohm") || q.includes("v = ir") || q.includes("resistance") || q.includes("resistivity") || q.includes("drift velocity")) {
+      return `### 1. Given Formula / Concept
+- **Macroscopic Ohm's Law:** At constant physical conditions and temperature:
+  \\[V = I \\cdot R \\implies I = \\frac{V}{R}, \\quad R = \\frac{V}{I}\\]
+- **Microscopic Ohm's Law & Resistivity:**
+  \\[\\vec{J} = \\sigma \\vec{E} = \\frac{1}{\\rho} \\vec{E}, \\quad R = \\rho \\frac{L}{A}\\]
+- **Curriculum Standard:** NCERT Class 10 & 12 Physics (${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Electron Drift Velocity):** In electric field \\(E = \\frac{V}{L}\\), acceleration \\(a = \\frac{eE}{m}\\). Mean drift velocity:
+  \\[v_d = \\frac{e E \\tau}{m} = \\frac{e V \\tau}{m L}\\]
+  where \\(\\tau\\) is the mean relaxation time between collisions.
+- **Step 2 (Current Expression):** Total charge crossing area \\(A\\) in unit time:
+  \\[I = n e A v_d = n e A \\left( \\frac{e V \\tau}{m L} \\right) = \\left( \\frac{n e^2 A \\tau}{m L} \\right) V\\]
+- **Step 3 (Extract Resistance \\(R\\)):** Comparing \\(I = \\frac{V}{R}\\):
+  \\[R = \\frac{m L}{n e^2 A \\tau} = \\left( \\frac{m}{n e^2 \\tau} \\right) \\frac{L}{A} = \\rho \\frac{L}{A}\\]
+  where specific electrical resistivity is \\(\\rho = \\frac{m}{n e^2 \\tau}\\).
+
+### 3. Final Answer
+**Ohmic Invariant:**
+\\[V = I \\cdot R, \\quad R = \\rho \\frac{L}{A}, \\quad \\rho = \\frac{m}{n e^2 \\tau}\\]`;
+    }
+
+    // Optics: Snell's Law & Lens Equation (NCERT Class 10 Chapter 10 & Class 12 Chapter 9)
+    if (q.includes("snell") || q.includes("refraction") || q.includes("lens formula") || q.includes("mirror formula") || q.includes("focal length")) {
+      return `### 1. Given Formula / Concept
+- **Snell's Law of Refraction:**
+  \\[n_1 \\sin(i) = n_2 \\sin(r) \\implies \\frac{\\sin(i)}{\\sin(r)} = \\frac{n_2}{n_1} = \\mu_{21}\\]
+- **Thin Lens Equation (New Cartesian Sign Convention):**
+  \\[\\frac{1}{f} = \\frac{1}{v} - \\frac{1}{u}\\]
+- **Curriculum Standard:** NCERT Class 10 & Class 12 Ray Optics (${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Cartesian Coordinates):** Optical center at origin. Object distance \\(u < 0\\), image distance \\(v > 0\\) (for real image), focal length \\(f > 0\\) (convex lens).
+- **Step 2 (Similar Triangles):** From ray tracing, \\(\\triangle ABO \\sim \\triangle A'B'O \\implies \\frac{A'B'}{AB} = \\frac{v}{-u}\\).
+  From \\(\\triangle OF_2X \\sim \\triangle A'B'F_2 \\implies \\frac{A'B'}{AB} = \\frac{v - f}{f}\\).
+- **Step 3 (Equate and Simplify):**
+  \\[\\frac{v}{-u} = \\frac{v - f}{f} \\implies vf = -uv + uf\\]
+  Dividing throughout by \\(uvf\\):
+  \\[\\frac{1}{u} = -\\frac{1}{f} + \\frac{1}{v} \\implies \\frac{1}{f} = \\frac{1}{v} - \\frac{1}{u}\\]
+
+### 3. Final Answer
+\\[\\frac{1}{f} = \\frac{1}{v} - \\frac{1}{u}, \\quad n_1 \\sin(i) = n_2 \\sin(r)\\]`;
+    }
+
+    // Calculus: Integration of sin^2(x) (NCERT Class 12 Chapter 7)
+    if (q.includes("sin^2") || q.includes("sin2") || (q.includes("integration") && q.includes("sin"))) {
+      return `### 1. Given Formula / Concept
+- **Target Integral:** \\(I = \\int \\sin^2(x) \\, dx\\)
+- **Power Reduction Trigonometric Identity:**
+  \\[\\cos(2x) = 1 - 2\\sin^2(x) \\implies \\sin^2(x) = \\frac{1 - \\cos(2x)}{2}\\]
+- **Curriculum Standard:** NCERT Class 12 Mathematics Chapter 7 (Integrals, ${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Substitute power reduction identity):**
+  \\[I = \\int \\frac{1 - \\cos(2x)}{2} \\, dx\\]
+- **Step 2 (Decompose into linear integral terms):**
+  \\[I = \\frac{1}{2} \\int 1 \\, dx - \\frac{1}{2} \\int \\cos(2x) \\, dx\\]
+- **Step 3 (Integrate each component):**
+  - First term: \\(\\frac{1}{2} \\int 1 \\, dx = \\frac{1}{2} x\\)
+  - Second term: \\(\\frac{1}{2} \\int \\cos(2x) \\, dx = \\frac{1}{2} \\left( \\frac{\\sin(2x)}{2} \\right) = \\frac{1}{4} \\sin(2x)\\)
+- **Step 4 (Combine terms and append constant of integration \\(C\\)):**
+  \\[I = \\frac{x}{2} - \\frac{\\sin(2x)}{4} + C\\]
+
+### 3. Final Answer
+\\[\\int \\sin^2(x) \\, dx = \\frac{x}{2} - \\frac{\\sin(2x)}{4} + C\\]`;
+    }
+
     // Default 3-Part Syllabus Solution
     return `### 1. Given Formula / Concept
 - **Subject Domain:** NCERT / CBSE Academic Standard (${board} Grade ${grade}).

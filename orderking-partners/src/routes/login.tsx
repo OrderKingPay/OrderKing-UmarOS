@@ -524,7 +524,7 @@ function Login() {
                       className="h-11 w-full border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/40 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
                     >
                       <MessageCircle className="size-4 text-emerald-400" />
-                      <span>Instant Sign In via WhatsApp OTP (1-Tap Zero-Lockout)</span>
+                      <span>Instant Sign In via WhatsApp OTP</span>
                     </Button>
                   </div>
                 </>
@@ -558,7 +558,7 @@ function Login() {
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-semibold flex items-center gap-1.5 text-amber-300">
                           <KeyRound className="size-3.5 text-amber-400 shrink-0" />
-                          Zero-Lockout Verification Code:
+                          Emergency Verification Code:
                         </span>
                         <button
                           type="button"

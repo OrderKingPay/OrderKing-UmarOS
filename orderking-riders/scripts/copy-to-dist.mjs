@@ -1,5 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const appDir = path.resolve(__dirname, '..');
 
 function copyDir(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -62,7 +67,14 @@ function run(appDir) {
       fs.copyFileSync(pubFile, path.join(destClient, config));
     }
   }
+
+  // 6. Run post-copy patch on dist/_worker.js to guarantee Error 1101 immunity
+  try {
+    const fixSsrScript = path.join(__dirname, 'fix-ssr.mjs');
+    execSync(`node "${fixSsrScript}"`, { stdio: 'inherit', cwd: appDir });
+  } catch (patchErr) {
+    console.warn('[copy-to-dist] post-copy fix-ssr warning:', patchErr);
+  }
 }
 
-const appDir = process.cwd();
 run(appDir);

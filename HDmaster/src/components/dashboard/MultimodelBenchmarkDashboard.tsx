@@ -474,7 +474,7 @@ export function MultimodelBenchmarkDashboard() {
             type="text"
             value={testPrompt}
             onChange={(e) => setTestPrompt(e.target.value)}
-            placeholder="Enter a test question or menu item name..."
+            placeholder="Enter customer support query or culinary menu item description..."
             className="flex-1 bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900"
           />
           <Button
