@@ -1,3 +1,4 @@
+import { getCurrentEcosystemShift, getShiftRemainingMinutes, CANONICAL_THREAT_ZONES } from "@orderking/ui";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -161,6 +162,51 @@ function Page() {
           <h1 className="font-display text-3xl">{t("safety")}</h1>
           <Badge tone="online">24x7 SOS</Badge>
         </div>
+
+        {/* Dynamic Shift Boundaries & Real-Time Safety Exclusion Zones */}
+        <Card className="space-y-3 border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <CardTitle className="text-base">
+                Operational Shift: {getCurrentEcosystemShift().name}
+              </CardTitle>
+            </div>
+            <Badge tone={getCurrentEcosystemShift().type === "LATE_NIGHT" ? "busy" : getCurrentEcosystemShift().type === "EVENING" ? "cod" : "online"}>
+              Max Radius: {getCurrentEcosystemShift().maxRadiusKm} km
+            </Badge>
+          </div>
+
+          <div className="text-xs text-muted-foreground flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span>
+              Shift Window: {getCurrentEcosystemShift().startHour}:00 &ndash; {getCurrentEcosystemShift().endHour}:00 IST ({getShiftRemainingMinutes()} mins remaining)
+            </span>
+            <span className="font-mono text-[10px] uppercase font-bold text-amber-500">
+              Threat Level: {getCurrentEcosystemShift().threatLevel}
+            </span>
+          </div>
+
+          {/* Active Canonical Safety Threat & Exclusion Zones */}
+          <div className="space-y-2 pt-1 border-t border-border/50">
+            <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <AlertTriangle className="size-3.5 text-amber-500" />
+              <span>Active Threat Exclusion Zones (Current Shift)</span>
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {CANONICAL_THREAT_ZONES.filter((tz) => tz.activeShifts.includes(getCurrentEcosystemShift().type)).map((tz) => (
+                <div key={tz.id} className="rounded-xl border border-border/80 bg-muted/40 p-2.5 text-xs space-y-1">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-bold text-foreground">{tz.name}</span>
+                    <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-extrabold shrink-0 ${tz.threatLevel === "EXCLUSION_CURFEW" ? "bg-destructive/20 text-destructive" : "bg-amber-500/20 text-amber-500"}`}>
+                      {tz.threatLevel}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">{tz.advisoryNote}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
 
         {/* 1-Tap Statutory Emergency Helplines & Personal Emergency Contact */}
         <Card className="space-y-3">
