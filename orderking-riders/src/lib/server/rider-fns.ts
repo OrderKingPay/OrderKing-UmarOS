@@ -727,6 +727,7 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
       pendingConfig: dispatchResult.pendingConfig,
+      providerNotice: dispatchResult.providerNotice,
       whatsAppOtpUrl: channel === "whatsapp" ? dispatchResult.whatsAppOtpUrl : undefined,
     };
   });

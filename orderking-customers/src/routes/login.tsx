@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
@@ -24,6 +25,7 @@ function Login() {
   const [phoneName, setPhoneName] = useState("");
   const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
   const [debugOtpCode, setDebugOtpCode] = useState<string | null>(null);
+  const [providerNotice, setProviderNotice] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
 
   // Email state
@@ -103,6 +105,9 @@ function Login() {
       setWhatsAppUrl(res.whatsAppOtpUrl || null);
       if (res.debugOtp) {
         setDebugOtpCode(res.debugOtp);
+      }
+      if (res.providerNotice) {
+        setProviderNotice(res.providerNotice);
       }
       setResendTimer(30);
 
@@ -390,25 +395,39 @@ function Login() {
                       />
                     </div>
 
-                    {/* Developer / Fallback code display if in resilient fallback */}
+                    {/* Prominent 1-Tap Auto-Fill Button if verification is pending */}
                     {debugOtpCode ? (
-                      <div className="p-2.5 bg-amber-100/80 border border-amber-300 rounded-xl text-center text-xs font-mono font-bold text-amber-950">
-                        Development Verification Code: <span className="underline text-amber-900">{debugOtpCode}</span>
+                      <div className="space-y-2">
+                        {providerNotice ? (
+                          <div className="rounded-xl border border-amber-300 bg-amber-50 p-2.5 text-[11px] text-amber-900 leading-relaxed font-medium">
+                            {providerNotice}
+                          </div>
+                        ) : null}
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            setOtp(debugOtpCode);
+                            setSuccessMsg(`Verification code ${debugOtpCode} auto-filled!`);
+                            toast.success("Verification code auto-filled!");
+                          }}
+                          className="w-full h-11 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border-2 border-amber-400 text-amber-950 font-black text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
+                        >
+                          <span className="text-sm">⚡</span>
+                          <span>1-Tap Auto-Fill Code ({debugOtpCode})</span>
+                        </Button>
                       </div>
                     ) : null}
 
-                    {/* WhatsApp 1-tap fallback button */}
-                    {whatsAppUrl ? (
-                      <a
-                        href={whatsAppUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full h-10 rounded-xl bg-emerald-50 border border-emerald-300 hover:bg-emerald-100 text-emerald-800 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all"
-                      >
-                        <span>💬</span>
-                        <span>Open WhatsApp for Instant Code</span>
-                      </a>
-                    ) : null}
+                    {/* Prominent 1-Tap WhatsApp Deep Link Button */}
+                    <a
+                      href={whatsAppUrl || `https://wa.me/919395065587?text=${encodeURIComponent(`VERIFY ${phone}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 transition"
+                    >
+                      <span className="text-sm">💬</span>
+                      <span>1-Tap WhatsApp Verification Code</span>
+                    </a>
 
                     <Button
                       type="button"

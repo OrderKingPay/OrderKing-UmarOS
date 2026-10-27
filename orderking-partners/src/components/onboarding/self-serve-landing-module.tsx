@@ -48,6 +48,7 @@ export function SelfServeLandingModule() {
 
   // Banking & Hours
   const [bankAccount, setBankAccount] = useState("");
+  const [confirmBankAccount, setConfirmBankAccount] = useState("");
   const [bankIfsc, setBankIfsc] = useState("");
   const [bankHolder, setBankHolder] = useState("");
   const [openTime, setOpenTime] = useState("10:00");
@@ -140,7 +141,7 @@ export function SelfServeLandingModule() {
               Self-Serve Restaurant Onboarding
             </span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800">
-              100% Industry Benchmark KYC
+              Statutory KYC & Regulatory Verification
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-white mt-1">

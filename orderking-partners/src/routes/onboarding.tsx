@@ -1236,7 +1236,7 @@ function OnboardingPage() {
                   4. Verification Documents &amp; Menu Upload
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Upload statutory FSSAI certificate, business PAN card, and restaurant menu / rate card photos. You can also configure your first signature dish for instant catalog digitization.
+                  Upload statutory FSSAI certificate, business PAN card, and restaurant menu / rate card photos. You can also configure your primary signature dish for menu setup.
                 </p>
               </div>
             </div>
@@ -1268,7 +1268,7 @@ function OnboardingPage() {
               <div className="rounded-lg border border-slate-800/90 bg-slate-950/70 p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-semibold text-slate-200">Flagship / Signature Dish (Menu Quick-Start)</h4>
-                  <span className="text-[10px] font-mono text-emerald-400">INSTANT DIGITIZATION</span>
+                  <span className="text-[10px] font-mono text-emerald-400">MENU CONFIGURATION</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="sm:col-span-2">
@@ -1336,11 +1336,11 @@ function OnboardingPage() {
                     5. Partner Agreement &amp; Instant Activation
                   </h2>
                   <span className="rounded bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
-                    FINAL STEP · 60s ONBOARDING
+                    FINAL STEP · STATUTORY EXECUTION
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Instant paperless digital execution under Section 10A of the IT Act, 2000. No physical paperwork or SMS OTP delays.
+                  Digital Clickwrap Execution under Section 10A of the Information Technology Act, 2000.
                 </p>
               </div>
             </div>
@@ -1353,16 +1353,16 @@ function OnboardingPage() {
               <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
                 <div className="flex items-center gap-1.5 font-semibold text-xs text-emerald-400">
                   <BadgeCheck className="size-4" />
-                  <span>Table Reservation Model</span>
+                  <span>Transparent Merchant Terms</span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-relaxed">
-                  100% of customer spend retained for table orders &amp; dining room. Honest 28% delivery fulfillment.
+                  Transparent agreed commission structure per order with zero hidden technology or listing levies.
                 </p>
               </div>
               <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
                 <div className="flex items-center gap-1.5 font-semibold text-xs text-emerald-400">
                   <Banknote className="size-4" />
-                  <span>Weekly Direct Settlement</span>
+                  <span>Direct Bank Settlements</span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-relaxed">
                   Direct automated payouts via NEFT/IMPS with integer paise precision and zero floating-point drift.
@@ -1457,10 +1457,10 @@ function OnboardingPage() {
                     <div className="space-y-1">
                       <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
                         <span className="size-1.5 rounded-full bg-emerald-400" />
-                        Clause 3: Delivery Fulfillment Commission &amp; Table Reservation Policy
+                        Clause 3: Delivery Fulfillment Logistics &amp; Platform Commercials
                       </h4>
                       <p className="text-slate-400 leading-relaxed pl-3">
-                        Order King applies an honest standard 28% delivery fulfillment commission (customizable per outlet down to negotiated partner rates) that directly funds delivery fleet payouts, dispatch logistics, and customer support. Additionally, Order King guarantees custom commission on all Dine-In and Table Reservations, ensuring restaurants retain 100% of customer dining room spend.
+                        Order King applies standard delivery fulfillment and logistics fees as configured per outlet tier to fund rider fleet compensation, routing telemetry, and customer care. Dine-in listings and catalog browsing operate under agreed statutory merchant terms.
                       </p>
                     </div>
                   )}

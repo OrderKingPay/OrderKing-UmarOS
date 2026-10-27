@@ -32,6 +32,7 @@ export default defineConfig({
       "src/lib/orderking/playbook/**/*.test.ts",
       "src/lib/orderking/finance/escrow-tpap-engine.test.ts",
       "src/lib/orderking/ai-connectors.test.ts",
+      "src/lib/orderking/education/ai-tutor.test.ts",
     ],
     environment: "node",
   },

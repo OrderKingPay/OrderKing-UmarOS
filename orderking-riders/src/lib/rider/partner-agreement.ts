@@ -9,7 +9,7 @@
  *  - Digital Personal Data Protection Act, 2023 (DPDP Act - Telemetry & PII Masking)
  *  - Arbitration and Conciliation Act, 1996
  *
- * Brand: OrderKing Partner (OrderKing Foods Private Limited)
+ * Brand: OrderKing Partner (Orderkingpay, Sribhumi, Assam - 788710 | GSTIN: 18AFXPH9838M1Z9)
  */
 
 export interface AgreementSection {
@@ -50,7 +50,7 @@ export const ORDERKING_PARTNER_AGREEMENT_METADATA: PartnerAgreementMetadata = {
   minimumFloorPayout: "INR 35 Base Floor Fare per completed delivery",
 };
 
-export const ORDERKING_PREAMBLE_TEXT = `This Independent Delivery Partner Service Agreement ("Agreement") is executed electronically by and between OrderKing Foods Private Limited, a company incorporated under the Companies Act, 2013, having its registered office in India (hereinafter referred to as "OrderKing" or "Platform", which expression shall unless repugnant to the context include its successors and assigns), and the Individual Applicant who completes the digital onboarding and verification flow (hereinafter referred to as the "Delivery Partner" or "Partner").
+export const ORDERKING_PREAMBLE_TEXT = `This Independent Delivery Partner Service Agreement ("Agreement") is executed electronically by and between Orderkingpay, an enterprise having its registered office in Sribhumi, Assam - 788710, operating under GSTIN 18AFXPH9838M1Z9 (hereinafter referred to as "OrderKing" or "Platform", which expression shall unless repugnant to the context include its successors and assigns), and the Individual Applicant who completes the digital onboarding and verification flow (hereinafter referred to as the "Delivery Partner" or "Partner").
 
 WHEREAS:
 A. OrderKing operates a digital technology platform and logistics network facilitating real-time discovery, ordering, and delivery of food, beverages, and grocery items from merchant establishments to end-consumers.

@@ -22,6 +22,7 @@
  */
 
 import type { SettlementCycleType } from "./SettlementReconciliationEngine";
+import { canonicalLedger, type CanonicalLedger, type LedgerEntry, type LedgerTransaction } from "./canonical-ledger.ts";
 
 export type WeeklyCyclePeriod = {
   cycleId: string;
@@ -88,6 +89,7 @@ export type RiderWeeklySettlement = {
   distancePayPaise: number;
   surgeIncentivesPaise: number;
   milestoneBonusPaise: number;
+  tipsPaise?: number;
   grossEarningsPaise: number;
   cashCollectedPaise: number; // COD cash holding to reconcile
   netDisbursementPaise: number; // Positive = we pay rider; Negative = rider deposits cash
@@ -330,15 +332,17 @@ export function calculateRiderWeeklySettlement(params: {
   distancePayPaise?: number;
   surgeIncentivesPaise?: number;
   milestoneBonusPaise?: number;
+  tipsPaise?: number;
   cashCollectedPaise?: number;
 }): RiderWeeklySettlement {
   const surge = params.surgeIncentivesPaise ?? 0;
   const milestone = params.milestoneBonusPaise ?? 0;
+  const tips = params.tipsPaise ?? 0;
   
   // Real geographic distance pay: Rs 5 per km (500 paise/km) if totalDistanceKm is provided
   const distancePay = params.distancePayPaise ?? (params.totalDistanceKm ? Math.round(params.totalDistanceKm * 500) : 0);
   
-  const gross = params.basePayPaise + distancePay + surge + milestone;
+  const gross = params.basePayPaise + distancePay + surge + milestone + tips;
   const cashCollected = params.cashCollectedPaise ?? 0;
 
   return {
@@ -351,6 +355,7 @@ export function calculateRiderWeeklySettlement(params: {
     distancePayPaise: distancePay,
     surgeIncentivesPaise: surge,
     milestoneBonusPaise: milestone,
+    tipsPaise: tips,
     grossEarningsPaise: gross,
     cashCollectedPaise: cashCollected,
     netDisbursementPaise: gross - cashCollected,
@@ -406,5 +411,172 @@ export async function persistWeeklySettlementTransaction(
         new Date().toISOString()
       ]
     );
+  });
+}
+
+/**
+ * 👑 Merchant Net Payable (NRP) Pure Formula Engine:
+ * NRP = Gross Food Sales + Packaging - Discounts - Commission + Promos - Taxes - Deductions
+ * SafeInteger paise arithmetic guaranteed.
+ */
+export function calculateMerchantNetPayable(params: {
+  grossFoodSalesPaise: number;
+  packagingPaise?: number;
+  restaurantDiscountsPaise?: number;
+  commissionBps: number;
+  platformPromosPaise?: number;
+  statutoryTaxesPaise?: number;
+  otherDeductionsPaise?: number;
+}): {
+  grossFoodSalesPaise: number;
+  packagingPaise: number;
+  discountsPaise: number;
+  commissionPaise: number;
+  promosPaise: number;
+  statutoryTaxesPaise: number;
+  otherDeductionsPaise: number;
+  netPayablePaise: number;
+} {
+  const food = Math.max(0, Math.round(params.grossFoodSalesPaise));
+  const packaging = Math.max(0, Math.round(params.packagingPaise ?? 0));
+  const discounts = Math.max(0, Math.round(params.restaurantDiscountsPaise ?? 0));
+  const netTaxableSupply = Math.max(0, food - discounts);
+  
+  const commissionPaise = Math.round((netTaxableSupply * params.commissionBps) / 10000);
+  const promos = Math.max(0, Math.round(params.platformPromosPaise ?? 0));
+  
+  // Statutory taxes: 18% GST on commission + 1% TCS + 1% TDS (unless supplied explicitly)
+  let taxes = params.statutoryTaxesPaise;
+  if (taxes === undefined) {
+    const commGst = Math.round((commissionPaise * 18) / 100);
+    const tcs = Math.round((netTaxableSupply * 100) / 10000);
+    const tds = Math.round((netTaxableSupply * 100) / 10000);
+    taxes = commGst + tcs + tds;
+  }
+  
+  const deductions = Math.max(0, Math.round(params.otherDeductionsPaise ?? 0));
+
+  // Formula: NRP = Gross Food Sales + Packaging - Discounts - Commission + Promos - Taxes - Deductions
+  const netPayablePaise = Math.max(
+    0,
+    food + packaging - discounts - commissionPaise + promos - taxes - deductions
+  );
+
+  return {
+    grossFoodSalesPaise: food,
+    packagingPaise: packaging,
+    discountsPaise: discounts,
+    commissionPaise,
+    promosPaise: promos,
+    statutoryTaxesPaise: taxes,
+    otherDeductionsPaise: deductions,
+    netPayablePaise,
+  };
+}
+
+/**
+ * 👑 Rider Net Earnings Pure Formula Engine:
+ * Rider Net Earnings = Base Floor (₹35 min) + Distance Pay + Surge Incentives + 100% Tips
+ * SafeInteger paise arithmetic with 100% tip pass-through and statutory floor enforcement.
+ */
+export function calculateRiderNetEarnings(params: {
+  deliveriesCompleted: number;
+  baseFloorPaise?: number; // minimum ₹35 per trip = 3500 paise
+  distancePayPaise?: number;
+  surgeIncentivesPaise?: number;
+  customerTipPaise?: number;
+}): {
+  deliveriesCompleted: number;
+  baseFloorPaise: number;
+  totalBasePayPaise: number;
+  distancePayPaise: number;
+  surgeIncentivesPaise: number;
+  customerTipPaise: number;
+  grossEarningsPaise: number;
+  passThroughTipPercentage: 100;
+} {
+  const count = Math.max(0, Math.floor(params.deliveriesCompleted));
+  const floorPerTrip = Math.max(3500, Math.round(params.baseFloorPaise ?? 3500)); // Minimum ₹35 (3500 paise) floor
+  const totalBasePayPaise = count * floorPerTrip;
+  const distancePayPaise = Math.max(0, Math.round(params.distancePayPaise ?? 0));
+  const surgeIncentivesPaise = Math.max(0, Math.round(params.surgeIncentivesPaise ?? 0));
+  const customerTipPaise = Math.max(0, Math.round(params.customerTipPaise ?? 0)); // 100% tip pass-through
+
+  const grossEarningsPaise = totalBasePayPaise + distancePayPaise + surgeIncentivesPaise + customerTipPaise;
+
+  return {
+    deliveriesCompleted: count,
+    baseFloorPaise: floorPerTrip,
+    totalBasePayPaise,
+    distancePayPaise,
+    surgeIncentivesPaise,
+    customerTipPaise,
+    grossEarningsPaise,
+    passThroughTipPercentage: 100,
+  };
+}
+
+/**
+ * Posts rider weekly settlement disbursement to Canonical Ledger.
+ * Enforces double-entry equality:
+ * DEBIT: RIDER_PAYABLE (gross earnings)
+ * CREDIT: CUSTOMER_CASH_IN (reconcile collected COD cash in hand)
+ * CREDIT: BANK_CLEARING (net bank / UPI disbursement)
+ */
+export async function postRiderWeeklySettlementToLedger(
+  settlement: RiderWeeklySettlement,
+  ledger: CanonicalLedger = canonicalLedger
+): Promise<LedgerTransaction> {
+  const entries: LedgerEntry[] = [];
+  
+  if (settlement.grossEarningsPaise <= 0) {
+    throw new Error("Cannot post zero or negative rider earnings to ledger.");
+  }
+
+  // DEBIT: RIDER_PAYABLE (clear platform delivery fee payable to rider)
+  entries.push({
+    account: "RIDER_PAYABLE",
+    direction: "DEBIT",
+    amountPaise: settlement.grossEarningsPaise,
+    entityId: settlement.riderId,
+    memo: `Discharge delivery earnings payable for rider ${settlement.riderId} (${settlement.cycle.cycleId})`,
+  });
+
+  // CREDIT: CUSTOMER_CASH_IN (reconcile floating COD cash collected by rider)
+  if (settlement.cashCollectedPaise > 0) {
+    entries.push({
+      account: "CUSTOMER_CASH_IN",
+      direction: "CREDIT",
+      amountPaise: settlement.cashCollectedPaise,
+      entityId: settlement.riderId,
+      memo: `Reconcile floating COD cash collected by rider ${settlement.riderId}`,
+    });
+  }
+
+  // CREDIT: BANK_CLEARING (net bank/UPI transfer disbursed to rider)
+  if (settlement.netDisbursementPaise > 0) {
+    entries.push({
+      account: "BANK_CLEARING",
+      direction: "CREDIT",
+      amountPaise: settlement.netDisbursementPaise,
+      entityId: "BANK_DISBURSEMENT",
+      memo: `Net earnings disbursement to rider via ${settlement.upiIdOrBankMasked}`,
+    });
+  }
+
+  // Double-entry verification: Total Debits must equal Total Credits
+  const totalDebit = entries.filter((e) => e.direction === "DEBIT").reduce((s, e) => s + e.amountPaise, 0);
+  const totalCredit = entries.filter((e) => e.direction === "CREDIT").reduce((s, e) => s + e.amountPaise, 0);
+
+  if (totalDebit !== totalCredit) {
+    throw new Error(`Rider settlement ledger out of balance! Debits: ${totalDebit}, Credits: ${totalCredit}`);
+  }
+
+  const idempotencyKey = `rider_stl_${settlement.riderId}_${settlement.cycle.cycleId}`;
+
+  return await ledger.postTransaction({
+    idempotencyKey,
+    eventType: "RIDER_SETTLEMENT_DISBURSED",
+    entries,
   });
 }

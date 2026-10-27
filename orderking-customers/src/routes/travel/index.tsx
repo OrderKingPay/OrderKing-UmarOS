@@ -927,8 +927,20 @@ export function TravelPage() {
         {/* Authoritative Single Travel Desk Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-5 sm:p-6 text-white border border-slate-800 shadow-xl">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
-              <Crown className="size-3.5 text-amber-400" /> Travel King · Orderkingpay Desk (GSTIN: 18AFXPH9838M1Z9)
+            <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
+              <span className="inline-flex items-center gap-1">
+                <Crown className="size-3.5 text-amber-400" /> Travel King · Orderkingpay Desk (GSTIN: 18AFXPH9838M1Z9)
+              </span>
+              <span className="text-slate-500">·</span>
+              <a
+                href="https://www.travelboutiqueonline.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sky-400 hover:text-sky-300 underline font-bold"
+                title="TBO Agency Verification (App #187051)"
+              >
+                TBO Agency Wholesale Partner (#187051)
+              </a>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
               Travel King — Flights, Trains, Hotels, Buses &amp; Cabs
@@ -2730,6 +2742,16 @@ export function TravelPage() {
                   <div className="flex items-center justify-between text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
                     <span>Direct Carrier Desk Fee</span>
                     <span className="font-mono font-black">Included (₹0.00)</span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded">
+                    <span>Instant KingPay Food Wallet Rebate (2%)</span>
+                    <span className="font-mono font-black">
+                      +
+                      {inAppBookingModal.type === "flight" && formatPaise(Math.floor((inAppBookingModal.data.baseFarePaise || 419900) * 0.02))}
+                      {inAppBookingModal.type === "train" && `₹${Math.round((inAppBookingModal.data.selectedClassFare || 2240) * 0.02).toLocaleString("en-IN")}`}
+                      {inAppBookingModal.type === "hotel" && `₹${Math.round(inAppBookingModal.data.tariffPerNightInr * 0.02).toLocaleString("en-IN")}`}
+                    </span>
                   </div>
 
                   <div className="border-t border-slate-200 pt-2 flex items-center justify-between text-sm font-black text-slate-900">

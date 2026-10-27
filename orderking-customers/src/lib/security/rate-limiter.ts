@@ -65,3 +65,4 @@ export const checkoutLimiter = new MemorySafeRateLimiter({ windowMs: 60_000, max
 export const paymentLimiter = new MemorySafeRateLimiter({ windowMs: 60_000, maxRequests: 10 });
 export const searchLimiter = new MemorySafeRateLimiter({ windowMs: 10_000, maxRequests: 30 });
 export const aiChatLimiter = new MemorySafeRateLimiter({ windowMs: 60_000, maxRequests: 15 });
+export const academicTutorLimiter = new MemorySafeRateLimiter({ windowMs: 60_000, maxRequests: 20 });

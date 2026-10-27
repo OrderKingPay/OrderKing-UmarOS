@@ -349,17 +349,17 @@ function Login() {
               </span>
             </div>
             <div className="text-xs text-slate-400">
-              Premier Dining, Kitchen Command &amp; Direct Daily Settlements
+              Kitchen Command &amp; Direct Bank Settlements
             </div>
           </div>
         </Link>
 
-        {/* Value Proposition Strip */}
+        {/* Commercial Status Strip */}
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-3.5 py-2.5 shadow-sm text-center">
           <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-300">
-            <Sparkles className="size-3.5 text-emerald-400 shrink-0" />
+            <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
             <span>
-              {commissionTokens.dineInBps === 0 ? "0%" : `${(commissionTokens.dineInBps / 100).toFixed(0)}%`} Commission on Dine-In • {(commissionTokens.standardDeliveryBps / 100).toFixed(0)}% Delivery • 24h Express Go-Live
+              Orderkingpay Merchant Platform · GSTIN 18AFXPH9838M1Z9 · T+1 Direct Payouts
             </span>
           </div>
         </div>

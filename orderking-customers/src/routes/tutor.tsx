@@ -501,6 +501,21 @@ export const askIntelligenceFn = createServerFn({ method: "POST" })
     history?: any[] 
   }) => data)
   .handler(async ({ data }: any) => {
+    // Strict rate limiting: prevent API flooding and abusive scraping (max 20 requests/minute)
+    const { academicTutorLimiter } = await import("@/lib/security/rate-limiter");
+    let rateLimitKey = "guest-session";
+    try {
+      const { getSessionUser } = await import("@/lib/auth/verify.server");
+      const u = await getSessionUser();
+      if (u?.id) rateLimitKey = u.id;
+    } catch {
+      // fallback to guest key
+    }
+    const rateCheck = academicTutorLimiter.isAllowed(rateLimitKey);
+    if (!rateCheck.allowed) {
+      throw new Error(`Academic solver rate limit reached. Please wait ${Math.ceil(rateCheck.resetMs / 1000)}s before asking another question.`);
+    }
+
     let billingStatus: {
       billed: boolean;
       amountPaise?: number;
