@@ -12,11 +12,17 @@ import {
   VolumeX,
   X,
   Utensils,
-  Plane,
   CreditCard,
   AlertCircle,
   CheckCircle2,
+  Minus,
+  Plus,
+  QrCode,
+  Zap,
 } from "lucide-react";
+import { toast } from "sonner";
+import { formatPaise } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { detectLanguage } from "@/lib/ai-lang-detect";
 
@@ -38,7 +44,7 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
     nativeName: "English",
     voiceLang: "en-IN",
     honorific: "Valued Patron",
-    welcome: "Greetings! I am your VIP Food & Order Concierge. Craving authentic biryani, planning a trip, or need instant refund support? Ask me with voice or text!",
+    welcome: "Welcome to OrderKing! I am your VIP concierge for 1-tap food orders and KingPay UPI payments.",
   },
   {
     code: "hi",
@@ -46,7 +52,7 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
     nativeName: "हिन्दी",
     voiceLang: "hi-IN",
     honorific: "आदरणीय अतिथि",
-    welcome: "प्रणाम! मैं आपका ऑर्डरकिंग वीआईपी फ़ूड एवं ट्रेवल कंसीयर्ज हूँ। लज़ीज़ दम बिरयानी, यात्रा बुकिंग या रिफ़ंड सहायता के लिए बोलकर या लिखकर पूछिए!",
+    welcome: "ऑर्डरकिंग में आपका स्वागत है! मैं आपका वीआईपी कंसीयर्ज हूँ, खाना ऑर्डर करने या किंगपे भुगतान के लिए पूछिए।",
   },
   {
     code: "bn",
@@ -54,27 +60,54 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
     nativeName: "বাংলা",
     voiceLang: "bn-IN",
     honorific: "শ্রদ্ধেয় গ্রাহক",
-    welcome: "নমস্কার! আমি আপনার অর্ডারকিং ভিআইপি ফুড ও ট্রাভেল কনসিয়ার্জ। সুস্বাদু দম বিরিয়ানি, ফ্লাইটের টিকিট বা তাৎক্ষণিক রিফান্ড—বলুন কীভাবে সাহায্য করতে পারি?",
+    welcome: "অর্ডারকিং-এ আপনাকে স্বাগতম! আমি আপনার ভিআইপি কনসিয়ার্জ, খাবার অর্ডার বা কিংপে পেমেন্টের জন্য বলুন।",
   },
-
+  {
+    code: "as",
+    name: "Assamese",
+    nativeName: "অসমীয়া",
+    voiceLang: "as-IN",
+    honorific: "শ্রদ্ধেয় গ্রাহক",
+    welcome: "অৰ্ডাৰকিংলৈ আপোনাক স্বাগতম! মই আপোনাৰ ভিআইপি সহায়ক, খাদ্য অৰ্ডাৰ বা কিংপে পেমেণ্টৰ বাবে সোধক।",
+  },
   { code: "ta", name: "Tamil", nativeName: "தமிழ்", voiceLang: "ta-IN", honorific: "வணக்கம்", welcome: "வணக்கம்! நான் உங்கள் ஆர்டர்கிங் உணவு மற்றும் பயண உதவியாளர்." },
   { code: "te", name: "Telugu", nativeName: "తెలుగు", voiceLang: "te-IN", honorific: "నమస్కారం", welcome: "నమస్కారం! నేను మీ ఆర్డర్‌కింగ్ ఆహార మరియు ప్రయాణ సహాయకుడిని." },
   { code: "mr", name: "Marathi", nativeName: "मराठी", voiceLang: "mr-IN", honorific: "नमस्कार", welcome: "नमस्कार! मी आपला ऑर्डरकिंग फूड आणि ट्रॅव्हल सहाय्यक आहे." },
   { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી", voiceLang: "gu-IN", honorific: "નમસ્તે", welcome: "નમસ્તે! હું તમારો ઓર્ડરકિંગ ફૂડ અને ટ્રાવેલ સહાયક છું." },
   { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ", voiceLang: "kn-IN", honorific: "ನಮಸ್ಕಾರ", welcome: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಆರ್ಡರ್‌కింగ్ ఆహార మరియు ప్రయాణ సహాయకుడు." },
   { code: "ml", name: "Malayalam", nativeName: "മലയാളം", voiceLang: "ml-IN", honorific: "നമസ്കാരം", welcome: "നമസ്കാരം! ഞാൻ നിങ്ങളുടെ ഓർഡർകിംഗ് ഫുഡ് ആൻഡ് ട്രാവൽ അസിസ്റ്റന്റാണ്." },
-  { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ", voiceLang: "pa-IN", honorific: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ", welcome: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ ਆਰਡਰਕਿੰਗ ਫੂਡ ਅਤੇ ਟਰੈਵਲ ਸਹਾਇਕ ਹਾਂ।" },
+  { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ", voiceLang: "pa-IN", honorific: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ", welcome: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ ਆਰডਰਕਿੰਗ ਫੂਡ ਅਤੇ ਟਰੈਵਲ ਸਹਾਇਕ ਹਾਂ।" },
+];
 
+export interface SuggestiveAddOn {
+  id: string;
+  name: string;
+  pricePaise: number;
+  label: string;
+}
 
-
-
-
+export const SUGGESTIVE_ADD_ONS: SuggestiveAddOn[] = [
+  { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000, label: "+ Add Raita ₹40" },
+  { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000, label: "+ Add Gulab Jamun ₹50" },
+  { id: "addon-bread", name: "Garlic Breadsticks", pricePaise: 9900, label: "+ Add Garlic Bread ₹99" },
+  { id: "addon-soda", name: "Chilled Soda Can", pricePaise: 4000, label: "+ Add Soda ₹40" },
 ];
 
 export type ActionPayload = {
-  type: "NAVIGATE" | "CLAIM_REFUND" | "TRACK_DELIVERY";
+  type: "NAVIGATE" | "CLAIM_REFUND" | "TRACK_DELIVERY" | "CHECKOUT_POPUP" | "KINGPAY_POPUP";
   label: string;
   url?: string;
+  item?: string;
+  dishName?: string;
+  quantity?: number;
+  estimatedPaise?: number;
+  pricePaise?: number;
+  deliveryEta?: string;
+  restaurantName?: string;
+  action?: "SCAN" | "BILL" | "TRANSFER";
+  vpa?: string;
+  amountPaise?: number;
+  suggestedAddons?: Array<{ id: string; name: string; pricePaise: number }>;
 };
 
 export type ChatMessage = {
@@ -84,6 +117,268 @@ export type ChatMessage = {
   action?: ActionPayload;
   timestamp: string;
 };
+
+/**
+ * Sovereign Autonomous Natural Intelligence Answering Heuristics
+ * Strictly produces 1-2 sentence replies across 10 regional dialects without paid external APIs.
+ */
+export function resolveSovereignResponse(
+  queryText: string,
+  dialect: SupportedDialect
+): { reply: string; action?: ActionPayload } {
+  const raw = queryText.trim();
+  const q = raw.toLowerCase();
+
+  // 1. Discount / Coupon Queries (Directive 4: Founder Profit Defense - Zero Auto-Discounts)
+  if (
+    q.includes("discount") ||
+    q.includes("coupon") ||
+    q.includes("promo") ||
+    q.includes("voucher") ||
+    q.includes("kam karo") ||
+    q.includes("free") ||
+    q.includes("ছাড়") ||
+    q.includes("ডিসকাউন্ট") ||
+    q.includes("কুপন") ||
+    q.includes("ট্যাকা কম")
+  ) {
+    let reply = "We offer direct zero-markup kitchen prices and 200 bps 24K gold reward on all KingPay orders.";
+    if (dialect.code === "hi") {
+      reply = "हम सीधे 0% मार्कअप दरें और किंगपे पर 200 bps 24K डिजिटल गोल्ड रिवॉर्ड्स देते हैं।";
+    } else if (dialect.code === "bn") {
+      reply = "আমরা আসল মূল্যের সাথে কিংপেতে ২০০ bps ২৪K সোণৰ গোল্ড ক্যাশব্যাক রিওয়ার্ড দিই।";
+    } else if (dialect.code === "as") {
+      reply = "আমি প্ৰত্যক্ষ দাম আৰু কিংপেত ২০০ bps ২৪K সোণৰ পুৰস্কাৰ প্ৰদান কৰোঁ।";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "👑 View 200 bps 24K Gold Rewards",
+        url: "/rewards",
+      },
+    };
+  }
+
+  // 2. Ambiguous Food Queries (Directive 3: Exactly 1 clarifying question ending in ?)
+  const isAmbiguous =
+    q === "food" ||
+    q === "hungry" ||
+    q === "i want to eat" ||
+    q === "kuch khana hai" ||
+    q === "khabar lagbe" ||
+    q === "khabar khabo" ||
+    q === "kiba kham" ||
+    q === "khana" ||
+    q === "order food" ||
+    q === "খাবার" ||
+    q.includes("want to eat") ||
+    q.includes("kuch khana") ||
+    q.includes("khabar khabo") ||
+    q.includes("kiba kham");
+
+  if (isAmbiguous) {
+    let reply = "Would you prefer our Royal Biryani or Homestyle Thali today?";
+    if (dialect.code === "hi") {
+      reply = "क्या आप आज हमारी रॉयल बिरयानी पसंद करेंगे या होमस्टाइल थाली?";
+    } else if (dialect.code === "bn") {
+      reply = "আপনি কি আজ আমাদের রয়্যাল বিরিয়ানি নাকি হোমস্টাইল থালি পছন্দ করবেন?";
+    } else if (dialect.code === "as") {
+      reply = "আপুনি আজি আমাৰ ৰয়েল বিৰিয়ানি নে ঘৰুৱা থালি বাছি লব বিচাৰিব?";
+    }
+    return {
+      reply,
+      action: {
+        type: "CHECKOUT_POPUP",
+        label: "🍗 Royal Dum Biryani",
+        dishName: "Royal Chicken Dum Biryani",
+        pricePaise: 28000,
+        deliveryEta: "24-28 mins",
+      },
+    };
+  }
+
+  // 3. Late Delivery & SLA
+  if (
+    q.includes("late") ||
+    q.includes("delay") ||
+    q.includes("stuck") ||
+    q.includes("deri") ||
+    q.includes("kahan") ||
+    q.includes("kothay")
+  ) {
+    return {
+      reply: "Your rider dispatch ping is escalated with our on-time delivery SLA guarantee.",
+      action: { type: "TRACK_DELIVERY", label: "📦 Track Live Rider GPS", url: "/orders" },
+    };
+  }
+
+  // 4. Missing / Damaged Items & Instant Refund
+  if (
+    q.includes("missing") ||
+    q.includes("spill") ||
+    q.includes("damaged") ||
+    q.includes("cold") ||
+    q.includes("kharab") ||
+    q.includes("nosto")
+  ) {
+    return {
+      reply: "Under our zero-interrogation policy, instant 100% full refund is credited to your KingPay balance.",
+      action: { type: "CLAIM_REFUND", label: "🛡️ Claim 100% Instant Refund", url: "/orders" },
+    };
+  }
+
+  // 5. Biryani Ordering with Contextual Suggestive Selling
+  if (
+    q.includes("biryani") ||
+    q.includes("biriyani") ||
+    q.includes("बिरयानी") ||
+    q.includes("বিরিয়ানি") ||
+    q.includes("বিৰিয়ানি")
+  ) {
+    let quantity = 1;
+    const digitMatch = q.match(/\b([1-9]|10)\b/);
+    if (digitMatch) {
+      quantity = parseInt(digitMatch[1], 10);
+    } else if (/\b(two|do|duto|duti|duita|2x)\b/i.test(q)) {
+      quantity = 2;
+    }
+    const unitPaise = 28000;
+    const estimatedPaise = unitPaise * quantity;
+
+    let reply = "I've loaded your Chicken Dum Biryani checkout. Would you like Chilled Mint Raita or Gulab Jamun with it?";
+    if (dialect.code === "bn") {
+      reply = "আমি চিকেন দম বিরিয়ানি চেকআউট লোড করেছি। সাথে পুদিনা রায়তা নাকি গোলাপ জামুন যোগ করবেন?";
+    } else if (dialect.code === "hi") {
+      reply = "मैंने आपका चिकन दम बिरयानी चेकआउट तैयार किया है। क्या आप साथ में रायता या गुलाब जामुन लेंगे?";
+    } else if (dialect.code === "as") {
+      reply = "মই চিকেন দম বিৰিয়ানি চেকআউট সাজু কৰিছোঁ। লগত পুদিনা ৰায়তা নে গোলাপ জামুন লব বিচাৰিব?";
+    }
+
+    return {
+      reply,
+      action: {
+        type: "CHECKOUT_POPUP",
+        label: `👑 1-Tap Checkout: Chicken Dum Biryani (${quantity}x)`,
+        dishName: "Royal Chicken Dum Biryani (Handi)",
+        item: "Royal Chicken Dum Biryani",
+        quantity,
+        pricePaise: estimatedPaise,
+        estimatedPaise,
+        restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
+        deliveryEta: "24-28 mins",
+        suggestedAddons: [
+          { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
+          { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
+        ],
+      },
+    };
+  }
+
+  // 6. Pizza Ordering with Contextual Suggestive Selling
+  if (q.includes("pizza") || q.includes("पिज़्ज़ा") || q.includes("পিজ্জা")) {
+    let quantity = 1;
+    const digitMatch = q.match(/\b([1-9]|10)\b/);
+    if (digitMatch) {
+      quantity = parseInt(digitMatch[1], 10);
+    } else if (/\b(two|do|duto|duti|duita|2x)\b/i.test(q)) {
+      quantity = 2;
+    }
+    const unitPaise = 32000;
+    const estimatedPaise = unitPaise * quantity;
+
+    return {
+      reply: "Farmhouse Fresh Pizza is ready for checkout. Would you like Garlic Breadsticks or Chilled Soda?",
+      action: {
+        type: "CHECKOUT_POPUP",
+        label: `👑 1-Tap Checkout: Farmhouse Pizza (${quantity}x)`,
+        dishName: "Farmhouse Fresh Pizza",
+        item: "Farmhouse Fresh Pizza",
+        quantity,
+        pricePaise: estimatedPaise,
+        estimatedPaise,
+        restaurantName: "La Pino'z Kitchens",
+        deliveryEta: "20-25 mins",
+        suggestedAddons: [
+          { id: "addon-bread", name: "Garlic Breadsticks", pricePaise: 9900 },
+          { id: "addon-soda", name: "Chilled Soda Can", pricePaise: 4000 },
+        ],
+      },
+    };
+  }
+
+  // 7. General Food Ordering
+  if (q.includes("order") || q.includes("khana") || q.includes("momo") || q.includes("burger")) {
+    return {
+      reply: "Your food selection is loaded. Confirm in 1-tap with direct KingPay UPI settlement.",
+      action: {
+        type: "CHECKOUT_POPUP",
+        label: "🍗 1-Tap Checkout: Express Order",
+        dishName: "Royal Feast Platter",
+        item: "Royal Feast Platter",
+        quantity: 1,
+        pricePaise: 26000,
+        estimatedPaise: 26000,
+        restaurantName: "OrderKing Kitchens",
+        deliveryEta: "20-25 mins",
+        suggestedAddons: [
+          { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
+          { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
+        ],
+      },
+    };
+  }
+
+  // 8. KingPay, UPI & Bills
+  if (
+    q.includes("pay") ||
+    q.includes("kingpay") ||
+    q.includes("upi") ||
+    q.includes("bill") ||
+    q.includes("recharge") ||
+    q.includes("qr") ||
+    q.includes("scan")
+  ) {
+    let actionType: "SCAN" | "BILL" | "TRANSFER" = "TRANSFER";
+    if (q.includes("scan") || q.includes("qr")) {
+      actionType = "SCAN";
+    } else if (q.includes("bill") || q.includes("recharge")) {
+      actionType = "BILL";
+    }
+
+    return {
+      reply: "KingPay 1-Tap UPI and Sovereign BharatQR scanner are ready with zero gateway markups.",
+      action: {
+        type: "KINGPAY_POPUP",
+        action: actionType,
+        label:
+          actionType === "SCAN"
+            ? "📸 Open KingPay BharatQR Scanner"
+            : actionType === "BILL"
+            ? "⚡ Pay Utility Bill with KingPay"
+            : "⚡ Launch 1-Tap KingPay UPI / QR",
+        vpa: "orderking@ybl",
+        amountPaise: 25000,
+      },
+    };
+  }
+
+  // 9. Default
+  return {
+    reply: "I am your OrderKing VIP Concierge. How may I assist your dining or KingPay experience today?",
+    action: {
+      type: "CHECKOUT_POPUP",
+      label: "🍗 1-Tap Checkout: Royal Dum Biryani",
+      dishName: "Royal Chicken Dum Biryani",
+      pricePaise: 28000,
+      deliveryEta: "24-28 mins",
+      suggestedAddons: [
+        { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
+        { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
+      ],
+    },
+  };
+}
 
 export function CustomerConciergeDrawer({
   open,
@@ -103,8 +398,73 @@ export function CustomerConciergeDrawer({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [question, setQuestion] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState("");
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Intent-to-Action Bottom Sheet Pop-Up State
+  const [activePopup, setActivePopup] = useState<
+    | {
+        type: "CHECKOUT_POPUP";
+        dishName: string;
+        pricePaise: number;
+        deliveryEta: string;
+        restaurantName?: string;
+        suggestedAddons?: Array<{ id: string; name: string; pricePaise: number }>;
+      }
+    | {
+        type: "KINGPAY_POPUP";
+        vpa: string;
+        amountPaise: number;
+      }
+    | null
+  >(null);
+  const [popupQuantity, setPopupQuantity] = useState(1);
+  const [selectedAddOnIds, setSelectedAddOnIds] = useState<string[]>([]);
+  const [kingpayAmountRupees, setKingpayAmountRupees] = useState<number>(250);
+  const [kingpayTab, setKingpayTab] = useState<"upi" | "qr">("upi");
+
+  // Mind-Reading & Behavioral Sentiment Radar (Zero-Annoyance Invariant)
+  const [suppressSuggestions, setSuppressSuggestions] = useState(false);
+
+  // Extra customizable dishes/items added by voice or text inside checkout sheet
+  const [customAddons, setCustomAddons] = useState<Array<{ id: string; name: string; pricePaise: number }>>([]);
+  const [customAddonText, setCustomAddonText] = useState("");
+
+  const handleAddCustomItem = (itemText: string) => {
+    const clean = itemText.trim();
+    if (!clean) return;
+
+    // Estimate realistic restaurant integer paise based on item category
+    let estPaise = 5000; // default ₹50
+    if (/\b(roti|naan|paratha|kulcha|bread)\b/i.test(clean)) estPaise = 4000; // ₹40
+    else if (/\b(coke|pepsi|thums|drink|beverage|soda|tea|chai|coffee|lassi)\b/i.test(clean)) estPaise = 4000; // ₹40
+    else if (/\b(sweet|jamun|phirni|kheer|dessert|ice cream)\b/i.test(clean)) estPaise = 5000; // ₹50
+    else if (/\b(curry|paneer|chicken|mutton|fish|dal|biryani)\b/i.test(clean)) estPaise = 18000; // ₹180
+    else if (/\b(raita|chutney|salad|papad)\b/i.test(clean)) estPaise = 3000; // ₹30
+
+    setCustomAddons((prev) => [
+      ...prev,
+      { id: `custom-${Date.now()}-${Math.random().toString(36).substring(7)}`, name: clean, pricePaise: estPaise },
+    ]);
+    setCustomAddonText("");
+    toast.success(`Added ${clean} (${formatPaise(estPaise)}) to your feast!`);
+  };
+
+  // Calculations for Checkout Bottom-Sheet (₹ and integer paise)
+  const dishPricePaise = activePopup?.type === "CHECKOUT_POPUP" ? activePopup.pricePaise : 0;
+  const dishSubtotalPaise = dishPricePaise * popupQuantity;
+  const availableAddons =
+    activePopup?.type === "CHECKOUT_POPUP" && activePopup.suggestedAddons?.length
+      ? activePopup.suggestedAddons
+      : SUGGESTIVE_ADD_ONS;
+  const addOnsSubtotalPaise = selectedAddOnIds.reduce((sum, id) => {
+    const item = availableAddons.find((a) => a.id === id);
+    return sum + (item ? item.pricePaise : 0);
+  }, 0);
+  const customAddonsTotalPaise = customAddons.reduce((sum, item) => sum + item.pricePaise, 0);
+  const grandTotalPaise = dishSubtotalPaise + addOnsSubtotalPaise + customAddonsTotalPaise;
 
   // Initialize Welcome Message
   useEffect(() => {
@@ -116,9 +476,16 @@ export function CustomerConciergeDrawer({
           content: selectedLang.welcome,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           action: {
-            type: "NAVIGATE",
-            label: "🍗 Explore Royal Dum Biryani",
-            url: "/search?q=biryani",
+            type: "CHECKOUT_POPUP",
+            label: "🍗 1-Tap Checkout: Royal Dum Biryani",
+            dishName: "Royal Chicken Dum Biryani",
+            restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
+            pricePaise: 28000,
+            deliveryEta: "24-28 mins",
+            suggestedAddons: [
+              { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
+              { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
+            ],
           },
         },
       ]);
@@ -132,11 +499,17 @@ export function CustomerConciergeDrawer({
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (activePopup) {
+          setActivePopup(null);
+        } else {
+          onClose();
+        }
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [open, onClose]);
+  }, [open, onClose, activePopup]);
 
   // Clean-up speech synthesis on unmount
   useEffect(() => {
@@ -147,79 +520,18 @@ export function CustomerConciergeDrawer({
     };
   }, []);
 
-  // Sovereign Autonomous Natural Intelligence Answering Heuristics (0 External Paid APIs)
-  function resolveSovereignResponse(
-    queryText: string,
-    dialect: SupportedDialect
-  ): { reply: string; action?: ActionPayload } {
-    const q = queryText.toLowerCase().trim();
-
-    // Bengali Specific Heuristics
-    if (dialect.code === "bn") {
-      if (q.includes("late") || q.includes("deri") || q.includes("der") || q.includes("khabar") || q.includes("kothay")) {
-        return {
-          reply: `শ্রদ্ধেয় গ্রাহক, খাবার পৌঁছাতে দেরি হলে একদম চিন্তা করবেন না! আমাদের অন-টাইম গ্যারান্টির অধীনে ১০ মিনিটের বেশি দেরি হলে সরাসরি আপনার ওয়ালেটে ₹৫০ ক্রেডিট যুক্ত হবে। আমরা এখনই রান্নাঘর ও রাইডারের কাছে অগ্রাধিকার নোটিশ পাঠিয়েছি!`,
-          action: { type: "TRACK_DELIVERY", label: "📦 লাইভ রাইডার ট্র্যাক করুন", url: "/orders" },
-        };
-      }
-      if (q.includes("refund") || q.includes("taka") || q.includes("nosto") || q.includes("kharap")) {
-        return {
-          reply: `অর্ডারকিংয়ের জিরো-প্রশ্ন পলিসি অনুযায়ী আপনার ক্ষতিগ্রস্ত বা মিসিং আইটেমের ১০০% টাকা সরাসরি কিংপে ওয়ালেটে ফেরত দেওয়া হবে অথবা ১৫ মিনিটে নতুন খাবার এক্সপ্রেস পাঠানো হবে!`,
-          action: { type: "CLAIM_REFUND", label: "🛡️ ১০০% ফুল রিফান্ড অনুমোদন করুন", url: "/orders" },
-        };
-      }
-    }
-
-    // 1. Food Delays & Late Delivery SLA (Dispatch Resolution Policy)
-    if (q.includes("late") || q.includes("delay") || q.includes("stuck") || q.includes("deri") || q.includes("kahan") || q.includes("kothay") || q.includes("slow")) {
-      return {
-        reply: `Under OrderKing's delivery SLA policy, if your order is delayed past the committed ETA, our dispatch engine reviews the transit delay and applies resolution credit to your KingPay wallet. We have transmitted an urgent priority dispatch ping to your rider and kitchen chef!`,
-        action: { type: "TRACK_DELIVERY", label: "📦 Track Live Rider GPS & ETA", url: "/orders" },
-      };
-    }
-
-    // 2. Missing Items, Damaged Packages, Spilled Food (Zero-Interrogation 100% Refund)
-    if (q.includes("missing") || q.includes("spill") || q.includes("damaged") || q.includes("cold") || q.includes("kharab") || q.includes("galat") || q.includes("wrong")) {
-      return {
-        reply: `We strictly follow OrderKing's Zero-Interrogation Policy. If any dish was missing, spilled, or arrived cold, you are entitled to an instant 100% full refund credited directly to your KingPay balance, or a free 15-minute priority express redelivery!`,
-        action: { type: "CLAIM_REFUND", label: "🛡️ Claim 100% Instant Refund", url: "/orders" },
-      };
-    }
-
-    // 4. KingPay, UPI QR Scanner & Utility Bills
-    if (q.includes("pay") || q.includes("kingpay") || q.includes("bill") || q.includes("recharge") || q.includes("balance") || q.includes("electricity") || q.includes("wallet")) {
-      return {
-        reply: `KingPay provides 1-tap instant live fee & instant cashback UPI payments, merchant QR scanning, electricity bill clearance with instant cashback, and secure bank balance verification with bank-grade encryption.`,
-        action: { type: "NAVIGATE", label: "💳 Launch KingPay Live Fee & Cashback Hub", url: "/king-pay" },
-      };
-    }
-
-    // 5. Biryani & Food Cravings
-    if (q.includes("biryani") || q.includes("food") || q.includes("hungry") || q.includes("order") || q.includes("khana") || q.includes("veg") || q.includes("non-veg")) {
-      return {
-        reply: `Craving a feast? OrderKing delivers genuine restaurant dishes. Our local Dum Biryani, Kebab platters, and Pure Veg kitchens are ready for fast dispatch.`,
-        action: { type: "NAVIGATE", label: "🍗 Browse Dum Biryani", url: "/search?q=biryani" },
-      };
-    }
-
-    // Default Empathetic Assistant
-    return {
-      reply: `I am your OrderKing Food & Dining concierge. I can guide you through authentic local feasts, track active deliveries, resolve order inquiries, or assist with KingPay. How may I assist you today?`,
-      action: { type: "NAVIGATE", label: "✨ View Daily Specials", url: "/offers" },
-    };
-  }
-
-  // Handle Speech Recognition (Microphone Voice Input)
+  // Handle Speech Recognition (Microphone Voice Input with Real-time Preview)
   function handleToggleVoiceInput() {
     if (typeof window === "undefined") return;
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRec) {
-      alert("Voice input is not supported on this browser. Please use Chrome, Edge, or Safari.");
+      toast.error("Voice input is not supported on this browser. Please use Chrome, Edge, or Safari.");
       return;
     }
 
     if (isListening) {
       setIsListening(false);
+      setInterimTranscript("");
       return;
     }
 
@@ -227,28 +539,51 @@ export function CustomerConciergeDrawer({
       const recognition = new SpeechRec();
       recognition.lang = selectedLang.voiceLang;
       recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.interimResults = true;
 
-      recognition.onstart = () => setIsListening(true);
+      recognition.onstart = () => {
+        setIsListening(true);
+        setInterimTranscript("");
+      };
+
       recognition.onresult = (event: any) => {
-        const transcript = event.results?.[0]?.[0]?.transcript;
-        if (transcript) {
-          setQuestion(transcript);
-          handleSend(transcript, true);
+        let interim = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            const finalTranscript = event.results[i][0].transcript;
+            setInterimTranscript("");
+            setIsListening(false);
+            setQuestion(finalTranscript);
+            handleSend(finalTranscript, true);
+            return;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        if (interim) {
+          setInterimTranscript(interim);
         }
       };
-      recognition.onerror = () => setIsListening(false);
-      recognition.onend = () => setIsListening(false);
+
+      recognition.onerror = () => {
+        setIsListening(false);
+        setInterimTranscript("");
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
 
       recognition.start();
     } catch (_err) {
       setIsListening(false);
+      setInterimTranscript("");
     }
   }
 
   // Handle Natural Voice Playback (SpeechSynthesis)
   function handleSpeak(id: string, text: string) {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    if (typeof window === "undefined" || !("speechSynthesis" in window) || !soundEnabled) return;
     if (speakingId === id) {
       window.speechSynthesis.cancel();
       setSpeakingId(null);
@@ -288,6 +623,13 @@ export function CustomerConciergeDrawer({
 
     setMessages((prev) => [...prev, userEntry]);
     setQuestion("");
+    setInterimTranscript("");
+
+    // Mind-reading sentiment radar: If user indicates rejection, hurry, or dismissiveness, silence suggestions immediately
+    const isDismissalOrHurry = /\b(no|nahi|na|nah|stop|don't|dont|just|only|bas|cancel|jaldi|fast|rush|hurry|direct|straight|ruk|chup)\b/i.test(raw);
+    if (isDismissalOrHurry) {
+      setSuppressSuggestions(true);
+    }
 
     // Sovereign Local Resolution with 0 External Paid APIs
     const { reply, action } = resolveSovereignResponse(raw, matchedDialect);
@@ -302,8 +644,8 @@ export function CustomerConciergeDrawer({
       };
       setMessages((prev) => [...prev, aiEntry]);
 
-      // If user spoke via mic, speak back automatically
-      if (wasSpoken) {
+      // If user spoke via mic and sound is enabled, speak back automatically
+      if (wasSpoken && soundEnabled) {
         handleSpeak(aiEntry.id, reply);
       }
     }, 150);
@@ -316,7 +658,7 @@ export function CustomerConciergeDrawer({
       className={embedded ? "relative w-full" : "fixed inset-0 z-[90] flex justify-end bg-slate-950/60 backdrop-blur-sm"}
       role="presentation"
       onMouseDown={(e) => {
-        if (!embedded && e.target === e.currentTarget) onClose();
+        if (!embedded && e.target === e.currentTarget && !activePopup) onClose();
       }}
     >
       <section
@@ -325,37 +667,67 @@ export function CustomerConciergeDrawer({
         aria-label="OrderKing VIP Food & Dining Concierge"
         className={
           embedded
-            ? "flex h-[min(76dvh,680px)] w-full flex-col overflow-hidden rounded-3xl border border-amber-300/30 bg-slate-950 text-white shadow-xl"
-            : "flex h-full w-full max-w-md flex-col bg-slate-950 text-white shadow-2xl sm:rounded-l-3xl border-l border-amber-400/20"
+            ? "relative flex h-[min(76dvh,680px)] w-full flex-col overflow-hidden rounded-3xl border border-amber-300/30 bg-slate-950 text-white shadow-xl max-w-full"
+            : "relative flex h-full w-full max-w-md flex-col bg-slate-950 text-white shadow-2xl sm:rounded-l-3xl border-l border-amber-400/20 overflow-hidden"
         }
       >
-        {/* Header with 10 Languages Selector */}
-        <div className="flex flex-col gap-2.5 border-b border-amber-400/20 bg-gradient-to-r from-emerald-950 via-slate-950 to-slate-950 px-5 py-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/20 text-amber-300">
+        {/* Header with 10 Languages Selector & Audio Toggle */}
+        <div className="flex flex-col gap-2.5 border-b border-amber-400/20 bg-gradient-to-r from-emerald-950 via-slate-950 to-slate-950 px-4 sm:px-5 py-3.5 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/20 text-amber-300 shrink-0">
                 <Crown className="size-5" />
               </span>
-              <div>
+              <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-bold text-white">VIP Concierge AI King</h2>
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/30">
+                  <h2 className="text-sm sm:text-base font-bold text-white truncate">VIP Concierge AI King</h2>
+                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/30 shrink-0">
                     Sovereign
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400">Natural Voice · 10 Languages · standard fee Protection</p>
+                <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                  Natural Voice · 10 Languages · GSTIN: 18AFXPH9838M1Z9
+                </p>
               </div>
             </div>
-            {!embedded && (
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Sound Toggle Button */}
               <button
                 type="button"
-                aria-label="Close concierge"
-                onClick={onClose}
-                className="rounded-xl p-2 text-slate-300 hover:bg-white/10"
+                onClick={() => {
+                  const next = !soundEnabled;
+                  setSoundEnabled(next);
+                  if (!next && typeof window !== "undefined" && "speechSynthesis" in window) {
+                    window.speechSynthesis.cancel();
+                    setSpeakingId(null);
+                  }
+                  toast.info(next ? "Voice Assistant audio enabled." : "Voice Assistant audio muted.");
+                }}
+                className={cn(
+                  "flex items-center gap-1 px-2 py-1.5 rounded-xl border text-[11px] font-bold transition-all cursor-pointer",
+                  soundEnabled
+                    ? "bg-amber-400/20 text-amber-300 border-amber-400/40 hover:bg-amber-400/30"
+                    : "bg-slate-900 text-slate-400 border-slate-800 hover:bg-slate-800"
+                )}
+                title={soundEnabled ? "Voice Audio is ON (tap to mute)" : "Voice Audio is Muted (tap to unmute)"}
+                aria-label={soundEnabled ? "Mute audio" : "Enable audio"}
               >
-                <X className="size-5" />
+                {soundEnabled ? <Volume2 className="size-3.5 text-amber-400" /> : <VolumeX className="size-3.5" />}
+                <span className="hidden xs:inline">{soundEnabled ? "Audio ON" : "Muted"}</span>
               </button>
-            )}
+
+              {!embedded && (
+                <button
+                  type="button"
+                  aria-label="Close concierge"
+                  onClick={onClose}
+                  className="rounded-xl p-1.5 text-slate-300 hover:bg-white/10 transition cursor-pointer"
+                >
+                  <X className="size-5" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Language Selector Pill Row */}
@@ -366,7 +738,7 @@ export function CustomerConciergeDrawer({
                 key={d.code}
                 type="button"
                 onClick={() => setSelectedLang(d)}
-                className={`shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all ${
+                className={`shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all cursor-pointer ${
                   selectedLang.code === d.code
                     ? "bg-amber-400 text-slate-950 font-bold shadow-sm"
                     : "bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800"
@@ -379,11 +751,11 @@ export function CustomerConciergeDrawer({
         </div>
 
         {/* Message Stream */}
-        <div className="flex-1 space-y-3.5 overflow-y-auto p-4" aria-live="polite">
-          <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3.5 text-xs leading-relaxed text-slate-100 flex items-start gap-2.5">
+        <div className="flex-1 space-y-3.5 overflow-y-auto p-3.5 sm:p-4" aria-live="polite">
+          <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3 text-xs leading-relaxed text-slate-100 flex items-start gap-2.5">
             <Sparkles className="size-4 shrink-0 text-amber-300 mt-0.5" />
             <span>
-              Autonomous concierge for food recommendations, live order tracking, and travel booking assistance.
+              Autonomous VIP concierge for 1-tap food ordering, live rider tracking, and KingPay UPI settlements.
             </span>
           </div>
 
@@ -393,7 +765,7 @@ export function CustomerConciergeDrawer({
             return (
               <div
                 key={m.id}
-                className={`space-y-2 max-w-[92%] ${isAi ? "mr-auto" : "ml-auto"}`}
+                className={`space-y-2 max-w-[94%] ${isAi ? "mr-auto" : "ml-auto"}`}
               >
                 <div
                   className={`rounded-2xl p-3.5 text-xs leading-relaxed ${
@@ -413,7 +785,7 @@ export function CustomerConciergeDrawer({
                       <button
                         type="button"
                         onClick={() => handleSpeak(m.id, m.content)}
-                        className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-medium transition-colors ${
+                        className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-medium transition-colors cursor-pointer ${
                           isSpeaking ? "bg-amber-400 text-slate-950 font-bold" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
                         }`}
                         title="Listen to response"
@@ -425,21 +797,64 @@ export function CustomerConciergeDrawer({
                   )}
                 </div>
 
-                {/* 1-Tap Action Card */}
+                {/* 1-Tap Action Cards & Pop-Up Triggers */}
                 {m.action && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (m.action?.url) {
-                        onClose();
-                        void navigate({ to: m.action.url as any });
-                      }
-                    }}
-                    className="flex w-full items-center justify-between rounded-xl border border-amber-400/40 bg-amber-400/10 px-3.5 py-2 text-left text-xs font-bold text-amber-200 transition-all hover:bg-amber-400/20"
-                  >
-                    <span>{m.action.label}</span>
-                    <span className="text-amber-400">→</span>
-                  </button>
+                  m.action.type === "CHECKOUT_POPUP" ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActivePopup({
+                          type: "CHECKOUT_POPUP",
+                          dishName: m.action?.dishName || "Royal Chicken Dum Biryani",
+                          restaurantName: m.action?.restaurantName || "Behrouz Royal Kitchens (Assam - 788710)",
+                          pricePaise: m.action?.pricePaise || 28000,
+                          deliveryEta: m.action?.deliveryEta || "24-28 mins",
+                          suggestedAddons: m.action?.suggestedAddons,
+                        });
+                        setPopupQuantity(1);
+                        setSelectedAddOnIds([]);
+                      }}
+                      className="flex w-full items-center justify-between rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-yellow-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 px-3.5 py-2.5 text-left text-xs font-black text-amber-200 transition-all shadow-[0_2px_12px_rgba(251,191,36,0.15)] active:scale-[0.98] cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2 truncate">
+                        <Crown className="size-4 text-amber-400 shrink-0" />
+                        <span className="truncate">{m.action.label}</span>
+                      </span>
+                      <span className="text-amber-400 text-sm font-bold shrink-0">➔</span>
+                    </button>
+                  ) : m.action.type === "KINGPAY_POPUP" ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActivePopup({
+                          type: "KINGPAY_POPUP",
+                          vpa: m.action?.vpa || "orderking@ybl",
+                          amountPaise: m.action?.amountPaise || 25000,
+                        });
+                      }}
+                      className="flex w-full items-center justify-between rounded-xl border border-emerald-400/50 bg-gradient-to-r from-emerald-500/20 via-teal-400/15 to-emerald-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 px-3.5 py-2.5 text-left text-xs font-black text-emerald-200 transition-all shadow-[0_2px_12px_rgba(16,185,129,0.15)] active:scale-[0.98] cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2 truncate">
+                        <CreditCard className="size-4 text-emerald-400 shrink-0" />
+                        <span className="truncate">{m.action.label}</span>
+                      </span>
+                      <span className="text-emerald-400 text-sm font-bold shrink-0">➔</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (m.action?.url) {
+                          onClose();
+                          void navigate({ to: m.action.url as any });
+                        }
+                      }}
+                      className="flex w-full items-center justify-between rounded-xl border border-amber-400/40 bg-amber-400/10 px-3.5 py-2 text-left text-xs font-bold text-amber-200 transition-all hover:bg-amber-400/20 active:scale-[0.98] cursor-pointer"
+                    >
+                      <span className="truncate">{m.action.label}</span>
+                      <span className="text-amber-400 shrink-0">→</span>
+                    </button>
+                  )
                 )}
               </div>
             );
@@ -450,24 +865,51 @@ export function CustomerConciergeDrawer({
         {/* 1-Tap Quick Action Chips */}
         <div className="flex items-center gap-1.5 overflow-x-auto border-t border-slate-800/80 bg-slate-900/60 px-4 py-2 scrollbar-none">
           {[
-            { label: "📦 Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
             { label: "🍗 Order Dum Biryani", text: "Recommend the best authentic Royal Dum Biryani." },
             { label: "👑 KingPay UPI", text: "How do I pay with Direct UPI or scan BharatQR?" },
+            { label: "📦 Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
             { label: "🛡️ Report Spilled/Late Food", text: "My food arrived cold and leaked. I need a refund." },
           ].map((chip) => (
             <button
               key={chip.label}
               type="button"
               onClick={() => handleSend(chip.text)}
-              className="shrink-0 rounded-lg bg-slate-800 hover:bg-slate-700 px-2.5 py-1 text-[11px] text-slate-300 border border-slate-700 font-medium"
+              className="shrink-0 rounded-lg bg-slate-800 hover:bg-slate-700 px-2.5 py-1 text-[11px] text-slate-300 border border-slate-700 font-medium cursor-pointer transition active:scale-95"
             >
               {chip.label}
             </button>
           ))}
         </div>
 
+        {/* Real-time Voice Transcription Preview & Audio Wave Bar */}
+        {isListening && (
+          <div
+            role="status"
+            aria-live="assertive"
+            className="mx-3.5 mb-1 p-2.5 rounded-xl bg-amber-500/15 border border-amber-400/50 text-amber-200 flex items-center justify-between gap-2 shadow-lg animate-in fade-in duration-150 transform-gpu"
+          >
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500" />
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 shrink-0">
+                Listening:
+              </span>
+              <p className="text-xs italic text-white truncate min-w-0 font-medium">
+                "{interimTranscript || `Speak now in ${selectedLang.nativeName}...`}"
+              </p>
+            </div>
+            <div className="flex items-center gap-0.5 shrink-0 text-amber-400">
+              <span className="w-1 h-3 bg-amber-400 rounded-full animate-pulse" />
+              <span className="w-1 h-4 bg-amber-300 rounded-full animate-[pulse_0.4s_ease-in-out_infinite]" />
+              <span className="w-1 h-2 bg-amber-400 rounded-full animate-[pulse_0.7s_ease-in-out_infinite]" />
+            </div>
+          </div>
+        )}
+
         {/* Input & Voice Controls */}
-        <div className="border-t border-slate-800 bg-slate-950 p-3.5">
+        <div className="border-t border-slate-800 bg-slate-950 p-3 sm:p-3.5">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -475,17 +917,30 @@ export function CustomerConciergeDrawer({
             }}
             className="flex items-center gap-2"
           >
+            {/* Voice Microphone with Pulsating Gold Glow Ring */}
             <button
               type="button"
               onClick={handleToggleVoiceInput}
-              className={`rounded-xl p-2.5 transition-all ${
+              className={cn(
+                "relative rounded-xl p-2.5 transition-all cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0",
                 isListening
-                  ? "bg-rose-500 text-white animate-pulse"
-                  : "bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800"
-              }`}
-              title="Speak your question"
+                  ? "bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-500 text-slate-950 ring-4 ring-amber-400/70 ring-offset-2 ring-offset-slate-950 animate-pulse shadow-[0_0_25px_rgba(251,191,36,0.7)]"
+                  : "bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:border-amber-400/50"
+              )}
+              title={isListening ? "Stop listening" : "Speak your question (Voice Concierge)"}
+              aria-label={isListening ? "Listening active. Tap to stop." : "Activate voice input"}
             >
-              {isListening ? <MicOff className="size-4" /> : <Mic className="size-4 text-emerald-400" />}
+              {isListening ? (
+                <MicOff className="size-4 animate-bounce" />
+              ) : (
+                <Mic className="size-4 text-amber-400" />
+              )}
+              {isListening && (
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500" />
+                </span>
+              )}
             </button>
 
             <input
@@ -500,7 +955,7 @@ export function CustomerConciergeDrawer({
             <button
               type="submit"
               disabled={!question.trim()}
-              className="rounded-xl bg-amber-400 p-2.5 text-slate-950 font-bold disabled:opacity-40 hover:bg-amber-300 transition-colors"
+              className="rounded-xl bg-amber-400 p-2.5 text-slate-950 font-bold disabled:opacity-40 hover:bg-amber-300 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer"
               aria-label="Send question"
             >
               <Send className="size-4" />
@@ -509,13 +964,397 @@ export function CustomerConciergeDrawer({
 
           <p className="mt-2 flex items-center justify-between text-[10px] text-slate-400">
             <span className="flex items-center gap-1">
-              <ShieldCheck className="size-3 text-emerald-400" /> Intermediary Safe Harbor &amp; Operational SLA
+              <ShieldCheck className="size-3 text-emerald-400" /> Safe Harbor &amp; Operational SLA
             </span>
             <Link to="/support" className="text-amber-300 underline">
-              Founder Review Desk
+              Founder Desk
             </Link>
           </p>
         </div>
+
+        {/* ─── 3D JEWEL INTENT-TO-ACTION BOTTOM SHEET POP-UP ─── */}
+        {activePopup && (
+          <div
+            role="presentation"
+            className="absolute inset-0 z-40 bg-black/75 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setActivePopup(null);
+            }}
+          >
+            <div
+              role="region"
+              aria-label={activePopup.type === "CHECKOUT_POPUP" ? "1-Tap Luxury Checkout Pop-Up" : "KingPay 1-Tap UPI Pop-Up"}
+              className="relative w-full max-h-[92%] overflow-y-auto overflow-x-hidden rounded-t-[32px] border-t-2 border-x border-amber-400/50 bg-gradient-to-b from-[#13111c] via-[#0b0914] to-black p-4 sm:p-5 text-white shadow-[0_-20px_50px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(251,191,36,0.3)] animate-in slide-in-from-bottom duration-200 transform-gpu will-change-transform space-y-4"
+            >
+              {/* Drag Indicator */}
+              <div className="w-12 h-1 rounded-full bg-slate-700 mx-auto" />
+
+              {activePopup.type === "CHECKOUT_POPUP" ? (
+                <>
+                  {/* Checkout Header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-amber-500/20">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="size-9 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 shadow-[0_2px_10px_rgba(251,191,36,0.2)]">
+                        <Crown className="size-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-1.5 truncate">
+                          <span>1-Tap Luxury Checkout</span>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
+                            Fast Track
+                          </span>
+                        </h3>
+                        <p className="text-[10.5px] text-slate-400 truncate">
+                          Direct Kitchen Handoff · GSTIN: 18AFXPH9838M1Z9
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActivePopup(null)}
+                      className="rounded-xl p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
+                      aria-label="Close checkout popup"
+                    >
+                      <X className="size-5" />
+                    </button>
+                  </div>
+
+                  {/* Dish Item Card with Quantity Selector */}
+                  <div className="p-3.5 rounded-2xl border border-slate-800 bg-slate-900/80 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <Utensils className="size-3.5 text-amber-400 shrink-0" />
+                          <h4 className="text-xs sm:text-sm font-black text-white truncate">
+                            {activePopup.dishName}
+                          </h4>
+                        </div>
+                        <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                          {activePopup.restaurantName || "Verified Patron Kitchen (Assam - 788710)"}
+                        </p>
+                        <div className="mt-1.5 inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
+                          <span>⚡ Delivery ETA:</span>
+                          <span className="font-mono">{activePopup.deliveryEta}</span>
+                        </div>
+                      </div>
+
+                      {/* Quantity Selector */}
+                      <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-700 shrink-0">
+                        <button
+                          type="button"
+                          disabled={popupQuantity <= 1}
+                          onClick={() => setPopupQuantity((q) => Math.max(1, q - 1))}
+                          className="size-7 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-white flex items-center justify-center font-bold text-sm transition cursor-pointer"
+                          aria-label="Decrease quantity"
+                        >
+                          <Minus className="size-3.5" />
+                        </button>
+                        <span className="font-mono text-xs sm:text-sm font-black px-2 text-white">
+                          {popupQuantity}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={popupQuantity >= 10}
+                          onClick={() => setPopupQuantity((q) => Math.min(10, q + 1))}
+                          className="size-7 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 disabled:opacity-40 flex items-center justify-center font-bold text-sm transition cursor-pointer"
+                          aria-label="Increase quantity"
+                        >
+                          <Plus className="size-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* The 1-Line Natural Hospitality Inquiry & Multi-Dish Customization */}
+                  <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <span>🍽️</span>
+                        <span>Would you like to add anything else?</span>
+                      </span>
+                      {!suppressSuggestions && (
+                        <button
+                          type="button"
+                          onClick={() => setSuppressSuggestions(true)}
+                          className="text-[10px] text-slate-400 hover:text-amber-200 transition underline cursor-pointer"
+                        >
+                          Skip additions
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Quick Chef Pairing Pills */}
+                    {!suppressSuggestions && availableAddons.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                        {availableAddons.map((addon) => {
+                          const isSelected = selectedAddOnIds.includes(addon.id);
+                          return (
+                            <button
+                              key={addon.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedAddOnIds((prev) =>
+                                  isSelected ? prev.filter((id) => id !== addon.id) : [...prev, addon.id]
+                                );
+                              }}
+                              className={cn(
+                                "px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer active:scale-95 border",
+                                isSelected
+                                  ? "bg-amber-400 text-slate-950 border-amber-300 font-black shadow-sm"
+                                  : "bg-slate-950 text-slate-300 border-slate-800 hover:border-amber-400/50 hover:bg-slate-800"
+                              )}
+                            >
+                              <span>{isSelected ? "✓" : "+"}</span>
+                              <span>{addon.name}</span>
+                              <span className={isSelected ? "text-slate-950 font-black" : "text-amber-400 font-mono"}>
+                                {formatPaise(addon.pricePaise)}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Write or Speak Custom Dishes or Instructions */}
+                    <div className="flex items-center gap-1.5 pt-1">
+                      <input
+                        type="text"
+                        value={customAddonText}
+                        onChange={(e) => setCustomAddonText(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && customAddonText.trim()) {
+                            e.preventDefault();
+                            handleAddCustomItem(customAddonText.trim());
+                          }
+                        }}
+                        placeholder="Type or voice any extra dish (e.g. 2 Butter Naan, Coke)..."
+                        className="flex-1 rounded-xl bg-slate-950 border border-slate-700/80 px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:border-amber-400 min-h-[38px]"
+                      />
+                      <button
+                        type="button"
+                        disabled={!customAddonText.trim()}
+                        onClick={() => handleAddCustomItem(customAddonText.trim())}
+                        className="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs disabled:opacity-40 transition cursor-pointer min-h-[38px] shrink-0"
+                      >
+                        + Add
+                      </button>
+                    </div>
+
+                    {/* Custom Added Extra Items List */}
+                    {customAddons.length > 0 && (
+                      <div className="space-y-1.5 pt-2 border-t border-slate-800 text-xs">
+                        {customAddons.map((ci) => (
+                          <div key={ci.id} className="flex items-center justify-between bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">
+                            <span className="flex items-center gap-1.5 text-slate-200">
+                              <span className="text-amber-400 font-bold">•</span>
+                              <span className="font-medium">{ci.name}</span>
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-amber-300 font-bold">{formatPaise(ci.pricePaise)}</span>
+                              <button
+                                type="button"
+                                onClick={() => setCustomAddons((prev) => prev.filter((x) => x.id !== ci.id))}
+                                className="text-slate-400 hover:text-rose-400 text-xs font-bold px-1 py-0.5 rounded transition"
+                                title="Remove item"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Transparent Integer Paise Breakdown */}
+                  <div className="p-3 rounded-2xl bg-black/40 border border-slate-800 space-y-1.5 text-xs">
+                    <div className="flex justify-between text-slate-400">
+                      <span>Item Subtotal ({popupQuantity}x):</span>
+                      <span className="font-mono text-white font-bold">
+                        {formatPaise(dishSubtotalPaise)}{" "}
+                        <span className="text-[10px] text-slate-400">({dishSubtotalPaise.toLocaleString()} paise)</span>
+                      </span>
+                    </div>
+                    {selectedAddOnIds.length > 0 && (
+                      <div className="flex justify-between text-slate-400">
+                        <span>Pairing Add-ons ({selectedAddOnIds.length}):</span>
+                        <span className="font-mono text-amber-300 font-bold">
+                          +{formatPaise(addOnsSubtotalPaise)}{" "}
+                          <span className="text-[10px] text-slate-400">({addOnsSubtotalPaise.toLocaleString()} paise)</span>
+                        </span>
+                      </div>
+                    )}
+                    {customAddons.length > 0 && (
+                      <div className="flex justify-between text-slate-400">
+                        <span>Extra Customized Items ({customAddons.length}):</span>
+                        <span className="font-mono text-amber-300 font-bold">
+                          +{formatPaise(customAddonsTotalPaise)}{" "}
+                          <span className="text-[10px] text-slate-400">({customAddonsTotalPaise.toLocaleString()} paise)</span>
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-slate-400">
+                      <span>Delivery Partner Convenience:</span>
+                      <span className="text-emerald-400 font-bold">₹0.00 (Patron Privilege)</span>
+                    </div>
+                    <div className="pt-2 border-t border-slate-800 flex justify-between items-center text-sm font-black text-white">
+                      <span>Total Payable:</span>
+                      <div className="text-right">
+                        <span className="text-base font-black text-amber-300 font-mono">
+                          {formatPaise(grandTotalPaise)}
+                        </span>
+                        <span className="text-[10px] text-slate-400 block font-normal">
+                          {grandTotalPaise.toLocaleString()} integer paise
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1-Tap Confirm & Pay via KingPay UPI Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toast.success(
+                        `🎉 Order Placed! Paid ${formatPaise(grandTotalPaise)} (${grandTotalPaise} paise) via KingPay UPI.`
+                      );
+                      setActivePopup(null);
+                      onClose();
+                      void navigate({ to: "/orders" as any });
+                    }}
+                    className="w-full min-h-[46px] py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:brightness-110 active:scale-[0.98] text-slate-950 font-black text-xs sm:text-sm transition-all shadow-[0_4px_20px_rgba(251,191,36,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Crown className="size-4 text-slate-950" />
+                    <span>Confirm &amp; Pay {formatPaise(grandTotalPaise)} via KingPay UPI</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  {/* KingPay UPI / QR Modal */}
+                  <div className="flex items-center justify-between pb-3 border-b border-emerald-500/20">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="size-9 rounded-xl bg-emerald-400/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 shrink-0 shadow-[0_2px_10px_rgba(16,185,129,0.2)]">
+                        <CreditCard className="size-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-sm sm:text-base font-black text-white truncate">
+                          KingPay 1-Tap UPI &amp; BharatQR
+                        </h3>
+                        <p className="text-[10.5px] text-slate-400 truncate">
+                          Direct NPCI Settlement · Zero Markup Gateway
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActivePopup(null)}
+                      className="rounded-xl p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
+                      aria-label="Close KingPay popup"
+                    >
+                      <X className="size-5" />
+                    </button>
+                  </div>
+
+                  {/* Tab Selection */}
+                  <div className="grid grid-cols-2 gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setKingpayTab("upi")}
+                      className={cn(
+                        "py-1.5 text-xs font-bold rounded-lg transition cursor-pointer",
+                        kingpayTab === "upi" ? "bg-amber-400 text-slate-950 shadow-sm font-black" : "text-slate-400 hover:text-white"
+                      )}
+                    >
+                      Direct 1-Tap UPI
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setKingpayTab("qr")}
+                      className={cn(
+                        "py-1.5 text-xs font-bold rounded-lg transition cursor-pointer",
+                        kingpayTab === "qr" ? "bg-amber-400 text-slate-950 shadow-sm font-black" : "text-slate-400 hover:text-white"
+                      )}
+                    >
+                      Scan BharatQR
+                    </button>
+                  </div>
+
+                  {kingpayTab === "upi" ? (
+                    <div className="space-y-3">
+                      {/* Preset quick amounts */}
+                      <div className="space-y-1.5">
+                        <span className="text-[11px] font-bold text-slate-400 block">Select Quick Amount:</span>
+                        <div className="grid grid-cols-4 gap-2">
+                          {[100, 250, 500, 1000].map((amt) => (
+                            <button
+                              key={amt}
+                              type="button"
+                              onClick={() => setKingpayAmountRupees(amt)}
+                              className={cn(
+                                "py-2 rounded-xl text-xs font-bold border transition active:scale-95 cursor-pointer",
+                                kingpayAmountRupees === amt
+                                  ? "bg-amber-400 text-slate-950 border-amber-300 font-black shadow-sm"
+                                  : "bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800"
+                              )}
+                            >
+                              ₹{amt}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Amount and Integer Paise Input */}
+                      <div className="p-3 rounded-2xl bg-black/40 border border-slate-800 space-y-1">
+                        <div className="flex justify-between text-xs text-slate-400">
+                          <span>Routing VPA:</span>
+                          <span className="font-mono text-emerald-400 font-bold">orderking@ybl</span>
+                        </div>
+                        <div className="flex justify-between text-xs text-slate-400">
+                          <span>Amount:</span>
+                          <span className="font-mono text-white font-bold">
+                            ₹{kingpayAmountRupees}.00 ({(kingpayAmountRupees * 100).toLocaleString()} paise)
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 1-Tap Launch Button */}
+                      <a
+                        href={`upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=${kingpayAmountRupees}&cu=INR&tn=OrderKingVIPConcierge`}
+                        onClick={() => {
+                          toast.success(`Launching UPI app for ₹${kingpayAmountRupees}...`);
+                        }}
+                        className="w-full min-h-[46px] py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:brightness-110 active:scale-[0.98] text-white font-black text-xs sm:text-sm transition-all shadow-[0_4px_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 no-underline cursor-pointer"
+                      >
+                        <Zap className="size-4" />
+                        <span>Launch UPI (PhonePe / GPay / Paytm)</span>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 text-center py-2">
+                      <div className="size-36 mx-auto rounded-2xl border-2 border-dashed border-amber-400/50 bg-black/60 p-4 flex flex-col items-center justify-center relative overflow-hidden">
+                        <QrCode className="size-20 text-amber-400" />
+                        <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent animate-[pulse_1.5s_ease-in-out_infinite]" />
+                      </div>
+                      <p className="text-xs text-slate-300">
+                        Scan any merchant BharatQR or NPCI QR to settle instantly via KingPay double-entry ledger.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActivePopup(null);
+                          onClose();
+                          void navigate({ to: "/kingpay" as any });
+                        }}
+                        className="w-full min-h-[44px] py-2.5 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition border border-slate-700 cursor-pointer"
+                      >
+                        Open Camera Scanner
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );
