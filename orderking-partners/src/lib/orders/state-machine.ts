@@ -2,6 +2,7 @@ export const ORDER_STATES = [
   "CREATED",
   "PLACED",
   "ACCEPTED",
+  "AUTO_ACCEPTED",
   "PREPARING",
   "READY",
   "RIDER_ASSIGNED",
@@ -61,6 +62,7 @@ export type TransitionActor =
 const ALLOWED: Record<OrderState, Partial<Record<OrderState, TransitionActor[]>>> = {
   CREATED: {
     ACCEPTED: ["restaurant", "admin"],
+    AUTO_ACCEPTED: ["system", "admin"],
     PREPARING: ["restaurant", "admin"],
     REJECTED: ["restaurant", "admin"],
     CANCELLED: ["customer", "admin", "system"],
@@ -68,6 +70,7 @@ const ALLOWED: Record<OrderState, Partial<Record<OrderState, TransitionActor[]>>
   },
   PLACED: {
     ACCEPTED: ["restaurant", "admin"],
+    AUTO_ACCEPTED: ["system", "admin"],
     REJECTED: ["restaurant", "admin"],
     CANCELLED: ["customer", "admin", "system"],
     FAILED_PAYMENT: ["system", "admin"],
@@ -76,6 +79,11 @@ const ALLOWED: Record<OrderState, Partial<Record<OrderState, TransitionActor[]>>
     PREPARING: ["restaurant", "admin"],
     CANCELLED: ["customer", "admin"],
     REJECTED: ["admin"],
+  },
+  AUTO_ACCEPTED: {
+    PREPARING: ["restaurant", "admin", "system"],
+    CANCELLED: ["customer", "admin", "system"],
+    REJECTED: ["admin", "system"],
   },
   PREPARING: {
     READY: ["restaurant", "admin"],
@@ -166,11 +174,13 @@ export function isTerminal(state: OrderState): boolean {
 }
 
 export function trackIndex(state: OrderState): number {
+  if (state === "AUTO_ACCEPTED") return 1;
   return MARKETPLACE_TRACK.indexOf(state);
 }
 
 export const RESTAURANT_NEXT: Partial<Record<OrderState, OrderState>> = {
   PLACED: "ACCEPTED",
+  AUTO_ACCEPTED: "PREPARING",
   ACCEPTED: "PREPARING",
   PREPARING: "READY",
 };

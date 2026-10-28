@@ -70,4 +70,69 @@ describe("Customer App - Phone Auth & SMS Gateway Test Suite", () => {
     const providers = getAvailableSmsProviders();
     expect(providers).toContain("fast2sms");
   });
+
+  it("6. dispatches via Fast2SMS Smart OTP corridor consuming existing balance when FAST2SMS_OTP_ID is set", async () => {
+    process.env.FAST2SMS_API_KEY = "test_f2s_key";
+    process.env.FAST2SMS_OTP_ID = "99887766";
+
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        return: true,
+        request_id: "SMART_OTP_99887766",
+        message: ["Smart OTP dispatched successfully."],
+      }),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const result = await dispatchOtpSms({
+      phone: "9395065587",
+      otp: "987654",
+      channel: "sms",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe("fast2sms");
+    expect(result.messageId).toBe("SMART_OTP_99887766");
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://www.fast2sms.com/dev/otp/send",
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          authorization: "test_f2s_key",
+          "Content-Type": "application/json",
+        }),
+      })
+    );
+  });
+
+  it("7. dispatches outbound WhatsApp directly via Meta Graph API v21.0 when credentials configured", async () => {
+    process.env.WHATSAPP_ACCESS_TOKEN = "EAABtest_token";
+    process.env.WHATSAPP_PHONE_NUMBER_ID = "109876543210";
+
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        messages: [{ id: "wamid.HBgMOTE5Mzk1MDY1NTg3" }],
+      }),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const result = await dispatchOtpSms({
+      phone: "9395065587",
+      otp: "112233",
+      channel: "whatsapp",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe("whatsapp");
+    expect(result.messageId).toBe("wamid.HBgMOTE5Mzk1MDY1NTg3");
+    expect(result.providerNotice).toContain("Verification code dispatched directly to your WhatsApp inbox");
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://graph.facebook.com/v21.0/109876543210/messages",
+      expect.objectContaining({
+        method: "POST",
+      })
+    );
+  });
 });

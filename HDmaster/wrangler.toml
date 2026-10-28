@@ -2,4 +2,8 @@ name = "orderking-hdmaster"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-10-06"
 compatibility_flags = ["nodejs_compat"]
-# Cloudflare unified production release validation: 2026-10-06
+
+# Cloudflare Edge KV Caching: Domestic Corridor Tariffs (TTL 900s / SWR 86400s)
+[[kv_namespaces]]
+binding = "CORRIDOR_TARIFFS_KV"
+id = "corridor_tariffs_kv"

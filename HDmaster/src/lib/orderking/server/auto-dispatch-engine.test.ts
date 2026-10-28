@@ -197,8 +197,9 @@ describe("Autonomous Algorithmic AI Dispatch Engine & Shift Curfew Verification"
     // Make Rider A offline so only Curfew Rider or Far Rider exist
     await sql`UPDATE riders SET online = 0 WHERE id = ${testRiderCloseId}`;
 
-    // Run dispatch engine
-    const result = await runAlgorithmicAutoDispatch();
+    // Run dispatch engine during evening curfew window (20:00 IST)
+    const eveningCurfewDate = new Date("2026-10-27T20:00:00+05:30");
+    const result = await runAlgorithmicAutoDispatch(eveningCurfewDate);
 
     // Curfew rider MUST NOT be assigned
     const curfewMatch = result.matchedPairs.find((m) => m.orderId === curfewOrderId);

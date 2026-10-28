@@ -8,7 +8,12 @@ export type DbSource = "neon" | "pglite";
 // "unset" — otherwise production would silently run on the PGLite fallback.
 export function getDatabaseUrl() {
   const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
-  let url = raw && raw.trim() ? raw : undefined;
+  let url = raw && typeof raw === 'string' ? raw.trim() : undefined;
+  if (url) {
+    if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+      url = url.slice(1, -1).trim();
+    }
+  }
   if (url && url.includes('your_supabase_pooler')) url = undefined;
   if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
     url = url.replace('sslmode=require', 'sslmode=no-verify');
@@ -111,7 +116,16 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing"); const pool = new Pool({ connectionString: url });
+    const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing");
+    const isRemote = url.includes("neon.tech") || url.includes("sslmode=") || url.includes("supabase.co") || !url.includes("localhost");
+    const pool = new Pool({
+      connectionString: url,
+      ssl: isRemote ? { rejectUnauthorized: false } : undefined,
+      connectionTimeoutMillis: 20000,
+      idleTimeoutMillis: 30000,
+      max: 1,
+    });
+    pool.on('error', (err: any) => console.warn('[Postgres Pool Warning]:', err?.message));
     const run = async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
@@ -124,22 +138,53 @@ function createNeonSql(): Promise<Sql> {
 
     return toSql(
       async <T>(text: string, params: unknown[]) => {
-        const res = await pool.query(text, params);
-        return res.rows as T[];
+        let lastErr;
+        for (let attempt = 0; attempt < 5; attempt++) {
+          try {
+            const res = await pool.query(text, params);
+            return res.rows as T[];
+          } catch (err) {
+            lastErr = err;
+            const msg = err instanceof Error ? err.message : String(err);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout/i.test(msg);
+            if (isTransient && attempt < 4) {
+              await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+              continue;
+            }
+            throw err;
+          }
+        }
+        throw lastErr;
       },
       async <T>(fn: (tx: Sql) => Promise<T>) => {
-        const client = await pool.connect();
-        try {
-          await client.query("BEGIN");
-          const result = await fn(makeClientSql(client));
-          await client.query("COMMIT");
-          return result;
-        } catch (error) {
-          try { await client.query("ROLLBACK"); } catch { /* preserve original */ }
-          throw error;
-        } finally {
-          client.release();
+        let lastErr;
+        for (let attempt = 0; attempt < 4; attempt++) {
+          let client;
+          try {
+            client = await pool.connect();
+            await client.query("BEGIN");
+            const result = await fn(makeClientSql(client));
+            await client.query("COMMIT");
+            return result;
+          } catch (error) {
+            lastErr = error;
+            if (client) {
+              try { await client.query("ROLLBACK"); } catch (_) {}
+              try { client.release(true); } catch (_) {}
+              client = undefined;
+            }
+            const msg = error instanceof Error ? error.message : String(error);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout/i.test(msg);
+            if (isTransient && attempt < 3) {
+              await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+              continue;
+            }
+            throw error;
+          } finally {
+            if (client) client.release();
+          }
         }
+        throw lastErr;
       },
     );
   })().catch((err) => {

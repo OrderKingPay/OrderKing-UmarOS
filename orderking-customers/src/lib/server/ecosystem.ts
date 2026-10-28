@@ -13,6 +13,16 @@ export interface EcosystemOrderSummary {
   deliveredAt?: string | null;
 }
 
+export interface AddressSnapshot {
+  line1: string;
+  line2?: string;
+  area: string;
+  city?: string;
+  pincode?: string;
+  lat: number;
+  lng: number;
+}
+
 /**
  * Step 1: Customer creates food/parcel order in PostgreSQL `orders` table with status 'CREATED'.
  */
@@ -28,7 +38,7 @@ export async function customerCreateOrder(params: {
   deliveryOtp?: string;
   idempotencyKey?: string;
   notes?: string;
-  addressSnapshot?: any;
+  addressSnapshot?: AddressSnapshot | Record<string, unknown> | string;
 }): Promise<EcosystemOrderSummary> {
   const sql = await getSql();
 
@@ -64,7 +74,8 @@ export async function customerCreateOrder(params: {
         platform_discount_paise, delivery_fee_paise, service_fee_paise,
         tax_paise, packaging_paise, total_paise, commission_bps,
         commission_paise, restaurant_payable_paise, notes, delivery_otp,
-        data_label, placed_at, updated_at
+        data_label, placed_at, updated_at,
+        food_paise, payment_fee_paise, rider_payout_paise, refund_paise, data_mode
       ) VALUES (
         ${orderId}, ${publicId}, ${userId}, ${params.restaurantId ?? null}, ${params.outletId ?? null}, ${zoneId},
         ${addressSnapshot}, ${'CREATED'}, ${method}, ${paymentStatus},
@@ -72,7 +83,8 @@ export async function customerCreateOrder(params: {
         ${0}, ${0}, ${0},
         ${0}, ${0}, ${totalPaise}, ${0},
         ${0}, ${totalPaise}, ${(params.notes ?? "").slice(0, 240)}, ${deliveryOtp},
-        ${'REAL'}, NOW(), NOW()
+        ${'REAL'}, NOW(), NOW(),
+        ${totalPaise}, ${0}, ${3000}, ${0}, ${'LIVE'}
       )
     `;
 
@@ -92,10 +104,10 @@ export async function customerCreateOrder(params: {
     // 3. Write initial canonical row to order_events
     await tx`
       INSERT INTO order_events (
-        id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at
+        id, order_id, from_status, to_status, actor_user_id, actor_role, action, note, created_at
       ) VALUES (
         ${newId("oev")}, ${orderId}, ${null}, ${'CREATED'}, ${userId}, ${'customer'},
-        ${'Order created in canonical connected ecosystem'}, NOW()
+        ${'order.created'}, ${'Order created in canonical connected ecosystem'}, NOW()
       )
     `;
   });
@@ -140,10 +152,10 @@ export async function partnerAcceptOrder(
 
   await sql`
     INSERT INTO order_events (
-      id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at
+      id, order_id, from_status, to_status, actor_user_id, actor_role, action, note, created_at
     ) VALUES (
       ${newId("oev")}, ${orderId}, ${currentStatus}, ${'PREPARING'},
-      ${actorUserId}, ${'restaurant'}, ${`Order accepted by KDS with ${prepMinutes}m prep SLA`}, NOW()
+      ${actorUserId}, ${'restaurant'}, ${'order.accepted'}, ${`Order accepted by KDS with ${prepMinutes}m prep SLA`}, NOW()
     )
   `;
 
@@ -178,10 +190,10 @@ export async function partnerMarkReady(
 
   await sql`
     INSERT INTO order_events (
-      id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at
+      id, order_id, from_status, to_status, actor_user_id, actor_role, action, note, created_at
     ) VALUES (
       ${newId("oev")}, ${orderId}, ${currentStatus}, ${'READY'},
-      ${actorUserId}, ${'restaurant'}, ${'Food prepared and packed. Ready for rider pickup.'}, NOW()
+      ${actorUserId}, ${'restaurant'}, ${'order.ready'}, ${'Food prepared and packed. Ready for rider pickup.'}, NOW()
     )
   `;
 
@@ -218,10 +230,10 @@ export async function riderAssignOrder(
 
   await sql`
     INSERT INTO order_events (
-      id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at
+      id, order_id, from_status, to_status, actor_user_id, actor_role, action, note, created_at
     ) VALUES (
       ${newId("oev")}, ${orderId}, ${currentStatus}, ${'RIDER_ASSIGNED'},
-      ${riderUserId}, ${'rider'}, ${`Rider ${riderId} assigned to delivery dispatch`}, NOW()
+      ${riderUserId}, ${'rider'}, ${'order.assigned'}, ${`Rider ${riderId} assigned to delivery dispatch`}, NOW()
     )
   `;
 
@@ -256,10 +268,10 @@ export async function riderDepartOrder(
 
   await sql`
     INSERT INTO order_events (
-      id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at
+      id, order_id, from_status, to_status, actor_user_id, actor_role, action, note, created_at
     ) VALUES (
       ${newId("oev")}, ${orderId}, ${currentStatus}, ${'ON_THE_WAY'},
-      ${riderUserId}, ${'rider'}, ${'Rider departed restaurant with package. Out for delivery.'}, NOW()
+      ${riderUserId}, ${'rider'}, ${'order.departed'}, ${'Rider departed restaurant with package. Out for delivery.'}, NOW()
     )
   `;
 
@@ -305,10 +317,10 @@ export async function riderDeliverOrder(
 
   await sql`
     INSERT INTO order_events (
-      id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at
+      id, order_id, from_status, to_status, actor_user_id, actor_role, action, note, created_at
     ) VALUES (
       ${newId("oev")}, ${orderId}, ${currentStatus}, ${'DELIVERED'},
-      ${riderUserId}, ${'rider'}, ${'Customer OTP verified. Handover complete and order delivered.'}, NOW()
+      ${riderUserId}, ${'rider'}, ${'order.delivered'}, ${'Customer OTP verified. Handover complete and order delivered.'}, NOW()
     )
   `;
 
@@ -331,7 +343,7 @@ export async function getUmarOSOrderMetrics() {
   const sql = await getSql();
   const countRes = await sql<{ count: number }>`SELECT COUNT(*) as count FROM orders`;
   const recentRes = await sql<{ id: string; status: string; total_paise: number }>`
-    SELECT id, status, total_paise FROM orders ORDER BY id DESC LIMIT 10
+    SELECT id, status, total_paise FROM orders ORDER BY updated_at DESC, id DESC LIMIT 50
   `;
 
   return {

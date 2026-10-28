@@ -24,6 +24,13 @@ export interface QuizResult {
   masteryDelta: number;
 }
 
+export interface AcademicBillingStatus {
+  billed: boolean;
+  amountPaise: number;
+  remainingBalancePaise?: number;
+  note: string;
+}
+
 export interface AcademicSolution {
   formula: string | null;
   derivation: string | null;
@@ -31,6 +38,7 @@ export interface AcademicSolution {
   rawText: string;
   modelUsed: string;
   isFallback: boolean;
+  billingStatus?: AcademicBillingStatus;
 }
 
 /**
@@ -436,6 +444,82 @@ export class AITutor {
 \\[\\int \\sin^2(x) \\, dx = \\frac{x}{2} - \\frac{\\sin(2x)}{4} + C\\]`;
     }
 
+    // Chemistry: Chemical Kinetics & Rate Law (NCERT Class 12 Chapter 4)
+    if (q.includes("kinetic") || q.includes("rate law") || q.includes("arrhenius") || q.includes("first order") || q.includes("half life")) {
+      return `### 1. Given Formula / Concept
+- **Differential Rate Equation for First-Order Reaction:**
+  \\[-\\frac{d[A]}{dt} = k [A]\\]
+- **Integrated First-Order Rate Law:**
+  \\[k = \\frac{2.303}{t} \\log_{10}\\left(\\frac{[A]_0}{[A]_t}\\right)\\]
+- **Half-Life Period (\\(t_{1/2}\\)):**
+  \\[t_{1/2} = \\frac{\\ln(2)}{k} = \\frac{0.693}{k}\\]
+- **Arrhenius Equation:**
+  \\[\\log_{10}\\left(\\frac{k_2}{k_1}\\right) = \\frac{E_a}{2.303 R} \\left( \\frac{T_2 - T_1}{T_1 T_2} \\right)\\]
+- **Curriculum Standard:** NCERT Class 12 Chemistry Chapter 4 (${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Variable Separation):** Rearrange \\(-\\frac{d[A]}{dt} = k [A] \\implies \\frac{d[A]}{[A]} = -k \\, dt\\).
+- **Step 2 (Definite Integration):** Integrate from initial state \\(t=0, [A]=[A]_0\\) to time \\(t, [A]=[A]_t\\):
+  \\[\\int_{[A]_0}^{[A]_t} \\frac{d[A]}{[A]} = -k \\int_{0}^{t} dt \\implies \\ln\\left(\\frac{[A]_t}{[A]_0}\\right) = -k t\\]
+- **Step 3 (Base-10 Logarithmic Conversion):**
+  \\[k t = \\ln\\left(\\frac{[A]_0}{[A]_t}\\right) = 2.303 \\log_{10}\\left(\\frac{[A]_0}{[A]_t}\\right) \\implies k = \\frac{2.303}{t} \\log_{10}\\left(\\frac{[A]_0}{[A]_t}\\right)\\]
+- **Step 4 (Half-Life Determination):** Substitute \\([A]_t = \\frac{[A]_0}{2}\\):
+  \\[t_{1/2} = \\frac{2.303}{k} \\log_{10}(2) = \\frac{2.303 \\times 0.3010}{k} = \\frac{0.693}{k}\\]
+
+### 3. Final Answer
+\\[k = \\frac{2.303}{t} \\log_{10}\\left(\\frac{[A]_0}{[A]_t}\\right), \\quad t_{1/2} = \\frac{0.693}{k}\\]`;
+    }
+
+    // Chemistry: Chemical Equilibrium & Le Chatelier (NCERT Class 11 Chapter 7)
+    if (q.includes("equilibrium") || q.includes("le chatelier") || q.includes("kp = kc") || q.includes("buffer") || q.includes("henderson")) {
+      return `### 1. Given Formula / Concept
+- **Equilibrium Constant Relation for Ideal Gas Reactions:**
+  \\[K_p = K_c (RT)^{\\Delta n_g}\\]
+  where \\(\\Delta n_g = \\sum n_{\\text{products(g)}} - \\sum n_{\\text{reactants(g)}}\\).
+- **Le Chatelier's Principle:** When a system in chemical equilibrium is subjected to an external constraint (temperature, pressure, or concentration), the equilibrium shifts to counteract the imposed change.
+- **Henderson-Hasselbalch Equation for Acidic Buffer:**
+  \\[\\text{pH} = \\text{p}K_a + \\log_{10}\\left(\\frac{[\\text{Salt}]}{[\\text{Acid}]}\\right)\\]
+- **Curriculum Standard:** NCERT Class 11 Chemistry Chapter 7 (${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Gas Law Partial Pressures):** For generic reaction \\(aA(g) + bB(g) \\rightleftharpoons cC(g) + dD(g)\\), partial pressure is \\(P_i = [i] RT\\).
+- **Step 2 (Evaluate \\(K_p\\)):**
+  \\[K_p = \\frac{P_C^c P_D^d}{P_A^a P_B^b} = \\frac{([C]RT)^c ([D]RT)^d}{([A]RT)^a ([B]RT)^b} = \\left(\\frac{[C]^c [D]^d}{[A]^a [B]^b}\\right) (RT)^{(c+d)-(a+b)}\\]
+- **Step 3 (Substitute \\(K_c\\)):** Since \\(K_c = \\frac{[C]^c [D]^d}{[A]^a [B]^b}\\) and \\(\\Delta n_g = (c+d) - (a+b)\\):
+  \\[K_p = K_c (RT)^{\\Delta n_g}\\]
+- **Step 4 (Le Chatelier Application):** In an exothermic reaction (\\(\\Delta H < 0\\)), increasing temperature shifts equilibrium to the left (reactants), while lowering temperature favors the forward yield.
+
+### 3. Final Answer
+\\[K_p = K_c (RT)^{\\Delta n_g}, \\quad \\text{pH} = \\text{p}K_a + \\log_{10}\\left(\\frac{[\\text{Salt}]}{[\\text{Acid}]}\\right)\\]`;
+    }
+
+    // Chemistry: Electrochemistry & Nernst Equation (NCERT Class 12 Chapter 3)
+    if (q.includes("nernst") || q.includes("electrochemistry") || q.includes("cell potential") || q.includes("emf") || q.includes("galvanic")) {
+      return `### 1. Given Formula / Concept
+- **Standard Cell Potential:**
+  \\[E^\\circ_{\\text{cell}} = E^\\circ_{\\text{cathode}} - E^\\circ_{\\text{anode}}\\]
+- **Nernst Equation at 298 K (25 °C):**
+  \\[E_{\\text{cell}} = E^\\circ_{\\text{cell}} - \\frac{2.303 RT}{nF} \\log_{10} Q = E^\\circ_{\\text{cell}} - \\frac{0.0591}{n} \\log_{10} Q\\]
+- **Gibbs Free Energy and Cell EMF:**
+  \\[\\Delta G^\\circ = -n F E^\\circ_{\\text{cell}}\\]
+- **Curriculum Standard:** NCERT Class 12 Chemistry Chapter 3 (${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Thermodynamic Relation):** From chemical thermodynamics, \\(\\Delta G = \\Delta G^\\circ + RT \\ln Q\\).
+- **Step 2 (Electrical Work Equivalence):** Maximum electrical work \\(W_{\\text{elec}} = -\\Delta G = nFE_{\\text{cell}}\\) and \\(-\\Delta G^\\circ = nFE^\\circ_{\\text{cell}}\\).
+- **Step 3 (Substitute Potentials into Free Energy):**
+  \\[-nFE_{\\text{cell}} = -nFE^\\circ_{\\text{cell}} + RT \\ln Q\\]
+- **Step 4 (Divide by \\(-nF\\) and convert natural log to base-10):**
+  \\[E_{\\text{cell}} = E^\\circ_{\\text{cell}} - \\frac{2.303 RT}{nF} \\log_{10} Q\\]
+- **Step 5 (Evaluate Constants at \\(T = 298.15 \\, \\text{K}\\)):**
+  Substituting \\(R = 8.314 \\, \\text{J}/(\\text{mol}\\cdot\\text{K})\\) and Faraday constant \\(F = 96485 \\, \\text{C/mol}\\):
+  \\[\\frac{2.303 \\times 8.314 \\times 298.15}{96485} \\approx 0.05916 \\, \\text{V}\\]
+  \\[\\therefore E_{\\text{cell}} = E^\\circ_{\\text{cell}} - \\frac{0.0591}{n} \\log_{10} Q\\]
+
+### 3. Final Answer
+\\[E_{\\text{cell}} = E^\\circ_{\\text{cell}} - \\frac{0.0591}{n} \\log_{10} Q, \\quad \\Delta G^\\circ = -nFE^\\circ_{\\text{cell}}\\]`;
+    }
+
     // Default 3-Part Syllabus Solution
     return `### 1. Given Formula / Concept
 - **Subject Domain:** NCERT / CBSE Academic Standard (${board} Grade ${grade}).
@@ -470,11 +554,17 @@ export class AITutor {
    *
    * Rate limited at 20 requests/minute.
    * Employs gemini-2.5-flash with gemini-2.0-flash fallback and deterministic NCERT fallback.
+   * Integrates closed-loop KingPay micropayments (₹1.00 micro-fee / 100 paise).
    */
   public async resolveAcademicDoubtWithGemini(
     studentId: string,
     query: string,
-    subject: string = "Mathematics"
+    subject: string = "Mathematics",
+    billingOptions?: {
+      enableKingPayBilling?: boolean;
+      walletBalancePaise?: number;
+      microFeePaise?: number;
+    }
   ): Promise<AcademicSolution> {
     const profile = this.studentProfiles.get(studentId);
     if (!profile) {
@@ -489,9 +579,25 @@ export class AITutor {
       );
     }
 
+    // 2. Closed-Loop KingPay Micropayment Calculation
+    let billingStatus: AcademicBillingStatus | undefined = undefined;
+    if (billingOptions?.enableKingPayBilling) {
+      const feePaise = billingOptions.microFeePaise ?? 100; // ₹1.00 micro-fee
+      const currentBalance = billingOptions.walletBalancePaise ?? 0;
+      const isBilled = currentBalance >= feePaise;
+      billingStatus = {
+        billed: isBilled,
+        amountPaise: isBilled ? feePaise : 0,
+        remainingBalancePaise: isBilled ? currentBalance - feePaise : currentBalance,
+        note: isBilled
+          ? `Micro-transaction settled via KingPay (₹${(feePaise / 100).toFixed(2)})`
+          : "Complimentary Tier (Zero/Insufficient KingPay Balance)",
+      };
+    }
+
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
-    // 2. Build strictly conditioned zero-hallucination prompt
+    // 3. Build strictly conditioned zero-hallucination prompt
     const systemPrompt = `You are the Official Academic Tutor for students under the ${profile.board} curriculum, Grade ${profile.grade}, Subject ${subject}.
 CRITICAL MANDATE:
 - Maintain 100% strict alignment with NCERT, CBSE, and Indian State Board textbook definitions.
@@ -501,7 +607,7 @@ CRITICAL MANDATE:
 ### 2. Step-by-Step Derivation & Solution
 ### 3. Final Answer`;
 
-    // 3. Attempt Gemini 2.5 Flash
+    // 4. Attempt Gemini 2.5 Flash
     if (apiKey && apiKey.trim().length > 15 && !apiKey.toLowerCase().includes("dummy")) {
       try {
         const ai = new GoogleGenAI({ apiKey });
@@ -524,6 +630,7 @@ CRITICAL MANDATE:
               ...parsed,
               modelUsed: "gemini-2.5-flash",
               isFallback: false,
+              billingStatus,
             };
           }
         } catch (flash25Err) {
@@ -545,6 +652,7 @@ CRITICAL MANDATE:
               ...parsed,
               modelUsed: "gemini-2.0-flash",
               isFallback: false,
+              billingStatus,
             };
           }
         }
@@ -553,7 +661,7 @@ CRITICAL MANDATE:
       }
     }
 
-    // 4. Deterministic NCERT Zero-Crash Fallback
+    // 5. Deterministic NCERT Zero-Crash Fallback
     const fallbackText = this.generateDeterministicNCERTSolution(query, profile.board, profile.grade);
     const parsed = parseAcademicSolution(fallbackText);
 
@@ -561,6 +669,7 @@ CRITICAL MANDATE:
       ...parsed,
       modelUsed: "deterministic-ncert-engine",
       isFallback: true,
+      billingStatus,
     };
   }
 }

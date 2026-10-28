@@ -18,10 +18,12 @@ import { formatPaise } from "@/lib/money";
 import {
   buildNPCIUpiIntentUrl,
   generateAllUPIAppLinks,
+  generateBharatQRPayload,
+  verifyBharatQRChecksum,
   type SupportedUPIApp,
   FOUNDER_UPI_VPAS,
 } from "@/lib/payments/npci-upi-intent";
-import { FOUNDER_UPI_VPA, FOUNDER_MERCHANT_NAME } from "@/lib/dispatch/whatsapp-gps-bridge";
+import { FOUNDER_UPI_VPA, FOUNDER_MERCHANT_NAME, SOVEREIGN_NPCI_UPI_VPA } from "@/lib/dispatch/whatsapp-gps-bridge";
 
 export interface DirectUpiIntentModalProps {
   isOpen: boolean;
@@ -44,6 +46,8 @@ export function DirectUpiIntentModal({
   founderVpa = FOUNDER_UPI_VPA,
   founderPayeeName = FOUNDER_MERCHANT_NAME,
 }: DirectUpiIntentModalProps) {
+  const [activeVpa, setActiveVpa] = useState<string>(founderVpa || "9395065587@ybl");
+  const [qrFormat, setQrFormat] = useState<"bharatqr" | "upi">("bharatqr");
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [timeRemainingSeconds, setTimeRemainingSeconds] = useState(300); // 5 minute dynamic window
@@ -54,22 +58,29 @@ export function DirectUpiIntentModal({
 
   // Generate NPCI Intent URL and app-specific links
   const upiParams = {
-    vpa: founderVpa,
+    vpa: activeVpa,
     payeeName: founderPayeeName,
     amountInRupees: amountRupees,
     currency: "INR" as const,
     transactionRef,
     transactionNote: `${orderPublicId} ${orderNotes}`.slice(0, 50),
     merchantCategoryCode: "5812", // Dining & Food
+    merchantCity: "Karimganj",
+    postalCode: "788710",
     mode: "02", // Dynamic QR / Intent
   };
 
   const universalIntentUrl = buildNPCIUpiIntentUrl(upiParams);
   const appLinks = generateAllUPIAppLinks(upiParams);
+  const bharatQr = generateBharatQRPayload(upiParams);
+  const isCrcValid = verifyBharatQRChecksum(bharatQr.emvcoPayload);
+
+  // Active QR payload: EMVCo MPM v1.0 standard with 16-bit CRC-CCITT or canonical UPI URI
+  const activeQrPayload = qrFormat === "bharatqr" ? bharatQr.emvcoPayload : universalIntentUrl;
 
   // High-res QR code image generated dynamically
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&data=${encodeURIComponent(
-    universalIntentUrl
+    activeQrPayload
   )}&bgcolor=FFFFFF&color=090D16`;
 
   // Countdown timer for dynamic intent
@@ -280,11 +291,40 @@ export function DirectUpiIntentModal({
 
           {/* Dynamic Live BharatQR Section */}
           <div className="rounded-2xl border border-amber-400/40 bg-zinc-900/70 p-4 text-center flex flex-col items-center">
-            <div className="flex items-center gap-2 mb-2">
-              <QrCode className="size-4 text-amber-400" />
-              <span className="text-xs font-bold text-zinc-200">
-                Or Scan with Any Phone Camera / Bank App
+            <div className="flex items-center justify-between w-full mb-3">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-200">
+                <QrCode className="size-4 text-amber-400" />
+                <span>Scan Dynamic BharatQR</span>
+              </div>
+              <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[9px] font-black uppercase text-emerald-400">
+                0.0% MDR Bypass
               </span>
+            </div>
+
+            {/* VPA Selector Tabs */}
+            <div className="grid grid-cols-2 gap-1.5 w-full mb-3 bg-black/40 p-1 rounded-xl border border-amber-400/20">
+              <button
+                type="button"
+                onClick={() => setActiveVpa("9395065587@ybl")}
+                className={`py-1 px-2 rounded-lg text-[10px] font-bold font-mono transition cursor-pointer ${
+                  activeVpa === "9395065587@ybl"
+                    ? "bg-amber-400 text-zinc-950 shadow-xs"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                9395065587@ybl (Founder)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveVpa(SOVEREIGN_NPCI_UPI_VPA || "orderking@ybl")}
+                className={`py-1 px-2 rounded-lg text-[10px] font-bold font-mono transition cursor-pointer ${
+                  activeVpa === (SOVEREIGN_NPCI_UPI_VPA || "orderking@ybl")
+                    ? "bg-amber-400 text-zinc-950 shadow-xs"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                orderking@ybl (Sovereign)
+              </button>
             </div>
 
             <div className="relative bg-white p-3 rounded-2xl shadow-xl ring-4 ring-amber-400/20 mb-3">
@@ -304,11 +344,51 @@ export function DirectUpiIntentModal({
               </div>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-300">
-              <span>{founderVpa}</span>
+            {/* Format toggle: EMVCo MPM BharatQR vs Canonical URI */}
+            <div className="flex items-center justify-center gap-1.5 mb-2">
               <button
                 type="button"
-                onClick={handleCopyUpi}
+                onClick={() => setQrFormat("bharatqr")}
+                className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider transition cursor-pointer ${
+                  qrFormat === "bharatqr"
+                    ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                EMVCo MPM v1.0
+              </button>
+              <span className="text-zinc-600">·</span>
+              <button
+                type="button"
+                onClick={() => setQrFormat("upi")}
+                className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider transition cursor-pointer ${
+                  qrFormat === "upi"
+                    ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                UPI URI Intent
+              </button>
+            </div>
+
+            {/* CRC-16 Checksum Status */}
+            <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-mono mb-2">
+              <ShieldCheck className="size-3 text-emerald-400" />
+              <span>CRC-16: 0x{bharatQr.emvcoPayload.slice(-4)} ({isCrcValid ? "Verified 100%" : "Invalid"})</span>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-300">
+              <span>{activeVpa}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && navigator.clipboard) {
+                    void navigator.clipboard.writeText(activeVpa);
+                    setCopiedUpi(true);
+                    toast.success(`Copied ${activeVpa} to clipboard!`);
+                    setTimeout(() => setCopiedUpi(false), 2000);
+                  }
+                }}
                 className="p-1 hover:text-amber-400 transition cursor-pointer"
                 title="Copy VPA"
               >

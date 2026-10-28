@@ -1,6 +1,7 @@
 
 import { Car, FileText, Shield, AlertTriangle, ArrowRight, Zap, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { buildMotorInsuranceAffiliateUrl } from "@/components/fintech/supreme-kingpay-experience";
 
 interface VehicleGarageHubProps {
   walletBalance: number;
@@ -9,8 +10,9 @@ interface VehicleGarageHubProps {
 }
 
 export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner }: VehicleGarageHubProps) {
-  const handleFastag = () => window.open("https://paytm.com/fastag-recharge?utm_source=orderking_affiliate", "_blank");
-  const handleInsurance = () => window.open("https://www.policybazaar.com/motor-insurance/?utm_source=orderking_affiliate", "_blank");
+  const handleFastag = () => window.open("https://paytm.com/fastag-recharge?utm_source=orderking_affiliate&utm_medium=garage_renewal&utm_campaign=silent_bypass_8&aff_id=orderking_pay", "_blank");
+  const handleInsurance = () => window.open(buildMotorInsuranceAffiliateUrl("policybazaar", "GENERAL"), "_blank");
+  const handleAcko = () => window.open(buildMotorInsuranceAffiliateUrl("acko", "GENERAL"), "_blank");
   const handleChallan = () => window.open("https://echallan.parivahan.gov.in/index/accused-challan", "_blank");
   const handlePuc = () => window.open("https://vahan.parivahan.gov.in/puc/", "_blank");
 
@@ -52,8 +54,19 @@ export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner 
           >
             <Shield className="mr-3 size-5 text-emerald-500" />
             <div className="flex flex-col items-start">
-              <span className="font-bold">Renew Insurance</span>
-              <span className="text-xs text-muted font-normal">0-Paperwork Policy</span>
+              <span className="font-bold">Renew Insurance (PolicyBazaar)</span>
+              <span className="text-xs text-muted font-normal">1-Click Policy Renewal</span>
+            </div>
+          </Button>
+
+          <Button 
+            onClick={handleAcko}
+            className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-purple-500/30 text-fg justify-start"
+          >
+            <Shield className="mr-3 size-5 text-purple-400" />
+            <div className="flex flex-col items-start">
+              <span className="font-bold">Renew Insurance (Acko)</span>
+              <span className="text-xs text-muted font-normal">Zero Paperwork Direct</span>
             </div>
           </Button>
 

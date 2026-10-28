@@ -65,7 +65,9 @@ import { Route as ApiPushSubscribeRouteImport } from './routes/api/push/subscrib
 import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
 import { Route as ApiRazorpayVerifyRouteImport } from './routes/api/razorpay/verify'
 import { Route as ApiSyncCustomizationsRouteImport } from './routes/api/sync/customizations'
+import { Route as ApiTravelBookingConfirmedRouteImport } from './routes/api/travel/booking-confirmed'
 import { Route as ApiTravelBusSearchRouteImport } from './routes/api/travel/bus-search'
+import { Route as ApiTravelCorridorTariffsRouteImport } from './routes/api/travel/corridor-tariffs'
 import { Route as ApiTravelFlightSearchRouteImport } from './routes/api/travel/flight-search'
 import { Route as ApiTravelFlightTrackerRouteImport } from './routes/api/travel/flight-tracker'
 import { Route as ApiTravelHotelSearchRouteImport } from './routes/api/travel/hotel-search'
@@ -356,11 +358,23 @@ const ApiSyncCustomizationsRoute = ApiSyncCustomizationsRouteImport.update({
   path: '/api/sync/customizations',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTravelBookingConfirmedRoute =
+  ApiTravelBookingConfirmedRouteImport.update({
+    id: '/api/travel/booking-confirmed',
+    path: '/api/travel/booking-confirmed',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiTravelBusSearchRoute = ApiTravelBusSearchRouteImport.update({
   id: '/api/travel/bus-search',
   path: '/api/travel/bus-search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTravelCorridorTariffsRoute =
+  ApiTravelCorridorTariffsRouteImport.update({
+    id: '/api/travel/corridor-tariffs',
+    path: '/api/travel/corridor-tariffs',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiTravelFlightSearchRoute = ApiTravelFlightSearchRouteImport.update({
   id: '/api/travel/flight-search',
   path: '/api/travel/flight-search',
@@ -466,7 +480,9 @@ export interface FileRoutesByFullPath {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
+  '/api/travel/booking-confirmed': typeof ApiTravelBookingConfirmedRoute
   '/api/travel/bus-search': typeof ApiTravelBusSearchRoute
+  '/api/travel/corridor-tariffs': typeof ApiTravelCorridorTariffsRoute
   '/api/travel/flight-search': typeof ApiTravelFlightSearchRoute
   '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
   '/api/travel/hotel-search': typeof ApiTravelHotelSearchRoute
@@ -534,7 +550,9 @@ export interface FileRoutesByTo {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
+  '/api/travel/booking-confirmed': typeof ApiTravelBookingConfirmedRoute
   '/api/travel/bus-search': typeof ApiTravelBusSearchRoute
+  '/api/travel/corridor-tariffs': typeof ApiTravelCorridorTariffsRoute
   '/api/travel/flight-search': typeof ApiTravelFlightSearchRoute
   '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
   '/api/travel/hotel-search': typeof ApiTravelHotelSearchRoute
@@ -603,7 +621,9 @@ export interface FileRoutesById {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
+  '/api/travel/booking-confirmed': typeof ApiTravelBookingConfirmedRoute
   '/api/travel/bus-search': typeof ApiTravelBusSearchRoute
+  '/api/travel/corridor-tariffs': typeof ApiTravelCorridorTariffsRoute
   '/api/travel/flight-search': typeof ApiTravelFlightSearchRoute
   '/api/travel/flight-tracker': typeof ApiTravelFlightTrackerRoute
   '/api/travel/hotel-search': typeof ApiTravelHotelSearchRoute
@@ -673,7 +693,9 @@ export interface FileRouteTypes {
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
     | '/api/sync/customizations'
+    | '/api/travel/booking-confirmed'
     | '/api/travel/bus-search'
+    | '/api/travel/corridor-tariffs'
     | '/api/travel/flight-search'
     | '/api/travel/flight-tracker'
     | '/api/travel/hotel-search'
@@ -741,7 +763,9 @@ export interface FileRouteTypes {
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
     | '/api/sync/customizations'
+    | '/api/travel/booking-confirmed'
     | '/api/travel/bus-search'
+    | '/api/travel/corridor-tariffs'
     | '/api/travel/flight-search'
     | '/api/travel/flight-tracker'
     | '/api/travel/hotel-search'
@@ -809,7 +833,9 @@ export interface FileRouteTypes {
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
     | '/api/sync/customizations'
+    | '/api/travel/booking-confirmed'
     | '/api/travel/bus-search'
+    | '/api/travel/corridor-tariffs'
     | '/api/travel/flight-search'
     | '/api/travel/flight-tracker'
     | '/api/travel/hotel-search'
@@ -877,7 +903,9 @@ export interface RootRouteChildren {
   ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
   ApiRazorpayVerifyRoute: typeof ApiRazorpayVerifyRoute
   ApiSyncCustomizationsRoute: typeof ApiSyncCustomizationsRouteWithChildren
+  ApiTravelBookingConfirmedRoute: typeof ApiTravelBookingConfirmedRoute
   ApiTravelBusSearchRoute: typeof ApiTravelBusSearchRoute
+  ApiTravelCorridorTariffsRoute: typeof ApiTravelCorridorTariffsRoute
   ApiTravelFlightSearchRoute: typeof ApiTravelFlightSearchRoute
   ApiTravelFlightTrackerRoute: typeof ApiTravelFlightTrackerRoute
   ApiTravelHotelSearchRoute: typeof ApiTravelHotelSearchRoute
@@ -1282,11 +1310,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSyncCustomizationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/travel/booking-confirmed': {
+      id: '/api/travel/booking-confirmed'
+      path: '/api/travel/booking-confirmed'
+      fullPath: '/api/travel/booking-confirmed'
+      preLoaderRoute: typeof ApiTravelBookingConfirmedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/travel/bus-search': {
       id: '/api/travel/bus-search'
       path: '/api/travel/bus-search'
       fullPath: '/api/travel/bus-search'
       preLoaderRoute: typeof ApiTravelBusSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/travel/corridor-tariffs': {
+      id: '/api/travel/corridor-tariffs'
+      path: '/api/travel/corridor-tariffs'
+      fullPath: '/api/travel/corridor-tariffs'
+      preLoaderRoute: typeof ApiTravelCorridorTariffsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/travel/flight-search': {
@@ -1435,7 +1477,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,
   ApiRazorpayVerifyRoute: ApiRazorpayVerifyRoute,
   ApiSyncCustomizationsRoute: ApiSyncCustomizationsRouteWithChildren,
+  ApiTravelBookingConfirmedRoute: ApiTravelBookingConfirmedRoute,
   ApiTravelBusSearchRoute: ApiTravelBusSearchRoute,
+  ApiTravelCorridorTariffsRoute: ApiTravelCorridorTariffsRoute,
   ApiTravelFlightSearchRoute: ApiTravelFlightSearchRoute,
   ApiTravelFlightTrackerRoute: ApiTravelFlightTrackerRoute,
   ApiTravelHotelSearchRoute: ApiTravelHotelSearchRoute,

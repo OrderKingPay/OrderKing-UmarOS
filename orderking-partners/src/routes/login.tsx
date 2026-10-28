@@ -179,10 +179,7 @@ function Login() {
         setOtpStep("code");
         setCountdown(30);
         setCanResend(false);
-        // Open WhatsApp deep link in new window for 1-tap OTP
-        if (typeof window !== "undefined" && res.whatsAppOtpUrl) {
-          window.open(res.whatsAppOtpUrl, "_blank", "noopener,noreferrer");
-        }
+        // Sovereign direct delivery to user WhatsApp inbox
         return;
       }
 
@@ -640,26 +637,15 @@ function Login() {
                       )}
                     </div>
 
-                    {whatsAppUrl ? (
-                      <a
-                        href={whatsAppUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/50 text-xs font-semibold transition"
-                      >
-                        <MessageCircle className="size-3.5 text-emerald-400" />
-                        <span>Open OTP in WhatsApp (Zero-Lockout)</span>
-                      </a>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => void handleSendOtp("whatsapp")}
-                        className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 hover:text-emerald-400 text-xs font-semibold transition"
-                      >
-                        <MessageCircle className="size-3.5 text-emerald-400" />
-                        <span>Deliver OTP to my WhatsApp</span>
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      disabled={working || !canResend}
+                      onClick={() => void handleSendOtp("whatsapp")}
+                      className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/50 disabled:opacity-50 text-xs font-semibold transition"
+                    >
+                      <MessageCircle className="size-3.5 text-emerald-400" />
+                      <span>{canResend ? "Deliver OTP to WhatsApp" : `Resend WhatsApp in ${countdown}s`}</span>
+                    </button>
                   </div>
                 </div>
               )}

@@ -170,7 +170,7 @@ export interface TravelRevenueLedgerRecord {
   grossAmountPaise: number;
   partnerCommissionBps: number;
   partnerCommissionPaise: number;
-  platformConvenienceFeePaise: 0; // Strictly 0 paise under OrderKing guarantee
+  platformConvenienceFeePaise: number;
   netCreditedPaise: number;
   userId?: string;
   timestamp: string;

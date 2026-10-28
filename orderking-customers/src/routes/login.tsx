@@ -112,10 +112,10 @@ function Login() {
       setResendTimer(30);
 
       if (channel === "whatsapp") {
-        setSuccessMsg(`WhatsApp verification generated for +91-${cleanNumber}`);
-        if (res.whatsAppOtpUrl) {
-          window.open(res.whatsAppOtpUrl, "_blank", "noopener,noreferrer");
-        }
+        setSuccessMsg(
+          res.providerNotice ||
+            `Verification code sent to your WhatsApp inbox (+91-${cleanNumber}). Valid for 10 minutes.`
+        );
       } else {
         setSuccessMsg(
           res.providerNotice ||
@@ -418,16 +418,21 @@ function Login() {
                       </div>
                     ) : null}
 
-                    {/* Prominent WhatsApp Verification Button */}
-                    <a
-                      href={whatsAppUrl || `https://wa.me/919395065587?text=${encodeURIComponent(`VERIFY ${phone}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 transition"
+                    {/* Sovereign WhatsApp Dispatch Action */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={busy || resendTimer > 0}
+                      onClick={() => void onSendOtp("whatsapp")}
+                      className="w-full h-11 rounded-2xl border-emerald-500/40 bg-emerald-950/20 text-emerald-400 hover:bg-emerald-950/40 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
                     >
                       <span className="text-sm">💬</span>
-                      <span>Receive Verification via WhatsApp</span>
-                    </a>
+                      <span>
+                        {resendTimer > 0
+                          ? `Resend via WhatsApp in ${resendTimer}s`
+                          : "Deliver OTP to WhatsApp"}
+                      </span>
+                    </Button>
 
                     <Button
                       type="button"

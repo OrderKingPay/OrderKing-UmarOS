@@ -49,6 +49,9 @@ export interface OrderReconciliationInput {
   panNumber?: string;
   isInterstate?: boolean;
   cycleType?: SettlementCycleType;
+  merchantHasGstin?: boolean;
+  restaurantGstin?: string;
+  annualTurnoverUnder20L?: boolean;
 }
 
 export interface OrderReconciliationStatement {
@@ -209,14 +212,33 @@ export class SettlementReconciliationEngine {
     const gwGst = calculatePlatformServiceGST(gatewayFeePaise, isInterstate);
 
     // 5. Statutory Withholdings
-    // Section 52 CGST Act: 1% TCS on Net Taxable Supply
-    const tcs = calculateSection52TCS(netTaxableSupplyPaise, isInterstate);
+    // Section 52 CGST Act: 0.5% TCS on Net Taxable Supply
+    // Per Circular 167/23/2021-GST, Section 52 TCS does NOT apply to restaurant services under Section 9(5).
+    // Furthermore, unregistered food vendors (<₹20L annual turnover) have zero TCS liability.
+    const isUnregistered =
+      input.merchantHasGstin === false ||
+      input.annualTurnoverUnder20L === true ||
+      (Boolean(input.restaurantGstin) && input.restaurantGstin!.startsWith("URP"));
+
+    const tcs = isUnregistered
+      ? {
+          netSalesPaise: netTaxableSupplyPaise,
+          rateBps: 0,
+          cgstTcsPaise: 0,
+          sgstTcsPaise: 0,
+          igstTcsPaise: 0,
+          totalTcsPaise: 0,
+          isInterstate,
+          statutorySection: "CGST_ACT_SECTION_52" as const,
+          monthlyGstr8Reporting: false,
+        }
+      : calculateSection52TCS(netTaxableSupplyPaise, isInterstate);
 
     // Section 194-O Income Tax Act: 1% TDS on Gross Sales
     const hasValidPan = input.hasValidPan ?? Boolean(input.panNumber && input.panNumber.length === 10);
     const tds = calculateSection194OTDS(grossSalesPaise, hasValidPan, input.panNumber);
 
-    // Section 9(5) CGST Act: 5% Food GST remitted by Platform (NOT debited from merchant)
+    // Section 9(5) CGST Act: 5% Food GST remitted by Platform (NOT debited from merchant; ZERO tax penalty for unregistered food vendors)
     const sec9_5 = calculateSection9_5FoodGST(netTaxableSupplyPaise, isInterstate);
 
     // 6. Express Daily (T+1) Early Liquidity Fee (0.5% + 18% GST)

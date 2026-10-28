@@ -1,6 +1,7 @@
 import { fraudShield, type OrderRiskContext } from '../security/fraud-shield.ts';
 import { getSql, type Sql } from '../../db.ts';
 import * as crypto from 'crypto';
+import { assertSafePaise } from '../revenue/tax-calculator.ts';
 
 export const SOVEREIGN_NPCI_UPI_VPA = "orderking@ybl";
 export const SECONDARY_NPCI_UPI_VPA = "9395065587@ybl";
@@ -32,7 +33,9 @@ export type LedgerAccountType =
   | "ESCROW_HOLDING"
   | "JOB_MILESTONE_ESCROW"
   | "FREELANCER_PAYABLE"
-  | "USER_WALLET";
+  | "USER_WALLET"
+  | "TRAVEL_PROVIDER_PAYABLE"
+  | "PROMO_MARKETING_EXPENSE";
 
 export interface LedgerEntry {
   entryId?: string;
@@ -93,6 +96,87 @@ export interface SettlementBatch {
   attemptsCount: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export const MANDATORY_OTA_CONVENIENCE_FEE_PAISE = {
+  FLIGHT: 39_900, // ₹399 per passenger
+  TRAIN: 4_000,   // ₹40 per ticket/passenger
+  HOTEL: 25_000,  // ₹250 per room/booking
+  BUS: 5_000,     // ₹50 per bus passenger
+  CAB: 5_000,     // ₹50 per cab booking
+} as const;
+
+export interface DynamicTravelCheckoutSplitParams {
+  bookingId: string;
+  serviceType: "FLIGHT" | "TRAIN" | "HOTEL" | "BUS" | "CAB";
+  customerPaidPaise: number;
+  wholesaleNetPaise: number;
+  foodWalletRewardPaise?: number; // default: 20_000 paise (₹200.00 closed-loop food wallet reward float)
+  userId: string;
+  passengerCount?: number;
+  convenienceFeePaise?: number;
+  providerName?: string; // default: "TBO_B2B_187051"
+  paymentMethod?: "NPCI_UPI" | "DIRECT_UPI" | "KING_PAY" | "BANK_TRANSFER" | "RAZORPAY_ONLINE";
+  founderAccount?: "PLATFORM_FEE_REVENUE" | "FOUNDER_VAULT";
+  founderEntityId?: string;
+  idempotencyKey: string;
+}
+
+export interface DynamicTravelCheckoutSplitResult {
+  transaction: LedgerTransaction;
+  splitSummary: {
+    bookingId: string;
+    serviceType: "FLIGHT" | "TRAIN" | "HOTEL" | "BUS" | "CAB";
+    passengerCount: number;
+    customerPaidPaise: number;
+    wholesaleNetPaise: number;
+    founderFeeRevenuePaise: number;
+    foodWalletRewardPaise: number;
+    convenienceFeePaise: number;
+    doubleEntryVariancePaise: number; // strictly 0
+    accountsCredited: {
+      travelProviderPayable: number;
+      platformFeeRevenue: number;
+      customerWallet: number;
+    };
+    accountDebited: {
+      account: LedgerAccountType;
+      amountPaise: number;
+    };
+  };
+}
+
+export interface OtaTravelBookingParams {
+  bookingId: string;
+  serviceType: "FLIGHT" | "TRAIN" | "HOTEL";
+  passengerCount: number;
+  wholesaleNetPaise: number;
+  publishedMrpPaise?: number;
+  promoCode?: string | null;
+  optInTripProtection?: boolean;
+  paymentMethod?: "NPCI_UPI" | "DIRECT_UPI" | "KING_PAY" | "BANK_TRANSFER" | "RAZORPAY_ONLINE";
+  userId?: string;
+  providerName?: string;
+  idempotencyKey: string;
+}
+
+export interface OtaTravelBookingResult {
+  transaction: LedgerTransaction;
+  fareBreakdown: {
+    serviceType: "FLIGHT" | "TRAIN" | "HOTEL";
+    passengerCount: number;
+    wholesaleNetTotalPaise: number;
+    publishedMrpTotalPaise: number;
+    wholesaleCommissionPaise: number;
+    mandatoryConvenienceFeePaise: number;
+    tripProtectionPaise: number;
+    promoCodeApplied: string | null;
+    promoDiscountPaise: number;
+    promoCashbackFoodWalletPaise: number;
+    totalCustomerDebitPaise: number;
+    platformRetainedMarginPaise: number;
+    guaranteedUpfrontCashFloatPaise: number;
+  };
 }
 
 export class CanonicalLedger {
@@ -926,6 +1010,260 @@ export class CanonicalLedger {
         },
       ],
     });
+  }
+
+  public async recordOtaTravelBooking(params: OtaTravelBookingParams): Promise<OtaTravelBookingResult> {
+    const count = Math.max(1, Math.floor(params.passengerCount || 1));
+    const wholesaleNetUnit = Math.max(0, Math.floor(params.wholesaleNetPaise));
+    const publishedMrpUnit = Math.max(wholesaleNetUnit, Math.floor(params.publishedMrpPaise ?? wholesaleNetUnit));
+
+    const wholesaleNetTotalPaise = wholesaleNetUnit * count;
+    const publishedMrpTotalPaise = publishedMrpUnit * count;
+    const wholesaleCommissionPaise = publishedMrpTotalPaise - wholesaleNetTotalPaise;
+
+    const feePerUnit = MANDATORY_OTA_CONVENIENCE_FEE_PAISE[params.serviceType];
+    const mandatoryConvenienceFeePaise = feePerUnit * count;
+    const tripProtectionPaise = params.optInTripProtection ? 14_900 * count : 0; // ₹149/pax
+
+    // Promo Code: strictly opt-in
+    let promoCodeApplied: string | null = null;
+    let promoCashbackFoodWalletPaise = 0;
+
+    if (params.promoCode && typeof params.promoCode === "string" && params.promoCode.trim().length > 0) {
+      const code = params.promoCode.trim().toUpperCase();
+      if (code === "FLYKING" || code === "ORDERKING" || code === "KINGTRAVEL") {
+        promoCodeApplied = code;
+        // Cap at ₹150 (15,000 paise) per booking, funded into closed-loop food wallet,
+        // strictly preserving minimum ₹249 cash float per unit
+        promoCashbackFoodWalletPaise = Math.min(15_000, Math.floor(mandatoryConvenienceFeePaise * 0.40));
+      }
+    }
+
+    // Customer debit = published MRP + mandatory convenience fee + trip protection
+    const totalCustomerDebitPaise = publishedMrpTotalPaise + mandatoryConvenienceFeePaise + tripProtectionPaise;
+
+    // Platform retained margin = convenience fee + wholesale commission + trip protection - food wallet promo
+    const platformRetainedMarginPaise =
+      mandatoryConvenienceFeePaise + wholesaleCommissionPaise + tripProtectionPaise - promoCashbackFoodWalletPaise;
+
+    const guaranteedUpfrontCashFloatPaise = mandatoryConvenienceFeePaise + wholesaleCommissionPaise + tripProtectionPaise;
+
+    const debitAccount: LedgerAccountType = params.paymentMethod === "KING_PAY" ? "CUSTOMER_WALLET" : "BANK_CLEARING";
+    const debitEntityId = params.paymentMethod === "KING_PAY" 
+      ? (params.userId || "KINGPAY_USER") 
+      : `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`;
+
+    const entries: LedgerEntry[] = [
+      {
+        account: debitAccount,
+        direction: "DEBIT",
+        amountPaise: totalCustomerDebitPaise,
+        entityId: debitEntityId,
+        memo: `Customer payment for ${params.serviceType} booking #${params.bookingId} (${count} units)`,
+      },
+      {
+        account: "TRAVEL_PROVIDER_PAYABLE",
+        direction: "CREDIT",
+        amountPaise: wholesaleNetTotalPaise,
+        entityId: params.providerName || "TBO_WHOLESALE_187051",
+        memo: `Wholesale net payable to carrier/hotel for booking #${params.bookingId}`,
+      },
+      {
+        account: "PLATFORM_FEE_REVENUE",
+        direction: "CREDIT",
+        amountPaise: mandatoryConvenienceFeePaise,
+        entityId: "PLATFORM_TREASURY",
+        memo: `Mandatory OTA convenience fee (${params.serviceType}: ₹${(feePerUnit / 100).toFixed(2)} x ${count}) for booking #${params.bookingId}`,
+      },
+    ];
+
+    if (wholesaleCommissionPaise > 0) {
+      entries.push({
+        account: "COMMISSION_ESCROW",
+        direction: "CREDIT",
+        amountPaise: wholesaleCommissionPaise,
+        entityId: "PLATFORM_TREASURY",
+        memo: `Wholesale carrier markup margin for booking #${params.bookingId}`,
+      });
+    }
+
+    if (tripProtectionPaise > 0) {
+      entries.push({
+        account: "PLATFORM_FEE_REVENUE",
+        direction: "CREDIT",
+        amountPaise: tripProtectionPaise,
+        entityId: "PLATFORM_TREASURY",
+        memo: `Trip protection fee for booking #${params.bookingId}`,
+      });
+    }
+
+    const tx = await this.postTransaction({
+      idempotencyKey: params.idempotencyKey,
+      eventType: "OTA_TRAVEL_BOOKING_CAPTURED",
+      orderId: params.bookingId,
+      entries,
+    });
+
+    if (promoCashbackFoodWalletPaise > 0 && params.userId) {
+      await this.postTransaction({
+        idempotencyKey: `promo_cashback_${params.bookingId}_${params.idempotencyKey}`,
+        eventType: "OTA_PROMO_FOOD_WALLET_CREDIT",
+        orderId: params.bookingId,
+        entries: [
+          {
+            account: "PROMO_MARKETING_EXPENSE",
+            direction: "DEBIT",
+            amountPaise: promoCashbackFoodWalletPaise,
+            entityId: "MARKETING_BUDGET",
+            memo: `Opt-in promo voucher ${promoCodeApplied} for travel booking #${params.bookingId}`,
+          },
+          {
+            account: "CUSTOMER_WALLET",
+            direction: "CREDIT",
+            amountPaise: promoCashbackFoodWalletPaise,
+            entityId: params.userId,
+            memo: `Closed-loop food wallet credit from travel booking #${params.bookingId}`,
+          },
+        ],
+      });
+    }
+
+    return {
+      transaction: tx,
+      fareBreakdown: {
+        serviceType: params.serviceType,
+        passengerCount: count,
+        wholesaleNetTotalPaise,
+        publishedMrpTotalPaise,
+        wholesaleCommissionPaise,
+        mandatoryConvenienceFeePaise,
+        tripProtectionPaise,
+        promoCodeApplied,
+        promoDiscountPaise: 0,
+        promoCashbackFoodWalletPaise,
+        totalCustomerDebitPaise,
+        platformRetainedMarginPaise,
+        guaranteedUpfrontCashFloatPaise,
+      },
+    };
+  }
+
+  /**
+   * Binds dynamic travel checkout split-settlement with exact 4-way balanced double-entry accounting:
+   * - DEBIT: Bank Clearing (BANK_CLEARING) — Full Customer Paid Amount via NPCI UPI
+   * - CREDIT: TBO B2B Settlement Account (TRAVEL_PROVIDER_PAYABLE) — Wholesale Net Paise
+   * - CREDIT: Founder Fee Revenue Account (PLATFORM_FEE_REVENUE / FOUNDER_VAULT) — Net Retained Margin + Convenience Fee
+   * - CREDIT: Closed-Loop Food Wallet Float (CUSTOMER_WALLET) — ₹200 / 20,000 paise reward per booking
+   *
+   * Invariant: Debits - Credits === 0 paise exact. Fail-closed if funds are insufficient or fractional.
+   */
+  public async recordDynamicTravelCheckoutSplit(
+    params: DynamicTravelCheckoutSplitParams
+  ): Promise<DynamicTravelCheckoutSplitResult> {
+    const count = Math.max(1, Math.floor(params.passengerCount || 1));
+    const customerPaidPaise = assertSafePaise(params.customerPaidPaise, "customerPaidPaise");
+    const wholesaleNetPaise = assertSafePaise(params.wholesaleNetPaise, "wholesaleNetPaise");
+    const foodWalletRewardPaise = params.foodWalletRewardPaise !== undefined
+      ? assertSafePaise(params.foodWalletRewardPaise, "foodWalletRewardPaise")
+      : 20_000;
+
+    const defaultFee =
+      MANDATORY_OTA_CONVENIENCE_FEE_PAISE[params.serviceType as keyof typeof MANDATORY_OTA_CONVENIENCE_FEE_PAISE] ?? 39_900;
+    const convenienceFeePaise = params.convenienceFeePaise !== undefined
+      ? assertSafePaise(params.convenienceFeePaise, "convenienceFeePaise")
+      : defaultFee * count;
+
+    // Strict fail-closed solvency check: customerPaidPaise must >= wholesaleNetPaise + foodWalletRewardPaise
+    if (customerPaidPaise < wholesaleNetPaise + foodWalletRewardPaise) {
+      throw new Error(
+        `FAIL-CLOSED: Customer paid amount (${customerPaidPaise} paise) is insufficient to cover wholesale net (${wholesaleNetPaise} paise) and closed-loop food wallet reward (${foodWalletRewardPaise} paise).`
+      );
+    }
+
+    // Net retained paise + convenience fee credited to founder revenue
+    const founderFeeRevenuePaise = customerPaidPaise - wholesaleNetPaise - foodWalletRewardPaise;
+
+    const debitAccount: LedgerAccountType = params.paymentMethod === "KING_PAY" ? "CUSTOMER_WALLET" : "BANK_CLEARING";
+    const debitEntityId = params.paymentMethod === "KING_PAY"
+      ? (params.userId || "KINGPAY_USER")
+      : `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`;
+
+    const founderAccount: LedgerAccountType = params.founderAccount || "PLATFORM_FEE_REVENUE";
+    const founderEntityId = params.founderEntityId || "FOUNDER_VAULT";
+    const providerEntityId = params.providerName || "TBO_B2B_187051";
+
+    const entries: LedgerEntry[] = [
+      {
+        account: debitAccount,
+        direction: "DEBIT",
+        amountPaise: customerPaidPaise,
+        entityId: debitEntityId,
+        memo: `Dynamic travel checkout payment for ${params.serviceType} booking #${params.bookingId} (${count} pax)`,
+      },
+      {
+        account: "TRAVEL_PROVIDER_PAYABLE",
+        direction: "CREDIT",
+        amountPaise: wholesaleNetPaise,
+        entityId: providerEntityId,
+        memo: `TBO B2B wholesale net settlement for booking #${params.bookingId}`,
+      },
+      {
+        account: founderAccount,
+        direction: "CREDIT",
+        amountPaise: founderFeeRevenuePaise,
+        entityId: founderEntityId,
+        memo: `Founder fee revenue & net margin retained for booking #${params.bookingId}`,
+      },
+      {
+        account: "CUSTOMER_WALLET",
+        direction: "CREDIT",
+        amountPaise: foodWalletRewardPaise,
+        entityId: params.userId,
+        memo: `Closed-Loop Food Wallet Float reward (₹${(foodWalletRewardPaise / 100).toFixed(2)}) for travel booking #${params.bookingId}`,
+      },
+    ];
+
+    // Mathematical verification of zero-paise double-entry variance
+    const totalDebits = entries.filter((e) => e.direction === "DEBIT").reduce((s, e) => s + e.amountPaise, 0);
+    const totalCredits = entries.filter((e) => e.direction === "CREDIT").reduce((s, e) => s + e.amountPaise, 0);
+    const doubleEntryVariancePaise = totalDebits - totalCredits;
+
+    if (doubleEntryVariancePaise !== 0) {
+      throw new Error(
+        `CRITICAL FINANCIAL DEFECT: Imbalanced double-entry journal! Debits (${totalDebits}) !== Credits (${totalCredits}), variance: ${doubleEntryVariancePaise} paise.`
+      );
+    }
+
+    const tx = await this.postTransaction({
+      idempotencyKey: params.idempotencyKey,
+      eventType: "TRAVEL_DYNAMIC_CHECKOUT_SPLIT_CAPTURED",
+      orderId: params.bookingId,
+      entries,
+    });
+
+    return {
+      transaction: tx,
+      splitSummary: {
+        bookingId: params.bookingId,
+        serviceType: params.serviceType,
+        passengerCount: count,
+        customerPaidPaise,
+        wholesaleNetPaise,
+        founderFeeRevenuePaise,
+        foodWalletRewardPaise,
+        convenienceFeePaise,
+        doubleEntryVariancePaise,
+        accountsCredited: {
+          travelProviderPayable: wholesaleNetPaise,
+          platformFeeRevenue: founderFeeRevenuePaise,
+          customerWallet: foodWalletRewardPaise,
+        },
+        accountDebited: {
+          account: debitAccount,
+          amountPaise: customerPaidPaise,
+        },
+      },
+    };
   }
 }
 

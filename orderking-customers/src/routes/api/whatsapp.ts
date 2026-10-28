@@ -3,6 +3,7 @@ import { getSql } from "@/lib/db";
 import { GoogleGenAI } from "@google/genai/web";
 import crypto from "node:crypto";
 import { timingSafeStringCompare, timingSafeHexCompare } from "@/lib/security/crypto-safe";
+import { generateBotCareResponse } from "@orderking/ui";
 
 export const Route = createFileRoute("/api/whatsapp")({
   server: {
@@ -59,41 +60,81 @@ export const Route = createFileRoute("/api/whatsapp")({
           const phone = contact?.wa_id;
           const text = message.text.body;
 
-          // 1. Identify user by phone number
-          const users = await sql<{ id: string }>`SELECT id FROM auth.users WHERE raw_user_meta_data->>'phone' = ${phone} LIMIT 1`;
-          let userId = users.length > 0 ? users[0].id : null;
+          // 1. Identify user and active order by phone number
+          const cleanPhone = (phone || "").replace(/\D/g, "").replace(/^(?:91|0)/, "");
+          let activeOrder: { id: string; status: string; public_id?: string } | null = null;
+          try {
+            const orders = await sql<{ id: string; status: string; public_id: string }>`
+              SELECT o.id, o.status, o.public_id 
+              FROM orders o
+              JOIN "user" u ON o.user_id = u.id
+              WHERE u.phone LIKE ${"%" + cleanPhone}
+              ORDER BY o.placed_at DESC
+              LIMIT 1
+            `;
+            if (orders.length > 0) activeOrder = orders[0];
+          } catch {
+            /* ignore db error */
+          }
 
-          // 2. Use Gemini to parse intent
-          const prompt = `
-            You are OrderKing's AI assistant. 
-            User message: "${text}"
-            
-            Determine the intent. Reply strictly in JSON format:
-            {
-              "intent": "order" | "status" | "support" | "unknown",
-              "items": [{"name": "string", "qty": number}],
-              "orderId": "string if status",
-              "reply": "friendly natural language response acknowledging their request"
-            }
-          `;
-
-          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-          const aiResponse = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: { responseMimeType: "application/json" }
+          // 2. Generate sovereign 24/7 care response in local language (en/hi/bn/syl)
+          const botCare = generateBotCareResponse(text, {
+            orderId: activeOrder?.public_id || activeOrder?.id,
+            orderStatus: activeOrder?.status,
           });
 
-          const parsed = JSON.parse(aiResponse.text || "{}");
+          let finalReply = botCare.replyText;
+          let parsed: any = {
+            intent: botCare.intent,
+            language: botCare.language,
+            reply: botCare.replyText,
+          };
 
-          // 3. Log communication in the CRM tracking infrastructure
+          // 3. If Gemini is available, enhance response while maintaining local tongue
+          if (process.env.GEMINI_API_KEY) {
+            try {
+              const prompt = `
+                You are OrderKing's Sovereign AI Customer Care Assistant. 
+                User message: "${text}"
+                Detected Language: ${botCare.language} (en, hi, bn, or syl)
+                Grounding reply template: "${botCare.replyText}"
+                Active Order: ${activeOrder ? `#${activeOrder.public_id || activeOrder.id} (${activeOrder.status})` : "None"}
+
+                Instruction:
+                1. Determine user intent.
+                2. Reply strictly in the EXACT SAME LANGUAGE and DIALECT as the user (English, Hindi, Bengali, or Sylheti).
+                3. Return JSON:
+                {
+                  "intent": "${botCare.intent}",
+                  "reply": "friendly, accurate response based on grounding template"
+                }
+              `;
+
+              const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+              const aiResponse = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: prompt,
+                config: { responseMimeType: "application/json" },
+              });
+
+              const geminiParsed = JSON.parse(aiResponse.text || "{}");
+              if (geminiParsed.reply) {
+                finalReply = geminiParsed.reply;
+                parsed = { ...parsed, ...geminiParsed };
+              }
+            } catch (aiErr) {
+              console.warn("Gemini WhatsApp enhancement skipped, using sovereign deterministic care reply:", aiErr);
+            }
+          }
+
+          // 4. Log communication in the CRM tracking infrastructure
           await sql`
             INSERT INTO crm_communications (channel, recipient, status, metadata, sent_at)
             VALUES ('whatsapp', ${phone}, 'received', ${JSON.stringify(parsed)}, NOW())
           `;
 
-          // 4. Trigger outbound WhatsApp reply via Meta Cloud API v21.0 if credentials configured
-          if (process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID && phone && parsed.reply) {
+          // 5. Trigger outbound WhatsApp reply via Meta Cloud API v21.0 if credentials configured
+          if (process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID && phone && finalReply) {
             try {
               await fetch(
                 `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
@@ -108,7 +149,7 @@ export const Route = createFileRoute("/api/whatsapp")({
                     recipient_type: "individual",
                     to: phone,
                     type: "text",
-                    text: { body: parsed.reply },
+                    text: { body: finalReply },
                   }),
                 }
               );

@@ -9,3 +9,5 @@ export * from "./tax";
 export * from "./fssai";
 export * from "./dpdp";
 export * from "./ecosystem-shifts";
+export * from "./telecom-care-bot";
+export * from "./virtual-kitchen";

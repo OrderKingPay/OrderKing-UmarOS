@@ -186,9 +186,95 @@ describe("Umar OS AI Tutor & Academic Specialist Certification Suite", () => {
       expect(solution.derivation).toContain("Decompose into linear integral terms");
       expect(solution.finalAnswer).toContain("\\frac{x}{2} - \\frac{\\sin(2x)}{4} + C");
     });
+
+    it("derives chemical kinetics first-order rate law and half-life according to NCERT Class 12 Chapter 4", async () => {
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        testStudentId,
+        "Derive integrated rate law for first order reaction and half-life Arrhenius",
+        "Chemistry"
+      );
+
+      expect(solution.formula).toContain("-\\frac{d[A]}{dt} = k [A]");
+      expect(solution.formula).toContain("k = \\frac{2.303}{t} \\log_{10}");
+      expect(solution.derivation).toContain("Definite Integration");
+      expect(solution.derivation).toContain("Half-Life Determination");
+      expect(solution.finalAnswer).toContain("t_{1/2} = \\frac{0.693}{k}");
+    });
+
+    it("derives chemical equilibrium Kp = Kc(RT)^delta n according to NCERT Class 11 Chapter 7", async () => {
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        testStudentId,
+        "Derive relationship between Kp and Kc and state Le Chatelier principle",
+        "Chemistry"
+      );
+
+      expect(solution.formula).toContain("K_p = K_c (RT)^{\\Delta n_g}");
+      expect(solution.derivation).toContain("Gas Law Partial Pressures");
+      expect(solution.finalAnswer).toContain("K_p = K_c (RT)^{\\Delta n_g}");
+    });
+
+    it("derives electrochemistry Nernst equation according to NCERT Class 12 Chapter 3", async () => {
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        testStudentId,
+        "Derive Nernst equation for galvanic cell potential at 298 K",
+        "Chemistry"
+      );
+
+      expect(solution.formula).toContain("E_{\\text{cell}} = E^\\circ_{\\text{cell}} - \\frac{2.303 RT}{nF}");
+      expect(solution.formula).toContain("\\frac{0.0591}{n} \\log_{10} Q");
+      expect(solution.derivation).toContain("Thermodynamic Relation");
+      expect(solution.derivation).toContain("Electrical Work Equivalence");
+      expect(solution.finalAnswer).toContain("\\Delta G^\\circ = -nFE^\\circ_{\\text{cell}}");
+    });
   });
 
-  describe("3. 3-Part Pedagogical Standard Parser & LaTeX String Integrity", () => {
+  describe("3. Closed-Loop KingPay Micropayment Integration", () => {
+    it("deducts ₹1.00 (100 paise) micropayment from KingPay wallet balance", async () => {
+      const studentId = "kingpay-paying-student";
+      aiTutor.registerStudent(studentId, "CBSE", 12);
+
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        studentId,
+        "Derive Nernst equation",
+        "Chemistry",
+        {
+          enableKingPayBilling: true,
+          walletBalancePaise: 5000, // ₹50.00
+          microFeePaise: 100,       // ₹1.00
+        }
+      );
+
+      expect(solution.billingStatus).toBeDefined();
+      expect(solution.billingStatus?.billed).toBe(true);
+      expect(solution.billingStatus?.amountPaise).toBe(100);
+      expect(solution.billingStatus?.remainingBalancePaise).toBe(4900);
+      expect(solution.billingStatus?.note).toContain("Micro-transaction settled via KingPay (₹1.00)");
+    });
+
+    it("falls back to complimentary session when student has zero or insufficient KingPay balance", async () => {
+      const studentId = "kingpay-complimentary-student";
+      aiTutor.registerStudent(studentId, "CBSE", 10);
+
+      const solution = await aiTutor.resolveAcademicDoubtWithGemini(
+        studentId,
+        "Derive quadratic formula",
+        "Mathematics",
+        {
+          enableKingPayBilling: true,
+          walletBalancePaise: 50, // Insufficient (less than ₹1.00)
+          microFeePaise: 100,
+        }
+      );
+
+      expect(solution.billingStatus).toBeDefined();
+      expect(solution.billingStatus?.billed).toBe(false);
+      expect(solution.billingStatus?.amountPaise).toBe(0);
+      expect(solution.billingStatus?.remainingBalancePaise).toBe(50);
+      expect(solution.billingStatus?.note).toContain("Complimentary Tier");
+    });
+  });
+
+  describe("4. 3-Part Pedagogical Standard Parser & LaTeX String Integrity", () => {
     it("parses valid 3-part markdown responses into formula, derivation, and finalAnswer", () => {
       const sampleText = `### 1. Given Formula / Concept
 - Principle: Ohm's Law V = I * R.
@@ -216,10 +302,13 @@ describe("Umar OS AI Tutor & Academic Specialist Certification Suite", () => {
         "ohm's law drift velocity resistance",
         "snell lens formula refraction",
         "integration of sin^2(x)",
+        "chemical kinetics rate law arrhenius",
+        "chemical equilibrium Kp = Kc Le Chatelier",
+        "electrochemistry nernst equation cell potential",
       ];
 
       for (const query of testQueries) {
-        const solution = aiTutor.generateDeterministicNCERTSolution(query, "CBSE", 10);
+        const solution = aiTutor.generateDeterministicNCERTSolution(query, "CBSE", 12);
         
         // 1. Must contain all 3 sections
         expect(solution).toContain("### 1. Given Formula / Concept");

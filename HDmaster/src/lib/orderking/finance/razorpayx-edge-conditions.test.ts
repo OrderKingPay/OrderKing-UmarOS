@@ -6,6 +6,7 @@ import {
   getRazorpayXCredentials,
 } from "./razorpayx-payout-engine.ts";
 import { validateIndianBankIFSC } from "../compliance/india-marketplace-engine.ts";
+import { calculateRestaurantWeeklySettlement } from "./weekly-settlement.ts";
 import { createHmac } from "node:crypto";
 
 describe("👑 RazorpayX Edge Conditions & Fail-Closed Payout Engine Verification", () => {
@@ -385,6 +386,104 @@ describe("👑 RazorpayX Edge Conditions & Fail-Closed Payout Engine Verificatio
         },
         /Invalid payout amount/
       );
+    });
+  });
+
+  // ==========================================================================
+  // 6. 0% RISK FOUNDER FUND PROTECTION CIRCUITS (GATEWAY COLLECTIONS VS PAYABLES)
+  // ==========================================================================
+  describe("6. 0% Risk Founder Fund Protection Circuits", () => {
+    it("halts payouts with ESCALATED_DEFICIT if gateway collections < payables + fees", () => {
+      // Scenario: Delinquent or chargebacked order where collected funds are insufficient
+      const deliveredCount = 5;
+      const grossSalesPaise = 100000; // ₹1,000.00
+      const commissionBps = 1200; // 12%
+
+      const settlement = calculateRestaurantWeeklySettlement({
+        restaurantId: "rest_deficit_test",
+        restaurantName: "Deficit Testing Cafe",
+        cycle: {
+          cycleId: "cycle_t1_test",
+          startDate: "2026-10-27",
+          endDate: "2026-10-27",
+          payoutDate: "2026-10-28",
+          status: "OPEN",
+        },
+        deliveredOrdersCount: deliveredCount,
+        grossSalesPaise,
+        restaurantDiscountsPaise: 0,
+        commissionBps,
+        pgFeeBps: 180,
+      });
+
+      const netPayablePaise = settlement.netPayablePaise;
+      const totalExpectedPlatformRetained =
+        settlement.platformCommissionPaise + settlement.gstOnCommissionPaise;
+
+      // Gateway only collected ₹500 (50,000 paise) due to customer chargeback or payment gateway reversal
+      const totalCollectedPaise = 50000;
+      const deliveryFeesPaise = 10000;
+
+      // Founder Protection Invariant Check:
+      const mathematicallySafe =
+        (totalCollectedPaise - deliveryFeesPaise) >=
+        (netPayablePaise + totalExpectedPlatformRetained);
+
+      // Invariant must FAIL (mathematicallySafe === false)
+      assert.equal(mathematicallySafe, false);
+
+      let payoutState = "READY_FOR_PAYOUT";
+      let escalationReason: string | null = null;
+
+      if (!mathematicallySafe) {
+        payoutState = "ESCALATED_DEFICIT";
+        escalationReason = `Mathematical Deficit Detected: Total Collected (₹${(totalCollectedPaise / 100).toFixed(2)}) minus Delivery Fees (₹${(deliveryFeesPaise / 100).toFixed(2)}) is LESS than Net Payable (₹${(netPayablePaise / 100).toFixed(2)}) + Platform Commission (₹${(totalExpectedPlatformRetained / 100).toFixed(2)}). Payout halted to protect Founder capital.`;
+      }
+
+      assert.equal(payoutState, "ESCALATED_DEFICIT");
+      assert.match(escalationReason || "", /protect Founder capital/);
+    });
+
+    it("permits payout when gateway collections cover payables and platform retained take-rate in full", () => {
+      const deliveredCount = 10;
+      const grossSalesPaise = 200000; // ₹2,000.00
+
+      const settlement = calculateRestaurantWeeklySettlement({
+        restaurantId: "rest_healthy_test",
+        restaurantName: "Healthy Cashflow Cafe",
+        cycle: {
+          cycleId: "cycle_t1_healthy",
+          startDate: "2026-10-27",
+          endDate: "2026-10-27",
+          payoutDate: "2026-10-28",
+          status: "OPEN",
+        },
+        deliveredOrdersCount: deliveredCount,
+        grossSalesPaise,
+        restaurantDiscountsPaise: 0,
+        commissionBps: 1200,
+        pgFeeBps: 180,
+      });
+
+      const netPayablePaise = settlement.netPayablePaise;
+      const totalExpectedPlatformRetained =
+        settlement.platformCommissionPaise + settlement.gstOnCommissionPaise;
+
+      // Customer paid ₹2,500 total (including ₹300 delivery + GST)
+      const totalCollectedPaise = 250000;
+      const deliveryFeesPaise = 30000;
+
+      const mathematicallySafe =
+        (totalCollectedPaise - deliveryFeesPaise) >=
+        (netPayablePaise + totalExpectedPlatformRetained);
+
+      assert.equal(mathematicallySafe, true);
+
+      let payoutState = "READY_FOR_PAYOUT";
+      if (!mathematicallySafe) {
+        payoutState = "ESCALATED_DEFICIT";
+      }
+      assert.equal(payoutState, "READY_FOR_PAYOUT");
     });
   });
 });

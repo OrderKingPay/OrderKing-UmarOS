@@ -261,11 +261,11 @@ export const auth = betterAuth({
   // `http://localhost`, so local dev still works.)
   advanced: {
     useSecureCookies: false,
-    defaultCookieAttributes: { secure: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 90 },
+    defaultCookieAttributes: { secure: true, httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 90 },
     cookies: {
       session_token: {
         name: SESSION_TOKEN_COOKIE,
-        attributes: { secure: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 90 },
+        attributes: { secure: true, httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 90 },
       },
       session_data: { name: "__Host-grok-auth.session_data" },
       account_data: { name: "__Host-grok-auth.account_data" },

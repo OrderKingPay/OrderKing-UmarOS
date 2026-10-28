@@ -35,7 +35,275 @@ export interface AcademicSolveResult {
  * for Indian central boards (CBSE/NCERT, ICSE/ISC, NIOS), all 28 State Boards,
  * Classes 1-12, Degree STEM, and premier competitive examinations (NEET/JEE).
  */
+
+export interface CurriculumAuthority {
+  authority: string;
+  textbookStandard: string;
+  region: "Central" | "North" | "South" | "East" | "West" | "Central India" | "National Competitive";
+}
+
+/**
+ * Maps any Indian central, state, or competitive board to its exact
+ * statutory governing curriculum authority and canonical textbook production body.
+ * Guarantees zero regional bias across North, South, East, West, and Central India.
+ */
+export function getGoverningCurriculumAuthority(board: string): CurriculumAuthority {
+  const b = (board || "").toLowerCase();
+
+  // Central Boards
+  if (b.includes("cbse") || b.includes("ncert")) {
+    return {
+      authority: "National Council of Educational Research and Training (NCERT) & CBSE",
+      textbookStandard: "Official NCERT Textbooks & CBSE Marking Schemes",
+      region: "Central",
+    };
+  }
+  if (b.includes("icse") || b.includes("isc") || b.includes("cisce")) {
+    return {
+      authority: "Council for the Indian School Certificate Examinations (CISCE)",
+      textbookStandard: "Prescribed CISCE Scope of Syllabus & Selina/Frank/Nootan Benchmarks",
+      region: "Central",
+    };
+  }
+  if (b.includes("nios")) {
+    return {
+      authority: "National Institute of Open Schooling (NIOS)",
+      textbookStandard: "Official NIOS Self-Instructional Study Material",
+      region: "Central",
+    };
+  }
+
+  // West India
+  if (b.includes("maharashtra") || b.includes("msbshse")) {
+    return {
+      authority: "Maharashtra State Board of Secondary and Higher Secondary Education (MSBSHSE)",
+      textbookStandard: "Balbharati / Maharashtra State Bureau of Textbook Production",
+      region: "West",
+    };
+  }
+  if (b.includes("gujarat") || b.includes("gseb")) {
+    return {
+      authority: "Gujarat Secondary and Higher Secondary Education Board (GSHSEB)",
+      textbookStandard: "Gujarat State Board of School Textbooks (GSSTB)",
+      region: "West",
+    };
+  }
+  if (b.includes("goa") || b.includes("gbshse")) {
+    return {
+      authority: "Goa Board of Secondary and Higher Secondary Education (GBSHSE)",
+      textbookStandard: "SCERT Goa Curriculum & State Textbooks",
+      region: "West",
+    };
+  }
+
+  // South India
+  if (b.includes("tamil nadu") || b.includes("tndge") || b.includes("samacheer")) {
+    return {
+      authority: "Directorate of Government Examinations Tamil Nadu (TNDGE)",
+      textbookStandard: "Tamil Nadu Textbook and Educational Services Corporation (Samacheer Kalvi)",
+      region: "South",
+    };
+  }
+  if (b.includes("karnataka") || b.includes("kseab")) {
+    return {
+      authority: "Karnataka School Examination and Assessment Board (KSEAB)",
+      textbookStandard: "Karnataka Textbook Society (KTBS) & DSERT Karnataka",
+      region: "South",
+    };
+  }
+  if (b.includes("kerala") || b.includes("dhse") || b.includes("kbpe")) {
+    return {
+      authority: "Kerala Board of Public Examinations (KBPE) & DHSE Kerala",
+      textbookStandard: "State Council of Educational Research and Training (SCERT Kerala)",
+      region: "South",
+    };
+  }
+  if (b.includes("andhra") || b.includes("bieap") || b.includes("bseap")) {
+    return {
+      authority: "Board of Intermediate Education & Directorate of Government Examinations AP",
+      textbookStandard: "SCERT Andhra Pradesh & Telugu Akademi Textbooks",
+      region: "South",
+    };
+  }
+  if (b.includes("telangana") || b.includes("tsbie")) {
+    return {
+      authority: "Telangana State Board of Intermediate Education (TSBIE) & BSE Telangana",
+      textbookStandard: "SCERT Telangana & Telugu Akademi Curriculum",
+      region: "South",
+    };
+  }
+
+  // North India
+  if (b.includes("uttar pradesh") || b.includes("up board") || b.includes("upmsp")) {
+    return {
+      authority: "Uttar Pradesh Madhyamik Shiksha Parishad (UPMSP)",
+      textbookStandard: "SCERT Uttar Pradesh & UPMSP Prescribed Textbooks",
+      region: "North",
+    };
+  }
+  if (b.includes("bihar") || b.includes("bseb")) {
+    return {
+      authority: "Bihar School Examination Board (BSEB)",
+      textbookStandard: "Bihar State Textbook Publishing Corporation (BSTBPC)",
+      region: "North",
+    };
+  }
+  if (b.includes("rajasthan") || b.includes("rbse")) {
+    return {
+      authority: "Board of Secondary Education Rajasthan (RBSE)",
+      textbookStandard: "Rajasthan State Textbook Board (RSTB) Jaipur",
+      region: "North",
+    };
+  }
+  if (b.includes("punjab") || b.includes("pseb")) {
+    return {
+      authority: "Punjab School Education Board (PSEB)",
+      textbookStandard: "PSEB Mohali State Syllabus & Textbooks",
+      region: "North",
+    };
+  }
+  if (b.includes("haryana") || b.includes("bseh")) {
+    return {
+      authority: "Board of School Education Haryana (BSEH)",
+      textbookStandard: "SCERT Haryana & Haryana School Education Board",
+      region: "North",
+    };
+  }
+  if (b.includes("himachal") || b.includes("hpbose")) {
+    return {
+      authority: "Himachal Pradesh Board of School Education (HPBOSE)",
+      textbookStandard: "HPBOSE Dharamshala Prescribed Syllabi",
+      region: "North",
+    };
+  }
+  if (b.includes("jammu") || b.includes("kashmir") || b.includes("jkbose")) {
+    return {
+      authority: "Jammu and Kashmir Board of School Education (JKBOSE)",
+      textbookStandard: "JKBOSE State Curriculum & Textbooks",
+      region: "North",
+    };
+  }
+  if (b.includes("uttarakhand") || b.includes("ubse")) {
+    return {
+      authority: "Uttarakhand Board of School Education (UBSE)",
+      textbookStandard: "SCERT Uttarakhand Prescribed Curriculum",
+      region: "North",
+    };
+  }
+
+  // East & Northeast India
+  if (b.includes("west bengal") || b.includes("wbbse") || b.includes("wbchse")) {
+    return {
+      authority: "West Bengal Board of Secondary Education & WBCHSE",
+      textbookStandard: "Paschimbanga Uchha Madhyamik Siksha Samsad & WBBSE Curriculum",
+      region: "East",
+    };
+  }
+  if (b.includes("assam") || b.includes("seba") || b.includes("ahsec")) {
+    return {
+      authority: "Board of Secondary Education Assam (SEBA) & AHSEC",
+      textbookStandard: "Assam State Textbook Production & Publication Corporation (ASTPPC)",
+      region: "East",
+    };
+  }
+  if (b.includes("odisha") || b.includes("bse/chse") || b.includes("chse")) {
+    return {
+      authority: "Board of Secondary Education Odisha & CHSE Odisha",
+      textbookStandard: "Text Book Bureau Odisha (TBW)",
+      region: "East",
+    };
+  }
+  if (b.includes("jharkhand") || b.includes("jac")) {
+    return {
+      authority: "Jharkhand Academic Council (JAC)",
+      textbookStandard: "Jharkhand Council of Educational Research and Training (JCERT)",
+      region: "East",
+    };
+  }
+  if (b.includes("tripura") || b.includes("tbse")) {
+    return {
+      authority: "Tripura Board of Secondary Education (TBSE)",
+      textbookStandard: "SCERT Tripura & TBSE Curriculum",
+      region: "East",
+    };
+  }
+  if (b.includes("meghalaya") || b.includes("mbose")) {
+    return {
+      authority: "Meghalaya Board of School Education (MBOSE)",
+      textbookStandard: "MBOSE Prescribed Curriculum",
+      region: "East",
+    };
+  }
+  if (b.includes("manipur") || b.includes("bosem")) {
+    return {
+      authority: "Board of Secondary Education Manipur (BOSEM & COHSEM)",
+      textbookStandard: "SCERT Manipur Prescribed Syllabi",
+      region: "East",
+    };
+  }
+  if (b.includes("mizoram") || b.includes("mbse")) {
+    return {
+      authority: "Mizoram Board of School Education (MBSE)",
+      textbookStandard: "MBSE Aizawl Textbooks",
+      region: "East",
+    };
+  }
+  if (b.includes("nagaland") || b.includes("nbse")) {
+    return {
+      authority: "Nagaland Board of School Education (NBSE)",
+      textbookStandard: "NBSE Kohima Curriculum",
+      region: "East",
+    };
+  }
+
+  // Central India
+  if (b.includes("madhya pradesh") || b.includes("mpbse")) {
+    return {
+      authority: "Board of Secondary Education Madhya Pradesh (MPBSE)",
+      textbookStandard: "MP Rajya Shiksha Kendra & MP Text Book Corporation",
+      region: "Central India",
+    };
+  }
+  if (b.includes("chhattisgarh") || b.includes("cgbse")) {
+    return {
+      authority: "Chhattisgarh Board of Secondary Education (CGBSE)",
+      textbookStandard: "Chhattisgarh Rajya Pathyapustak Nigam & SCERT CG",
+      region: "Central India",
+    };
+  }
+
+  // National Competitive
+  if (b.includes("neet")) {
+    return {
+      authority: "National Testing Agency (NTA) - NEET UG Medical Entrance",
+      textbookStandard: "NCERT Class 11-12 Biology, Chemistry, and Physics Standard",
+      region: "National Competitive",
+    };
+  }
+  if (b.includes("jee")) {
+    return {
+      authority: "National Testing Agency (NTA) & IIT Joint Admission Board (JEE)",
+      textbookStandard: "Advanced Analytical Problem Solving & Theoretical Mathematics/Physics Standards",
+      region: "National Competitive",
+    };
+  }
+  if (b.includes("degree") || b.includes("stem")) {
+    return {
+      authority: "University Grants Commission (UGC) & AICTE Engineering Curriculum",
+      textbookStandard: "National Undergraduate STEM Standard Framework",
+      region: "National Competitive",
+    };
+  }
+
+  return {
+    authority: "State Council of Educational Research and Training (SCERT) / State Board",
+    textbookStandard: "State Prescribed Textbook Curriculum",
+    region: "Central",
+  };
+}
+
 export function buildAcademicSystemPrompt(data: AcademicSolveParams): string {
+  const auth = getGoverningCurriculumAuthority(data.board);
   const selectedLang =
     data.language && data.language !== "Auto (Detect Native Language)"
       ? data.language
@@ -45,6 +313,9 @@ export function buildAcademicSystemPrompt(data: AcademicSolveParams): string {
 
 SYLLABUS & PEDAGOGICAL ALIGNMENT:
 - Examination Board: ${data.board}
+- Statutory Authority: ${auth.authority}
+- Textbook Standard: ${auth.textbookStandard}
+- Regional Educational Jurisdiction: ${auth.region}
 - Grade / Examination: ${data.stdClass}
 - Subject Domain: ${data.subject}
 - Delivery Language: ${selectedLang}

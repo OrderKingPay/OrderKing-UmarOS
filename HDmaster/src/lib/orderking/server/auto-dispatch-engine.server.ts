@@ -31,7 +31,7 @@ function calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lo
   return R * c;
 }
 
-export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> {
+export async function runAlgorithmicAutoDispatch(evaluationDate: Date = new Date()): Promise<AutoDispatchResult> {
   // 0. Military-Grade Dispatch Velocity Throttling
   const throttleCheck = militaryAntiFraudShield.checkDispatchThrottle(2);
   if (!throttleCheck.valid) {
@@ -76,7 +76,7 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
       `;
 
       // 3. AI Dispatch Matching (Closest Proximity + Capacity)
-      const currentShift = getCurrentEcosystemShift();
+      const currentShift = getCurrentEcosystemShift(evaluationDate);
       const maxDispatchRadius = currentShift.maxRadiusKm;
       for (const order of unassignedOrders) {
         // If the restaurant is missing coordinates, fallback to Karimganj core center
@@ -110,7 +110,7 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
           const effectiveDistance = distanceKm + loadPenaltyKm;
 
           // Honor dynamic active shift radius (Day: 12km, Evening: 7.5km, Late-Night: 3.5km) & safety exclusion zones
-          const inCurfewExclusion = checkThreatZoneIntersections(rider.lat, rider.lng).some(z => z.threatLevel === "EXCLUSION_CURFEW");
+          const inCurfewExclusion = checkThreatZoneIntersections(rider.lat, rider.lng, evaluationDate).some(z => z.threatLevel === "EXCLUSION_CURFEW");
           if (!inCurfewExclusion && effectiveDistance < bestDistance && distanceKm <= maxDispatchRadius) {
             bestDistance = distanceKm;
             bestRiderId = rider.id;

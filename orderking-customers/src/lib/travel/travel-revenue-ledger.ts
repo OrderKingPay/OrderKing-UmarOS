@@ -1,12 +1,17 @@
 /**
  * 👑 OrderKing Travel Revenue Ledger
  * Immutable Double-Entry Ledger Recording for Dynamic Partner Commissions
- * and Platform Convenience Fees in Supabase & Local Database.
+ * and Mandatory Platform Convenience Fees in Supabase & Local Database.
  *
  * Guarantees:
- * - Standard Sovereign Travel Desk Fee Structure
- * - Dynamic Partner Affiliate / B2B Commission (200 - 600 bps) credited to PLATFORM_FEE_REVENUE
- * - Double-entry balanced ledger entries (DEBIT from Clearing / Partner Receivable, CREDIT to Revenue)
+ * - Mandatory High-Yield Platform Convenience Fees:
+ *   - Flights: ₹399/pax (39,900 paise)
+ *   - Trains: ₹40/ticket (4,000 paise)
+ *   - Hotels: ₹250/room (25,000 paise)
+ *   - Bus: ₹30/pax (3,000 paise)
+ * - Dynamic Partner Affiliate / B2B Commission (100 - 600 bps) credited to PLATFORM_FEE_REVENUE
+ * - Strictly Opt-In Promo Codes: When omitted, 100% of fees and wholesale margins are retained by platform.
+ * - Double-entry balanced ledger entries (DEBIT from Bank Clearing, CREDIT to Platform Revenue)
  */
 
 import { supabase } from "@/lib/db-cloud";
@@ -20,12 +25,22 @@ export const DEFAULT_TRAVEL_COMMISSION_BPS = {
   hotel: 600,  // 6.0%
 } as const;
 
+export const MANDATORY_TRAVEL_CONVENIENCE_FEE_PAISE = {
+  flight: 39_900, // ₹399 per passenger
+  train: 4_000,   // ₹40 per ticket/passenger
+  hotel: 25_000,  // ₹250 per room/booking
+  bus: 3_000,     // ₹30 per passenger
+} as const;
+
 export interface RecordCommissionInput {
   bookingReference: string;
   travelMode: "flight" | "train" | "bus" | "hotel";
   partnerName: string;
   grossAmountPaise: number;
   partnerCommissionBps?: number;
+  passengerCount?: number;
+  convenienceFeePaise?: number;
+  promoCode?: string | null;
   userId?: string;
 }
 
@@ -38,13 +53,27 @@ export function calculateTravelCommissionPaise(grossPaise: number, bps: number):
 }
 
 /**
- * Records a travel booking commission event into the authentic ledger.
+ * Records a travel booking commission and convenience fee event into the authentic ledger.
  */
 export async function recordTravelCommissionLedger(
   input: RecordCommissionInput
 ): Promise<TravelRevenueLedgerRecord> {
   const bps = input.partnerCommissionBps ?? DEFAULT_TRAVEL_COMMISSION_BPS[input.travelMode];
   const commissionPaise = calculateTravelCommissionPaise(input.grossAmountPaise, bps);
+  const count = Math.max(1, Math.floor(input.passengerCount || 1));
+  const defaultFee = MANDATORY_TRAVEL_CONVENIENCE_FEE_PAISE[input.travelMode] * count;
+  const convenienceFeePaise = input.convenienceFeePaise !== undefined ? input.convenienceFeePaise : defaultFee;
+
+  // Opt-in promo code: When no code is provided, platform retains 100% of convenience fees and wholesale commission
+  let promoCashbackFoodWalletPaise = 0;
+  if (input.promoCode && typeof input.promoCode === "string" && input.promoCode.trim().length > 0) {
+    const code = input.promoCode.trim().toUpperCase();
+    if (code === "FLYKING" || code === "ORDERKING" || code === "KINGTRAVEL") {
+      promoCashbackFoodWalletPaise = Math.min(15_000, Math.floor(convenienceFeePaise * 0.40));
+    }
+  }
+
+  const netPlatformRevenuePaise = commissionPaise + convenienceFeePaise;
   const trvBuf = new Uint32Array(1);
   crypto.getRandomValues(trvBuf);
   const transactionId = `TRV-COMM-${Date.now()}-${1000 + (trvBuf[0] % 9000)}`;
@@ -58,8 +87,8 @@ export async function recordTravelCommissionLedger(
     grossAmountPaise: input.grossAmountPaise,
     partnerCommissionBps: bps,
     partnerCommissionPaise: commissionPaise,
-    platformConvenienceFeePaise: 0,
-    netCreditedPaise: commissionPaise,
+    platformConvenienceFeePaise: convenienceFeePaise,
+    netCreditedPaise: netPlatformRevenuePaise,
     userId: input.userId,
     timestamp: now,
   };
@@ -70,9 +99,9 @@ export async function recordTravelCommissionLedger(
     transaction_id: transactionId,
     account: "BANK_CLEARING",
     direction: "DEBIT",
-    amount_paise: commissionPaise,
+    amount_paise: netPlatformRevenuePaise,
     entity_id: input.partnerName,
-    memo: `Partner commission receivable from ${input.partnerName} (${bps} bps) for ${input.travelMode.toUpperCase()} ${input.bookingReference}`,
+    memo: `Partner commission receivable (${bps} bps: ₹${(commissionPaise / 100).toFixed(2)}) + OTA fee (₹${(convenienceFeePaise / 100).toFixed(2)}) for ${input.travelMode.toUpperCase()} ${input.bookingReference}`,
     timestamp: now,
   };
 
@@ -81,9 +110,9 @@ export async function recordTravelCommissionLedger(
     transaction_id: transactionId,
     account: "PLATFORM_FEE_REVENUE",
     direction: "CREDIT",
-    amount_paise: commissionPaise,
+    amount_paise: netPlatformRevenuePaise,
     entity_id: "ORDERKING_REVENUE",
-    memo: `Earned travel revenue commission from ${input.partnerName} for booking ${input.bookingReference}`,
+    memo: `Earned travel revenue commission + OTA fee for booking ${input.bookingReference}`,
     timestamp: now,
   };
 

@@ -192,3 +192,59 @@ describe("🇮🇳 Automated Statutory Credit Note Engine (Section 34 CGST Act)"
     assert.ok(cn.digitalSignatureRef.startsWith("DSC-OK-ECO-"));
   });
 });
+
+
+describe("🇮🇳 Section 9(5) CGST Dual-Bucket & Unregistered Vendor (<₹20L) Certification", () => {
+  it("strictly enforces zero tax penalty and zero TCS for unregistered food vendors (<₹20L)", () => {
+    const withholding = calculateStatutoryWithholding({
+      grossSalesPaise: 150000, // ₹1,500 gross food sales
+      restaurantDiscountPaise: 10000, // ₹100 discount
+      hasValidPan: true,
+      isGstRegistered: false, // Unregistered Food Vendor (<₹20L)
+      annualTurnoverUnder20L: true,
+      restaurantGstin: "URP (Unregistered Person)",
+    });
+
+    assert.equal(withholding.isUnregisteredVendor, true);
+    assert.equal(withholding.tcsSection52Paise, 0); // TCS is strictly ₹0.00
+    assert.equal(withholding.tcsRateBps, 0);
+    assert.equal(withholding.taxPenaltyPaise, 0); // Zero tax penalty
+    assert.equal(withholding.platformRemittanceGstin, "18AFXPH9838M1Z9");
+    assert.equal(withholding.tdsSection194OPaise, 1500); // 1% TDS on ₹1,500 gross sales
+    assert.equal(withholding.totalWithholdingPaise, 1500);
+  });
+
+  it("settles unregistered food vendors on T+1 with zero TCS and zero food GST deduction", () => {
+    const batch = compileTPlus1DailySettlement({
+      restaurantId: "rest_unreg_dhaba_01",
+      restaurantName: "Highway Dhaba (Unregistered <₹20L)",
+      bankAccountMasked: "SBI-XXXX-4321",
+      ifscCode: "SBIN0001234",
+      orderDate: "2026-10-18",
+      isGstRegistered: false,
+      annualTurnoverUnder20L: true,
+      restaurantGstin: "URP (Unregistered Person)",
+      orders: [
+        {
+          orderId: "ord_dhaba_01",
+          foodValuePaise: 40000, // ₹400
+          packingPaise: 2000, // ₹20
+          restaurantDiscountPaise: 0,
+          commissionBps: 1000, // 10%
+          completedAt: "2026-10-18T18:00:00Z",
+        },
+      ],
+    });
+
+    assert.equal(batch.totalGrossSalesPaise, 42000); // ₹420 gross food sales
+    assert.equal(batch.totalNetTaxableSupplyPaise, 42000);
+    assert.equal(batch.totalTcsSection52Paise, 0); // Zero TCS for unregistered vendor u/s 9(5)
+    assert.equal(batch.totalSec9_5FoodGstRemittedPaise, 2100); // 5% Food GST remitted by OrderKing under 18AFXPH9838M1Z9
+    assert.equal(batch.totalTdsSection194OPaise, 420); // 1% TDS
+    // Commission 10% = 4,200 paise, 18% GST on Commission = 756 paise. Total deductions = 4200 + 756 + 420 = 5376 paise
+    assert.equal(batch.totalCommissionPaise, 4200);
+    assert.equal(batch.totalCommissionGstPaise, 756);
+    assert.equal(batch.totalDeductionsPaise, 5376);
+    assert.equal(batch.netPayablePaise, 42000 - 5376); // 36624 paise (Zero 5% Food GST debit to vendor!)
+  });
+});

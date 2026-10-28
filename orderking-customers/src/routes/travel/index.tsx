@@ -1,4 +1,4 @@
-import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
@@ -23,6 +23,9 @@ import {
   CreditCard,
   ShieldCheck,
   Sparkles,
+  GraduationCap,
+  Briefcase,
+  Landmark,
   ArrowRight,
   ArrowLeftRight,
   MapPin,
@@ -46,11 +49,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import { TravelSkeleton } from "@/components/skeletons/travel-skeleton";
 import { AppErrorComponent } from "@/lib/error-component";
 import { AirportAutoSuggest, StationAutoSuggest } from "@/components/fintech/travel-autosuggest";
 
 export const Route = createFileRoute("/travel/")({
+  validateSearch: (search: Record<string, unknown>): { tab?: string } => ({
+    tab: (search.tab as string) || undefined,
+  }),
   component: TravelPage,
   pendingComponent: TravelSkeleton,
   errorComponent: AppErrorComponent,
@@ -547,9 +554,22 @@ const AUTHENTIC_LUXURY_HOTELS: LuxuryHotelProperty[] = [
 ];
 
 export function TravelPage() {
-  const [activeTab, setActiveTab] = useState<TravelTab>("flights");
-  const sectionHash = (useRouterState({ select: (s) => s?.location?.hash }) as unknown as string) ?? "";
   const searchTab = useRouterState({ select: (s) => (s?.location?.search as any)?.tab }) as unknown as string | undefined;
+  const sectionHash = (useRouterState({ select: (s) => s?.location?.hash }) as unknown as string) ?? "";
+
+  const [activeTab, setActiveTab] = useState<TravelTab>(() => {
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      const raw = (sp.get("tab") || window.location.hash.replace(/^#/, "")).toLowerCase();
+      if (raw === "hotels") return "hotels";
+      if (raw === "trains") return "trains";
+      if (raw === "buses") return "buses";
+      if (raw === "cabs") return "cabs";
+      if (raw === "trips") return "trips";
+      if (raw === "pilgrimage" || raw === "tours" || raw === "holiday" || raw === "holidays" || raw === "umrah") return "pilgrimage";
+    }
+    return "flights";
+  });
 
   useEffect(() => {
     const tabParam = (searchTab || "").toLowerCase();
@@ -561,7 +581,7 @@ export function TravelPage() {
     else if (target === "hotels") setActiveTab("hotels");
     else if (target === "cabs") setActiveTab("cabs");
     else if (target === "trips") setActiveTab("trips");
-    else if (target === "pilgrimage" || target === "tours" || target === "umrah") setActiveTab("pilgrimage");
+    else if (target === "pilgrimage" || target === "tours" || target === "holiday" || target === "holidays" || target === "umrah") setActiveTab("pilgrimage");
   }, [sectionHash, searchTab]);
 
   // Flight Search State
@@ -623,10 +643,21 @@ export function TravelPage() {
   const [cabVehicleClass, setCabVehicleClass] = useState<"mini" | "sedan" | "suv">("sedan");
   const [cabDistanceKm, setCabDistanceKm] = useState(35);
 
-  // Pilgrimage & High-Margin Tour Desk State
-  const [pilgrimPromoCode, setPilgrimPromoCode] = useState("");
-  const [appliedPilgrimPromo, setAppliedPilgrimPromo] = useState<string | null>("PILGRIM3000");
+  // Holiday Tours & Spiritual Tour Desk State
+  const [toursSubCategory, setToursSubCategory] = useState<"holidays" | "pilgrimage">("holidays");
   const [pilgrimSearchQuery, setPilgrimSearchQuery] = useState("");
+  const [spiritualFaithSelection, setSpiritualFaithSelection] = useState<"ISLAMIC" | "SANATAN" | "SIKH" | "CHRISTIAN" | null>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("orderking_faith_tradition") as any) || null;
+    }
+    return null;
+  });
+  const [spiritualCircuitFilter, setSpiritualCircuitFilter] = useState<"ALL" | "ISLAMIC" | "SANATAN" | "LEISURE">(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("orderking_spiritual_circuit") as any) || "ALL";
+    }
+    return "ALL";
+  });
 
   // Saved Trips State (persisted in localStorage)
   const [savedTrips, setSavedTrips] = useState<SavedTripReference[]>([]);
@@ -646,6 +677,7 @@ export function TravelPage() {
     selectedClass?: string;
   } | null>(null);
 
+  const [optInTripProtection, setOptInTripProtection] = useState(true);
   const [bookingPaxName, setBookingPaxName] = useState("");
   const [bookingPaxAge, setBookingPaxAge] = useState(28);
   const [bookingPaxGender, setBookingPaxGender] = useState<"male" | "female" | "other">("male");
@@ -827,7 +859,13 @@ export function TravelPage() {
         modalType === "train" ? Math.round(baseFarePaise * 0.05) :
         Math.round(baseFarePaise * 0.18);
 
-      const totalPaise = baseFarePaise + taxPaise;
+      const convenienceFeePaise =
+        modalType === "flight" ? 49_900 : // Mandatory ₹499 platform fee (MakeMyTrip benchmark)
+        modalType === "train" ? 4_000 :   // Mandatory ₹40 IRCTC platform fee
+        25_000;                          // Mandatory ₹250 Hotel booking fee
+
+      const tripProtectionPaise = (modalType === "flight" && optInTripProtection) ? 14_900 : 0; // ₹149 shield
+      const totalPaise = baseFarePaise + taxPaise + convenienceFeePaise + tripProtectionPaise;
 
       const createdTicket: SovereignETicket = {
         pnr: pnrGenerated,
@@ -942,24 +980,14 @@ export function TravelPage() {
           <div>
             <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
               <span className="inline-flex items-center gap-1">
-                <Crown className="size-3.5 text-amber-400" /> Travel King · Orderkingpay Desk (GSTIN: 18AFXPH9838M1Z9)
+                <Crown className="size-3.5 text-amber-400" /> OrderKing Travel · Travel King Desk (GSTIN: 18AFXPH9838M1Z9)
               </span>
-              <span className="text-slate-500">·</span>
-              <a
-                href="https://www.travelboutiqueonline.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sky-400 hover:text-sky-300 underline font-bold"
-                title="TBO Agency Verification (App #187051)"
-              >
-                TBO Agency Wholesale Partner (#187051)
-              </a>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-              Travel King — Flights, Trains, Hotels, Buses &amp; Cabs
+              Flights, Trains, Hotels, Buses &amp; Holiday Tours
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-              Verified airline fares, official railway desk, curated stays and live corridor tariffs with 100% in-app sovereign booking.
+              Search and book domestic and international flights, IRCTC train tickets, verified hotels, and curated holiday packages.
             </p>
           </div>
           <button
@@ -984,98 +1012,175 @@ export function TravelPage() {
         {/* AUTHORITATIVE SINGLE TRAVEL DESK */}
         <div className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm space-y-6">
           
-          {/* CATEGORY SWITCHER TABS */}
-          <div className="flex gap-2 overflow-x-auto pb-2 border-b border-slate-100 scrollbar-none">
-            <button
-              type="button"
-              onClick={() => setActiveTab("flights")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all ${
-                activeTab === "flights"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <Plane className="size-4 text-sky-400" />
-              <span>Flights (IndiGo, AI, Akasa, SpiceJet)</span>
-            </button>
+          {/* ─── CORE HUB: 4 CLEAN LUXURY POWER TILES ─── */}
+          <div className="space-y-3 pb-3 border-b border-slate-100">
+            {/* Row 1: The 4 Clean Luxury Power Tiles */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3.5">
+              {/* Tile 1: Flights */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("flights")}
+                className={cn(
+                  "group rounded-2xl border p-3 sm:p-4 text-left transition-all duration-200 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[104px] cursor-pointer",
+                  activeTab === "flights"
+                    ? "border-sky-500 bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 text-white shadow-md ring-2 ring-sky-400"
+                    : "border-slate-200 bg-slate-50 hover:bg-white hover:border-sky-300 text-slate-800"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className={cn(
+                    "size-9 sm:size-10 rounded-xl flex items-center justify-center transition shrink-0",
+                    activeTab === "flights" ? "bg-sky-400/20 text-sky-300 border border-sky-400/30" : "bg-sky-100 text-sky-600"
+                  )}>
+                    <Plane className="size-4.5 sm:size-5" />
+                  </div>
+                  <ChevronRight className={cn("size-4 transition", activeTab === "flights" ? "text-sky-300" : "text-slate-400 group-hover:text-sky-600")} />
+                </div>
+                <div className="min-w-0 mt-2">
+                  <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "flights" ? "text-white" : "text-slate-950")}>
+                    ✈️ Flights
+                  </span>
+                  <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "flights" ? "text-sky-200/80" : "text-slate-500")}>
+                    Domestic &amp; International
+                  </span>
+                </div>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("trains")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all ${
-                activeTab === "trains"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <Train className="size-4 text-indigo-400" />
-              <span>Trains (Rajdhani, Vande Bharat, Paschim)</span>
-            </button>
+              {/* Tile 2: Trains */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("trains")}
+                className={cn(
+                  "group rounded-2xl border p-3 sm:p-4 text-left transition-all duration-200 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[104px] cursor-pointer",
+                  activeTab === "trains"
+                    ? "border-indigo-500 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white shadow-md ring-2 ring-indigo-400"
+                    : "border-slate-200 bg-slate-50 hover:bg-white hover:border-indigo-300 text-slate-800"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className={cn(
+                    "size-9 sm:size-10 rounded-xl flex items-center justify-center transition shrink-0",
+                    activeTab === "trains" ? "bg-indigo-400/20 text-indigo-300 border border-indigo-400/30" : "bg-indigo-100 text-indigo-600"
+                  )}>
+                    <Train className="size-4.5 sm:size-5" />
+                  </div>
+                  <ChevronRight className={cn("size-4 transition", activeTab === "trains" ? "text-indigo-300" : "text-slate-400 group-hover:text-indigo-600")} />
+                </div>
+                <div className="min-w-0 mt-2">
+                  <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "trains" ? "text-white" : "text-slate-950")}>
+                    🚆 Trains
+                  </span>
+                  <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "trains" ? "text-indigo-200/80" : "text-slate-500")}>
+                    IRCTC Trains &amp; PNR Status
+                  </span>
+                </div>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("hotels")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all ${
-                activeTab === "hotels"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <Building2 className="size-4 text-amber-400" />
-              <span>Hotels &amp; Heritage Stays</span>
-            </button>
+              {/* Tile 3: Hotels */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("hotels")}
+                className={cn(
+                  "group rounded-2xl border p-3 sm:p-4 text-left transition-all duration-200 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[104px] cursor-pointer",
+                  activeTab === "hotels"
+                    ? "border-amber-500 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white shadow-md ring-2 ring-amber-400"
+                    : "border-slate-200 bg-slate-50 hover:bg-white hover:border-amber-300 text-slate-800"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className={cn(
+                    "size-9 sm:size-10 rounded-xl flex items-center justify-center transition shrink-0",
+                    activeTab === "hotels" ? "bg-amber-400/20 text-amber-300 border border-amber-400/30" : "bg-amber-100 text-amber-600"
+                  )}>
+                    <Building2 className="size-4.5 sm:size-5" />
+                  </div>
+                  <ChevronRight className={cn("size-4 transition", activeTab === "hotels" ? "text-amber-300" : "text-slate-400 group-hover:text-amber-600")} />
+                </div>
+                <div className="min-w-0 mt-2">
+                  <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "hotels" ? "text-white" : "text-slate-950")}>
+                    🏨 Hotels
+                  </span>
+                  <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "hotels" ? "text-amber-200/80" : "text-slate-500")}>
+                    Hotels &amp; Resorts Worldwide
+                  </span>
+                </div>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("buses")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all ${
-                activeTab === "buses"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <Bus className="size-4 text-orange-400" />
-              <span>Buses &amp; Sleepers</span>
-            </button>
+              {/* Tile 4: Tours */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("pilgrimage")}
+                className={cn(
+                  "group rounded-2xl border p-3 sm:p-4 text-left transition-all duration-200 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[104px] cursor-pointer",
+                  activeTab === "pilgrimage"
+                    ? "border-emerald-500 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white shadow-md ring-2 ring-emerald-400"
+                    : "border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-300 text-slate-800"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className={cn(
+                    "size-9 sm:size-10 rounded-xl flex items-center justify-center transition shrink-0",
+                    activeTab === "pilgrimage" ? "bg-emerald-400/20 text-emerald-300 border border-emerald-400/30" : "bg-emerald-100 text-emerald-600"
+                  )}>
+                    <Compass className="size-4.5 sm:size-5" />
+                  </div>
+                  <ChevronRight className={cn("size-4 transition", activeTab === "pilgrimage" ? "text-emerald-300" : "text-slate-400 group-hover:text-emerald-600")} />
+                </div>
+                <div className="min-w-0 mt-2">
+                  <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "pilgrimage" ? "text-white" : "text-slate-950")}>
+                    🌍 Holiday Tours
+                  </span>
+                  <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "pilgrimage" ? "text-emerald-200/80" : "text-slate-500")}>
+                    World &amp; Domestic Destinations
+                  </span>
+                </div>
+              </button>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("cabs")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all ${
-                activeTab === "cabs"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <Car className="size-4 text-emerald-400" />
-              <span>Cabs &amp; Airport</span>
-            </button>
+            {/* Row 2: Travel Modes (Buses, Cabs, My Trips) */}
+            <div className="flex gap-2 overflow-x-auto pt-1 scrollbar-none">
+              <button
+                type="button"
+                onClick={() => setActiveTab("buses")}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border",
+                  activeTab === "buses"
+                    ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                )}
+              >
+                <Bus className="size-3.5 text-orange-500" />
+                <span>Buses &amp; Sleepers</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("pilgrimage")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all ${
-                activeTab === "pilgrimage"
-                  ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md ring-2 ring-amber-400"
-                  : "bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100"
-              }`}
-            >
-              <Crown className="size-4 text-amber-500" />
-              <span>Pilgrimage &amp; Tours (Umrah, Kashi, Dubai)</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("cabs")}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border",
+                  activeTab === "cabs"
+                    ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                )}
+              >
+                <Car className="size-3.5 text-emerald-500" />
+                <span>Cabs &amp; Airport</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("trips")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all ${
-                activeTab === "trips"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              <Compass className="size-4 text-purple-400" />
-              <span>My Trips ({savedTrips.length})</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("trips")}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border",
+                  activeTab === "trips"
+                    ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                )}
+              >
+                <Compass className="size-3.5 text-purple-500" />
+                <span>My Trips ({savedTrips.length})</span>
+              </button>
+            </div>
           </div>
 
           {/* =====================================================================
@@ -1839,7 +1944,7 @@ export function TravelPage() {
           )}
 
           {/* =====================================================================
-              CATEGORY 3: HOTELS & HERITAGE STAYS (AUTHENTIC LUXURY TARIFFS)
+              CATEGORY 3: HOTELS & RESORTS WORLDWIDE
              ===================================================================== */}
           {activeTab === "hotels" && (
             <div className="space-y-6">
@@ -1847,14 +1952,14 @@ export function TravelPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-amber-600">
-                    Indian Heritage Palaces &amp; Luxury Stays
+                    Hotels &amp; Accommodations
                   </span>
                   <h2 className="text-base sm:text-lg font-black text-slate-900 mt-0.5">
-                    Taj Lake Palace, Oberoi Udaivilas, Rambagh &amp; Falaknuma
+                    Book Hotels &amp; Resorts Worldwide
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full self-start">
-                  GST Invoicing Supported (18%)
+                  Instant Confirmation · GST Invoicing
                 </span>
               </div>
 
@@ -1869,7 +1974,7 @@ export function TravelPage() {
                     value={hotelCity}
                     onChange={(e) => setHotelCity(e.target.value)}
                     className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
-                    placeholder="e.g. Udaipur, Jaipur, Mumbai, Goa"
+                    placeholder="e.g. Mumbai, Goa, Delhi, Dubai, Udaipur"
                   />
                 </div>
 
@@ -1938,31 +2043,49 @@ export function TravelPage() {
               <div className="flex justify-end pt-1">
                 <Button
                   type="button"
-                  onClick={() => toast.success(`Curated stays loaded for ${hotelCity}`)}
+                  onClick={() => toast.success(`Hotels updated for ${hotelCity || "all destinations"}`)}
                   className="w-full sm:w-auto h-11 px-6 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 flex items-center justify-center gap-2"
                 >
                   <Search className="size-4" />
-                  Search Curated Stays
+                  Search Hotels
                 </Button>
               </div>
 
-              {/* AUTHENTIC INDIAN LUXURY HOTELS (In-App Booking · Zero Popups) */}
+              {/* AUTHENTIC HOTELS (In-App Booking · Zero Popups) */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <Crown className="size-4 text-amber-600" />
-                    <span>Curated Luxury Palace Stays ({AUTHENTIC_LUXURY_HOTELS.length})</span>
-                    <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                      Curated Stays · Live Corridor Tariffs
-                    </span>
+                    <Building2 className="size-4 text-amber-600" />
+                    <span>Available Accommodations ({
+                      AUTHENTIC_LUXURY_HOTELS.filter((h) => 
+                        !hotelCity.trim() || 
+                        h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) || 
+                        h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
+                        h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
+                      ).length || AUTHENTIC_LUXURY_HOTELS.length
+                    })</span>
                   </h3>
                   <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-                    Direct Partner Reservation
+                    Verified Rates
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {AUTHENTIC_LUXURY_HOTELS.map((hotel) => (
+                  {(
+                    AUTHENTIC_LUXURY_HOTELS.filter((h) => 
+                      !hotelCity.trim() || 
+                      h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) || 
+                      h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
+                      h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
+                    ).length > 0
+                      ? AUTHENTIC_LUXURY_HOTELS.filter((h) => 
+                          !hotelCity.trim() || 
+                          h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) || 
+                          h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
+                          h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
+                        )
+                      : AUTHENTIC_LUXURY_HOTELS
+                  ).map((hotel) => (
                     <div
                       key={hotel.id}
                       className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-amber-300 hover:shadow-md transition p-4 sm:p-5 flex flex-col justify-between gap-4"
@@ -1979,7 +2102,7 @@ export function TravelPage() {
                             <p className="text-xs text-slate-500 mt-0.5">{hotel.locationDetail}</p>
                           </div>
                           <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold text-[10px] shrink-0">
-                            ★ 5-Star Luxury
+                            ★ 5-Star Hotel
                           </span>
                         </div>
 
@@ -1997,11 +2120,11 @@ export function TravelPage() {
 
                       <div className="border-t border-slate-200/80 pt-3 flex items-center justify-between">
                         <div>
-                          <span className="text-xs text-slate-400 block">Nightly Tariff</span>
+                          <span className="text-xs text-slate-400 block">Per Night Rate</span>
                           <span className="text-lg font-black font-mono text-slate-900">
                             ₹{hotel.tariffPerNightInr.toLocaleString("en-IN")}
                           </span>
-                          <span className="text-[10px] text-slate-500 block">+18% Luxury GST</span>
+                          <span className="text-[10px] text-slate-500 block">+18% Hotel GST</span>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -2016,15 +2139,15 @@ export function TravelPage() {
                             }}
                             className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20"
                           >
-                            Reserve Stay (In-App) ➔
+                            Reserve Stay ➔
                           </Button>
                           <button
                             type="button"
                             onClick={() => {
-                              toast.info(`${hotel.name}: 24/7 concierge, in-room dining & authentic live tariff.`);
+                              toast.info(`${hotel.name}: 24/7 front desk, room service & verified booking.`);
                             }}
                             className="h-10 px-3 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition"
-                            title="Concierge Details"
+                            title="Hotel Details"
                           >
                             <Building2 className="size-3.5" />
                           </button>
@@ -2320,282 +2443,658 @@ export function TravelPage() {
           )}
 
           {/* =====================================================================
-              CATEGORY 7: PILGRIMAGE & SACRED HIGH-MARGIN TOURS (TBO GDS POWERHOUSE)
+              CATEGORY 7: HOLIDAY TOURS & VACATION PACKAGES
              ===================================================================== */}
           {activeTab === "pilgrimage" && (
             <div className="space-y-6">
               
-              {/* Luxury Promotional Header & Up to ₹5,000 Closed-Loop Cashback Banner */}
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950 via-slate-900 to-amber-900 p-6 text-white border border-amber-500/30 shadow-lg">
+              {/* Holiday Tours & Travel Packages Header */}
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-6 text-white border border-slate-800 shadow-lg">
                 <div className="relative z-10 max-w-2xl space-y-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-[11px] font-black uppercase tracking-wider text-amber-300">
-                    <Crown className="size-3.5 text-amber-400" /> TBO Agency #187051 Wholesale Gateway
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-[11px] font-black uppercase tracking-wider text-slate-300">
+                    <Compass className="size-3.5 text-amber-400" /> Holiday Tours
                   </span>
                   <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    Sovereign Pilgrimage &amp; Curated Holiday Tours
+                    Holiday Tours
                   </h3>
-                  <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed">
-                    Direct wholesale packages for Umrah, Kashi Vishwanath, Ayodhya Ram Mandir, Dubai, and Kashmir.
-                    Earn <span className="font-bold text-amber-300">up to ₹5,000 instant cashback</span> credited directly to your closed-loop KingPay Food Wallet.
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    National, international, and religious tour packages.
                   </p>
                 </div>
 
-                {/* Vouchers Bar */}
+                {/* Sub-Category Navigation Bar */}
                 <div className="relative z-10 mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] font-bold text-amber-200 uppercase tracking-wider">
-                    Instant Voucher Codes:
-                  </span>
-                  {[
-                    { code: "PILGRIM3000", label: "₹3,000 Off Umrah / Kashi" },
-                    { code: "GLOBAL5000", label: "₹5,000 Off Dubai & International" },
-                    { code: "HOLIDAY1500", label: "₹1,500 Off Domestic Tours" },
-                    { code: "KASHMIR2500", label: "₹2,500 Off Kashmir Valley" },
-                  ].map((v) => (
-                    <button
-                      key={v.code}
-                      type="button"
-                      onClick={() => {
-                        setAppliedPilgrimPromo(v.code);
-                        toast.success(`Coupon ${v.code} Applied! ${v.label}`);
-                      }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-all flex items-center gap-1.5 ${
-                        appliedPilgrimPromo === v.code
-                          ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-105"
-                          : "bg-white/10 text-white border-white/20 hover:bg-white/20"
-                      }`}
-                    >
-                      <span>🏷️ {v.code}</span>
-                      <span className="text-[10px] opacity-80">({v.label})</span>
-                    </button>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setToursSubCategory("holidays")}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer border",
+                      toursSubCategory === "holidays"
+                        ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-102"
+                        : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+                    )}
+                  >
+                    <span>🌍</span>
+                    <span>National &amp; International</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setToursSubCategory("pilgrimage")}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer border",
+                      toursSubCategory === "pilgrimage"
+                        ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-102"
+                        : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+                    )}
+                  >
+                    <Compass className="size-3.5" />
+                    <span>Religious</span>
+                  </button>
                 </div>
               </div>
 
-              {/* Curated Package Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[
-                  {
-                    id: "pkg-umrah-15d",
-                    title: "Umrah 15-Day Premium Spiritual Journey",
-                    destination: "Makkah & Madinah (Saudi Arabia)",
-                    duration: "14 Nights / 15 Days",
-                    category: "Islamic Pilgrimage",
-                    badgeColor: "bg-emerald-600",
-                    image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=600&auto=format&fit=crop&q=80",
-                    inclusions: [
-                      "Direct Flights: CCU / GAU / DEL ➔ JED / MED",
-                      "5 Nights in Makkah (4-Star Clock Tower Facing)",
-                      "5 Nights in Madinah (Near Prophet's Mosque)",
-                      "Rawdah Permit & E-Visa Processing",
-                      "Private AC Coach Ziyarat & Transfers",
-                    ],
-                    publishedMrp: 10500000,
-                    orderkingPrice: 8850000,
-                    wholesaleMargin: 1800000,
-                    eligiblePromo: "PILGRIM3000",
-                    cashbackPaise: 300000,
-                    departureCity: "Guwahati / Kolkata / Delhi",
-                  },
-                  {
-                    id: "pkg-dubai-5d",
-                    title: "Dubai 5D/4N Luxury Oasis Tour",
-                    destination: "Dubai & Abu Dhabi (UAE)",
-                    duration: "4 Nights / 5 Days",
-                    category: "International Leisure",
-                    badgeColor: "bg-sky-600",
-                    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&auto=format&fit=crop&q=80",
-                    inclusions: [
-                      "Return Flights via Emirates / IndiGo",
-                      "5-Star Marina Hotel with Daily Breakfast",
-                      "Desert Safari with Dune Bashing & BBQ",
-                      "Burj Khalifa 124th Floor Observation Deck",
-                      "Private Marina Dhow Cruise Dinner",
-                    ],
-                    publishedMrp: 5900000,
-                    orderkingPrice: 4800000,
-                    wholesaleMargin: 1250000,
-                    eligiblePromo: "GLOBAL5000",
-                    cashbackPaise: 500000,
-                    departureCity: "Guwahati / Kolkata / Mumbai / Delhi",
-                  },
-                  {
-                    id: "pkg-kashi-ayodhya-4d",
-                    title: "Sacred Kashi, Ayodhya & Prayagraj Express",
-                    destination: "Varanasi, Ayodhya & Prayagraj",
-                    duration: "3 Nights / 4 Days",
-                    category: "Sacred Hindu Circuit",
-                    badgeColor: "bg-orange-600",
-                    image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=600&auto=format&fit=crop&q=80",
-                    inclusions: [
-                      "Express Vande Bharat / Rajdhani Rail Berths",
-                      "Ram Janmabhoomi VIP Darshan Pass",
-                      "Kashi Vishwanath Corridor Darshan",
-                      "Ganga Aarti Boat Ride at Dashashwamedh Ghat",
-                      "Heritage Haveli Stay with Satvik Meals",
-                    ],
-                    publishedMrp: 2400000,
-                    orderkingPrice: 1850000,
-                    wholesaleMargin: 650000,
-                    eligiblePromo: "HOLIDAY1500",
-                    cashbackPaise: 150000,
-                    departureCity: "Delhi / Patna / Guwahati",
-                  },
-                  {
-                    id: "pkg-kashmir-6d",
-                    title: "Kashmir Valley Paradise (Srinagar & Gulmarg)",
-                    destination: "Srinagar, Gulmarg, Pahalgam & Sonamarg",
-                    duration: "5 Nights / 6 Days",
-                    category: "Mountain Escape",
-                    badgeColor: "bg-teal-600",
-                    image: "https://images.unsplash.com/photo-1566837945700-30057527ade0?w=600&auto=format&fit=crop&q=80",
-                    inclusions: [
-                      "Return Flights to Srinagar (SXR)",
-                      "Luxury Dal Lake Houseboat with Shikara Ride",
-                      "Gulmarg Gondola Phase 1 & 2 Passes Included",
-                      "Pahalgam Betaab Valley Sightseeing",
-                      "Dedicated Chauffeur Driven Private Cab",
-                    ],
-                    publishedMrp: 3400000,
-                    orderkingPrice: 2650000,
-                    wholesaleMargin: 1400000,
-                    eligiblePromo: "KASHMIR2500",
-                    cashbackPaise: 250000,
-                    departureCity: "All Major Indian Airports",
-                  },
-                  {
-                    id: "pkg-shillong-meghalaya-4d",
-                    title: "Shillong & Meghalaya Northeast Sacred Circuit",
-                    destination: "Guwahati, Shillong, Cherrapunji & Dawki",
-                    duration: "3 Nights / 4 Days",
-                    category: "Northeast Flagship",
-                    badgeColor: "bg-indigo-600",
-                    image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&auto=format&fit=crop&q=80",
-                    inclusions: [
-                      "Maa Kamakhya Devi Temple VIP Darshan",
-                      "Umiam Lake & Nohkalikai Waterfalls Sightseeing",
-                      "Dawki Crystal Clear Umngot River Boat Ride",
-                      "Eco-Resort Stay in Shillong Pine Woods",
-                      "Doorstep Pickup from Sribhumi / Silchar / Guwahati",
-                    ],
-                    publishedMrp: 2200000,
-                    orderkingPrice: 1650000,
-                    wholesaleMargin: 800000,
-                    eligiblePromo: "HOLIDAY1500",
-                    cashbackPaise: 150000,
-                    departureCity: "Assam / Northeast / Kolkata",
-                  },
-                ].map((pkg) => {
-                  const hasPromo = appliedPilgrimPromo === pkg.eligiblePromo;
-                  const finalPayablePaise = pkg.orderkingPrice;
-                  const cashbackAwarded = hasPromo ? pkg.cashbackPaise : 0;
-                  const netPlatformRetained = pkg.wholesaleMargin - cashbackAwarded;
-
-                  return (
-                    <div
-                      key={pkg.id}
-                      className="group flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs hover:shadow-xl transition-all duration-300"
+              {/* ─── SUB-VIEW 1: NATIONAL & INTERNATIONAL TOURS (DEFAULT) ─── */}
+              {toursSubCategory === "holidays" && (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-slate-200">
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                        <span>🌍</span>
+                        <span>National &amp; International Tours</span>
+                      </h3>
+                      <p className="text-xs text-slate-500">
+                        Top-rated international vacations and national domestic retreats with verified flights and accommodations.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        toast.success("Travel Concierge activated: Our bespoke specialist will curate your custom itinerary!");
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold transition active:scale-95 shadow-sm cursor-pointer shrink-0"
                     >
-                      <div className="space-y-3">
-                        <div className="relative h-44 rounded-2xl overflow-hidden shadow-inner">
-                          <img
-                            src={pkg.image}
-                            alt={pkg.title}
-                            className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            loading="lazy"
-                          />
-                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                            <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase text-white shadow-xs ${pkg.badgeColor}`}>
-                              {pkg.category}
-                            </span>
-                            <span className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-slate-900/80 text-white backdrop-blur-xs">
-                              {pkg.duration}
-                            </span>
-                          </div>
-                        </div>
+                      <Sparkles className="size-3.5 text-amber-400" />
+                      <span>+ Customize My Trip</span>
+                    </button>
+                  </div>
 
-                        <div>
-                          <h4 className="text-base font-black text-slate-900 leading-snug group-hover:text-amber-700 transition-colors">
-                            {pkg.title}
-                          </h4>
-                          <span className="text-xs font-semibold text-slate-500 flex items-center gap-1 mt-1">
-                            <MapPin className="size-3 text-amber-500 shrink-0" />
-                            {pkg.destination}
-                          </span>
-                        </div>
-
-                        <ul className="space-y-1 text-xs text-slate-600 bg-slate-50 rounded-2xl p-3 border border-slate-100">
-                          {pkg.inclusions.map((item, idx) => (
-                            <li key={idx} className="flex items-start gap-1.5">
-                              <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div className="mt-4 pt-3 border-t border-slate-100 space-y-2.5">
-                        <div className="flex items-baseline justify-between">
-                          <div>
-                            <span className="text-[11px] font-bold text-slate-400 line-through mr-1.5">
-                              {formatPaise(pkg.publishedMrp)}
-                            </span>
-                            <span className="text-lg font-black text-slate-900">
-                              {formatPaise(finalPayablePaise)}
-                            </span>
-                            <span className="text-[10px] text-slate-500 block font-medium">
-                              All inclusive per person
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg block">
-                              Profit: {formatPaise(netPlatformRetained)}
-                            </span>
-                            {cashbackAwarded > 0 && (
-                              <span className="text-[10px] font-black text-amber-700 block mt-0.5">
-                                +{formatPaise(cashbackAwarded)} Food Cashback
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[
+                      {
+                        id: "pkg-dubai-5d",
+                        title: "Dubai 5D/4N Luxury Oasis Tour",
+                        destination: "Dubai & Abu Dhabi (UAE)",
+                        duration: "4 Nights / 5 Days",
+                        category: "International Leisure",
+                        badgeColor: "bg-sky-600",
+                        image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Return Flights via Emirates / IndiGo",
+                          "5-Star Marina Hotel with Daily Breakfast",
+                          "Desert Safari with Dune Bashing & BBQ",
+                          "Burj Khalifa 124th Floor Observation Deck",
+                        ],
+                        publishedMrp: 5900000,
+                        orderkingPrice: 4800000,
+                        departureCity: "All Major Indian Airports",
+                      },
+                      {
+                        id: "pkg-bangkok-5d",
+                        title: "Bangkok & Pattaya Tropical Escape",
+                        destination: "Bangkok & Pattaya (Thailand)",
+                        duration: "4 Nights / 5 Days",
+                        category: "International Leisure",
+                        badgeColor: "bg-emerald-600",
+                        image: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Return Flights to Bangkok (BKK)",
+                          "4-Star Beachfront Hotel with Breakfast",
+                          "Coral Island Speedboat Tour & Lunch",
+                          "Chaophraya Princess River Dinner Cruise",
+                        ],
+                        publishedMrp: 4600000,
+                        orderkingPrice: 3850000,
+                        departureCity: "Delhi / Kolkata / Mumbai / Bengaluru",
+                      },
+                      {
+                        id: "pkg-swiss-6d",
+                        title: "Switzerland & Alps Alpine Dream",
+                        destination: "Zurich, Lucerne & Interlaken",
+                        duration: "5 Nights / 6 Days",
+                        category: "Europe Luxury",
+                        badgeColor: "bg-blue-600",
+                        image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Return Flights via Swiss / Lufthansa",
+                          "Swiss Travel Pass (Trains & Mountain Transit)",
+                          "Mount Titlis Glacier Excursion with Rotair",
+                          "Lake Lucerne Cruise & 4-Star Scenic Stay",
+                        ],
+                        publishedMrp: 18500000,
+                        orderkingPrice: 14500000,
+                        departureCity: "Delhi / Mumbai / Bengaluru",
+                      },
+                      {
+                        id: "pkg-bali-6d",
+                        title: "Bali Island Paradise & Villa Retreat",
+                        destination: "Seminyak & Ubud (Bali)",
+                        duration: "5 Nights / 6 Days",
+                        category: "Island Getaway",
+                        badgeColor: "bg-teal-600",
+                        image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Return Flights to Denpasar (DPS)",
+                          "Private Pool Villa in Ubud + Resort Stay",
+                          "Nusa Penida Island Speedboat Day Tour",
+                          "Kintamani Volcano & Traditional Spa Session",
+                        ],
+                        publishedMrp: 6800000,
+                        orderkingPrice: 5400000,
+                        departureCity: "Delhi / Mumbai / Kolkata / Chennai",
+                      },
+                      {
+                        id: "pkg-kashmir-6d",
+                        title: "Kashmir Valley Paradise (Srinagar & Gulmarg)",
+                        destination: "Srinagar, Gulmarg & Pahalgam",
+                        duration: "5 Nights / 6 Days",
+                        category: "Mountain Escape",
+                        badgeColor: "bg-indigo-600",
+                        image: "https://images.unsplash.com/photo-1566837945700-30057527ade0?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Return Flights to Srinagar (SXR)",
+                          "Luxury Dal Lake Houseboat Stay",
+                          "Gulmarg Gondola Phase 1 & 2 Passes",
+                          "Private Chauffeur AC Vehicle",
+                        ],
+                        publishedMrp: 3400000,
+                        orderkingPrice: 2650000,
+                        departureCity: "All Major Indian Airports",
+                      },
+                      {
+                        id: "pkg-goa-4d",
+                        title: "Goa Beachfront & Sun Splash Luxury Resort",
+                        destination: "North & South Goa",
+                        duration: "3 Nights / 4 Days",
+                        category: "Coastal Leisure",
+                        badgeColor: "bg-amber-600",
+                        image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Return Flights to Goa (GOI / GOX)",
+                          "4-Star Candolim Beachfront Resort",
+                          "Sunset Mandovi River Cruise with Dinner",
+                          "Private Airport Transfers Included",
+                        ],
+                        publishedMrp: 2100000,
+                        orderkingPrice: 1450000,
+                        departureCity: "All Major Indian Airports",
+                      },
+                      {
+                        id: "pkg-shillong-meghalaya-4d",
+                        title: "Shillong & Meghalaya Northeast Escapes",
+                        destination: "Guwahati, Shillong & Cherrapunji",
+                        duration: "3 Nights / 4 Days",
+                        category: "Northeast Flagship",
+                        badgeColor: "bg-violet-600",
+                        image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Private Chauffeur Pickup from GAU / Silchar",
+                          "Umiam Lake & Nohkalikai Waterfalls Sightseeing",
+                          "Dawki Crystal Clear Umngot River Boat Ride",
+                          "Eco-Resort Stay in Shillong Pine Woods",
+                        ],
+                        publishedMrp: 2200000,
+                        orderkingPrice: 1650000,
+                        departureCity: "Assam / Northeast / Kolkata",
+                      },
+                      {
+                        id: "pkg-kerala-5d",
+                        title: "Kerala Backwaters & Munnar Hills Luxury Tour",
+                        destination: "Cochin, Munnar & Alleppey",
+                        duration: "4 Nights / 5 Days",
+                        category: "Nature & Backwaters",
+                        badgeColor: "bg-emerald-700",
+                        image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Return Flights to Kochi (COK)",
+                          "Private Alleppey Houseboat with All Meals",
+                          "Tea Estate & Eravikulam National Park",
+                          "Private AC Vehicle for Complete Circuit",
+                        ],
+                        publishedMrp: 2900000,
+                        orderkingPrice: 2200000,
+                        departureCity: "All Major Indian Airports",
+                      },
+                      {
+                        id: "pkg-kaziranga-4d",
+                        title: "Kaziranga Wildlife Safari & Tea Estate",
+                        destination: "Kaziranga & Jorhat (Assam)",
+                        duration: "3 Nights / 4 Days",
+                        category: "Wildlife & Heritage",
+                        badgeColor: "bg-orange-700",
+                        image: "https://images.unsplash.com/photo-1575550959106-5a7defe28b56?w=600&auto=format&fit=crop&q=80",
+                        inclusions: [
+                          "Private Jeep Safari in Central & Western Ranges",
+                          "Heritage Tea Planter's Bungalow Stay",
+                          "Guaranteed One-Horned Rhino & Wildlife Views",
+                          "Chauffeur Transfers from Guwahati / Jorhat",
+                        ],
+                        publishedMrp: 2500000,
+                        orderkingPrice: 1850000,
+                        departureCity: "Assam / Northeast / Kolkata",
+                      },
+                    ].map((pkg) => (
+                      <div
+                        key={pkg.id}
+                        className="group flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-4 shadow-xs hover:shadow-lg transition-all"
+                      >
+                        <div className="space-y-3">
+                          <div className="relative h-40 rounded-2xl overflow-hidden shadow-inner">
+                            <img
+                              src={pkg.image}
+                              alt={pkg.title}
+                              className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
+                            />
+                            <div className="absolute top-2 left-2 flex items-center gap-1">
+                              <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase text-white ${pkg.badgeColor}`}>
+                                {pkg.category}
                               </span>
-                            )}
+                              <span className="px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-900/80 text-white">
+                                {pkg.duration}
+                              </span>
+                            </div>
                           </div>
+                          <div>
+                            <h4 className="text-sm font-black text-slate-900 leading-snug group-hover:text-amber-700 transition-colors">
+                              {pkg.title}
+                            </h4>
+                            <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1 mt-0.5">
+                              <MapPin className="size-3 text-amber-500 shrink-0" />
+                              {pkg.destination}
+                            </span>
+                          </div>
+                          <ul className="space-y-1 text-[11px] text-slate-600 bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                            {pkg.inclusions.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-1">
+                                <CheckCircle2 className="size-3 text-emerald-500 shrink-0 mt-0.5" />
+                                <span className="truncate">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
 
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            setInAppBookingModal({
-                              type: "pilgrimage",
-                              data: {
-                                carrierName: "OrderKing Wholesale Travel Desk (#187051)",
-                                name: pkg.title,
-                                baseFarePaise: pkg.orderkingPrice,
-                                totalFarePaise: pkg.orderkingPrice,
-                                taxesPaise: 0,
-                                departureDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
-                                origin: {
-                                  city: pkg.departureCity.split("/")[0].trim(),
-                                  airportCode: "GAU",
-                                  departureTime: "08:00 AM",
+                        <div className="mt-3 pt-2.5 border-t border-slate-100 space-y-2">
+                          <div className="flex items-baseline justify-between">
+                            <div>
+                              <span className="text-[10px] font-bold text-slate-400 line-through mr-1">
+                                {formatPaise(pkg.publishedMrp)}
+                              </span>
+                              <span className="text-base font-black text-slate-900">
+                                {formatPaise(pkg.orderkingPrice)}
+                              </span>
+                            </div>
+                            <span className="text-[9px] font-bold text-slate-500">
+                              per person
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              setInAppBookingModal({
+                                type: "pilgrimage",
+                                data: {
+                                  carrierName: "OrderKing Travel",
+                                  name: pkg.title,
+                                  baseFarePaise: pkg.orderkingPrice,
+                                  totalFarePaise: pkg.orderkingPrice,
+                                  taxesPaise: 0,
                                   departureDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
                                 },
-                                destination: {
-                                  city: pkg.destination.split("(")[0].trim(),
-                                  airportCode: "JED",
-                                  arrivalTime: "04:30 PM",
-                                  arrivalDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
-                                },
-                              },
-                              selectedClass: "Deluxe AC Sovereign",
-                            });
-                          }}
-                          className="w-full h-11 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
-                        >
-                          <Crown className="size-4 text-amber-200" />
-                          <span>Book Tour with KingPay UPI</span>
-                        </Button>
+                                selectedClass: "Standard Deluxe",
+                              });
+                            }}
+                            className="w-full h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition active:scale-98"
+                          >
+                            Book Package ➔
+                          </Button>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ─── SUB-VIEW 2: RELIGIOUS TOURS (FILTERED BY RELIGION) ─── */}
+              {toursSubCategory === "pilgrimage" && (
+                <div className="space-y-4">
+                  <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5 sm:p-6 text-white shadow-lg space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <h3 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
+                          <Compass className="size-5 text-amber-400" />
+                          <span>Religious Tours</span>
+                        </h3>
+                        <p className="text-xs text-slate-400 max-w-2xl">
+                          Select your religion to show relevant tour itineraries.
+                        </p>
+                      </div>
+
+                      {spiritualFaithSelection && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSpiritualFaithSelection(null);
+                            if (typeof window !== "undefined") {
+                              localStorage.removeItem("orderking_faith_tradition");
+                            }
+                            toast.info("Religion selection cleared.");
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition active:scale-95 shrink-0 cursor-pointer"
+                        >
+                          <Compass className="size-3 text-amber-300" />
+                          <span>Change Religion</span>
+                        </button>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
+
+                    {/* Neutral Religion Selection Gate: Displayed when no religion is selected */}
+                    {!spiritualFaithSelection && (
+                      <div className="pt-2">
+                        <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-2.5">
+                          Select Religion:
+                        </span>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          {[
+                            {
+                              id: "ISLAMIC",
+                              label: "Muslim",
+                              sub: "Umrah, Ziyarat & Holy Sites",
+                              icon: "🕋",
+                              color: "from-emerald-950/80 to-emerald-900/60 border-emerald-500/40 hover:border-emerald-400 text-emerald-300",
+                            },
+                            {
+                              id: "SANATAN",
+                              label: "Hindu",
+                              sub: "Kashi, Ayodhya, Kamakhya & Char Dham",
+                              icon: "🕉️",
+                              color: "from-amber-950/80 to-orange-900/60 border-orange-500/40 hover:border-orange-400 text-orange-300",
+                            },
+                            {
+                              id: "SIKH",
+                              label: "Sikh",
+                              sub: "Golden Temple & Sri Hemkund",
+                              icon: "☬",
+                              color: "from-blue-950/80 to-indigo-900/60 border-blue-500/40 hover:border-blue-400 text-blue-300",
+                            },
+                            {
+                              id: "CHRISTIAN",
+                              label: "Christian",
+                              sub: "Old Goa Shrines & Heritage",
+                              icon: "✝️",
+                              color: "from-purple-950/80 to-violet-900/60 border-purple-500/40 hover:border-purple-400 text-purple-300",
+                            },
+                          ].map((item) => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                const faith = item.id as any;
+                                setSpiritualFaithSelection(faith);
+                                if (typeof window !== "undefined") {
+                                  localStorage.setItem("orderking_faith_tradition", faith);
+                                }
+                                toast.success(`Viewing verified ${item.label} itineraries`);
+                              }}
+                              className={`p-3.5 rounded-2xl border bg-gradient-to-br ${item.color} text-left transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-md flex flex-col justify-between min-h-[92px]`}
+                            >
+                              <span className="text-2xl">{item.icon}</span>
+                              <div>
+                                <span className="text-xs font-black block leading-tight text-white">{item.label}</span>
+                                <span className="text-[10px] opacity-75 block mt-0.5">{item.sub}</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Filtered Packages */}
+                  {spiritualFaithSelection && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in duration-300">
+                      {[
+                        // ISLAMIC PACKAGES
+                        {
+                          id: "pkg-umrah-budget-15d",
+                          title: "Umrah 15-Day Economy Saver Pilgrimage",
+                          destination: "Makkah & Madinah (Saudi Arabia)",
+                          duration: "14 Nights / 15 Days",
+                          category: "Islamic Pilgrimage",
+                          faith: "ISLAMIC",
+                          badgeColor: "bg-emerald-700",
+                          image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=600&auto=format&fit=crop&q=80",
+                          inclusions: [
+                            "Return Flights: Direct CCU / GAU / DEL ➔ JED",
+                            "7 Nights in Makkah (Walking Distance to Haram)",
+                            "7 Nights in Madinah (Near Masjid an-Nabawi)",
+                            "Umrah Visa & Comprehensive Medical Insurance",
+                            "Dedicated AC Bus Ziyarat & Multilingual Guide",
+                          ],
+                          publishedMrp: 9200000,
+                          orderkingPrice: 7850000,
+                          departureCity: "Guwahati / Kolkata / Delhi",
+                        },
+                        {
+                          id: "pkg-umrah-15d",
+                          title: "Umrah 15-Day Royal Clock Tower Luxury Journey",
+                          destination: "Makkah & Madinah (Saudi Arabia)",
+                          duration: "14 Nights / 15 Days",
+                          category: "Islamic Pilgrimage",
+                          faith: "ISLAMIC",
+                          badgeColor: "bg-emerald-600",
+                          image: "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=600&auto=format&fit=crop&q=80",
+                          inclusions: [
+                            "Direct Flights: CCU / GAU / DEL ➔ JED / MED",
+                            "5 Nights in Makkah (5-Star Clock Tower Haram Facing)",
+                            "5 Nights in Madinah (Near Prophet's Mosque)",
+                            "Rawdah Permit & E-Visa VIP Processing",
+                            "Private Chauffeur AC Coach Ziyarat & Full Board Buffet",
+                          ],
+                          publishedMrp: 13500000,
+                          orderkingPrice: 11800000,
+                          departureCity: "Guwahati / Kolkata / Delhi",
+                        },
+
+                        // SANATAN HINDU PACKAGES
+                        {
+                          id: "pkg-kashi-ayodhya-4d",
+                          title: "Sacred Kashi Vishwanath & Ayodhya Ram Mandir VIP Express",
+                          destination: "Varanasi, Ayodhya & Prayagraj",
+                          duration: "3 Nights / 4 Days",
+                          category: "Sacred Hindu Circuit",
+                          faith: "SANATAN",
+                          badgeColor: "bg-orange-600",
+                          image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=600&auto=format&fit=crop&q=80",
+                          inclusions: [
+                            "Express Vande Bharat / Rajdhani Rail Berths Included",
+                            "Ram Janmabhoomi VIP Darshan Pass & Prasad",
+                            "Kashi Vishwanath Corridor VIP Aarti Darshan",
+                            "Private Ganga Aarti Boat Ride at Dashashwamedh Ghat",
+                            "Heritage Haveli Stay with Pure Satvik Meals",
+                          ],
+                          publishedMrp: 2400000,
+                          orderkingPrice: 1850000,
+                          departureCity: "Delhi / Patna / Guwahati",
+                        },
+                        {
+                          id: "pkg-kamakhya-sacred",
+                          title: "Maa Kamakhya Devi Temple VIP Darshan & Brahmaputra Yatra",
+                          destination: "Guwahati & Nilachal Hills (Assam)",
+                          duration: "2 Nights / 3 Days",
+                          category: "Sacred Hindu Circuit",
+                          faith: "SANATAN",
+                          badgeColor: "bg-amber-600",
+                          image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&auto=format&fit=crop&q=80",
+                          inclusions: [
+                            "VIP Temple Entry Pass for Maa Kamakhya Devi",
+                            "Private Chauffeur Pickup from Sribhumi / Silchar / Guwahati",
+                            "Sunset Luxury Brahmaputra River Cruise with Aarti",
+                            "Satvik Dining & Heritage Riverside Resort",
+                          ],
+                          publishedMrp: 1800000,
+                          orderkingPrice: 1250000,
+                          departureCity: "Assam / Northeast / Bengal",
+                        },
+                        {
+                          id: "pkg-chardham-yatra",
+                          title: "Maha Char Dham Yatra (Kedarnath, Badrinath, Gangotri)",
+                          destination: "Uttarakhand Sacred Himalayan Circuit",
+                          duration: "9 Nights / 10 Days",
+                          category: "Sacred Hindu Circuit",
+                          faith: "SANATAN",
+                          badgeColor: "bg-orange-700",
+                          image: "https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=600&auto=format&fit=crop&q=80",
+                          inclusions: [
+                            "Helicopter Shuttle Assistance for Kedarnath",
+                            "VIP Puja Booking & Temple Corridor Passes",
+                            "All Road Transfers in Luxury AC Innova",
+                            "Pure Satvik Organic Vegetarian Meals",
+                          ],
+                          publishedMrp: 4200000,
+                          orderkingPrice: 3250000,
+                          departureCity: "Dehradun / Haridwar / Delhi",
+                        },
+
+                        // SIKH PACKAGES
+                        {
+                          id: "pkg-amritsar-golden",
+                          title: "Amritsar Golden Temple & Sri Harmandir Sahib Yatra",
+                          destination: "Amritsar, Punjab",
+                          duration: "2 Nights / 3 Days",
+                          category: "Sikh Gurdwara Circuit",
+                          faith: "SIKH",
+                          badgeColor: "bg-blue-600",
+                          image: "https://images.unsplash.com/photo-1514222134-b57cbb8ce073?w=600&auto=format&fit=crop&q=80",
+                          inclusions: [
+                            "Heritage Haveli Stay near Golden Temple",
+                            "VIP Palki Sahib Seva Assistance",
+                            "Wagah Border Retreat Ceremony VIP Passes",
+                            "Guru Ka Langar & Sacred Kada Prasad",
+                          ],
+                          publishedMrp: 1600000,
+                          orderkingPrice: 1150000,
+                          departureCity: "Delhi / Chandigarh / Guwahati",
+                        },
+
+                        // CHRISTIAN PACKAGES
+                        {
+                          id: "pkg-old-goa-churches",
+                          title: "Old Goa Basilica of Bom Jesus & Heritage Shrines",
+                          destination: "Velha Goa & Panaji",
+                          duration: "3 Nights / 4 Days",
+                          category: "Christian Heritage",
+                          faith: "CHRISTIAN",
+                          badgeColor: "bg-purple-600",
+                          image: "https://images.unsplash.com/photo-1548625361-16a73562a981?w=600&auto=format&fit=crop&q=80",
+                          inclusions: [
+                            "Guided Tour of Basilica of Bom Jesus & Se Cathedral",
+                            "Heritage Portuguese Quarter Fontainhas Walk",
+                            "St. Francis Xavier Relics Sacred Viewing",
+                            "Riverside Boutique Stay with Daily Breakfast",
+                          ],
+                          publishedMrp: 1850000,
+                          orderkingPrice: 1350000,
+                          departureCity: "Goa / Mumbai / Bengaluru",
+                        },
+                      ]
+                        .filter((pkg) => pkg.faith === spiritualFaithSelection)
+                        .map((pkg) => (
+                          <div
+                            key={pkg.id}
+                            className="group flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs hover:shadow-xl transition-all duration-300"
+                          >
+                            <div className="space-y-3">
+                              <div className="relative h-44 rounded-2xl overflow-hidden shadow-inner">
+                                <img
+                                  src={pkg.image}
+                                  alt={pkg.title}
+                                  className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                  loading="lazy"
+                                />
+                                <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                                  <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase text-white shadow-xs ${pkg.badgeColor}`}>
+                                    {pkg.category}
+                                  </span>
+                                  <span className="px-2.5 py-1 rounded-xl text-[10px] font-black bg-slate-900/80 text-white backdrop-blur-xs">
+                                    {pkg.duration}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div>
+                                <h4 className="text-base font-black text-slate-900 leading-snug group-hover:text-amber-700 transition-colors">
+                                  {pkg.title}
+                                </h4>
+                                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1 mt-1">
+                                  <MapPin className="size-3 text-amber-500 shrink-0" />
+                                  {pkg.destination}
+                                </span>
+                              </div>
+
+                              <ul className="space-y-1 text-xs text-slate-600 bg-slate-50 rounded-2xl p-3 border border-slate-100">
+                                {pkg.inclusions.map((item, idx) => (
+                                  <li key={idx} className="flex items-start gap-1.5">
+                                    <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div className="mt-4 pt-3 border-t border-slate-100 space-y-2.5">
+                              <div className="flex items-baseline justify-between">
+                                <div>
+                                  <span className="text-[11px] font-bold text-slate-400 line-through mr-1.5">
+                                    {formatPaise(pkg.publishedMrp)}
+                                  </span>
+                                  <span className="text-lg font-black text-slate-900">
+                                    {formatPaise(pkg.orderkingPrice)}
+                                  </span>
+                                  <span className="text-[10px] text-slate-500 block font-medium">
+                                    All inclusive per person
+                                  </span>
+                                </div>
+                              </div>
+
+                              <Button
+                                type="button"
+                                onClick={() => {
+                                  setInAppBookingModal({
+                                    type: "pilgrimage",
+                                    data: {
+                                      carrierName: "OrderKing Travel",
+                                      name: pkg.title,
+                                      baseFarePaise: pkg.orderkingPrice,
+                                      totalFarePaise: pkg.orderkingPrice,
+                                      taxesPaise: 0,
+                                      departureDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
+                                    },
+                                    selectedClass: "Standard Yatra",
+                                  });
+                                }}
+                                className="w-full h-11 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
+                              >
+                                <Crown className="size-4 text-amber-200" />
+                                <span>Book Yatra Package</span>
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
             </div>
           )}
@@ -3046,10 +3545,35 @@ export function TravelPage() {
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
-                    <span>Direct Carrier Desk Fee</span>
-                    <span className="font-mono font-black">Included (₹0.00)</span>
+                  <div className="flex items-center justify-between text-xs text-slate-700 bg-slate-100/80 px-2.5 py-1.5 rounded-lg border border-slate-200">
+                    <span className="font-bold flex items-center gap-1.5">
+                      <span>👑</span>
+                      <span>Platform Convenience &amp; Processing</span>
+                    </span>
+                    <span className="font-mono font-black text-slate-950">
+                      {inAppBookingModal.type === "flight" && "₹499.00"}
+                      {inAppBookingModal.type === "train" && "₹40.00"}
+                      {inAppBookingModal.type === "hotel" && "₹250.00"}
+                    </span>
                   </div>
+
+                  {inAppBookingModal.type === "flight" && (
+                    <label className="flex items-center justify-between text-xs bg-sky-50/80 p-2.5 rounded-xl border border-sky-200/80 cursor-pointer transition hover:bg-sky-50">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={optInTripProtection}
+                          onChange={(e) => setOptInTripProtection(e.target.checked)}
+                          className="size-4 rounded text-sky-600 focus:ring-sky-500 cursor-pointer"
+                        />
+                        <div>
+                          <span className="font-black text-sky-950 block">Trip Delay &amp; Baggage Shield</span>
+                          <span className="text-[10px] text-sky-700 font-medium block">Instant ₹5,000 compensation for delays &gt; 2 hrs</span>
+                        </div>
+                      </div>
+                      <span className="font-mono font-black text-sky-950">+₹149.00</span>
+                    </label>
+                  )}
 
                   <div className="flex items-center justify-between text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded">
                     <span>Instant KingPay Food Wallet Rebate (2%)</span>
@@ -3064,9 +3588,15 @@ export function TravelPage() {
                   <div className="border-t border-slate-200 pt-2 flex items-center justify-between text-sm font-black text-slate-900">
                     <span>Total Amount Payable</span>
                     <span className="font-mono text-base text-indigo-700">
-                      {inAppBookingModal.type === "flight" && formatPaise((inAppBookingModal.data.baseFarePaise || 419900) + (inAppBookingModal.data.taxesPaise || 45100))}
-                      {inAppBookingModal.type === "train" && `₹${Math.round((inAppBookingModal.data.selectedClassFare || 2240) * 1.05).toLocaleString("en-IN")}`}
-                      {inAppBookingModal.type === "hotel" && `₹${Math.round(inAppBookingModal.data.tariffPerNightInr * 1.18).toLocaleString("en-IN")}`}
+                      {inAppBookingModal.type === "flight" &&
+                        formatPaise(
+                          (inAppBookingModal.data.baseFarePaise || 419900) +
+                          (inAppBookingModal.data.taxesPaise || 45100) +
+                          49900 +
+                          (optInTripProtection ? 14900 : 0)
+                        )}
+                      {inAppBookingModal.type === "train" && `₹${(Math.round((inAppBookingModal.data.selectedClassFare || 2240) * 1.05) + 40).toLocaleString("en-IN")}`}
+                      {inAppBookingModal.type === "hotel" && `₹${(Math.round(inAppBookingModal.data.tariffPerNightInr * 1.18) + 250).toLocaleString("en-IN")}`}
                     </span>
                   </div>
                 </div>

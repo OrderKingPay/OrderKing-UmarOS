@@ -138,5 +138,69 @@ describe("Partner Phone Authentication & Zero-Lockout Architecture Audit", () =>
       expect(verifyRes.success).toBe(true);
       expect(verifyRes.email).toBe(`${testPhone}@partner.orderking.in`);
     });
+
+    it("dispatches via Fast2SMS Smart OTP corridor consuming existing balance when FAST2SMS_OTP_ID is set", async () => {
+      process.env.FAST2SMS_API_KEY = "test_f2s_key";
+      process.env.FAST2SMS_OTP_ID = "88776655";
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          return: true,
+          request_id: "SMART_OTP_PARTNER_123",
+          message: ["Smart OTP dispatched."],
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: testPhone,
+        otp: "654321",
+        channel: "sms",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.provider).toBe("fast2sms");
+      expect(res.messageId).toBe("SMART_OTP_PARTNER_123");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://www.fast2sms.com/dev/otp/send",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            authorization: "test_f2s_key",
+          }),
+        }),
+      );
+
+      delete process.env.FAST2SMS_OTP_ID;
+      delete process.env.FAST2SMS_API_KEY;
+    });
+
+    it("dispatches outbound WhatsApp directly via Meta Graph API v21.0 without self-chat redirect", async () => {
+      process.env.WHATSAPP_ACCESS_TOKEN = "EAABtest_token";
+      process.env.WHATSAPP_PHONE_NUMBER_ID = "109876543210";
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          messages: [{ id: "wamid.PARTNER_WA_123" }],
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: testPhone,
+        otp: "332211",
+        channel: "whatsapp",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.provider).toBe("whatsapp");
+      expect(res.messageId).toBe("wamid.PARTNER_WA_123");
+      expect(res.providerNotice).toContain("Verification code dispatched directly to your WhatsApp inbox");
+
+      delete process.env.WHATSAPP_ACCESS_TOKEN;
+      delete process.env.WHATSAPP_PHONE_NUMBER_ID;
+    });
   });
 });

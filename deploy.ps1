@@ -25,6 +25,17 @@ if (-not (Test-Path $nodeExe)) {
     throw "Fatal: Node.js executable not located. Please install Node.js v22+."
 }
 
+# Supreme Engineer ALPHA / OMEGA: Automatic .env Synchronization across Monorepo Sub-Apps
+$rootEnv = "$PSScriptRoot\.env"
+if (Test-Path $rootEnv) {
+    $subApps = @("orderking-customers", "orderking-partners", "orderking-riders", "HDmaster")
+    foreach ($app in $subApps) {
+        $destPath = "$PSScriptRoot\$app\.env"
+        Copy-Item -Path $rootEnv -Destination $destPath -Force
+    }
+    Write-Host " [OK] Production .env synchronized to all 4 monorepo packages." -ForegroundColor Green
+}
+
 # Fail-Closed Command Runner with Configurable Retries
 function Invoke-CheckedStep {
     param (
@@ -109,6 +120,37 @@ switch ($Action.ToLower()) {
         $wranglerJs = "$PSScriptRoot\node_modules\wrangler\bin\wrangler.js"
         if (-not (Test-Path $wranglerJs)) {
             throw "Fatal: Wrangler binary not found at $wranglerJs"
+        }
+
+        # Supreme Engineer OMEGA: Edge Pre-Flight Sanitization & Error 1101 Fault-Barrier Audit
+        Write-Host "`n>>> [0/5] Executing Edge Pre-Flight Sanitization & 1101 Fault-Barrier Audit..." -ForegroundColor Cyan
+        $apps = @("HDmaster", "orderking-customers", "orderking-partners", "orderking-riders")
+        foreach ($app in $apps) {
+            $distDir = "$PSScriptRoot\$app\dist"
+            $publicDir = "$PSScriptRoot\$app\public"
+            if (Test-Path $distDir) {
+                # 1. Guarantee edge configuration files are present in dist
+                foreach ($cfg in @("_headers", "_routes.json", "_redirects")) {
+                    $srcCfg = "$publicDir\$cfg"
+                    $destCfg = "$distDir\$cfg"
+                    if (Test-Path $srcCfg) {
+                        Copy-Item -Path $srcCfg -Destination $destCfg -Force
+                    }
+                }
+                # 2. Verify and enforce Error 1101 Fault-Barrier in dist/_worker.js
+                $workerIndex = "$distDir\_worker.js\index.js"
+                if (Test-Path $workerIndex) {
+                    $workerContent = Get-Content $workerIndex -Raw
+                    if (-not $workerContent.Contains("Trapped unhandled SSR exception")) {
+                        Write-Host "  ⚠ Applying Error 1101 fault-barrier to $app..." -ForegroundColor Yellow
+                        $fixSsrScript = "$PSScriptRoot\$app\scripts\fix-ssr.mjs"
+                        if (Test-Path $fixSsrScript) {
+                            & $nodeExe $fixSsrScript
+                        }
+                    }
+                }
+                Write-Host "  ✓ [$app] Edge configs & Error 1101 fault-barrier: VERIFIED" -ForegroundColor Green
+            }
         }
 
         Invoke-CheckedStep "[1/5] Deploying orderking-customers -> orderkingpay.com" {

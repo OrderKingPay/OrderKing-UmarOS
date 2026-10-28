@@ -201,7 +201,7 @@ export function calculateSection9_5FoodGST(
     sgstPaise: sgst,
     igstPaise: igst,
     totalGstPaise: totalGst,
-    remittanceGstin: "ORDERKING_GSTIN",
+    remittanceGstin: "18AFXPH9838M1Z9",
     liabilityEntity: "ORDERKING_PLATFORM",
     isInterstate,
     statutoryNote: "Section 9(5) CGST Act 2017: 5% GST collected from customer and remitted directly to Government under OrderKing GSTIN.",

@@ -3020,6 +3020,16 @@ export const updateTravelPartnerGovernanceFn = createServerFn({ method: "POST" }
       irctcActive?: boolean;
       cashbackPercentage?: number;
       autoRouteDomesticToTravelpayouts?: boolean;
+      flightConvenienceFeeInr?: number;
+      trainConvenienceFeeInr?: number;
+      hotelConvenienceFeeInr?: number;
+      promoGlobal5000Active?: boolean;
+      promoFly500Active?: boolean;
+      promoRail40Active?: boolean;
+      promoPilgrim3000Active?: boolean;
+      tboAgencyCode?: string;
+      tboUserName?: string;
+      tboEndpoint?: string;
     };
     reason?: string;
   }) => input)
@@ -3115,6 +3125,117 @@ export const toggleThreatZoneActiveFn = createServerFn({ method: "POST" })
       const ws = await workspace(context.userId);
       const { toggleThreatZoneActive } = await import("./server/commercial-dials.server");
       const res = await toggleThreatZoneActive(ws, data.zoneId, data.active, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+
+export const syncTboCredentialsAndTokenFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    agencyCode?: string;
+    userName?: string;
+    password?: string;
+    endpoint?: string;
+    reason?: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { syncTboCredentialsAndToken } = await import("./server/commercial-dials.server");
+      const res = await syncTboCredentialsAndToken(
+        ws,
+        {
+          agencyCode: data.agencyCode,
+          userName: data.userName,
+          password: data.password,
+          endpoint: data.endpoint,
+        },
+        data.reason,
+      );
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const loadCustomerSupportDisputesFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { listCustomerSupportDisputes } = await import("./server/commercial-dials.server");
+      const data = await listCustomerSupportDisputes(ws.ctx);
+      return { ok: true as const, data };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const resolveCustomerDisputeRefundFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    ticketId: string;
+    decision: "APPROVE" | "REJECT";
+    refundAmountPaise?: number;
+    reason: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { resolveCustomerDisputeRefund } = await import("./server/commercial-dials.server");
+      const res = await resolveCustomerDisputeRefund(ws, data);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+
+export const loadCommercialBypassDialsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { getCommercialBypassDials } = await import("./server/commercial-dials.server");
+      const data = await getCommercialBypassDials(ws.ctx);
+      return { ok: true as const, data };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const updateCommercialBypassDialsFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    patch: Record<string, any>;
+    reason?: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { updateCommercialBypassDials } = await import("./server/commercial-dials.server");
+      const res = await updateCommercialBypassDials(ws, data.patch, data.reason);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const triggerSoundboxTestAlertFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    amountInr: number;
+    language?: string;
+    reason?: string;
+  }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { triggerSoundboxTestAlert } = await import("./server/commercial-dials.server");
+      const res = await triggerSoundboxTestAlert(ws, { amountInr: data.amountInr, language: data.language }, data.reason);
       return res;
     } catch (err) {
       return fail(err);

@@ -57,11 +57,17 @@ import {
   updateFeaturedAdBidFn,
   loadTravelPartnerGovernanceFn,
   updateTravelPartnerGovernanceFn,
+  syncTboCredentialsAndTokenFn,
+  loadCustomerSupportDisputesFn,
+  resolveCustomerDisputeRefundFn,
   loadGeofencingThreatDialsFn,
   updateGeofencingThreatDialsFn,
   addThreatZoneExclusionFn,
   removeThreatZoneExclusionFn,
   toggleThreatZoneActiveFn,
+  loadCommercialBypassDialsFn,
+  updateCommercialBypassDialsFn,
+  triggerSoundboxTestAlertFn,
 } from "@/lib/orderking/actions";
 import type {
   CommercialDialsState,
@@ -75,8 +81,12 @@ import type {
   AdAuctionStudioState,
   TravelPartnerGovernanceState,
   GeofencingThreatDialsState,
+  CustomerDisputeItem,
+  CustomerDisputeSummary,
+  CommercialBypassDialsState,
 } from "@/lib/orderking/server/commercial-dials.server";
 import type { ThreatZonePolygon } from "@/lib/orderking/types";
+import { CommercialBypassDialsSection } from "./commercial-bypass-dials-section";
 
 export type DialTabKey =
   | "platform_fee"
@@ -86,7 +96,9 @@ export type DialTabKey =
   | "wednesday_payout"
   | "ad_auction"
   | "travel_governance"
-  | "geofencing_threat";
+  | "geofencing_threat"
+  | "disputes"
+  | "bypass_dials";
 
 export function CommercialCommandDials() {
   const qc = useQueryClient();
@@ -223,6 +235,27 @@ export function CommercialCommandDials() {
             icon: Globe,
             color: "sky",
           },
+          {
+            id: "disputes" as DialTabKey,
+            label: "8. Dispute & Refund Desk",
+            subtitle: "1-Tap Customer Refunds",
+            icon: Scale,
+            color: "rose",
+          },
+          {
+            id: "geofencing_threat" as DialTabKey,
+            label: "9. Threat Geofencing",
+            subtitle: "H3 Curfews & Exclusions",
+            icon: ShieldAlert,
+            color: "red",
+          },
+          {
+            id: "bypass_dials" as DialTabKey,
+            label: "10. Commercial Bypass Dials",
+            subtitle: "9 Sovereign Dials: VPA, Tax, OTA, Telemetry",
+            icon: SlidersHorizontal,
+            color: "amber",
+          },
         ].map((tab) => {
           const Icon = tab.icon;
           const isSelected = activeTab === tab.id;
@@ -286,6 +319,8 @@ export function CommercialCommandDials() {
         {activeTab === "ad_auction" && <FeaturedAdAuctionStudioSection />}
         {activeTab === "travel_governance" && <TravelPartnerGovernanceSection />}
         {activeTab === "geofencing_threat" && <GeofencingThreatDialsSection />}
+        {activeTab === "disputes" && <CustomerSupportDisputeQueueSection />}
+        {activeTab === "bypass_dials" && <CommercialBypassDialsSection />}
       </div>
     </div>
   );
@@ -1671,13 +1706,56 @@ function TravelPartnerGovernanceSection() {
   const [markerDraft, setMarkerDraft] = useState("");
   const [cashbackDraft, setCashbackDraft] = useState<number>(1.5);
 
+  // 1. Convenience Fees Local Drafts
+  const [flightFeeDraft, setFlightFeeDraft] = useState<number>(399);
+  const [trainFeeDraft, setTrainFeeDraft] = useState<number>(40);
+  const [hotelFeeDraft, setHotelFeeDraft] = useState<number>(250);
+
+  // 2. TBO Credentials & Sync State
+  const [tboAgencyDraft, setTboAgencyDraft] = useState("187051");
+  const [tboUserDraft, setTboUserDraft] = useState("orderkingpay");
+  const [tboPassDraft, setTboPassDraft] = useState("");
+  const [tboEndpointDraft, setTboEndpointDraft] = useState("https://api.tbotechnology.com");
+  const [isSyncingTbo, setIsSyncingTbo] = useState(false);
+
   useEffect(() => {
     if (state) {
       setForm(state);
       setMarkerDraft(state.travelpayoutsMarker || "794122");
       setCashbackDraft(state.cashbackPercentage || 1.5);
+      setFlightFeeDraft(state.flightConvenienceFeeInr ?? 399);
+      setTrainFeeDraft(state.trainConvenienceFeeInr ?? 40);
+      setHotelFeeDraft(state.hotelConvenienceFeeInr ?? 250);
+      setTboAgencyDraft(state.tboAgencyCode || "187051");
+      setTboUserDraft(state.tboUserName || "orderkingpay");
+      setTboEndpointDraft(state.tboEndpoint || "https://api.tbotechnology.com");
     }
   }, [state]);
+
+  const handleSyncTbo = async () => {
+    setIsSyncingTbo(true);
+    try {
+      const res = await syncTboCredentialsAndTokenFn({
+        data: {
+          agencyCode: tboAgencyDraft,
+          userName: tboUserDraft,
+          password: tboPassDraft,
+          endpoint: tboEndpointDraft,
+          reason: "Founder 1-Click TBO API Gateway Token Synchronization",
+        },
+      });
+      if (res && res.ok) {
+        toast.success(res.state.tboSyncMessage || "TBO API Token Synced Successfully");
+        void qc.invalidateQueries({ queryKey: ["travel-partner-governance"] });
+      } else {
+        toast.error((res as any)?.message || "TBO API Token sync failed");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Error syncing TBO credentials");
+    } finally {
+      setIsSyncingTbo(false);
+    }
+  };
 
   const mutateSettings = useMutation({
     mutationFn: (patch: Partial<TravelPartnerGovernanceState>) =>
@@ -1968,6 +2046,560 @@ function TravelPartnerGovernanceSection() {
           <span>Last Updated: {state?.updatedAt ? new Date(state.updatedAt).toLocaleString("en-IN") : "Just now"}</span>
           <span>Operator: {state?.updatedBy || "Founder"}</span>
         </div>
+      </div>
+
+      {/* Card 4: Dynamic Sliders for Convenience Fees */}
+      <div className="rounded-xl border border-sky-500/40 bg-surface/50 p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="size-4 text-sky-400" />
+            <h3 className="text-sm font-bold text-white">Dynamic Convenience Fee Master Sliders</h3>
+          </div>
+          <Badge className="border-sky-500/40 bg-sky-950/60 text-sky-300 font-mono text-[10px]">
+            REAL-TIME CHECKOUT TARIFFS
+          </Badge>
+        </div>
+        <p className="text-xs text-slate-300">
+          Founder dials governing platform convenience fees applied during ticket checkout across domestic flights, Indian Railways, and hotels.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+          {/* Slider 1: Flight Convenience Fee */}
+          <div className="p-4 rounded-xl bg-black/40 border border-border/60 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Plane className="size-3.5 text-sky-400" /> Flights Fee
+              </span>
+              <span className="text-xs font-mono font-bold text-sky-300">₹{flightFeeDraft}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="999"
+              step="1"
+              value={flightFeeDraft}
+              onChange={(e) => setFlightFeeDraft(parseInt(e.target.value, 10))}
+              onMouseUp={() => mutateSettings.mutate({ flightConvenienceFeeInr: flightFeeDraft })}
+              className="w-full accent-sky-500"
+            />
+            <div className="flex justify-between text-[10px] text-muted font-mono">
+              <span>₹0</span>
+              <span className="text-amber-400">Target: ₹399</span>
+              <span>₹999</span>
+            </div>
+          </div>
+
+          {/* Slider 2: Train Convenience Fee */}
+          <div className="p-4 rounded-xl bg-black/40 border border-border/60 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Scale className="size-3.5 text-amber-400" /> Trains Fee
+              </span>
+              <span className="text-xs font-mono font-bold text-amber-300">₹{trainFeeDraft}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={trainFeeDraft}
+              onChange={(e) => setTrainFeeDraft(parseInt(e.target.value, 10))}
+              onMouseUp={() => mutateSettings.mutate({ trainConvenienceFeeInr: trainFeeDraft })}
+              className="w-full accent-amber-500"
+            />
+            <div className="flex justify-between text-[10px] text-muted font-mono">
+              <span>₹0</span>
+              <span className="text-amber-400">Target: ₹40</span>
+              <span>₹100</span>
+            </div>
+          </div>
+
+          {/* Slider 3: Hotel Convenience Fee */}
+          <div className="p-4 rounded-xl bg-black/40 border border-border/60 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Building2 className="size-3.5 text-emerald-400" /> Hotels Fee
+              </span>
+              <span className="text-xs font-mono font-bold text-emerald-300">₹{hotelFeeDraft}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="750"
+              step="5"
+              value={hotelFeeDraft}
+              onChange={(e) => setHotelFeeDraft(parseInt(e.target.value, 10))}
+              onMouseUp={() => mutateSettings.mutate({ hotelConvenienceFeeInr: hotelFeeDraft })}
+              className="w-full accent-emerald-500"
+            />
+            <div className="flex justify-between text-[10px] text-muted font-mono">
+              <span>₹0</span>
+              <span className="text-amber-400">Target: ₹250</span>
+              <span>₹750</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 5: 1-Click Promo Campaign Toggles */}
+      <div className="rounded-xl border border-purple-500/40 bg-surface/50 p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="size-4 text-purple-400" />
+            <h3 className="text-sm font-bold text-white">1-Click Sovereign Promo Campaign Master Toggles</h3>
+          </div>
+          <Badge className="border-purple-500/40 bg-purple-950/60 text-purple-300 font-mono text-[10px]">
+            INSTANT CAMPAIGN ENGINE
+          </Badge>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Promo 1: GLOBAL5000 */}
+          <div className="p-3.5 rounded-xl bg-black/40 border border-border/60 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-black text-amber-400 text-sm">GLOBAL5000</span>
+                <Badge className={cn("text-[9px] font-mono", form.promoGlobal5000Active !== false ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40" : "bg-zinc-900 text-zinc-500")}>
+                  {form.promoGlobal5000Active !== false ? "ACTIVE" : "PAUSED"}
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-300 mt-1 font-medium">Flat ₹5,000 Off International & Umrah Travel</p>
+              <p className="text-[10px] text-muted mt-0.5">Min. booking ₹50,000 across GDS flights</p>
+            </div>
+            <Button
+              size="sm"
+              variant={form.promoGlobal5000Active !== false ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !(form.promoGlobal5000Active !== false);
+                setForm((prev) => ({ ...prev, promoGlobal5000Active: nextVal }));
+                mutateSettings.mutate({ promoGlobal5000Active: nextVal });
+              }}
+              className={cn("w-full text-xs font-bold", form.promoGlobal5000Active !== false ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "border-border/60 text-slate-400")}
+            >
+              {form.promoGlobal5000Active !== false ? "Campaign Live (1-Tap Pause)" : "Activate Campaign"}
+            </Button>
+          </div>
+
+          {/* Promo 2: FLY500 */}
+          <div className="p-3.5 rounded-xl bg-black/40 border border-border/60 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-black text-sky-400 text-sm">FLY500</span>
+                <Badge className={cn("text-[9px] font-mono", form.promoFly500Active !== false ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40" : "bg-zinc-900 text-zinc-500")}>
+                  {form.promoFly500Active !== false ? "ACTIVE" : "PAUSED"}
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-300 mt-1 font-medium">Flat ₹500 Off Domestic Flights</p>
+              <p className="text-[10px] text-muted mt-0.5">Valid on all IndiGo, AI, Akasa & SpiceJet</p>
+            </div>
+            <Button
+              size="sm"
+              variant={form.promoFly500Active !== false ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !(form.promoFly500Active !== false);
+                setForm((prev) => ({ ...prev, promoFly500Active: nextVal }));
+                mutateSettings.mutate({ promoFly500Active: nextVal });
+              }}
+              className={cn("w-full text-xs font-bold", form.promoFly500Active !== false ? "bg-sky-600 hover:bg-sky-500 text-white" : "border-border/60 text-slate-400")}
+            >
+              {form.promoFly500Active !== false ? "Campaign Live (1-Tap Pause)" : "Activate Campaign"}
+            </Button>
+          </div>
+
+          {/* Promo 3: RAIL40 */}
+          <div className="p-3.5 rounded-xl bg-black/40 border border-border/60 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-black text-emerald-400 text-sm">RAIL40</span>
+                <Badge className={cn("text-[9px] font-mono", form.promoRail40Active !== false ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40" : "bg-zinc-900 text-zinc-500")}>
+                  {form.promoRail40Active !== false ? "ACTIVE" : "PAUSED"}
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-300 mt-1 font-medium">100% Zero Convenience Fee on Rail</p>
+              <p className="text-[10px] text-muted mt-0.5">Flat ₹40 waiver on IRCTC bookings</p>
+            </div>
+            <Button
+              size="sm"
+              variant={form.promoRail40Active !== false ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !(form.promoRail40Active !== false);
+                setForm((prev) => ({ ...prev, promoRail40Active: nextVal }));
+                mutateSettings.mutate({ promoRail40Active: nextVal });
+              }}
+              className={cn("w-full text-xs font-bold", form.promoRail40Active !== false ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "border-border/60 text-slate-400")}
+            >
+              {form.promoRail40Active !== false ? "Campaign Live (1-Tap Pause)" : "Activate Campaign"}
+            </Button>
+          </div>
+
+          {/* Promo 4: PILGRIM3000 */}
+          <div className="p-3.5 rounded-xl bg-black/40 border border-border/60 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="font-mono font-black text-amber-300 text-sm">PILGRIM3000</span>
+                <Badge className={cn("text-[9px] font-mono", form.promoPilgrim3000Active !== false ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40" : "bg-zinc-900 text-zinc-500")}>
+                  {form.promoPilgrim3000Active !== false ? "ACTIVE" : "PAUSED"}
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-300 mt-1 font-medium">Flat ₹3,000 Off Pilgrimage Packages</p>
+              <p className="text-[10px] text-muted mt-0.5">Spiritual corridors, Umrah, Vaishno Devi, Ajmer</p>
+            </div>
+            <Button
+              size="sm"
+              variant={form.promoPilgrim3000Active !== false ? "default" : "outline"}
+              onClick={() => {
+                const nextVal = !(form.promoPilgrim3000Active !== false);
+                setForm((prev) => ({ ...prev, promoPilgrim3000Active: nextVal }));
+                mutateSettings.mutate({ promoPilgrim3000Active: nextVal });
+              }}
+              className={cn("w-full text-xs font-bold", form.promoPilgrim3000Active !== false ? "bg-amber-600 hover:bg-amber-500 text-white" : "border-border/60 text-slate-400")}
+            >
+              {form.promoPilgrim3000Active !== false ? "Campaign Live (1-Tap Pause)" : "Activate Campaign"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 6: 1-Click TBO API Password & Token Sync */}
+      <div className="rounded-xl border border-amber-500/40 bg-surface/50 p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <Lock className="size-4 text-amber-400" />
+            <h3 className="text-sm font-bold text-white">TBO Tek Enterprise GDS Gateway & Token Synchronization</h3>
+          </div>
+          <Badge className={cn(
+            "font-mono text-xs px-3 py-1 border",
+            state?.tboAuthStatus === "AUTHENTICATED"
+              ? "border-emerald-500/40 bg-emerald-950/60 text-emerald-300"
+              : state?.tboAuthStatus === "PENDING_CREDENTIALS"
+              ? "border-amber-500/40 bg-amber-950/60 text-amber-300"
+              : "border-rose-500/40 bg-rose-950/60 text-rose-300"
+          )}>
+            Status: {state?.tboAuthStatus || "AUTHENTICATED"}
+          </Badge>
+        </div>
+
+        <p className="text-xs text-slate-300">
+          Official Aggregator Agency Application #187051 (Orderkingpay, GSTIN: 18AFXPH9838M1Z9). Synchronize gateway credentials and authenticate upstream session tokens for live air/rail/hotel ticketing.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-white">Agency / Client ID</label>
+            <Input
+              value={tboAgencyDraft}
+              onChange={(e) => setTboAgencyDraft(e.target.value)}
+              placeholder="187051"
+              className="bg-black/60 border-border/60 text-xs font-mono h-9"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-white">TBO Username</label>
+            <Input
+              value={tboUserDraft}
+              onChange={(e) => setTboUserDraft(e.target.value)}
+              placeholder="orderkingpay"
+              className="bg-black/60 border-border/60 text-xs font-mono h-9"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-white">TBO Password / Secret</label>
+            <Input
+              type="password"
+              value={tboPassDraft}
+              onChange={(e) => setTboPassDraft(e.target.value)}
+              placeholder="••••••••••••"
+              className="bg-black/60 border-border/60 text-xs font-mono h-9"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-white">Gateway Endpoint</label>
+            <Input
+              value={tboEndpointDraft}
+              onChange={(e) => setTboEndpointDraft(e.target.value)}
+              placeholder="https://api.tbotechnology.com"
+              className="bg-black/60 border-border/60 text-xs font-mono h-9"
+            />
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-black/60 border border-border/60 p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white">Active Session Token:</span>
+              <span className="font-mono text-emerald-400 text-[11px]">
+                {state?.tboAuthToken ? `${state.tboAuthToken.slice(0, 24)}...` : "TBO-TOKEN-LIVE-AUTH-187051"}
+              </span>
+            </div>
+            <p className="text-[10px] text-muted">
+              {state?.tboSyncMessage || "Authenticated for Live Booking Engine Service"} · Last Synced: {state?.tboLastSyncAt ? new Date(state.tboLastSyncAt).toLocaleString("en-IN") : "Active"}
+            </p>
+          </div>
+
+          <Button
+            size="sm"
+            disabled={isSyncingTbo}
+            onClick={handleSyncTbo}
+            className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs h-9 px-4 shrink-0 shadow-lg shadow-amber-950/50"
+          >
+            {isSyncingTbo ? (
+              <RefreshCw className="size-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <Zap className="size-3.5 mr-1.5 text-amber-200" />
+            )}
+            1-Click Sync TBO Token
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================================================
+// 10. CENTRAL CUSTOMER SUPPORT DISPUTE QUEUE & 1-TAP REFUND ENGINE
+// ==========================================================================
+
+function CustomerSupportDisputeQueueSection() {
+  const qc = useQueryClient();
+
+  const disputesQ = useQuery({
+    queryKey: ["customer-support-disputes"],
+    queryFn: () => loadCustomerSupportDisputesFn(),
+    refetchInterval: 10_000,
+  });
+
+  const summary: CustomerDisputeSummary | null =
+    disputesQ.data && disputesQ.data.ok ? disputesQ.data.data : null;
+
+  const disputes = summary?.disputes || [];
+  const [resolvingId, setResolvingId] = useState<string | null>(null);
+
+  const resolveMutation = useMutation({
+    mutationFn: (vars: { ticketId: string; decision: "APPROVE" | "REJECT"; reason: string; refundAmountPaise?: number }) =>
+      resolveCustomerDisputeRefundFn({ data: vars }),
+    onSuccess: (res, vars) => {
+      if (res && res.ok) {
+        toast.success(
+          vars.decision === "APPROVE"
+            ? `Refund approved for Ticket ${vars.ticketId} (₹${((res.refundPaise || 0) / 100).toFixed(2)})`
+            : `Dispute rejected for Ticket ${vars.ticketId}`
+        );
+        void qc.invalidateQueries({ queryKey: ["customer-support-disputes"] });
+        void qc.invalidateQueries({ queryKey: ["commercial-dials"] });
+      } else {
+        toast.error((res as any)?.message || "Action failed");
+      }
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Failed to execute dispute resolution");
+    },
+    onSettled: () => {
+      setResolvingId(null);
+    },
+  });
+
+  const handleAction = (ticketId: string, decision: "APPROVE" | "REJECT", defaultPaise: number) => {
+    setResolvingId(ticketId);
+    const reason = decision === "APPROVE"
+      ? "Founder 1-Tap Approved: Legitimate consumer dispute verified"
+      : "Founder 1-Tap Declined: Customer claim not substantiated by delivery telematics";
+
+    resolveMutation.mutate({
+      ticketId,
+      decision,
+      reason,
+      refundAmountPaise: defaultPaise,
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header Banner */}
+      <div className="flex flex-col gap-4 rounded-xl border border-rose-500/40 bg-gradient-to-r from-rose-950/40 via-slate-900 to-black p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Scale className="size-5 text-rose-400" />
+            <h2 className="text-lg font-black text-white">CENTRAL CUSTOMER SUPPORT DISPUTE QUEUE</h2>
+            <Badge className="border-rose-500/40 bg-rose-500/20 text-rose-300 font-mono text-[10px]">
+              1-TAP REFUND SOVEREIGN GATE
+            </Badge>
+          </div>
+          <p className="text-xs text-slate-300">
+            Real-time customer dispute queue. Directly approve refunds with double-entry ledger reversals or dismiss non-genuine claims with 1 tap.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge className="border-amber-500/40 bg-amber-950/60 text-amber-300 font-mono text-xs px-3 py-1">
+            Statutory 30-Min SLA Enforced
+          </Badge>
+        </div>
+      </div>
+
+      {/* KPI Metric Summary Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="rounded-xl border border-rose-500/30 bg-black/40 p-4 space-y-1">
+          <span className="text-[10px] font-mono uppercase text-muted">Pending Disputes</span>
+          <p className="text-2xl font-black font-mono text-rose-400">{summary?.pendingCount || 0}</p>
+          <span className="text-[10px] text-muted">Awaiting Founder Decision</span>
+        </div>
+
+        <div className="rounded-xl border border-amber-500/30 bg-black/40 p-4 space-y-1">
+          <span className="text-[10px] font-mono uppercase text-muted">Total Claim Value</span>
+          <p className="text-2xl font-black font-mono text-amber-300">
+            ₹{(((summary?.pendingRefundPaise || 0)) / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+          </p>
+          <span className="text-[10px] text-muted">Pending Reimbursement</span>
+        </div>
+
+        <div className="rounded-xl border border-emerald-500/30 bg-black/40 p-4 space-y-1">
+          <span className="text-[10px] font-mono uppercase text-muted">Refunds Approved</span>
+          <p className="text-2xl font-black font-mono text-emerald-400">{summary?.approvedCount || 0}</p>
+          <span className="text-[10px] text-muted">
+            ₹{(((summary?.approvedRefundPaise || 0)) / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })} credited
+          </span>
+        </div>
+
+        <div className="rounded-xl border border-zinc-700 bg-black/40 p-4 space-y-1">
+          <span className="text-[10px] font-mono uppercase text-muted">Disputes Dismissed</span>
+          <p className="text-2xl font-black font-mono text-zinc-400">{summary?.rejectedCount || 0}</p>
+          <span className="text-[10px] text-muted">Fraud/Unverified Claims</span>
+        </div>
+      </div>
+
+      {/* Dispute Ticket List */}
+      <div className="rounded-xl border border-border/80 bg-surface/50 p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <FileText className="size-4 text-rose-400" />
+            <h3 className="text-sm font-bold text-white">Live Customer Escalation Feed</h3>
+          </div>
+          <span className="text-[10px] font-mono text-muted">{disputes.length} Disputes in Registry</span>
+        </div>
+
+        {disputesQ.isLoading ? (
+          <div className="flex h-36 items-center justify-center text-xs text-muted">
+            Loading Customer Dispute Queue from PostgreSQL...
+          </div>
+        ) : disputes.length === 0 ? (
+          <div className="p-8 text-center rounded-xl bg-black/30 border border-border/60 space-y-2">
+            <CheckCircle2 className="size-8 text-emerald-400 mx-auto" />
+            <p className="text-sm font-bold text-white">Dispute Queue Clean</p>
+            <p className="text-xs text-muted">Zero pending consumer complaints or unresolved refund claims.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {disputes.map((d) => {
+              const isResolved = d.status === "RESOLVED";
+              const isApproved = d.resolutionCode === "REFUND_APPROVED";
+              const isRejected = d.resolutionCode === "REFUND_REJECTED";
+              const isBusy = resolvingId === d.ticketId;
+
+              return (
+                <div
+                  key={d.id}
+                  className={cn(
+                    "rounded-xl border p-4 space-y-3 transition-all",
+                    !isResolved
+                      ? "border-rose-500/40 bg-gradient-to-r from-rose-950/20 via-black to-black shadow-sm"
+                      : "border-border/60 bg-black/30 opacity-75"
+                  )}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge className="font-mono text-[10px] bg-zinc-900 border-zinc-700 text-zinc-300">
+                        {d.ticketId}
+                      </Badge>
+                      {d.orderId && (
+                        <Badge className="font-mono text-[10px] bg-amber-950/60 border-amber-500/40 text-amber-300">
+                          Order: {d.orderId}
+                        </Badge>
+                      )}
+                      <Badge className={cn(
+                        "text-[10px] font-mono",
+                        d.priority === "CRITICAL"
+                          ? "bg-rose-950 border-rose-500 text-rose-300"
+                          : d.priority === "HIGH"
+                          ? "bg-amber-950 border-amber-500 text-amber-300"
+                          : "bg-zinc-900 border-zinc-700 text-zinc-300"
+                      )}>
+                        {d.priority} PRIORITY
+                      </Badge>
+                      <Badge className="text-[10px] bg-purple-950/60 border-purple-500/40 text-purple-300">
+                        Category: {d.category}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs font-mono">
+                      <span className="text-muted">Order Total:</span>
+                      <span className="font-bold text-white">₹{(d.orderTotalPaise / 100).toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-white">{d.subject}</span>
+                      <span className="text-[10px] text-muted font-mono">
+                        Customer: {d.customerName} ({d.customerPhone})
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed bg-black/40 p-2.5 rounded-lg border border-border/40">
+                      &quot;{d.message}&quot;
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1 border-t border-border/40">
+                    <div className="text-[11px] text-muted flex items-center gap-3">
+                      <span>Logged: {new Date(d.openedAt).toLocaleString("en-IN")}</span>
+                      {d.resolvedAt && (
+                        <span className="text-emerald-400 font-mono">
+                          Resolved: {new Date(d.resolvedAt).toLocaleTimeString("en-IN")}
+                        </span>
+                      )}
+                    </div>
+
+                    {!isResolved ? (
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          disabled={isBusy}
+                          onClick={() => handleAction(d.ticketId, "APPROVE", d.orderTotalPaise)}
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs h-8 px-3 shadow-md shadow-emerald-950/40"
+                        >
+                          <CheckCircle2 className="size-3.5 mr-1.5" />
+                          Approve Refund (₹{(d.orderTotalPaise / 100).toFixed(2)})
+                        </Button>
+                        <Button
+                          size="sm"
+                          disabled={isBusy}
+                          variant="outline"
+                          onClick={() => handleAction(d.ticketId, "REJECT", 0)}
+                          className="border-rose-500/40 hover:bg-rose-950/50 text-rose-300 font-bold text-xs h-8 px-3"
+                        >
+                          <XCircle className="size-3.5 mr-1.5" />
+                          Reject Claim
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Badge className={cn(
+                          "text-xs font-mono font-bold px-3 py-1",
+                          isApproved
+                            ? "bg-emerald-950/80 border-emerald-500/60 text-emerald-300"
+                            : "bg-rose-950/80 border-rose-500/60 text-rose-300"
+                        )}>
+                          {isApproved ? "✓ REFUND APPROVED & SETTLED" : "✕ CLAIM REJECTED"}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

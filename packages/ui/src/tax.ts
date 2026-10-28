@@ -352,13 +352,16 @@ export interface StatutoryWithholdingInputPaise {
   restaurantDiscountPaise?: number; // Pre-tax discount funded by merchant
   hasValidPan?: boolean;
   isInterstate?: boolean;
+  isGstRegistered?: boolean;
+  annualTurnoverUnder20L?: boolean;
+  restaurantGstin?: string;
 }
 
 export interface StatutoryWithholdingResultPaise {
   netTaxableSupplyPaise: number; // grossSales - restaurantDiscount
   grossSalesPaise: number;
 
-  // Section 52 TCS (1% on net taxable supply)
+  // Section 52 TCS (1% on net taxable supply; strictly 0 for unregistered vendors <₹20L or Sec 9(5) food)
   tcsRateBps: number;
   tcsSection52Paise: number;
   tcsCgstPaise: number;
@@ -369,6 +372,11 @@ export interface StatutoryWithholdingResultPaise {
   tdsRateBps: number;
   tdsSection194OPaise: number;
   hasValidPan: boolean;
+
+  // Section 9(5) CGST Act & Unregistered Vendor Status
+  isUnregisteredVendor: boolean;
+  taxPenaltyPaise: number; // Strictly 0 paise penalty
+  platformRemittanceGstin: "18AFXPH9838M1Z9";
 
   totalWithholdingPaise: number;
 }
@@ -382,20 +390,29 @@ export function calculateStatutoryWithholding(
   const isInterstate = Boolean(input.isInterstate);
   const hasValidPan = input.hasValidPan !== false;
 
-  // 1% TCS under Section 52 of CGST Act (100 bps)
-  const tcsRateBps = STATUTORY_TAX_RATES.TCS_SEC52_BPS;
+  // Unregistered food vendor (<₹20L turnover): Circular 167/23/2021-GST & Section 22 CGST Act
+  const isUnregisteredVendor =
+    input.isGstRegistered === false ||
+    input.annualTurnoverUnder20L === true ||
+    (Boolean(input.restaurantGstin) && input.restaurantGstin!.startsWith("URP"));
+
+  // 1% TCS under Section 52 of CGST Act (100 bps) ONLY if merchant is GST registered
+  let tcsRateBps = 0;
   let tcsCgstPaise = 0;
   let tcsSgstPaise = 0;
   let tcsIgstPaise = 0;
   let tcsSection52Paise = 0;
 
-  if (isInterstate) {
-    tcsIgstPaise = applyTaxBpsPaise(netTaxableSupplyPaise, tcsRateBps);
-    tcsSection52Paise = tcsIgstPaise;
-  } else {
-    tcsCgstPaise = applyTaxBpsPaise(netTaxableSupplyPaise, STATUTORY_TAX_RATES.TCS_CGST_BPS);
-    tcsSgstPaise = applyTaxBpsPaise(netTaxableSupplyPaise, STATUTORY_TAX_RATES.TCS_SGST_BPS);
-    tcsSection52Paise = tcsCgstPaise + tcsSgstPaise;
+  if (!isUnregisteredVendor) {
+    tcsRateBps = STATUTORY_TAX_RATES.TCS_SEC52_BPS;
+    if (isInterstate) {
+      tcsIgstPaise = applyTaxBpsPaise(netTaxableSupplyPaise, tcsRateBps);
+      tcsSection52Paise = tcsIgstPaise;
+    } else {
+      tcsCgstPaise = applyTaxBpsPaise(netTaxableSupplyPaise, STATUTORY_TAX_RATES.TCS_CGST_BPS);
+      tcsSgstPaise = applyTaxBpsPaise(netTaxableSupplyPaise, STATUTORY_TAX_RATES.TCS_SGST_BPS);
+      tcsSection52Paise = tcsCgstPaise + tcsSgstPaise;
+    }
   }
 
   // 1% TDS under Section 194-O of Income Tax Act (100 bps) with PAN, 500 bps without PAN
@@ -415,6 +432,9 @@ export function calculateStatutoryWithholding(
     tdsRateBps,
     tdsSection194OPaise,
     hasValidPan,
+    isUnregisteredVendor,
+    taxPenaltyPaise: 0, // Zero tax penalty
+    platformRemittanceGstin: "18AFXPH9838M1Z9",
     totalWithholdingPaise: tcsSection52Paise + tdsSection194OPaise,
   };
 }
@@ -430,6 +450,9 @@ export interface TPlus1DailySettlementInput {
   ifscCode?: string;
   payoutChannel?: "BANK_TRANSFER_NEFT_IMPS" | "UPI_PAYOUT";
   orderDate?: string; // YYYY-MM-DD
+  isGstRegistered?: boolean;
+  annualTurnoverUnder20L?: boolean;
+  restaurantGstin?: string;
   orders: Array<{
     orderId: string;
     foodValuePaise: number;
@@ -437,6 +460,7 @@ export interface TPlus1DailySettlementInput {
     restaurantDiscountPaise?: number;
     commissionBps: number;
     completedAt: string; // ISO timestamp
+    isGstRegistered?: boolean;
   }>;
 }
 
@@ -508,7 +532,14 @@ export function compileTPlus1DailySettlement(input: TPlus1DailySettlementInput):
     const comm = applyTaxBpsPaise(netTaxable, o.commissionBps);
     const commGst = applyTaxBpsPaise(comm, STATUTORY_TAX_RATES.COMMISSION_GST_BPS);
 
-    const tcs = applyTaxBpsPaise(netTaxable, STATUTORY_TAX_RATES.TCS_SEC52_BPS);
+    // Unregistered food vendor (<₹20L annual turnover) or Section 9(5) food per Circular 167/23/2021-GST: TCS is strictly 0
+    const isUnregistered =
+      input.isGstRegistered === false ||
+      input.annualTurnoverUnder20L === true ||
+      (Boolean(input.restaurantGstin) && input.restaurantGstin!.startsWith("URP")) ||
+      o.isGstRegistered === false;
+
+    const tcs = isUnregistered ? 0 : applyTaxBpsPaise(netTaxable, STATUTORY_TAX_RATES.TCS_SEC52_BPS);
     const tds = applyTaxBpsPaise(food + packing, STATUTORY_TAX_RATES.TDS_SEC194_O_BPS);
     const sec95 = applyTaxBpsPaise(netTaxable, STATUTORY_TAX_RATES.FOOD_GST_BPS);
 
@@ -662,3 +693,7 @@ export function generateAutomatedCreditNote(input: CreditNoteInputPaise): Statut
     digitalSignatureRef: `DSC-OK-ECO-${now.getTime()}`,
   };
 }
+
+
+export const calculateSection9_5Tax = calculateSection95Tax;
+export const calculateTcsAndTdsWithholding = calculateStatutoryWithholding;

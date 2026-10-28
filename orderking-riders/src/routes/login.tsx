@@ -127,9 +127,6 @@ function Login() {
       setCountdown(30);
       setCanResend(false);
 
-      if (channel === "whatsapp" && res.whatsAppOtpUrl && typeof window !== "undefined") {
-        window.location.href = res.whatsAppOtpUrl;
-      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to send OTP.";
       setError(msg);

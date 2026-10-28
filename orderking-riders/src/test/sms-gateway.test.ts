@@ -5,6 +5,7 @@ import {
   buildWhatsAppOtpUrl,
   getAvailableSmsProviders,
   dispatchOtpSms,
+  sendViaWhatsAppCloudApi,
 } from "../lib/server/sms-gateway";
 
 describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
@@ -130,6 +131,78 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
       expect(parsedBody.route).toBe("otp");
       expect(parsedBody.variables_values).toBe("778899");
       expect(parsedBody.numbers).toBe("9876543210");
+    });
+
+    it("dispatches TRAI DLT template compliant payload when FAST2SMS_ROUTE is dlt", async () => {
+      process.env.FAST2SMS_API_KEY = "mock_f2s_key_123";
+      process.env.FAST2SMS_ROUTE = "dlt";
+      process.env.FAST2SMS_SENDER_ID = "ORDKNG";
+      process.env.FAST2SMS_DLT_TE_ID = "1207161728392019283";
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          return: true,
+          request_id: "REQ_F2S_DLT_12345",
+          message: ["DLT SMS sent successfully."],
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: "9876543210",
+        otp: "554433",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.provider).toBe("fast2sms");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, options] = mockFetch.mock.calls[0];
+      const parsedBody = JSON.parse(options.body);
+      expect(parsedBody.route).toBe("dlt");
+      expect(parsedBody.sender_id).toBe("ORDKNG");
+      expect(parsedBody.message).toBe("1207161728392019283");
+      expect(parsedBody.variables_values).toBe("554433");
+      expect(parsedBody.numbers).toBe("9876543210");
+
+      delete process.env.FAST2SMS_ROUTE;
+      delete process.env.FAST2SMS_SENDER_ID;
+      delete process.env.FAST2SMS_DLT_TE_ID;
+    });
+
+    it("dispatches via Fast2SMS Smart OTP corridor consuming existing balance when FAST2SMS_OTP_ID is set", async () => {
+      process.env.FAST2SMS_API_KEY = "mock_f2s_key_123";
+      process.env.FAST2SMS_OTP_ID = "10928374";
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          return: true,
+          request_id: "SMART_OTP_REQ_998811",
+          message: ["Smart OTP dispatched successfully."],
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: "9876543210",
+        otp: "123456",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.provider).toBe("fast2sms");
+      expect(res.messageId).toBe("SMART_OTP_REQ_998811");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, options] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://www.fast2sms.com/dev/otp/send");
+      expect(options.method).toBe("POST");
+      expect(options.headers.authorization).toBe("mock_f2s_key_123");
+      const parsedBody = JSON.parse(options.body);
+      expect(parsedBody.otp_id).toBe("10928374");
+      expect(parsedBody.mobile).toBe("9876543210");
+      expect(parsedBody.otp).toBe("123456");
+
+      delete process.env.FAST2SMS_OTP_ID;
     });
   });
 
@@ -279,6 +352,69 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
       expect(res.debugOtp).toBe("123987");
       expect(res.error).toContain("Network timeout");
       expect(res.whatsAppOtpUrl).toContain("123987");
+    });
+  });
+
+  describe("10. Outbound Meta WhatsApp Cloud API v21.0 Dispatch", () => {
+    it("throws clear error when WhatsApp Cloud API credentials are unconfigured", async () => {
+      await expect(
+        sendViaWhatsAppCloudApi("9876543210", "123456")
+      ).rejects.toThrow("Meta WhatsApp Cloud API credentials not configured");
+    });
+
+    it("successfully dispatches outbound template message to Meta Graph API", async () => {
+      process.env.WHATSAPP_ACCESS_TOKEN = "EAABtest_token_meta";
+      process.env.WHATSAPP_PHONE_NUMBER_ID = "109876543210";
+      process.env.WHATSAPP_OTP_TEMPLATE = "orderking_otp_login";
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          messaging_product: "whatsapp",
+          contacts: [{ input: "919876543210", wa_id: "919876543210" }],
+          messages: [{ id: "wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgSRTIy" }],
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await sendViaWhatsAppCloudApi("9876543210", "456789", "OrderKing");
+
+      expect(res.success).toBe(true);
+      expect(res.messageId).toBe("wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgSRTIy");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://graph.facebook.com/v21.0/109876543210/messages",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            Authorization: "Bearer EAABtest_token_meta",
+            "Content-Type": "application/json",
+          }),
+        })
+      );
+    });
+
+    it("integrates with dispatchOtpSms to deliver directly to user WhatsApp inbox", async () => {
+      process.env.WHATSAPP_ACCESS_TOKEN = "EAABtest_token_meta";
+      process.env.WHATSAPP_PHONE_NUMBER_ID = "109876543210";
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          messages: [{ id: "wamid.DISPATCH_OK_123" }],
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: "9876543210",
+        otp: "334455",
+        channel: "whatsapp",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.provider).toBe("whatsapp");
+      expect(res.messageId).toBe("wamid.DISPATCH_OK_123");
+      expect(res.providerNotice).toContain("Verification code dispatched directly to your WhatsApp inbox");
     });
   });
 });

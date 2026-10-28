@@ -8,6 +8,8 @@ import {
   Briefcase,
   Receipt,
   Ticket,
+  ClipboardList,
+  Luggage,
   LayoutGrid,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -176,31 +178,38 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
   const search = (useRouterState({ select: (s) => (s?.location?.search as any)?.tab }) as unknown as string | undefined) ?? "";
   const inKingPay = /^\/(?:kingpay|king-pay)(?:\/|$)/.test(pathname);
   const inTravel = pathname.startsWith("/travel");
+  const isSuperApp = inKingPay || inTravel || pathname.startsWith("/tutor") || pathname.startsWith("/tutor-jobs");
   const inActivity =
     (inTravel && (search === "trips" || pathname.includes("/trips"))) ||
     pathname.startsWith("/orders") ||
-    pathname.startsWith("/kingpay/passbook");
-  const inFood = pathname === "/" || ["/delivery", "/r/", "/restaurants", "/menu", "/dining", "/search", "/cart", "/checkout", "/offers", "/rewards"].some((p) => pathname.startsWith(p));
-  const activeId = inActivity ? "activity" : inKingPay ? "kingpay" : inFood ? "food" : null;
-  const rightTab = inTravel
-    ? { id: "activity", label: "MY TRIPS", to: "/travel?tab=trips", icon: Ticket }
-    : inKingPay
-    ? { id: "activity", label: "HISTORY", to: "/kingpay/passbook", icon: Receipt }
-    : { id: "activity", label: "ORDERS", to: "/orders", icon: ShoppingBag };
-  const tabs = [...THREE_TAB_CUSTOMER_NAV, rightTab] as const;
+    pathname.startsWith("/kingpay/passbook") ||
+    pathname.startsWith("/tutor-jobs/history");
+  const inFood = !isSuperApp && !inActivity;
+  const activeId = inActivity ? "activity" : inKingPay ? "kingpay" : inFood ? "food" : isSuperApp ? "kingpay" : null;
+
+  // Contextual Dynamic Tab 3: Food Orders vs Travel Bookings & PNRs (Zero layout shift)
+  const rightTab = isSuperApp
+    ? { id: "activity", label: "My Bookings & PNRs", displayLabel: "🧳 My Bookings & PNRs", to: "/travel?tab=trips", icon: Luggage }
+    : { id: "activity", label: "My Food Orders", displayLabel: "📋 My Food Orders", to: "/orders", icon: ClipboardList };
+
+  const tabs = [
+    { id: "food", label: "OrderKing", displayLabel: "OrderKing", to: "/", icon: UtensilsCrossed },
+    { id: "kingpay", label: "KingPay", displayLabel: "KingPay", to: "/kingpay", icon: Wallet },
+    rightTab,
+  ] as const;
 
   return (
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "pointer-events-none fixed bottom-0 left-0 right-0 z-[70] flex justify-center px-2.5 sm:px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-4",
+        "pointer-events-none fixed bottom-0 left-0 right-0 z-[70] flex justify-center px-2.5 sm:px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-4 transform-gpu will-change-transform [contain:paint]",
         className
       )}
     >
       <ul
         role="list"
         data-testid="customer-bottom-nav"
-        className="pointer-events-auto grid w-full max-w-lg md:max-w-[560px] grid-cols-3 gap-1.5 sm:gap-2 rounded-[24px] border border-amber-400/60 bg-gradient-to-br from-[#0d111b] via-[#201b18] to-[#181312] p-1.5 sm:p-2 shadow-[0_18px_50px_rgba(15,12,10,0.5),0_0_0_1px_rgba(245,158,11,0.2)] backdrop-blur-2xl overflow-hidden"
+        className="pointer-events-auto grid w-full max-w-lg md:max-w-[560px] grid-cols-3 gap-1.5 sm:gap-2 rounded-[24px] border border-amber-400/60 bg-gradient-to-br from-[#0d111b] via-[#201b18] to-[#181312] p-1.5 sm:p-2 shadow-[0_18px_50px_rgba(15,12,10,0.5),0_0_0_1px_rgba(245,158,11,0.2)] backdrop-blur-2xl overflow-hidden transform-gpu"
       >
         {tabs.map(({ id, label, to, icon: Icon }) => {
           const selected = id === activeId;
@@ -212,7 +221,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                 aria-label={label}
                 aria-current={selected ? "page" : undefined}
                 className={cn(
-                  "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-1.5 py-1.5 text-[11px] font-extrabold tracking-tight no-underline transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 sm:min-h-[62px] sm:text-xs",
+                  "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-1.5 py-1.5 text-[11px] font-extrabold tracking-tight no-underline transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 sm:min-h-[62px] sm:text-xs transform-gpu will-change-transform",
                   selected ? "bg-gradient-to-br from-[#ffedaf] via-amber-400 to-amber-500 text-slate-950 shadow-[0_4px_20px_rgba(245,158,11,0.32)]" :
                   id === "kingpay" ? "border border-amber-400/50 bg-gradient-to-b from-amber-400/20 to-amber-500/10 text-amber-100 hover:bg-amber-400/25" :
                   "text-stone-200 hover:bg-white/10 hover:text-white",
@@ -220,7 +229,16 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                 )}
               >
                 <Icon className="size-5 shrink-0" aria-hidden="true" />
-                <span className="block w-full truncate text-center leading-tight">{label}</span>
+                <span className="block w-full truncate text-center leading-tight">
+                  <span className="xs:hidden">
+                    {id === "activity"
+                      ? (isSuperApp ? "🧳 Bookings" : "📋 Orders")
+                      : label}
+                  </span>
+                  <span className="hidden xs:inline">
+                    {(tabs.find((t) => t.id === id) as any)?.displayLabel || label}
+                  </span>
+                </span>
               </Link>
             </li>
           );

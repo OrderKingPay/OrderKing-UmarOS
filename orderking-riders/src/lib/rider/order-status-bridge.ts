@@ -4,6 +4,7 @@ import type { DeliveryState } from "./types.ts";
 export type MarketplaceOrderStatus =
   | "PLACED"
   | "ACCEPTED"
+  | "AUTO_ACCEPTED"
   | "PREPARING"
   | "READY"
   | "RIDER_ASSIGNED"

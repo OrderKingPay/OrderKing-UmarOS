@@ -21,6 +21,8 @@ import {
   calculateTboFounderMargin,
   calculateOtaHighYieldFare,
   calculateTrainTripGuarantee,
+  calculateAlternateOriginRailArbitrage,
+  calculateOmniCompetitorShadowPrice,
   authenticateTbo,
   searchTboFlights,
   fareQuoteTbo,
@@ -45,6 +47,12 @@ describe("TBO B2B Wholesale Client (#187051) & Production Serializers", () => {
     delete process.env.TBO_USER_NAME;
     delete process.env.TBO_PASSWORD;
     delete process.env.TBO_ENDPOINT;
+    delete process.env.VITE_TBO_CLIENT_ID;
+    delete process.env.VITE_TBO_AGENCY_CODE;
+    delete process.env.VITE_TBO_USERNAME;
+    delete process.env.VITE_TBO_USER_NAME;
+    delete process.env.VITE_TBO_PASSWORD;
+    delete process.env.VITE_TBO_ENDPOINT;
   });
 
   afterEach(() => {
@@ -507,7 +515,7 @@ describe("TBO B2B Wholesale Client (#187051) & Production Serializers", () => {
     });
   });
 
-  describe("10. ixigo/ConfirmTkt Style Train Trip Guarantee Engine", () => {
+  describe("10. KingConfirm Train Trip Guarantee Engine (Zero Founder Risk)", () => {
     it("charges non-refundable ₹99 for Sleeper and calculates high confirmation probability for low WL", () => {
       const guarantee = calculateTrainTripGuarantee({
         pnrOrTrainNo: "12345",
@@ -518,7 +526,10 @@ describe("TBO B2B Wholesale Client (#187051) & Production Serializers", () => {
         baseFarePaise: 45_000, // ₹450
       });
 
+      expect(guarantee.serviceName).toBe("KingConfirm");
       expect(guarantee.isNonRefundableFee).toBe(true);
+      expect(guarantee.isEligibleForGuarantee).toBe(true);
+      expect(guarantee.founderFinancialRiskPaise).toBe(0);
       expect(guarantee.guaranteeFeePaise).toBe(9_900); // ₹99
       expect(guarantee.confirmationProbabilityScore).toBeGreaterThanOrEqual(80);
       expect(guarantee.probabilityTier).toBe("VERY_HIGH");
@@ -527,7 +538,7 @@ describe("TBO B2B Wholesale Client (#187051) & Production Serializers", () => {
       expect(guarantee.platformExpectedProfitPaise).toBe(9_900);
     });
 
-    it("charges ₹199 for 3A AC class and decreases probability for high WL in Tatkal quota", () => {
+    it("charges ₹199 for 3A AC class and decreases probability for high WL in Tatkal quota, disabling guarantee to protect founder", () => {
       const guarantee = calculateTrainTripGuarantee({
         pnrOrTrainNo: "22436",
         travelClass: "3A",
@@ -537,11 +548,136 @@ describe("TBO B2B Wholesale Client (#187051) & Production Serializers", () => {
         baseFarePaise: 165_000, // ₹1,650
       });
 
+      expect(guarantee.serviceName).toBe("KingConfirm");
       expect(guarantee.guaranteeFeePaise).toBe(19_900); // ₹199 for AC
       expect(guarantee.confirmationProbabilityScore).toBeLessThan(50);
       expect(guarantee.probabilityTier).toMatch(/LOW|MEDIUM/);
+      expect(guarantee.isEligibleForGuarantee).toBe(false); // Safeguard active!
+      expect(guarantee.founderFinancialRiskPaise).toBe(0); // Zero risk for founder
       expect(guarantee.isNonRefundableFee).toBe(true);
       expect(guarantee.unconfirmedFoodWalletRefundPaise).toBe(165_000);
+    });
+  });
+
+  describe("11. KingConfirm Alternate-Origin Rail Quota Arbitrage Engine (Bypass 2 & 3)", () => {
+    it("scans upstream Agartala (AGTL) quota when Badarpur (BPB) is waitlisted and charges ₹750 for 3A", () => {
+      const result = calculateAlternateOriginRailArbitrage({
+        boardStationCode: "BPB",
+        destinationStationCode: "ANVT",
+        journeyDate: "2026-11-05",
+        travelClass: "3A",
+        currentWaitlistStatus: "WL/18",
+      });
+
+      expect(result.serviceName).toBe("KingConfirm Alternate-Origin Arbitrage");
+      expect(result.boardStationCode).toBe("BPB");
+      expect(result.destinationStationCode).toBe("ANVT");
+      expect(result.upstreamOriginStationCode).toBe("AGTL");
+      expect(result.upstreamQuotaAvailability).toBe("CONFIRMED_GN");
+      expect(result.arbitrageConfirmationFeePaise).toBe(75_000); // ₹750
+      expect(result.isNonRefundableFee).toBe(true);
+      expect(result.founderFinancialRiskPaise).toBe(0);
+      expect(result.boardingPointChangePermitted).toBe(true);
+      expect(result.guaranteedConfirmation).toBe(true);
+    });
+
+    it("scans upstream Silchar (SCL) when Badarpur (BPB) to Guwahati (GHY) is waitlisted and scales fee to ₹1,100 for 1A", () => {
+      const result = calculateAlternateOriginRailArbitrage({
+        boardStationCode: "BPB",
+        destinationStationCode: "GHY",
+        journeyDate: "2026-11-06",
+        travelClass: "1A",
+        currentWaitlistStatus: "WL/8",
+      });
+
+      expect(result.upstreamOriginStationCode).toBe("SCL");
+      expect(result.upstreamOriginStationName).toBe("Silchar");
+      expect(result.arbitrageConfirmationFeePaise).toBe(110_000); // ₹1,100
+      expect(result.founderFinancialRiskPaise).toBe(0);
+      expect(result.isNonRefundableFee).toBe(true);
+    });
+  });
+
+  describe("12. Omni-Competitor Dynamic Shadow Pricing & Zero-Loss Surge Engine", () => {
+    it("guarantees OrderKing is ₹150 cheaper than Skyscanner/MakeMyTrip while capturing high wholesale margin", () => {
+      const pricing = calculateOmniCompetitorShadowPrice({
+        tboWholesaleNetPaise: 450_000, // ₹4,500 (TBO B2B net)
+        publishedCarrierMrpPaise: 580_000, // ₹5,800 (IndiGo retail)
+        competitorRates: {
+          skyscannerPaise: 565_000,  // ₹5,650
+          makeMyTripPaise: 570_000,  // ₹5,700
+          easeMyTripPaise: 568_000,  // ₹5,680
+        },
+        departureHoursRemaining: 72,
+        passengerCount: 1,
+        enableClosedLoopFoodWalletReward: true,
+      });
+
+      // 1. Lowest competitor was Skyscanner at ₹5,650
+      expect(pricing.competitorBenchmarkSource).toBe("Skyscanner");
+      expect(pricing.lowestCompetitorRatePaiseTotal).toBe(565_000);
+
+      // 2. OrderKing undercuts by exactly ₹150 (₹5,650 - ₹150 = ₹5,500)
+      expect(pricing.orderKingPublishedFarePaiseTotal).toBe(550_000); // ₹5,500
+      expect(pricing.undercutAmountPaiseTotal).toBe(15_000); // ₹150
+
+      // 3. Zero Loss Safeguard is verified
+      expect(pricing.isZeroLossGuaranteed).toBe(true);
+      expect(pricing.orderKingPublishedFarePaiseTotal).toBeGreaterThan(pricing.tboWholesaleNetPaiseTotal);
+
+      // 4. Convenience fee at standard tier
+      expect(pricing.convenienceFeeSurgeTier).toBe("STANDARD");
+      expect(pricing.dynamicConvenienceFeePaiseTotal).toBe(49_900); // ₹499
+
+      // 5. Customer pays Fare (₹5,500) + Fee (₹499) = ₹5,999
+      expect(pricing.customerTotalPayablePaise).toBe(599_900);
+
+      // 6. Founder retains Wholesale Margin (₹1,000) + Convenience Fee (₹499) - Food Wallet (₹200) = ₹1,299
+      expect(pricing.founderNetRetainedProfitPaise).toBe(129_900); // ₹1,299 net cash profit
+      expect(pricing.closedLoopFoodWalletRewardPaiseTotal).toBe(20_000); // ₹200 food retention credit
+    });
+
+    it("activates surge multiplier during festive peak (Eid/Diwali) and scales fee to ₹1,299", () => {
+      const pricing = calculateOmniCompetitorShadowPrice({
+        tboWholesaleNetPaise: 600_000,
+        publishedCarrierMrpPaise: 750_000,
+        competitorRates: {
+          makeMyTripPaise: 740_000,
+        },
+        isFestiveCorridor: true,
+        passengerCount: 1,
+      });
+
+      expect(pricing.convenienceFeeSurgeTier).toBe("FESTIVAL_PEAK");
+      expect(pricing.dynamicConvenienceFeePaiseTotal).toBe(129_900); // ₹1,299
+      expect(pricing.isZeroLossGuaranteed).toBe(true);
+      expect(pricing.founderNetRetainedProfitPaise).toBeGreaterThan(200_000); // > ₹2,000 net profit
+    });
+
+    it("activates last-minute urgency multiplier when departure is in less than 48 hours", () => {
+      const pricing = calculateOmniCompetitorShadowPrice({
+        tboWholesaleNetPaise: 500_000,
+        publishedCarrierMrpPaise: 650_000,
+        departureHoursRemaining: 18,
+      });
+
+      expect(pricing.convenienceFeeSurgeTier).toBe("LAST_MINUTE_SURGE");
+      expect(pricing.dynamicConvenienceFeePaiseTotal).toBe(99_900); // ₹999
+    });
+
+    it("strictly floors at TBO wholesale net price if aggressive competitor rate would cause a loss", () => {
+      const pricing = calculateOmniCompetitorShadowPrice({
+        tboWholesaleNetPaise: 400_000, // ₹4,000
+        publishedCarrierMrpPaise: 420_000,
+        competitorRates: {
+          skyscannerPaise: 405_000, // ₹4,050 (undercutting by ₹150 would be ₹3,900 = loss!)
+        },
+      });
+
+      // Strictly floored at ₹4,000 (TBO net)
+      expect(pricing.orderKingPublishedFarePaiseTotal).toBe(400_000);
+      expect(pricing.isZeroLossGuaranteed).toBe(true);
+      expect(pricing.founderNetRetainedProfitPaise).toBeGreaterThanOrEqual(pricing.dynamicConvenienceFeePaiseTotal - 20_000);
     });
   });
 });

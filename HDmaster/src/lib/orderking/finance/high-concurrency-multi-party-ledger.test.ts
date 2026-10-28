@@ -4,6 +4,8 @@ import {
   CanonicalLedger,
   canonicalLedger,
   type LedgerEntry,
+  type DynamicTravelCheckoutSplitParams,
+  type DynamicTravelCheckoutSplitResult,
   SOVEREIGN_NPCI_UPI_VPA,
   SECONDARY_NPCI_UPI_VPA,
 } from "./canonical-ledger.ts";
@@ -659,6 +661,208 @@ describe("👑 HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", 
       const tamperedCheck = await ledger.verifyLedgerChainIntegrity();
       assert.strictEqual(tamperedCheck.isValid, false);
       assert.strictEqual(tamperedCheck.tamperedTxId, tx2.transactionId);
+    });
+  });
+
+  // =========================================================================
+  // SECTION 6: DYNAMIC TRAVEL CHECKOUT SPLIT-SETTLEMENT & CLOSED-LOOP FLOAT
+  // =========================================================================
+  describe("Section 6: Dynamic Travel Checkout Split-Settlement & Closed-Loop Float", () => {
+    test("executes exact 4-way balanced split on flight booking: Bank Debit, TBO Net, Founder Margin, and ₹200 Food Wallet Float", async () => {
+      const ledger = new CanonicalLedger();
+      const customerUserId = "cust_travel_flight_001";
+      const customerPaidPaise = 459_900;  // ₹4,599.00 paid via NPCI UPI
+      const wholesaleNetPaise = 400_000;  // ₹4,000.00 wholesale net to TBO B2B (#187051)
+      const foodWalletRewardPaise = 20_000; // ₹200.00 closed-loop food wallet reward float
+
+      const result = await ledger.recordDynamicTravelCheckoutSplit({
+        bookingId: "FL-DEL-CCU-9821",
+        serviceType: "FLIGHT",
+        passengerCount: 1,
+        customerPaidPaise,
+        wholesaleNetPaise,
+        foodWalletRewardPaise,
+        userId: customerUserId,
+        providerName: "TBO_B2B_187051",
+        idempotencyKey: `fl_split_dyn_${Date.now()}`,
+      });
+
+      // Split Summary verification
+      const summary = result.splitSummary;
+      assert.strictEqual(summary.customerPaidPaise, 459_900);
+      assert.strictEqual(summary.wholesaleNetPaise, 400_000);
+      assert.strictEqual(summary.foodWalletRewardPaise, 20_000);
+      // Founder fee revenue & net margin retained = 459,900 - 400,000 - 20,000 = 39,900 paise (₹399.00)
+      assert.strictEqual(summary.founderFeeRevenuePaise, 39_900);
+      assert.strictEqual(summary.doubleEntryVariancePaise, 0);
+
+      // Verify Transaction entries
+      const tx = result.transaction;
+      assert.strictEqual(tx.entries.length, 4);
+
+      const debit = tx.entries.find((e) => e.direction === "DEBIT");
+      assert.ok(debit);
+      assert.strictEqual(debit.account, "BANK_CLEARING");
+      assert.strictEqual(debit.amountPaise, 459_900);
+      assert.strictEqual(debit.entityId, `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`);
+
+      const credits = tx.entries.filter((e) => e.direction === "CREDIT");
+      assert.strictEqual(credits.length, 3);
+
+      const tboCredit = credits.find((e) => e.account === "TRAVEL_PROVIDER_PAYABLE");
+      assert.ok(tboCredit);
+      assert.strictEqual(tboCredit.amountPaise, 400_000);
+      assert.strictEqual(tboCredit.entityId, "TBO_B2B_187051");
+
+      const founderCredit = credits.find((e) => e.account === "PLATFORM_FEE_REVENUE");
+      assert.ok(founderCredit);
+      assert.strictEqual(founderCredit.amountPaise, 39_900);
+      assert.strictEqual(founderCredit.entityId, "FOUNDER_VAULT");
+
+      const walletCredit = credits.find((e) => e.account === "CUSTOMER_WALLET");
+      assert.ok(walletCredit);
+      assert.strictEqual(walletCredit.amountPaise, 20_000);
+      assert.strictEqual(walletCredit.entityId, customerUserId);
+
+      // Verify mathematical identity: Sum(Debits) - Sum(Credits) === 0
+      const sumDebits = tx.entries.filter((e) => e.direction === "DEBIT").reduce((s, e) => s + e.amountPaise, 0);
+      const sumCredits = tx.entries.filter((e) => e.direction === "CREDIT").reduce((s, e) => s + e.amountPaise, 0);
+      assert.strictEqual(sumDebits, sumCredits);
+      assert.strictEqual(sumDebits - sumCredits, 0);
+
+      // Verify closed-loop food wallet balance reflects the ₹200.00 credit immediately
+      const walletBalance = await ledger.getKingPayWalletBalancePaise(customerUserId);
+      assert.strictEqual(walletBalance, 20_000);
+    });
+
+    test("executes exact 4-way balanced split on train booking with custom food float", async () => {
+      const ledger = new CanonicalLedger();
+      const customerUserId = "cust_travel_train_002";
+      const customerPaidPaise = 44_000;   // ₹440.00
+      const wholesaleNetPaise = 38_000;   // ₹380.00 IRCTC net base fare
+      const foodWalletRewardPaise = 2_000; // ₹20.00 food wallet float reward
+
+      const result = await ledger.recordDynamicTravelCheckoutSplit({
+        bookingId: "TR-IRCTC-12345",
+        serviceType: "TRAIN",
+        passengerCount: 1,
+        customerPaidPaise,
+        wholesaleNetPaise,
+        foodWalletRewardPaise,
+        userId: customerUserId,
+        providerName: "IRCTC_B2B_TBO",
+        idempotencyKey: `tr_split_dyn_${Date.now()}`,
+      });
+
+      assert.strictEqual(result.splitSummary.customerPaidPaise, 44_000);
+      assert.strictEqual(result.splitSummary.wholesaleNetPaise, 38_000);
+      assert.strictEqual(result.splitSummary.foodWalletRewardPaise, 2_000);
+      // Founder fee revenue: 44,000 - 38,000 - 2,000 = 4,000 paise (₹40.00 mandatory train fee)
+      assert.strictEqual(result.splitSummary.founderFeeRevenuePaise, 4_000);
+      assert.strictEqual(result.splitSummary.doubleEntryVariancePaise, 0);
+
+      const walletBalance = await ledger.getKingPayWalletBalancePaise(customerUserId);
+      assert.strictEqual(walletBalance, 2_000);
+    });
+
+    test("executes hotel booking checkout split with default ₹200 food float and FOUNDER_VAULT account", async () => {
+      const ledger = new CanonicalLedger();
+      const customerUserId = "cust_travel_hotel_003";
+      const customerPaidPaise = 275_000;  // ₹2,750.00
+      const wholesaleNetPaise = 230_000;  // ₹2,300.00
+      // foodWalletRewardPaise omitted -> defaults to 20,000 paise (₹200.00)
+
+      const result = await ledger.recordDynamicTravelCheckoutSplit({
+        bookingId: "HTL-TAJ-KOL-88",
+        serviceType: "HOTEL",
+        customerPaidPaise,
+        wholesaleNetPaise,
+        userId: customerUserId,
+        founderAccount: "FOUNDER_VAULT",
+        idempotencyKey: `htl_split_dyn_${Date.now()}`,
+      });
+
+      assert.strictEqual(result.splitSummary.foodWalletRewardPaise, 20_000);
+      // Founder revenue = 275,000 - 230,000 - 20,000 = 25,000 paise (₹250.00)
+      assert.strictEqual(result.splitSummary.founderFeeRevenuePaise, 25_000);
+
+      const founderCredit = result.transaction.entries.find((e) => e.account === "FOUNDER_VAULT");
+      assert.ok(founderCredit);
+      assert.strictEqual(founderCredit.amountPaise, 25_000);
+
+      const walletBalance = await ledger.getKingPayWalletBalancePaise(customerUserId);
+      assert.strictEqual(walletBalance, 20_000);
+    });
+
+    test("fail-closed: strictly throws when customer paid amount is insufficient to cover wholesale net and food float", async () => {
+      const ledger = new CanonicalLedger();
+      await assert.rejects(
+        async () => {
+          await ledger.recordDynamicTravelCheckoutSplit({
+            bookingId: "FL-FAIL-001",
+            serviceType: "FLIGHT",
+            customerPaidPaise: 410_000,   // ₹4,100.00
+            wholesaleNetPaise: 400_000,   // ₹4,000.00
+            foodWalletRewardPaise: 20_000, // ₹200.00 (Total required = 420,000 paise > 410,000 paise)
+            userId: "cust_fail_001",
+            idempotencyKey: `fail_insufficient_${Date.now()}`,
+          });
+        },
+        /FAIL-CLOSED: Customer paid amount \(410000 paise\) is insufficient to cover wholesale net \(400000 paise\) and closed-loop food wallet reward \(20000 paise\)/
+      );
+    });
+
+    test("fail-closed: strictly rejects non-integer or fractional paise amounts", async () => {
+      const ledger = new CanonicalLedger();
+      await assert.rejects(
+        async () => {
+          await ledger.recordDynamicTravelCheckoutSplit({
+            bookingId: "FL-FAIL-FRACT",
+            serviceType: "FLIGHT",
+            customerPaidPaise: 4599.50 as any, // Fractional float
+            wholesaleNetPaise: 400_000,
+            userId: "cust_fail_002",
+            idempotencyKey: `fail_fract_${Date.now()}`,
+          });
+        },
+        /must be a safe integer number of paise/
+      );
+    });
+
+    test("executes 100 concurrent dynamic travel splits with zero float drift and 100% cryptographic audit chain validity", async () => {
+      const ledger = new CanonicalLedger();
+      const operations = Array.from({ length: 100 }, (_, i) => {
+        const isFlight = i % 3 === 0;
+        const isTrain = i % 3 === 1;
+        const serviceType = isFlight ? "FLIGHT" : isTrain ? "TRAIN" : "HOTEL";
+        const wholesaleNetPaise = isFlight ? 350_000 : isTrain ? 50_000 : 180_000;
+        const foodWalletRewardPaise = isTrain ? 5_000 : 20_000;
+        const founderFee = isFlight ? 39_900 : isTrain ? 4_000 : 25_000;
+        const customerPaidPaise = wholesaleNetPaise + foodWalletRewardPaise + founderFee;
+
+        return ledger.recordDynamicTravelCheckoutSplit({
+          bookingId: `BK-CONCUR-${i}`,
+          serviceType,
+          customerPaidPaise,
+          wholesaleNetPaise,
+          foodWalletRewardPaise,
+          userId: `cust_concur_${i}`,
+          idempotencyKey: `dyn_concur_tx_${i}_${Date.now()}`,
+        });
+      });
+
+      const results = await Promise.all(operations);
+      assert.strictEqual(results.length, 100);
+
+      // Verify all 100 transactions have 0 double-entry variance
+      for (const res of results) {
+        assert.strictEqual(res.splitSummary.doubleEntryVariancePaise, 0);
+      }
+
+      // Verify the cryptographic chain state across all 100 transactions
+      const chainVerification = await ledger.verifyLedgerChainIntegrity();
+      assert.strictEqual(chainVerification.isValid, true);
+      assert.strictEqual(chainVerification.totalTransactions, 100);
     });
   });
 });

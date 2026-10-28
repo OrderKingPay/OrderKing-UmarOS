@@ -110,10 +110,27 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing"); const pool = new Pool({ connectionString: url });
+    const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing");
+    const isRemote = url.includes("neon.tech") || url.includes("sslmode=") || url.includes("supabase.co") || !url.includes("localhost");
+    const pool = new Pool({ connectionString: url, ssl: isRemote ? { rejectUnauthorized: false } : undefined, max: 1, connectionTimeoutMillis: 15000 });
     const run = async <T>(text: string, params: unknown[]) => {
-      const res = await pool.query(text, params);
-      return res.rows as T[];
+      let lastErr;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const res = await pool.query(text, params);
+          return res.rows as T[];
+        } catch (err) {
+          lastErr = err;
+          const msg = err instanceof Error ? err.message : String(err);
+          const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected/i.test(msg);
+          if (isTransient && attempt < 2) {
+            await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
+            continue;
+          }
+          throw err;
+        }
+      }
+      throw lastErr;
     };
     const makeClientSql = (client: any) =>
       toSql(async <T>(text: string, params: unknown[]) => {
@@ -124,18 +141,34 @@ function createNeonSql(): Promise<Sql> {
     return toSql(
       run,
       async <T>(fn: (tx: Sql) => Promise<T>) => {
-        const client = await pool.connect();
-        try {
-          await client.query("BEGIN");
-          const result = await fn(makeClientSql(client));
-          await client.query("COMMIT");
-          return result;
-        } catch (error) {
-          try { await client.query("ROLLBACK"); } catch { /* preserve original error */ }
-          throw error;
-        } finally {
-          client.release();
+        let lastErr;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          let client;
+          try {
+            client = await pool.connect();
+            await client.query("BEGIN");
+            const result = await fn(makeClientSql(client));
+            await client.query("COMMIT");
+            return result;
+          } catch (error) {
+            lastErr = error;
+            if (client) {
+              try { await client.query("ROLLBACK"); } catch (_) {}
+              try { client.release(true); } catch (_) {}
+              client = undefined;
+            }
+            const msg = error instanceof Error ? error.message : String(error);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected/i.test(msg);
+            if (isTransient && attempt < 2) {
+              await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
+              continue;
+            }
+            throw error;
+          } finally {
+            if (client) client.release();
+          }
         }
+        throw lastErr;
       },
     );
 
