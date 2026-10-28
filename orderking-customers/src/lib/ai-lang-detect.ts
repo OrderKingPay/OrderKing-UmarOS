@@ -37,18 +37,18 @@ export function detectLanguage(text: string, defaultCode: string = "en"): string
   // 2. Transliterated / Romanized keyword detection
   const lower = text.toLowerCase();
 
-  // Assamese / Sylheti
-  if (/\b(kenekoi|kene|lagibo|lagbo|khabole|apunar|kiba|bhala|oilam|sylhet|silchar|khomoy|kiya|khobor|dibo|aisen|aisa|kham)\b/.test(lower)) {
+  // Assamese / Sylheti distinctive dialect
+  if (/\b(kenekoi|kene|lagibo|lagbo|khabole|apunar|kiba|bhala|oilam|sylhet|silchar|khomoy|khobor|dibo|aisen|aisa|kham|buzo|matin)\b/.test(lower)) {
     return "as";
   }
 
-  // Bengali / Bonglish
-  if (/\b(kemon|ache|achen|lagbe|khabo|kothay|amake|duto|duti|ekta|tinta|kichu|bhalo|taka|pathan|apnar|bolun|khabar)\b/.test(lower)) {
+  // Bengali / Sylheti / Bonglish
+  if (/\b(kemon|ache|achen|lagbe|khabo|kothay|amake|duto|duti|ekta|tinta|kichu|bhalo|taka|pathan|apnar|bolun|khabar|kibhabe|korbo|korte|parbo|bujho|bhasha|kon kon|kun kun|janen|bujhte)\b/.test(lower)) {
     return "bn";
   }
 
-  // Hindi / Hinglish
-  if (/\b(kya|kaise|batao|chahiye|kripya|bhai|khana|khao|paise|bhej|madad|karo|bataiye|aapka|karna|chahiye|namaste|pranam)\b/.test(lower)) {
+  // Hindi / Hinglish phrasing
+  if (/\b(kaise|kya|batao|bataiye|chahiye|kripya|bhai|khana|khao|paise|bhej|madad|karo|aapka|karna|namaste|pranam|tumhe|tumko|aapko|samajh|jaayega|hoga|karenge|karega|karen)\b/.test(lower)) {
     return "hi";
   }
 

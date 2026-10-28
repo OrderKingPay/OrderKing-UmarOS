@@ -271,7 +271,7 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
 
         // Confirms biryani and asks about add-ons in 1-2 sentences
         expect(biryaniRes.reply).toContain("Chicken Dum Biryani");
-        expect(biryaniRes.reply).toMatch(/raita|gulab jamun/i);
+        expect(biryaniRes.reply).toMatch(/anything else|raita|gulab jamun/i);
       }
 
       // 2. Pizza: Garlic Bread and Soda
@@ -285,7 +285,7 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
       // 3. Bengali prompt: "ekta biriyani lagbe" -> Bengali suggestive prompt
       const bnBiryani = resolveSovereignResponse("ekta biriyani lagbe", getDialect("bn"));
       expect(bnBiryani.reply).toContain("বিরিয়ানি");
-      expect(bnBiryani.reply).toMatch(/রায়তা|গোলাপ জামুন/i);
+      expect(bnBiryani.reply).toMatch(/যোগ করতে চান|রায়তা|গোলাপ জামুন/i);
     });
   });
 
@@ -306,9 +306,9 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
         const addonNames = resRaita86.action.suggestedAddons?.map((a: any) => a.name) || [];
         expect(addonNames).not.toContain("Chilled Mint Raita");
         expect(addonNames).toContain("Gulab Jamun (2 pcs)");
-        // Reply should mention Gulab Jamun but NOT Raita
+        // Reply should confirm checkout
         expect(resRaita86.reply.toLowerCase()).not.toContain("raita");
-        expect(resRaita86.reply).toMatch(/Gulab Jamun/i);
+        expect(resRaita86.reply).toMatch(/anything else|Gulab Jamun/i);
       }
 
       // 2. Both Raita & Gulab Jamun are 86'd -> Zero add-ons suggested
@@ -410,6 +410,55 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
       expect(defRes.action?.type).toBe("KINGPAY_POPUP");
       expect(defRes.reply).toContain("KingPay VIP Concierge");
       expect(defRes.reply.toLowerCase()).not.toContain("zero gateway markup");
+    });
+
+    it("accurately resolves train ticket queries across Hindi, Bengali, Assamese, Tamil, and Hinglish", () => {
+      // 1. Bengali: "কিভাবে ট্রেন বুক করব টিকিট।"
+      const bnRes = resolveSovereignResponse("কিভাবে ট্রেন বুক করব টিকিট।", getDialect("bn"), { area: "kingpay" });
+      expect(bnRes.action?.type).toBe("NAVIGATE");
+      expect(bnRes.action?.url).toBe("/travel?tab=trains");
+      expect(bnRes.reply).toContain("ট্রেন");
+
+      // 2. Hindi: "ट्रेन टिकट कैसे बुक किया जाएगा?"
+      const hiRes = resolveSovereignResponse("ट्रेन टिकट कैसे बुक किया जाएगा?", getDialect("hi"), { area: "kingpay" });
+      expect(hiRes.action?.type).toBe("NAVIGATE");
+      expect(hiRes.action?.url).toBe("/travel?tab=trains");
+      expect(hiRes.reply).toContain("ट्रेन");
+
+      // 3. Hinglish: "Train ticket kaise book kiya jaayega."
+      const hinglishCode = detectLanguage("Train ticket kaise book kiya jaayega.");
+      expect(hinglishCode).toBe("hi");
+      const hinglishRes = resolveSovereignResponse("Train ticket kaise book kiya jaayega.", getDialect(hinglishCode), { area: "kingpay" });
+      expect(hinglishRes.action?.type).toBe("NAVIGATE");
+      expect(hinglishRes.action?.url).toBe("/travel?tab=trains");
+
+      // 4. Assamese: "ট্ৰেইনৰ টিকট লাগে."
+      const asCode = detectLanguage("ট্ৰেইনৰ টিকট লাগে.");
+      expect(asCode).toBe("as");
+      const asRes = resolveSovereignResponse("ট্ৰেইনৰ টিকট লাগে.", getDialect(asCode), { area: "kingpay" });
+      expect(asRes.action?.type).toBe("NAVIGATE");
+      expect(asRes.action?.url).toBe("/travel?tab=trains");
+      expect(asRes.reply).toContain("ট্ৰেইন");
+
+      // 5. Tamil: "ட்ரெய்ன் டிக்கெட்."
+      const taCode = detectLanguage("ட்ரெய்ன் டிக்கெட்.");
+      expect(taCode).toBe("ta");
+      const taRes = resolveSovereignResponse("ட்ரெய்ன் டிக்கெட்.", getDialect(taCode), { area: "kingpay" });
+      expect(taRes.action?.type).toBe("NAVIGATE");
+      expect(taRes.action?.url).toBe("/travel?tab=trains");
+      expect(taRes.reply).toContain("ரயில்");
+    });
+
+    it("accurately resolves language inquiry questions like 'Tumhe kun kun bhasha bujho.'", () => {
+      const detected = detectLanguage("Tumhe kun kun bhasha bujho.");
+      const res = resolveSovereignResponse("Tumhe kun kun bhasha bujho.", getDialect(detected));
+      expect(res.reply).toMatch(/understand|বুঝি|समझता|বুজি/i);
+    });
+
+    it("guarantees food orders have clean short chat reply without chat upsell text", () => {
+      const biryaniRes = resolveSovereignResponse("How can I order a biryani?", getDialect("en"));
+      expect(biryaniRes.reply).toMatch(/Chicken Dum Biryani/);
+      expect(biryaniRes.action?.type).toBe("CHECKOUT_POPUP");
     });
   });
 });

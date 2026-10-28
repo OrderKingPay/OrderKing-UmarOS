@@ -249,7 +249,252 @@ export function resolveSovereignResponse(
     };
   }
 
-  // 4b. Cab, Taxi & Transit Dispatch Intent (Point-to-Point City Travel)
+  // 4b. Language Capability & Understanding Intent
+  if (
+    /\b(bhasha|language|languages|kun kun|kon kon|bujho|buzo|bhashay|bolte|bhashate|janen|samajh|boliye)\b/i.test(raw) ||
+    q.includes("भाषा") ||
+    q.includes("மொழி") ||
+    q.includes("ভাষাত") ||
+    q.includes("ভাষা")
+  ) {
+    let reply = "I understand English, Hindi, Bengali, Assamese, Sylheti, Tamil, Telugu, and major Indian languages. Please speak or type in any language.";
+    if (dialect.code === "hi") {
+      reply = "मैं हिन्दी, अंग्रेजी, बंगाली, असमिया, सिल्हटी, तमिल, तेलुगु समझता हूँ। आप अपनी भाषा में पूछ सकते हैं।";
+    } else if (dialect.code === "bn") {
+      reply = "আমি বাংলা, সিলেটি, অসমীয়া, হিন্দি, ইংরেজি এবং অন্যান্য ভারতীয় ভাষা বুঝি। আপনি স্বাভাবিকভাবে বলুন।";
+    } else if (dialect.code === "as") {
+      reply = "মই অসমীয়া, বাংলা, চিলঠীয়া, হিন্দী আৰু ইংৰাজী বুজি পাওঁ। আপুনি আপোনাৰ ভাষাত সুধিব পাৰে।";
+    } else if (dialect.code === "ta") {
+      reply = "நான் தமிழ், ஆங்கிலம், இந்தி, பெங்காலி மற்றும் அஸ்ஸாமி மொழிகளைப் புரிந்துகொள்கிறேன். உங்கள் மொழியில் பேசலாம்.";
+    } else if (dialect.code === "te") {
+      reply = "నేను తెలుగు, ఇంగ్లీష్, హిందీ, బెంగాలీ మరియు ఇతర భారతీయ భాషలను అర్థం చేసుకుంటాను.";
+    }
+    return { reply };
+  }
+
+  // 4c. Train Ticket Booking & Live PNR Intent (KingConfirm Rail Engine)
+  if (
+    q.includes("train") ||
+    q.includes("rail") ||
+    q.includes("ट्रेन") ||
+    q.includes("রেল") ||
+    q.includes("ট্ৰেইন") ||
+    q.includes("টিকিট") ||
+    q.includes("টিকট") ||
+    q.includes("ட்ரெய்ன்") ||
+    q.includes("ரயில்") ||
+    q.includes("டிக்கெட்") ||
+    q.includes("irctc") ||
+    q.includes("pnr") ||
+    q.includes("berth") ||
+    q.includes("tatkal") ||
+    q.includes("sleeper") ||
+    q.includes("ticket")
+  ) {
+    let reply = "You can search train routes, check live seat availability, and book tickets directly.";
+    if (dialect.code === "hi") {
+      reply = "आप ट्रेन खोज सकते हैं, सीट की उपलब्धता देख सकते हैं और सीधे टिकट बुक कर सकते हैं।";
+    } else if (dialect.code === "bn") {
+      reply = "আপনি ট্রেনের সময়সূচী ও সিটের প্রাপ্যতা দেখতে পারেন এবং সরাসরি টিকিট বুক করতে পারেন।";
+    } else if (dialect.code === "as") {
+      reply = "আপুনি ট্ৰেইন বিচাৰিব পাৰে, ছিটৰ উপলব্ধতা চাব পাৰে আৰু পোনপটীয়াকৈ টিকট বুক কৰিব পাৰে।";
+    } else if (dialect.code === "ta") {
+      reply = "நீங்கள் ரயில்களைத் தேடலாம், இருக்கை இருப்பைச் சரிபார்க்கலாம் மற்றும் நேரடியாக டிக்கெட் முன்பதிவு செய்யலாம்.";
+    } else if (dialect.code === "te") {
+      reply = "మీరు రైళ్లను శోధించవచ్చు, సీట్ల లభ్యతను తనిఖీ చేయవచ్చు మరియు టిక్కెట్లను బుక్ చేసుకోవచ్చు.";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "🚆 Book Train Tickets & Live PNR",
+        url: "/travel?tab=trains",
+      },
+    };
+  }
+
+  // 4d. Flight Booking & Carrier Comparison Intent (ignoring cab rides to airport)
+  if (
+    (!q.includes("cab") && !q.includes("taxi") && !q.includes("auto") && !q.includes("gaadi") && !q.includes("gadi")) &&
+    (q.includes("flight") ||
+      q.includes("airline") ||
+      q.includes("airport") ||
+      q.includes("plane") ||
+      q.includes("उड़ान") ||
+      q.includes("विमान") ||
+      q.includes("হওয়াই") ||
+      q.includes("ফ্লাইট") ||
+      q.includes("বিমান") ||
+      q.includes("বিমানৰ") ||
+      q.includes("விமானம்") ||
+      q.includes("indigo") ||
+      q.includes("air india"))
+  ) {
+    let reply = "Search official airline fares with live comparison and direct booking.";
+    if (dialect.code === "hi") {
+      reply = "सभी एयरलाइंस के आधिकारिक किराए देखें और सीधे टिकट बुक करें।";
+    } else if (dialect.code === "bn") {
+      reply = "অফিসিয়াল এয়ারলাইনসের সরাসরি ভাড়া তুলনা করে টিকিট বুক করুন।";
+    } else if (dialect.code === "as") {
+      reply = "অফিচিয়েল এয়াৰলাইনছৰ প্ৰত্যক্ষ ভাড়া তুলনা কৰি টিকট বুক কৰক।";
+    } else if (dialect.code === "ta") {
+      reply = "அதிகாரப்பூர்வ விமானக் கட்டணங்களை ஒப்பிட்டு உடனடியாக முன்பதிவு செய்யுங்கள்.";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "✈️ Search & Book Official Carrier Flights",
+        url: "/travel?tab=flights",
+      },
+    };
+  }
+
+  // 4e. Hotel & Luxury Stay Intent
+  if (
+    q.includes("hotel") ||
+    q.includes("room") ||
+    q.includes("lodge") ||
+    q.includes("resort") ||
+    q.includes("stay") ||
+    q.includes("होटल") ||
+    q.includes("कमरा") ||
+    q.includes("হোটেল") ||
+    q.includes("ৰুম") ||
+    q.includes("விடுதி")
+  ) {
+    let reply = "Explore verified hotels and luxury stays with authentic room rates.";
+    if (dialect.code === "hi") {
+      reply = "सत्यापित होटल और कमरे देखें, सीधे प्रामाणिक दरों पर।";
+    } else if (dialect.code === "bn") {
+      reply = "যাচাইকৃত হোটেল এবং থাকার জায়গা খুঁজুন আসল মূল্যে।";
+    } else if (dialect.code === "as") {
+      reply = "যাচাই কৰা হোটেল আৰু কোঠা বিচাৰক প্ৰকৃত দামত।";
+    } else if (dialect.code === "ta") {
+      reply = "சரிபார்க்கப்பட்ட தங்கும் விடுதிகளை சிறந்த கட்டணத்தில் முன்பதிவு செய்யுங்கள்.";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "🏨 Browse & Book Verified Hotels",
+        url: "/travel?tab=hotels",
+      },
+    };
+  }
+
+  // 4f. Holiday Tours & Packages Intent
+  if (
+    q.includes("tour") ||
+    q.includes("holiday") ||
+    q.includes("package") ||
+    q.includes("vacation") ||
+    q.includes("घूमना") ||
+    q.includes("ট্যুর") ||
+    q.includes("ভ্রমণ") ||
+    q.includes("ছুটি") ||
+    q.includes("ভ্ৰমণ") ||
+    q.includes("சுற்றுலா")
+  ) {
+    let reply = "Explore curated national and international holiday tour packages.";
+    if (dialect.code === "hi") {
+      reply = "घरेलू और अंतरराष्ट्रीय हॉलिडे टूर पैकेज देखें।";
+    } else if (dialect.code === "bn") {
+      reply = "জাতীয় এবং আন্তর্জাতিক ট্যুর প্যাকেজ দেখুন।";
+    } else if (dialect.code === "as") {
+      reply = "ৰাষ্ট্ৰীয় আৰু আন্তঃৰাষ্ট্ৰীয় ভ্ৰমণ পেকেজ চাওক।";
+    } else if (dialect.code === "ta") {
+      reply = "சுற்றுலா தொகுப்புகளை ஆராயுங்கள்.";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "🌴 Explore Holiday Tours & Packages",
+        url: "/travel?tab=tours",
+      },
+    };
+  }
+
+  // 4g. Utility Bills & Recharges Intent
+  if (
+    q.includes("electricity") ||
+    q.includes("dth") ||
+    q.includes("water") ||
+    q.includes("gas") ||
+    q.includes("broadband") ||
+    q.includes("recharge") ||
+    q.includes("बिजली") ||
+    q.includes("बिल") ||
+    q.includes("বিদ্যুৎ") ||
+    q.includes("পানীৰ বিল") ||
+    q.includes("மின்சாரம்") ||
+    q.includes("fastag")
+  ) {
+    let reply = "Pay electricity, water, gas, and broadband bills directly through Bharat BillPay.";
+    if (dialect.code === "hi") {
+      reply = "भारत बिलपे के माध्यम से बिजली, पानी, गैस और मोबाइल बिल का तुरंत भुगतान करें।";
+    } else if (dialect.code === "bn") {
+      reply = "ভারত বিলপে-র মাধ্যমে বিদ্যুৎ, জল, গ্যাস ও রিচার্জ সরাসরি পরিশোধ করুন।";
+    } else if (dialect.code === "as") {
+      reply = "ভাৰত বিলপে-ৰ জৰিয়তে বিজুলী, পানী আৰু গেছৰ বিল পৰিশোধ কৰক।";
+    } else if (dialect.code === "ta") {
+      reply = "பாரத் பில்பே மூலம் மின்சாரம், தண்ணீர் மற்றும் எரிவாயு கட்டணங்களை செலுத்துங்கள்.";
+    }
+    return {
+      reply,
+      action: {
+        type: "KINGPAY_POPUP",
+        action: "BILL",
+        label: "⚡ Pay Utility Bill with KingPay",
+        vpa: "orderking@ybl",
+        amountPaise: 25000,
+      },
+    };
+  }
+
+  // 4h. Customer Assistance & Navigation Guidance Intent
+  if (
+    q.includes("help") ||
+    q.includes("confused") ||
+    q.includes("how to use") ||
+    q.includes("kahan jau") ||
+    q.includes("madad") ||
+    q.includes("sahayata") ||
+    q.includes("কি করব") ||
+    q.includes("কী করব") ||
+    q.includes("কোথায় যাব") ||
+    q.includes("কিভাবে ব্যবহার করব") ||
+    q.includes("কেনে ব্যৱহাৰ কৰিম") ||
+    q.includes("উপায়ে") ||
+    q.includes("সাহায্য") ||
+    q.includes("உதவி") ||
+    q.includes("guide") ||
+    q.includes("where to go") ||
+    q.includes("back") ||
+    q.includes("front")
+  ) {
+    let reply = "I can help you navigate: food delivery, UPI payments, utility bills, transit cabs, train tickets, or flights.";
+    if (dialect.code === "hi") {
+      reply = "मैं आपकी पूरी सहायता करूँगा: खाना ऑर्डर, यूपीआई पेमेंट, बिल भुगतान, सिटी कैब, ट्रेन या फ्लाइट टिकट।";
+    } else if (dialect.code === "bn") {
+      reply = "আমি আপনাকে সাহায্য করব: খাবার অর্ডার, ইউপিআই পেমেন্ট, বিল পরিশোধ, ট্যাক্সি, ট্রেন বা বিমানের টিকিট।";
+    } else if (dialect.code === "as") {
+      reply = "মই আপোনাৰ সহায় কৰিম: খাদ্য অৰ্ডাৰ, ইউপিআই পেমেণ্ট, বিল পৰিশোধ, কেব, ট্ৰেইন বা বিমানৰ টিকট।";
+    } else if (dialect.code === "ta") {
+      reply = "நான் உங்களுக்கு உதவ தயாராக உள்ளேன்: உணவு, பணம், பில், டாக்ஸி, ரயில் அல்லது விமான டிக்கெட்டுகள்.";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "🧭 Explore KingPay All Services Desk",
+        url: "/kingpay",
+      },
+    };
+  }
+
+  // 4i. Cab, Taxi & Transit Dispatch Intent (Point-to-Point City Travel)
   if (
     q.includes("cab") ||
     q.includes("taxi") ||
@@ -269,6 +514,8 @@ export function resolveSovereignResponse(
       reply = "আপনার ভেরিফাইড সিটি ট্যাক্সি ও অটো প্রস্তুত। সরাসরি কিংপে ইউপিআই পেমেন্ট।";
     } else if (dialect.code === "as") {
       reply = "আপোনাৰ প্ৰস্তুত চিটি কেব সাজু হৈছে। পোনপটীয়া কিংপে ইউপিআই পেমেণ্ট।";
+    } else if (dialect.code === "ta") {
+      reply = "உங்கள் சரிபார்க்கப்பட்ட நகர டாக்ஸி தயாராக உள்ளது.";
     }
     return {
       reply,
@@ -335,33 +582,26 @@ export function resolveSovereignResponse(
       : baseBiryaniAddons.filter((a) => !isItem86(a.id) && !isItem86(a.name));
 
     let reply = "I've loaded your Chicken Dum Biryani checkout.";
-    if (availableBiryaniAddons.length >= 2) {
-      reply = "I've loaded your Chicken Dum Biryani checkout. Would you like Chilled Mint Raita or Gulab Jamun with it?";
+    if (availableBiryaniAddons.length > 0 && !isDismissalOrHurry) {
+      reply = "I've loaded your Chicken Dum Biryani checkout. Would you like to add anything else?";
       if (dialect.code === "bn") {
-        reply = "আমি চিকেন দম বিরিয়ানি চেকআউট লোড করেছি। সাথে পুদিনা রায়তা নাকি গোলাপ জামুন যোগ করবেন?";
+        reply = "আমি চিকেন দম বিরিয়ানি চেকআউট লোড করেছি। সাথে আর কিছু যোগ করতে চান?";
       } else if (dialect.code === "hi") {
-        reply = "मैंने आपका चिकन दम बिरयानी चेकआउट तैयार किया है। क्या आप साथ में रायता या गुलाब जामुन लेंगे?";
+        reply = "मैंने आपका चिकन दम बिरयानी चेकआउट तैयार किया है। क्या आप कुछ और जोड़ना चाहेंगे?";
       } else if (dialect.code === "as") {
-        reply = "মই চিকেন দম বিৰিয়ানি চেকআউট সাজু কৰিছোঁ। লগত পুদিনা ৰায়তা নে গোলাপ জামুন লব বিচাৰিব?";
-      }
-    } else if (availableBiryaniAddons.length === 1) {
-      const single = availableBiryaniAddons[0];
-      reply = `I've loaded your Chicken Dum Biryani checkout. Would you like ${single.name} with it?`;
-      if (dialect.code === "bn") {
-        reply = `আমি চিকেন দম বিরিয়ানি চেকআউট লোড করেছি। সাথে ${single.name} যোগ করবেন?`;
-      } else if (dialect.code === "hi") {
-        reply = `मैंने आपका चिकन दम बिरयानी चेकआउट तैयार किया है। क्या आप साथ में ${single.name} लेंगे?`;
-      } else if (dialect.code === "as") {
-        reply = `মই চিকেন দম বিৰিয়ানি চেকআউট সাজু কৰিছোঁ। লগত ${single.name} লব বিচাৰিব?`;
+        reply = "মই চিকেন দম বিৰিয়ানি চেকআউট সাজু কৰিছোঁ। লগত আন কিবা লব বিচাৰিব নেকি?";
+      } else if (dialect.code === "ta") {
+        reply = "உங்கள் சிக்கன் பிரியாணி தயாராக உள்ளது. வேறு ஏதேனும் சேர்க்க விரும்புகிறீர்களா?";
       }
     } else {
-      // Zero add-ons or Irritation Radar suppressed: direct 1-sentence checkout without upsell
       if (dialect.code === "bn") {
         reply = "আমি আপনার চিকেন দম বিরিয়ানি সরাসরি চেকআউটে লোড করেছি।";
       } else if (dialect.code === "hi") {
         reply = "मैंने आपका चिकन दम बिरयानी सीधे चेकआउट के लिए तैयार किया है।";
       } else if (dialect.code === "as") {
         reply = "মই আপোনাৰ চিকেন দম বিৰিয়ানি পোনপটীয়াকৈ চেকআউটত সাজু কৰিছোঁ।";
+      } else if (dialect.code === "ta") {
+        reply = "உங்கள் சிக்கன் பிரியாணி ஆர்டர் தயாராக உள்ளது.";
       }
     }
 
@@ -421,10 +661,14 @@ export function resolveSovereignResponse(
       : basePizzaAddons.filter((a) => !isItem86(a.id) && !isItem86(a.name));
 
     let reply = "Artisan Woodfired Pizza is ready for checkout.";
-    if (availablePizzaAddons.length >= 2) {
-      reply = "Artisan Woodfired Pizza is ready for checkout. Would you like Garlic Breadsticks or Chilled Soda?";
-    } else if (availablePizzaAddons.length === 1) {
-      reply = `Artisan Woodfired Pizza is ready for checkout. Would you like ${availablePizzaAddons[0].name}?`;
+    if (dialect.code === "bn") {
+      reply = "পিজ্জা চেকআউট লোড করেছি।";
+    } else if (dialect.code === "hi") {
+      reply = "पिज़्ज़ा चेकआउट तैयार है।";
+    } else if (dialect.code === "as") {
+      reply = "পিজ্জা চেকআউট সাজু হৈছে।";
+    } else if (dialect.code === "ta") {
+      reply = "பீட்சா ஆர்டர் தயாராக உள்ளது.";
     }
 
     return {
@@ -888,17 +1132,14 @@ export function CustomerConciergeDrawer({
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/20 text-amber-300 shrink-0">
-                <Crown className="size-5" />
+                <Sparkles className="size-5 text-amber-400" />
               </span>
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm sm:text-base font-bold text-white truncate">VIP Concierge AI King</h2>
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/30 shrink-0">
-                    Sovereign
-                  </span>
-                </div>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">
-                  Natural Voice · 10 Languages · GSTIN: 18AFXPH9838M1Z9
+                <h2 className="text-sm sm:text-base font-bold text-white truncate">
+                  {area === "kingpay" ? "KingPay Support" : "OrderKing Support"}
+                </h2>
+                <p className="text-[11px] text-slate-400 truncate">
+                  Voice &amp; Chat Customer Assistant
                 </p>
               </div>
             </div>
@@ -964,13 +1205,6 @@ export function CustomerConciergeDrawer({
 
         {/* Message Stream */}
         <div className="flex-1 space-y-3.5 overflow-y-auto p-3.5 sm:p-4" aria-live="polite">
-          <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3 text-xs leading-relaxed text-slate-100 flex items-start gap-2.5">
-            <Sparkles className="size-4 shrink-0 text-amber-300 mt-0.5" />
-            <span>
-              Autonomous VIP concierge for 1-tap food ordering, live rider tracking, and KingPay UPI settlements.
-            </span>
-          </div>
-
           {messages.map((m) => {
             const isAi = m.role === "assistant";
             const isSpeaking = speakingId === m.id;
@@ -987,7 +1221,7 @@ export function CustomerConciergeDrawer({
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-700/40 text-[10px] opacity-75">
-                    <span>{isAi ? `👑 OrderKing VIP AI (${selectedLang.name})` : "You"}</span>
+                    <span>{isAi ? (area === "kingpay" ? "KingPay Support" : "OrderKing Support") : "You"}</span>
                     <span>{m.timestamp}</span>
                   </div>
                   <p className="mt-1.5 whitespace-pre-wrap">{m.content}</p>
@@ -1078,15 +1312,18 @@ export function CustomerConciergeDrawer({
         <div className="flex items-center gap-1.5 overflow-x-auto border-t border-slate-800/80 bg-slate-900/60 px-4 py-2 scrollbar-none">
           {(area === "kingpay"
             ? [
-                { label: "⚡ Pay Electricity / DTH", text: "Pay my utility bill or DTH recharge with KingPay." },
-                { label: "🚖 Book City Cab & Auto", text: "Book a city cab or taxi transit with direct KingPay." },
-                { label: "✈️ Flights & Trains", text: "Check train and flight bookings on KingPay." },
-                { label: "📸 Scan BharatQR", text: "Open KingPay camera to scan BharatQR or UPI merchant." },
+                { label: "🚆 Train Tickets", text: "Book train tickets and check live PNR." },
+                { label: "✈️ Flight Bookings", text: "Search and book airline flight tickets." },
+                { label: "⚡ Pay Utility Bills", text: "Pay electricity or water bill with KingPay." },
+                { label: "🚖 City Cabs & Auto", text: "Book a city cab or taxi transit with direct KingPay." },
+                { label: "📸 Scan BharatQR", text: "Open KingPay camera to scan BharatQR." },
                 { label: "🍗 Order Food Delivery", text: "I want to order Royal Dum Biryani food." },
               ]
             : [
-                { label: "🍗 Order Dum Biryani", text: "Recommend the best authentic Royal Dum Biryani." },
-                { label: "👑 KingPay UPI", text: "How do I pay with Direct UPI or scan BharatQR?" },
+                { label: "🍗 Order Dum Biryani", text: "I want to order Royal Dum Biryani." },
+                { label: "🍕 Fresh Pizza", text: "Order fresh pizza." },
+                { label: "🚆 Train Tickets", text: "Book train tickets and check live PNR." },
+                { label: "👑 KingPay UPI", text: "How do I pay with KingPay UPI or scan BharatQR?" },
                 { label: "📦 Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
                 { label: "🛡️ Report Spilled/Late Food", text: "My food arrived cold and leaked. I need a refund." },
               ]
