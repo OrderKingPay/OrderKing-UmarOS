@@ -48,6 +48,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { ScanQrModal } from "@/components/fintech/scan-qr-modal";
 import { AddMoneyModal } from "@/components/fintech/add-money-modal";
 import { OrderKingPassbookReceipts } from "@/components/fintech/orderking-passbook-receipts";
+import { CustomerConciergeDrawer } from "@/components/ai/customer-concierge-drawer";
 import {
   ALL_INDIAN_BOARDS,
   CORE_SUBJECTS,
@@ -209,6 +210,7 @@ export function SupremeKingPayExperience() {
   // Modals
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
+  const [conciergeOpen, setConciergeOpen] = useState(false);
 
   // Active Dedicated Desk Navigation (Eliminates page-scroll duplication)
   const [activeDesk, setActiveDesk] = useState<"garage" | "bills" | "wealth" | "pay" | "passbook" | null>(null);
@@ -374,8 +376,19 @@ export function SupremeKingPayExperience() {
     <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 text-slate-100 font-sans selection:bg-amber-400 selection:text-slate-950">
       {/* ─── 1. TOP SPLIT BAR: SMART SEARCH (LEFT) + COMPACT QUICK BAR (RIGHT) ─── */}
       <section aria-label="KingPay Search and Quick Bar" className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3">
-        {/* Left Half: Universal Deep Search Box */}
-        <div className="relative flex-1 w-full">
+        {/* Left Half: AI Concierge Button + Universal Deep Search Box */}
+        <div className="flex items-center gap-2 flex-1 w-full">
+          <button
+            type="button"
+            onClick={() => setConciergeOpen(true)}
+            className="flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-2xl border border-amber-400/80 bg-stone-950 text-amber-300 shadow-md hover:bg-stone-900 hover:border-amber-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500 transition-all cursor-pointer"
+            aria-label="Open KingPay AI Concierge"
+            title="KingPay AI Concierge"
+          >
+            <Sparkles className="size-5" />
+          </button>
+
+          <div className="relative flex-1 w-full">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-amber-400">
             <Search className="size-4" />
           </div>
@@ -456,6 +469,7 @@ export function SupremeKingPayExperience() {
               )}
             </div>
           )}
+          </div>
         </div>
 
         {/* Right Half: Compact VIP Quick Bar (Vault Balance + Scan QR + Passbook) */}
@@ -1551,6 +1565,15 @@ export function SupremeKingPayExperience() {
             )}
           </div>
         </div>
+      )}
+
+      {/* KingPay AI Concierge Drawer */}
+      {conciergeOpen && (
+        <CustomerConciergeDrawer
+          open={conciergeOpen}
+          onClose={() => setConciergeOpen(false)}
+          area="kingpay"
+        />
       )}
     </div>
   );

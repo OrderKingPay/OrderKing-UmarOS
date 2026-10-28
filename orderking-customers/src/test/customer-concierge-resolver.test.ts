@@ -397,5 +397,19 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
         expect(res.reply.toLowerCase()).not.toContain("gulab jamun");
       }
     });
+
+    it("verifies KingPay area default response and cab transit dispatch intent", () => {
+      // 1. Cab transit
+      const cabRes = resolveSovereignResponse("book cab to airport", getDialect("en"), { area: "kingpay" });
+      expect(cabRes.action?.type).toBe("NAVIGATE");
+      expect(cabRes.action?.url).toBe("/travel?tab=cabs");
+      expect(cabRes.reply).toContain("transit is ready");
+
+      // 2. Default in kingpay area
+      const defRes = resolveSovereignResponse("general question", getDialect("en"), { area: "kingpay" });
+      expect(defRes.action?.type).toBe("KINGPAY_POPUP");
+      expect(defRes.reply).toContain("KingPay VIP Concierge");
+      expect(defRes.reply.toLowerCase()).not.toContain("zero gateway markup");
+    });
   });
 });

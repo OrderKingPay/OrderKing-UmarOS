@@ -121,6 +121,7 @@ export type ChatMessage = {
 export interface SovereignResolveOptions {
   outOfStockItems?: string[];
   suppressSuggestions?: boolean;
+  area?: ConciergeArea;
 }
 
 /**
@@ -482,8 +483,17 @@ export function resolveSovereignResponse(
       actionType = "BILL";
     }
 
+    let reply = "KingPay direct NPCI 1-Tap UPI and Sovereign BharatQR scanner are ready.";
+    if (dialect.code === "hi") {
+      reply = "डायरेक्ट एनपीसीआई 1-टैप यूपीआई और भारतक्यूआर स्कैनर तैयार है।";
+    } else if (dialect.code === "bn") {
+      reply = "সরাসরি এনপিসিআই ১-ট্যাপ ইউপিআই এবং ভারতকিউআর স্ক্যানার প্রস্তুত।";
+    } else if (dialect.code === "as") {
+      reply = "পোনপটীয়া এনপিচিআই ১-টেপ ইউপিআই আৰু ভাৰতকিউআৰ স্ক্যানাৰ সাজু আছে।";
+    }
+
     return {
-      reply: "KingPay 1-Tap UPI and Sovereign BharatQR scanner are ready with zero gateway markups.",
+      reply,
       action: {
         type: "KINGPAY_POPUP",
         action: actionType,
@@ -500,8 +510,38 @@ export function resolveSovereignResponse(
   }
 
   // 9. Default
+  if (options?.area === "kingpay") {
+    let reply = "I am your KingPay VIP Concierge. How may I assist your UPI payment, bill recharge, or transit cabs?";
+    if (dialect.code === "hi") {
+      reply = "मैं आपका किंगपे वीआईपी कंसीयर्ज हूँ। यूपीआई भुगतान, बिल रिचार्ज या यात्रा में सहायता के लिए पूछिए।";
+    } else if (dialect.code === "bn") {
+      reply = "আমি আপনার কিংপে ভিআইপি কনসিয়ার্জ। ইউপিআই পেমেন্ট, বিল রিচার্জ বা ভ্রমণের জন্য বলুন।";
+    } else if (dialect.code === "as") {
+      reply = "মই আপোনাৰ কিংপে ভিআইপি সহায়ক। ইউপিআই পেমেণ্ট, বিল ৰিচাৰ্জ বা ভ্ৰমণৰ বাবে সোধক।";
+    }
+    return {
+      reply,
+      action: {
+        type: "KINGPAY_POPUP",
+        action: "TRANSFER",
+        label: "⚡ Launch 1-Tap KingPay UPI / QR",
+        vpa: "orderking@ybl",
+        amountPaise: 25000,
+      },
+    };
+  }
+
+  let defaultReply = "I am your OrderKing VIP Concierge. How may I assist your dining or KingPay experience today?";
+  if (dialect.code === "hi") {
+    defaultReply = "मैं आपका ऑर्डरकिंग वीआईपी कंसीयर्ज हूँ। भोजन ऑर्डर या किंगपे सेवा में क्या सहायता करूँ?";
+  } else if (dialect.code === "bn") {
+    defaultReply = "আমি আপনার অর্ডারকিং ভিআইপি কনসিয়ার্জ। খাবার অর্ডার বা কিংপে সেবায় কীভাবে সাহায্য করতে পারি?";
+  } else if (dialect.code === "as") {
+    defaultReply = "মই আপোনাৰ অৰ্ডাৰকিং ভিআইপি সহায়ক। খাদ্য অৰ্ডাৰ বা কিংপে সেৱাত কেনেদৰে সহায় কৰিব পাৰোঁ?";
+  }
+
   return {
-    reply: "I am your OrderKing VIP Concierge. How may I assist your dining or KingPay experience today?",
+    reply: defaultReply,
     action: {
       type: "CHECKOUT_POPUP",
       label: "🍗 1-Tap Checkout: Royal Dum Biryani",
@@ -615,28 +655,49 @@ export function CustomerConciergeDrawer({
   // Initialize Welcome Message
   useEffect(() => {
     if (messages.length === 0) {
+      const isKingPay = area === "kingpay";
+      let welcomeContent = selectedLang.welcome;
+      if (isKingPay) {
+        if (selectedLang.code === "hi") {
+          welcomeContent = "किंगपे वीआईपी कंसीयर्ज में आपका स्वागत है! यूपीआई, भारतक्यूआर, बिल भुगतान या सिटी कैब के लिए पूछिए।";
+        } else if (selectedLang.code === "bn") {
+          welcomeContent = "কিংপে ভিআইপি কনসিয়ার্জে স্বাগতম! ইউপিআই, ভারতকিউআর, বিল পেমেন্ট বা সিটি ক্যাবের জন্য বলুন।";
+        } else if (selectedLang.code === "as") {
+          welcomeContent = "কিংপে ভিআইপি সহায়কলৈ স্বাগতম! ইউপিআই, ভাৰতকিউআৰ, বিল পেমেণ্ট বা চিটি কেবৰ বাবে সোধক।";
+        } else {
+          welcomeContent = "Welcome to KingPay VIP Concierge! Ask to pay bills, scan BharatQR, book transit cabs, or send 1-tap UPI.";
+        }
+      }
+
       setMessages([
         {
           id: "welcome-init",
           role: "assistant",
-          content: selectedLang.welcome,
+          content: welcomeContent,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          action: {
-            type: "CHECKOUT_POPUP",
-            label: "🍗 1-Tap Checkout: Royal Dum Biryani",
-            dishName: "Royal Chicken Dum Biryani",
-            restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
-            pricePaise: 28000,
-            deliveryEta: "24-28 mins",
-            suggestedAddons: [
-              { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
-              { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
-            ],
-          },
+          action: isKingPay
+            ? {
+                type: "KINGPAY_POPUP",
+                label: "⚡ Launch 1-Tap KingPay UPI / QR",
+                vpa: "orderking@ybl",
+                amountPaise: 25000,
+              }
+            : {
+                type: "CHECKOUT_POPUP",
+                label: "🍗 1-Tap Checkout: Royal Dum Biryani",
+                dishName: "Royal Chicken Dum Biryani",
+                restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
+                pricePaise: 28000,
+                deliveryEta: "24-28 mins",
+                suggestedAddons: [
+                  { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
+                  { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
+                ],
+              },
         },
       ]);
     }
-  }, [selectedLang]);
+  }, [selectedLang, area]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -778,10 +839,11 @@ export function CustomerConciergeDrawer({
       setSuppressSuggestions(true);
     }
 
-    // Sovereign Local Resolution with 0 External Paid APIs (passing outOfStockItems and suppressSuggestions)
+    // Sovereign Local Resolution with 0 External Paid APIs (passing outOfStockItems, suppressSuggestions, and area)
     const { reply, action } = resolveSovereignResponse(raw, matchedDialect, {
       outOfStockItems,
       suppressSuggestions: nextSuppress,
+      area,
     });
 
     setTimeout(() => {
@@ -1014,12 +1076,21 @@ export function CustomerConciergeDrawer({
 
         {/* 1-Tap Quick Action Chips */}
         <div className="flex items-center gap-1.5 overflow-x-auto border-t border-slate-800/80 bg-slate-900/60 px-4 py-2 scrollbar-none">
-          {[
-            { label: "🍗 Order Dum Biryani", text: "Recommend the best authentic Royal Dum Biryani." },
-            { label: "👑 KingPay UPI", text: "How do I pay with Direct UPI or scan BharatQR?" },
-            { label: "📦 Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
-            { label: "🛡️ Report Spilled/Late Food", text: "My food arrived cold and leaked. I need a refund." },
-          ].map((chip) => (
+          {(area === "kingpay"
+            ? [
+                { label: "⚡ Pay Electricity / DTH", text: "Pay my utility bill or DTH recharge with KingPay." },
+                { label: "🚖 Book City Cab & Auto", text: "Book a city cab or taxi transit with direct KingPay." },
+                { label: "✈️ Flights & Trains", text: "Check train and flight bookings on KingPay." },
+                { label: "📸 Scan BharatQR", text: "Open KingPay camera to scan BharatQR or UPI merchant." },
+                { label: "🍗 Order Food Delivery", text: "I want to order Royal Dum Biryani food." },
+              ]
+            : [
+                { label: "🍗 Order Dum Biryani", text: "Recommend the best authentic Royal Dum Biryani." },
+                { label: "👑 KingPay UPI", text: "How do I pay with Direct UPI or scan BharatQR?" },
+                { label: "📦 Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
+                { label: "🛡️ Report Spilled/Late Food", text: "My food arrived cold and leaked. I need a refund." },
+              ]
+          ).map((chip) => (
             <button
               key={chip.label}
               type="button"
