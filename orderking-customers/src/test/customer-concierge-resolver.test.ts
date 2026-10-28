@@ -408,8 +408,44 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
       // 2. Default in kingpay area
       const defRes = resolveSovereignResponse("general question", getDialect("en"), { area: "kingpay" });
       expect(defRes.action?.type).toBe("KINGPAY_POPUP");
-      expect(defRes.reply).toContain("KingPay VIP Concierge");
+      expect(defRes.reply).toContain("KingPay Support");
       expect(defRes.reply.toLowerCase()).not.toContain("zero gateway markup");
+    });
+
+    it("routes burger requests authentically to search catalog without fake dishes", () => {
+      // 1. English in KingPay
+      const burgerRes = resolveSovereignResponse("Can I order a burger?", getDialect("en"), { area: "kingpay" });
+      expect(burgerRes.action?.type).toBe("NAVIGATE");
+      expect(burgerRes.action?.url).toBe("/search?q=burger");
+      expect(burgerRes.reply).toContain("burger menus");
+      expect(burgerRes.reply).not.toContain("Royal Feast Platter");
+
+      // 2. Hindi
+      const hiBurger = resolveSovereignResponse("मुझे बर्गर खाना है", getDialect("hi"));
+      expect(hiBurger.action?.type).toBe("NAVIGATE");
+      expect(hiBurger.action?.url).toBe("/search?q=burger");
+      expect(hiBurger.reply).toContain("बर्गर");
+
+      // 3. Bengali
+      const bnBurger = resolveSovereignResponse("বার্গার অর্ডার করতে চাই", getDialect("bn"));
+      expect(bnBurger.action?.type).toBe("NAVIGATE");
+      expect(bnBurger.action?.url).toBe("/search?q=burger");
+      expect(bnBurger.reply).toContain("বার্গার");
+    });
+
+    it("answers restaurant connectivity inquiries with authentic partner architecture", () => {
+      const restRes = resolveSovereignResponse("how are restaurants connected to kingpay", getDialect("en"), { area: "kingpay" });
+      expect(restRes.action?.type).toBe("NAVIGATE");
+      expect(restRes.action?.url).toBe("/");
+      expect(restRes.reply).toContain("partner.orderkingpay.com");
+      expect(restRes.reply).toContain("live menus");
+    });
+
+    it("routes general food inquiries in KingPay to OrderKing Food", () => {
+      const foodRes = resolveSovereignResponse("i want to order food", getDialect("en"), { area: "kingpay" });
+      expect(foodRes.action?.type).toBe("NAVIGATE");
+      expect(foodRes.action?.url).toBe("/");
+      expect(foodRes.reply).toContain("OrderKing Food");
     });
 
     it("accurately resolves train ticket queries across Hindi, Bengali, Assamese, Tamil, and Hinglish", () => {

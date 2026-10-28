@@ -1533,7 +1533,7 @@ export function SupremeKingPayExperience() {
                   <ShieldCheck className="size-8" />
                 </div>
                 <div>
-                  <h4 className="text-base font-black text-white">Full-KYC Sovereign Verified</h4>
+                  <h4 className="text-base font-black text-white">Full-KYC Verified</h4>
                   <p className="text-xs text-emerald-400 font-bold mt-0.5">RBI Master Direction PPI Compliant</p>
                 </div>
                 <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-2 text-xs">
@@ -1546,8 +1546,8 @@ export function SupremeKingPayExperience() {
                     <span className="text-white font-mono font-bold">₹1,00,000.00</span>
                   </div>
                   <div className="flex justify-between text-slate-400">
-                    <span>GSTIN Legal Entity</span>
-                    <span className="text-amber-300 font-mono">18AFXPH9838M1Z9</span>
+                    <span>Wallet Compliance</span>
+                    <span className="text-emerald-400 font-bold">RBI PPI Master Direction</span>
                   </div>
                   <div className="flex justify-between text-slate-400">
                     <span>TDS Deduction</span>

@@ -175,9 +175,9 @@ describe("Luxury Voice Concierge & Action Pop-Up UI Audit Suite (783ded97)", () 
       expect(drawerSource).toContain("duration-200");
     });
 
-    it("verifies statutory entity compliance disclosure (GSTIN: 18AFXPH9838M1Z9)", () => {
-      expect(drawerSource).toContain("18AFXPH9838M1Z9");
-      expect(drawerSource).toContain("Assam - 788710");
+    it("ensures founder privacy by never exposing raw GSTIN inside customer-facing drawer", () => {
+      expect(drawerSource).not.toContain("GSTIN: 18AFXPH9838M1Z9");
+      expect(drawerSource).not.toContain("18AFXPH9838M1Z9");
     });
   });
 });

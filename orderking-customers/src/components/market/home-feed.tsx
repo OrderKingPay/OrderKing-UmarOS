@@ -17,18 +17,9 @@ import {
   ChevronRight,
   CloudRain,
   Sparkles,
-  Store,
-  ExternalLink,
-  Crown,
-  CreditCard,
-  Plane,
-  Train,
-  Package,
-  ShieldCheck,
-  GraduationCap,
-  Briefcase,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
+import { LocationDialog } from "@/components/market/location-dialog";
 import { CuratedCollections } from "@/components/market/curated-collections";
 import { useCustomization } from "@orderking/ui";
 import { useBrand, useT } from "@/components/providers";
@@ -41,7 +32,6 @@ import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
-import { getActiveDeliveryRadius } from "@/lib/geo/dynamic-radius";
 
 // Curated high-resolution categories with distinct gradient colors (Biryani, Pizza, Rolls, Thali, Burgers, Desserts)
 const CURATED_FOOD_CATEGORIES = [
@@ -224,6 +214,7 @@ export function HomeFeed({
   const [filterOffers, setFilterOffers] = useState(false);
   const [filterBudget, setFilterBudget] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
+  const [locDialogOpen, setLocDialogOpen] = useState(false);
 
   // Past orders for reorder
   const pastOrders = useQuery({
@@ -341,7 +332,6 @@ export function HomeFeed({
     )
   );
 
-  const activeShift = useMemo(() => getActiveDeliveryRadius(), []);
   const isDeliveryActive = location
     ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId)
     : true;
@@ -413,30 +403,12 @@ export function HomeFeed({
     <div className="space-y-4 px-3 py-2 sm:px-4 sm:py-3 bg-[#FCFAF7] text-gray-900">
 
 
-      {/* Dynamic Time-Based Operational Delivery Shift Banner */}
-      {!q && list.data?.deliveryAvailable !== false && (
-        <div className="flex items-center justify-between gap-2 rounded-2xl border border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent px-3 py-2 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-extrabold text-stone-900 tracking-tight">
-              {activeShift.shiftName}
-            </span>
-            <span className="rounded-full bg-stone-900/5 border border-stone-300 px-2 py-0.5 text-[10px] font-bold text-stone-700">
-              {activeShift.radiusKm} km Radius
-            </span>
-          </div>
-          <span className="text-[10px] font-mono text-stone-500 hidden sm:inline">
-            Next: {activeShift.nextShiftTime}
-          </span>
-        </div>
-      )}
-
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
-      {!q && list.data?.deliveryAvailable !== false && (
+      {!q && (
         <section aria-label="Food Categories" className="pt-0.5">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
-              Explore food
+              Eat what makes you happy
             </h2>
             <Link
               to="/search"
@@ -611,49 +583,19 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* Restaurant menu transparency banner */}
-      {!q && list.data?.deliveryAvailable !== false && (
-        <section aria-label="Restaurant menu transparency" className="pt-0.5">
-          <div className="rounded-2xl border border-emerald-200/90 bg-gradient-to-r from-emerald-50/90 via-teal-50/50 to-emerald-50/90 p-3 sm:p-3.5 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white shadow-xs">
-                <Percent className="size-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-black text-xs sm:text-sm text-emerald-950 tracking-tight">
-                    Explore local restaurant menus
-                  </span>
-                  <span className="inline-flex items-center rounded-full bg-emerald-200/80 text-emerald-950 font-black text-[10px] px-2 py-0.5 border border-emerald-300/60">
-                    Compare final checkout prices
-                  </span>
-                </div>
-                <p className="text-[11px] text-emerald-800/90 font-medium leading-tight">
-                  Menus and delivery availability depend on participating restaurants. Review all fees and the final total before paying.
-                </p>
-              </div>
-            </div>
-            <div className="shrink-0 self-end sm:self-auto">
-              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-white/90 border border-emerald-200 px-2.5 py-1 rounded-lg shadow-2xs">
-                <Sparkles className="size-3 text-emerald-600" />
-                See Menu Prices
-              </span>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* RESTAURANTS GRID */}
       <section aria-label="Restaurants Grid" className="pt-1">
         <div className="flex items-center justify-between mb-2.5">
           <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
-            {!isDeliveryActive
-              ? `Services in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`
-              : selectedCategory
-              ? "Filtered restaurants"
+            {selectedCategory
+              ? `Best in ${selectedCategory}`
               : dietFilter === "veg"
               ? "Pure vegetarian restaurants"
-              : `Restaurants in ${location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your area")}`}
+              : location?.zoneName && location.zoneName !== "Current GPS Position"
+              ? `Restaurants in ${location.zoneName}`
+              : location?.cityName && location.cityName !== "Locating..."
+              ? `Restaurants in ${location.cityName}`
+              : "Restaurants near you"}
           </h2>
         </div>
 
@@ -698,10 +640,12 @@ export function HomeFeed({
           </div>
         ) : filteredRestaurants.length === 0 ? (
           <div className="space-y-4">
-            {list.data && list.data.restaurants.length > 0 && (
-              <div className="rounded-2xl border border-amber-200/80 bg-white p-6 text-center space-y-3 shadow-sm">
-                <Utensils className="size-8 text-amber-500 mx-auto" />
-                <h3 className="font-extrabold text-gray-900 text-base">No restaurants match your current filters</h3>
+            {list.data && list.data.restaurants.length > 0 ? (
+              <div className="rounded-2xl border border-stone-200 bg-white p-8 text-center space-y-3 shadow-xs">
+                <div className="flex size-14 items-center justify-center rounded-2xl bg-stone-100 text-stone-600 mx-auto">
+                  <Utensils className="size-6 text-stone-600" />
+                </div>
+                <h3 className="font-bold text-gray-900 text-base">No restaurants match your filters</h3>
                 <p className="text-xs text-gray-500 max-w-sm mx-auto">Try resetting your filters or selecting a different dish category.</p>
                 <Button
                   type="button"
@@ -714,305 +658,40 @@ export function HomeFeed({
                     setFilterOffers(false);
                     setFilterBudget(false);
                   }}
-                  className="bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 font-bold"
+                  className="bg-[#E23744] hover:bg-[#cf2f3c] text-white border-transparent font-bold rounded-xl px-5 py-2 cursor-pointer"
                 >
                   Reset Filters
                 </Button>
               </div>
-            )}
-            {/* Active Hyperlocal Discovery & Flagship Hub Switcher */}
-            <div
-              role="status"
-              data-testid="food-availability-note"
-              className="rounded-3xl border border-amber-200/90 bg-gradient-to-b from-white via-amber-50/25 to-white p-5 sm:p-6 text-left shadow-sm space-y-5"
-            >
-              {/* Header and status notice */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-extrabold text-amber-900">
-                      <Sparkles className="size-3 text-amber-600" />
-                      Active Hub Discovery
-                    </span>
-                    {!isDeliveryActive && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-bold text-stone-600">
-                        Outside Delivery Radius
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
-                    {!isDeliveryActive || list.data?.deliveryAvailable === false
-                      ? "Food delivery is not currently available at this address."
-                      : "No restaurants match your criteria at this address."}
+            ) : (
+              <div
+                role="status"
+                data-testid="food-availability-note"
+                className="rounded-3xl border border-stone-200 bg-white p-8 sm:p-12 text-center shadow-xs space-y-4 max-w-lg mx-auto my-6"
+              >
+                <div className="flex size-16 items-center justify-center rounded-full bg-red-50 text-[#E23744] mx-auto">
+                  <MapPin className="size-8 text-[#E23744]" />
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
+                    No restaurants delivering here yet
                   </h3>
-                  <p className="text-xs text-stone-600 max-w-xl">
-                    Browse live restaurants, authentic menus, and real-time ordering by switching to one of our active flagship culinary hubs below:
+                  <p className="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto leading-relaxed font-medium">
+                    We haven't expanded delivery to this address right now. Change your delivery location to explore restaurants near you.
                   </p>
                 </div>
-              </div>
-
-              {/* 1-Click Active Flagship Hubs */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-black uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
-                    <MapPin className="size-3.5 text-red-500" />
-                    1-Click Active Flagship Hubs
-                  </p>
-                  <span className="text-[10px] text-stone-500 font-medium">Instant Menu Reload</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {ACTIVE_FLAGSHIP_HUBS.map((hub) => {
-                    const isSelected =
-                      location?.zoneId === hub.zoneId ||
-                      (location?.cityId === hub.cityId && Math.abs(location.lat - hub.lat) < 0.05);
-
-                    return (
-                      <button
-                        key={hub.id}
-                        type="button"
-                        onClick={() => {
-                          setLocation({
-                            cityId: hub.cityId,
-                            cityName: hub.cityName,
-                            zoneId: hub.zoneId,
-                            zoneName: hub.zoneName,
-                            label: hub.label,
-                            line1: hub.line1,
-                            lat: hub.lat,
-                            lng: hub.lng,
-                          });
-                          toast.success(`Switched to ${hub.name} (${hub.flagshipLabel})`);
-                        }}
-                        className={cn(
-                          "group relative flex items-start justify-between gap-3 rounded-2xl border p-3.5 text-left transition-all duration-200 active:scale-[0.98] cursor-pointer",
-                          isSelected
-                            ? "border-[#E23744] bg-red-50/50 shadow-sm ring-1 ring-[#E23744]/20"
-                            : "border-stone-200 bg-white hover:border-amber-400 hover:bg-amber-50/40 hover:shadow-sm"
-                        )}
-                      >
-                        <div className="flex items-start gap-3 min-w-0">
-                          <div
-                            className={cn(
-                              "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr text-white shadow-xs transition-transform group-hover:scale-105",
-                              hub.gradient
-                            )}
-                          >
-                            <MapPin className="size-4" />
-                          </div>
-                          <div className="min-w-0 space-y-0.5">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-extrabold text-xs sm:text-sm text-gray-950 truncate">
-                                {hub.name}
-                              </span>
-                              <span className="rounded-md bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold text-stone-700">
-                                {hub.flagshipLabel}
-                              </span>
-                            </div>
-                            <p className="text-[11px] text-stone-500 font-medium truncate">
-                              {hub.description}
-                            </p>
-                            <p className="text-[10px] text-amber-700 font-bold truncate">
-                              ⭐ {hub.highlight}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="shrink-0 pt-1">
-                          <span
-                            className={cn(
-                              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-extrabold transition-colors",
-                              isSelected
-                                ? "bg-[#E23744] text-white"
-                                : "bg-stone-100 text-stone-700 group-hover:bg-amber-100 group-hover:text-amber-900"
-                            )}
-                          >
-                            {isSelected ? "Active" : "Switch"}
-                            <ChevronRight className="size-3" />
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
+                <div className="pt-2">
+                  <Button
+                    type="button"
+                    onClick={() => setLocDialogOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#E23744] hover:bg-[#cf2f3c] text-white font-bold text-sm px-6 py-2.5 shadow-sm transition active:scale-95 cursor-pointer"
+                  >
+                    <MapPin className="size-4" />
+                    <span>Change Location</span>
+                  </Button>
                 </div>
               </div>
-
-              {/* Sovereign Ecosystem Services (Available Even When Food Delivery is Outside Radius) */}
-              <div className="space-y-2.5 pt-2 border-t border-amber-900/10">
-                <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-black uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
-                    <Sparkles className="size-3.5 text-amber-600" />
-                    Always Available OrderKing Services at Your Location
-                  </p>
-                  <span className="text-[10px] text-stone-500 font-medium">Zero-Downtime Delivery</span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
-                  {/* Flights & Stays */}
-                  <Link
-                    to="/travel"
-                    className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-sky-50 via-white to-sky-100/40 border border-sky-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 no-underline"
-                  >
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <span className="size-8 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-600 group-hover:scale-110 transition-transform">
-                        <Plane className="size-4" />
-                      </span>
-                      <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-sky-500 text-white">
-                        ₹0 Fee
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-xs font-black text-slate-900 block leading-tight">
-                        Flights &amp; Stays
-                      </span>
-                      <span className="text-[10px] font-semibold text-sky-700 block mt-0.5">
-                        Lowest Tariffs
-                      </span>
-                    </div>
-                  </Link>
-
-                  {/* Trains */}
-                  <Link
-                    to="/travel"
-                    search={{ tab: "trains" }}
-                    className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-indigo-50 via-white to-indigo-100/40 border border-indigo-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 no-underline"
-                  >
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <span className="size-8 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
-                        <Train className="size-4" />
-                      </span>
-                      <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-indigo-600 text-white">
-                        KingConfirm
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-xs font-black text-slate-900 block leading-tight">
-                        Trains &amp; PNR
-                      </span>
-                      <span className="text-[10px] font-semibold text-indigo-700 block mt-0.5">
-                        Quota Guarantee
-                      </span>
-                    </div>
-                  </Link>
-
-                  {/* Pilgrimage */}
-                  <Link
-                    to="/travel"
-                    search={{ tab: "pilgrimage" }}
-                    className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-amber-50 via-white to-amber-100/40 border border-amber-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 no-underline"
-                  >
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <span className="size-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
-                        <Crown className="size-4" />
-                      </span>
-                      <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-amber-600 text-white">
-                        Sacred
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-xs font-black text-slate-900 block leading-tight">
-                        Tours &amp; Yatra
-                      </span>
-                      <span className="text-[10px] font-semibold text-amber-700 block mt-0.5">
-                        Umrah &amp; Kashi
-                      </span>
-                    </div>
-                  </Link>
-
-                  {/* KingPay Wallet */}
-                  <Link
-                    to="/kingpay"
-                    className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-emerald-50 via-white to-emerald-100/40 border border-emerald-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 no-underline"
-                  >
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <span className="size-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
-                        <CreditCard className="size-4" />
-                      </span>
-                      <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-600 text-white">
-                        Instant
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-xs font-black text-slate-900 block leading-tight">
-                        KingPay Wallet
-                      </span>
-                      <span className="text-[10px] font-semibold text-emerald-700 block mt-0.5">
-                        Direct UPI &amp; Bills
-                      </span>
-                    </div>
-                  </Link>
-
-                  {/* AI STEM Solver */}
-                  <Link
-                    to="/tutor"
-                    className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-purple-50 via-white to-purple-100/40 border border-purple-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 no-underline"
-                  >
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <span className="size-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
-                        <GraduationCap className="size-4" />
-                      </span>
-                      <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-purple-600 text-white">
-                        CBSE
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-xs font-black text-slate-900 block leading-tight">
-                        AI STEM Tutor
-                      </span>
-                      <span className="text-[10px] font-semibold text-purple-700 block mt-0.5">
-                        Step-by-step
-                      </span>
-                    </div>
-                  </Link>
-
-                  {/* Express Courier */}
-                  <Link
-                    to="/parcel"
-                    className="group relative flex flex-col justify-between p-3 rounded-2xl bg-gradient-to-br from-orange-50 via-white to-orange-100/40 border border-orange-200/80 shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 no-underline"
-                  >
-                    <div className="flex items-center justify-between w-full mb-1">
-                      <span className="size-8 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-600 group-hover:scale-110 transition-transform">
-                        <Package className="size-4" />
-                      </span>
-                      <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-orange-600 text-white">
-                        Fleet
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-xs font-black text-slate-900 block leading-tight">
-                        Send Packages
-                      </span>
-                      <span className="text-[10px] font-semibold text-orange-700 block mt-0.5">
-                        Door-to-Door
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Partner Merchant Onboarding Banner */}
-              <div className="rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-500 via-amber-500 to-amber-600 p-4 sm:p-5 text-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="space-y-1 min-w-0">
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-black/20 backdrop-blur-xs px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-200">
-                    <Store className="size-3" />
-                    Merchant Network
-                  </div>
-                  <h4 className="text-sm sm:text-base font-black tracking-tight text-white">
-                    Restaurant Owner? Partner with OrderKing
-                  </h4>
-                  <p className="text-xs text-white/90 max-w-lg leading-relaxed">
-                    Expand your reach with OrderKing's hyperlocal food network. Digital onboarding, live catalog listing, and automated delivery dispatch.
-                  </p>
-                </div>
-                <a
-                  href="https://partners.orderkingpay.com/onboarding"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 shrink-0 rounded-xl bg-white hover:bg-stone-100 text-gray-950 px-4 py-2.5 text-xs font-black transition-all shadow-sm hover:shadow active:scale-95 no-underline"
-                >
-                  <span>Partner Onboarding</span>
-                  <ExternalLink className="size-3.5" />
-                </a>
-              </div>
-            </div>
+            )}
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
@@ -1078,6 +757,8 @@ export function HomeFeed({
         </section>
       )}
 
+      {/* Location Selector Dialog */}
+      <LocationDialog open={locDialogOpen} onOpenChange={setLocDialogOpen} />
     </div>
   );
 }

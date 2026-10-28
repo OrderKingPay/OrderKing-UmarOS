@@ -43,32 +43,32 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
     name: "English",
     nativeName: "English",
     voiceLang: "en-IN",
-    honorific: "Valued Patron",
-    welcome: "Welcome to OrderKing! I am your VIP concierge for 1-tap food orders and KingPay UPI payments.",
+    honorific: "Customer",
+    welcome: "Welcome to OrderKing! How may I assist your food orders or KingPay payments?",
   },
   {
     code: "hi",
     name: "Hindi",
     nativeName: "हिन्दी",
     voiceLang: "hi-IN",
-    honorific: "आदरणीय अतिथि",
-    welcome: "ऑर्डरकिंग में आपका स्वागत है! मैं आपका वीआईपी कंसीयर्ज हूँ, खाना ऑर्डर करने या किंगपे भुगतान के लिए पूछिए।",
+    honorific: "ग्राहक",
+    welcome: "ऑर्डरकिंग में आपका स्वागत है! भोजन ऑर्डर या किंगपे भुगतान में क्या सहायता करूँ?",
   },
   {
     code: "bn",
     name: "Bengali",
     nativeName: "বাংলা",
     voiceLang: "bn-IN",
-    honorific: "শ্রদ্ধেয় গ্রাহক",
-    welcome: "অর্ডারকিং-এ আপনাকে স্বাগতম! আমি আপনার ভিআইপি কনসিয়ার্জ, খাবার অর্ডার বা কিংপে পেমেন্টের জন্য বলুন।",
+    honorific: "গ্রাহক",
+    welcome: "অর্ডারকিং-এ আপনাকে স্বাগতম! খাবার অর্ডার বা কিংপে পেমেন্টে কীভাবে সাহায্য করতে পারি?",
   },
   {
     code: "as",
     name: "Assamese",
     nativeName: "অসমীয়া",
     voiceLang: "as-IN",
-    honorific: "শ্রদ্ধেয় গ্রাহক",
-    welcome: "অৰ্ডাৰকিংলৈ আপোনাক স্বাগতম! মই আপোনাৰ ভিআইপি সহায়ক, খাদ্য অৰ্ডাৰ বা কিংপে পেমেণ্টৰ বাবে সোধক।",
+    honorific: "গ্ৰাহক",
+    welcome: "অৰ্ডাৰকিংলৈ আপোনাক স্বাগতম! খাদ্য অৰ্ডাৰ বা কিংপে পেমেণ্টত কেনেদৰে সহায় কৰিব পাৰোঁ?",
   },
   { code: "ta", name: "Tamil", nativeName: "தமிழ்", voiceLang: "ta-IN", honorific: "வணக்கம்", welcome: "வணக்கம்! நான் உங்கள் ஆர்டர்கிங் உணவு மற்றும் பயண உதவியாளர்." },
   { code: "te", name: "Telugu", nativeName: "తెలుగు", voiceLang: "te-IN", honorific: "నమస్కారం", welcome: "నమస్కారం! నేను మీ ఆర్డర్‌కింగ్ ఆహార మరియు ప్రయాణ సహాయకుడిని." },
@@ -688,24 +688,101 @@ export function resolveSovereignResponse(
     };
   }
 
-  // 7. General Food Ordering
-  if (q.includes("order") || q.includes("khana") || q.includes("momo") || q.includes("burger")) {
+  // 7a. Burger Inquiry & Catalog Search
+  if (q.includes("burger") || q.includes("बर्गर") || q.includes("বার্গার") || q.includes("বাৰ্গাৰ")) {
+    let reply = "You can browse live burger menus from partner restaurants on OrderKing Food.";
+    if (dialect.code === "hi") {
+      reply = "आप आर्डरकिंग फ़ूड पर पार्टनर रेस्टोरेंट्स के ताज़ा बर्गर मेन्यू देख सकते हैं।";
+    } else if (dialect.code === "bn") {
+      reply = "আপনি অর্ডারকিং ফুডে পার্টনার রেস্তোরাঁগুলির লাইভ বার্গার মেনু দেখতে পারেন।";
+    } else if (dialect.code === "as") {
+      reply = "আপুনি অৰ্ডাৰকিং ফুডত অংশীদাৰ ৰেষ্টুৰেণ্টসমূহৰ লাইভ বাৰ্গাৰ মেনু চাব পাৰে।";
+    } else if (dialect.code === "ta") {
+      reply = "ஆர்டர்கிங் உணவில் பார்ட்னர் உணவகங்களின் பர்கர் மெனுக்களைப் பார்க்கலாம்.";
+    }
     return {
-      reply: "Your food selection is loaded. Confirm in 1-tap with direct KingPay UPI settlement.",
+      reply,
       action: {
-        type: "CHECKOUT_POPUP",
-        label: "🍗 1-Tap Checkout: Express Order",
-        dishName: "Royal Feast Platter",
-        item: "Royal Feast Platter",
-        quantity: 1,
-        pricePaise: 26000,
-        estimatedPaise: 26000,
-        restaurantName: "OrderKing Kitchens",
-        deliveryEta: "20-25 mins",
-        suggestedAddons: [
-          { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
-          { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
-        ],
+        type: "NAVIGATE",
+        label: "🍔 Browse Burgers on OrderKing Food",
+        url: "/search?q=burger",
+      },
+    };
+  }
+
+  // 7b. Restaurant Connectivity & Partner Onboarding Architecture Inquiry
+  if (
+    q.includes("restaurant") ||
+    q.includes("connect") ||
+    q.includes("partner") ||
+    q.includes("how it work") ||
+    q.includes("how will it work") ||
+    q.includes("authentic") ||
+    q.includes("रेस्टोरेंट") ||
+    q.includes("রেস্তোরাঁ") ||
+    q.includes("ৰেষ্টুৰেণ্ট")
+  ) {
+    let reply = "Partner kitchens register at partner.orderkingpay.com to publish live menus and fulfill orders. You can browse active restaurants in your area on OrderKing Food.";
+    if (dialect.code === "hi") {
+      reply = "पार्टनर रेस्टोरेंट partner.orderkingpay.com पर जुड़कर लाइव मेन्यू और आर्डर मैनेज करते हैं। आप फ़ूड पेज पर लाइव उपलब्ध रेस्टोरेंट देख सकते हैं।";
+    } else if (dialect.code === "bn") {
+      reply = "অংশীদার রেস্তোরাঁগুলি partner.orderkingpay.com-এ যুক্ত হয়ে লাইভ মেনু পরিচালনা করে। ফুড পেজে আপনি সক্রিয় রেস্তোরাঁ দেখতে পারেন।";
+    } else if (dialect.code === "as") {
+      reply = "অংশীদাৰ ৰেষ্টুৰেণ্টসমূহে partner.orderkingpay.com-ৰ জৰিয়তে যুক্ত হৈ লাইভ মেনু পৰিচালনা কৰে। আপুনি ফুড পেজত উপলব্ধ ৰেষ্টুৰেণ্ট চাব পাৰে।";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "🍽️ View OrderKing Food Marketplace",
+        url: "/",
+      },
+    };
+  }
+
+  // 7c. General Food Ordering
+  if (
+    q.includes("order") ||
+    q.includes("khana") ||
+    q.includes("momo") ||
+    q.includes("food") ||
+    q.includes("खाना") ||
+    q.includes("খাবার") ||
+    q.includes("খাদ্য")
+  ) {
+    if (options?.area === "kingpay") {
+      let reply = "Food ordering is available on OrderKing Food. You can browse partner kitchens and menus there.";
+      if (dialect.code === "hi") {
+        reply = "फ़ूड आर्डरिंग आर्डरकिंग फ़ूड पर उपलब्ध है। आप वहाँ पार्टनर किचन और मेन्यू देख सकते हैं।";
+      } else if (dialect.code === "bn") {
+        reply = "খাবার অর্ডার অর্ডারকিং ফুডে উপলব্ধ। সেখানে আপনি পার্টনার রান্নাঘর ও মেনু দেখতে পারেন।";
+      } else if (dialect.code === "as") {
+        reply = "খাদ্য অৰ্ডাৰ অৰ্ডাৰকিং ফুডত উপলব্ধ। তাত আপুনি অংশীদাৰ ৰান্ধনশালা আৰু মেনু চাব পাৰে।";
+      }
+      return {
+        reply,
+        action: {
+          type: "NAVIGATE",
+          label: "🍽️ Open OrderKing Food",
+          url: "/",
+        },
+      };
+    }
+
+    let reply = "You can browse verified partner kitchens and live menus in your locality on OrderKing Food.";
+    if (dialect.code === "hi") {
+      reply = "आप आर्डरकिंग फ़ूड पर अपने क्षेत्र के सत्यापित किचन और लाइव मेन्यू देख सकते हैं।";
+    } else if (dialect.code === "bn") {
+      reply = "আপনি অর্ডারকিং ফুডে আপনার এলাকার যাচাইকৃত রান্নাঘর ও লাইভ মেনু দেখতে পারেন।";
+    } else if (dialect.code === "as") {
+      reply = "আপুনি অৰ্ডাৰকিং ফুডত আপোনাৰ অঞ্চলৰ সত্যাাপিত ৰান্ধনশালা আৰু লাইভ মেনু চাব পাৰে।";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "🍽️ Browse Local Kitchens",
+        url: "/",
       },
     };
   }
@@ -727,7 +804,7 @@ export function resolveSovereignResponse(
       actionType = "BILL";
     }
 
-    let reply = "KingPay direct NPCI 1-Tap UPI and Sovereign BharatQR scanner are ready.";
+    let reply = "KingPay direct NPCI UPI and BharatQR scanner are ready.";
     if (dialect.code === "hi") {
       reply = "डायरेक्ट एनपीसीआई 1-टैप यूपीआई और भारतक्यूआर स्कैनर तैयार है।";
     } else if (dialect.code === "bn") {
@@ -746,7 +823,7 @@ export function resolveSovereignResponse(
             ? "📸 Open KingPay BharatQR Scanner"
             : actionType === "BILL"
             ? "⚡ Pay Utility Bill with KingPay"
-            : "⚡ Launch 1-Tap KingPay UPI / QR",
+            : "⚡ Launch KingPay UPI / QR",
         vpa: "orderking@ybl",
         amountPaise: 25000,
       },
@@ -755,33 +832,33 @@ export function resolveSovereignResponse(
 
   // 9. Default
   if (options?.area === "kingpay") {
-    let reply = "I am your KingPay VIP Concierge. How may I assist your UPI payment, bill recharge, or transit cabs?";
+    let reply = "I am your KingPay Support assistant. How may I assist your UPI payment, bill recharge, or transit cabs?";
     if (dialect.code === "hi") {
-      reply = "मैं आपका किंगपे वीआईपी कंसीयर्ज हूँ। यूपीआई भुगतान, बिल रिचार्ज या यात्रा में सहायता के लिए पूछिए।";
+      reply = "मैं आपका किंगपे सपोर्ट सहायक हूँ। यूपीआई भुगतान, बिल रिचार्ज या यात्रा में सहायता के लिए पूछिए।";
     } else if (dialect.code === "bn") {
-      reply = "আমি আপনার কিংপে ভিআইপি কনসিয়ার্জ। ইউপিআই পেমেন্ট, বিল রিচার্জ বা ভ্রমণের জন্য বলুন।";
+      reply = "আমি আপনার কিংপে সাপোর্ট সহকারী। ইউপিআই পেমেন্ট, বিল রিচার্জ বা ভ্রমণের জন্য বলুন।";
     } else if (dialect.code === "as") {
-      reply = "মই আপোনাৰ কিংপে ভিআইপি সহায়ক। ইউপিআই পেমেণ্ট, বিল ৰিচাৰ্জ বা ভ্ৰমণৰ বাবে সোধক।";
+      reply = "মই আপোনাৰ কিংপে সহায়ক। ইউপিআই পেমেণ্ট, বিল ৰিচাৰ্জ বা ভ্ৰমণৰ বাবে সোধক।";
     }
     return {
       reply,
       action: {
         type: "KINGPAY_POPUP",
         action: "TRANSFER",
-        label: "⚡ Launch 1-Tap KingPay UPI / QR",
+        label: "⚡ Launch KingPay UPI / QR",
         vpa: "orderking@ybl",
         amountPaise: 25000,
       },
     };
   }
 
-  let defaultReply = "I am your OrderKing VIP Concierge. How may I assist your dining or KingPay experience today?";
+  let defaultReply = "I am your OrderKing Support assistant. How may I assist your dining or KingPay experience today?";
   if (dialect.code === "hi") {
-    defaultReply = "मैं आपका ऑर्डरकिंग वीआईपी कंसीयर्ज हूँ। भोजन ऑर्डर या किंगपे सेवा में क्या सहायता करूँ?";
+    defaultReply = "मैं आपका ऑर्डरकिंग सपोर्ट सहायक हूँ। भोजन ऑर्डर या किंगपे सेवा में क्या सहायता करूँ?";
   } else if (dialect.code === "bn") {
-    defaultReply = "আমি আপনার অর্ডারকিং ভিআইপি কনসিয়ার্জ। খাবার অর্ডার বা কিংপে সেবায় কীভাবে সাহায্য করতে পারি?";
+    defaultReply = "আমি আপনার অর্ডারকিং সাপোর্ট সহকারী। খাবার অর্ডার বা কিংপে সেবায় কীভাবে সাহায্য করতে পারি?";
   } else if (dialect.code === "as") {
-    defaultReply = "মই আপোনাৰ অৰ্ডাৰকিং ভিআইপি সহায়ক। খাদ্য অৰ্ডাৰ বা কিংপে সেৱাত কেনেদৰে সহায় কৰিব পাৰোঁ?";
+    defaultReply = "মই আপোনাৰ অৰ্ডাৰকিং সহায়ক। খাদ্য অৰ্ডাৰ বা কিংপে সেৱাত কেনেদৰে সহায় কৰিব পাৰোঁ?";
   }
 
   return {
@@ -903,13 +980,13 @@ export function CustomerConciergeDrawer({
       let welcomeContent = selectedLang.welcome;
       if (isKingPay) {
         if (selectedLang.code === "hi") {
-          welcomeContent = "किंगपे वीआईपी कंसीयर्ज में आपका स्वागत है! यूपीआई, भारतक्यूआर, बिल भुगतान या सिटी कैब के लिए पूछिए।";
+          welcomeContent = "किंगपे सपोर्ट में आपका स्वागत है! यूपीआई, भारतक्यूआर, बिल भुगतान या कैब सेवा के लिए पूछिए।";
         } else if (selectedLang.code === "bn") {
-          welcomeContent = "কিংপে ভিআইপি কনসিয়ার্জে স্বাগতম! ইউপিআই, ভারতকিউআর, বিল পেমেন্ট বা সিটি ক্যাবের জন্য বলুন।";
+          welcomeContent = "কিংপে সাপোর্টে স্বাগতম! ইউপিআই, ভারতকিউআর, বিল পেমেন্ট বা ক্যাব সেবার জন্য বলুন।";
         } else if (selectedLang.code === "as") {
-          welcomeContent = "কিংপে ভিআইপি সহায়কলৈ স্বাগতম! ইউপিআই, ভাৰতকিউআৰ, বিল পেমেণ্ট বা চিটি কেবৰ বাবে সোধক।";
+          welcomeContent = "কিংপে সহায়কলৈ স্বাগতম! ইউপিআই, ভাৰতকিউআৰ, বিল পেমেণ্ট বা কেব সেৱাৰ বাবে সোধক।";
         } else {
-          welcomeContent = "Welcome to KingPay VIP Concierge! Ask to pay bills, scan BharatQR, book transit cabs, or send 1-tap UPI.";
+          welcomeContent = "Welcome to KingPay Support! How may I assist your payments, bills, transit cabs, or travel bookings?";
         }
       }
 
@@ -922,22 +999,11 @@ export function CustomerConciergeDrawer({
           action: isKingPay
             ? {
                 type: "KINGPAY_POPUP",
-                label: "⚡ Launch 1-Tap KingPay UPI / QR",
+                label: "⚡ Launch KingPay UPI / QR",
                 vpa: "orderking@ybl",
                 amountPaise: 25000,
               }
-            : {
-                type: "CHECKOUT_POPUP",
-                label: "🍗 1-Tap Checkout: Royal Dum Biryani",
-                dishName: "Royal Chicken Dum Biryani",
-                restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
-                pricePaise: 28000,
-                deliveryEta: "24-28 mins",
-                suggestedAddons: [
-                  { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
-                  { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
-                ],
-              },
+            : undefined,
         },
       ]);
     }
@@ -1120,7 +1186,7 @@ export function CustomerConciergeDrawer({
       <section
         role="dialog"
         aria-modal={!embedded}
-        aria-label="OrderKing VIP Food & Dining Concierge"
+        aria-label="OrderKing Customer Support Assistant"
         className={
           embedded
             ? "relative flex h-[min(76dvh,680px)] w-full flex-col overflow-hidden rounded-3xl border border-amber-300/30 bg-slate-950 text-white shadow-xl max-w-full"
@@ -1251,8 +1317,8 @@ export function CustomerConciergeDrawer({
                       onClick={() => {
                         setActivePopup({
                           type: "CHECKOUT_POPUP",
-                          dishName: m.action?.dishName || "Royal Chicken Dum Biryani",
-                          restaurantName: m.action?.restaurantName || "Behrouz Royal Kitchens (Assam - 788710)",
+                          dishName: m.action?.dishName || "Chicken Dum Biryani",
+                          restaurantName: m.action?.restaurantName || "Verified Partner Kitchen",
                           pricePaise: m.action?.pricePaise || 28000,
                           deliveryEta: m.action?.deliveryEta || "24-28 mins",
                           suggestedAddons: m.action?.suggestedAddons,
@@ -1317,10 +1383,10 @@ export function CustomerConciergeDrawer({
                 { label: "⚡ Pay Utility Bills", text: "Pay electricity or water bill with KingPay." },
                 { label: "🚖 City Cabs & Auto", text: "Book a city cab or taxi transit with direct KingPay." },
                 { label: "📸 Scan BharatQR", text: "Open KingPay camera to scan BharatQR." },
-                { label: "🍗 Order Food Delivery", text: "I want to order Royal Dum Biryani food." },
+                { label: "🍔 Browse Burgers", text: "Can I order a burger?" },
               ]
             : [
-                { label: "🍗 Order Dum Biryani", text: "I want to order Royal Dum Biryani." },
+                { label: "🍗 Order Dum Biryani", text: "I want to order Chicken Dum Biryani." },
                 { label: "🍕 Fresh Pizza", text: "Order fresh pizza." },
                 { label: "🚆 Train Tickets", text: "Book train tickets and check live PNR." },
                 { label: "👑 KingPay UPI", text: "How do I pay with KingPay UPI or scan BharatQR?" },
@@ -1403,7 +1469,7 @@ export function CustomerConciergeDrawer({
 
             <input
               type="text"
-              aria-label="Ask VIP Concierge"
+              aria-label="Ask Support"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder={isListening ? "Listening to your voice..." : `Ask in ${selectedLang.nativeName} or English...`}
@@ -1441,7 +1507,7 @@ export function CustomerConciergeDrawer({
           >
             <div
               role="region"
-              aria-label={activePopup.type === "CHECKOUT_POPUP" ? "1-Tap Luxury Checkout Pop-Up" : "KingPay 1-Tap UPI Pop-Up"}
+              aria-label={activePopup.type === "CHECKOUT_POPUP" ? "Order Summary" : "KingPay UPI Pop-Up"}
               className="relative w-full max-h-[92%] overflow-y-auto overflow-x-hidden rounded-t-[32px] border-t-2 border-x border-amber-400/50 bg-gradient-to-b from-[#13111c] via-[#0b0914] to-black p-4 sm:p-5 text-white shadow-[0_-20px_50px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(251,191,36,0.3)] animate-in slide-in-from-bottom duration-200 transform-gpu will-change-transform space-y-4"
             >
               {/* Drag Indicator */}
@@ -1457,13 +1523,10 @@ export function CustomerConciergeDrawer({
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-1.5 truncate">
-                          <span>1-Tap Luxury Checkout</span>
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
-                            Fast Track
-                          </span>
+                          <span>Order Summary</span>
                         </h3>
                         <p className="text-[10.5px] text-slate-400 truncate">
-                          Direct Kitchen Handoff · GSTIN: 18AFXPH9838M1Z9
+                          Live Kitchen Order
                         </p>
                       </div>
                     </div>
@@ -1488,7 +1551,7 @@ export function CustomerConciergeDrawer({
                           </h4>
                         </div>
                         <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                          {activePopup.restaurantName || "Verified Patron Kitchen (Assam - 788710)"}
+                          {activePopup.restaurantName || "Verified Kitchen"}
                         </p>
                         <div className="mt-1.5 inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
                           <span>⚡ Delivery ETA:</span>
@@ -1652,8 +1715,8 @@ export function CustomerConciergeDrawer({
                       </div>
                     )}
                     <div className="flex justify-between text-slate-400">
-                      <span>Delivery Partner Convenience:</span>
-                      <span className="text-emerald-400 font-bold">₹0.00 (Patron Privilege)</span>
+                      <span>Delivery Fee:</span>
+                      <span className="text-emerald-400 font-bold">₹0.00 (Free Delivery)</span>
                     </div>
                     <div className="pt-2 border-t border-slate-800 flex justify-between items-center text-sm font-black text-white">
                       <span>Total Payable:</span>
@@ -1698,7 +1761,7 @@ export function CustomerConciergeDrawer({
                           KingPay 1-Tap UPI &amp; BharatQR
                         </h3>
                         <p className="text-[10.5px] text-slate-400 truncate">
-                          Direct NPCI Settlement · Sovereign Banking Gateway
+                          Direct NPCI Settlement · UPI Gateway
                         </p>
                       </div>
                     </div>
@@ -1776,7 +1839,7 @@ export function CustomerConciergeDrawer({
 
                       {/* 1-Tap Launch Button */}
                       <a
-                        href={`upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=${kingpayAmountRupees}&cu=INR&tn=OrderKingVIPConcierge`}
+                        href={`upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=${kingpayAmountRupees}&cu=INR&tn=OrderKingSupport`}
                         onClick={() => {
                           toast.success(`Launching UPI app for ₹${kingpayAmountRupees}...`);
                         }}

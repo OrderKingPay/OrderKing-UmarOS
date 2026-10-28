@@ -339,25 +339,27 @@ export function CustomerShell({
               </span>
             </Link>
 
-            {/* Cart icon with badge counter (redirecting to /cart or opening drawer) */}
-            <Link
-              to="/cart"
-              className={cn(
-                "relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl shadow-2xs transition-all active:scale-95 shrink-0 no-underline cursor-pointer border",
-                isDark
-                  ? "bg-white/10 hover:bg-white/20 border-white/15 text-white"
-                  : "bg-white/80 hover:bg-amber-50 border-amber-200/80 text-gray-800 hover:border-amber-400"
-              )}
-              title="Shopping Cart"
-              aria-label={`Cart with ${count} items`}
-            >
-              <ShoppingBag className={cn("size-4", isDark ? "text-white" : "text-gray-900")} />
-              {count > 0 && (
-                <span className="absolute -top-1 -right-1 flex min-w-4 h-4 px-1 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[9px] font-black text-white shadow-2xs ring-1 ring-white">
-                  {count > 99 ? "99+" : count}
-                </span>
-              )}
-            </Link>
+            {/* Cart icon with badge counter (redirecting to /cart or opening drawer) - strictly for food delivery, hidden on KingPay/Travel */}
+            {!isKingPayDomain && (
+              <Link
+                to="/cart"
+                className={cn(
+                  "relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl shadow-2xs transition-all active:scale-95 shrink-0 no-underline cursor-pointer border",
+                  isDark
+                    ? "bg-white/10 hover:bg-white/20 border-white/15 text-white"
+                    : "bg-white/80 hover:bg-amber-50 border-amber-200/80 text-gray-800 hover:border-amber-400"
+                )}
+                title="Shopping Cart"
+                aria-label={`Cart with ${count} items`}
+              >
+                <ShoppingBag className={cn("size-4", isDark ? "text-white" : "text-gray-900")} />
+                {count > 0 && (
+                  <span className="absolute -top-1 -right-1 flex min-w-4 h-4 px-1 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[9px] font-black text-white shadow-2xs ring-1 ring-white">
+                    {count > 99 ? "99+" : count}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {/* User profile avatar / standard top-right user menu with fallback avatar */}
             {isPending ? (
