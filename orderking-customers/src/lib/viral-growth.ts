@@ -698,7 +698,7 @@ export function generateMetaAdCampaignSpec(
     adCreatives: [
       {
         headline: `${townName}'s Own Food App: direct menu pricing + 24K Gold 👑`,
-        primaryText: `Why pay extra on every food order? Order from ${townName}'s top restaurants with 0% menu markup and sub-25 min delivery. Win pure 24K Digital Gold on every order above ₹299!`,
+        primaryText: `Why pay extra on every food order? Order from ${townName}'s top restaurants with transparent restaurant menu rates and sub-25 min delivery. Win pure 24K Digital Gold on every order above ₹299!`,
         callToAction: "ORDER_NOW",
         targetUrl: `https://orderking.in?utm_source=meta_ads&utm_medium=instagram_feed&utm_campaign=${townName.toLowerCase()}_launch`,
       },
@@ -1371,7 +1371,7 @@ export function generateViralReelsScripts(townName: string = "Karimganj"): Viral
       title: "Why All Local Restaurants Love OrderKing",
       durationSeconds: 25,
       visualHook: "Fast montage of local restaurant chefs cooking and smiling, showing OrderKing soundbox announcing orders.",
-      audioHook: `${townName}'s restaurant owners have united! Traditional apps charge up to 3custom commission, but OrderKing supports local kitchens with fair 10% rates and 0% menu markup!`,
+      audioHook: `${townName}'s restaurant owners have united! Traditional apps charge up to 3custom commission, but OrderKing supports local kitchens with fair 10% rates and transparent restaurant menu rates!`,
       callToAction: `Support your local town food heroes. Order on OrderKing today!`,
     },
   ];
@@ -1389,8 +1389,9 @@ export function generateLocalInfluencerBarterPitch(
 ): InfluencerBarterPitch {
   return {
     influencerHandle,
-    dmMessage: `Hey ${influencerHandle}! 👋 We love your content representing ${townName}!\n\nWe are OrderKing—${townName}'s very own food delivery app bringing fair pricing with 0% menu markup, 25-minute delivery, and pure 24K gold scratch cards for foodies.\n\nWe'd love to treat you and your friends to a 100% FREE meal worth ₹750 from your favorite restaurant in town! All we ask is 2 honest Instagram Stories showing the food and your 24K gold scratch card win.\n\nAre you up for delicious free food? Reply YES and we'll credit your OrderKing wallet immediately! 🍗👑`,
-    perksOffered: "₹750 Free Food Wallet Credit + Custom Referral Code earning ₹50 cash per follower order",
+    dmMessage: `Hey ${influencerHandle}! 👋 We love your content representing ${townName}!\n\nWe are OrderKing—${townName}'s very own food delivery app bringing fair pricing with transparent restaurant menu rates, 25-minute delivery, and pure 24K gold scratch cards for foodies.\n\nWe'd love to treat you and your friends to a complimentary banquet feast worth ₹750 from your favorite restaurant in town! All we ask is 2 honest Instagram Stories showing the food and your 24K gold scratch card win.\n\nAre you up for a complimentary tasting experience? Reply YES and we'll credit your OrderKing wallet immediately! 🍗👑`,
+    perksOffered: "₹750 Tasting Experience Wallet Credit + Custom Referral Code earning ₹50 cash per follower order",
   };
 }
+
 

@@ -603,6 +603,118 @@ export class CanonicalLedger {
     });
   }
 
+  /**
+   * Settles food order and concierge add-on pairing revenue via double-entry accounting.
+   * - Withholds 5% GST under CGST Act Section 9(5) under OrderKing GSTIN 18AFXPH9838M1Z9.
+   * - Enforces zero floating-point rounding (100% integer paise).
+   * - Credits restaurant payable for food and add-ons net of platform fee and Sec 9(5) liability.
+   */
+  public async recordConciergeOrderSettlement(params: {
+    orderId: string;
+    restaurantId: string;
+    dishName: string;
+    dishPricePaise: number;
+    quantity: number;
+    packagingPaise?: number;
+    addOns?: Array<{ id: string; name: string; pricePaise: number }>;
+    paymentMethod?: "NPCI_UPI" | "DIRECT_UPI" | "KING_PAY" | "COD";
+    npciUpiVpa?: string;
+    idempotencyKey: string;
+    platformCommissionBps?: number;
+  }): Promise<LedgerTransaction> {
+    const qty = Math.max(1, Math.floor(params.quantity));
+    assertSafePaise(params.dishPricePaise, "dishPricePaise");
+    const dishSubtotalPaise = Math.floor(params.dishPricePaise * qty);
+    
+    const addOnsSubtotalPaise = (params.addOns || []).reduce((sum, item) => {
+      assertSafePaise(item.pricePaise, `addOn.${item.name || item.id}`);
+      return sum + Math.floor(item.pricePaise);
+    }, 0);
+
+    const packagingPaise = Math.min(5000, Math.max(0, Math.floor(params.packagingPaise ?? 3000)));
+    const grossFoodAndAddOnsPaise = dishSubtotalPaise + addOnsSubtotalPaise + packagingPaise;
+
+    // Section 9(5) CGST Act: 5% withholding on composite food + add-on supply
+    const foodGst9_5Paise = Math.round((grossFoodAndAddOnsPaise * 500) / 10000);
+    const totalCustomerPaidPaise = grossFoodAndAddOnsPaise + foodGst9_5Paise;
+
+    // Platform commission (10% standard unless specified) and 18% GST under Sec 9(1) with ITC
+    const commBps = params.platformCommissionBps ?? 1000;
+    const platformCommissionPaise = Math.floor((grossFoodAndAddOnsPaise * commBps) / 10000);
+    const commissionGstPaise = Math.round((platformCommissionPaise * 1800) / 10000);
+    const totalPlatformRevenuePaise = platformCommissionPaise + commissionGstPaise;
+
+    // Net payable to restaurant: gross food & add-ons minus commission & commission GST
+    const netRestaurantPayablePaise = grossFoodAndAddOnsPaise - totalPlatformRevenuePaise;
+
+    const method = (params.paymentMethod || "NPCI_UPI").toUpperCase();
+    let debitAccount: LedgerAccountType = "BANK_CLEARING";
+    let debitEntityId = `NPCI_UPI:${params.npciUpiVpa || SOVEREIGN_NPCI_UPI_VPA}`;
+    let debitMemo = `Customer 1-Tap UPI payment for order #${params.orderId} (incl. concierge add-ons)`;
+
+    if (method === "KING_PAY") {
+      debitAccount = "CUSTOMER_WALLET";
+      debitEntityId = "KINGPAY_USER_WALLET";
+      debitMemo = `KingPay wallet payment for order #${params.orderId} (incl. concierge add-ons)`;
+    } else if (method === "COD") {
+      debitAccount = "CUSTOMER_CASH_IN";
+      debitEntityId = "RIDER_POCKET_HOLDING";
+      debitMemo = `Doorstep cash collection for order #${params.orderId} (incl. concierge add-ons)`;
+    }
+
+    const entries: LedgerEntry[] = [
+      {
+        account: debitAccount,
+        direction: "DEBIT",
+        amountPaise: totalCustomerPaidPaise,
+        entityId: debitEntityId,
+        memo: debitMemo,
+      },
+      {
+        account: "FOOD_GST_9_5_LIABILITY",
+        direction: "CREDIT",
+        amountPaise: foodGst9_5Paise,
+        entityId: "GSTIN:18AFXPH9838M1Z9",
+        memo: `Section 9(5) CGST 5% withholding on food & concierge add-ons for order #${params.orderId}`,
+      },
+      {
+        account: "RESTAURANT_PAYABLE",
+        direction: "CREDIT",
+        amountPaise: netRestaurantPayablePaise,
+        entityId: params.restaurantId,
+        memo: `Net payable to kitchen for dish '${params.dishName}' and concierge add-ons on order #${params.orderId}`,
+      },
+      {
+        account: "PLATFORM_FEE_REVENUE",
+        direction: "CREDIT",
+        amountPaise: platformCommissionPaise,
+        entityId: "PLATFORM_COMMISSION",
+        memo: `Platform fee on order #${params.orderId} (incl. add-on volume)`,
+      },
+      {
+        account: "GST_OUTPUT_LIABILITY",
+        direction: "CREDIT",
+        amountPaise: commissionGstPaise,
+        entityId: "GOVT_TAX_SEC_9_1",
+        memo: `18% GST output tax on platform commission for order #${params.orderId}`,
+      },
+    ];
+
+    // Assert double-entry balance: sum(DEBIT) === sum(CREDIT)
+    const totalDebit = entries.filter((e) => e.direction === "DEBIT").reduce((s, e) => s + e.amountPaise, 0);
+    const totalCredit = entries.filter((e) => e.direction === "CREDIT").reduce((s, e) => s + e.amountPaise, 0);
+    if (totalDebit !== totalCredit) {
+      throw new Error(`Double-entry balance mismatch: DEBIT=${totalDebit} paise, CREDIT=${totalCredit} paise`);
+    }
+
+    return this.postTransaction({
+      idempotencyKey: params.idempotencyKey,
+      eventType: "CONCIERGE_ORDER_SETTLEMENT_RECORDED",
+      orderId: params.orderId,
+      entries,
+    });
+  }
+
   public async createSettlementBatch(params: {
     entityId: string;
     entityType: "RESTAURANT" | "RIDER";

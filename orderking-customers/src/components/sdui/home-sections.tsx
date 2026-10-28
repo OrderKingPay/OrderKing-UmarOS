@@ -265,7 +265,7 @@ export function BannerCarouselSection({
   return (
     <section
       data-sdui-section="banner_carousel"
-      aria-label={section.title || "Special Offers"}
+      aria-label={section.title || "Featured Collections"}
       className="w-full select-none"
     >
       <div

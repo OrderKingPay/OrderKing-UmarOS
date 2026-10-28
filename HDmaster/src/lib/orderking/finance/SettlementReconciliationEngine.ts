@@ -36,6 +36,7 @@ export interface OrderReconciliationInput {
   orderNumber: string;
   placedAt: string;
   foodValuePaise: number;
+  conciergeAddOnsPaise?: number; // Add-on pairing revenue generated via Concierge 1-Tap Checkout sheet
   packingPaise?: number;
   restaurantDiscountPaise?: number;
   platformDiscountPaise?: number;
@@ -62,6 +63,7 @@ export interface OrderReconciliationStatement {
   
   // Gross & Net Sales
   foodValuePaise: number;
+  conciergeAddOnsPaise?: number;
   packingPaise: number;
   grossSalesPaise: number;
   
@@ -186,7 +188,9 @@ export class SettlementReconciliationEngine {
    * Complies with Section 9(5) CGST, Section 52 TCS, Section 194-O TDS, and 18% GST.
    */
   public reconcileOrder(input: OrderReconciliationInput): OrderReconciliationStatement {
-    const food = assertSafePaise(input.foodValuePaise, "foodValuePaise");
+    const baseFood = assertSafePaise(input.foodValuePaise, "foodValuePaise");
+    const conciergeAddons = assertSafePaise(input.conciergeAddOnsPaise ?? 0, "conciergeAddOnsPaise");
+    const food = baseFood + conciergeAddons;
     const packing = assertSafePaise(input.packingPaise ?? 0, "packingPaise");
     const restDisc = assertSafePaise(input.restaurantDiscountPaise ?? 0, "restaurantDiscountPaise");
     const platDisc = assertSafePaise(input.platformDiscountPaise ?? 0, "platformDiscountPaise");
@@ -294,6 +298,7 @@ export class SettlementReconciliationEngine {
       placedAt: input.placedAt,
       cycleType,
       foodValuePaise: food,
+      conciergeAddOnsPaise: conciergeAddons,
       packingPaise: packing,
       grossSalesPaise,
       customerDiscountsPaise: restDisc + platDisc,

@@ -118,16 +118,36 @@ export type ChatMessage = {
   timestamp: string;
 };
 
+export interface SovereignResolveOptions {
+  outOfStockItems?: string[];
+  suppressSuggestions?: boolean;
+}
+
 /**
  * Sovereign Autonomous Natural Intelligence Answering Heuristics
  * Strictly produces 1-2 sentence replies across 10 regional dialects without paid external APIs.
+ * Supports connected ecosystem 86'd stockout filtering and zero-annoyance irritation radar suppression.
  */
 export function resolveSovereignResponse(
   queryText: string,
-  dialect: SupportedDialect
+  dialect: SupportedDialect,
+  options?: SovereignResolveOptions
 ): { reply: string; action?: ActionPayload } {
   const raw = queryText.trim();
   const q = raw.toLowerCase();
+
+  // Behavioral Irritation & Rejection Radar (100% suppression of upsells on "no", "jaldi", "cancel", "only", "bas")
+  const isDismissalOrHurry =
+    options?.suppressSuggestions === true ||
+    /\b(no|nahi|na|nah|stop|don't|dont|just|only|bas|cancel|jaldi|fast|rush|hurry|direct|straight|ruk|chup)\b/i.test(raw);
+
+  // Connected Ecosystem 86'd inventory status check
+  const outOfStock = (options?.outOfStockItems || []).map((s) => s.toLowerCase().trim());
+  const isItem86 = (identifier: string): boolean => {
+    if (outOfStock.length === 0) return false;
+    const id = identifier.toLowerCase().trim();
+    return outOfStock.some((oos) => oos === id || id.includes(oos) || oos.includes(id));
+  };
 
   // 1. Discount / Coupon Queries (Directive 4: Founder Profit Defense - Zero Auto-Discounts)
   if (
@@ -142,13 +162,13 @@ export function resolveSovereignResponse(
     q.includes("কুপন") ||
     q.includes("ট্যাকা কম")
   ) {
-    let reply = "We offer direct zero-markup kitchen prices and 200 bps 24K gold reward on all KingPay orders.";
+    let reply = "We offer direct authentic kitchen prices and 200 bps 24K gold rewards on all KingPay orders.";
     if (dialect.code === "hi") {
-      reply = "हम सीधे 0% मार्कअप दरें और किंगपे पर 200 bps 24K डिजिटल गोल्ड रिवॉर्ड्स देते हैं।";
+      reply = "हम असली रेस्टोरेंट मेन्यू दरें और किंगपे पर 200 bps 24K डिजिटल गोल्ड रिवॉर्ड्स देते हैं।";
     } else if (dialect.code === "bn") {
-      reply = "আমরা আসল মূল্যের সাথে কিংপেতে ২০০ bps ২৪K সোণৰ গোল্ড ক্যাশব্যাক রিওয়ার্ড দিই।";
+      reply = "আমরা সরাসরি আসল রেস্তোরাঁর মূল্যের সাথে কিংপেতে ২০০ bps ২৪K গোল্ড ক্যাশব্যাক রিওয়ার্ড দিই।";
     } else if (dialect.code === "as") {
-      reply = "আমি প্ৰত্যক্ষ দাম আৰু কিংপেত ২০০ bps ২৪K সোণৰ পুৰস্কাৰ প্ৰদান কৰোঁ।";
+      reply = "আমি প্ৰত্যক্ষ খাঁটি দাম আৰু কিংপেত ২০০ bps ২৪K সোণৰ পুৰস্কাৰ প্ৰদান কৰোঁ।";
     }
     return {
       reply,
@@ -228,7 +248,38 @@ export function resolveSovereignResponse(
     };
   }
 
-  // 5. Biryani Ordering with Contextual Suggestive Selling
+  // 4b. Cab, Taxi & Transit Dispatch Intent (Point-to-Point City Travel)
+  if (
+    q.includes("cab") ||
+    q.includes("taxi") ||
+    q.includes("car") ||
+    q.includes("ride") ||
+    q.includes("auto") ||
+    q.includes("rickshaw") ||
+    q.includes("gaadi") ||
+    q.includes("gadi") ||
+    q.includes("airport") ||
+    q.includes("station")
+  ) {
+    let reply = "Your verified city cab and auto transit is ready with direct KingPay UPI settlement.";
+    if (dialect.code === "hi") {
+      reply = "आपकी वेरिफाइड सिटी कैब तैयार है। किंगपे यूपीआई द्वारा डायरेक्ट पेमेंट।";
+    } else if (dialect.code === "bn") {
+      reply = "আপনার ভেরিফাইড সিটি ট্যাক্সি ও অটো প্রস্তুত। সরাসরি কিংপে ইউপিআই পেমেন্ট।";
+    } else if (dialect.code === "as") {
+      reply = "আপোনাৰ প্ৰস্তুত চিটি কেব সাজু হৈছে। পোনপটীয়া কিংপে ইউপিআই পেমেণ্ট।";
+    }
+    return {
+      reply,
+      action: {
+        type: "NAVIGATE",
+        label: "🚖 1-Tap Book Verified City Cab & Auto",
+        url: "/travel?tab=cabs",
+      },
+    };
+  }
+
+  // 5. Biryani Ordering with Contextual Suggestive Selling & 86'd Stock Filter
   if (
     q.includes("biryani") ||
     q.includes("biriyani") ||
@@ -236,6 +287,33 @@ export function resolveSovereignResponse(
     q.includes("বিরিয়ানি") ||
     q.includes("বিৰিয়ানি")
   ) {
+    // Check if Biryani itself is marked 86'd (out of stock) in kitchen live POS inventory
+    if (isItem86("biryani") || isItem86("Chicken Dum Biryani") || isItem86("Royal Chicken Dum Biryani")) {
+      let soldOutReply = "Royal Chicken Dum Biryani is currently sold out (86'd) at the kitchen. Would you prefer our fresh Homestyle Thali or Mutton Dum Biryani?";
+      if (dialect.code === "hi") {
+        soldOutReply = "चिकन दम बिरयानी इस समय किचन में समाप्त (86'd) है। क्या आप ताज़ा होमस्टाइल थाली या मटन दम बिरयानी पसंद करेंगे?";
+      } else if (dialect.code === "bn") {
+        soldOutReply = "চিকেন দম বিরিয়ানি বর্তমানে রান্নাঘরে শেষ (86'd) হয়ে গেছে। আপনি কি তাজা হোমস্টাইল থালি বা মাটন বিরিয়ানি নিতে চান?";
+      } else if (dialect.code === "as") {
+        soldOutReply = "চিকেন দম বিৰিয়ানি বৰ্তমান ৰান্ধনশালাত শেষ (86'd) হৈছে। আপুনি ঘৰুৱা থালি নে মটন বিৰিয়ানি বাছি লব বিচাৰিব?";
+      }
+
+      return {
+        reply: soldOutReply,
+        action: {
+          type: "CHECKOUT_POPUP",
+          label: "👑 1-Tap Checkout: Fresh Homestyle Thali",
+          dishName: "Royal Homestyle Thali",
+          item: "Royal Homestyle Thali",
+          quantity: 1,
+          pricePaise: 26000,
+          estimatedPaise: 26000,
+          restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
+          deliveryEta: "20-25 mins",
+        },
+      };
+    }
+
     let quantity = 1;
     const digitMatch = q.match(/\b([1-9]|10)\b/);
     if (digitMatch) {
@@ -246,13 +324,44 @@ export function resolveSovereignResponse(
     const unitPaise = 28000;
     const estimatedPaise = unitPaise * quantity;
 
-    let reply = "I've loaded your Chicken Dum Biryani checkout. Would you like Chilled Mint Raita or Gulab Jamun with it?";
-    if (dialect.code === "bn") {
-      reply = "আমি চিকেন দম বিরিয়ানি চেকআউট লোড করেছি। সাথে পুদিনা রায়তা নাকি গোলাপ জামুন যোগ করবেন?";
-    } else if (dialect.code === "hi") {
-      reply = "मैंने आपका चिकन दम बिरयानी चेकआउट तैयार किया है। क्या आप साथ में रायता या गुलाब जामुन लेंगे?";
-    } else if (dialect.code === "as") {
-      reply = "মই চিকেন দম বিৰিয়ানি চেকআউট সাজু কৰিছোঁ। লগত পুদিনা ৰায়তা নে গোলাপ জামুন লব বিচাৰিব?";
+    // Filter add-on pairings against live 86'd stock and irritation radar
+    const baseBiryaniAddons = [
+      { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
+      { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
+    ];
+    const availableBiryaniAddons = isDismissalOrHurry
+      ? []
+      : baseBiryaniAddons.filter((a) => !isItem86(a.id) && !isItem86(a.name));
+
+    let reply = "I've loaded your Chicken Dum Biryani checkout.";
+    if (availableBiryaniAddons.length >= 2) {
+      reply = "I've loaded your Chicken Dum Biryani checkout. Would you like Chilled Mint Raita or Gulab Jamun with it?";
+      if (dialect.code === "bn") {
+        reply = "আমি চিকেন দম বিরিয়ানি চেকআউট লোড করেছি। সাথে পুদিনা রায়তা নাকি গোলাপ জামুন যোগ করবেন?";
+      } else if (dialect.code === "hi") {
+        reply = "मैंने आपका चिकन दम बिरयानी चेकआउट तैयार किया है। क्या आप साथ में रायता या गुलाब जामुन लेंगे?";
+      } else if (dialect.code === "as") {
+        reply = "মই চিকেন দম বিৰিয়ানি চেকআউট সাজু কৰিছোঁ। লগত পুদিনা ৰায়তা নে গোলাপ জামুন লব বিচাৰিব?";
+      }
+    } else if (availableBiryaniAddons.length === 1) {
+      const single = availableBiryaniAddons[0];
+      reply = `I've loaded your Chicken Dum Biryani checkout. Would you like ${single.name} with it?`;
+      if (dialect.code === "bn") {
+        reply = `আমি চিকেন দম বিরিয়ানি চেকআউট লোড করেছি। সাথে ${single.name} যোগ করবেন?`;
+      } else if (dialect.code === "hi") {
+        reply = `मैंने आपका चिकन दम बिरयानी चेकआउट तैयार किया है। क्या आप साथ में ${single.name} लेंगे?`;
+      } else if (dialect.code === "as") {
+        reply = `মই চিকেন দম বিৰিয়ানি চেকআউট সাজু কৰিছোঁ। লগত ${single.name} লব বিচাৰিব?`;
+      }
+    } else {
+      // Zero add-ons or Irritation Radar suppressed: direct 1-sentence checkout without upsell
+      if (dialect.code === "bn") {
+        reply = "আমি আপনার চিকেন দম বিরিয়ানি সরাসরি চেকআউটে লোড করেছি।";
+      } else if (dialect.code === "hi") {
+        reply = "मैंने आपका चिकन दम बिरयानी सीधे चेकआउट के लिए तैयार किया है।";
+      } else if (dialect.code === "as") {
+        reply = "মই আপোনাৰ চিকেন দম বিৰিয়ানি পোনপটীয়াকৈ চেকআউটত সাজু কৰিছোঁ।";
+      }
     }
 
     return {
@@ -267,16 +376,31 @@ export function resolveSovereignResponse(
         estimatedPaise,
         restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
         deliveryEta: "24-28 mins",
-        suggestedAddons: [
-          { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
-          { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
-        ],
+        suggestedAddons: availableBiryaniAddons.length > 0 ? availableBiryaniAddons : undefined,
       },
     };
   }
 
-  // 6. Pizza Ordering with Contextual Suggestive Selling
+  // 6. Pizza Ordering with Contextual Suggestive Selling & 86'd Stock Filter
   if (q.includes("pizza") || q.includes("पिज़्ज़ा") || q.includes("পিজ্জা")) {
+    // Check if Pizza itself is 86'd
+    if (isItem86("pizza") || isItem86("Farmhouse Fresh Pizza") || isItem86("Artisan Woodfired Pizza")) {
+      return {
+        reply: "Farmhouse Fresh Pizza is currently sold out (86'd) at the kitchen. Would you prefer our fresh Steamed Momos or Crispy Burger?",
+        action: {
+          type: "CHECKOUT_POPUP",
+          label: "👑 1-Tap Checkout: Steamed Momos (8 Pcs)",
+          dishName: "Steamed Chicken Momos (8 Pcs)",
+          item: "Steamed Chicken Momos (8 Pcs)",
+          quantity: 1,
+          pricePaise: 18000,
+          estimatedPaise: 18000,
+          restaurantName: "La Pino'z Kitchens",
+          deliveryEta: "15-20 mins",
+        },
+      };
+    }
+
     let quantity = 1;
     const digitMatch = q.match(/\b([1-9]|10)\b/);
     if (digitMatch) {
@@ -287,8 +411,23 @@ export function resolveSovereignResponse(
     const unitPaise = 32000;
     const estimatedPaise = unitPaise * quantity;
 
+    const basePizzaAddons = [
+      { id: "addon-bread", name: "Garlic Breadsticks", pricePaise: 9900 },
+      { id: "addon-soda", name: "Chilled Soda Can", pricePaise: 4000 },
+    ];
+    const availablePizzaAddons = isDismissalOrHurry
+      ? []
+      : basePizzaAddons.filter((a) => !isItem86(a.id) && !isItem86(a.name));
+
+    let reply = "Artisan Woodfired Pizza is ready for checkout.";
+    if (availablePizzaAddons.length >= 2) {
+      reply = "Artisan Woodfired Pizza is ready for checkout. Would you like Garlic Breadsticks or Chilled Soda?";
+    } else if (availablePizzaAddons.length === 1) {
+      reply = `Artisan Woodfired Pizza is ready for checkout. Would you like ${availablePizzaAddons[0].name}?`;
+    }
+
     return {
-      reply: "Farmhouse Fresh Pizza is ready for checkout. Would you like Garlic Breadsticks or Chilled Soda?",
+      reply,
       action: {
         type: "CHECKOUT_POPUP",
         label: `👑 1-Tap Checkout: Farmhouse Pizza (${quantity}x)`,
@@ -299,10 +438,7 @@ export function resolveSovereignResponse(
         estimatedPaise,
         restaurantName: "La Pino'z Kitchens",
         deliveryEta: "20-25 mins",
-        suggestedAddons: [
-          { id: "addon-bread", name: "Garlic Breadsticks", pricePaise: 9900 },
-          { id: "addon-soda", name: "Chilled Soda Can", pricePaise: 4000 },
-        ],
+        suggestedAddons: availablePizzaAddons.length > 0 ? availablePizzaAddons : undefined,
       },
     };
   }
@@ -385,11 +521,13 @@ export function CustomerConciergeDrawer({
   onClose,
   area = "food",
   embedded = false,
+  outOfStockItems = [],
 }: {
   open: boolean;
   onClose: () => void;
   area?: ConciergeArea;
   embedded?: boolean;
+  outOfStockItems?: string[];
 }) {
   const { user } = useCurrentUserState();
   const navigate = useNavigate();
@@ -455,10 +593,18 @@ export function CustomerConciergeDrawer({
   // Calculations for Checkout Bottom-Sheet (₹ and integer paise)
   const dishPricePaise = activePopup?.type === "CHECKOUT_POPUP" ? activePopup.pricePaise : 0;
   const dishSubtotalPaise = dishPricePaise * popupQuantity;
-  const availableAddons =
+  const rawAvailableAddons =
     activePopup?.type === "CHECKOUT_POPUP" && activePopup.suggestedAddons?.length
       ? activePopup.suggestedAddons
       : SUGGESTIVE_ADD_ONS;
+  const availableAddons = rawAvailableAddons.filter((addon) => {
+    const id = addon.id.toLowerCase();
+    const name = addon.name.toLowerCase();
+    return !outOfStockItems.some((oos) => {
+      const o = oos.toLowerCase().trim();
+      return o === id || o === name || id.includes(o) || name.includes(o);
+    });
+  });
   const addOnsSubtotalPaise = selectedAddOnIds.reduce((sum, id) => {
     const item = availableAddons.find((a) => a.id === id);
     return sum + (item ? item.pricePaise : 0);
@@ -627,12 +773,16 @@ export function CustomerConciergeDrawer({
 
     // Mind-reading sentiment radar: If user indicates rejection, hurry, or dismissiveness, silence suggestions immediately
     const isDismissalOrHurry = /\b(no|nahi|na|nah|stop|don't|dont|just|only|bas|cancel|jaldi|fast|rush|hurry|direct|straight|ruk|chup)\b/i.test(raw);
+    const nextSuppress = suppressSuggestions || isDismissalOrHurry;
     if (isDismissalOrHurry) {
       setSuppressSuggestions(true);
     }
 
-    // Sovereign Local Resolution with 0 External Paid APIs
-    const { reply, action } = resolveSovereignResponse(raw, matchedDialect);
+    // Sovereign Local Resolution with 0 External Paid APIs (passing outOfStockItems and suppressSuggestions)
+    const { reply, action } = resolveSovereignResponse(raw, matchedDialect, {
+      outOfStockItems,
+      suppressSuggestions: nextSuppress,
+    });
 
     setTimeout(() => {
       const aiEntry: ChatMessage = {
@@ -1240,7 +1390,7 @@ export function CustomerConciergeDrawer({
                           KingPay 1-Tap UPI &amp; BharatQR
                         </h3>
                         <p className="text-[10.5px] text-slate-400 truncate">
-                          Direct NPCI Settlement · Zero Markup Gateway
+                          Direct NPCI Settlement · Sovereign Banking Gateway
                         </p>
                       </div>
                     </div>

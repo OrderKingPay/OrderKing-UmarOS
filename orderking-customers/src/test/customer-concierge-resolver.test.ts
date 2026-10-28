@@ -288,4 +288,114 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
       expect(bnBiryani.reply).toMatch(/রায়তা|গোলাপ জামুন/i);
     });
   });
+
+  // --------------------------------------------------------------------------
+  // Directive 6: Connected Ecosystem Live Item 86 Inventory Filter (f5a2c465)
+  // --------------------------------------------------------------------------
+  describe("Directive 6: Connected Ecosystem Live Item 86 Inventory Filter", () => {
+    it("never suggests an add-on that is marked 86'd (out-of-stock) in the kitchen POS", () => {
+      // 1. Raita is marked 86'd -> Only Gulab Jamun suggested
+      const resRaita86 = resolveSovereignResponse(
+        "1 Chicken Dum Biryani",
+        getDialect("en"),
+        { outOfStockItems: ["addon-raita", "Chilled Mint Raita"] }
+      );
+
+      expect(resRaita86.action?.type).toBe("CHECKOUT_POPUP");
+      if (resRaita86.action?.type === "CHECKOUT_POPUP") {
+        const addonNames = resRaita86.action.suggestedAddons?.map((a: any) => a.name) || [];
+        expect(addonNames).not.toContain("Chilled Mint Raita");
+        expect(addonNames).toContain("Gulab Jamun (2 pcs)");
+        // Reply should mention Gulab Jamun but NOT Raita
+        expect(resRaita86.reply.toLowerCase()).not.toContain("raita");
+        expect(resRaita86.reply).toMatch(/Gulab Jamun/i);
+      }
+
+      // 2. Both Raita & Gulab Jamun are 86'd -> Zero add-ons suggested
+      const resBoth86 = resolveSovereignResponse(
+        "1 Chicken Dum Biryani",
+        getDialect("en"),
+        { outOfStockItems: ["addon-raita", "addon-gulab-jamun"] }
+      );
+
+      if (resBoth86.action?.type === "CHECKOUT_POPUP") {
+        expect(resBoth86.action.suggestedAddons).toBeUndefined();
+        expect(resBoth86.reply.toLowerCase()).not.toContain("raita");
+        expect(resBoth86.reply.toLowerCase()).not.toContain("gulab jamun");
+        expect(resBoth86.reply).toContain("Chicken Dum Biryani");
+      }
+    });
+
+    it("notifies customer and redirects to available signature dish when requested item itself is 86'd", () => {
+      // Biryani is 86'd (sold out) in POS inventory
+      const resBiryani86 = resolveSovereignResponse(
+        "I want to order biryani",
+        getDialect("en"),
+        { outOfStockItems: ["biryani", "Royal Chicken Dum Biryani"] }
+      );
+
+      expect(resBiryani86.reply).toMatch(/sold out \(86'd\)/i);
+      expect(resBiryani86.reply).toMatch(/Homestyle Thali|Mutton Dum Biryani/i);
+      // Action points to alternative in-stock dish
+      expect(resBiryani86.action?.type).toBe("CHECKOUT_POPUP");
+      if (resBiryani86.action?.type === "CHECKOUT_POPUP") {
+        expect(resBiryani86.action.dishName).toBe("Royal Homestyle Thali");
+      }
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // Directive 7: Irritation Radar & Rejection Sentiment Enforcement (a57bc3d7)
+  // --------------------------------------------------------------------------
+  describe("Directive 7: Irritation Radar & Zero-Annoyance Upsell Suppression", () => {
+    it("suppresses 100% of upsell prompts when user triggers irritation keywords ('No', 'Jaldi', 'Cancel')", () => {
+      const irritationQueries = [
+        "No, just 1 biryani",
+        "biryani jaldi bhejo",
+        "cancel suggestions, order biryani",
+        "bas ek biryani chahiye",
+        "only biryani please",
+        "stop recommendations, 1 biryani",
+        "direct biryani checkout fast",
+      ];
+
+      for (const query of irritationQueries) {
+        const res = resolveSovereignResponse(query, getDialect("en"));
+
+        expect(res.action?.type).toBe("CHECKOUT_POPUP");
+        if (res.action?.type === "CHECKOUT_POPUP") {
+          // Zero upsell items attached
+          expect(res.action.suggestedAddons).toBeUndefined();
+
+          // Zero upsell keywords in conversational reply
+          const lowerReply = res.reply.toLowerCase();
+          expect(lowerReply).not.toContain("raita");
+          expect(lowerReply).not.toContain("gulab jamun");
+          expect(lowerReply).not.toContain("would you like");
+
+          // Clean, respectful 1-sentence confirmation
+          expect(res.reply).toContain("Chicken Dum Biryani");
+          const sentences = res.reply
+            .split(/[.?!।|]/)
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 0);
+          expect(sentences.length).toBeLessThanOrEqual(2);
+        }
+      }
+    });
+
+    it("suppresses 100% of upsell prompts when options.suppressSuggestions is explicitly true", () => {
+      const res = resolveSovereignResponse(
+        "1 Chicken Dum Biryani",
+        getDialect("en"),
+        { suppressSuggestions: true }
+      );
+
+      if (res.action?.type === "CHECKOUT_POPUP") {
+        expect(res.action.suggestedAddons).toBeUndefined();
+        expect(res.reply.toLowerCase()).not.toContain("raita");
+        expect(res.reply.toLowerCase()).not.toContain("gulab jamun");
+      }
+    });
+  });
 });

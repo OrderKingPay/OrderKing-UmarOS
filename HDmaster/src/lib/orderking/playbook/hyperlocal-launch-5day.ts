@@ -95,7 +95,7 @@ export interface RiderPayStructure {
     startDeductionDay: number; // Day 4 onwards
     maxDaysAmortization: number; // 24 days (for ₹1200) or 10 days (for ₹500)
     safeguardRule: string; // Deduct ONLY if rider earnings strictly exceed the daily net floor
-    returnableOption: string; // 100% free returnable kit option with zero deductions on exit
+    returnableOption: string; // zero-deposit returnable kit option with zero deductions on exit
   };
 }
 
@@ -531,7 +531,7 @@ export const RIDER_RECRUITMENT_CONFIG: RiderRecruitmentPlan = {
       startDeductionDay: 4, // Day 4 onwards
       maxDaysAmortization: 24, // 24 active earning days
       safeguardRule: "Deduction of ₹50 occurs ONLY on days where gross earnings exceed ₹500, ensuring take-home never drops below floor.",
-      returnableOption: "Option for 100% free returnable kit with zero deductions, returned upon contract conclusion.",
+      returnableOption: "Option for zero-deposit returnable kit with zero deductions, returned upon contract conclusion.",
     },
   },
   shiftRoster15: {
@@ -1254,3 +1254,4 @@ export function formatInrWhole(paise: number): string {
   const rupees = Math.round(absPaise / 100).toLocaleString("en-IN");
   return `${isNegative ? "-" : ""}₹${rupees}`;
 }
+

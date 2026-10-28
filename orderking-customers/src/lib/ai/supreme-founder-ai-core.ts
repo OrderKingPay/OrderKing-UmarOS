@@ -1104,10 +1104,10 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
 You can download this image, copy its direct CDN link, or command further edits below!`;
 
     const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh 100% free hai aur aapke media vault me save ho gaya hai.`
+      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh unlimited capacity hai aur aapke media vault me save ho gaya hai.`
       : isBengali
-      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta 100% free ebong apnar media vault e save hoyeche.`
-      : `I have generated your high-resolution AI image. It is 100% free with unlimited generation capacity and has been saved to your Media Vault.`;
+      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta unlimited capacity ebong apnar media vault e save hoyeche.`
+      : `I have generated your high-resolution AI image. It has unlimited generation capacity and has been saved to your Media Vault.`;
 
     return {
       intent: "media_generation",
@@ -1162,7 +1162,7 @@ You can download this image, copy its direct CDN link, or command further edits 
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Compiling Kinetic Motion Script", status: "COMPLETED", detail: rawPrompt },
       { stepNumber: 2, totalSteps: 4, label: "Simulating 60FPS Video Keyframes", status: "COMPLETED", detail: "Motion interpolation and procedural particles generated" },
-      { stepNumber: 3, totalSteps: 4, label: "Encoding MP4 Stream", status: "COMPLETED", detail: "WebCodecs hardware acceleration active · 100% Free" },
+      { stepNumber: 3, totalSteps: 4, label: "Encoding MP4 Stream", status: "COMPLETED", detail: "WebCodecs hardware acceleration active · Unlimited" },
       { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
     ];
 
@@ -2269,7 +2269,7 @@ By routing payments via direct King Pay UPI, we bypass the 2.5% payment gateway 
 
 ---
 
-#### 2. Why King Pay is Open Pan-India (100% Free UPI Rails)
+#### 2. Why King Pay is Open Pan-India (Zero-Surcharge Direct NPCI UPI Rails)
 - **Zero Physical Footprint**: Software and UPI QR codes require zero delivery riders.
 - **Section 79 IT Act Compliance**: King Pay acts as a pure technological intermediary with direct bank-to-bank settlement and 0% gateway commission.
 - **Viral Funnel**: Users across India use King Pay for fee-free UPI transactions, building a massive national user base ready for future city launches.`;
@@ -2541,3 +2541,4 @@ By routing payments via direct King Pay UPI, we bypass the 2.5% payment gateway 
     executionSteps,
   };
 }
+

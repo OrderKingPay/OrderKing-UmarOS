@@ -479,7 +479,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
     ];
 
-    const responseMarkdown = `### 🎨 Premium AI Image Generated (100% Free & Unlimited)
+    const responseMarkdown = `### 🎨 Premium AI Image Generated (Sovereign Unlimited Capacity)
 - **Prompt**: *"${rawPrompt}"*
 - **Resolution**: **1024 × 1024 (Ultra HD)** | **Cost**: **$0.00 (Unlimited Forever)**
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
@@ -489,10 +489,10 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
 You can download this image, copy its direct CDN link, or command further edits below!`;
 
     const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh 100% free hai aur aapke media vault me save ho gaya hai.`
+      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh unlimited capacity hai aur aapke media vault me save ho gaya hai.`
       : isBengali
-      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta 100% free ebong apnar media vault e save hoyeche.`
-      : `I have generated your high-resolution AI image. It is 100% free with unlimited generation capacity and has been saved to your Media Vault.`;
+      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta unlimited capacity ebong apnar media vault e save hoyeche.`
+      : `I have generated your high-resolution AI image. It has unlimited generation capacity and has been saved to your Media Vault.`;
 
     return {
       intent: "media_generation",
@@ -547,11 +547,11 @@ You can download this image, copy its direct CDN link, or command further edits 
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Compiling Kinetic Motion Script", status: "COMPLETED", detail: rawPrompt },
       { stepNumber: 2, totalSteps: 4, label: "Simulating 60FPS Video Keyframes", status: "COMPLETED", detail: "Motion interpolation and procedural particles generated" },
-      { stepNumber: 3, totalSteps: 4, label: "Encoding MP4 Stream", status: "COMPLETED", detail: "WebCodecs hardware acceleration active · 100% Free" },
+      { stepNumber: 3, totalSteps: 4, label: "Encoding MP4 Stream", status: "COMPLETED", detail: "WebCodecs hardware acceleration active · Unlimited" },
       { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
     ];
 
-    const responseMarkdown = `### 🎬 Premium AI Video Generated (100% Free & Unlimited)
+    const responseMarkdown = `### 🎬 Premium AI Video Generated (Sovereign Unlimited Capacity)
 - **Prompt**: *"${rawPrompt}"*
 - **Format**: **MP4 60FPS** | **Cost**: **$0.00 (Unlimited Forever)**
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to play, download, and showcase to enterprise clients).
@@ -2120,3 +2120,4 @@ This subject connects foundational principles of systems theory, human incentive
     executionSteps,
   };
 }
+

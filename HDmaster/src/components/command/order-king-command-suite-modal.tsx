@@ -296,8 +296,8 @@ export function OrderKingCommandSuiteModal({
                     <span className="font-mono font-bold text-white">40% Speed + 30% Rating + 30% Customer Value</span>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900">
-                    <span>Zero-Markup Enforcement</span>
-                    <span className="font-mono font-bold text-emerald-400">100% Verified (0 paisa added)</span>
+                    <span>Sovereign Menu Parity</span>
+                    <span className="font-mono font-bold text-emerald-400">100% Verified (Authentic POS Rate)</span>
                   </div>
                 </div>
               </div>
@@ -461,3 +461,4 @@ export function OrderKingCommandSuiteModal({
     </div>
   );
 }
+

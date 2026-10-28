@@ -245,7 +245,7 @@ export function AddMoneyModal({
               <Zap className="size-4 text-emerald-400" />
               <span>Platform Surcharge: ₹0.00</span>
             </span>
-            <span className="font-mono text-emerald-400 font-black">100% Free</span>
+            <span className="font-mono text-emerald-400 font-black">Zero Surcharge</span>
           </div>
 
           {/* Action Button */}

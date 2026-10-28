@@ -225,4 +225,73 @@ describe("Canonical Double-Entry Financial Ledger Engine", () => {
       /Total amount must be a positive integer in paise/
     );
   });
+
+  // =========================================================================
+  // FINTECH & SETTLEMENTS SPECIALIST (2b420240): CONCIERGE ADD-ON REVENUE SETTLEMENT
+  // =========================================================================
+  test("settles Concierge 1-Tap Checkout add-on pairings via double-entry ledger with Sec 9(5) CGST withholding", async () => {
+    // 1x Royal Chicken Dum Biryani (28000 paise)
+    // + Chilled Mint Raita (4000 paise)
+    // + Gulab Jamun (5000 paise)
+    // + CCPA Packaging cap (3000 paise)
+    // Gross Food & Add-ons = 40,000 paise (₹400.00)
+    // Sec 9(5) CGST 5% = 2,000 paise (₹20.00) under GSTIN 18AFXPH9838M1Z9
+    // Total Customer Paid = 42,000 paise (₹420.00)
+    const tx = await canonicalLedger.recordConciergeOrderSettlement({
+      orderId: "ord-concierge-feast-7788",
+      restaurantId: "rest-behrouz-788710",
+      dishName: "Royal Chicken Dum Biryani",
+      dishPricePaise: 28000,
+      quantity: 1,
+      packagingPaise: 3000,
+      addOns: [
+        { id: "addon-raita", name: "Chilled Mint Raita", pricePaise: 4000 },
+        { id: "addon-gulab-jamun", name: "Gulab Jamun (2 pcs)", pricePaise: 5000 },
+      ],
+      paymentMethod: "NPCI_UPI",
+      npciUpiVpa: "orderking@ybl",
+      idempotencyKey: "idem-concierge-settle-" + Date.now(),
+      platformCommissionBps: 1000, // 10%
+    });
+
+    assert.ok(tx);
+    assert.strictEqual(tx.eventType, "CONCIERGE_ORDER_SETTLEMENT_RECORDED");
+    assert.strictEqual(tx.totalAmountPaise, 42000);
+
+    const debits = tx.entries.filter((e) => e.direction === "DEBIT");
+    const credits = tx.entries.filter((e) => e.direction === "CREDIT");
+
+    const totalDebit = debits.reduce((s, e) => s + e.amountPaise, 0);
+    const totalCredit = credits.reduce((s, e) => s + e.amountPaise, 0);
+
+    // Strict Double-Entry Balance
+    assert.strictEqual(totalDebit, 42000);
+    assert.strictEqual(totalCredit, 42000);
+
+    // Debit Account: Direct NPCI UPI collection
+    assert.strictEqual(debits[0].account, "BANK_CLEARING");
+    assert.strictEqual(debits[0].amountPaise, 42000);
+    assert.strictEqual(debits[0].entityId, "NPCI_UPI:orderking@ybl");
+
+    // Credit 1: Section 9(5) CGST 5% withholding under OrderKing GSTIN
+    const sec9_5Entry = credits.find((e) => e.account === "FOOD_GST_9_5_LIABILITY");
+    assert.ok(sec9_5Entry);
+    assert.strictEqual(sec9_5Entry.amountPaise, 2000); // exactly 5% of 40,000 paise
+    assert.strictEqual(sec9_5Entry.entityId, "GSTIN:18AFXPH9838M1Z9");
+
+    // Credit 2: Restaurant payable (Gross 40,000 minus Platform Commission ₹40 + 18% GST ₹7.20 = 4,720 -> 35,280 paise)
+    const restEntry = credits.find((e) => e.account === "RESTAURANT_PAYABLE");
+    assert.ok(restEntry);
+    assert.strictEqual(restEntry.amountPaise, 35280);
+    assert.strictEqual(restEntry.entityId, "rest-behrouz-788710");
+
+    // Credit 3 & 4: Platform fee + GST
+    const platEntry = credits.find((e) => e.account === "PLATFORM_FEE_REVENUE");
+    assert.ok(platEntry);
+    assert.strictEqual(platEntry.amountPaise, 4000);
+
+    const gstEntry = credits.find((e) => e.account === "GST_OUTPUT_LIABILITY");
+    assert.ok(gstEntry);
+    assert.strictEqual(gstEntry.amountPaise, 720);
+  });
 });

@@ -95,7 +95,7 @@ export function NextGenSeo({ config }: { config: any }) {
       {
         "@type": "Product",
         "name": "King Pass",
-        "description": "Unlimited Free Food Delivery and Premium Perks across India.",
+        "description": "Priority Food Delivery and Premium Perks across India.",
         "brand": {
           "@type": "Brand",
           "name": "OrderKing"

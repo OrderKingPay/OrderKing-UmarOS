@@ -63,6 +63,30 @@ describe("SettlementReconciliationEngine - Statutory Tax & Dual Settlement Verif
       // Verify that deducting Section 9(5) would result in a lower payout, proving it's NOT debited
       assert.ok(result.netPayablePaise > (60802 - 4750));
     });
+
+    test("accurately includes Concierge add-on pairing revenue under Section 9(5) CGST remittance under GSTIN 18AFXPH9838M1Z9", () => {
+      const input: OrderReconciliationInput = {
+        orderId: "ord-concierge-recon-9901",
+        orderNumber: "OK-CON-9901",
+        placedAt: "2026-10-28T12:00:00Z",
+        foodValuePaise: 28000,
+        conciergeAddOnsPaise: 9000,
+        packingPaise: 3000,
+        restaurantDiscountPaise: 0,
+        commissionBps: 1000,
+        hasValidPan: true,
+        panNumber: "ABCDE1234F",
+      };
+
+      const result = engine.reconcileOrder(input);
+
+      assert.equal(result.foodValuePaise, 37000);
+      assert.equal(result.conciergeAddOnsPaise, 9000);
+      assert.equal(result.grossSalesPaise, 40000);
+      assert.equal(result.netTaxableSupplyPaise, 40000);
+      assert.equal(result.sec9_5FoodGstPaise, 2000);
+      assert.equal(result.sec9_5RemittanceGstin, "18AFXPH9838M1Z9");
+    });
   });
 
   describe("2. Statutory Withholdings: Section 52 TCS and Section 194-O TDS", () => {
