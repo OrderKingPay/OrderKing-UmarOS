@@ -408,7 +408,7 @@ export function HomeFeed({
   }, [list.data?.restaurants, dietFilter, filterRating, filterOffers, filterBudget, filterFast, selectedCategory, q]);
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-3 sm:px-6 sm:py-6 bg-[#FCFAF7] text-gray-900 font-sans">
+    <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 bg-[#FCFAF7] text-gray-900 font-sans">
 
 
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
@@ -678,11 +678,20 @@ export function HomeFeed({
                 <div
                   role="status"
                   data-testid="food-availability-note"
-                  className="relative overflow-hidden rounded-3xl border border-amber-200/80 bg-white/95 p-6 sm:p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.06),0_1px_3px_rgb(0,0,0,0.04)] backdrop-blur-xl max-w-xl mx-auto space-y-4"
+                  className="relative overflow-hidden rounded-3xl border border-amber-200/90 bg-gradient-to-b from-white via-white to-amber-50/20 p-6 sm:p-8 text-center shadow-[0_12px_36px_rgba(245,158,11,0.08),0_2px_8px_rgba(0,0,0,0.03)] backdrop-blur-xl w-full max-w-2xl mx-auto space-y-4"
                 >
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600" />
-                  <div className="relative mx-auto flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-[0_4px_16px_rgba(245,158,11,0.35)] ring-4 ring-amber-100">
-                    <MapPin className="size-6 text-white drop-shadow-sm" />
+                  
+                  {/* Location badge if available */}
+                  {(location?.zoneName || location?.cityName) && (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-[11px] font-bold text-amber-900 shadow-2xs">
+                      <MapPin className="size-3 text-amber-600 shrink-0" />
+                      <span className="truncate max-w-[240px] sm:max-w-xs">{location.zoneName || location.cityName}</span>
+                    </div>
+                  )}
+
+                  <div className="relative mx-auto flex size-14 sm:size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 via-amber-600 to-orange-600 text-white shadow-[0_6px_20px_rgba(245,158,11,0.35)] ring-4 ring-amber-100">
+                    <MapPin className="size-6 sm:size-7 text-white drop-shadow-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
@@ -696,7 +705,7 @@ export function HomeFeed({
                     <Button
                       type="button"
                       onClick={() => setLocDialogOpen(true)}
-                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-xs sm:text-sm px-5 py-2.5 shadow-[0_4px_14px_rgba(245,158,11,0.35)] hover:shadow-[0_6px_20px_rgba(245,158,11,0.45)] transition active:scale-95 cursor-pointer border-0"
+                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs sm:text-sm px-6 py-2.5 shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.45)] transition active:scale-95 cursor-pointer border-0"
                     >
                       <MapPin className="size-4" />
                       <span>Change Location</span>
