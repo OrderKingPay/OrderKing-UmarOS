@@ -15,5 +15,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  return <CustomerShell><div className="min-h-full bg-[#FFFCF7] px-1 py-1 sm:px-3 sm:py-2"><HomeFeed /></div></CustomerShell>;
+  return (
+    <CustomerShell>
+      <div className="min-h-full bg-[#FCFAF7]">
+        <HomeFeed />
+      </div>
+    </CustomerShell>
+  );
 }

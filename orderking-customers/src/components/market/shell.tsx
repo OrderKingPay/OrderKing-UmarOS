@@ -103,7 +103,7 @@ export function CustomerShell({
     path.startsWith("/kingpay") ||
     path.startsWith("/king-pay")
   );
-  const effectiveMaxWidth = maxWidth || (isDark ? "max-w-7xl" : "max-w-lg md:max-w-5xl");
+  const effectiveMaxWidth = maxWidth || "max-w-7xl";
   const { user, isPending } = useCurrentUserState();
   const navigate = useNavigate();
   const [locOpen, setLocOpen] = useState(false);

@@ -444,30 +444,35 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
         "If this isn't where you are right now, you can update your location to check delivery. Even without food delivery here, all other KingPay services are active and ready to use."
       );
 
-      // 4. All 6 authentic KingPay services present
+      // 4. Exact 6 authentic KingPay-aligned 3D services present
       expect(homeFeedSource).toContain('to="/kingpay"');
       expect(homeFeedSource).toContain("KingPay Wallet");
       expect(homeFeedSource).toContain("Direct UPI &amp; Bills");
 
-      expect(homeFeedSource).toContain('to="/parcel"');
-      expect(homeFeedSource).toContain("Send Packages");
-      expect(homeFeedSource).toContain("Door-to-door courier");
+      expect(homeFeedSource).toContain('search={{ tab: "flights" }}');
+      expect(homeFeedSource).toContain("Flights");
+      expect(homeFeedSource).toContain("Domestic &amp; International");
 
-      expect(homeFeedSource).toContain('to="/travel"');
-      expect(homeFeedSource).toContain("Flights &amp; Stays");
-      expect(homeFeedSource).toContain("Zero markup travel");
+      expect(homeFeedSource).toContain('search={{ tab: "hotels" }}');
+      expect(homeFeedSource).toContain("Hotels &amp; Stays");
+      expect(homeFeedSource).toContain("Worldwide Stays");
 
       expect(homeFeedSource).toContain('search={{ tab: "trains" }}');
       expect(homeFeedSource).toContain("Trains &amp; PNR");
-      expect(homeFeedSource).toContain("Live booking &amp; status");
-
-      expect(homeFeedSource).toContain('search={{ tab: "pilgrimage" }}');
-      expect(homeFeedSource).toContain("Tours &amp; Yatra");
-      expect(homeFeedSource).toContain("Pilgrimage booking");
+      expect(homeFeedSource).toContain("IRCTC Booking &amp; Status");
 
       expect(homeFeedSource).toContain('to="/tutor"');
-      expect(homeFeedSource).toContain("AI STEM Tutor");
-      expect(homeFeedSource).toContain("CBSE / State board study solver");
+      expect(homeFeedSource).toContain("King AI Tutor");
+      expect(homeFeedSource).toContain("Academic Tutor · CBSE &amp; State");
+
+      expect(homeFeedSource).toContain('to="/tutor-jobs"');
+      expect(homeFeedSource).toContain("King Jobs");
+      expect(homeFeedSource).toContain("Hyperlocal Gigs &amp; Apply");
+
+      // Verify courier & pilgrimage are NOT in frontline fallback (as per user mandate)
+      expect(homeFeedSource).not.toContain('to="/parcel"');
+      expect(homeFeedSource).not.toContain('search={{ tab: "pilgrimage" }}');
+      expect(homeFeedSource).not.toContain("AI STEM Tutor");
 
       // 5. Zero slogans or buzzwords
       const bannedWords = ["sovereign", "patron privilege", "vip concierge", "zero bleed", "disaster proof", "monarch"];
@@ -475,6 +480,14 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
         const matches = homeFeedSource.match(new RegExp(`\\b${word}\\b`, "gi"));
         expect(matches).toBeNull();
       }
+
+      // 6. Page container responsiveness alignment with KingPay
+      const shellSource = fs.readFileSync(
+        path.resolve(process.cwd(), "src/components/market/shell.tsx"),
+        "utf8"
+      );
+      expect(shellSource).toContain('const effectiveMaxWidth = maxWidth || "max-w-7xl";');
+      expect(homeFeedSource).toContain('max-w-6xl');
     });
   });
 });
