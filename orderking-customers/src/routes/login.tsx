@@ -109,7 +109,10 @@ function Login() {
       setResendTimer(30);
 
       if (channel === "whatsapp") {
-        setSuccessMsg(`Verification code sent to WhatsApp (+91-${cleanNumber}).`);
+        if (res.whatsAppOtpUrl && typeof window !== "undefined") {
+          window.open(res.whatsAppOtpUrl, "_blank");
+        }
+        setSuccessMsg(`Opening WhatsApp with your verification code for +91-${cleanNumber}.`);
       } else {
         setSuccessMsg(`Verification code sent via SMS to +91-${cleanNumber}.`);
       }
@@ -365,21 +368,33 @@ function Login() {
                     </div>
 
 
-                    {/* Sovereign WhatsApp Dispatch Action */}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={busy || resendTimer > 0}
-                      onClick={() => void onSendOtp("whatsapp")}
-                      className="w-full h-11 rounded-2xl border-emerald-500/40 bg-emerald-950/20 text-emerald-400 hover:bg-emerald-950/40 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
-                    >
-                      <span className="text-sm">💬</span>
-                      <span>
-                        {resendTimer > 0
-                          ? `Resend via WhatsApp in ${resendTimer}s`
-                          : "Deliver OTP to WhatsApp"}
-                      </span>
-                    </Button>
+                    {/* Instant WhatsApp Delivery Action */}
+                    {whatsAppUrl ? (
+                      <a
+                        href={whatsAppUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition no-underline cursor-pointer active:scale-95"
+                      >
+                        <span className="text-sm">💬</span>
+                        <span>Open WhatsApp to View Verification Code</span>
+                      </a>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={busy || resendTimer > 0}
+                        onClick={() => void onSendOtp("whatsapp")}
+                        className="w-full h-11 rounded-2xl border-emerald-500/40 bg-emerald-950/20 text-emerald-400 hover:bg-emerald-950/40 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
+                      >
+                        <span className="text-sm">💬</span>
+                        <span>
+                          {resendTimer > 0
+                            ? `Resend via WhatsApp in ${resendTimer}s`
+                            : "Deliver OTP to WhatsApp"}
+                        </span>
+                      </Button>
+                    )}
 
                     <Button
                       type="button"
