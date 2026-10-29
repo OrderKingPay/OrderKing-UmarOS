@@ -145,7 +145,7 @@ export const ACTIVE_FLAGSHIP_HUBS = [
     line1: "Station Road, Karimganj, Assam",
     lat: 24.8688,
     lng: 92.3511,
-    highlight: "Sovereign Assam Core 15km Zone",
+    highlight: "Assam Core 15km Zone",
     gradient: "from-emerald-500 to-teal-600",
   },
   {
@@ -410,7 +410,7 @@ export function HomeFeed({
 
 
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
-      {!q && (
+      {!q && !isZeroDeliveryInRadius && (
         <section aria-label="Food Categories" className="pt-0.5">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
@@ -591,19 +591,21 @@ export function HomeFeed({
 
       {/* RESTAURANTS GRID */}
       <section aria-label="Restaurants Grid" className="pt-1">
-        <div className="flex items-center justify-between mb-2.5">
-          <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
-            {selectedCategory
-              ? `Best in ${selectedCategory}`
-              : dietFilter === "veg"
-              ? "Pure vegetarian restaurants"
-              : location?.zoneName && location.zoneName !== "Current GPS Position"
-              ? `Restaurants in ${location.zoneName}`
-              : location?.cityName && location.cityName !== "Locating..."
-              ? `Restaurants in ${location.cityName}`
-              : "Restaurants near you"}
-          </h2>
-        </div>
+        {!isZeroDeliveryInRadius && (
+          <div className="flex items-center justify-between mb-2.5">
+            <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
+              {selectedCategory
+                ? `Best in ${selectedCategory}`
+                : dietFilter === "veg"
+                ? "Pure vegetarian restaurants"
+                : location?.zoneName && location.zoneName !== "Current GPS Position"
+                ? `Restaurants in ${location.zoneName}`
+                : location?.cityName && location.cityName !== "Locating..."
+                ? `Restaurants in ${location.cityName}`
+                : "Restaurants near you"}
+            </h2>
+          </div>
+        )}
 
         {list.isPending && !list.data ? (
           /* Warm Ivory/Amber Gradient Shimmer Skeletons */
@@ -706,7 +708,7 @@ export function HomeFeed({
                       Other services available in your area
                     </h4>
                     <p className="text-xs text-gray-500">
-                      You can access all sovereign KingPay financial, travel, courier, and study services below anytime.
+                      You can access KingPay financial, travel, courier, and study services below anytime.
                     </p>
                   </div>
 
@@ -726,7 +728,7 @@ export function HomeFeed({
                       </div>
                       <div>
                         <span className="text-xs font-bold text-gray-900 block leading-snug">KingPay Wallet</span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">UPI &amp; Bills</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">Direct UPI &amp; Bills</span>
                       </div>
                     </Link>
 
@@ -745,7 +747,7 @@ export function HomeFeed({
                       </div>
                       <div>
                         <span className="text-xs font-bold text-gray-900 block leading-snug">Send Packages</span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">Door-to-door</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">Door-to-door courier</span>
                       </div>
                     </Link>
 
@@ -764,7 +766,7 @@ export function HomeFeed({
                       </div>
                       <div>
                         <span className="text-xs font-bold text-gray-900 block leading-snug">Flights &amp; Stays</span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">₹0 fee</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">Zero markup travel</span>
                       </div>
                     </Link>
 
@@ -784,7 +786,7 @@ export function HomeFeed({
                       </div>
                       <div>
                         <span className="text-xs font-bold text-gray-900 block leading-snug">Trains &amp; PNR</span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">Live status</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">Live booking &amp; status</span>
                       </div>
                     </Link>
 
@@ -799,12 +801,12 @@ export function HomeFeed({
                           <Crown className="size-4" />
                         </span>
                         <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md">
-                          Yatra
+                          Pilgrimage
                         </span>
                       </div>
                       <div>
                         <span className="text-xs font-bold text-gray-900 block leading-snug">Tours &amp; Yatra</span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">Umrah &amp; Kashi</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">Pilgrimage booking</span>
                       </div>
                     </Link>
 
@@ -822,8 +824,8 @@ export function HomeFeed({
                         </span>
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-gray-900 block leading-snug">AI Study Solver</span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">CBSE &amp; Boards</span>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">AI STEM Tutor</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">CBSE / State board study solver</span>
                       </div>
                     </Link>
                   </div>

@@ -423,5 +423,58 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
       expect(sribhumiState.lat).toBe(24.8688);
       expect(sribhumiState.lng).toBe(92.3511);
     });
+
+    it("verifies home feed food unavailability fallback provides human-style guidance and authentic services", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const homeFeedSource = fs.readFileSync(
+        path.resolve(process.cwd(), "src/components/market/home-feed.tsx"),
+        "utf8"
+      );
+
+      // 1. Honest status statement
+      expect(homeFeedSource).toContain("Food delivery is not available in your location.");
+
+      // 2. Clear location fix button
+      expect(homeFeedSource).toContain("Change Location");
+      expect(homeFeedSource).toContain("setLocDialogOpen(true)");
+
+      // 3. Non-upsetting, polite human guidance
+      expect(homeFeedSource).toContain(
+        "If this isn't where you are right now, you can update your location to check delivery. Even without food delivery here, all other KingPay services are active and ready to use."
+      );
+
+      // 4. All 6 authentic KingPay services present
+      expect(homeFeedSource).toContain('to="/kingpay"');
+      expect(homeFeedSource).toContain("KingPay Wallet");
+      expect(homeFeedSource).toContain("Direct UPI &amp; Bills");
+
+      expect(homeFeedSource).toContain('to="/parcel"');
+      expect(homeFeedSource).toContain("Send Packages");
+      expect(homeFeedSource).toContain("Door-to-door courier");
+
+      expect(homeFeedSource).toContain('to="/travel"');
+      expect(homeFeedSource).toContain("Flights &amp; Stays");
+      expect(homeFeedSource).toContain("Zero markup travel");
+
+      expect(homeFeedSource).toContain('search={{ tab: "trains" }}');
+      expect(homeFeedSource).toContain("Trains &amp; PNR");
+      expect(homeFeedSource).toContain("Live booking &amp; status");
+
+      expect(homeFeedSource).toContain('search={{ tab: "pilgrimage" }}');
+      expect(homeFeedSource).toContain("Tours &amp; Yatra");
+      expect(homeFeedSource).toContain("Pilgrimage booking");
+
+      expect(homeFeedSource).toContain('to="/tutor"');
+      expect(homeFeedSource).toContain("AI STEM Tutor");
+      expect(homeFeedSource).toContain("CBSE / State board study solver");
+
+      // 5. Zero slogans or buzzwords
+      const bannedWords = ["sovereign", "patron privilege", "vip concierge", "zero bleed", "disaster proof", "monarch"];
+      for (const word of bannedWords) {
+        const matches = homeFeedSource.match(new RegExp(`\\b${word}\\b`, "gi"));
+        expect(matches).toBeNull();
+      }
+    });
   });
 });
