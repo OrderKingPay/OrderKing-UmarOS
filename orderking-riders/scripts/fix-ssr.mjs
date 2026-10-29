@@ -14,6 +14,36 @@ function patchFile(filePath, transforms) {
   }
 }
 
+// 0. Parse .env to embed production secrets into edge worker bundle
+function readEnv() {
+  const candidates = [
+    path.resolve(process.cwd(), '.env'),
+    path.resolve(process.cwd(), '../.env'),
+  ];
+  const envMap = {};
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      const lines = fs.readFileSync(p, 'utf8').split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const eqIdx = trimmed.indexOf('=');
+        if (eqIdx > 0) {
+          const k = trimmed.slice(0, eqIdx).trim();
+          const v = trimmed.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, '');
+          if (!(k in envMap)) {
+            envMap[k] = v;
+          }
+        }
+      }
+    }
+  }
+  return envMap;
+}
+
+const embeddedEnv = readEnv();
+console.log(`[fix-ssr] Parsed ${Object.keys(embeddedEnv).length} production env keys for edge worker embedding.`);
+
 const targets = [
   '.vercel/output/functions/__server.func',
   '.output/server/_worker.js',
@@ -49,13 +79,24 @@ for (const targetDir of targets) {
     ]);
   }
 
-  // 3. Patch Cloudflare Pages worker index.js to trap unhandled exceptions (preventing Error 1101)
+  // 3. Patch Cloudflare Pages worker index.js to embed production env and trap unhandled exceptions (preventing Error 1101)
   const workerIndexPath = path.join(targetDir, 'index.js');
   if (fs.existsSync(workerIndexPath)) {
     let content = fs.readFileSync(workerIndexPath, 'utf8');
+
+    // Embed production env at the top of worker index if not yet present
+    if (!content.includes('__ORDERKING_EMBEDDED_ENV__')) {
+      const envInjection = `\n// Embedded Production Environment Bindings\nconst __ORDERKING_EMBEDDED_ENV__ = ${JSON.stringify(embeddedEnv)};\nfor (const [k, v] of Object.entries(__ORDERKING_EMBEDDED_ENV__)) {\n  if (!processModule.env[k]) processModule.env[k] = v;\n}\n`;
+      content = content.replace('globalThis.__nitro_main__ = import.meta.url;', `globalThis.__nitro_main__ = import.meta.url;\n${envInjection}`);
+      console.log(`[fix-ssr] Injected __ORDERKING_EMBEDDED_ENV__ into ${workerIndexPath}`);
+    }
+
     if (!content.includes('Trapped unhandled SSR exception')) {
       const targetPattern = 'return nitroApp.fetch(cfReq);';
       const replacementPattern = `try {
+			if (env) {
+				Object.assign(processModule.env, env);
+			}
 			return await nitroApp.fetch(cfReq);
 		} catch (workerErr) {
 			console.error("[OrderKing Riders Edge Worker] Trapped unhandled SSR exception:", workerErr);
@@ -71,8 +112,9 @@ for (const targetDir of targets) {
 			});
 		}`;
       content = content.replace(targetPattern, replacementPattern);
-      fs.writeFileSync(workerIndexPath, content);
       console.log(`[fix-ssr] Installed zero-downtime Error 1101 fault-barrier in ${workerIndexPath}`);
     }
+
+    fs.writeFileSync(workerIndexPath, content);
   }
 }
