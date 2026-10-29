@@ -222,7 +222,7 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
   // Wealth & Investments
   {
     id: "digital_gold",
-    title: "24K 99.9% Pure Sovereign Digital Gold",
+    title: "24K 99.9% Pure 24K Digital Gold",
     subtitle: "Buy, sell or store certified gold starting from just ₹10",
     category: "wealth",
     icon: "🌟",

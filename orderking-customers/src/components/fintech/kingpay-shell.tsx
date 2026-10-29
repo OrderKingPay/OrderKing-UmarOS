@@ -124,7 +124,7 @@ export function KingPayShell({
               type="button"
               onClick={onAddMoneyClick}
               className="flex items-center gap-2 rounded-full border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-amber-600/20 to-yellow-600/20 px-3 py-1 text-xs text-white shadow-md hover:border-amber-300 transition group"
-              title="Click to Add Money to Sovereign Wallet"
+              title="Click to Add Money to KingPay Wallet"
             >
               <Wallet className="size-4 shrink-0 text-amber-300 group-hover:scale-110 transition-transform" aria-hidden />
               <div className="flex flex-col text-left leading-tight">

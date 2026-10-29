@@ -48,7 +48,7 @@ type ActiveTab = "food_checkout" | "remittance" | "qr_generator" | "split_bill" 
 // ==========================================
 function UpiQrGeneratorTool() {
   const [vpa, setVpa] = useState("9395065587@ybl");
-  const [payeeName, setPayeeName] = useState("OrderKing Sovereign Desk");
+  const [payeeName, setPayeeName] = useState("OrderKing Official");
   const [amountInr, setAmountInr] = useState<number>(500);
   const [note, setNote] = useState("OrderKing Instant Settlement");
 
@@ -149,7 +149,7 @@ function UpiQrGeneratorTool() {
               type="text"
               value={payeeName}
               onChange={(e) => setPayeeName(e.target.value)}
-              placeholder="e.g. OrderKing Sovereign Desk"
+              placeholder="e.g. OrderKing Official"
               className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-950 text-white text-sm focus:border-amber-400 outline-none"
             />
           </div>
@@ -1377,7 +1377,7 @@ export function KingPayCategoryHub({
         {activeTab === "yield_est" && <YieldEstimatorTool />}
       </div>
 
-      {/* Sovereign Assist Link */}
+      {/* Support Desk Link */}
       <Link
         to="/king-pay/assist"
         className="block rounded-2xl border border-amber-400/50 bg-gradient-to-r from-amber-950/80 via-slate-950 to-amber-900/80 p-4 text-center text-sm font-black text-amber-200 no-underline shadow-[0_0_25px_rgba(245,158,11,0.2)] hover:border-amber-300 hover:text-amber-100 transition group"

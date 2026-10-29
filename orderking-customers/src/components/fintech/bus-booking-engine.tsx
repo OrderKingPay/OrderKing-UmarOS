@@ -476,7 +476,7 @@ export function BusBookingEngine({
         />
       )}
 
-      {/* Sovereign Digital E-Ticket Modal */}
+      {/* Digital E-Ticket Modal */}
       {confirmedTicket && (
         <SovereignETicketModal
           ticket={confirmedTicket}

@@ -39,7 +39,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-950/80 via-yellow-900/60 to-amber-950/80 px-4 py-1.5 shadow-[0_4px_20px_rgba(245,158,11,0.25)] backdrop-blur-md">
             <Crown className="size-4 text-amber-400 animate-pulse" />
             <span className="text-xs font-black uppercase tracking-widest text-amber-200">
-              OrderKing Sovereign Ecosystem
+              OrderKing Platform &amp; Services
             </span>
           </div>
 
@@ -95,7 +95,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
             </div>
             <div className="mt-3">
               <h3 className="text-sm font-black text-white group-hover:text-amber-300 transition-colors">
-                KingPay Sovereign Wallet
+                KingPay Wallet
               </h3>
               <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
                 1-tap QR scan, instant bank settlement, authentic double-entry ledger & 24K gold rewards.
@@ -125,7 +125,7 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
                 VIP Dining Reserve
               </h3>
               <p className="mt-1 text-xs text-slate-300 font-medium leading-snug">
-                Priority table reservations at Michelin-grade & 5-star fine dining destinations with bill discounts.
+                Table reservations at curated dining destinations.
               </p>
             </div>
             <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-rose-400 group-hover:translate-x-1 transition-transform">
@@ -224,9 +224,9 @@ export function UltraLuxuryEcosystemFooter({ className }: { className?: string }
           </div>
         </div>
 
-        {/* ─── SOVEREIGN COPYRIGHT & ATTRIBUTION ─── */}
+        {/* ─── COPYRIGHT & STATUTORY ATTRIBUTION ─── */}
         <div className="text-center text-[11px] text-slate-500 font-medium">
-          © {new Date().getFullYear()} OrderKing Sovereign Group. All Rights Reserved.
+          © {new Date().getFullYear()} OrderKing / KingPay (Orderkingpay, Assam - 788710). All Rights Reserved.
         </div>
       </div>
     </footer>

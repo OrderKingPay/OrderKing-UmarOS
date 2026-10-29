@@ -34,7 +34,7 @@ interface KingPayAccountHubProps {
 }
 
 export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccountHubProps) {
-  const [displayName, setDisplayName] = useState("Sovereign Patron");
+  const [displayName, setDisplayName] = useState("Verified Customer");
   const [phone, setPhone] = useState("+91 98765 43210");
   const [email, setEmail] = useState("patron@orderking.in");
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -96,7 +96,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
                 <h2 className="text-lg font-black text-fg">{displayName}</h2>
                 <span className="inline-flex items-center gap-1 rounded-full bg-[#D4AF37]/10 px-2 py-0.5 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-300 border border-emerald-500/40">
                   <CheckCircle2 className="size-3" />
-                  Verified Sovereign KYC
+                  Verified KYC
                 </span>
               </div>
               <p className="text-xs text-muted mt-0.5">{phone} · {email}</p>

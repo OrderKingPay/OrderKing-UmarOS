@@ -407,7 +407,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "9395065587@ybl" }: { fou
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <QrCode className="h-5 w-5 text-emerald-400" />
-                  <span className="font-bold text-fg text-sm">Sovereign Direct UPI QR Code</span>
+                  <span className="font-bold text-fg text-sm">Direct UPI QR Code</span>
                 </div>
                 <p className="text-xs text-slate-400">
                   Scan with GPay, PhonePe, Paytm, or BHIM. Zero gateway commissions.

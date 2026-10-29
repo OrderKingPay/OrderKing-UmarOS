@@ -125,7 +125,7 @@ export interface SovereignResolveOptions {
 }
 
 /**
- * Sovereign Autonomous Natural Intelligence Answering Heuristics
+ * AI Concierge Answering Heuristics
  * Strictly produces 1-2 sentence replies across 10 regional dialects without paid external APIs.
  * Supports connected ecosystem 86'd stockout filtering and zero-annoyance irritation radar suppression.
  */

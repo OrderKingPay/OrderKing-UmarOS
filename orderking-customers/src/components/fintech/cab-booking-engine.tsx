@@ -315,7 +315,7 @@ export function CabBookingEngine({
         />
       )}
 
-      {/* Sovereign Digital E-Ticket Modal */}
+      {/* Digital E-Ticket Modal */}
       {confirmedTicket && (
         <SovereignETicketModal
           ticket={confirmedTicket}

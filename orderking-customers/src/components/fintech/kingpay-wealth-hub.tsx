@@ -517,10 +517,10 @@ export function KingPayWealthHub() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-400 border border-amber-500/30 mb-2">
-                  <Coins className="size-3.5" /> 24K 99.9% Sovereign Bullion
+                  <Coins className="size-3.5" /> 24K 99.9% Certified Bullion
                 </div>
                 <h3 className="text-2xl font-black text-fg flex items-center gap-2">
-                  24K Sovereign Digital Gold
+                  24K 24K Digital Gold
                   <span className="text-xs font-bold bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
                     BIS Hallmarked
                   </span>
@@ -741,7 +741,7 @@ export function KingPayWealthHub() {
                   </span>
                 </h3>
                 <p className="text-sm text-muted max-w-xl mt-1">
-                  Lock in sovereign-level high yields with RBI-regulated Scheduled Commercial Banks and CRISIL AAA-rated corporate deposit issuers.
+                  Lock in competitive bank yields with RBI-regulated Scheduled Commercial Banks and CRISIL AAA-rated corporate deposit issuers.
                 </p>
               </div>
 

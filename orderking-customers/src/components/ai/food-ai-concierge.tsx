@@ -1057,7 +1057,7 @@ export function FoodAiConcierge({
   const handleActionClick = (action: NonNullable<ChatMessage["actionPayload"]>) => {
     if (action.type === "SUBMIT_DISPUTE_CONSENT") {
       setConsentGiven(true);
-      toast.success("Ticket and evidence authorized for Founder Sovereign Review!");
+      toast.success("Ticket and evidence authorized for Priority Review!");
       setMessages((prev) => [
         ...prev,
         {
