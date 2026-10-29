@@ -270,8 +270,8 @@ async function sendViaFast2SMS(
 }
 
 /**
- * 2. 2Factor.in API
- * Docs: https://2factor.in/v1/API/V1/{API_KEY}/SMS/{PHONE}/{OTP}/AUTOGEN
+ * 2. 2Factor.in Transactional & Voice OTP API
+ * Docs: https://2factor.in/API/V1/{API_KEY}/SMS/{PHONE}/{OTP}
  */
 async function sendVia2Factor(
   cleanPhone: string,
@@ -279,39 +279,66 @@ async function sendVia2Factor(
   apiKey: string,
   timeoutMs: number,
 ): Promise<{ success: boolean; messageId: string; raw?: unknown }> {
-  const template = process.env.TWOFACTOR_OTP_TEMPLATE || "AUTOGEN";
-  const url = `https://2factor.in/v1/API/V1/${encodeURIComponent(apiKey)}/SMS/${cleanPhone}/${otp}/${encodeURIComponent(template)}`;
+  const cleanKey = (apiKey || "").trim().replace(/^["']|["']$/g, "");
+  const template = (process.env.TWOFACTOR_OTP_TEMPLATE || "").trim();
+  const url = template
+    ? `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/${cleanPhone}/${otp}/${encodeURIComponent(template)}`
+    : `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/${cleanPhone}/${otp}`;
 
-  const res = await fetchWithTimeout(
-    url,
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+  let json: { Status?: string; Details?: string } | undefined;
+  try {
+    const res = await fetchWithTimeout(
+      url,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
       },
-    },
-    timeoutMs,
-  );
+      timeoutMs,
+    );
 
-  if (!res.ok) {
-    const errText = await res.text().catch(() => "");
-    throw new Error(`2Factor HTTP ${res.status}: ${errText}`);
+    if (res.ok) {
+      json = (await res.json()) as { Status?: string; Details?: string };
+      if (json.Status === "Success") {
+        return {
+          success: true,
+          messageId: json.Details || `2F-${Date.now()}`,
+          raw: json,
+        };
+      }
+    }
+  } catch (smsErr) {
+    console.warn("[2Factor] SMS attempt failed, attempting Voice OTP fallback:", smsErr);
   }
 
-  const json = (await res.json()) as {
-    Status?: string;
-    Details?: string;
-  };
+  // Automatic Voice Call Failover Corridor (24x7)
+  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/VOICE/${cleanPhone}/${otp}`;
+  try {
+    const vRes = await fetchWithTimeout(
+      voiceUrl,
+      {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      },
+      timeoutMs,
+    );
 
-  if (json.Status !== "Success") {
-    throw new Error(`2Factor delivery error: ${json.Details || json.Status || "Unknown"}`);
+    if (vRes.ok) {
+      const vJson = (await vRes.json()) as { Status?: string; Details?: string };
+      if (vJson.Status === "Success") {
+        return {
+          success: true,
+          messageId: vJson.Details || `2F-VOICE-${Date.now()}`,
+          raw: vJson,
+        };
+      }
+    }
+  } catch (voiceErr) {
+    console.error("[2Factor] Voice OTP fallback failed:", voiceErr);
   }
 
-  return {
-    success: true,
-    messageId: json.Details || `2F-${Date.now()}`,
-    raw: json,
-  };
+  throw new Error(`2Factor delivery error: ${json?.Details || json?.Status || "Carrier gateway timeout"}`);
 }
 
 /**
@@ -532,19 +559,19 @@ export async function sendViaWhatsAppCloudApi(
 export function getAvailableSmsProviders(): TelecomProvider[] {
   const providers: TelecomProvider[] = [];
 
-  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
-    .trim()
-    .replace(/^["']|["']$/g, "");
-  if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
-    providers.push("fast2sms");
-  }
-
   const twoFactorKey =
     process.env.TWOFACTOR_API_KEY ||
     process.env.TWO_FACTOR_API_KEY ||
     process.env.TWO_FACTOR_SMS_KEY;
   if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me")) {
     providers.push("2factor");
+  }
+
+  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
+    providers.push("fast2sms");
   }
 
   const msg91Key = process.env.MSG91_AUTH_KEY;
