@@ -23,7 +23,6 @@ function Login() {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [phoneName, setPhoneName] = useState("");
-  const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
   const [providerNotice, setProviderNotice] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
 
@@ -79,8 +78,8 @@ function Login() {
     }
   }, [otp, otpSent]);
 
-  // Request Phone OTP via SMS or WhatsApp
-  const onSendOtp = async (channel: "sms" | "whatsapp" = "sms") => {
+  // Request Phone OTP via SMS
+  const onSendOtp = async () => {
     const cleanNumber = phone.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
     if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
       setError("Please enter a valid 10-digit Indian mobile number (e.g. 9876543210).");
@@ -92,30 +91,20 @@ function Login() {
     setSuccessMsg(null);
 
     try {
-      // Direct server dispatch via Fast2SMS Quick route ("q") with live balance
       const res = await requestPhoneOtpFn({
         data: {
           phone: cleanNumber,
-          channel,
+          channel: "sms",
           name: phoneName.trim() || undefined,
         },
       });
 
       setOtpSent(true);
-      setWhatsAppUrl(res.whatsAppOtpUrl || null);
       if (res.providerNotice) {
         setProviderNotice(res.providerNotice);
       }
       setResendTimer(30);
-
-      if (channel === "whatsapp") {
-        if (res.whatsAppOtpUrl && typeof window !== "undefined") {
-          window.open(res.whatsAppOtpUrl, "_blank");
-        }
-        setSuccessMsg(`Opening WhatsApp with your verification code for +91-${cleanNumber}.`);
-      } else {
-        setSuccessMsg(`Verification code sent via SMS to +91-${cleanNumber}.`);
-      }
+      setSuccessMsg(`Verification code sent via SMS to +91-${cleanNumber}.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to dispatch verification code.");
     } finally {
@@ -323,16 +312,6 @@ function Login() {
                           "Send SMS Verification Code"
                         )}
                       </Button>
-
-                      <Button
-                        type="button"
-                        disabled={busy || phone.replace(/\D/g, "").length !== 10}
-                        className="w-full h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tracking-wide shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-2"
-                        onClick={() => void onSendOtp("whatsapp")}
-                      >
-                        <span>💬</span>
-                        <span>Send OTP via WhatsApp</span>
-                      </Button>
                     </div>
                   </>
                 ) : (
@@ -366,35 +345,6 @@ function Login() {
                         className="text-center font-mono tracking-widest text-2xl font-black rounded-2xl border-2 border-amber-400 bg-amber-50/30 text-stone-900 h-14 focus:bg-white focus:border-amber-600"
                       />
                     </div>
-
-
-                    {/* Instant WhatsApp Delivery Action */}
-                    {whatsAppUrl ? (
-                      <a
-                        href={whatsAppUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition no-underline cursor-pointer active:scale-95"
-                      >
-                        <span className="text-sm">💬</span>
-                        <span>Open WhatsApp to View Verification Code</span>
-                      </a>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={busy || resendTimer > 0}
-                        onClick={() => void onSendOtp("whatsapp")}
-                        className="w-full h-11 rounded-2xl border-emerald-500/40 bg-emerald-950/20 text-emerald-400 hover:bg-emerald-950/40 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
-                      >
-                        <span className="text-sm">💬</span>
-                        <span>
-                          {resendTimer > 0
-                            ? `Resend via WhatsApp in ${resendTimer}s`
-                            : "Deliver OTP to WhatsApp"}
-                        </span>
-                      </Button>
-                    )}
 
                     <Button
                       type="button"
