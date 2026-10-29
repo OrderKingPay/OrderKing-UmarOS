@@ -746,9 +746,7 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     }
 
     const record = riderOtpStore.get(cleanPhone);
-    // In production, bypass is strictly prohibited. Permitted strictly in automated test/dev suites.
-    const isMasterBypass = process.env.NODE_ENV !== "production" && cleanOtp === "123456";
-    const isMatched = (record && record.otp === cleanOtp && record.expiresAt > Date.now()) || isMasterBypass;
+    const isMatched = record && record.otp === cleanOtp && record.expiresAt > Date.now();
 
     if (!isMatched) {
       if (record && record.expiresAt <= Date.now()) {

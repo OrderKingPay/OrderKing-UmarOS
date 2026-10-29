@@ -24,7 +24,6 @@ function Login() {
   const [otpSent, setOtpSent] = useState(false);
   const [phoneName, setPhoneName] = useState("");
   const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
-  const [debugOtpCode, setDebugOtpCode] = useState<string | null>(null);
   const [providerNotice, setProviderNotice] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
 
@@ -104,9 +103,6 @@ function Login() {
 
       setOtpSent(true);
       setWhatsAppUrl(res.whatsAppOtpUrl || null);
-      if (res.debugOtp) {
-        setDebugOtpCode(res.debugOtp);
-      }
       if (res.providerNotice) {
         setProviderNotice(res.providerNotice);
       }
@@ -348,7 +344,6 @@ function Login() {
                         onClick={() => {
                           setOtpSent(false);
                           setOtp("");
-                          setDebugOtpCode(null);
                         }}
                       >
                         Change Number

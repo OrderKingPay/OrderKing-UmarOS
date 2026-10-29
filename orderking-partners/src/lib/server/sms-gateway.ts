@@ -1028,7 +1028,6 @@ export async function handleSendPartnerOtp(data: {
     whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
     provider: dispatchResult.provider,
     providerNotice: dispatchResult.providerNotice,
-    debugOtp: process.env.NODE_ENV !== "production" ? otp : undefined,
   };
 }
 
@@ -1047,9 +1046,7 @@ export async function handleVerifyPartnerOtp(data: {
   }
 
   const record = partnerOtpStore.get(cleanPhone);
-  const isMasterBypass = process.env.NODE_ENV !== "production" && cleanOtp === "123456";
-  const isMatched =
-    (record && record.otp === cleanOtp && record.expiresAt > Date.now()) || isMasterBypass;
+  const isMatched = record && record.otp === cleanOtp && record.expiresAt > Date.now();
 
   if (!isMatched) {
     if (record && record.expiresAt <= Date.now()) {

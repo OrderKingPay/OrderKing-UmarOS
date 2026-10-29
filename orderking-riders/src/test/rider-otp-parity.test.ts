@@ -120,11 +120,12 @@ describe("Rider Fleet & OTP Parity Suite (https://rider.orderkingpay.com/login)"
       expect(sendFnBody).toContain('whatsAppOtpUrl: channel === "whatsapp" ? dispatchResult.whatsAppOtpUrl : undefined');
     });
 
-    it("strictly prohibits master bypass OTP in production environment", () => {
+    it("strictly prohibits master bypass OTP across all environments (zero-mock directive)", () => {
       const riderFnsPath = path.resolve(__dirname, "../lib/server/rider-fns.ts");
       const riderFnsSource = fs.readFileSync(riderFnsPath, "utf-8");
 
-      expect(riderFnsSource).toContain('process.env.NODE_ENV !== "production" && cleanOtp === "123456"');
+      expect(riderFnsSource).not.toContain('cleanOtp === "123456"');
+      expect(riderFnsSource).not.toContain("isMasterBypass");
     });
     it("synchronizes session via Better Auth client signIn and fallback signUp", () => {
       expect(loginSource).toContain("authClient.signIn.email");
@@ -139,7 +140,6 @@ describe("Rider Fleet & OTP Parity Suite (https://rider.orderkingpay.com/login)"
       const riderFnsSource = fs.readFileSync(riderFnsPath, "utf-8");
 
       expect(riderFnsSource).toContain('destination: isVerified ? "/" : "/onboarding"');
-      expect(riderFnsSource).toContain("cleanOtp === \"123456\"");
     });
   });
 

@@ -129,14 +129,13 @@ describe("Partner Phone Authentication & Zero-Lockout Architecture Audit", () =>
       ).rejects.toThrow(/Invalid verification code/);
     });
 
-    it("supports test environment master bypass (123456)", async () => {
-      const verifyRes = await handleVerifyPartnerOtp({
-        phone: testPhone,
-        otp: "123456",
-      });
-
-      expect(verifyRes.success).toBe(true);
-      expect(verifyRes.email).toBe(`${testPhone}@partner.orderking.in`);
+    it("strictly rejects master bypass or fake OTP (123456) in zero-mock architecture", async () => {
+      await expect(
+        handleVerifyPartnerOtp({
+          phone: testPhone,
+          otp: "123456",
+        }),
+      ).rejects.toThrow(/Invalid verification code/);
     });
 
     it("dispatches via Fast2SMS Smart OTP corridor consuming existing balance when FAST2SMS_OTP_ID is set", async () => {
