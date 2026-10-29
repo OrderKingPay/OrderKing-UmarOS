@@ -128,6 +128,33 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
       expect(options.method).toBe("POST");
       expect(options.headers.authorization).toBe("mock_f2s_key_123");
       const parsedBody = JSON.parse(options.body);
+      expect(parsedBody.route).toBe("q");
+      expect(parsedBody.message).toContain("778899");
+      expect(parsedBody.numbers).toBe("9876543210");
+    });
+
+    it("dispatches OTP route payload when FAST2SMS_ROUTE is otp", async () => {
+      process.env.FAST2SMS_API_KEY = "mock_f2s_key_123";
+      process.env.FAST2SMS_ROUTE = "otp";
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          return: true,
+          request_id: "REQ_F2S_OTP_123",
+          message: ["SMS sent successfully."],
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: "9876543210",
+        otp: "778899",
+      });
+
+      expect(res.success).toBe(true);
+      const [, options] = mockFetch.mock.calls[0];
+      const parsedBody = JSON.parse(options.body);
       expect(parsedBody.route).toBe("otp");
       expect(parsedBody.variables_values).toBe("778899");
       expect(parsedBody.numbers).toBe("9876543210");

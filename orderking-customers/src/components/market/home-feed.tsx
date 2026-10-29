@@ -17,6 +17,12 @@ import {
   ChevronRight,
   CloudRain,
   Sparkles,
+  Plane,
+  Train,
+  CreditCard,
+  Package,
+  GraduationCap,
+  Crown,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { LocationDialog } from "@/components/market/location-dialog";
@@ -664,31 +670,163 @@ export function HomeFeed({
                 </Button>
               </div>
             ) : (
-              <div
-                role="status"
-                data-testid="food-availability-note"
-                className="rounded-3xl border border-stone-200 bg-white p-8 sm:p-12 text-center shadow-xs space-y-4 max-w-lg mx-auto my-6"
-              >
-                <div className="flex size-16 items-center justify-center rounded-full bg-red-50 text-[#E23744] mx-auto">
-                  <MapPin className="size-8 text-[#E23744]" />
+              <div className="space-y-6">
+                <div
+                  role="status"
+                  data-testid="food-availability-note"
+                  className="rounded-2xl border border-stone-200/90 bg-white p-6 text-center shadow-xs space-y-4 max-w-md mx-auto"
+                >
+                  <div className="flex size-12 items-center justify-center rounded-full bg-red-50 text-[#E23744] mx-auto">
+                    <MapPin className="size-6 text-[#E23744]" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-base font-bold text-gray-900">
+                      Food delivery is not available in your location.
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      If this isn't where you are right now, you can update your location to check delivery. Even without food delivery here, all other KingPay services are active and ready to use.
+                    </p>
+                  </div>
+                  <div>
+                    <Button
+                      type="button"
+                      onClick={() => setLocDialogOpen(true)}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#E23744] hover:bg-[#cf2f3c] text-white font-bold text-xs px-4 py-2 shadow-xs transition active:scale-95 cursor-pointer"
+                    >
+                      <MapPin className="size-3.5" />
+                      <span>Change Location</span>
+                    </Button>
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <h3 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
-                    No restaurants delivering here yet
-                  </h3>
-                  <p className="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto leading-relaxed font-medium">
-                    We haven't expanded delivery to this address right now. Change your delivery location to explore restaurants near you.
-                  </p>
-                </div>
-                <div className="pt-2">
-                  <Button
-                    type="button"
-                    onClick={() => setLocDialogOpen(true)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#E23744] hover:bg-[#cf2f3c] text-white font-bold text-sm px-6 py-2.5 shadow-sm transition active:scale-95 cursor-pointer"
-                  >
-                    <MapPin className="size-4" />
-                    <span>Change Location</span>
-                  </Button>
+
+                {/* Other KingPay services */}
+                <div className="space-y-3">
+                  <div className="text-center">
+                    <h4 className="text-sm font-bold text-gray-900">
+                      Other services available in your area
+                    </h4>
+                    <p className="text-xs text-gray-500">
+                      You can access all sovereign KingPay financial, travel, courier, and study services below anytime.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
+                    {/* KingPay Wallet / UPI & Bills */}
+                    <Link
+                      to="/kingpay"
+                      className="group flex flex-col justify-between p-3 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-xs transition active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                          <CreditCard className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+                          UPI
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">KingPay Wallet</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">UPI &amp; Bills</span>
+                      </div>
+                    </Link>
+
+                    {/* Send Packages */}
+                    <Link
+                      to="/parcel"
+                      className="group flex flex-col justify-between p-3 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-xs transition active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+                          <Package className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded-md">
+                          Courier
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">Send Packages</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">Door-to-door</span>
+                      </div>
+                    </Link>
+
+                    {/* Flights & Stays */}
+                    <Link
+                      to="/travel"
+                      className="group flex flex-col justify-between p-3 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-xs transition active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600">
+                          <Plane className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded-md">
+                          Travel
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">Flights &amp; Stays</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">₹0 fee</span>
+                      </div>
+                    </Link>
+
+                    {/* Trains */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "trains" }}
+                      className="group flex flex-col justify-between p-3 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-xs transition active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                          <Train className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md">
+                          IRCTC
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">Trains &amp; PNR</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">Live status</span>
+                      </div>
+                    </Link>
+
+                    {/* Tours & Yatra */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "pilgrimage" }}
+                      className="group flex flex-col justify-between p-3 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-xs transition active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                          <Crown className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md">
+                          Yatra
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">Tours &amp; Yatra</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">Umrah &amp; Kashi</span>
+                      </div>
+                    </Link>
+
+                    {/* AI STEM Tutor */}
+                    <Link
+                      to="/tutor"
+                      className="group flex flex-col justify-between p-3 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-xs transition active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
+                          <GraduationCap className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded-md">
+                          AI Tutor
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">AI Study Solver</span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">CBSE &amp; Boards</span>
+                      </div>
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}

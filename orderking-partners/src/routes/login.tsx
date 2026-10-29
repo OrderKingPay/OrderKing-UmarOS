@@ -10,11 +10,6 @@ import { platformConfig } from "@/lib/platform-config";
 import { useMerchantBranding, useCommissionTokens } from "@orderking/ui";
 import { cn } from "@/lib/utils";
 import {
-  createInvisibleRecaptcha,
-  sendFirebasePhoneOtp,
-  type ConfirmationResult,
-} from "@/lib/auth/firebase";
-import {
   sendPartnerOtpFn,
   verifyPartnerOtpFn,
   sanitizeIndianPhone,
@@ -81,12 +76,10 @@ function Login() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const [activeFallbackOtp, setActiveFallbackOtp] = useState<string | null>(null);
   const [providerNotice, setProviderNotice] = useState<string | null>(null);
-  const recaptchaVerifierRef = useRef<any>(null);
 
   // Password State
   const [identifier, setIdentifier] = useState("");
@@ -168,45 +161,13 @@ function Login() {
     setError(null);
 
     try {
-      // 1. If WhatsApp channel requested, trigger direct server WhatsApp dispatch
-      if (channel === "whatsapp") {
-        const res = await sendPartnerOtpFn({
-          data: { phone: cleanPhone, channel: "whatsapp" },
-        });
-        setWhatsAppUrl(res.whatsAppOtpUrl || null);
-        if (res.debugOtp) setActiveFallbackOtp(res.debugOtp);
-        if (res.providerNotice) setProviderNotice(res.providerNotice);
-        setOtpStep("code");
-        setCountdown(30);
-        setCanResend(false);
-        // Sovereign direct delivery to user WhatsApp inbox
-        return;
-      }
-
-      // 2. Try Firebase Phone Auth client-side
-      let firebaseSucceeded = false;
-      try {
-        if (typeof window !== "undefined") {
-          if (!recaptchaVerifierRef.current) {
-            recaptchaVerifierRef.current = createInvisibleRecaptcha("recaptcha-container");
-          }
-          const conf = await sendFirebasePhoneOtp(cleanPhone, recaptchaVerifierRef.current);
-          setConfirmationResult(conf);
-          firebaseSucceeded = true;
-        }
-      } catch (fbErr: any) {
-        console.warn("[Partner Auth] Firebase Phone Auth unavailable or quota exceeded. Falling back to Smart OTP / Fast2SMS:", fbErr);
-      }
-
-      // 3. If Firebase failed (e.g. 10k monthly quota exhausted or reCAPTCHA blocked), invoke server Fast2SMS Smart OTP
-      if (!firebaseSucceeded) {
-        const res = await sendPartnerOtpFn({
-          data: { phone: cleanPhone, channel: "sms" },
-        });
-        setWhatsAppUrl(res.whatsAppOtpUrl || null);
-        if (res.debugOtp) setActiveFallbackOtp(res.debugOtp);
-        if (res.providerNotice) setProviderNotice(res.providerNotice);
-      }
+      // Direct server dispatch via Fast2SMS Quick Route "q" or Meta WhatsApp API
+      const res = await sendPartnerOtpFn({
+        data: { phone: cleanPhone, channel },
+      });
+      setWhatsAppUrl(res.whatsAppOtpUrl || null);
+      if (res.debugOtp) setActiveFallbackOtp(res.debugOtp);
+      if (res.providerNotice) setProviderNotice(res.providerNotice);
 
       setOtpStep("code");
       setCountdown(30);
@@ -230,16 +191,7 @@ function Login() {
     setError(null);
 
     try {
-      // 1. If confirmationResult from Firebase is present, attempt client verification
-      if (confirmationResult) {
-        try {
-          await confirmationResult.confirm(code);
-        } catch (fbErr) {
-          console.warn("[Partner Auth] Firebase verification mismatch, checking server fallback:", fbErr);
-        }
-      }
-
-      // 2. Validate OTP with server store and synchronize Better-Auth credentials
+      // Validate OTP with server store and synchronize Better-Auth credentials
       const verifyRes = await verifyPartnerOtpFn({
         data: { phone: cleanPhone, otp: code },
       });
@@ -756,8 +708,6 @@ function Login() {
           </div>
         </div>
 
-        {/* Hidden reCAPTCHA anchor for invisible Firebase verification */}
-        <div id="recaptcha-container" />
 
         {/* Key Partner Highlights */}
         <div className="grid grid-cols-2 gap-3 text-xs text-slate-400">

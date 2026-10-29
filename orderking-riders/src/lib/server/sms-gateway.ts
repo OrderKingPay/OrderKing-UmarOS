@@ -152,7 +152,7 @@ async function sendViaFast2SMS(
     };
   }
 
-  const route = process.env.FAST2SMS_ROUTE || "otp";
+  const route = (process.env.FAST2SMS_ROUTE || "q").trim().replace(/^["']|["']$/g, "").toLowerCase();
   const url = "https://www.fast2sms.com/dev/bulkV2";
 
   let body: Record<string, unknown>;

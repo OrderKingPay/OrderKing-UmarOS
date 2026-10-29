@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
 import { Wordmark } from "@/components/brand/wordmark";
 import { Button } from "@/components/ui/button";
@@ -93,6 +93,7 @@ function Login() {
     setSuccessMsg(null);
 
     try {
+      // Direct server dispatch via Fast2SMS Quick route ("q") with live balance
       const res = await requestPhoneOtpFn({
         data: {
           phone: cleanNumber,
@@ -112,15 +113,9 @@ function Login() {
       setResendTimer(30);
 
       if (channel === "whatsapp") {
-        setSuccessMsg(
-          res.providerNotice ||
-            `Verification code sent to your WhatsApp inbox (+91-${cleanNumber}). Valid for 10 minutes.`
-        );
+        setSuccessMsg(`Verification code sent to WhatsApp (+91-${cleanNumber}).`);
       } else {
-        setSuccessMsg(
-          res.providerNotice ||
-            `SMS OTP sent successfully to +91-${cleanNumber}. Valid for 10 minutes.`
-        );
+        setSuccessMsg(`Verification code sent via SMS to +91-${cleanNumber}.`);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to dispatch verification code.");
@@ -215,11 +210,8 @@ function Login() {
         {/* Golden ambient radial flare */}
         <div className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-gradient-to-br from-amber-400/25 to-yellow-300/15 blur-2xl" />
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center">
           <Wordmark />
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950">
-            🔒 Account Access
-          </span>
         </div>
 
         <h1 className="mt-5 font-display text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
@@ -262,6 +254,7 @@ function Login() {
                 ✉️ Email & Password
               </button>
             </div>
+
 
             {/* Notifications */}
             {error ? (
@@ -342,19 +335,12 @@ function Login() {
                         <span>Send OTP via WhatsApp</span>
                       </Button>
                     </div>
-
-                    <div className="rounded-xl bg-amber-50/60 border border-amber-200/70 p-2.5 text-[11px] text-stone-600 flex items-start gap-2">
-                      <span className="text-amber-600 text-sm">🔒</span>
-                      <span>
-                        Fast2SMS verified gateway active across Jio, Airtel, Vi, and BSNL. Standard SMS rates apply.
-                      </span>
-                    </div>
                   </>
                 ) : (
                   <>
-                    <div className="space-y-2 text-center">
+                    <div className="space-y-1 text-center">
                       <p className="text-xs text-stone-600">
-                        Code sent to <span className="font-black text-stone-900">+91-{phone}</span>
+                        Code sent to <span className="font-bold text-stone-900">+91-{phone}</span>
                       </p>
                       <button
                         type="button"
@@ -365,23 +351,11 @@ function Login() {
                           setDebugOtpCode(null);
                         }}
                       >
-                        Change Number ✏️
+                        Change Number
                       </button>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[11px] font-black uppercase tracking-wider text-stone-500 text-center block">
-                        Enter 6-Digit OTP
-                      </label>
-                      {/* WebOTP 1-Tap Auto-Detection Listening Indicator */}
-                      <div className="flex items-center justify-center gap-2 rounded-2xl bg-amber-500/10 border border-amber-400/30 px-3 py-2 text-xs text-amber-950 font-bold">
-                        <span className="relative flex size-2">
-                          <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-                        </span>
-                        <span>Listening for incoming SMS OTP (WebOTP 1-Tap Auto-Fill)</span>
-                      </div>
-
                       <Input
                         type="text"
                         inputMode="numeric"
@@ -395,27 +369,19 @@ function Login() {
                       />
                     </div>
 
-                    {/* Prominent 1-Tap Auto-Fill Button if verification is pending */}
+                    {/* Auto-Fill button if SMS code was generated */}
                     {debugOtpCode ? (
-                      <div className="space-y-2">
-                        {providerNotice ? (
-                          <div className="rounded-xl border border-amber-300 bg-amber-50 p-2.5 text-[11px] text-amber-900 leading-relaxed font-medium">
-                            {providerNotice}
-                          </div>
-                        ) : null}
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            setOtp(debugOtpCode);
-                            setSuccessMsg(`Verification code ${debugOtpCode} auto-filled!`);
-                            toast.success("Verification code auto-filled!");
-                          }}
-                          className="w-full h-11 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border-2 border-amber-400 text-amber-950 font-black text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
-                        >
-                          <span className="text-sm">🔑</span>
-                          <span>Auto-Fill Verification Code ({debugOtpCode})</span>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setOtp(debugOtpCode);
+                          setSuccessMsg("Verification code auto-filled.");
+                          toast.success("Code auto-filled");
+                        }}
+                        className="w-full h-10 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 border border-amber-300"
+                      >
+                        <span>🔑 Auto-Fill Code ({debugOtpCode})</span>
+                      </Button>
                     ) : null}
 
                     {/* Sovereign WhatsApp Dispatch Action */}
@@ -549,13 +515,6 @@ function Login() {
                   {p.idp === "google" ? `🌐 ${t("auth.google")}` : `✖️ ${t("auth.x")}`}
                 </Button>
               ))}
-            </div>
-
-            <div className="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/70 to-yellow-50/40 p-3 text-xs text-amber-950 shadow-2xs flex items-center gap-2">
-              <span className="text-base">🛡️</span>
-              <p className="text-stone-600 text-[11px] leading-relaxed">
-                Single Unified Identity across UmarOS: Customer, Partner &amp; Rider portals with instant OTP.
-              </p>
             </div>
           </div>
         ) : (

@@ -157,7 +157,7 @@ async function sendViaFast2SMS(
     };
   }
 
-  const route = (process.env.FAST2SMS_ROUTE || "otp").trim().replace(/^["']|["']$/g, "").toLowerCase();
+  const route = (process.env.FAST2SMS_ROUTE || "q").trim().replace(/^["']|["']$/g, "").toLowerCase();
   const url = "https://www.fast2sms.com/dev/bulkV2";
 
   let body: Record<string, unknown>;
@@ -217,6 +217,42 @@ async function sendViaFast2SMS(
   };
 
   if (!json.return) {
+    // If route was 'otp' and hit website verification error (996), automatically failover to Quick route ('q')
+    if (json.status_code === 996 && route === "otp") {
+      try {
+        const qRes = await fetchWithTimeout(
+          url,
+          {
+            method: "POST",
+            headers: {
+              authorization: cleanKey,
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              route: "q",
+              message: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Do not share with anyone.`,
+              language: "english",
+              numbers: cleanPhone,
+            }),
+          },
+          timeoutMs,
+        );
+        if (qRes.ok) {
+          const qJson = (await qRes.json()) as { return?: boolean; request_id?: string };
+          if (qJson.return) {
+            return {
+              success: true,
+              messageId: qJson.request_id || `F2S-Q-${Date.now()}`,
+              raw: qJson,
+            };
+          }
+        }
+      } catch {
+        // Fall through to error reporting below
+      }
+    }
+
     let msg = Array.isArray(json.message) ? json.message.join(", ") : "Fast2SMS rejected request";
     if (json.status_code === 996) {
       msg = "Fast2SMS website verification required: Log in to fast2sms.com -> OTP Message menu and add orderkingpay.com";
