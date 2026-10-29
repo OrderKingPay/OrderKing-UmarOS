@@ -369,20 +369,6 @@ function Login() {
                       />
                     </div>
 
-                    {/* Auto-Fill button if SMS code was generated */}
-                    {debugOtpCode ? (
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          setOtp(debugOtpCode);
-                          setSuccessMsg("Verification code auto-filled.");
-                          toast.success("Code auto-filled");
-                        }}
-                        className="w-full h-10 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 border border-amber-300"
-                      >
-                        <span>🔑 Auto-Fill Code ({debugOtpCode})</span>
-                      </Button>
-                    ) : null}
 
                     {/* Sovereign WhatsApp Dispatch Action */}
                     <Button
