@@ -17,6 +17,12 @@ import {
   ChevronRight,
   CloudRain,
   Sparkles,
+  Plane,
+  Train,
+  CreditCard,
+  Package,
+  GraduationCap,
+  Compass,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { LocationDialog } from "@/components/market/location-dialog";
@@ -585,19 +591,21 @@ export function HomeFeed({
 
       {/* RESTAURANTS GRID */}
       <section aria-label="Restaurants Grid" className="pt-1">
-        <div className="flex items-center justify-between mb-2.5">
-          <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
-            {selectedCategory
-              ? `Best in ${selectedCategory}`
-              : dietFilter === "veg"
-              ? "Pure vegetarian restaurants"
-              : location?.zoneName && location.zoneName !== "Current GPS Position"
-              ? `Restaurants in ${location.zoneName}`
-              : location?.cityName && location.cityName !== "Locating..."
-              ? `Restaurants in ${location.cityName}`
-              : "Restaurants near you"}
-          </h2>
-        </div>
+        {filteredRestaurants.length > 0 && (
+          <div className="flex items-center justify-between mb-2.5">
+            <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
+              {selectedCategory
+                ? `Best in ${selectedCategory}`
+                : dietFilter === "veg"
+                ? "Pure vegetarian restaurants"
+                : location?.zoneName && location.zoneName !== "Current GPS Position"
+                ? `Restaurants in ${location.zoneName}`
+                : location?.cityName && location.cityName !== "Locating..."
+                ? `Restaurants in ${location.cityName}`
+                : "Restaurants near you"}
+            </h2>
+          </div>
+        )}
 
         {list.isPending && !list.data ? (
           /* Warm Ivory/Amber Gradient Shimmer Skeletons */
@@ -664,31 +672,160 @@ export function HomeFeed({
                 </Button>
               </div>
             ) : (
-              <div
-                role="status"
-                data-testid="food-availability-note"
-                className="rounded-3xl border border-stone-200 bg-white p-8 sm:p-12 text-center shadow-xs space-y-4 max-w-lg mx-auto my-6"
-              >
-                <div className="flex size-16 items-center justify-center rounded-full bg-red-50 text-[#E23744] mx-auto">
-                  <MapPin className="size-8 text-[#E23744]" />
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
-                    No restaurants delivering here yet
-                  </h3>
-                  <p className="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto leading-relaxed font-medium">
-                    We haven't expanded delivery to this address right now. Change your delivery location to explore restaurants near you.
+              <div className="space-y-6">
+                <div
+                  role="status"
+                  data-testid="food-availability-note"
+                  className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 text-center shadow-xs space-y-3.5 max-w-md mx-auto"
+                >
+                  <div className="flex size-12 items-center justify-center rounded-full bg-red-50 text-[#E23744] mx-auto">
+                    <MapPin className="size-6 text-[#E23744]" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-800 leading-snug">
+                    Food delivery is currently not available at this address. You may change your delivery location.
                   </p>
+                  <div>
+                    <Button
+                      type="button"
+                      onClick={() => setLocDialogOpen(true)}
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#E23744] hover:bg-[#cf2f3c] text-white font-bold text-xs px-5 py-2.5 shadow-xs transition active:scale-95 cursor-pointer"
+                    >
+                      <MapPin className="size-3.5" />
+                      <span>Change Location</span>
+                    </Button>
+                  </div>
                 </div>
-                <div className="pt-2">
-                  <Button
-                    type="button"
-                    onClick={() => setLocDialogOpen(true)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#E23744] hover:bg-[#cf2f3c] text-white font-bold text-sm px-6 py-2.5 shadow-sm transition active:scale-95 cursor-pointer"
-                  >
-                    <MapPin className="size-4" />
-                    <span>Change Location</span>
-                  </Button>
+
+                {/* Demand-Driven Authentic KingPay Services Active in This Location */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between px-1">
+                    <div>
+                      <h4 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
+                        Services available in {location?.cityName && location.cityName !== "Locating..." ? location.cityName : "your location"}
+                      </h4>
+                      <p className="text-xs text-gray-500 font-medium">
+                        Instant digital services active across all regions via KingPay
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
+                    {/* Flights & Hotels */}
+                    <Link
+                      to="/travel"
+                      className="group flex flex-col justify-between p-3.5 rounded-2xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-md transition-all active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600 group-hover:scale-105 transition-transform">
+                          <Plane className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded-md">
+                          Airfares
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">Flights &amp; Hotels</span>
+                        <span className="text-[11px] text-gray-500 block mt-0.5">Official rates</span>
+                      </div>
+                    </Link>
+
+                    {/* Trains & Live PNR */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "trains" }}
+                      className="group flex flex-col justify-between p-3.5 rounded-2xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-md transition-all active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 group-hover:scale-105 transition-transform">
+                          <Train className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md">
+                          IRCTC
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">Trains &amp; PNR</span>
+                        <span className="text-[11px] text-gray-500 block mt-0.5">Live status</span>
+                      </div>
+                    </Link>
+
+                    {/* KingPay UPI & Utility Bills */}
+                    <Link
+                      to="/kingpay"
+                      className="group flex flex-col justify-between p-3.5 rounded-2xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-md transition-all active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
+                          <CreditCard className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+                          UPI
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">UPI &amp; Bills</span>
+                        <span className="text-[11px] text-gray-500 block mt-0.5">0% surcharge</span>
+                      </div>
+                    </Link>
+
+                    {/* Send Packages / Courier */}
+                    <Link
+                      to="/parcel"
+                      className="group flex flex-col justify-between p-3.5 rounded-2xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-md transition-all active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600 group-hover:scale-105 transition-transform">
+                          <Package className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded-md">
+                          Courier
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">Send Packages</span>
+                        <span className="text-[11px] text-gray-500 block mt-0.5">Door-to-door</span>
+                      </div>
+                    </Link>
+
+                    {/* AI Academic & STEM Tutor */}
+                    <Link
+                      to="/tutor"
+                      className="group flex flex-col justify-between p-3.5 rounded-2xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-md transition-all active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-purple-50 text-purple-600 group-hover:scale-105 transition-transform">
+                          <GraduationCap className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded-md">
+                          24/7 AI
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">AI Study Solver</span>
+                        <span className="text-[11px] text-gray-500 block mt-0.5">CBSE &amp; Boards</span>
+                      </div>
+                    </Link>
+
+                    {/* Tours & Pilgrimage */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "pilgrimage" }}
+                      className="group flex flex-col justify-between p-3.5 rounded-2xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-md transition-all active:scale-95 no-underline"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 group-hover:scale-105 transition-transform">
+                          <Compass className="size-4" />
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md">
+                          Yatra
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block leading-snug">Tours &amp; Yatra</span>
+                        <span className="text-[11px] text-gray-500 block mt-0.5">Umrah &amp; Kashi</span>
+                      </div>
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}
