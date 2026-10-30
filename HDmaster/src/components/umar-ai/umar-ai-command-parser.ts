@@ -117,7 +117,7 @@ export function parseNaturalLanguageConfigCommand(
         {
           label: "Partner Mobile OTP Login",
           description: "Instant stateless OTP login with automatic verification fallback",
-          url: "https://www.google.com/search?q=https://partner.orderkingpay.com/login",
+          url: "https://partner.orderkingpay.com/login",
           badge: "AUTH",
         },
       ]
@@ -209,3 +209,4 @@ export function parseNaturalLanguageConfigCommand(
     ]
   );
 }
+
