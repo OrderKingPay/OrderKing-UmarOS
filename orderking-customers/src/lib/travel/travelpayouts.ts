@@ -155,7 +155,7 @@ export function resolveWhiteLabelWidgetConfig(env: TravelpayoutsEnvConfig): {
     reasonIfDisabled: null,
   };
 }
-export const AUTHORITATIVE_SUPPLIER_CATALOG: ReadonlyArray&lt;SupplierPolicyDisclosure&gt; = [
+export const AUTHORITATIVE_SUPPLIER_CATALOG: ReadonlyArray<SupplierPolicyDisclosure> = [
   {
     supplierId: 'aviasales-tp',
     supplierName: 'Aviasales (Travelpayouts Project Orderkingpay · Marker 589554)',
@@ -223,3 +223,4 @@ export const AUTHORITATIVE_SUPPLIER_CATALOG: ReadonlyArray&lt;SupplierPolicyDisc
     ctaLabel: 'Continue to partner to book and pay',
   },
 ];
+

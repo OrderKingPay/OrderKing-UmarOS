@@ -15,7 +15,7 @@ interface TravelpayoutsWhiteLabelProps {
   hasTrackingConsent: boolean;
   onGrantConsent: () => void;
 }
-export const TravelpayoutsWhiteLabel: React.FC&lt;TravelpayoutsWhiteLabelProps&gt; = ({
+export const TravelpayoutsWhiteLabel: React.FC<TravelpayoutsWhiteLabelProps> = ({
   wlId,
   resultsUrl,
   hasTrackingConsent,
@@ -32,7 +32,7 @@ export const TravelpayoutsWhiteLabel: React.FC&lt;TravelpayoutsWhiteLabelProps&g
       ...(window.TPWL_CONFIGURATION || {}),
       ...(resultsUrl ? { resultsURL: resultsUrl } : {}),
     };
-    const existing = document.querySelector&lt;HTMLScriptElement&gt;(
+    const existing = document.querySelector<HTMLScriptElement>(
       `script[src="${config.scriptSrc}"]`
     );
     if (existing) {
@@ -52,54 +52,55 @@ export const TravelpayoutsWhiteLabel: React.FC&lt;TravelpayoutsWhiteLabelProps&g
   }, [config.enabled, config.scriptSrc, hasTrackingConsent, resultsUrl]);
   if (!hasTrackingConsent) {
     return (
-      &lt;div className=&quot;rounded-2xl border border-amber-500/30 bg-slate-900/90 p-4 text-slate-100&quot;&gt;
-        &lt;p className=&quot;text-sm font-semibold text-amber-300&quot;&gt;
+      <div className="rounded-2xl border border-amber-500/30 bg-slate-900/90 p-4 text-slate-100">
+        <p className="text-sm font-semibold text-amber-300">
           Partner Search &amp; Cookie Consent Required
-        &lt;/p&gt;
-        &lt;p className=&quot;mt-1 text-xs text-slate-300&quot;&gt;
+        </p>
+        <p className="mt-1 text-xs text-slate-300">
           In-page flight search loads the official Travelpayouts White Label widget (project{' '}
-          &lt;span className=&quot;font-mono&quot;&gt;{TRAVELPAYOUTS_PROJECT_NAME}&lt;/span&gt;, marker{' '}
-          &lt;span className=&quot;font-mono&quot;&gt;{TRAVELPAYOUTS_MARKER}&lt;/span&gt;).
-        &lt;/p&gt;
-        &lt;button
-          type=&quot;button&quot;
+          <span className="font-mono">{TRAVELPAYOUTS_PROJECT_NAME}</span>, marker{' '}
+          <span className="font-mono">{TRAVELPAYOUTS_MARKER}</span>).
+        </p>
+        <button
+          type="button"
           onClick={onGrantConsent}
-          className=&quot;mt-3 rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-amber-400&quot;
-        &gt;
+          className="mt-3 rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-amber-400"
+        >
           Allow Partner Search Widget
-        &lt;/button&gt;
-      &lt;/div&gt;
+        </button>
+      </div>
     );
   }
   if (!config.enabled) {
     return (
-      &lt;div
-        role=&quot;status&quot;
-        className=&quot;rounded-2xl border border-slate-700 bg-slate-900/70 p-4 text-xs text-slate-300&quot;
-      &gt;
-        &lt;p className=&quot;font-semibold text-slate-200&quot;&gt;
+      <div
+        role="status"
+        className="rounded-2xl border border-slate-700 bg-slate-900/70 p-4 text-xs text-slate-300"
+      >
+        <p className="font-semibold text-slate-200">
           Verified Partner Deep-Link Search Active (Marker {TRAVELPAYOUTS_MARKER})
-        &lt;/p&gt;
-        &lt;p className=&quot;mt-1 text-slate-400&quot;&gt;
+        </p>
+        <p className="mt-1 text-slate-400">
           Use the flight and hotel search controls above to compare live fares on Aviasales, Hotellook, IndiGo, Air India, IRCTC, and redBus.
-        &lt;/p&gt;
-      &lt;/div&gt;
+        </p>
+      </div>
     );
   }
   return (
-    &lt;section aria-label=&quot;In-page Flight Search and Results&quot; className=&quot;w-full space-y-4&quot;&gt;
+    <section aria-label="In-page Flight Search and Results" className="w-full space-y-4">
       {scriptStatus === 'loading' && (
-        &lt;div className=&quot;animate-pulse rounded-2xl border border-slate-800 bg-slate-900 p-6 text-center text-xs text-slate-400&quot;&gt;
+        <div className="animate-pulse rounded-2xl border border-slate-800 bg-slate-900 p-6 text-center text-xs text-slate-400">
           Loading live partner flight search engine...
-        &lt;/div&gt;
+        </div>
       )}
       {scriptStatus === 'error' && (
-        &lt;div className=&quot;rounded-2xl border border-red-500/40 bg-red-950/30 p-4 text-xs text-red-200&quot;&gt;
+        <div className="rounded-2xl border border-red-500/40 bg-red-950/30 p-4 text-xs text-red-200">
           Unable to load the embedded widget. Use the direct partner search form above to continue to partner checkout.
-        &lt;/div&gt;
+        </div>
       )}
-      &lt;div id=&quot;tpwl-search&quot; className=&quot;min-h-[80px] w-full&quot; /&gt;
-      &lt;div id=&quot;tpwl-tickets&quot; className=&quot;w-full&quot; /&gt;
-    &lt;/section&gt;
+      <div id="tpwl-search" className="min-h-[80px] w-full" />
+      <div id="tpwl-tickets" className="w-full" />
+    </section>
   );
 };
+
