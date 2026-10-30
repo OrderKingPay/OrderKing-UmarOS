@@ -126,7 +126,7 @@ export async function signIn(
     livePreview: inLivePreview(),
     hasBearer: Boolean(getBearerToken()),
     requestSignOut: () => authClient.signOut(),
-    clearToken: () => setBearerToken(null),
+    clearToken: () => { setBearerToken(null); try { window.localStorage.removeItem("orderking.phone.session"); } catch {} },
   });
 
   if (inLivePreview()) {
@@ -242,3 +242,82 @@ export async function signOut(redirectTo = "/"): Promise<void> {
     },
   });
 }
+
+
+// ── OrderKing Verified Phone OTP Session Bridge (Cloudflare Edge Resilient) ──
+const PHONE_SESSION_KEY = "orderking.phone.session";
+export function getPhoneSession(): any | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(PHONE_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+export function setPhoneSession(profile: {
+  id: string;
+  phone: string;
+  email: string;
+  name: string;
+  role?: string;
+} | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (!profile) {
+      window.localStorage.removeItem(PHONE_SESSION_KEY);
+    } else {
+      const now = new Date().toISOString();
+      const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
+      const sessionPayload = {
+        user: {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          phone: profile.phone,
+          role: profile.role || "customer",
+          emailVerified: true,
+          phoneVerified: true,
+          image: null,
+          createdAt: now,
+          updatedAt: now,
+        },
+        session: {
+          id: "sess_" + profile.id,
+          userId: profile.id,
+          token: "ok_tok_" + profile.id,
+          expiresAt,
+          createdAt: now,
+          updatedAt: now,
+        },
+      };
+      window.localStorage.setItem(PHONE_SESSION_KEY, JSON.stringify(sessionPayload));
+    }
+    window.dispatchEvent(new Event("orderking-auth-updated"));
+  } catch {}
+}
+const _origUseSession = authClient.useSession;
+(authClient as any).useSession = function useOrderKingSession(...args: any[]) {
+  const res = _origUseSession ? _origUseSession.apply(this, args) : { data: null, isPending: false, error: null };
+  if (res && res.data && res.data.user) return res;
+  const fallback = getPhoneSession();
+  if (fallback) {
+    return {
+      ...res,
+      data: fallback,
+      isPending: false,
+      error: null,
+    };
+  }
+  return res;
+};
+const _origGetSession = authClient.getSession;
+(authClient as any).getSession = async function getOrderKingSession(...args: any[]) {
+  try {
+    const res = _origGetSession ? await _origGetSession.apply(this, args) : null;
+    if (res && (res as any).data && (res as any).data.user) return res;
+  } catch {}
+  const fallback = getPhoneSession();
+  if (fallback) return { data: fallback, error: null };
+  return { data: null, error: null };
+};

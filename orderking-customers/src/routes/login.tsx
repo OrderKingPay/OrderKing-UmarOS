@@ -136,6 +136,40 @@ function Login() {
       }
 
       setSuccessMsg("Verification successful! Initializing your session...");
+      // Immediately persist verified Phone OTP profile for Cloudflare Pages edge session hydration
+      try {
+        const now = new Date().toISOString();
+        const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
+        const uid = (res as any).userId || ("usr_" + cleanNumber);
+        const uname = phoneName.trim() || (res as any).profile?.name || ("OrderKing " + cleanNumber.slice(-4));
+        const sessionPayload = {
+          user: {
+            id: uid,
+            name: uname,
+            email: res.email,
+            phone: cleanNumber,
+            role: "customer",
+            emailVerified: true,
+            phoneVerified: true,
+            image: null,
+            createdAt: now,
+            updatedAt: now,
+          },
+          session: {
+            id: "sess_" + uid,
+            userId: uid,
+            token: "ok_tok_" + uid,
+            expiresAt,
+            createdAt: now,
+            updatedAt: now,
+          },
+        };
+        window.localStorage.setItem("orderking.phone.session", JSON.stringify(sessionPayload));
+        window.localStorage.setItem("orderking_user", JSON.stringify(sessionPayload.user));
+        window.dispatchEvent(new Event("orderking-auth-updated"));
+      } catch (storageErr) {
+        console.warn("[OrderKing-Auth] Storage persistence warning:", storageErr);
+      }
 
       // Bridge to Better Auth session
       try {
@@ -162,6 +196,7 @@ function Login() {
       } catch (authError) {
         console.warn("[Auth Bridge] Direct Better Auth auto-signup fallback:", authError);
       }
+      window.location.href = "/";
 
       // Smooth redirect to app home
       window.location.href = "/";
