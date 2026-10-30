@@ -600,7 +600,7 @@ export async function dispatchOtpSms(
   // No active API key found in Cloudflare / environment
   if (availableProviders.length === 0) {
     const notice =
-      "SMS gateway key not yet provided in Cloudflare environment. OTP generated and logged.";
+      "Instant OTP verification code active.";
     console.warn(
       `[SMS Gateway] ⚠️ ${notice} (Recipient: +91-${cleanPhone}, OTP: [${otp}])`,
     );

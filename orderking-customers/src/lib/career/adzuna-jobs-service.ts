@@ -511,7 +511,7 @@ export const REAL_TIME_JOB_CATALOG: LiveJob[] = [
   {
     id: "job-flt-03",
     title: "Express Delivery Executive",
-    company: "Swiggy Instamart",
+    company: "OrderKing Instamart",
     location: "Mumbai, Maharashtra",
     city: "Mumbai",
     category: "Local City & Fleet Delivery Gigs",
@@ -565,7 +565,7 @@ export const REAL_TIME_JOB_CATALOG: LiveJob[] = [
   {
     id: "job-flt-06",
     title: "Food & Parcel Fleet Delivery Rider",
-    company: "Zomato Logistics",
+    company: "OrderKing Logistics",
     location: "Hyderabad, Telangana",
     city: "Hyderabad",
     category: "Local City & Fleet Delivery Gigs",

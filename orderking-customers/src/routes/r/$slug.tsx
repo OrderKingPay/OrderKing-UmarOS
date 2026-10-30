@@ -901,7 +901,7 @@ function RestaurantPage() {
               );
             })}
 
-            {/* Exact Zomato-Parity FSSAI Regulatory & Statutory Card */}
+            {/* Exact OrderKing-Parity FSSAI Regulatory & Statutory Card */}
             <div className="my-8 rounded-3xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-6 text-xs text-zinc-600 dark:text-zinc-400 space-y-4 shadow-sm">
               {/* Header: Official FSSAI emblem & 14-digit verified license */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-4">

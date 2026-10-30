@@ -44,6 +44,7 @@ export function SelfServeLandingModule() {
   const [fssaiNumber, setFssaiNumber] = useState("");
   const [panNumber, setPanNumber] = useState("");
   const [gstin, setGstin] = useState("");
+  const [isGstRegistered, setIsGstRegistered] = useState(false);
   const [isGstExempt, setIsGstExempt] = useState(false);
 
   // Banking & Hours

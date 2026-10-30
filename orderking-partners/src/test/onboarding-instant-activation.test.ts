@@ -9,7 +9,7 @@ import {
   validateDigitalExecution,
 } from "../lib/merchant-kyc";
 
-describe("Restaurant Onboarding Revolution - Instant 60s Activation (Zomato Equivalent)", () => {
+describe("Restaurant Onboarding Revolution - Instant 60s Activation (OrderKing Equivalent)", () => {
   let mockStorage: Record<string, string> = {};
 
   beforeEach(() => {

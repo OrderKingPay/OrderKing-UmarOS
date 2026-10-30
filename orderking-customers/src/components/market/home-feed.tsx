@@ -480,7 +480,7 @@ export function HomeFeed({
       {/* 2. SECONDARY QUICK FILTER PILLS (Distinct Color Background when active) & RESULT COUNT */}
       {(list.data?.restaurants?.length ?? 0) > 0 && <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
         <div className="flex items-center gap-2 shrink-0">
-          {/* Pure Veg Filter: Zomato standard green dot & badge */}
+          {/* Pure Veg Filter: OrderKing standard green dot & badge */}
           <button
             type="button"
             onClick={() => setDietFilter(dietFilter === "veg" ? "all" : "veg")}
@@ -695,10 +695,10 @@ export function HomeFeed({
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
-                      Food delivery is not available in your location.
+                      Kitchens at this exact pin are onboarding soon — switch to a nearby food hub or use live KingPay services here
                     </h3>
                     <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-md mx-auto">
-                      If this isn't where you are right now, you can update your location to check delivery. Even without food delivery here, all other KingPay services are active and ready to use.
+                      Tap Change Location below to switch to the nearest active restaurant zone (Guwahati, Silchar, Karimganj, New Delhi), or use KingPay right at your location for instant UPI & utility bills, IRCTC train & flight bookings, local courier, AI tutor, and hyperlocal jobs.
                     </p>
                   </div>
                   <div className="pt-1">

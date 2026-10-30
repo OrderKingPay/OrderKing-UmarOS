@@ -263,7 +263,7 @@ function OnboardingPage() {
         if (d.amortizedConsent !== undefined) {
           setAmortizedConsent(Boolean(d.amortizedConsent));
         }
-        // Default executionMethod to "CLICKWRAP" unconditionally (Zomato-equivalent instant onboarding)
+        // Default executionMethod to "CLICKWRAP" unconditionally (OrderKing-equivalent instant onboarding)
         setExecutionMethod("CLICKWRAP");
         if (d.clickwrapConsent !== undefined) {
           setClickwrapConsent(Boolean(d.clickwrapConsent));
@@ -329,7 +329,7 @@ function OnboardingPage() {
     privacyAndTaxAccepted &&
     clickwrapConsent;
 
-  // 1-Click Clean Legal Agreement Toggle (Zomato-Equivalent Frictionless Activation)
+  // 1-Click Clean Legal Agreement Toggle (OrderKing-Equivalent Frictionless Activation)
   const handleToggleUnifiedAgreement = (checked: boolean) => {
     setCovenantsAccepted(checked);
     setFoodSafetyUndertakingAccepted(checked);

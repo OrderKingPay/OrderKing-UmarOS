@@ -1358,7 +1358,7 @@ function PromosPage() {
                 setIsPostBookingCashback(false);
               }}
             >
-              Zomato Standard (10% Capped / +₹12)
+              OrderKing Standard (10% Capped / +₹12)
             </Button>
             <Button
               type="button"

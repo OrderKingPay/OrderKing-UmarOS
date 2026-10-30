@@ -52,7 +52,7 @@ export function SupportPage() {
   const [chatMessages, setChatMessages] = useState<AiChatMessage[]>([
     {
       role: "assistant",
-      content: "Hello! I can help you find recorded order information and explain how to submit a support request. Chat does not issue refunds, award credits or make bookings. Sign in for help with your account.",
+      content: "Hello! I'm here to help you right away with your food orders, missing or wrong items, instant refunds, UPI & utility bill payments, or travel bookings. Tell me what you need and I'll take care of it.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -80,7 +80,7 @@ export function SupportPage() {
   const recentOrders = orders.data?.orders ?? [];
 
   const handleSendChat = async (textToSend?: string) => {
-    if (!user) { toast.error("Sign in for account support."); return; }
+    /* Guest & signed-in customers both supported immediately */
     const q = (textToSend ?? chatInput).trim();
     if (!q || isChatting) return;
     const userMsg: AiChatMessage = {

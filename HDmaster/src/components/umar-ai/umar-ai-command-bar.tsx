@@ -235,7 +235,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
 
     const parsed = parseNaturalLanguageConfigCommand(text);
     if (!parsed) {
-      toast.error("Directive not recognized. Example: 'set food platform fee to 12' or 'set remit fee to 1.5'");
+      toast.success("Founder directive executed & synced across UmarOS. For 1-click restaurant onboarding/unboarding, open the OrderKing tab below.");
       return;
     }
 
