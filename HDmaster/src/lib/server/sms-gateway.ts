@@ -1043,3 +1043,26 @@ export async function dispatchBookingConfirmationTelecom(
     deliveryLatencyMs: Date.now() - startTime,
   };
 }
+
+export async function verifyVia2Factor(phone: string, otp: string): Promise<boolean> {
+  const cleanPhone = phone.replace(/\D/g, "").slice(-10);
+  const cleanOtp = String(otp || "").replace(/\D/g, "").trim();
+  if (cleanPhone.length !== 10 || cleanOtp.length < 4) return false;
+  const apiKey = (
+    process.env.TWO_FACTOR_API_KEY ||
+    process.env.TWOFACTOR_API_KEY ||
+    process.env.VITE_TWO_FACTOR_API_KEY ||
+    "bae2bf50-d3d4-11f1-ac3e-0200cd936042"
+  ).trim();
+  try {
+    const res = await fetch(
+      `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/SMS/VERIFY3/+91${cleanPhone}/${encodeURIComponent(cleanOtp)}`,
+      { method: "GET" }
+    );
+    const data = (await res.json().catch(() => ({}))) as { Status?: string; Details?: string };
+    return res.ok && data.Status === "Success";
+  } catch {
+    return false;
+  }
+}
+
