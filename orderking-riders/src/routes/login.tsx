@@ -123,7 +123,7 @@ function Login() {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
 
-      setStep("otp"); if ((res as any)?.debugOtp && typeof setOtp === "function") { setOtp(String((res as any).debugOtp)); }
+      setStep("otp");
       setCountdown(30);
       setCanResend(false);
 

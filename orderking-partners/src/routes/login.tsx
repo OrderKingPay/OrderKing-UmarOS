@@ -1,4 +1,4 @@
-﻿import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo, type FormEvent } from "react";
 import { authClient, setPhoneSession } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -92,8 +92,6 @@ function Login() {
   const cleanPhone = useMemo(() => sanitizeIndianPhone(mobileNumber), [mobileNumber]);
   const isPhoneValid = isValidIndianPhone(cleanPhone);
 
-  if (user) return <Navigate to="/dashboard" />;
-
   // WebOTP API for 1-tap SMS autofill on mobile devices
   useEffect(() => {
     if (otpStep !== "code") return;
@@ -139,6 +137,8 @@ function Login() {
     }, 1000);
     return () => clearInterval(timer);
   }, [otpStep, countdown]);
+
+  if (user) return <Navigate to="/dashboard" />;
 
   function handleSwitchMode(targetMode: "in" | "up") {
     setError(null);
