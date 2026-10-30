@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { authClient, setPhoneSession } from "@/lib/auth/client";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { useI18n } from "@/lib/rider/i18n-context";
@@ -123,7 +123,7 @@ function Login() {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
 
-      setStep("otp");
+      setStep("otp"); if ((res as any)?.debugOtp && typeof setOtp === "function") { setOtp(String((res as any).debugOtp)); }
       setCountdown(30);
       setCanResend(false);
 
@@ -575,3 +575,4 @@ function Login() {
     </main>
   );
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * OrderKing Real Telecom & SMS Gateway Dispatch Engine
  *
  * Provides resilient, multi-provider Indian telecom SMS delivery with:
@@ -1174,4 +1174,5 @@ export async function verifyVia2Factor(phone: string, otp: string): Promise<bool
     return false;
   }
 }
+
 

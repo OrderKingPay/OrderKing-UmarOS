@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -1804,3 +1804,4 @@ function DocumentUpload({ restaurantId, kind, label }: { restaurantId?: string; 
     </div>
   );
 }
+

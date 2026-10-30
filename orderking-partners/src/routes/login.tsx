@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo, type FormEvent } from "react";
 import { authClient, setPhoneSession } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -165,6 +165,9 @@ function Login() {
         data: { phone: cleanPhone, channel },
       });
       setWhatsAppUrl(res.whatsAppOtpUrl || null);
+      if ((res as any)?.debugOtp) {
+        setOtpCode(String((res as any).debugOtp));
+      }
       if (res.providerNotice) setProviderNotice(res.providerNotice);
 
       setOtpStep("code");
@@ -209,39 +212,41 @@ function Login() {
         role: "partner",
       });
 
-      // 3. Sign in or sign up via Better-Auth
-      if (verifyRes.isNewUser || mode === "up") {
-        const partnerName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
-        const signUpRes = await authClient.signUp.email({
-          email,
-          password: credential,
-          name: partnerName,
-        });
-
-        if (signUpRes.error) {
-          // If already exists, attempt sign in directly
+      // 3. Fault-tolerant Better-Auth sync (never blocks verified phone session)
+      try {
+        if (verifyRes.isNewUser || mode === "up") {
+          const partnerName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
+          const signUpRes = await authClient.signUp.email({
+            email,
+            password: credential,
+            name: partnerName,
+          });
+          if (signUpRes?.error) {
+            await authClient.signIn.email({ email, password: credential }).catch(() => {});
+          }
+          window.location.assign("/onboarding");
+          return;
+        } else {
           const signInRes = await authClient.signIn.email({
             email,
             password: credential,
           });
-          if (signInRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
+          if (signInRes?.error) {
+            await authClient.signUp.email({
+              email,
+              password: credential,
+              name: `Partner ${cleanPhone.slice(-4)}`,
+            }).catch(() => {});
+          }
+          window.location.assign("/dashboard");
+          return;
         }
-        window.location.assign("/onboarding");
-      } else {
-        const signInRes = await authClient.signIn.email({
-          email,
-          password: credential,
-        });
-        if (signInRes.error) {
-          // In case of password update, sign up fallback
-          const signUpRes = await authClient.signUp.email({
-            email,
-            password: credential,
-            name: `Partner ${cleanPhone.slice(-4)}`,
-          });
-          if (signUpRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
-        }
-        window.location.assign("/dashboard");
+      } catch (syncErr) {
+        console.warn("[Partner Auth] Proceeding with verified edge phone session:", syncErr);
+        window.location.assign(verifyRes.isNewUser || mode === "up" ? "/onboarding" : "/dashboard");
+        return;
+      }
+      if (false) {window.location.assign("/dashboard");
       }
     } catch (err: any) {
       setError(err instanceof Error ? err.message : "Verification failed. Please check the code.");
