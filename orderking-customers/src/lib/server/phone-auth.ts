@@ -104,56 +104,127 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       throw new Error(`Failed to send SMS: ${msg}`);
     }
 
-    const userId = "usr_" + hash.slice(0, 16);
-  const now = new Date().toISOString();
-  const profile = {
-    id: userId,
-    phone: cleanPhone,
-    email: syntheticEmail,
-    name: "OrderKing " + cleanPhone.slice(-4),
-    role: "customer",
-    phoneVerified: true,
-    kingpayBalancePaise: 0,
-    updatedAt: now,
-  };
-
-  const sbUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-  if (sbUrl && sbKey) {
-    try {
-      await fetch(sbUrl + "/rest/v1/profiles", {
-        method: "POST",
-        headers: {
-          apikey: sbKey,
-          Authorization: "Bearer " + sbKey,
-          "Content-Type": "application/json",
-          Prefer: "resolution=merge-duplicates",
-        },
-        body: JSON.stringify({
-          id: userId,
-          phone: cleanPhone,
-          email: syntheticEmail,
-          full_name: profile.name,
-          role: "customer",
-          phone_verified: true,
-          updated_at: now,
-        }),
-      });
-    } catch (err) {
-      console.warn("[OrderKing-Auth] Supabase profile upsert warning:", err);
-    }
-  }
-
-  return {
-    success: true,
-    verified: true,
-    userId,
-    phone: cleanPhone,
-    email: syntheticEmail,
-    password: derivedPassword,
-    profile,
-  };
+    return {
+      success: true,
+      phone: cleanPhone,
+      provider: dispatchResult.provider,
+      messageId: dispatchResult.messageId,
+      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
+      providerNotice: dispatchResult.providerNotice,
+      // In development or when gateway is in simulated/fallback mode, surface debugOtp
+      debugOtp: dispatchResult.provider === "resilient_fallback" ? dispatchResult.debugOtp : undefined,
+    };
   });
 
+/**
+ * 2. Verify OTP and return deterministic credentials for Better Auth session
+ */
+export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
+  .validator((input: { phone: string; otp: string }) => input)
+  .handler(async ({ data }) => {
+    cleanExpiredMemoryOtps();
+    const cleanPhone = sanitizeIndianPhone(data.phone);
+    const enteredOtp = (data.otp || "").trim();
 
+    if (!isValidIndianPhone(cleanPhone)) {
+      throw new Error("Invalid mobile number format.");
+    }
+
+    if (!/^\d{6}$/.test(enteredOtp)) {
+      throw new Error("Please enter a valid 6-digit OTP code.");
+    }
+
+    let isValid = false;
+    const cacheKey = `phone:${cleanPhone}`;
+
+    // 1. Check in-memory store
+    const memEntry = memoryOtpCache.get(cacheKey);
+    if (memEntry && memEntry.otp === enteredOtp && memEntry.expiresAt > Date.now()) {
+      isValid = true;
+      memoryOtpCache.delete(cacheKey);
+    }
+
+    // 2. Check database verification table if not verified via memory
+    if (!isValid) {
+      try {
+        const sql = await getSql();
+        const rows = await sql<{ id: string; value: string; expiresAt: string }>`
+          SELECT id, value, "expiresAt"
+          FROM verification
+          WHERE identifier = ${cacheKey}
+            AND value = ${enteredOtp}
+            AND "expiresAt" > NOW()
+          ORDER BY "createdAt" DESC
+          LIMIT 1
+        `;
+
+        if (rows.length > 0) {
+          isValid = true;
+          // Consume OTP
+          await sql`DELETE FROM verification WHERE id = ${rows[0].id}`;
+        }
+      } catch (dbErr) {
+        console.warn("[Phone Auth] DB verification query failed:", dbErr);
+      }
+    }
+
+    if (!isValid) {
+      throw new Error("Invalid or expired OTP. Please check the code or request a new one.");
+    }
+
+    // 3. Derive deterministic Better Auth credentials
+    const authSecret = process.env.BETTER_AUTH_SECRET || "orderking_phone_salt_v1_2026";
+    const hash = createHmac("sha256", authSecret).update(cleanPhone).digest("hex");
+    const derivedPassword = `OK_${hash.slice(0, 20)}!9A`;
+    const syntheticEmail = `${cleanPhone}@phone.orderkingpay.com`;
+    const userId = "usr_" + hash.slice(0, 16);
+    const now = new Date().toISOString();
+    const profile = {
+      id: userId,
+      phone: cleanPhone,
+      email: syntheticEmail,
+      name: "OrderKing " + cleanPhone.slice(-4),
+      role: "customer",
+      phoneVerified: true,
+      kingpayBalancePaise: 0,
+      updatedAt: now,
+    };
+
+    const sbUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+    if (sbUrl && sbKey) {
+      try {
+        await fetch(sbUrl + "/rest/v1/profiles", {
+          method: "POST",
+          headers: {
+            apikey: sbKey,
+            Authorization: "Bearer " + sbKey,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates",
+          },
+          body: JSON.stringify({
+            id: userId,
+            phone: cleanPhone,
+            email: syntheticEmail,
+            full_name: profile.name,
+            role: "customer",
+            phone_verified: true,
+            updated_at: now,
+          }),
+        });
+      } catch (err) {
+        console.warn("[OrderKing-Auth] Supabase profile upsert warning:", err);
+      }
+    }
+
+    return {
+      success: true,
+      verified: true,
+      userId,
+      phone: cleanPhone,
+      email: syntheticEmail,
+      password: derivedPassword,
+      profile,
+    };
+  });
 
