@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Umar OS Administrator Phone Authentication & SMS OTP Server Functions
  *
  * Implements real telecom OTP delivery via Fast2SMS / 2Factor / WhatsApp,
@@ -184,3 +184,4 @@ export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
       password: derivedPassword,
     };
   });
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * OrderKing Customer Phone Authentication & SMS OTP Server Functions
  *
  * Implements real telecom OTP delivery via Fast2SMS / 2Factor / WhatsApp,
@@ -186,3 +186,4 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
       password: derivedPassword,
     };
   });
+
