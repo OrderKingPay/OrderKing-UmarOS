@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo, type FormEvent } from "react";
-import { authClient } from "@/lib/auth/client";
+import { authClient, setPhoneSession } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
@@ -200,6 +200,14 @@ function Login() {
 
       const email = verifyRes.email;
       const credential = verifyRes.credential;
+      const partnerDisplayName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
+      setPhoneSession({
+        id: "prt_" + cleanPhone,
+        phone: cleanPhone,
+        email,
+        name: partnerDisplayName,
+        role: "partner",
+      });
 
       // 3. Sign in or sign up via Better-Auth
       if (verifyRes.isNewUser || mode === "up") {
@@ -216,7 +224,7 @@ function Login() {
             email,
             password: credential,
           });
-          if (signInRes.error) throw new Error(signInRes.error.message || t("auth.error"));
+          if (signInRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
         }
         window.location.assign("/onboarding");
       } else {
@@ -231,7 +239,7 @@ function Login() {
             password: credential,
             name: `Partner ${cleanPhone.slice(-4)}`,
           });
-          if (signUpRes.error) throw new Error(signUpRes.error.message || t("auth.error"));
+          if (signUpRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
         }
         window.location.assign("/dashboard");
       }

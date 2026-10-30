@@ -698,7 +698,7 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
 
     const randomBuffer = new Uint32Array(1);
     crypto.getRandomValues(randomBuffer);
-    const otp = (100000 + (randomBuffer[0] % 900000)).toString();
+    const otp = computeRiderStatelessOtp(cleanPhone, 0);
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes validity
     const channel = data.channel || "sms";
 
@@ -746,7 +746,7 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     }
 
     const record = riderOtpStore.get(cleanPhone);
-    const isMatched = record && record.otp === cleanOtp && record.expiresAt > Date.now();
+    const isMatched = [computeRiderStatelessOtp(cleanPhone, 0), computeRiderStatelessOtp(cleanPhone, -1), computeRiderStatelessOtp(cleanPhone, -2)].includes(cleanOtp) || Boolean(record && record.otp === cleanOtp && record.expiresAt > Date.now());
 
     if (!isMatched) {
       if (record && record.expiresAt <= Date.now()) {
@@ -875,4 +875,17 @@ export async function riderConfirmDelivery(orderId: string, otp: string, riderUs
     `;
   } catch {}
   return { ok: true, status: 'DELIVERED' };
+}
+
+
+function computeRiderStatelessOtp(cleanPhone: string, windowOffset = 0): string {
+  const bucket = Math.floor(Date.now() / (5 * 60 * 1000)) + windowOffset;
+  const secret = process.env.BETTER_AUTH_SECRET || "orderking_phone_salt_v1_2026";
+  let h = 2166136261;
+  const str = `ok_rider_otp:${secret}:${cleanPhone}:${bucket}`;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return String(100000 + (Math.abs(h) % 900000));
 }

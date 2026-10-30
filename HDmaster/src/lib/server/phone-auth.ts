@@ -243,3 +243,46 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
       },
     };
   });
+
+export const requestAdminPhoneOtpFn = requestPhoneOtpFn;
+export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
+  .validator((input: { phone: string; code?: string; otp?: string; name?: string }) => input)
+  .handler(async ({ data }) => {
+    const cleanPhone = sanitizeIndianPhone(data.phone);
+    const enteredOtp = (data.code || data.otp || "").trim();
+    if (!isValidIndianPhone(cleanPhone)) {
+      return { success: false, error: "Invalid 10-digit mobile number." };
+    }
+    const validWindowOtps = [
+      computeStatelessOtp(cleanPhone, 0),
+      computeStatelessOtp(cleanPhone, -1),
+      computeStatelessOtp(cleanPhone, -2),
+    ];
+    const memEntry = memoryOtpCache.get(`phone:${cleanPhone}`);
+    const isMatched =
+      validWindowOtps.includes(enteredOtp) ||
+      Boolean(memEntry && memEntry.otp === enteredOtp && memEntry.expiresAt > Date.now());
+    if (!isMatched) {
+      return { success: false, error: "Invalid or expired OTP code." };
+    }
+    memoryOtpCache.delete(`phone:${cleanPhone}`);
+    const hash = createHmac("sha256", getAuthSecret()).update(cleanPhone).digest("hex");
+    const userId = "adm_" + hash.slice(0, 16);
+    const syntheticEmail = `${cleanPhone}@admin.orderkingpay.com`;
+    const derivedPassword = `OK_${hash.slice(0, 20)}!9A`;
+    return {
+      success: true,
+      verified: true,
+      userId,
+      phone: cleanPhone,
+      email: syntheticEmail,
+      password: derivedPassword,
+      profile: {
+        id: userId,
+        phone: cleanPhone,
+        email: syntheticEmail,
+        name: data.name?.trim() || `HDmaster Admin ${cleanPhone.slice(-4)}`,
+        role: "admin",
+      },
+    };
+  });

@@ -989,3 +989,16 @@ export async function dispatchBookingConfirmationTelecom(
     deliveryLatencyMs: Date.now() - startTime,
   };
 }
+
+
+function computeRiderStatelessOtp(cleanPhone: string, windowOffset = 0): string {
+  const bucket = Math.floor(Date.now() / (5 * 60 * 1000)) + windowOffset;
+  const secret = process.env.BETTER_AUTH_SECRET || "orderking_phone_salt_v1_2026";
+  let h = 2166136261;
+  const str = `ok_rider_otp:${secret}:${cleanPhone}:${bucket}`;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return String(100000 + (Math.abs(h) % 900000));
+}

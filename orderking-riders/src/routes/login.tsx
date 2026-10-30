@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { authClient } from "@/lib/auth/client";
+import { authClient, setPhoneSession } from "@/lib/auth/client";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { useI18n } from "@/lib/rider/i18n-context";
 import {

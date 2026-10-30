@@ -1,6 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useState, useEffect, type FormEvent } from "react";
-import { GROK_PROVIDERS, authEnabled, signIn, authClient } from "@/lib/auth/client";
+import { GROK_PROVIDERS, authEnabled, signIn, authClient, setPhoneSession } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { OrderKingMark } from "@/components/brand/mark";
 import { Button } from "@/components/ui/button";
