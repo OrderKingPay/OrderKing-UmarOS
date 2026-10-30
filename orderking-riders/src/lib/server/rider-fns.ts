@@ -748,7 +748,16 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     const record = riderOtpStore.get(cleanPhone);
     const isMatched = [computeRiderStatelessOtp(cleanPhone, 0), computeRiderStatelessOtp(cleanPhone, -1), computeRiderStatelessOtp(cleanPhone, -2)].includes(cleanOtp) || Boolean(record && record.otp === cleanOtp && record.expiresAt > Date.now());
 
-    if (!isMatched) {
+    let finalMatched = isMatched;
+  if (!finalMatched) {
+    try {
+      const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
+      const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
+      const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+      if (tfJson.Status === "Success") finalMatched = true;
+    } catch {}
+  }
+  if (!finalMatched) {
       if (record && record.expiresAt <= Date.now()) {
         throw new RiderError(
           "OTP_EXPIRED",

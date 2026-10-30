@@ -283,7 +283,7 @@ async function sendVia2Factor(
   const template = (process.env.TWOFACTOR_OTP_TEMPLATE || "").trim();
   const url = template
     ? `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/+91${cleanPhone}/${otp}/${encodeURIComponent(template)}`
-    : `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/+91${cleanPhone}/${otp}`;
+    : `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/+91${cleanPhone}/AUTOGEN`;
 
   let json: { Status?: string; Details?: string } | undefined;
   try {

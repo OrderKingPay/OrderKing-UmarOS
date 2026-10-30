@@ -173,6 +173,23 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
         }
       } catch {}
     }
+    
+    // Verify against 2Factor VERIFY3 endpoint for AUTOGEN OTPs
+    if (!isValid) {
+      try {
+        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
+        const tfRes = await fetch(
+          `https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`
+        );
+        if (tfRes.ok) {
+          const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+          if (tfJson.Status === "Success") {
+            isValid = true;
+          }
+        }
+      } catch {}
+    }
+
     if (!isValid) {
       throw new Error("Invalid or expired OTP code. Please check the 6-digit code or tap Resend.");
     }
