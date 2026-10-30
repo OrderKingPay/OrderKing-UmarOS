@@ -244,7 +244,7 @@ export async function signOut(redirectTo = "/"): Promise<void> {
       const { error } = await authClient.signOut();
       if (error) throw new Error(error.message ?? "Sign-out failed");
     },
-    clearToken: () => setBearerToken(null),
+    clearToken: () => { setBearerToken(null); try { window.localStorage.removeItem("orderking.phone.session"); window.localStorage.removeItem("orderking_user"); window.dispatchEvent(new Event("orderking-auth-updated")); } catch {} },
     redirect: () => {
       window.location.href = redirectTo;
     },
@@ -258,22 +258,28 @@ export function getPhoneSession(): any | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(PHONE_SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.user && parsed.user.id) return parsed;
+    return null;
   } catch {
     return null;
   }
 }
-export function setPhoneSession(profile: {
-  id: string;
-  phone: string;
-  email: string;
-  name: string;
-  role?: string;
-} | null): void {
+export function setPhoneSession(
+  profile: {
+    id: string;
+    phone: string;
+    email: string;
+    name: string;
+    role?: string;
+  } | null
+): void {
   if (typeof window === "undefined") return;
   try {
     if (!profile) {
       window.localStorage.removeItem(PHONE_SESSION_KEY);
+      window.localStorage.removeItem("orderking_user");
     } else {
       const now = new Date().toISOString();
       const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
@@ -300,23 +306,16 @@ export function setPhoneSession(profile: {
         },
       };
       window.localStorage.setItem(PHONE_SESSION_KEY, JSON.stringify(sessionPayload));
+      window.localStorage.setItem("orderking_user", JSON.stringify(sessionPayload.user));
     }
     window.dispatchEvent(new Event("orderking-auth-updated"));
   } catch {}
 }
-export const authClient: typeof _rawAuthClient = new Proxy(_rawAuthClient, {
-  get(target, prop, receiver) {
-    if (prop === "useSession") return useOrderKingSession;
-    if (prop === "getSession") return getOrderKingSession;
-    return Reflect.get(target, prop, receiver);
-  },
-});
-const _origUseSession = _rawAuthClient.useSession;
-(authClient as any).useSession = function useOrderKingSession(...args: any[]) {
-  const res = _origUseSession ? _origUseSession.apply(this, args) : { data: null, isPending: false, error: null };
-  if (res && res.data && res.data.user) return res;
+export function useOrderKingSession(...args: any[]) {
+  const origFn = (_rawAuthClient as any).useSession;
+  const res = origFn ? origFn.apply(_rawAuthClient, args) : { data: null, isPending: false, error: null };
   const fallback = getPhoneSession();
-  if (fallback) {
+  if (fallback && fallback.user) {
     return {
       ...res,
       data: fallback,
@@ -325,14 +324,22 @@ const _origUseSession = _rawAuthClient.useSession;
     };
   }
   return res;
-};
-const _origGetSession = _rawAuthClient.getSession;
-(authClient as any).getSession = async function getOrderKingSession(...args: any[]) {
+}
+export async function getOrderKingSession(...args: any[]) {
+  const fallback = getPhoneSession();
   try {
-    const res = _origGetSession ? await _origGetSession.apply(this, args) : null;
+    const origFn = (_rawAuthClient as any).getSession;
+    const res = origFn ? await origFn.apply(_rawAuthClient, args) : null;
     if (res && (res as any).data && (res as any).data.user) return res;
   } catch {}
-  const fallback = getPhoneSession();
-  if (fallback) return { data: fallback, error: null };
+  if (fallback && fallback.user) return { data: fallback, error: null };
   return { data: null, error: null };
-};
+}
+export const authClient: typeof _rawAuthClient = new Proxy(_rawAuthClient, {
+  get(target, prop, receiver) {
+    if (prop === "useSession") return useOrderKingSession;
+    if (prop === "getSession") return getOrderKingSession;
+    const value = Reflect.get(target, prop, receiver);
+    return typeof value === "function" ? value.bind(target) : value;
+  },
+});

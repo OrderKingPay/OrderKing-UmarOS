@@ -1,25 +1,54 @@
-import { authClient, authEnabled } from "./client";
-
-/** Normalized user shape used across the app, auth on or off. */
+import { useState, useEffect } from "react";
+import { authClient, authEnabled, getPhoneSession } from "./client";
 export type AppUser = {
   id: string;
   displayName: string | null;
   primaryEmail: string | null;
   profileImageUrl: string | null;
+  phone?: string | null;
+  role?: string | null;
+  isDevFallback: boolean;
 };
-
-/** `useCurrentUserState()` result: the user plus the session-loading flag. */
+export const DEV_USER: AppUser = {
+  id: "dev-user",
+  displayName: "Dev User",
+  primaryEmail: "dev@orderking.in",
+  profileImageUrl: null,
+  isDevFallback: true,
+};
 export type CurrentUserState = {
-  /** The user — `null` BOTH while the session loads and when signed out. */
   user: AppUser | null;
-  /** True while the session is still resolving — don't treat `user: null` as signed out yet. */
   isPending: boolean;
 };
-
 export function useCurrentUserState(): CurrentUserState {
-  if (!authEnabled) return { user: null, isPending: false };
-  // eslint-disable-next-line react-hooks/rules-of-hooks -- authEnabled is constant for the app's lifetime
+  const [phoneSession, setPhoneSessionState] = useState<any | null>(() => getPhoneSession());
+  useEffect(() => {
+    const sync = () => setPhoneSessionState(getPhoneSession());
+    sync();
+    window.addEventListener("orderking-auth-updated", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("orderking-auth-updated", sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
   const { data, isPending } = authClient.useSession();
+  if (phoneSession?.user) {
+    const u = phoneSession.user;
+    return {
+      user: {
+        id: u.id,
+        displayName: u.name ?? ("OrderKing " + String(u.phone || "").slice(-4)),
+        primaryEmail: u.email ?? null,
+        profileImageUrl: u.image ?? null,
+        phone: u.phone ?? null,
+        role: u.role ?? "rider",
+        isDevFallback: false,
+      },
+      isPending: false,
+    };
+  }
+  if (!authEnabled) return { user: DEV_USER, isPending: false };
   const user = data?.user;
   return {
     user: user
@@ -28,17 +57,12 @@ export function useCurrentUserState(): CurrentUserState {
           displayName: user.name ?? null,
           primaryEmail: user.email ?? null,
           profileImageUrl: user.image ?? null,
+          isDevFallback: false,
         }
       : null,
     isPending,
   };
 }
-
-/**
- * Convenience view of `useCurrentUserState().user` for display (e.g.
- * `user?.displayName ?? "Guest"`). NOTE: `null` means *loading OR signed out* —
- * for redirects/guards use `useCurrentUserState()` and check `isPending`.
- */
 export function useCurrentUser(): AppUser | null {
   return useCurrentUserState().user;
 }

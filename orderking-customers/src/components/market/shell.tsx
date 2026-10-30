@@ -42,6 +42,7 @@ import { cartCount, useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { SignedOut } from "@/lib/auth/gates";
+import { setPhoneSession, signOut } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { DeviceAvatar } from "@/components/common/device-avatar";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
@@ -470,8 +471,7 @@ export function CustomerShell({
 
                       <Link
                         to="/login"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-700 hover:text-rose-900 transition no-underline font-bold"
+                        onClick={(e) => { e.preventDefault(); setUserMenuOpen(false); setPhoneSession(null); void signOut("/").catch(() => { window.location.href = "/"; }); }} className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-700 hover:text-rose-900 transition no-underline font-bold"
                       >
                         <LogOut className="size-4 text-rose-500" />
                         <span>Sign Out</span>
