@@ -26,7 +26,7 @@ const getBaseURL = () => {
   return "https://partner.orderkingpay.com";
 };
 
-export const authClient = createAuthClient({
+const _rawAuthClient = createAuthClient({
   baseURL: getBaseURL(),
   fetchOptions: {
     onRequest(ctx) {
@@ -296,7 +296,14 @@ export function setPhoneSession(profile: {
     window.dispatchEvent(new Event("orderking-auth-updated"));
   } catch {}
 }
-const _origUseSession = authClient.useSession;
+export const authClient: typeof _rawAuthClient = new Proxy(_rawAuthClient, {
+  get(target, prop, receiver) {
+    if (prop === "useSession") return useOrderKingSession;
+    if (prop === "getSession") return getOrderKingSession;
+    return Reflect.get(target, prop, receiver);
+  },
+});
+const _origUseSession = _rawAuthClient.useSession;
 (authClient as any).useSession = function useOrderKingSession(...args: any[]) {
   const res = _origUseSession ? _origUseSession.apply(this, args) : { data: null, isPending: false, error: null };
   if (res && res.data && res.data.user) return res;
@@ -311,7 +318,7 @@ const _origUseSession = authClient.useSession;
   }
   return res;
 };
-const _origGetSession = authClient.getSession;
+const _origGetSession = _rawAuthClient.getSession;
 (authClient as any).getSession = async function getOrderKingSession(...args: any[]) {
   try {
     const res = _origGetSession ? await _origGetSession.apply(this, args) : null;
