@@ -14,12 +14,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
+import { createRazorpayOrder } from "@/lib/server/razorpay.server";
+
+export interface RazorpayTopupVerification {
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   currentBalancePaise: number;
-  onSuccess: (addedPaise: number) => void;
+  onSuccess: (addedPaise: number, verification?: RazorpayTopupVerification) => void;
 }
 
 const PRESET_AMOUNTS = [500, 1000, 2000, 5000];
@@ -49,7 +56,7 @@ export function AddMoneyModal({
     setAmountRupees(isNaN(num) ? 0 : num);
   };
 
-  const handleAddMoney = () => {
+  const handleAddMoney = async () => {
     if (amountRupees < 10) {
       toast.error("Minimum top-up amount is ₹10");
       return;
@@ -59,24 +66,49 @@ export function AddMoneyModal({
       return;
     }
 
-    const liveKey =
-      (typeof process !== "undefined" && process.env?.RAZORPAY_KEY_ID) ||
-      (typeof window !== "undefined" && (window as any).__ENV__?.RAZORPAY_KEY_ID) ||
-      "";
-
-    if (typeof window !== "undefined" && (window as any).Razorpay && liveKey) {
-      try {
-        const rzp = new (window as any).Razorpay({
-          key: liveKey,
-          amount: amountRupees * 100,
+    setIsProcessing(true);
+    try {
+      const rzpOrder = await createRazorpayOrder({
+        data: {
+          amountPaise: amountRupees * 100,
           currency: "INR",
-          name: "OrderKing Wallet Top-up",
-          description: `Add ₹${amountRupees} to KingPay Balance`,
-          handler: function (resp: { razorpay_payment_id?: string }) {
-            const addedPaise = amountRupees * 100;
-            onSuccess(addedPaise);
-            toast.success(`Payment verified! ID: ${resp.razorpay_payment_id || "Live"}`);
+          receipt: ("topup_" + Date.now()).slice(0, 40),
+          notes: { type: "WALLET_TOPUP" },
+        },
+      });
+
+      const RazorpayCtor = (window as unknown as { Razorpay?: new (opts: unknown) => any }).Razorpay;
+      if (RazorpayCtor && rzpOrder?.keyId && rzpOrder?.orderId) {
+        const rzp = new RazorpayCtor({
+          key: rzpOrder.keyId,
+          amount: rzpOrder.amountPaise,
+          currency: rzpOrder.currency,
+          name: "KingPay Wallet Top-up",
+          description: "Add ₹" + amountRupees + " to KingPay Balance",
+          order_id: rzpOrder.orderId,
+          handler: function (resp: {
+            razorpay_order_id?: string;
+            razorpay_payment_id?: string;
+            razorpay_signature?: string;
+          }) {
+            if (!resp?.razorpay_payment_id || !resp?.razorpay_order_id || !resp?.razorpay_signature) {
+              toast.error("Incomplete payment response from gateway.");
+              setIsProcessing(false);
+              return;
+            }
+            onSuccess(amountRupees * 100, {
+              razorpayOrderId: resp.razorpay_order_id,
+              razorpayPaymentId: resp.razorpay_payment_id,
+              razorpaySignature: resp.razorpay_signature,
+            });
+            toast.success("Wallet loaded! Payment ID: " + resp.razorpay_payment_id);
+            setIsProcessing(false);
             onClose();
+          },
+          modal: {
+            ondismiss: function () {
+              setIsProcessing(false);
+            },
           },
           prefill: {
             contact: "9395065587",
@@ -87,22 +119,23 @@ export function AddMoneyModal({
         });
         rzp.open();
         return;
-      } catch {
-        // fallback
       }
+    } catch (err) {
+      console.warn("Razorpay wallet order creation fallback:", err);
     }
 
-    const upiUri = `upi://pay?pa=9395065587@ybl&pn=OrderKing%20Wallet&am=${amountRupees}&cu=INR&tn=Wallet%20Topup`;
+    const upiUri = "upi://pay?pa=9395065587@ybl&pn=OrderKing%20Wallet&am=" + amountRupees + "&cu=INR&tn=Wallet%20Topup";
     if (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
       window.location.href = upiUri;
       toast.info("Opening UPI application to authorize wallet top-up...");
+      setIsProcessing(false);
       onClose();
       return;
     }
 
-    toast.info(`Please complete top-up to UPI ID 9395065587@ybl in your banking app.`);
+    toast.info("Please complete top-up to UPI ID 9395065587@ybl in your banking app.");
+    setIsProcessing(false);
     onClose();
-    return;
   };
 
   return (

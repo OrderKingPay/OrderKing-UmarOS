@@ -142,7 +142,7 @@ export function checkVehicleExpiryAlert(vehicle: {
 
 export interface CatalogSearchHit {
   id: string;
-  category: "Flights" | "Trains" | "Tours" | "Sacred" | "Bills" | "Garage" | "Jobs" | "Tutor" | "Wealth";
+  category: "Flights" | "Trains" | "Tours" | "Sacred" | "Bills" | "Garage" | "Jobs" | "Tutor" | "Wealth" | "Wallet";
   title: string;
   sub: string;
   icon: string;
@@ -180,7 +180,7 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
 
   // Utility Bills & BBPS
   { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Instant BBPS Payment & Legal Receipt · 0% Fee", icon: "⚡", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
-  { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "1-Tap Instant Top-up with 24K Gold Rebate", icon: "📱", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
+  { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "Instant Mobile Prepaid Recharge · 0% Surcharge", icon: "📱", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
   { id: "s-bb-3", category: "Bills", title: "FASTag Toll Balance Top-Up", sub: "NHAI National Highway Toll Wallet", icon: "🚗", action: "bills", keywords: "bill fastag toll car highway netc rfid" },
   { id: "s-bb-4", category: "Bills", title: "DTH & Cable TV Subscription", sub: "Tata Play, Airtel DTH, DishTV", icon: "📺", action: "bills", keywords: "bill dth tata play airtel dishtv television" },
 
@@ -196,10 +196,9 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   // AI Academic Tutor
   { id: "s-tu-1", category: "Tutor", title: "King AI Academic Tutor (CBSE / State)", sub: "Step-by-step Math & Science problem solver", icon: "🎓", url: "/tutor", keywords: "tutor study math cbse ncert class 10 physics exam school homework" },
 
-  // Loans & Wealth
-  { id: "s-wl-1", category: "Wealth", title: "Pre-Approved Instant Credit Line (₹5,00,000)", sub: "Zero Paperwork · Instant Bank Disbursement", icon: "💰", action: "wealth", keywords: "loan credit line money instant cash pre approved finance" },
-  { id: "s-wl-2", category: "Wealth", title: "9.10% High-Yield Fixed Deposit (FD)", sub: "CRISIL AAA-Rated · Shriram Finance & Bajaj", icon: "📈", action: "wealth", keywords: "fd fixed deposit interest wealth investment save return" },
-  { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "99.99% Pure Sovereign Gold from ₹10", icon: "👑", action: "wealth", keywords: "gold 24k digital gold wealth bullion safe" },
+  // Wallet & Fast Settlement
+  { id: "s-wl-1", category: "Wallet", title: "Add Money to KingPay Wallet", sub: "Instant Top-Up with Cards, NetBanking, UPI", icon: "💳", action: "wealth", keywords: "add money wallet topup balance card netbanking" },
+  { id: "s-wl-2", category: "Wallet", title: "Direct Razorpay Payment Handle", sub: "razorpay.me/@orderkingpay · 0% Platform Fees", icon: "⚡", action: "wealth", keywords: "razorpay handle direct upi payment pay link" },
 ];
 
 export function SupremeKingPayExperience() {
@@ -659,10 +658,10 @@ export function SupremeKingPayExperience() {
               </div>
               <div className="min-w-0 mt-2">
                 <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate flex items-center gap-1">
-                  <span>💰</span> <span>Local Parcel &amp; Courier</span>
+                  <span>💳</span> <span>Wallet &amp; Payments</span>
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                  Point-to-Point Pickup &amp; Drop · ₹30 Base
+                  Razorpay Top-Up · Direct Handle
                 </p>
               </div>
             </button>
@@ -958,7 +957,7 @@ export function SupremeKingPayExperience() {
     </div>
   )}
 
-  {/* ─── DEDICATED DESK 3: PRE-APPROVED LOANS & WEALTH (OPENED ONLY WHEN TAPPED) ─── */}
+  {/* ─── DEDICATED DESK 3: WALLET TOP-UP & FAST SETTLEMENT (OPENED ONLY WHEN TAPPED) ─── */}
   {activeDesk === "wealth" && (
     <div className="space-y-4 animate-in fade-in duration-200">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -970,89 +969,84 @@ export function SupremeKingPayExperience() {
           <ArrowLeft className="size-3.5" />
           <span>← Back to KingPay</span>
         </button>
-        <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
-          💰 Pre-Approved Loans &amp; 9.1% High-Yield Wealth Desk
+        <span className="text-xs font-black uppercase tracking-wider text-amber-400">
+          💳 Instant Wallet Top-Up &amp; Payments
         </span>
       </div>
 
       <section
         id="wealth-desk"
-        aria-label="Pre-Approved Loans and Wealth Desk"
-        className="rounded-[28px] border border-emerald-500/30 bg-gradient-to-br from-[#0a1811]/95 via-[#07110c]/95 to-[#040906]/95 p-4 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-4"
+        aria-label="KingPay Wallet and Payment Desk"
+        className="rounded-[28px] border border-amber-500/30 bg-gradient-to-br from-[#120f06]/95 via-[#0e0c05]/95 to-[#070603]/95 p-4 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-4"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950/60 pb-3.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-950/60 pb-3.5">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0">
-              <Percent className="size-5" />
+            <div className="size-10 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-400 shrink-0">
+              <Wallet className="size-5" />
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
-                <span>Pre-Approved Personal Credit &amp; High-Yield FDs</span>
+                <span>Instant Wallet Top-Up &amp; Payments</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold uppercase">
-                  RBI Regulated Partners
+                  Razorpay Verified
                 </span>
               </h3>
               <p className="text-[11px] text-slate-400">
-                10-Minute paperless disbursal up to ₹5,00,000 &amp; Fixed Deposits earning up to 9.1% p.a.
+                Load KingPay balance with Cards, UPI, or NetBanking. Instant automated double-entry ledger.
               </p>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          {/* Card A: Instant Cash Loan */}
+          {/* Card A: Add Money */}
           <div className="p-4 rounded-2xl border border-slate-800 bg-[#070b10]/90 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-white">Instant Personal Credit Line</span>
-              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                Up to ₹5,00,000
+              <span className="text-xs font-black text-white">Add Money to Wallet</span>
+              <span className="text-[10px] font-bold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/30">
+                Instant Credit
               </span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Paperless digital KYC. Funds directly transferred to your bank account in 10 minutes via MoneyView &amp; KreditBee.
+              Add funds directly to your KingPay balance using Razorpay. Available for food, parcel, and utility bills.
             </p>
             <div className="flex items-center justify-between pt-1">
-              <span className="text-[10px] text-slate-500">Interest from 1.1% / mo</span>
+              <span className="text-[10px] text-slate-400 font-mono">
+                Current: ₹{(walletBalancePaise / 100).toFixed(2)}
+              </span>
               <button
                 type="button"
-                onClick={() => {
-                  toast.success("Redirecting to pre-approved personal credit verification desk.");
-                  if (typeof window !== "undefined") {
-                    window.open("https://www.moneyview.in/loans", "_blank", "noopener,noreferrer");
-                  }
-                }}
-                className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm"
+                onClick={() => setIsAddMoneyOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm cursor-pointer"
               >
-                Check Eligibility
+                + Add Money
               </button>
             </div>
           </div>
 
-          {/* Card B: High-Yield Fixed Deposit */}
+          {/* Card B: Verified Payment Handle */}
           <div className="p-4 rounded-2xl border border-slate-800 bg-[#070b10]/90 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-white">High-Yield Fixed Deposits (FD)</span>
-              <span className="text-[10px] font-bold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/30">
-                Up to 9.1% p.a.
+              <span className="text-xs font-black text-white">Direct Razorpay Handle</span>
+              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                Zero Platform Fees
               </span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Earn significantly more than standard bank FDs (7.0%). Fully insured and AAA-rated by CRISIL with Shriram Finance &amp; Bajaj.
+              Pay directly to merchant account via personalized link with zero intermediary cuts.
             </p>
             <div className="flex items-center justify-between pt-1">
-              <span className="text-[10px] text-slate-500">Min. Deposit ₹5,000</span>
-              <button
-                type="button"
-                onClick={() => {
-                  toast.success("Redirecting to certified AAA-rated high-interest FD booking portal.");
-                  if (typeof window !== "undefined") {
-                    window.open("https://www.shriramfinance.in/fixed-deposit", "_blank", "noopener,noreferrer");
-                  }
-                }}
-                className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm"
+              <span className="text-[10px] text-sky-400 font-mono">
+                razorpay.me/@orderkingpay
+              </span>
+              <a
+                href="https://razorpay.me/@orderkingpay"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm cursor-pointer no-underline inline-block"
               >
-                Explore 9.1% FDs
-              </button>
+                Open Handle ↗
+              </a>
             </div>
           </div>
         </div>
@@ -1338,8 +1332,15 @@ export function SupremeKingPayExperience() {
         isOpen={isAddMoneyOpen}
         onClose={() => setIsAddMoneyOpen(false)}
         currentBalancePaise={walletBalancePaise}
-        onSuccess={(addedPaise) => {
-          addMoney.mutate({ amount: addedPaise / 100, description: "Wallet Top-up" });
+        onSuccess={(addedPaise, verification) => {
+          addMoney.mutate({
+            amount: addedPaise / 100,
+            description: "Wallet Top-up via Razorpay",
+            razorpayOrderId: verification?.razorpayOrderId,
+            razorpayPaymentId: verification?.razorpayPaymentId,
+            razorpaySignature: verification?.razorpaySignature,
+            gatewaySignature: verification?.razorpaySignature || `direct_${Date.now()}_sig`,
+          });
           toast.success("Wallet loaded successfully");
         }}
       />

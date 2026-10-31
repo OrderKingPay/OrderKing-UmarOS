@@ -43,7 +43,14 @@ export function useRealKingPayWallet() {
   const kingCoins = data?.coins ?? 0;
 
   const addMoney = useMutation({
-    mutationFn: (args: { amount: number; description: string }) => addKingpayMoney({ data: args }),
+    mutationFn: (args: {
+      amount: number;
+      description: string;
+      gatewaySignature?: string;
+      razorpayOrderId?: string;
+      razorpayPaymentId?: string;
+      razorpaySignature?: string;
+    }) => addKingpayMoney({ data: args }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
   });
 

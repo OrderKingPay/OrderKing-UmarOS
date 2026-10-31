@@ -25,24 +25,45 @@ export const getKingpayBalance = createServerFn({ method: "GET" })
 
 export const addKingpayMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { amount: number; description: string; gatewaySignature?: string }) => d)
+  .validator((d: {
+    amount: number;
+    description: string;
+    gatewaySignature?: string;
+    razorpayOrderId?: string;
+    razorpayPaymentId?: string;
+    razorpaySignature?: string;
+  }) => d)
   .handler(async ({ context, data }: any) => {
     if (typeof data.amount !== "number" || !Number.isFinite(data.amount) || data.amount <= 0) {
       throw new Error("Financial Security: Credit amount must be a positive finite number.");
     }
 
-    const cfg = await loadConfig();
+    const { getRazorpayConfig, verifyRazorpaySignature } = await import("./razorpay.server");
+    const rzpConfig = getRazorpayConfig();
 
-    if (!data.gatewaySignature || typeof data.gatewaySignature !== "string" || data.gatewaySignature.trim().length < 16) {
-      throw new Error("Financial Security: Payment gateway signature missing. Unauthorized minting blocked.");
+    if (data.razorpayOrderId && data.razorpayPaymentId && data.razorpaySignature) {
+      if (!rzpConfig.hasCredentials || !rzpConfig.keySecret) {
+        throw new Error("Financial Security: Payment provider unconfigured. Cannot verify top-up.");
+      }
+      const isValid = verifyRazorpaySignature({
+        razorpayOrderId: data.razorpayOrderId,
+        razorpayPaymentId: data.razorpayPaymentId,
+        razorpaySignature: data.razorpaySignature,
+      });
+      if (!isValid) {
+        throw new Error("Financial Security: Razorpay signature verification failed. Top-up rejected.");
+      }
+    } else if (data.gatewaySignature && typeof data.gatewaySignature === "string" && data.gatewaySignature.trim().length >= 16) {
+      const cfg = await loadConfig();
+      if (cfg.marketplace.launchMode === "live") {
+        throw new Error("Financial Security: Online gateway verification required in live mode.");
+      }
+    } else {
+      throw new Error("Financial Security: Valid gateway signature required to top up wallet.");
     }
 
-    if (cfg.marketplace.launchMode === "live") {
-      throw new Error("Financial Security: Live payment gateways are pending legal/provider authorization. Minting blocked.");
-    }
-
-    if (data.amount > 10000) {
-      throw new Error("Sandbox Security: Maximum test transaction limit exceeded.");
+    if (data.amount > 100000) {
+      throw new Error("Financial Security: Maximum single top-up limit is ₹1,00,000.");
     }
 
     const sql = await getSql();
