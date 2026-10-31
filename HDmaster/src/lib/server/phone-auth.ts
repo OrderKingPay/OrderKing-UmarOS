@@ -17,10 +17,6 @@ const memoryOtpCache = new Map<string, OtpCacheEntry>();
 function getAuthSecret(): string {
   return process.env.BETTER_AUTH_SECRET || "orderking_phone_salt_v1_2026";
 }
-/**
- * Stateless cryptographic 6-digit OTP derived from 5-minute time buckets.
- * Guarantees 100% verification accuracy across separate Cloudflare Edge Worker isolates!
- */
 function computeStatelessOtp(cleanPhone: string, windowOffset = 0): string {
   const bucket = Math.floor(Date.now() / (5 * 60 * 1000)) + windowOffset;
   const digest = createHmac("sha256", getAuthSecret())
@@ -78,8 +74,10 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       if (data.channel === "voice") {
         const twoFactorKey =
           process.env.TWOFACTOR_API_KEY ||
-          process.env.TWO_FACTOR_API_KEY ||
-          "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
+          process.env.TWO_FACTOR_API_KEY;
+        if (!twoFactorKey) {
+          throw new Error("TWOFACTOR_API_KEY not configured in environment");
+        }
         const vRes = await fetch(
           `https://2factor.in/API/V1/${encodeURIComponent(twoFactorKey)}/VOICE/+91${cleanPhone}/${otp}`
         );
@@ -141,7 +139,6 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     const cacheKey = `phone:${cleanPhone}`;
     const memEntry = memoryOtpCache.get(cacheKey);
     let isValid = false;
-    // 1. Check stateless cryptographic HMAC time windows (current, -5m, -10m)
     const validWindowOtps = [
       computeStatelessOtp(cleanPhone, 0),
       computeStatelessOtp(cleanPhone, -1),
@@ -150,11 +147,9 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     if (validWindowOtps.includes(enteredOtp)) {
       isValid = true;
     }
-    // 2. Check in-memory cache
     if (!isValid && memEntry && memEntry.otp === enteredOtp && memEntry.expiresAt > Date.now()) {
       isValid = true;
     }
-    // 3. Check Postgres verification table if still not matched
     if (!isValid) {
       try {
         const sql = await getSql();
@@ -173,23 +168,22 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
         }
       } catch {}
     }
-    
-    // Verify against 2Factor VERIFY3 endpoint for AUTOGEN OTPs
     if (!isValid) {
       try {
-        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
-        const tfRes = await fetch(
-          `https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`
-        );
-        if (tfRes.ok) {
-          const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
-          if (tfJson.Status === "Success") {
-            isValid = true;
+        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY;
+        if (tfKey) {
+          const tfRes = await fetch(
+            `https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`
+          );
+          if (tfRes.ok) {
+            const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+            if (tfJson.Status === "Success") {
+              isValid = true;
+            }
           }
         }
       } catch {}
     }
-
     if (!isValid) {
       throw new Error("Invalid or expired OTP code. Please check the 6-digit code or tap Resend.");
     }
@@ -214,35 +208,6 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
       kingpayBalancePaise: 0,
       updatedAt: now,
     };
-    const sbUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-    const sbKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.SUPABASE_ANON_KEY ||
-      process.env.VITE_SUPABASE_ANON_KEY;
-    if (sbUrl && sbKey) {
-      try {
-        await fetch(sbUrl + "/rest/v1/profiles", {
-          method: "POST",
-          headers: {
-            apikey: sbKey,
-            Authorization: "Bearer " + sbKey,
-            "Content-Type": "application/json",
-            Prefer: "resolution=merge-duplicates",
-          },
-          body: JSON.stringify({
-            id: userId,
-            phone: cleanPhone,
-            email: syntheticEmail,
-            full_name: resolvedName,
-            role: "admin",
-            phone_verified: true,
-            updated_at: now,
-          }),
-        });
-      } catch (err) {
-        console.warn("[OrderKing-Auth] Supabase profile upsert warning:", err);
-      }
-    }
     return {
       success: true,
       verified: true,
@@ -257,58 +222,6 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
         email: syntheticEmail,
         password: derivedPassword,
         name: resolvedName,
-      },
-    };
-  });
-
-export const requestAdminPhoneOtpFn = requestPhoneOtpFn;
-export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
-  .validator((input: { phone: string; code?: string; otp?: string; name?: string }) => input)
-  .handler(async ({ data }) => {
-    const cleanPhone = sanitizeIndianPhone(data.phone);
-    const enteredOtp = (data.code || data.otp || "").trim();
-    if (!isValidIndianPhone(cleanPhone)) {
-      return { success: false, error: "Invalid 10-digit mobile number." };
-    }
-    const validWindowOtps = [
-      computeStatelessOtp(cleanPhone, 0),
-      computeStatelessOtp(cleanPhone, -1),
-      computeStatelessOtp(cleanPhone, -2),
-    ];
-    const memEntry = memoryOtpCache.get(`phone:${cleanPhone}`);
-    const isMatched =
-      validWindowOtps.includes(enteredOtp) ||
-      Boolean(memEntry && memEntry.otp === enteredOtp && memEntry.expiresAt > Date.now());
-    let isTfValid = isMatched;
-    if (!isTfValid) {
-      try {
-        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
-        const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`);
-        const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
-        if (tfJson.Status === "Success") isTfValid = true;
-      } catch {}
-    }
-    if (!isTfValid) {
-      return { success: false, error: "Invalid or expired OTP code." };
-    }
-    memoryOtpCache.delete(`phone:${cleanPhone}`);
-    const hash = createHmac("sha256", getAuthSecret()).update(cleanPhone).digest("hex");
-    const userId = "adm_" + hash.slice(0, 16);
-    const syntheticEmail = `${cleanPhone}@admin.orderkingpay.com`;
-    const derivedPassword = `OK_${hash.slice(0, 20)}!9A`;
-    return {
-      success: true,
-      verified: true,
-      userId,
-      phone: cleanPhone,
-      email: syntheticEmail,
-      password: derivedPassword,
-      profile: {
-        id: userId,
-        phone: cleanPhone,
-        email: syntheticEmail,
-        name: data.name?.trim() || `HDmaster Admin ${cleanPhone.slice(-4)}`,
-        role: "admin",
       },
     };
   });
