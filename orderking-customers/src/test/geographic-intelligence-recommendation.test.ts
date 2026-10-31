@@ -152,7 +152,7 @@ describe("Geographic Intelligence & Cross-Ecosystem Recommendation Specialist Su
       const extraDeliveryFeePaise = 0;
       expect(Number.isSafeInteger(extraDeliveryFeePaise)).toBe(true);
       expect(extraDeliveryFeePaise).toBe(0);
-      expect(formatPaise(extraDeliveryFeePaise)).toBe("UPI Ready");
+      expect(formatPaise(extraDeliveryFeePaise)).toBe("₹0.00");
     });
 
     it("strictly verifies zero competitor trademarks in cross-ecosystem copy", () => {

@@ -38,6 +38,8 @@ export const DEFAULT_DISPATCH_PHONE = "919876543210";
 export const FOUNDER_UPI_VPA = "9395065587@ybl";
 export const SOVEREIGN_NPCI_UPI_VPA = "orderking@ybl";
 export const FOUNDER_MERCHANT_NAME = "OrderKingPay";
+export const RAZORPAY_PAYMENT_HANDLE = "razorpay.me/@orderkingpay";
+export const RAZORPAY_PAYMENT_HANDLE_URL = "https://razorpay.me/@orderkingpay";
 
 export const FOUNDER_UPI_VPAS = {
   phonepe: "9395065587@ybl",

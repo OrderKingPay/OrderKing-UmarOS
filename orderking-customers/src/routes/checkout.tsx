@@ -37,6 +37,8 @@ import {
   triggerWhatsAppDispatchWithGps,
   FOUNDER_UPI_VPA,
   FOUNDER_MERCHANT_NAME,
+  RAZORPAY_PAYMENT_HANDLE,
+  RAZORPAY_PAYMENT_HANDLE_URL,
 } from "@/lib/dispatch/whatsapp-gps-bridge";
 import {
   buildNPCIUpiIntentUrl,
@@ -944,6 +946,22 @@ function CheckoutPage() {
                           >
                             <Copy className="size-3" />
                           </button>
+                        </div>
+                      </div>
+
+                      {/* Verified Razorpay Payment Handle */}
+                      <div className="flex items-center justify-between bg-sky-950/30 border border-sky-500/20 rounded-xl p-2.5 text-xs">
+                        <span className="text-zinc-400">Razorpay Verified Handle:</span>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={RAZORPAY_PAYMENT_HANDLE_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono font-bold text-sky-400 hover:underline flex items-center gap-1"
+                          >
+                            <span>{RAZORPAY_PAYMENT_HANDLE}</span>
+                            <ExternalLink className="size-3" />
+                          </a>
                         </div>
                       </div>
 
