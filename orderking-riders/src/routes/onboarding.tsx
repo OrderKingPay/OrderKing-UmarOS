@@ -195,10 +195,10 @@ function Page() {
     }
   }
   const [agreements, setAgreements] = useState<LegalAgreementsState>({
-    serviceAgreement: false,
-    roadSafety: false,
-    foodHygiene: false,
-    privacyGps: false,
+    serviceAgreement: true,
+    roadSafety: true,
+    foodHygiene: true,
+    privacyGps: true,
   });
   const [expandedAgreement, setExpandedAgreement] = useState<string | null>(null);
   const [showAgreementModal, setShowAgreementModal] = useState(false);
@@ -1724,89 +1724,32 @@ function Page() {
                   </div>
                 </div>
 
-                {/* Mandatory Delivery Partner Legal & Safety Agreements */}
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5 space-y-3.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                        Mandatory Delivery Partner Legal &amp; Safety Agreements *
-                      </h3>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        Review the statutory summaries below and check all 4 undertakings to submit your KYC application.
+                {/* Delivery Partner Agreement (Exact Zomato Equivalent 1-Click Acceptance) */}
+                <div className="rounded-2xl border border-emerald-300 bg-emerald-50/70 p-4 sm:p-5 space-y-3">
+                  <label className="flex items-start gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={allAgreementsAccepted}
+                      onChange={(e) => {
+                        const v = e.target.checked;
+                        setAgreements({
+                          serviceAgreement: v,
+                          roadSafety: v,
+                          foodHygiene: v,
+                          privacyGps: v,
+                        });
+                      }}
+                      className="mt-1 size-5 rounded border-emerald-500 bg-white text-emerald-600 focus:ring-emerald-500 cursor-pointer shrink-0"
+                    />
+                    <div className="space-y-1">
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 block leading-snug">
+                        I agree to the OrderKing Delivery Partner Terms, Road Safety Rules, and Code on Social Security 2020 *
+                      </span>
+                      <p className="text-[11px] text-slate-700 leading-relaxed">
+                        By checking this box, you confirm that your identity and bank payout details are accurate, agree to receive weekly Wednesday settlements, and agree to follow FSSAI food safety and road safety guidelines.
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setAgreements({
-                          serviceAgreement: true,
-                          roadSafety: true,
-                          foodHygiene: true,
-                          privacyGps: true,
-                        })
-                      }
-                      className="shrink-0 rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-800 hover:bg-slate-100 transition"
-                    >
-                      Accept All 4
-                    </button>
-                  </div>
-
-                  <div className="space-y-2.5">
-                    {LEGAL_CLAUSES.map((clause) => {
-                      const checked = agreements[clause.id];
-                      const isExpanded = expandedAgreement === clause.id;
-                      return (
-                        <div
-                          key={clause.id}
-                          className="rounded-xl border border-slate-200 bg-white p-3.5 transition"
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <label className="flex items-start gap-2.5 cursor-pointer flex-1">
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={(e) =>
-                                  setAgreements((prev) => ({
-                                    ...prev,
-                                    [clause.id]: e.target.checked,
-                                  }))
-                                }
-                                className="mt-0.5 size-4 rounded border-slate-300 accent-slate-900"
-                              />
-                              <div>
-                                <span className="text-xs font-bold text-slate-900 block">
-                                  {clause.title}
-                                </span>
-                                <span className="text-[11px] text-slate-600 mt-0.5 block">
-                                  {clause.summary}
-                                </span>
-                              </div>
-                            </label>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setExpandedAgreement(isExpanded ? null : clause.id)
-                              }
-                              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 hover:text-slate-900 shrink-0"
-                            >
-                              <span>{isExpanded ? "Hide Text" : "Read Full Clause"}</span>
-                              {isExpanded ? (
-                                <ChevronUp className="size-3.5" />
-                              ) : (
-                                <ChevronDown className="size-3.5" />
-                              )}
-                            </button>
-                          </div>
-
-                          {isExpanded && (
-                            <div className="mt-2.5 border-t border-slate-100 pt-2.5 text-[11px] text-slate-600 leading-relaxed bg-slate-50 rounded-lg p-2.5">
-                              {clause.fullText}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  </label>
                 </div>
 
                 <div className="flex gap-3 pt-2">
