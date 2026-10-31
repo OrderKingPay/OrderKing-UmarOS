@@ -17,21 +17,38 @@ vi.mock("@tanstack/react-start/server", () => ({
 }));
 
 import { getSql } from "../lib/db";
+import { getRazorpayConfig } from "../lib/server/razorpay.server";
 import {
   prepareParcelRazorpayOrder,
   submitParcelOrder,
 } from "../lib/server/parcel-order";
 
 describe("Parcel Order Database Storage & Server RPC Integration", () => {
-  it("refuses Razorpay order creation without verified provider integration", async () => {
-    await expect(prepareParcelRazorpayOrder({
-      data: {
-        distanceKm: 5.0,
-        packageType: "DOCUMENTS",
-        isNight: false,
-        receipt: `rcpt_test_${Date.now()}`,
-      },
-    })).rejects.toThrow("Secure online parcel payment");
+  it("creates authentic Razorpay order when provider is configured or fails closed safely", async () => {
+    const config = getRazorpayConfig();
+    if (config.hasCredentials && config.keyId && config.keySecret) {
+      const res = await prepareParcelRazorpayOrder({
+        data: {
+          distanceKm: 5.0,
+          packageType: "DOCUMENTS",
+          isNight: false,
+          receipt: `rcpt_test_${Date.now()}`,
+        },
+      });
+      expect(res.orderId).toMatch(/^order_/);
+      expect(res.amountPaise).toBe(8000);
+      expect(res.currency).toBe("INR");
+      expect(res.keyId).toBe(config.keyId);
+    } else {
+      await expect(prepareParcelRazorpayOrder({
+        data: {
+          distanceKm: 5.0,
+          packageType: "DOCUMENTS",
+          isNight: false,
+          receipt: `rcpt_test_${Date.now()}`,
+        },
+      })).rejects.toThrow("Secure online parcel payment");
+    }
   });
 
   it(
