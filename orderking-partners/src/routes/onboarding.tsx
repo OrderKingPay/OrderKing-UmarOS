@@ -189,7 +189,7 @@ function OnboardingPage() {
     description: "",
     gstin: "",
     fssaiNumber: "",
-    fssaiExpiryDate: "",
+    fssaiExpiryDate: "2028-12-31",
     pan: "",
     holder: "",
     bankName: "",
@@ -198,12 +198,12 @@ function OnboardingPage() {
     bankIfsc: "",
     openingTime: "10:00",
     closingTime: "23:00",
-    dishName: "",
+    dishName: "Chef Special Meal",
     dishDiet: "NONVEG",
-    dishPrice: "",
+    dishPrice: "149",
   });
 
-  const [exemptFromGst, setExemptFromGst] = useState(false);
+  const [exemptFromGst, setExemptFromGst] = useState(true);
   const [partnerTermsAccepted, setPartnerTermsAccepted] = useState(true);
 
   // Auto-hydrate draft
