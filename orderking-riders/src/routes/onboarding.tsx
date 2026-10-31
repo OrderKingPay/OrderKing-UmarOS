@@ -1724,7 +1724,7 @@ function Page() {
                   </div>
                 </div>
 
-                {/* Delivery Partner Agreement (Exact Zomato Equivalent 1-Click Acceptance) */}
+                {/* Delivery Partner Agreement (1-Click Acceptance) */}
                 <div className="rounded-2xl border border-emerald-300 bg-emerald-50/70 p-4 sm:p-5 space-y-3">
                   <label className="flex items-start gap-3 cursor-pointer select-none">
                     <input
