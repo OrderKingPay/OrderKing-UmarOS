@@ -698,10 +698,10 @@ export function SupremeKingPayExperience() {
               </div>
               <div className="min-w-0 mt-2">
                 <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate flex items-center gap-1">
-                  <span>💰</span> <span>Loans &amp; FD</span>
+                  <span>💰</span> <span>Local Parcel &amp; Courier</span>
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                  Pre-Approved ₹5L · 9.1% FD
+                  Point-to-Point Pickup & Drop · ₹30 Base
                 </p>
               </div>
             </button>

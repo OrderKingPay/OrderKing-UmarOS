@@ -162,7 +162,7 @@ function DashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800">
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
                 <div className="text-[10px] uppercase font-mono text-slate-400">Food Safety Compliance</div>
-                <div className="text-sm font-semibold text-slate-100 mt-0.5">14-Digit FSSAI Mandatory</div>
+                <div className="text-sm font-semibold text-slate-100 mt-0.5">FSSAI + PAN (GST Optional)</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
                 <div className="text-[10px] uppercase font-mono text-slate-400">Tax &amp; Accounting</div>

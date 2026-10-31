@@ -472,7 +472,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
             placeholder={
               isListening
                 ? "Listening... speak command now..."
-                : "Type directive (e.g. 'set food platform fee to 12' or 'set remit fee to 1.5')..."
+                : "Ask any question or type a directive (e.g. 'how to onboard a restaurant', 'set food platform fee to 12', 'commission 18%')..."
             }
             className="w-full h-11 pl-10 pr-24 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-white placeholder:text-slate-500 font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
           />

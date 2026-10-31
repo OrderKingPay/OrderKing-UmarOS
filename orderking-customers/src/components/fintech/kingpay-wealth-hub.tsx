@@ -505,7 +505,7 @@ export function KingPayWealthHub() {
       )}
 
       {/* ========================================================= */}
-      {/* 1. DIGITAL GOLD BULLION & SAVINGS VAULT (ENHANCEMENT)    */}
+      {/* 1. DIGITAL GOLD BULLION & SAVINGS PASSBOOK (ENHANCEMENT)    */}
       {/* ========================================================= */}
       {shouldShowSection("digital_gold") && (
         <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-br from-[#1a1500] via-surface to-amber-950/20 p-6 sm:p-8 shadow-2xl relative overflow-hidden">

@@ -201,7 +201,7 @@ export function OrderKingPassbookReceipts({
             Platform Transaction Surcharge
           </span>
           <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 block mt-0.5">
-            ₹0.00
+            UPI Ready
           </span>
           <span className={`text-[10px] block mt-1 ${isDark ? "text-slate-400" : "text-stone-500"}`}>
             Direct NPCI UPI Transfer

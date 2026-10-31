@@ -254,7 +254,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
               </div>
             </div>
             <span className="font-mono font-black text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded text-xs">
-              ₹0.00 standard fee
+              UPI Ready standard fee
             </span>
           </div>
 

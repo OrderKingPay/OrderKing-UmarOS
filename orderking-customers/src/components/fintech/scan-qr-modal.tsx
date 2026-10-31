@@ -355,7 +355,7 @@ export function ScanQrModal({
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Convenience Fee:</span>
-                <span className="text-emerald-400 font-bold">₹0.00</span>
+                <span className="text-emerald-400 font-bold">UPI Ready</span>
               </div>
             </div>
 

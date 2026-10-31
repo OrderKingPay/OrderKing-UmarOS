@@ -459,7 +459,7 @@ export function RemittanceDesk() {
             <div className="flex justify-between text-slate-400">
               <span>PA-CB Cross-Border Regulatory Fee:</span>
               <span className="font-mono text-emerald-400 font-bold">
-                ₹0.00 (Promo Zero Surcharge)
+                UPI Ready (Promo Zero Surcharge)
               </span>
             </div>
 

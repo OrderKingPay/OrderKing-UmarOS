@@ -1116,7 +1116,7 @@ function PassbookLedgerTool() {
             Platform Take-Rate Fee
           </span>
           <span className="text-2xl font-black font-mono text-emerald-400 block mt-0.5">
-            ₹0.00
+            UPI Ready
           </span>
           <span className="text-[10px] text-slate-400 block mt-1">
             Standard UPI Transfer

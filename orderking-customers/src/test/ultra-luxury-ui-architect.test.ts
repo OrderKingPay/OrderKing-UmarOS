@@ -163,9 +163,9 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
       expect(kingpayExperienceCode).toContain("Daily Bills");
       expect(kingpayExperienceCode).toContain('setActiveDesk("bills")');
 
-      // Tile 9: Loans & FD
+      // Tile 9: Local Parcel & Courier
       expect(kingpayExperienceCode).toContain("💰");
-      expect(kingpayExperienceCode).toContain("Loans &amp; FD");
+      expect(kingpayExperienceCode).toContain("Local Parcel &amp; Courier");
       expect(kingpayExperienceCode).toContain('setActiveDesk("wealth")');
     });
 

@@ -213,7 +213,7 @@ export type AcademicInstitutionInvite = {
 };
 
 // ---------------------------------------------------------------------------
-// 1. GENUINE GOVERNMENT & CLOUD SUBSIDIES VAULT (> ₹3.74 CRORE)
+// 1. GENUINE GOVERNMENT & CLOUD SUBSIDIES PASSBOOK (> ₹3.74 CRORE)
 // ---------------------------------------------------------------------------
 export const GENUINE_SUBSIDIES_REGISTRY: GovernmentSubsidyProgram[] = [
   {

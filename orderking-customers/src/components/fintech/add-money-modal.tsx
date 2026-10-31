@@ -243,7 +243,7 @@ export function AddMoneyModal({
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300 flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-bold">
               <Zap className="size-4 text-emerald-400" />
-              <span>Platform Surcharge: ₹0.00</span>
+              <span>Platform Surcharge: UPI Ready</span>
             </span>
             <span className="font-mono text-emerald-400 font-black">Zero Surcharge</span>
           </div>
