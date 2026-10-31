@@ -178,8 +178,13 @@ export function CustomerShell({
     }
   }, [isDark]);
 
-  const currentPlaceholder =
-    SEARCH_PLACEHOLDERS[searchPlaceholderIndex % SEARCH_PLACEHOLDERS.length] || "What are you hungry for?";
+  const currentPlaceholder = path.startsWith("/travel")
+    ? "Search flights, hotels, or destinations..."
+    : path.startsWith("/kingpay") || path.startsWith("/king-pay")
+    ? "Search billers, utilities, or contacts..."
+    : path.startsWith("/tutor")
+    ? "Search subjects, topics, or tutors..."
+    : SEARCH_PLACEHOLDERS[searchPlaceholderIndex % SEARCH_PLACEHOLDERS.length] || "What are you hungry for?";
   const isKingPayDomain = path.startsWith("/travel") || path.startsWith("/kingpay") || path.startsWith("/king-pay");
   const hasSearchRow = path === "/" ||
     ["/restaurants", "/menu", "/r/", "/dining", "/cart"].some((prefix) => path.startsWith(prefix));

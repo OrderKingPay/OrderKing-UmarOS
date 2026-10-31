@@ -19,11 +19,103 @@ export function isValidIndianPhone(cleanPhone: string): boolean {
 }
 
 /**
- * Send OTP via Fast2SMS modern Bulk V2 OTP API.
+ * Primary OTP Provider: 2Factor.in Official Transactional Gateway
+ * Official Endpoint: https://2factor.in/API/V1/{API_KEY}/SMS/{PHONE}/{OTP}/AUTOGEN
+ *
+ * Guard: If TWOFACTOR_API_KEY === FAST2SMS_API_KEY, recognize duplicate key and skip
+ * to prevent gateway rejection.
+ */
+export async function sendOtp2Factor(phone: string, otp: string): Promise<boolean> {
+  const apiKey = (
+    process.env.TWOFACTOR_API_KEY ||
+    process.env.TWO_FACTOR_API_KEY ||
+    process.env.OTP_2FACTOR_API_KEY ||
+    ''
+  ).trim().replace(/^["']|["']$/g, '');
+  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
+
+  if (!apiKey || apiKey === 'xxx' || apiKey.includes('change-me') || apiKey.includes('your_2factor')) {
+    console.warn('[Telecom Gateway] TWOFACTOR_API_KEY not configured or placeholder; skipping 2Factor.');
+    return false;
+  }
+
+  if (fast2SmsKey && apiKey === fast2SmsKey) {
+    console.warn(
+      '[Telecom Gateway] TWOFACTOR_API_KEY is identical to FAST2SMS_API_KEY. ' +
+      '2Factor.in is not independently configured. Skipping 2Factor dispatch to prevent API crash.'
+    );
+    return false;
+  }
+
+  const cleanPhone = sanitizeIndianPhone(phone);
+  if (!isValidIndianPhone(cleanPhone)) {
+    console.warn(`[Telecom Gateway] Invalid Indian mobile number for 2Factor: ${phone}`);
+    return false;
+  }
+
+  const cleanOtp = String(otp || '').replace(/\D/g, '').trim();
+  if (!cleanOtp) {
+    console.warn('[Telecom Gateway] Empty OTP for 2Factor dispatch');
+    return false;
+  }
+
+  const template = (process.env.TWOFACTOR_OTP_TEMPLATE || 'AUTOGEN').trim();
+  const url = `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/SMS/${cleanPhone}/${encodeURIComponent(cleanOtp)}/${encodeURIComponent(template)}`;
+
+  try {
+    const resp = await axios.get(url, {
+      headers: { Accept: 'application/json' },
+      timeout: 8000,
+    });
+    return resp.data?.Status === 'Success';
+  } catch (err: unknown) {
+    const errMsg = (err as any)?.response?.data?.Details || (err as any)?.message || String(err);
+    console.error('[Telecom Gateway] 2Factor error:', errMsg);
+    return false;
+  }
+}
+
+/**
+ * 2Factor Official Voice OTP Dispatcher
+ * Official Endpoint: https://2factor.in/API/V1/{API_KEY}/VOICE/{PHONE}/{OTP}
+ */
+export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<boolean> {
+  const apiKey = (
+    process.env.TWOFACTOR_API_KEY ||
+    process.env.TWO_FACTOR_API_KEY ||
+    process.env.OTP_2FACTOR_API_KEY ||
+    ''
+  ).trim().replace(/^["']|["']$/g, '');
+
+  if (!apiKey || apiKey === 'xxx' || apiKey.includes('change-me')) {
+    console.warn('[Telecom Gateway] TWOFACTOR_API_KEY not configured for voice OTP dispatch.');
+    return false;
+  }
+
+  const cleanPhone = sanitizeIndianPhone(phone);
+  if (!isValidIndianPhone(cleanPhone)) return false;
+  const cleanOtp = String(otp || '').replace(/\D/g, '').trim();
+  if (!cleanOtp) return false;
+
+  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/VOICE/${cleanPhone}/${encodeURIComponent(cleanOtp)}`;
+
+  try {
+    const resp = await axios.get(voiceUrl, {
+      headers: { Accept: 'application/json' },
+      timeout: 8000,
+    });
+    return resp.data?.Status === 'Success';
+  } catch (err: unknown) {
+    const errMsg = (err as any)?.response?.data?.Details || (err as any)?.message || String(err);
+    console.error('[Telecom Gateway] 2Factor voice error:', errMsg);
+    return false;
+  }
+}
+
+/**
+ * Secondary OTP Provider: Fast2SMS modern Bulk V2 OTP API
  * Endpoint: https://www.fast2sms.com/dev/bulkV2
  * Route: 'otp'
- * Payload: { route: 'otp', variables_values: otp, numbers: phone }
- * Header: authorization: <FAST2SMS_API_KEY>
  */
 export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boolean> {
   const apiKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
@@ -65,68 +157,41 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
 }
 
 /**
- * Fallback OTP via 2Factor.in.
- * API: https://2factor.in/API/V1/{apiKey}/SMS/{phone}/{otp}
- *
- * Guard: If OTP_2FACTOR_API_KEY === FAST2SMS_API_KEY, recognize that 2Factor is not
- * independently configured and don't fail silently or crash.
+ * Tertiary OTP Provider: MSG91 OTP API
  */
-export async function sendOtp2Factor(phone: string, otp: string): Promise<boolean> {
-  const apiKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || '').trim().replace(/^["']|["']$/g, '');
-  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
-
-  if (!apiKey || apiKey === 'xxx' || apiKey.includes('change-me') || apiKey.includes('your_2factor')) {
-    console.warn('[Telecom Gateway] OTP_2FACTOR_API_KEY not set or placeholder; skipping 2Factor.');
+export async function sendOtpMSG91(phone: string, otp: string): Promise<boolean> {
+  const authKey = (process.env.MSG91_AUTH_KEY || '').trim().replace(/^["']|["']$/g, '');
+  const templateId = (process.env.MSG91_TEMPLATE_ID || '').trim();
+  if (!authKey || authKey === 'xxx' || authKey.includes('change-me') || !templateId) {
     return false;
   }
-
-  if (fast2SmsKey && apiKey === fast2SmsKey) {
-    console.warn(
-      '[Telecom Gateway] OTP_2FACTOR_API_KEY is identical to FAST2SMS_API_KEY. ' +
-      '2Factor.in is not independently configured. Skipping 2Factor dispatch to prevent API crash.'
-    );
-    return false;
-  }
-
   const cleanPhone = sanitizeIndianPhone(phone);
-  if (!isValidIndianPhone(cleanPhone)) {
-    console.warn(`[Telecom Gateway] Invalid Indian mobile number for 2Factor: ${phone}`);
-    return false;
-  }
-
+  if (!isValidIndianPhone(cleanPhone)) return false;
   const cleanOtp = String(otp || '').replace(/\D/g, '').trim();
-  if (!cleanOtp) {
-    console.warn('[Telecom Gateway] Empty OTP for 2Factor dispatch');
-    return false;
-  }
-
-  const template = (process.env.TWOFACTOR_OTP_TEMPLATE || '').trim();
-  const url = template
-    ? `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/SMS/${cleanPhone}/${encodeURIComponent(cleanOtp)}/${encodeURIComponent(template)}`
-    : `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/SMS/${cleanPhone}/${encodeURIComponent(cleanOtp)}`;
 
   try {
-    const resp = await axios.get(url, {
-      headers: { Accept: 'application/json' },
-      timeout: 8000,
-    });
-    return resp.data?.Status === 'Success';
-  } catch (err: unknown) {
-    const errMsg = (err as any)?.response?.data?.Details || (err as any)?.message || String(err);
-    console.error('[Telecom Gateway] 2Factor error:', errMsg);
+    const resp = await axios.post(
+      `https://control.msg91.com/api/v5/otp?template_id=${encodeURIComponent(templateId)}&mobile=91${cleanPhone}&authkey=${encodeURIComponent(authKey)}&otp=${encodeURIComponent(cleanOtp)}`,
+      {},
+      { timeout: 8000 }
+    );
+    return resp.data?.type === 'success';
+  } catch {
     return false;
   }
 }
 
 /**
  * Resilient Multi-Gateway Dispatcher with Zero-Lockout Fallback:
- * 1. Primary: Fast2SMS modern Bulk V2 (route: 'otp')
- * 2. Secondary fallback: 2Factor.in (if independently configured with separate key)
- * 3. Emergency fallback: Returns status without throwing/crashing
+ * Priority Order:
+ * 1. Primary: 2Factor.in (AUTOGEN / Transactional route 24/7)
+ * 2. Secondary fallback: Fast2SMS modern Bulk V2 (route: 'otp')
+ * 3. Tertiary fallback: MSG91
+ * 4. Emergency fallback: Returns status without throwing/crashing
  */
 export async function sendOtp(phone: string, otp: string): Promise<{
   success: boolean;
-  provider: 'fast2sms' | '2factor' | 'fallback_logged';
+  provider: '2factor' | 'fast2sms' | 'msg91' | 'fallback_logged';
   message?: string;
 }> {
   const cleanPhone = sanitizeIndianPhone(phone);
@@ -134,23 +199,14 @@ export async function sendOtp(phone: string, otp: string): Promise<{
     throw new Error('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
   }
 
-  // 1. Primary: Fast2SMS v2 OTP
-  try {
-    const fast2smsOk = await sendOtpFast2SMS(cleanPhone, otp);
-    if (fast2smsOk) {
-      return {
-        success: true,
-        provider: 'fast2sms',
-        message: `OTP delivered via Fast2SMS to +91-${cleanPhone}`,
-      };
-    }
-  } catch (err: unknown) {
-    console.warn('[Telecom Gateway] Fast2SMS dispatch failed, checking fallback:', (err as any)?.message || err);
-  }
-
-  // 2. Secondary: 2Factor.in (only if independently configured)
+  // 1. Primary: 2Factor.in
   const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
-  const twoFactorKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || '').trim().replace(/^["']|["']$/g, '');
+  const twoFactorKey = (
+    process.env.TWOFACTOR_API_KEY ||
+    process.env.TWO_FACTOR_API_KEY ||
+    process.env.OTP_2FACTOR_API_KEY ||
+    ''
+  ).trim().replace(/^["']|["']$/g, '');
 
   if (twoFactorKey && twoFactorKey !== fast2SmsKey && !twoFactorKey.includes('change-me') && twoFactorKey !== 'xxx') {
     try {
@@ -163,13 +219,37 @@ export async function sendOtp(phone: string, otp: string): Promise<{
         };
       }
     } catch (err: unknown) {
-      console.warn('[Telecom Gateway] 2Factor fallback failed:', (err as any)?.message || err);
+      console.warn('[Telecom Gateway] 2Factor primary failed, checking fallback:', (err as any)?.message || err);
     }
-  } else if (twoFactorKey && twoFactorKey === fast2SmsKey) {
-    console.info('[Telecom Gateway] 2Factor fallback skipped: OTP_2FACTOR_API_KEY mirrors FAST2SMS_API_KEY.');
   }
 
-  // 3. Fallback logged (guarantees system resilience)
+  // 2. Secondary: Fast2SMS Bulk V2
+  try {
+    const fast2smsOk = await sendOtpFast2SMS(cleanPhone, otp);
+    if (fast2smsOk) {
+      return {
+        success: true,
+        provider: 'fast2sms',
+        message: `OTP delivered via Fast2SMS to +91-${cleanPhone}`,
+      };
+    }
+  } catch (err: unknown) {
+    console.warn('[Telecom Gateway] Fast2SMS fallback failed:', (err as any)?.message || err);
+  }
+
+  // 3. Tertiary: MSG91
+  try {
+    const msg91Ok = await sendOtpMSG91(cleanPhone, otp);
+    if (msg91Ok) {
+      return {
+        success: true,
+        provider: 'msg91',
+        message: `OTP delivered via MSG91 to +91-${cleanPhone}`,
+      };
+    }
+  } catch {}
+
+  // 4. Fallback logged (guarantees system resilience)
   console.warn(`[Telecom Gateway] OTP dispatch logged for +91-${cleanPhone} (Code: ${otp})`);
   return {
     success: true,

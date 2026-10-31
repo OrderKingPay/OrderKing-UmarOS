@@ -51,14 +51,14 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
 
       setResult({
         disbursedAmount: requested,
-        message: "Instant Pre-Approved Credit Line Authorized",
+        message: "Estimated Pre-Qualification Calculated",
         interestRate,
         tenureMonths,
         emi,
         loanId,
       });
-      toast.success(`Credit line of ₹${requested.toLocaleString("en-IN")} authorized and credited to KingPay Wallet!`);
-      onDisburseToWallet(requested);
+      toast.success(`Pre-qualification calculated: ₹${requested.toLocaleString("en-IN")}. Apply with licensed NBFC partners below.`);
+      onDisburseToWallet(0);
     } catch (err) {
       setError("Bureau verification error. Please try again or apply with our verified lending partners below.");
     } finally {
