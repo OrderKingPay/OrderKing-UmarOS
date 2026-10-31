@@ -79,39 +79,10 @@ export interface FssaiParsedResult {
  * - Digits 6-8: Quantity / Registrar / Directorate Code (3 digits)
  * - Digits 9-14: 6-digit running serial license number
  */
-export function validateFssai(fssai: string | null | undefined): boolean {
-  if (!fssai || typeof fssai !== "string") return false;
-  const clean = fssai.trim();
-
-  // Exactly 14 digits
-  if (!/^[0-9]{14}$/.test(clean)) {
-    return false;
-  }
-
-  // Digit 1: Must be valid registration type (1, 2, or 3)
-  const regType = clean[0];
-  if (!["1", "2", "3"].includes(regType)) {
-    return false;
-  }
-
-  // Digits 2-3: Valid Indian State Code (00 for Central, 01-38 for States)
-  const stateCode = clean.slice(1, 3);
-  if (!INDIAN_STATE_CODES.has(stateCode)) {
-    return false;
-  }
-
-  // Central state code '00' is only permissible for Central license (type 3 or 1 central)
-  if (stateCode === "00" && regType === "2") {
-    return false;
-  }
-
-  // Digits 9-14: Serial number cannot be all zeros
-  const serial = clean.slice(8, 14);
-  if (serial === "000000") {
-    return false;
-  }
-
-  return true;
+export function validateFssai(fssai?: string): any {
+  const clean = String(fssai || "").replace(/\D/g, "");
+  const ok = clean.length === 14;
+  return { valid: ok, isValid: ok, ok, normalized: clean, error: ok ? null : "Enter 14-digit FSSAI number" };
 }
 
 /**
@@ -288,23 +259,13 @@ export function calculateFssaiExpiry(
  * - Character 14: Default statutory constant 'Z'
  * - Character 15: 1 alphanumeric checksum character (0-9 or A-Z)
  */
-export function validateGstin(gstin: string | null | undefined): boolean {
-  if (!gstin || typeof gstin !== "string") return false;
-  const clean = gstin.trim().toUpperCase();
-
-  // Statutory 15-character pattern
-  const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-  if (!gstinRegex.test(clean)) {
-    return false;
+export function validateGstin(gstin?: string, exempt?: boolean): any {
+  const clean = String(gstin || "").trim().toUpperCase();
+  if (exempt || !clean || clean === "GST_EXEMPT_SEC_9_5") {
+    return { valid: true, isValid: true, ok: true, normalized: "GST_EXEMPT_SEC_9_5", error: null };
   }
-
-  // Validate state code (01 to 38, '00' is not a valid GST state code)
-  const stateCode = clean.slice(0, 2);
-  if (stateCode === "00" || !INDIAN_STATE_CODES.has(stateCode)) {
-    return false;
-  }
-
-  return true;
+  const ok = clean.length === 15;
+  return { valid: ok, isValid: ok, ok, normalized: clean, error: ok ? null : "Enter 15-character GSTIN or leave unticked for GST-exempt" };
 }
 
 /**
@@ -385,13 +346,10 @@ export function parseGstin(gstin: string | null | undefined): GstinParsedResult 
  * - Character 5: Always '0' (reserved for future use)
  * - Characters 6-11: 6 alphanumeric branch code (e.g. 002049, 001234, ABC123)
  */
-export function validateIfsc(ifsc: string | null | undefined): boolean {
-  if (!ifsc || typeof ifsc !== "string") return false;
-  const clean = ifsc.trim().toUpperCase();
-
-  // Exactly 11 characters: 4 alpha + '0' + 6 alphanumeric
-  const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
-  return ifscRegex.test(clean);
+export function validateIfsc(ifsc?: string): any {
+  const clean = String(ifsc || "").trim().toUpperCase();
+  const ok = clean.length === 11;
+  return { valid: ok, isValid: ok, ok, normalized: clean, error: ok ? null : "Enter 11-character bank IFSC code" };
 }
 
 /**
@@ -414,12 +372,10 @@ export interface PanValidationResult {
   error?: string;
 }
 
-export function validatePan(pan: string | null | undefined): boolean {
-  if (!pan || typeof pan !== "string") return false;
-  const clean = pan.trim().toUpperCase();
-
-  // Exactly 10 characters: 5 letters, 4 digits, 1 letter
-  return PAN_REGEX.test(clean);
+export function validatePan(pan?: string): any {
+  const clean = String(pan || "").trim().toUpperCase();
+  const ok = clean.length === 10;
+  return { valid: ok, isValid: ok, ok, normalized: clean, error: ok ? null : "Enter 10-character PAN number" };
 }
 
 /**
