@@ -520,10 +520,10 @@ function Page() {
         return;
       }
 
-      // Partner Selfie with OrderKing delivery bag is required for onboarding
+      // Partner Photo / Live Selfie for ID card
       if (!docs.partnerSelfie) {
         setError(
-          "Partner selfie with OrderKing delivery bag is required to complete fleet onboarding verification.",
+          "Partner profile photo or live selfie is required to complete fleet onboarding verification.",
         );
         return;
       }
@@ -1423,9 +1423,7 @@ function Page() {
                         },
                         {
                           key: "partnerSelfie" as const,
-                          label: isExemptVehicle
-                            ? "Partner Selfie with Bag (* Required for Bicycle & Low-Speed EV)"
-                            : "Partner Selfie with OrderKing Delivery Bag (* Required)",
+                          label: "Partner Profile Photo / Live Selfie (* Clear photo of your face for Partner ID)",
                         },
                       ] as const
                     ).map((docItem) => {

@@ -936,24 +936,24 @@ function OnboardingPage() {
           {/* 5 Stations Step Indicator */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-3 text-xs">
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">STATION 1</span>
-              <span className="font-medium text-slate-200">Identity &amp; Kitchen</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STEP 1</span>
+              <span className="font-medium text-slate-200">Restaurant Info</span>
             </div>
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">STATION 2</span>
-              <span className="font-medium text-slate-200">Food Safety &amp; Tax</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STEP 2</span>
+              <span className="font-medium text-slate-200">FSSAI &amp; PAN</span>
             </div>
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">STATION 3</span>
-              <span className="font-medium text-slate-200">Direct Payouts</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STEP 3</span>
+              <span className="font-medium text-slate-200">Bank Payouts</span>
             </div>
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">STATION 4</span>
-              <span className="font-medium text-slate-200">Documents &amp; Menu</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STEP 4</span>
+              <span className="font-medium text-slate-200">Menu &amp; Docs</span>
             </div>
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">STATION 5</span>
-              <span className="font-medium text-emerald-400">Partner Agreement</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STEP 5</span>
+              <span className="font-medium text-emerald-400">Terms &amp; Launch</span>
             </div>
           </div>
         </div>
@@ -1007,7 +1007,7 @@ function OnboardingPage() {
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">STATION 1 OF 5</span>
+            <span className="text-[11px] font-mono text-slate-400">STEP 1 OF 5</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1129,7 +1129,7 @@ function OnboardingPage() {
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">STATION 2 OF 5</span>
+            <span className="text-[11px] font-mono text-slate-400">STEP 2 OF 5</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1202,7 +1202,7 @@ function OnboardingPage() {
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">STATION 3 OF 5</span>
+            <span className="text-[11px] font-mono text-slate-400">STEP 3 OF 5</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1246,7 +1246,7 @@ function OnboardingPage() {
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">STATION 4 OF 5</span>
+            <span className="text-[11px] font-mono text-slate-400">STEP 4 OF 5</span>
           </div>
 
           {vendor.restaurantId ? (
@@ -1350,7 +1350,7 @@ function OnboardingPage() {
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-emerald-400 font-semibold">STATION 5 OF 5</span>
+            <span className="text-[11px] font-mono text-emerald-400 font-semibold">STEP 5 OF 5 · LAUNCH</span>
           </div>
 
           {/* 1. KEY TERMS SUMMARY & EXPANDABLE COVENANTS */}

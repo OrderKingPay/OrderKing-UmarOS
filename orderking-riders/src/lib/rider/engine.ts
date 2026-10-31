@@ -481,11 +481,13 @@ export class RiderEngine {
     if (!rider.fullName.trim() || !rider.phone.trim()) {
       throw new RiderError("INCOMPLETE", "Name and phone are required", 400);
     }
-    if (!rider.payoutUpi?.trim()) {
-      throw new RiderError("INCOMPLETE", "UPI payout details are required", 400);
+    const hasUpi = Boolean(rider.payoutUpi && /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(rider.payoutUpi.trim()));
+    const hasBank = Boolean((rider.bankAccount && rider.bankIfsc) || (rider.payoutBankLast4 && /^\d{4}$/.test(rider.payoutBankLast4.trim())));
+    if (!hasUpi && !hasBank) {
+      throw new RiderError("INCOMPLETE", "Bank Account (with IFSC) or UPI payout details are required", 400);
     }
     const evaluation = evaluateAutomatedOnboarding(rider);
-    const nextStatus: KycStatus = evaluation.approved ? "VERIFIED" : "REJECTED";
+    const nextStatus: KycStatus = evaluation.approved ? "VERIFIED" : "UNDER_REVIEW";
     const next: RiderProfile = {
       ...rider,
       kycStatus: nextStatus,

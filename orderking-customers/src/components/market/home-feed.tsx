@@ -344,10 +344,9 @@ export function HomeFeed({
     ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId)
     : true;
 
-  const isZeroDeliveryInRadius =
-    !isDeliveryActive ||
-    (list.data && list.data.restaurants.length === 0) ||
-    (list.data && list.data.deliveryAvailable === false);
+  const isZeroDeliveryInRadius = Boolean(
+    list.data && list.data.restaurants && list.data.restaurants.length === 0
+  );
 
   // Filtered and sorted restaurants based on active controls
   const filteredRestaurants = useMemo(() => {
@@ -410,6 +409,25 @@ export function HomeFeed({
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 bg-[#FCFAF7] text-gray-900 font-sans">
 
+
+      {/* Informative Hub Banner when browsing outside immediate delivery radius */}
+      {list.data?.deliveryAvailable === false && list.data?.restaurants && list.data.restaurants.length > 0 && (
+        <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-950 text-xs mb-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <MapPin className="size-4 text-amber-600 shrink-0" />
+            <span className="truncate">
+              {list.data.reason || "Showing verified partner kitchens in active delivery hub. Tap to set your delivery address."}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setLocDialogOpen(true)}
+            className="shrink-0 px-3 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition cursor-pointer"
+          >
+            Change
+          </button>
+        </div>
+      )}
 
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
       {!q && !isZeroDeliveryInRadius && (

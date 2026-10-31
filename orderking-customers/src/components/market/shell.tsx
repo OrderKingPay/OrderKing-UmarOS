@@ -269,45 +269,38 @@ export function CustomerShell({
             )}
           </div>
 
-          {/* Row 1 Center: Fork & Spoon "Food" and KingPay Symbol Pill '✈️ 🚆 🎓' */}
-          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 py-0.5">
-            {/* Minimal Micro-Pill 1: Food Delivery ( 🍔 ) */}
+          {/* Row 1 Center: Clean Segmented App Switcher */}
+          <nav aria-label="OrderKing Core Navigation" className="flex items-center p-0.5 rounded-full bg-slate-200/60 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 shrink-0">
+            {/* Food Tab */}
             <Link
               to="/"
               title="OrderKing Food Delivery"
               aria-label="OrderKing Food Delivery"
               className={cn(
-                "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
-                path === "/" || path.startsWith("/r/") || path.startsWith("/delivery") || path.startsWith("/dining")
-                  ? isDark
-                    ? "border-amber-400 bg-gradient-to-b from-amber-500/30 to-amber-600/20 text-amber-200 ring-1 ring-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
-                    : "border-amber-500 bg-gradient-to-b from-amber-100 to-amber-200/80 text-amber-950 ring-1 ring-amber-400 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
-                  : isDark
-                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-amber-400/40"
-                    : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400/60"
+                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black transition-all no-underline shrink-0 cursor-pointer select-none",
+                !isKingPayDomain && !path.startsWith("/travel") && !path.startsWith("/tutor")
+                  ? "bg-white text-gray-950 shadow-xs"
+                  : "text-gray-600 dark:text-slate-400 hover:text-gray-900"
               )}
             >
-              <span className="text-sm sm:text-base leading-none select-none">🍔</span>
-              <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
+              <span className="text-sm leading-none">🍔</span>
+              <span className="text-[11px] font-black uppercase tracking-tight">Food</span>
             </Link>
 
-            {/* KingPay Mode: ONLY '✈️ 🚆 🎓' with no text */}
+            {/* KingPay / Travel Tab */}
             <Link
               to="/travel"
-              title="KingPay Super-App (Flights, Trains, AI Tutor)"
-              aria-label="Flights, Trains, AI Tutor"
+              title="KingPay (Travel, IRCTC & AI)"
+              aria-label="KingPay Travel and AI"
               className={cn(
-                "inline-flex items-center justify-center px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
-                isKingPayDomain || path.startsWith("/tutor")
-                  ? isDark
-                    ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-indigo-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
-                    : "border-sky-500 bg-gradient-to-b from-sky-100 to-indigo-100 text-sky-950 ring-1 ring-sky-400 shadow-[0_2px_8px_rgba(14,165,233,0.2)]"
-                  : isDark
-                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-sky-400/40"
-                    : "border-slate-200 bg-white/90 hover:bg-sky-50/80 text-gray-800 hover:border-sky-400/60"
+                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black transition-all no-underline shrink-0 cursor-pointer select-none",
+                isKingPayDomain || path.startsWith("/travel") || path.startsWith("/tutor")
+                  ? "bg-slate-900 text-white shadow-xs"
+                  : "text-gray-600 dark:text-slate-400 hover:text-gray-900"
               )}
             >
-              <span className="text-xs sm:text-sm tracking-wider leading-none select-none">✈️ 🚆 🎓</span>
+              <span className="text-sm leading-none">✈️</span>
+              <span className="text-[11px] font-black uppercase tracking-tight">KingPay</span>
             </Link>
           </nav>
 

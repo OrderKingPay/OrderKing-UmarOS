@@ -123,6 +123,10 @@ function Login() {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
 
+      if (channel === "whatsapp" && res.whatsAppOtpUrl && typeof window !== "undefined") {
+        window.open(res.whatsAppOtpUrl, "_blank");
+      }
+
       setStep("otp");
       setCountdown(30);
       setCanResend(false);

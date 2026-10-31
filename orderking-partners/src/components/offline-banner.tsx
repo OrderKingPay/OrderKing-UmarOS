@@ -24,7 +24,7 @@ export function OfflineBanner({ stale: _stale }: { stale?: boolean }) {
     };
   }, []);
 
-  if (speed === "NORMAL") return null;
+  if (speed !== "OFFLINE") return null;
 
   if (speed === "OFFLINE") {
     return (

@@ -250,13 +250,13 @@ export function TravelPage() {
     <CustomerShell>
       <div className="min-h-screen bg-slate-100 text-slate-900 pb-24">
         {/* Header Banner */}
-        <div className="bg-slate-900 text-white border-b border-slate-800">
+        <div className="bg-slate-900 !text-white border-b border-slate-800">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
-              <Plane className="size-6 text-sky-400" />
-              <span>Travel &amp; Ticketing</span>
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2 !text-white">
+              <Plane className="size-6 text-sky-400 shrink-0" />
+              <span className="!text-white">Travel &amp; Ticketing</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm !text-slate-200 mt-1">
               Search live domestic and international flights, IRCTC train schedules, verified hotels, and buses.
             </p>
           </div>
@@ -394,7 +394,7 @@ export function TravelPage() {
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
                     Book Directly on Official Airlines:
                   </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {airlineLinks.map((item) => (
                       <a
                         key={item.code}

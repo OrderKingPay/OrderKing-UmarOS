@@ -180,7 +180,7 @@ async function sendViaFast2SMS(
     };
   }
 
-  const res = await fetchWithTimeout(
+  let res = await fetchWithTimeout(
     url,
     {
       method: "POST",
@@ -193,6 +193,29 @@ async function sendViaFast2SMS(
     },
     timeoutMs,
   );
+
+  // If route !== "q" fails (e.g. status 400 with 996 unverified OTP API), immediately retry via quick SMS route "q"
+  if (!res.ok && route !== "q") {
+    console.warn(`[Fast2SMS] Route '${route}' returned HTTP ${res.status}. Falling back to Quick SMS route 'q'...`);
+    res = await fetchWithTimeout(
+      url,
+      {
+        method: "POST",
+        headers: {
+          authorization: apiKey,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          route: "q",
+          message: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Do not share with anyone.`,
+          language: "english",
+          numbers: cleanPhone,
+        }),
+      },
+      timeoutMs,
+    );
+  }
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");

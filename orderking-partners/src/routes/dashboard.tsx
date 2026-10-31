@@ -22,6 +22,7 @@ import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
 import { DailyPerformanceLedgerCard } from "@/components/dashboard/daily-performance-ledger-card";
 import {
   AlertTriangle,
+  ArrowRight,
   ArrowUpRight,
   Banknote,
   CheckCircle2,
@@ -144,38 +145,44 @@ function DashboardPage() {
     return (
       <VendorShell title="Restaurant Partner Onboarding">
         <div className="mx-auto max-w-2xl space-y-4 py-4">
-          <Card className="border-slate-800 bg-slate-900/90 p-6 space-y-4">
+          <Card className="border-slate-800 bg-slate-900/90 p-6 sm:p-8 space-y-5 rounded-2xl shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
                 <Store className="size-4" />
-                OrderKing Restaurant Partner
+                OrderKing Partner Platform
               </div>
-              <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-mono font-semibold text-emerald-400">
-                SELF-SERVICE ONBOARDING
+              <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-0.5 text-[11px] font-mono font-semibold text-emerald-300">
+                PARTNER ONBOARDING
               </span>
             </div>
-            <h2 className="font-display text-2xl font-bold text-slate-100">
-              Register Your Restaurant &amp; Complete Statutory KYC
-            </h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Your partner account is ready. Complete your restaurant profile with your 14-digit FSSAI food license, PAN card, outlet address proof, and settlement bank account (GST is optional — tick only if applicable) to start receiving customer orders.</p>
+            <div className="space-y-1.5">
+              <h2 className="font-display text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Register Your Restaurant &amp; Start Receiving Orders
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Welcome to the OrderKing Partner platform. Set up your outlet profile, add your 14-digit FSSAI license and PAN card, and configure your bank account for automated daily/weekly payouts.
+              </p>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800">
-              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Food Safety Compliance</div>
-                <div className="text-sm font-semibold text-slate-100 mt-0.5">FSSAI + PAN (GST Optional)</div>
+              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 space-y-1">
+                <div className="text-[10px] uppercase font-mono text-slate-400">1. Outlet Profile</div>
+                <div className="text-xs font-bold text-slate-100">Location, Cuisines &amp; Timings</div>
               </div>
-              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Tax &amp; Accounting</div>
-                <div className="text-sm font-semibold text-slate-100 mt-0.5">PAN Card &amp; Optional GST</div>
+              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 space-y-1">
+                <div className="text-[10px] uppercase font-mono text-slate-400">2. Statutory KYC</div>
+                <div className="text-xs font-bold text-slate-100">14-Digit FSSAI &amp; PAN Card</div>
               </div>
-              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Payout Ledger</div>
-                <div className="text-sm font-semibold text-emerald-400 mt-0.5">Automated Bank Payouts</div>
+              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80 space-y-1">
+                <div className="text-[10px] uppercase font-mono text-slate-400">3. Direct Payouts</div>
+                <div className="text-xs font-bold text-emerald-400">Direct Bank Settlements</div>
               </div>
             </div>
             <div className="flex flex-wrap gap-3 pt-2">
-              <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium">
-                <Link to="/onboarding">Complete Restaurant Onboarding</Link>
+              <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95">
+                <Link to="/onboarding">
+                  Start Restaurant Registration Now
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
               </Button>
             </div>
           </Card>

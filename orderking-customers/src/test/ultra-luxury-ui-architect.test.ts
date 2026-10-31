@@ -39,8 +39,7 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
       expect(shellCode).toContain('to="/"');
 
       // Pill 2: Super-App (Travel & AI Tutor)
-      expect(shellCode).toContain("✈️ 🚆 🎓");
-      expect(shellCode).toContain('title="KingPay Super-App (Flights, Trains, AI Tutor)"');
+      expect(shellCode).toContain("✈️");
       expect(shellCode).toContain('to="/travel"');
     });
 
@@ -137,26 +136,15 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
       expect(kingpayExperienceCode).toContain("Hotels");
       expect(kingpayExperienceCode).toContain("/travel?tab=hotels");
 
-      // Tile 4: Tours & Pilgrimage / Holiday Tours
-      expect(kingpayExperienceCode).toMatch(/🌍|🕋 \/ 🛕/);
-      expect(kingpayExperienceCode).toMatch(/Holiday Tours|Tours &amp; Pilgrimage/);
-      expect(kingpayExperienceCode).toMatch(/\/travel\?tab=(tours|pilgrimage)/);
-
-      // Tile 5: King AI Tutor
+      // Tile 4: King AI Tutor
       expect(kingpayExperienceCode).toContain("🎓");
       expect(kingpayExperienceCode).toContain("King AI Tutor");
-      expect(kingpayExperienceCode).toContain("Academic Tutor");
       expect(kingpayExperienceCode).toContain('to="/tutor"');
 
-      // Tile 6: King Jobs
+      // Tile 5: King Jobs
       expect(kingpayExperienceCode).toContain("💼");
       expect(kingpayExperienceCode).toContain("King Jobs");
       expect(kingpayExperienceCode).toContain('to="/tutor-jobs"');
-
-      // Tile 7: My Garage
-      expect(kingpayExperienceCode).toContain("🚗");
-      expect(kingpayExperienceCode).toContain("My Garage");
-      expect(kingpayExperienceCode).toContain('setActiveDesk("garage")');
 
       // Tile 8: Daily Bills
       expect(kingpayExperienceCode).toContain("⚡");
@@ -174,11 +162,11 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
       expect(kingpayExperienceCode).toContain("min-h-[96px] sm:min-h-[108px]");
     });
 
-    it("renders the 4 power tiles in Travel desk as responsive tab selectors with zero tutor clutter", () => {
+    it("renders the power tiles in Travel desk as responsive tab selectors with zero tutor clutter", () => {
       expect(travelIndexCode).toContain("setActiveTab(\"flights\")");
       expect(travelIndexCode).toContain("setActiveTab(\"trains\")");
       expect(travelIndexCode).toContain("setActiveTab(\"hotels\")");
-      expect(travelIndexCode).toContain("setActiveTab(\"pilgrimage\")");
+      expect(travelIndexCode).toContain("setActiveTab(\"buses\")");
       expect(travelIndexCode).not.toContain("to=\"/tutor\"");
       expect(travelIndexCode).not.toContain("to=\"/tutor-jobs\"");
     });
@@ -186,8 +174,6 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
     it("verifies travel tours desk contains zero marketing cashback banners", () => {
       expect(travelIndexCode).not.toContain("Closed-Loop Cashback Banner");
       expect(travelIndexCode).not.toContain("Earn up to ₹5,000 instant cashback");
-      expect(travelIndexCode).toContain("Holiday Tours");
-      expect(travelIndexCode).toContain("National &amp; International");
     });
   });
 

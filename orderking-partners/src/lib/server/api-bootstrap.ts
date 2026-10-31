@@ -246,11 +246,15 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
       insert into restaurant_staff (id, restaurant_id, outlet_id, user_id, role)
       values (${newId("stf")}, ${restaurantId}, ${outletId}, ${context.userId}, 'OWNER')
     `;
-    for (let day = 0; day <= 6; day++) {
-      await sql`
-        insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minute, open_minutes, close_minute, close_minutes)
-        values (${newId("hrs")}, ${restaurantId}, ${outletId}, ${day}, ${11 * 60}, ${11 * 60}, ${22 * 60}, ${22 * 60})
-      `;
+        for (let day = 0; day <= 6; day++) {
+      try {
+        await sql`
+          insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minutes, close_minutes)
+          values (${newId("hrs")}, ${restaurantId}, ${outletId}, ${day}, ${11 * 60}, ${22 * 60})
+        `;
+      } catch {
+        // Non-fatal if schema differs or hours already initialized
+      }
     }
     await writeAudit(sql, {
       restaurantId,
@@ -259,24 +263,6 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
       entityType: "restaurant",
       entityId: restaurantId,
     });
-
-    // HDmaster transition or external sync hook:
-    // Safely wrap URL parsing and synchronization so draft creation NEVER fails due to external URL errors
-    try {
-      const hdUrl = process.env.HDMASTER_URL?.trim();
-      if (hdUrl) {
-        try {
-          const parsed = new URL(hdUrl);
-          if (parsed.protocol === "http:" || parsed.protocol === "https:") {
-            // External sync isolated
-          }
-        } catch (urlErr) {
-          console.warn("[createRestaurantDraft] HDMASTER_URL is not a valid absolute URL; ignoring external sync:", urlErr);
-        }
-      }
-    } catch (syncErr) {
-      console.warn("[createRestaurantDraft] External sync non-fatal error:", syncErr);
-    }
 
     return { ok: true as const, restaurantId, verificationStatus: "DRAFT" as const, dataLabel: "REAL" as const };
   });
@@ -456,15 +442,13 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
             if (existing.length > 0) {
               await sql`
                 update restaurant_hours
-                set open_minute = ${openMin}, open_minutes = ${openMin},
-                    close_minute = ${closeMin}, close_minutes = ${closeMin}
+                set open_minutes = ${openMin}, close_minutes = ${closeMin}
                 where restaurant_id = ${ctx.restaurantId} and weekday = ${day}
               `;
             } else {
               const { newId } = await import("@/lib/utils");
               await sql`
-                insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minute, open_minutes, close_minute, close_minutes)
-                values (${newId("hrs")}, ${ctx.restaurantId}, ${outletId}, ${day}, ${openMin}, ${openMin}, ${closeMin}, ${closeMin})
+                insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minutes, close_minutes) values (${newId("hrs")}, ${ctx.restaurantId}, ${outletId}, ${day}, ${openMin}, ${closeMin})
               `;
             }
           } catch {
