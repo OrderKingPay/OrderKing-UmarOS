@@ -28,6 +28,24 @@ export interface RiderStore {
   getRiderByUserId(userId: string): Promise<RiderProfile | null>;
   getRiderById(id: string): Promise<RiderProfile | null>;
   upsertRider(rider: RiderProfile): Promise<void>;
+  upsertRiderKyc?(kyc: {
+    id: string;
+    riderId: string;
+    userId: string;
+    fullName: string;
+    phone: string;
+    vehicleType: string;
+    vehicleNumber?: string | null;
+    dlNumber?: string | null;
+    pan?: string | null;
+    aadhaarLast4?: string | null;
+    bankAccount?: string | null;
+    bankIfsc?: string | null;
+    bankHolder?: string | null;
+    documentUrls?: Record<string, unknown>;
+    status: string;
+    rejectionReason?: string | null;
+  }): Promise<void>;
   insertDocument(doc: RiderDocument, userId: string): Promise<void>;
   listDocuments(userId: string): Promise<RiderDocument[]>;
 

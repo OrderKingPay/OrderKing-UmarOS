@@ -2383,7 +2383,7 @@ function IntelligencePage() {
                 {candidateSkillsInput.trim() && (
                   <div className="flex items-center gap-2 text-[11px] text-zinc-400">
                     <span className="font-bold text-emerald-400">✓ Deterministic Skill-Matching Active:</span>
-                    <span>Zero Math.random() / fake scoring. Fit scores computed strictly from requirement token intersection.</span>
+                    <span>Verified algorithmic match. Fit scores are calculated directly from verified job requirements and candidate profile.</span>
                   </div>
                 )}
               </div>

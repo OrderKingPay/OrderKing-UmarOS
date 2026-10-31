@@ -768,7 +768,7 @@ export function RiderBenefitsHub({
                 1. Scheduled Weekly Payout
               </span>
               <p className="text-muted-foreground">
-                {RIDER_AFFILIATE_PARTNERS.instantCashout.scheduledSettlement}. standard fees or commissions deducted.
+                {RIDER_AFFILIATE_PARTNERS.instantCashout.scheduledSettlement}. Zero fees or commissions deducted.
               </p>
             </div>
 

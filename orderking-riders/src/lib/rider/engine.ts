@@ -118,6 +118,12 @@ const PROFILE_KEYS = [
   "preferredZones",
   "availabilityNotes",
   "locale",
+  "vehicleNumber",
+  "dlNumber",
+  "pan",
+  "bankAccount",
+  "bankIfsc",
+  "bankHolder",
 ] as const;
 
 type ProfilePatch = Partial<Pick<RiderProfile, (typeof PROFILE_KEYS)[number]>>;
@@ -416,6 +422,14 @@ export class RiderEngine {
     const rider = await this.requireRider(userId);
     const cfg = await this.cfg();
     const incoming = patch as Record<string, unknown>;
+    if (incoming.panNumber && !incoming.pan) incoming.pan = incoming.panNumber;
+    if (incoming.bankAccountNumber && !incoming.bankAccount) incoming.bankAccount = incoming.bankAccountNumber;
+    if (incoming.bankAccountHolder && !incoming.bankHolder) incoming.bankHolder = incoming.bankAccountHolder;
+    if (incoming.ifsc && !incoming.bankIfsc) incoming.bankIfsc = incoming.ifsc;
+    if (incoming.rcNumber && !incoming.vehicleNumber) incoming.vehicleNumber = incoming.rcNumber;
+    if (incoming.rcNumber && !incoming.vehicleRegistration) incoming.vehicleRegistration = incoming.rcNumber;
+    if (incoming.dlNumber && !incoming.licenceNumber) incoming.licenceNumber = incoming.dlNumber;
+    if (incoming.aadhaarLast4 && !incoming.governmentIdLast4) incoming.governmentIdLast4 = incoming.aadhaarLast4;
     if ("kycStatus" in incoming && incoming.kycStatus != null) {
       assertNotSelfVerify(incoming.kycStatus as KycStatus);
     }
@@ -480,6 +494,26 @@ export class RiderEngine {
       vehicleRegistration: evaluation.normalized.effectiveRc,
       updatedAt: this.now(),
     };
+    if (this.store.upsertRiderKyc) {
+      await this.store.upsertRiderKyc({
+        id: `kyc_${rider.id}`,
+        riderId: rider.id,
+        userId: rider.userId,
+        fullName: rider.fullName,
+        phone: rider.phone,
+        vehicleType: rider.vehicleType,
+        vehicleNumber: next.vehicleNumber || next.vehicleRegistration || "",
+        dlNumber: next.dlNumber || next.licenceNumber || "",
+        pan: next.pan || (next.governmentIdType?.startsWith("AADHAAR_PAN:") ? next.governmentIdType.replace("AADHAAR_PAN:", "") : ""),
+        aadhaarLast4: next.governmentIdLast4 || "",
+        bankAccount: next.bankAccount || "",
+        bankIfsc: next.bankIfsc || "",
+        bankHolder: next.bankHolder || next.fullName || "",
+        documentUrls: {},
+        status: evaluation.approved ? "approved" : "rejected",
+        rejectionReason: evaluation.approved ? null : evaluation.reasons.join("; "),
+      });
+    }
     await this.store.upsertRider(next);
     await this.audit(
       userId,

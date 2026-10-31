@@ -39,8 +39,16 @@ function Login() {
       void handleVerifyOtp(otp.trim());
     }
   }, [otp, otpSent]);
-  const cleanIndianNumber = (raw: string) =>
-    raw.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "").slice(0, 10);
+  const cleanIndianNumber = (raw: string) => {
+    const digits = (raw || "").replace(/\D/g, "");
+    if (digits.length === 12 && digits.startsWith("91")) {
+      return digits.slice(2);
+    }
+    if (digits.length === 11 && digits.startsWith("0")) {
+      return digits.slice(1);
+    }
+    return digits.replace(/^(?:91|0)(?=\d{10}$)/, "").slice(0, 10);
+  };
   const handleSendOtp = async (selectedChannel: "sms" | "voice" | "whatsapp" = channel) => {
     const cleanNumber = cleanIndianNumber(phone);
     if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
@@ -264,7 +272,7 @@ function Login() {
                     <input
                       type="tel"
                       inputMode="numeric"
-                      maxLength={10}
+                      maxLength={14}
                       value={phone}
                       onChange={(e) => setPhone(cleanIndianNumber(e.target.value))}
                       onKeyDown={(e) => {

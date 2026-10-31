@@ -18,6 +18,7 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
     delete process.env.TWOFACTOR_API_KEY;
     delete process.env.TWO_FACTOR_API_KEY;
     delete process.env.TWO_FACTOR_SMS_KEY;
+    delete process.env.OTP_2FACTOR_API_KEY;
     delete process.env.MSG91_AUTH_KEY;
     delete process.env.TWILIO_ACCOUNT_SID;
     delete process.env.TWILIO_AUTH_TOKEN;
@@ -257,8 +258,39 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
       const [url, options] = mockFetch.mock.calls[0];
-      expect(url).toContain("https://2factor.in/v1/API/V1/mock_2factor_key_456/SMS/9876543210/112233/AUTOGEN");
+      expect(url).toContain("https://2factor.in/API/V1/mock_2factor_key_456/SMS/9876543210/112233/AUTOGEN");
       expect(options.method).toBe("GET");
+    });
+
+    it("safely recognizes when OTP_2FACTOR_API_KEY equals FAST2SMS_API_KEY and avoids 2Factor failure", async () => {
+      process.env.FAST2SMS_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
+      process.env.OTP_2FACTOR_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
+
+      const providers = getAvailableSmsProviders();
+      expect(providers).not.toContain("2factor");
+      expect(providers).toContain("fast2sms");
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          return: true,
+          request_id: "REQ_F2S_SAFE_99",
+          message: ["SMS sent successfully."],
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: "9876543210",
+        otp: "332211",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.provider).toBe("fast2sms");
+      expect(res.messageId).toBe("REQ_F2S_SAFE_99");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://www.fast2sms.com/dev/bulkV2");
     });
   });
 

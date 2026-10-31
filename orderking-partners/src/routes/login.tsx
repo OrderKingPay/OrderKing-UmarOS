@@ -441,10 +441,20 @@ function Login() {
                       <Input
                         id="mobile-input"
                         type="tel"
-                        maxLength={10}
+                        maxLength={14}
                         required
                         value={mobileNumber}
-                        onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          const digits = raw.replace(/\D/g, "");
+                          const normalized =
+                            digits.length === 12 && digits.startsWith("91")
+                              ? digits.slice(2)
+                              : digits.length === 11 && digits.startsWith("0")
+                              ? digits.slice(1)
+                              : digits.replace(/^(?:91|0)(?=\d{10}$)/, "").slice(0, 10);
+                          setMobileNumber(normalized);
+                        }}
                         placeholder="9876543210"
                         className="pl-12 border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11 font-mono tracking-wider text-sm"
                       />

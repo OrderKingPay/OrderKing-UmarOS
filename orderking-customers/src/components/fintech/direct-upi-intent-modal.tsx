@@ -145,7 +145,7 @@ export function DirectUpiIntentModal({
     setIsVerifying(true);
     setTimeout(() => {
       setIsVerifying(false);
-      toast.success("Direct UPI payment registered! Bank settlement confirmed at standard fee.");
+      toast.success("Direct UPI payment registered! Instant bank settlement confirmed.");
       if (onPaymentConfirmed) {
         onPaymentConfirmed(transactionRef);
       }
@@ -164,7 +164,7 @@ export function DirectUpiIntentModal({
                 👑
               </span>
               <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2.5 py-0.5 rounded-full">
-                standard fee Direct NPCI UPI Link &amp; Live QR
+                Direct NPCI UPI Link &amp; Live QR
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">

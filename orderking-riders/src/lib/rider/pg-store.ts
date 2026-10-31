@@ -71,6 +71,12 @@ function riderFromRow(row: Record<string, unknown>): RiderProfile {
     vehicleType: row.vehicle_type as RiderProfile["vehicleType"],
     vehicleRegistration: row.vehicle_registration ? String(row.vehicle_registration) : null,
     licenceNumber: row.licence_number ? String(row.licence_number) : null,
+    dlNumber: (row.dl_number ? String(row.dl_number) : (row.licence_number ? String(row.licence_number) : null)),
+    vehicleNumber: (row.vehicle_number ? String(row.vehicle_number) : (row.vehicle_registration ? String(row.vehicle_registration) : null)),
+    pan: row.pan ? String(row.pan) : null,
+    bankAccount: row.bank_account ? String(row.bank_account) : null,
+    bankIfsc: row.bank_ifsc ? String(row.bank_ifsc) : null,
+    bankHolder: row.bank_holder ? String(row.bank_holder) : null,
     insuranceRef: row.insurance_ref ? String(row.insurance_ref) : null,
     payoutUpi: row.payout_upi ? String(row.payout_upi) : null,
     payoutBankLast4: row.payout_bank_last4 ? String(row.payout_bank_last4) : null,
@@ -292,9 +298,11 @@ export class PgStore implements RiderStore {
         government_id_last4, kyc_status, kyc_reject_reason, rider_type,
         vehicle_type, vehicle_registration, licence_number, insurance_ref,
         payout_upi, payout_bank_last4, preferred_zones, availability_notes,
-        status, online_since, locale, created_at, updated_at, data_mode
+        status, online_since, locale, created_at, updated_at, data_mode,
+        vehicle_number, dl_number, pan, bank_account, bank_ifsc, bank_holder
       ) values (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,
+        $30,$31,$32,$33,$34,$35
       )
       on conflict (id) do update set
         full_name = excluded.full_name, phone = excluded.phone, email = excluded.email,
@@ -308,7 +316,13 @@ export class PgStore implements RiderStore {
         payout_upi = excluded.payout_upi, payout_bank_last4 = excluded.payout_bank_last4,
         preferred_zones = excluded.preferred_zones, availability_notes = excluded.availability_notes,
         status = excluded.status, online_since = excluded.online_since, locale = excluded.locale,
-        updated_at = excluded.updated_at`,
+        updated_at = excluded.updated_at,
+        vehicle_number = coalesce(excluded.vehicle_number, riders.vehicle_number),
+        dl_number = coalesce(excluded.dl_number, riders.dl_number),
+        pan = coalesce(excluded.pan, riders.pan),
+        bank_account = coalesce(excluded.bank_account, riders.bank_account),
+        bank_ifsc = coalesce(excluded.bank_ifsc, riders.bank_ifsc),
+        bank_holder = coalesce(excluded.bank_holder, riders.bank_holder)`,
       [
         r.id,
         r.userId,
@@ -339,6 +353,12 @@ export class PgStore implements RiderStore {
         r.createdAt,
         r.updatedAt,
         r.dataMode,
+        r.vehicleNumber ?? r.vehicleRegistration ?? '',
+        r.dlNumber ?? r.licenceNumber ?? '',
+        r.pan ?? (r.governmentIdType?.startsWith('AADHAAR_PAN:') ? r.governmentIdType.replace('AADHAAR_PAN:', '') : ''),
+        r.bankAccount ?? '',
+        r.bankIfsc ?? '',
+        r.bankHolder ?? r.fullName ?? '',
       ],
     );
 
@@ -359,6 +379,73 @@ export class PgStore implements RiderStore {
       );
     } catch {
       // Column auto-handled by migration 0020
+    }
+  }
+
+  async upsertRiderKyc(kyc: {
+    id: string;
+    riderId: string;
+    userId: string;
+    fullName: string;
+    phone: string;
+    vehicleType: string;
+    vehicleNumber?: string | null;
+    dlNumber?: string | null;
+    pan?: string | null;
+    aadhaarLast4?: string | null;
+    bankAccount?: string | null;
+    bankIfsc?: string | null;
+    bankHolder?: string | null;
+    documentUrls?: Record<string, unknown>;
+    status: string;
+    rejectionReason?: string | null;
+  }) {
+    try {
+      await this.sql.query(
+        `insert into rider_kyc (
+          id, rider_id, user_id, full_name, phone, vehicle_type, vehicle_number,
+          dl_number, pan, aadhaar_last4, bank_account, bank_ifsc, bank_holder,
+          document_urls, status, rejection_reason, verified_at, updated_at
+        ) values (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, now(), now()
+        )
+        on conflict (id) do update set
+          full_name = excluded.full_name,
+          phone = excluded.phone,
+          vehicle_type = excluded.vehicle_type,
+          vehicle_number = excluded.vehicle_number,
+          dl_number = excluded.dl_number,
+          pan = excluded.pan,
+          aadhaar_last4 = excluded.aadhaar_last4,
+          bank_account = excluded.bank_account,
+          bank_ifsc = excluded.bank_ifsc,
+          bank_holder = excluded.bank_holder,
+          document_urls = excluded.document_urls,
+          status = excluded.status,
+          rejection_reason = excluded.rejection_reason,
+          verified_at = excluded.verified_at,
+          updated_at = now()`,
+        [
+          kyc.id,
+          kyc.riderId,
+          kyc.userId,
+          kyc.fullName,
+          kyc.phone,
+          kyc.vehicleType,
+          kyc.vehicleNumber ?? '',
+          kyc.dlNumber ?? '',
+          kyc.pan ?? '',
+          kyc.aadhaarLast4 ?? '',
+          kyc.bankAccount ?? '',
+          kyc.bankIfsc ?? '',
+          kyc.bankHolder ?? '',
+          JSON.stringify(kyc.documentUrls ?? {}),
+          kyc.status,
+          kyc.rejectionReason ?? null,
+        ],
+      );
+    } catch (err) {
+      console.warn('[PgStore] upsertRiderKyc non-fatal warning:', err);
     }
   }
 

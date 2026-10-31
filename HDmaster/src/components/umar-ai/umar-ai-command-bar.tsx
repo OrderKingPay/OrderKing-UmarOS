@@ -184,15 +184,16 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         { event: "*", schema: "public", table: "umar_os_config" },
         (payload: any) => {
           const row = payload?.new as UmarOsConfigRow;
-          if (row?.key && row?.value) {
+          const configKey = row?.key;
+          if (configKey && row?.value) {
             setLiveConfig((prev) => ({
               ...prev,
-              [row.key]: {
-                ...(prev[row.key] || {}),
+              [configKey]: {
+                ...((prev as any)[configKey] || {}),
                 ...row.value,
               },
             }));
-            toast.info(`Realtime sync: ${row.key} updated in Supabase`, {
+            toast.info(`Realtime sync: ${configKey} updated in Supabase`, {
               duration: 2500,
             });
           }

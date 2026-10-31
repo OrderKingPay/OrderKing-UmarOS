@@ -21,6 +21,8 @@ import { formatPaise } from "@/lib/money";
 import { toast } from "sonner";
 import {
   searchFlightQuotes,
+  searchFlightQuotesLive,
+  logTravelPartnerBooking,
   type FlightQuote,
 } from "@/lib/travel/in-app-booking-service";
 import {
@@ -64,17 +66,49 @@ export function FlightBookingEngine({
   const [passengersCount, setPassengersCount] = useState(1);
   const [cabinClass, setCabinClass] = useState<"Economy" | "Premium Economy" | "Business">("Economy");
 
+  const [liveQuotes, setLiveQuotes] = useState<FlightQuote[] | null>(null);
+  const [isLiveLoading, setIsLiveLoading] = useState(false);
+
   useEffect(() => {
     loadTravelpayoutsWhiteLabelScript();
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    async function loadLiveQuotes() {
+      setIsLiveLoading(true);
+      try {
+        const res = await searchFlightQuotesLive(
+          from.trim() || "New Delhi (DEL)",
+          to.trim() || "Mumbai (BOM)",
+          departureDate,
+          cabinClass
+        );
+        if (!cancelled && res && res.length > 0) {
+          setLiveQuotes(res);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch live TBO quotes, falling back to official carrier benchmarks:", err);
+      } finally {
+        if (!cancelled) setIsLiveLoading(false);
+      }
+    }
+    loadLiveQuotes();
+    return () => {
+      cancelled = true;
+    };
+  }, [from, to, departureDate, cabinClass]);
+
   // Live quotes
-  const quotes = searchFlightQuotes(
+  const defaultQuotes = searchFlightQuotes(
     from.trim() || "New Delhi (DEL)",
     to.trim() || "Mumbai (BOM)",
     departureDate,
     cabinClass
   );
+
+  const quotes = liveQuotes && liveQuotes.length > 0 ? liveQuotes : defaultQuotes;
+  const isTboLive = Boolean(quotes.some((q) => q.isLiveTbo));
 
   const handleSwapRoute = () => {
     const temp = from;
@@ -132,7 +166,12 @@ export function FlightBookingEngine({
 
         {/* Dual Routing Engine Indicator Badge */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          {isDomesticIndianRoute(originCode, destinationCode) ? (
+          {isTboLive ? (
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 border border-sky-400/40 px-3 py-1 text-xs font-bold text-sky-200">
+              <span className="size-2 rounded-full bg-sky-400 animate-pulse" />
+              ✈️ Live TBO GDS AirService Connected (TekTravels Agency #187051)
+            </div>
+          ) : isDomesticIndianRoute(originCode, destinationCode) ? (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-300">
               <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
               🇮🇳 Domestic Indian Route · Travelpayouts Direct INR Settlement (Verified Airline Fares · Marker #{TP_MARKER})
@@ -142,6 +181,11 @@ export function FlightBookingEngine({
               <span className="size-2 rounded-full bg-sky-400 animate-pulse" />
               🌐 International Route · Duffel Global GDS &amp; Multi-Currency Settlement
             </div>
+          )}
+          {isLiveLoading && (
+            <span className="text-[11px] font-bold text-sky-300 animate-pulse">
+              Querying live GDS tariffs...
+            </span>
           )}
         </div>
 
@@ -429,6 +473,16 @@ export function FlightBookingEngine({
                         toast.success(
                           `Redirecting to official ${deepLink.carrierName} portal (${deepLink.portalName}) for ${deepLink.fromCode} ➔ ${deepLink.toCode}...`
                         );
+                        logTravelPartnerBooking({
+                          bookingType: "FLIGHT",
+                          partnerProvider: "TRAVELPAYOUTS",
+                          carrierName: q.carrierName,
+                          carrierCode: q.carrierCode,
+                          routeSummary: `${from} ➔ ${to}`,
+                          fareAmountInr: totalPaiseAll / 100,
+                          affiliateDeepLink: deepLink.bookingUrl,
+                          bookingStatus: "HANDOFF_COMPLETED",
+                        }).catch(() => {});
                       }}
                       className="inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto text-center"
                     >

@@ -23,6 +23,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   searchCabQuotes,
+  logTravelPartnerBooking,
   type CabQuote,
   type SovereignETicket,
 } from "@/lib/travel/in-app-booking-service";
@@ -271,12 +272,32 @@ export function CabBookingEngine({
                   </div>
 
                   <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenBooking(q)}
+                      className="h-10 px-4 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs shadow-md inline-flex items-center gap-1.5 transition"
+                    >
+                      <span>Book Cab</span>
+                      <ArrowRight className="size-3.5" />
+                    </button>
                     <a
                       href={`https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(drop)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={() => toast.success(`Opening Uber dispatch for ${pickup} ➔ ${drop}...`)}
-                      className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md inline-flex items-center gap-1.5 no-underline transition"
+                      onClick={() => {
+                        const url = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(drop)}`;
+                        toast.success(`Opening Uber dispatch for ${pickup} ➔ ${drop}...`);
+                        logTravelPartnerBooking({
+                          bookingType: "FLIGHT", // category fallback or cab
+                          partnerProvider: "TRAVELPAYOUTS",
+                          carrierName: "Uber Rides",
+                          routeSummary: `${pickup} ➔ ${drop}`,
+                          fareAmountInr: totalFare / 100,
+                          affiliateDeepLink: url,
+                          bookingStatus: "HANDOFF_COMPLETED",
+                        }).catch(() => {});
+                      }}
+                      className="h-10 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md inline-flex items-center gap-1.5 no-underline transition"
                     >
                       <span>Uber</span>
                       <ArrowRight className="size-3.5" />
@@ -285,8 +306,19 @@ export function CabBookingEngine({
                       href="https://www.olacabs.com/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={() => toast.success(`Opening Ola Cabs dispatch...`)}
-                      className="h-10 px-3.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
+                      onClick={() => {
+                        toast.success(`Opening Ola Cabs dispatch...`);
+                        logTravelPartnerBooking({
+                          bookingType: "FLIGHT",
+                          partnerProvider: "TRAVELPAYOUTS",
+                          carrierName: "Ola Cabs",
+                          routeSummary: `${pickup} ➔ ${drop}`,
+                          fareAmountInr: totalFare / 100,
+                          affiliateDeepLink: "https://www.olacabs.com/",
+                          bookingStatus: "HANDOFF_COMPLETED",
+                        }).catch(() => {});
+                      }}
+                      className="h-10 px-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
                     >
                       <span>Ola</span>
                       <ArrowRight className="size-3.5" />

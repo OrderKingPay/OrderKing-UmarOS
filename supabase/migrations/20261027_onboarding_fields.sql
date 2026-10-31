@@ -21,6 +21,14 @@ ALTER TABLE riders ADD COLUMN IF NOT EXISTS pan text DEFAULT '';
 ALTER TABLE riders ADD COLUMN IF NOT EXISTS bank_account text DEFAULT '';
 ALTER TABLE riders ADD COLUMN IF NOT EXISTS bank_ifsc text DEFAULT '';
 ALTER TABLE riders ADD COLUMN IF NOT EXISTS bank_holder text DEFAULT '';
+ALTER TABLE riders ADD COLUMN IF NOT EXISTS kyc_reject_reason text DEFAULT '';
+
+-- 3b. Harmonize restaurant & hours column defaults for flawless persistence
+ALTER TABLE restaurants ALTER COLUMN cuisine_summary SET DEFAULT '';
+ALTER TABLE restaurants ALTER COLUMN description_bn SET DEFAULT '';
+ALTER TABLE restaurants ALTER COLUMN description_en SET DEFAULT '';
+ALTER TABLE restaurant_hours ALTER COLUMN open_minute SET DEFAULT 0;
+ALTER TABLE restaurant_hours ALTER COLUMN close_minute SET DEFAULT 1440;
 
 -- 4. Rider KYC table
 CREATE TABLE IF NOT EXISTS rider_kyc (

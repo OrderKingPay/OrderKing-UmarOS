@@ -24,6 +24,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   searchBusQuotes,
+  logTravelPartnerBooking,
   type BusQuote,
   type BusSeatBerth,
   type SovereignETicket,
@@ -310,19 +311,42 @@ export function BusBookingEngine({
                     ))}
                   </div>
 
-                  <a
-                    href={`https://www.redbus.in/bus-tickets/${encodeURIComponent((q.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((q.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toast.success(`Redirecting to official redBus portal for ${q.fromCity} ➔ ${q.toCity}...`);
-                    }}
-                    className="h-9 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
-                  >
-                    <span>Book on redBus</span>
-                    <ArrowRight className="size-3.5" />
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStartBooking(q);
+                      }}
+                      className="h-9 px-3 rounded-xl border border-rose-300 bg-white hover:bg-rose-50 text-rose-700 font-black text-xs inline-flex items-center gap-1 transition"
+                    >
+                      <span>In-App Ticket</span>
+                    </button>
+                    <a
+                      href={`https://www.redbus.in/bus-tickets/${encodeURIComponent((q.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((q.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const url = `https://www.redbus.in/bus-tickets/${encodeURIComponent((q.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((q.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`;
+                        toast.success(`Redirecting to official redBus portal for ${q.fromCity} ➔ ${q.toCity}...`);
+                        logTravelPartnerBooking({
+                          bookingType: "BUS",
+                          partnerProvider: "REDBUS",
+                          carrierName: q.operatorName,
+                          carrierCode: q.carrierCode,
+                          routeSummary: `${q.fromCity} ➔ ${q.toCity}`,
+                          fareAmountInr: singleTotal / 100,
+                          affiliateDeepLink: url,
+                          bookingStatus: "HANDOFF_COMPLETED",
+                        }).catch(() => {});
+                      }}
+                      className="h-9 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
+                    >
+                      <span>Book on redBus</span>
+                      <ArrowRight className="size-3.5" />
+                    </a>
+                  </div>
                 </div>
               </div>
             );
@@ -444,15 +468,38 @@ export function BusBookingEngine({
                   {formatPaise((currentQuote.baseFarePaise + currentQuote.carrierTaxesPaise) * selectedSeatIds.length)}
                 </span>
               </div>
-              <a
-                href={`https://www.redbus.in/bus-tickets/${encodeURIComponent((currentQuote.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((currentQuote.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => toast.success(`Redirecting to redBus to finalize ${selectedSeatIds.join(", ")} berths...`)}
-                className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md shadow-rose-600/25 inline-flex items-center justify-center gap-1.5 no-underline transition"
-              >
-                <span>Book Selected Berths on redBus ➔</span>
-              </a>
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleStartBooking(currentQuote)}
+                  className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md inline-flex items-center justify-center gap-1.5 transition"
+                >
+                  <span>Book in OrderKing ({selectedSeatIds.join(", ")})</span>
+                </button>
+                <a
+                  href={`https://www.redbus.in/bus-tickets/${encodeURIComponent((currentQuote.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((currentQuote.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    const totalPaise = (currentQuote.baseFarePaise + currentQuote.carrierTaxesPaise) * selectedSeatIds.length;
+                    const url = `https://www.redbus.in/bus-tickets/${encodeURIComponent((currentQuote.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((currentQuote.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`;
+                    toast.success(`Redirecting to redBus to finalize ${selectedSeatIds.join(", ")} berths...`);
+                    logTravelPartnerBooking({
+                      bookingType: "BUS",
+                      partnerProvider: "REDBUS",
+                      carrierName: currentQuote.operatorName,
+                      carrierCode: currentQuote.carrierCode,
+                      routeSummary: `${from} ➔ ${to}`,
+                      fareAmountInr: totalPaise / 100,
+                      affiliateDeepLink: url,
+                      bookingStatus: "HANDOFF_COMPLETED",
+                    }).catch(() => {});
+                  }}
+                  className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md shadow-rose-600/25 inline-flex items-center justify-center gap-1.5 no-underline transition"
+                >
+                  <span>Book Selected Berths on redBus ➔</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

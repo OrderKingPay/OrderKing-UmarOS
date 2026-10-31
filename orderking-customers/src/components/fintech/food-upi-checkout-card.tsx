@@ -25,7 +25,7 @@ interface FoodUpiCheckoutCardProps {
 }
 
 /**
- * standard fee Direct NPCI UPI Intent Card & Instant Dynamic BharatQR Bridge.
+ * Zero-Fee Direct NPCI UPI Intent Card & Instant Dynamic BharatQR Bridge.
  * Allows customers to bypass 2-3% aggregator/gateway transaction fees,
  * routing 100% of money directly to the founder bank account via NPCI UPI.
  */
@@ -81,7 +81,7 @@ export function FoodUpiCheckoutCard({
             </span>
             <div>
               <h3 className="font-display font-black text-base sm:text-lg tracking-tight">
-                standard fee Direct NPCI UPI Intent
+                Direct NPCI UPI Instant Pay
               </h3>
               <p className="text-[11px] text-muted-foreground flex items-center gap-1 font-medium">
                 <ShieldCheck className="size-3 text-emerald-500" />

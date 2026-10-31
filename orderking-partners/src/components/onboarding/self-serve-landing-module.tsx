@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { createRestaurantDraft, updateRestaurantProfile } from "@/lib/server/api-bootstrap";
+import { useClientState } from "@/lib/client-state";
 import {
   validateFssai,
   validatePan,
@@ -122,7 +124,50 @@ export function SelfServeLandingModule() {
     }
 
     if (user) {
-      void navigate({ to: "/onboarding" });
+      void (async () => {
+        try {
+          const res = await createRestaurantDraft({
+            data: {
+              name: restaurantName.trim(),
+              displayName: restaurantName.trim(),
+              ownerName: ownerName.trim(),
+              phone: phone.trim(),
+              email: email.trim(),
+              city: city.trim(),
+              address: address.trim(),
+              cuisine: "North Indian, Biryani",
+              diet: dishDiet,
+              description: dishName ? `Home of signature ${dishName.trim()}` : "",
+            },
+          });
+          if (res?.restaurantId) {
+            useClientState.getState().setRestaurantId(res.restaurantId);
+            if (fssaiNumber || panNumber || bankAccount) {
+              await updateRestaurantProfile({
+                data: {
+                  restaurantId: res.restaurantId,
+                  city: city.trim(),
+                  fboName: ownerName.trim() || restaurantName.trim(),
+                  fssaiNumber: fssaiNumber.trim() || undefined,
+                  fssaiLicenseNumber: fssaiNumber.trim() || undefined,
+                  pan: panNumber.trim().toUpperCase() || undefined,
+                  gstin: isGstExempt ? "" : (gstin.trim().toUpperCase() || undefined),
+                  bankAccount: bankAccount.trim() || undefined,
+                  bankIfsc: bankIfsc.trim().toUpperCase() || undefined,
+                  bankName: bankHolder.trim() || ownerName.trim(),
+                  bankHolder: bankHolder.trim() || ownerName.trim(),
+                  openingTime: openTime,
+                  closingTime: closeTime,
+                },
+              });
+            }
+          }
+        } catch (e) {
+          console.warn("[SelfServeLandingModule] background draft create error:", e);
+        } finally {
+          void navigate({ to: "/onboarding" });
+        }
+      })();
     } else {
       void navigate({
         to: "/login",

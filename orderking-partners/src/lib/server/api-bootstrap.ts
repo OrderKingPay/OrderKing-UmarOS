@@ -161,6 +161,7 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
     ownerName: string;
     phone: string;
     email: string;
+    city?: string;
     address: string;
     landmark?: string;
     cuisine?: string;
@@ -183,13 +184,17 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
       await sql`
         insert into restaurants (
           id, owner_user_id, slug, name, display_name, owner_name, phone, email,
-          address, landmark, cuisine, diet, description, verification_status, data_label, active, status
+          city, address, landmark, cuisine, diet, description, verification_status, data_label, active, status,
+          cuisine_summary, description_bn, description_en
         ) values (
           ${restaurantId}, ${context.userId}, ${slug}, ${name}, ${displayName},
           ${(data.ownerName || "").trim()}, ${(data.phone || "").trim()}, ${(data.email || "").trim()},
-          ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
-          ${data.cuisine?.trim() ?? ""}, ${data.diet ?? "NONVEG"},
-          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', false, 'DRAFT'
+          ${(data.city || "").trim()}, ${(data.address || "").trim()}, ${data.landmark?.trim() ?? ""},
+          ${data.cuisine?.trim() ?? "Multi-Cuisine"}, ${data.diet ?? "NONVEG"},
+          ${data.description?.trim() ?? ""}, 'DRAFT', 'REAL', false, 'DRAFT',
+          ${data.cuisine?.trim() ?? "Multi-Cuisine"},
+          ${data.description?.trim() ?? displayName},
+          ${data.description?.trim() ?? displayName}
         )
       `;
     } catch {
@@ -243,8 +248,8 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
     `;
     for (let day = 0; day <= 6; day++) {
       await sql`
-        insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minutes, close_minutes)
-        values (${newId("hrs")}, ${restaurantId}, ${outletId}, ${day}, ${11 * 60}, ${22 * 60})
+        insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minute, open_minutes, close_minute, close_minutes)
+        values (${newId("hrs")}, ${restaurantId}, ${outletId}, ${day}, ${11 * 60}, ${11 * 60}, ${22 * 60}, ${22 * 60})
       `;
     }
     await writeAudit(sql, {
@@ -285,6 +290,8 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     ownerName?: string;
     phone?: string;
     email?: string;
+    city?: string;
+    fboName?: string;
     address?: string;
     landmark?: string;
     serviceArea?: string;
@@ -293,6 +300,8 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     description?: string;
     gstin?: string;
     fssaiNumber?: string;
+    fssaiLicenseNumber?: string;
+    fssaiExpiryDate?: string;
     pan?: string;
     prepMinutes?: number;
     peakPrepMinutes?: number;
@@ -306,6 +315,7 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     bankAccount?: string;
     bankIfsc?: string;
     bankName?: string;
+    bankHolder?: string;
     openingTime?: string;
     closingTime?: string;
     businessStructure?: string;
@@ -320,6 +330,8 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         "owner_name",
         "phone",
         "email",
+        "city",
+        "fbo_name",
         "address",
         "landmark",
         "service_area",
@@ -328,12 +340,15 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         "description",
         "gstin",
         "fssai_number",
+        "fssai_license_number",
+        "fssai_expiry_date",
         "pan",
         "prep_minutes",
         "peak_prep_minutes",
         "min_order_paise",
         "packing_paise",
         "contact_persons",
+        "bank_holder",
       ] as const;
       const map: Record<string, string> = {
         name: "name",
@@ -341,6 +356,8 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         ownerName: "owner_name",
         phone: "phone",
         email: "email",
+        city: "city",
+        fboName: "fbo_name",
         address: "address",
         landmark: "landmark",
         serviceArea: "service_area",
@@ -349,7 +366,10 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         description: "description",
         gstin: "gstin",
         fssaiNumber: "fssai_number",
+        fssaiLicenseNumber: "fssai_license_number",
+        fssaiExpiryDate: "fssai_expiry_date",
         pan: "pan",
+        bankHolder: "bank_holder",
         prepMinutes: "prep_minutes",
         peakPrepMinutes: "peak_prep_minutes",
         minOrderPaise: "min_order_paise",
@@ -385,7 +405,13 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
           ctx.restaurantId,
         ]);
       }
-      if (data.bankAccount !== undefined || data.bankIfsc !== undefined || data.bankName !== undefined) {
+      if (data.fssaiNumber) {
+        await sql.query(`update restaurants set fssai_license_number = $1 where id = $2`, [
+          data.fssaiNumber.trim(),
+          ctx.restaurantId,
+        ]);
+      }
+      if (data.bankAccount !== undefined || data.bankIfsc !== undefined || data.bankName !== undefined || data.bankHolder !== undefined) {
         const { assertCan } = await import("@/lib/rbac");
         assertCan(ctx.role, "settings.financial");
         if (data.bankAccount !== undefined) {
@@ -396,6 +422,9 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         }
         if (data.bankName !== undefined) {
           await sql`update restaurants set bank_name = ${String(data.bankName)}, updated_at = now() where id = ${ctx.restaurantId}`;
+        }
+        if (data.bankHolder !== undefined) {
+          await sql`update restaurants set bank_holder = ${String(data.bankHolder)}, updated_at = now() where id = ${ctx.restaurantId}`;
         }
       }
       if (data.commissionBps !== undefined) {
@@ -413,6 +442,10 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         const { hmToMinutes } = await import("@/lib/hours");
         const openMin = hmToMinutes(data.openingTime);
         const closeMin = hmToMinutes(data.closingTime);
+        const outlets = await sql<{ id: string }>`
+          select id from outlets where restaurant_id = ${ctx.restaurantId} limit 1
+        `;
+        const outletId = outlets[0]?.id || `out_${ctx.restaurantId.slice(-6)}`;
         for (let day = 0; day <= 6; day++) {
           try {
             const existing = await sql<{ id: string }>`
@@ -423,14 +456,15 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
             if (existing.length > 0) {
               await sql`
                 update restaurant_hours
-                set open_minutes = ${openMin}, close_minutes = ${closeMin}
+                set open_minute = ${openMin}, open_minutes = ${openMin},
+                    close_minute = ${closeMin}, close_minutes = ${closeMin}
                 where restaurant_id = ${ctx.restaurantId} and weekday = ${day}
               `;
             } else {
               const { newId } = await import("@/lib/utils");
               await sql`
-                insert into restaurant_hours (id, restaurant_id, weekday, open_minutes, close_minutes)
-                values (${newId("hrs")}, ${ctx.restaurantId}, ${day}, ${openMin}, ${closeMin})
+                insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minute, open_minutes, close_minute, close_minutes)
+                values (${newId("hrs")}, ${ctx.restaurantId}, ${outletId}, ${day}, ${openMin}, ${openMin}, ${closeMin}, ${closeMin})
               `;
             }
           } catch {
@@ -657,10 +691,10 @@ export const uploadDocument = createServerFn({ method: "POST" })
       const id = newId("doc");
       await sql`
         insert into restaurant_documents (
-          id, restaurant_id, kind, file_name, content_type, byte_size,
+          id, restaurant_id, kind, document_type, file_name, content_type, byte_size,
           storage_backend, storage_key, data_url, status, verification_status
         ) values (
-          ${id}, ${ctx.restaurantId}, ${data.kind}, ${data.fileName}, ${data.contentType},
+          ${id}, ${ctx.restaurantId}, ${data.kind}, ${data.kind}, ${data.fileName}, ${data.contentType},
           ${byteSize}, ${stored.backend}, ${stored.key}, ${data.dataUrl.slice(0, 200000)},
           'uploaded', 'PENDING'
         )

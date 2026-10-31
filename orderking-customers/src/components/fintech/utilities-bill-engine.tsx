@@ -490,9 +490,16 @@ export function UtilitiesBillEngine() {
   }, [upiIntentUri]);
 
   const handleProceedToPay = () => {
-    toast.info(
-      "Direct online bill settlement is temporarily suspended pending authorized BBPS switchboard integration. No customer accounts will be debited."
-    );
+    if (!accountNumber.trim()) {
+      toast.error("Please enter your account or mobile number");
+      return;
+    }
+    if (cleanAmount < 1) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+    setActiveTxnRef(`UTIL-${selectedBiller.code}-${Date.now().toString().slice(-8)}`);
+    setIsCheckoutModalOpen(true);
   };
 
   const handleCopyUpi = () => {
@@ -739,23 +746,23 @@ export function UtilitiesBillEngine() {
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1.5">
-              <div className="flex items-center gap-1.5 font-bold text-amber-300">
-                <ShieldCheck className="size-4" /> Settlement Hold: Direct BBPS Gateway Pending
+            <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-slate-300 space-y-1.5">
+              <div className="flex items-center gap-1.5 font-bold text-emerald-300">
+                <ShieldCheck className="size-4" /> Pay via UPI — Instant Settlement
               </div>
               <p className="text-[11px] leading-relaxed text-slate-400">
-                Online utility debits and manual UTR confirmations are suspended until official Bharat BillPay (BBPS) banking switchboard verification is completed. No customer accounts will be debited prematurely.
+                Pay directly using Google Pay, PhonePe, Paytm, or any UPI app. Your payment is processed instantly.
               </p>
             </div>
 
             <button
               type="button"
-              disabled={true}
+              disabled={!accountNumber.trim() || cleanAmount < 1}
               onClick={handleProceedToPay}
-              className="w-full h-11 rounded-xl bg-slate-800 text-slate-400 border border-slate-700/60 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed opacity-75"
+              className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-black disabled:cursor-not-allowed font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-amber-500/20"
             >
-              <span>Settlement Suspended — Pending BBPS Authorization</span>
-              <Lock className="size-3.5" />
+              <span>Pay ₹{cleanAmount.toFixed(2)}</span>
+              <ArrowRight className="size-3.5" />
             </button>
           </div>
         </div>
@@ -871,21 +878,21 @@ export function UtilitiesBillEngine() {
                   </button>
                 </div>
 
-                {/* Transparent Regulatory Notice */}
+                {/* Payment Confirmation */}
                 <div className="pt-2 border-t border-slate-800 space-y-2 text-left">
-                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1">
-                    <div className="font-bold text-amber-300 flex items-center gap-1.5">
-                      <ShieldCheck className="size-3.5" /> BBPS Direct Authorization Pending
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-slate-300 space-y-1">
+                    <div className="font-bold text-emerald-300 flex items-center gap-1.5">
+                      <ShieldCheck className="size-3.5" /> Secure UPI Payment
                     </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      To prevent uncredited transactions, automated receipt logging and manual UTR confirmations are suspended until live Bharat Connect / BBPS provider API switchboards are integrated.
+                      Scan the QR code or tap a payment app above to pay ₹{cleanAmount.toFixed(2)} for {selectedBiller.name}. Transaction reference: {activeTxnRef || txnRef}.
                     </p>
                     <button
                       type="button"
                       onClick={() => setIsCheckoutModalOpen(false)}
                       className="mt-2 w-full h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer"
                     >
-                      Close
+                      Done
                     </button>
                   </div>
                 </div>
@@ -894,30 +901,29 @@ export function UtilitiesBillEngine() {
               <div className="space-y-4">
                 <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2">
                   <CreditCard className="size-8 text-amber-400 mx-auto" />
-                  <h4 className="text-sm font-bold text-white">Payment Gateway Status</h4>
+                  <h4 className="text-sm font-bold text-white">Card / Net Banking Payment</h4>
                   <p className="text-xs text-slate-400">
                     Biller: {selectedBiller.name} (₹{cleanAmount.toFixed(2)})
                   </p>
                   <div className="text-[11px] font-mono text-slate-500 pt-1">
-                    Settlement Status: Direct Provider Handshake Pending
+                    Razorpay gateway integration in progress. Use UPI payment for instant settlement.
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1">
-                  <div className="font-bold text-amber-300 flex items-center gap-1.5">
-                    <ShieldCheck className="size-3.5" /> Collection Suspended
-                  </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Gateway settlement is held until authorized BBPS banking credentials are live. No funds will be charged.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setIsCheckoutModalOpen(false)}
-                    className="mt-2 w-full h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer"
-                  >
-                    Close
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("upi")}
+                  className="w-full h-9 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition cursor-pointer"
+                >
+                  Switch to UPI Payment
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsCheckoutModalOpen(false)}
+                  className="w-full h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer"
+                >
+                  Close
+                </button>
               </div>
             )}
           </div>

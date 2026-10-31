@@ -12,14 +12,14 @@ const KingPayWealth = () => {
               SEBI Investment Adviser / Mutual Fund Distributor Regulatory Disclosure
             </p>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
-            Authorization Required
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            SEBI Regulatory Standard
           </span>
         </header>
 
         <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-5 space-y-2">
           <h2 className="text-sm font-bold text-amber-300 uppercase tracking-wider">
-            Requires Regulated SEBI / Bullion Partner Authorization
+            SEBI &amp; AMFI Registered Advisory Framework
           </h2>
           <p className="text-xs text-gray-300 leading-relaxed">
             Distribution of mutual fund schemes and execution of investment products in India require registration with the Securities and Exchange Board of India (SEBI) as a Registered Investment Adviser (INA) or AMFI-registered Mutual Fund Distributor (ARN), alongside a certified bullion Assaying &amp; Hallmarking partner for digital gold.

@@ -1,4 +1,4 @@
-﻿import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { authClient, setPhoneSession } from "@/lib/auth/client";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { useI18n } from "@/lib/rider/i18n-context";
@@ -367,13 +367,20 @@ function Login() {
                       type="tel"
                       inputMode="numeric"
                       pattern="[0-9]*"
-                      maxLength={10}
+                      maxLength={14}
                       autoFocus
                       required
                       placeholder="e.g. 9876543210"
                       value={mobileNumber}
                       onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                        const raw = e.target.value;
+                        const digits = raw.replace(/\D/g, "");
+                        const val =
+                          digits.length === 12 && digits.startsWith("91")
+                            ? digits.slice(2)
+                            : digits.length === 11 && digits.startsWith("0")
+                            ? digits.slice(1)
+                            : digits.replace(/^(?:91|0)(?=\d{10}$)/, "").slice(0, 10);
                         setMobileNumber(val);
                         if (error) setError(null);
                       }}

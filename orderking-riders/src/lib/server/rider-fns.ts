@@ -132,7 +132,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
 
 export const saveProfileFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: Partial<RiderProfile>) => input)
+  .validator((input: Partial<RiderProfile> & Record<string, unknown>) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
@@ -751,10 +751,12 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     let finalMatched = isMatched;
   if (!finalMatched) {
     try {
-      const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
-      const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
-      const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
-      if (tfJson.Status === "Success") finalMatched = true;
+      const tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim().replace(/^["']|["']$/g, "");
+      if (tfKey) {
+        const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
+        const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+        if (tfJson.Status === "Success") finalMatched = true;
+      }
     } catch {}
   }
   if (!finalMatched) {

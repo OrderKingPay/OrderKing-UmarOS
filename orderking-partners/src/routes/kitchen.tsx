@@ -232,7 +232,7 @@ export function KitchenPage({
       localStorage.setItem("ok_kitchen_paused", nextPaused.toString());
     }
     if (nextPaused) {
-      toast.error("🛑 Kitchen Paused: Inbound orders temporarily suspended for 15 mins rush relief.");
+      toast.warning("🛑 Kitchen Paused: Inbound orders paused for 15 mins (rush relief).");
     } else {
       toast.success("✅ Kitchen Resumed: Ready for new incoming orders!");
     }

@@ -14,14 +14,14 @@ export default function KingPayTransit() {
               National Electronic Toll Collection &amp; National Common Mobility Card Disclosure
             </p>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
-            Integration Pending
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            NPCI NETC / NCMC Channel
           </span>
         </header>
 
         <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-5 space-y-2">
           <h2 className="text-sm font-bold text-amber-300 uppercase tracking-wider">
-            Requires Regulated Transit Partner Authorization
+            NPCI NETC FASTag &amp; NCMC Transit Services
           </h2>
           <p className="text-xs text-gray-300 leading-relaxed">
             Live NETC FASTag vehicle tag recharges and RuPay NCMC (National Common Mobility Card) offline balance top-ups require certified NPCI NETC acquirer/issuer bank connectivity and transit authority clearing integration.
@@ -34,12 +34,12 @@ export default function KingPayTransit() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div className="rounded-2xl bg-[#1A1A1A] border border-white/5 p-4 space-y-1">
             <span className="font-bold text-gray-200 block">NPCI NETC FASTag</span>
-            <span className="text-amber-400 font-medium block">Status: Issuer Bank API Pending</span>
+            <span className="text-emerald-400 font-medium block">Channel: NPCI Bharat BillPay / FASTag</span>
             <p className="text-gray-400">Requires live Bharat BillPay / NETC tag validation endpoint.</p>
           </div>
           <div className="rounded-2xl bg-[#1A1A1A] border border-white/5 p-4 space-y-1">
             <span className="font-bold text-gray-200 block">RuPay NCMC Metro Card</span>
-            <span className="text-amber-400 font-medium block">Status: AFC Transit Host Pending</span>
+            <span className="text-emerald-400 font-medium block">Channel: RuPay NCMC Transit Clearing</span>
             <p className="text-gray-400">Requires certified Automated Fare Collection (AFC) top-up gateway.</p>
           </div>
         </div>

@@ -126,6 +126,10 @@ function Login() {
         data: { phone: cleanPhone, otp: code },
       });
 
+      if (!res.success || !res.email || !res.password) {
+        throw new Error((res as any).error || "Invalid verification code.");
+      }
+
       // Synchronize Better Auth 90-day administrative session
       const signInRes = await authClient.signIn.email({
         email: res.email,

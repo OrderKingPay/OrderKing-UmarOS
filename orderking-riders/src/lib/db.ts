@@ -7,8 +7,15 @@ export type DbSource = "neon" | "pglite";
 // "unset" — otherwise production would silently run on the PGLite fallback.
 export function getDatabaseUrl() {
   const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
-  let url = raw && raw.trim() ? raw : undefined;
-  if (url && url.includes('your_supabase_pooler')) url = undefined;
+  let url = raw && typeof raw === 'string' ? raw.trim() : undefined;
+  if (url) {
+    if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+      url = url.slice(1, -1).trim();
+    }
+  }
+  if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
+    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
+  }
   if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
     url = url.replace('sslmode=require', 'sslmode=no-verify');
   }

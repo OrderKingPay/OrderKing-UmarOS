@@ -175,8 +175,10 @@ export function getTboCredentials(customEnv?: Record<string, string>): TboCreden
   };
 
   const agencyCode =
+    getEnv("TBO_AGENCY_ID") ||
     getEnv("TBO_CLIENT_ID") ||
     getEnv("TBO_AGENCY_CODE") ||
+    getEnv("VITE_TBO_AGENCY_ID") ||
     getEnv("VITE_TBO_CLIENT_ID") ||
     getEnv("VITE_TBO_AGENCY_CODE") ||
     TBO_APPLICATION_ID;
@@ -474,6 +476,8 @@ export function calculateTboFounderMargin(
 
 /**
  * Authenticates with TBO API Gateway using registered agency credentials.
+ * POST to `${endpoint}/SharedServices/SharedData.svc/rest/Authenticate` with:
+ * `{ ClientId: agencyCode, UserName: userName, Password: password, EndUserIp: "127.0.0.1" }`
  */
 export async function authenticateTbo(
   creds?: TboCredentials | null,
@@ -491,24 +495,50 @@ export async function authenticateTbo(
   }
 
   try {
-    const authUrl = `${credentials.endpoint}/SharedServices/SharedData.svc/rest/Authenticate`;
+    const baseEndpoint = credentials.endpoint.replace(/\/+$/, "");
+    const authUrl = `${baseEndpoint}/SharedServices/SharedData.svc/rest/Authenticate`;
     const payload = serializeTboAuthRequest(credentials, endUserIp);
 
-    const res = await fetch(authUrl, {
+    let res = await fetch(authUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) {
-      return {
-        authenticated: false,
-        status: "auth_failed",
-        message: `TBO API authentication returned HTTP ${res.status}: ${res.statusText}`,
-      };
+    let data: any;
+    try {
+      data = await res.json();
+    } catch {
+      // If parsing json fails directly (e.g. text/html or 'Invalid Resource Requested')
+      if (typeof res.text === "function") {
+        let rawText = await res.text();
+        if ((rawText.includes("Invalid Resource") || res.status === 404) && baseEndpoint.includes("tektravels.com")) {
+          const fallbackUrl = "http://Sharedapi.tektravels.com/SharedData.svc/rest/Authenticate";
+          try {
+            const fallbackRes = await fetch(fallbackUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            if (fallbackRes.ok) {
+              rawText = await fallbackRes.text();
+            }
+          } catch {
+            // ignore
+          }
+        }
+        try {
+          data = JSON.parse(rawText);
+        } catch {
+          return {
+            authenticated: false,
+            status: "auth_failed",
+            message: `TBO API authentication returned HTTP ${res.status}: ${rawText.slice(0, 100)}`,
+          };
+        }
+      }
     }
 
-    const data: any = await res.json();
     if (data?.Status === 1 && data?.TokenId) {
       return {
         authenticated: true,
@@ -535,9 +565,15 @@ export async function authenticateTbo(
 }
 
 /**
- * Live Flight Search via TBO Air API.
+ * Live TBO Authentication API (Canonical Task 1 Export)
  */
-export async function searchTboFlights(
+export const authenticateTBO = authenticateTbo;
+
+/**
+ * Live Flight Search via TBO Air API.
+ * POST to `${endpoint}/AirService.svc/rest/Search` with auth token.
+ */
+export async function searchFlightsTBO(
   query: TboFlightSearchQuery,
   token?: string,
   endUserIp = DEFAULT_END_USER_IP
@@ -566,14 +602,24 @@ export async function searchTboFlights(
   }
 
   try {
-    const searchUrl = `${creds.endpoint}/BookingEngineService_Air/AirService.svc/rest/Search`;
+    const baseEndpoint = creds.endpoint.replace(/\/+$/, "");
+    const primaryUrl = `${baseEndpoint}/AirService.svc/rest/Search`;
     const payload = serializeTboFlightSearchRequest(query, authToken, endUserIp);
 
-    const res = await fetch(searchUrl, {
+    let res = await fetch(primaryUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+
+    if (res.status === 404) {
+      const fallbackUrl = `${baseEndpoint}/BookingEngineService_Air/AirService.svc/rest/Search`;
+      res = await fetch(fallbackUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }
 
     if (!res.ok) {
       return { success: false, flights: [], error: `TBO Search returned HTTP ${res.status}` };
@@ -590,6 +636,11 @@ export async function searchTboFlights(
     return { success: false, flights: [], error: err?.message || "TBO flight search error" };
   }
 }
+
+/**
+ * Live Flight Search via TBO Air API (canonical alias).
+ */
+export const searchTboFlights = searchFlightsTBO;
 
 /**
  * Re-validates pricing, seat availability, and baggage/meal allowances before booking.

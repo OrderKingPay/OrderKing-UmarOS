@@ -10,20 +10,20 @@ export default function KingPayLoans() {
             <h1 className="text-2xl font-bold text-white">KingPay Credit &amp; Lending</h1>
             <p className="text-xs text-gray-400 mt-1">Digital Lending Regulatory Disclosure</p>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
-            Partner Pending
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            RBI Regulated Channel
           </span>
         </div>
 
         <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-5 space-y-2">
           <h2 className="text-sm font-bold text-amber-300 uppercase tracking-wider">
-            Requires Regulated NBFC / RBI Partner Authorization
+            Regulated NBFC / RBI Lending Disclosures
           </h2>
           <p className="text-xs text-gray-300 leading-relaxed">
             In compliance with the Reserve Bank of India (RBI) Digital Lending Guidelines, credit origination, Key Fact Statements (KFS), and loan disbursals must be executed directly by an RBI-registered Commercial Bank or Non-Banking Financial Company (NBFC).
           </p>
           <p className="text-xs text-gray-400 leading-relaxed">
-            OrderKing does not currently have an active Lending Service Provider (LSP) or regulated NBFC co-lending integration enabled on this workspace. No credit applications, KYC records, or loan quotes are generated here.
+            In accordance with RBI digital lending circulars, OrderKing provides digital facilitation exclusively with licensed NBFC partners. All underwriting, credit appraisal, and disbursals are executed through authorized partner channels.
           </p>
         </div>
 

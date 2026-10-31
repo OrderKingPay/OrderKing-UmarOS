@@ -72,14 +72,16 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
     let dispatchResult: DispatchOtpResult;
     try {
       if (data.channel === "voice") {
-        const twoFactorKey =
+        const twoFactorKey = (
           process.env.TWOFACTOR_API_KEY ||
-          process.env.TWO_FACTOR_API_KEY;
+          process.env.TWO_FACTOR_API_KEY ||
+          ""
+        ).trim().replace(/^["']|["']$/g, "");
         if (!twoFactorKey) {
           throw new Error("TWOFACTOR_API_KEY not configured in environment");
         }
         const vRes = await fetch(
-          `https://2factor.in/API/V1/${encodeURIComponent(twoFactorKey)}/VOICE/+91${cleanPhone}/${otp}`
+          `https://2factor.in/API/V1/${encodeURIComponent(twoFactorKey)}/VOICE/${cleanPhone}/${otp}`
         );
         const vJson = (await vRes.json().catch(() => ({}))) as { Status?: string; Details?: string };
         dispatchResult = {
@@ -87,7 +89,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
           provider: "2factor",
           messageId: vJson.Details || `2F-VOICE-${Date.now()}`,
           debugOtp: otp,
-          whatsappOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
+          whatsAppOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
           providerNotice: `Calling +91-${cleanPhone} now with your 6-digit voice verification code.`,
         };
       } else {
@@ -105,7 +107,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
         provider: "resilient_fallback",
         messageId: `FALLBACK-${Date.now()}`,
         debugOtp: otp,
-        whatsappOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
+        whatsAppOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
         providerNotice: `Carrier SMS delayed (${msg}). Instant verified OTP ready below.`,
       };
     }
@@ -114,8 +116,8 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       phone: cleanPhone,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
-      whatsAppOtpUrl: dispatchResult.whatsappOtpUrl,
-      whatsappOtpUrl: dispatchResult.whatsappOtpUrl,
+      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
+      whatsappOtpUrl: dispatchResult.whatsAppOtpUrl,
       providerNotice:
         dispatchResult.providerNotice ||
         (dispatchResult.provider === "2factor"
@@ -170,7 +172,7 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     }
     if (!isValid) {
       try {
-        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY;
+const tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim().replace(/^["']|["']$/g, "");
         if (tfKey) {
           const tfRes = await fetch(
             `https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`
@@ -225,3 +227,57 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
       },
     };
   });
+export const requestAdminPhoneOtpFn = requestPhoneOtpFn;
+export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
+  .validator((input: { phone: string; code?: string; otp?: string; name?: string }) => input)
+  .handler(async ({ data }) => {
+    const cleanPhone = sanitizeIndianPhone(data.phone);
+    const enteredOtp = (data.code || data.otp || "").trim();
+    if (!isValidIndianPhone(cleanPhone)) {
+      return { success: false, error: "Invalid 10-digit mobile number." };
+    }
+    const validWindowOtps = [
+      computeStatelessOtp(cleanPhone, 0),
+      computeStatelessOtp(cleanPhone, -1),
+      computeStatelessOtp(cleanPhone, -2),
+    ];
+    const memEntry = memoryOtpCache.get(`phone:${cleanPhone}`);
+    const isMatched =
+      validWindowOtps.includes(enteredOtp) ||
+      Boolean(memEntry && memEntry.otp === enteredOtp && memEntry.expiresAt > Date.now());
+    let isTfValid = isMatched;
+    if (!isTfValid) {
+      try {
+        const tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim().replace(/^["']|["']$/g, "");
+        if (tfKey) {
+          const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`);
+          const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+          if (tfJson.Status === "Success") isTfValid = true;
+        }
+      } catch {}
+    }
+    if (!isTfValid) {
+      return { success: false, error: "Invalid or expired OTP code." };
+    }
+    memoryOtpCache.delete(`phone:${cleanPhone}`);
+    const hash = createHmac("sha256", getAuthSecret()).update(cleanPhone).digest("hex");
+    const userId = "adm_" + hash.slice(0, 16);
+    const syntheticEmail = `${cleanPhone}@admin.orderkingpay.com`;
+    const derivedPassword = `OK_${hash.slice(0, 20)}!9A`;
+    return {
+      success: true,
+      verified: true,
+      userId,
+      phone: cleanPhone,
+      email: syntheticEmail,
+      password: derivedPassword,
+      profile: {
+        id: userId,
+        phone: cleanPhone,
+        email: syntheticEmail,
+        name: data.name?.trim() || `HDmaster Admin ${cleanPhone.slice(-4)}`,
+        role: "admin",
+      },
+    };
+  });
+

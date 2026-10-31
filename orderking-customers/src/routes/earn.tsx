@@ -131,7 +131,7 @@ function CrownOpportunitiesPage() {
                   Active Financial Utilities
                 </h2>
                 <p className="text-xs text-stone-500">
-                  Zero placeholder blockers. Fully operational tools with 0% gateway markup.
+                  Instant tools with 0% gateway markup and real-time passbook tracking.
                 </p>
               </div>
 
@@ -210,8 +210,20 @@ function CrownOpportunitiesPage() {
                 <span>Explore food menus</span>
                 <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              
-              
+              <Link
+                to="/kingpay"
+                className="group flex items-center justify-between rounded-2xl border border-amber-300/80 bg-gradient-to-r from-amber-50/80 to-amber-50/30 p-4 text-sm font-black text-amber-950 no-underline shadow-2xs hover:border-amber-500 transition-all"
+              >
+                <span>KingPay Instant UPI</span>
+                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                to="/join-fleet"
+                className="group flex items-center justify-between rounded-2xl border border-blue-300/80 bg-gradient-to-r from-blue-50/80 to-blue-50/30 p-4 text-sm font-black text-blue-950 no-underline shadow-2xs hover:border-blue-500 transition-all"
+              >
+                <span>Partner With Us</span>
+                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </div>
             <p className="mt-4 flex items-start gap-2 text-xs text-stone-500">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" />

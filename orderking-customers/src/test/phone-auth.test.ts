@@ -14,6 +14,7 @@ describe("Customer App - Phone Auth & SMS Gateway Test Suite", () => {
     delete process.env.FAST2SMS_API_KEY;
     delete process.env.SMS_GATEWAY_API_KEY;
     delete process.env.TWOFACTOR_API_KEY;
+    delete process.env.OTP_2FACTOR_API_KEY;
     delete process.env.MSG91_AUTH_KEY;
     delete process.env.TWILIO_ACCOUNT_SID;
   });
@@ -130,6 +131,41 @@ describe("Customer App - Phone Auth & SMS Gateway Test Suite", () => {
     expect(result.providerNotice).toContain("Verification code dispatched directly to your WhatsApp inbox");
     expect(mockFetch).toHaveBeenCalledWith(
       "https://graph.facebook.com/v21.0/109876543210/messages",
+      expect.objectContaining({
+        method: "POST",
+      })
+    );
+  });
+
+  it("8. safely recognizes when OTP_2FACTOR_API_KEY equals FAST2SMS_API_KEY and avoids 2Factor failure", async () => {
+    process.env.FAST2SMS_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
+    process.env.OTP_2FACTOR_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
+
+    const providers = getAvailableSmsProviders();
+    expect(providers).not.toContain("2factor");
+    expect(providers).toContain("fast2sms");
+
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        return: true,
+        request_id: "REQ_F2S_CUST_99",
+        message: ["SMS sent successfully."],
+      }),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const result = await dispatchOtpSms({
+      phone: "9395065587",
+      otp: "998877",
+      channel: "sms",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe("fast2sms");
+    expect(result.messageId).toBe("REQ_F2S_CUST_99");
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://www.fast2sms.com/dev/bulkV2",
       expect.objectContaining({
         method: "POST",
       })
