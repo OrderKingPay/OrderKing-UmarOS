@@ -1605,7 +1605,7 @@ export function AiMediaEngineHub({
         </div>
       )}
 
-      {/* TAB 5: RENDERED VIDEO VAULT */}
+      {/* TAB 5: RENDERED VIDEO PASSBOOK */}
       {activeTab === "library" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">

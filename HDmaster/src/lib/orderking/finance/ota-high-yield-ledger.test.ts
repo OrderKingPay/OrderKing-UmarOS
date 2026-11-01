@@ -172,7 +172,7 @@ describe("👑 HIGH-YIELD OTA CONVENIENCE FEE & DOUBLE-ENTRY LEDGER LOCKDOWN", (
       assert.strictEqual(result.fareBreakdown.guaranteedUpfrontCashFloatPaise, 179_800);
     });
 
-    test("when invalid/unrecognized promo code is passed, it is strictly ignored and 100% fees retained", async () => {
+    test("when invalid/unrecognized promo code is passed, it is strictly ignored and 10Direct UPIs retained", async () => {
       const ledger = new CanonicalLedger();
       const booking: OtaTravelBookingParams = {
         bookingId: "FL-INVALID-PROMO",

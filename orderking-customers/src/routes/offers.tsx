@@ -32,7 +32,7 @@ const FEATURED_OFFERS = [
     id: "feat_welcome",
     name: "Welcome 50% OFF (Up to ₹100)",
     code: "ORDERKING",
-    description: "Flat 50% Courtesy Saving on your food orders.",
+    description: "Promotional restaurant discount on eligible orders.",
     minOrderPaise: 14900,
     badge: "🎉 First Order",
   },

@@ -2034,7 +2034,7 @@ function TravelPartnerGovernanceSection() {
           <div className="p-4 rounded-xl bg-black/40 border border-emerald-500/30 space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-xs font-bold text-white">Platform Convenience Markup</span>
-              <span className="text-xs font-mono font-bold text-emerald-400">₹0.00 (0 bps)</span>
+              <span className="text-xs font-mono font-bold text-emerald-400">UPI Ready (0 bps)</span>
             </div>
             <div className="rounded-lg bg-emerald-950/40 p-2.5 border border-emerald-500/30 text-[11px] text-emerald-200">
               🔒 Immutable Founder Guarantee: OrderKing never marks up carrier fares or inflates tickets with convenience surcharges.

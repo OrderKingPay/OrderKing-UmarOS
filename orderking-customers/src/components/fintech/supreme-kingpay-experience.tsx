@@ -179,7 +179,7 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   { id: "s-sc-7", category: "Sacred", title: "Old Goa Basilica of Bom Jesus Heritage Shrines", sub: "St. Francis Xavier Relics Sacred Viewing · ₹13,500", icon: "✝️", url: "/travel?tab=pilgrimage", keywords: "old goa basilica bom jesus christian church heritage shrines" },
 
   // Utility Bills & BBPS
-  { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Instant BBPS Payment & Legal Receipt · 0% Fee", icon: "⚡", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
+  { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Instant BBPS Payment & Legal Receipt · Direct UPI", icon: "⚡", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
   { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "Instant Mobile Prepaid Recharge · 0% Surcharge", icon: "📱", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
   { id: "s-bb-3", category: "Bills", title: "FASTag Toll Balance Top-Up", sub: "NHAI National Highway Toll Wallet", icon: "🚗", action: "bills", keywords: "bill fastag toll car highway netc rfid" },
   { id: "s-bb-4", category: "Bills", title: "DTH & Cable TV Subscription", sub: "Tata Play, Airtel DTH, DishTV", icon: "📺", action: "bills", keywords: "bill dth tata play airtel dishtv television" },

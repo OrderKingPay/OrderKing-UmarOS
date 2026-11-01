@@ -1105,7 +1105,7 @@ function FinancePage() {
             <div className="rounded-xl border border-border bg-elevated p-3">
               <span className="text-muted">Double-Entry Match:</span>
               <p className="mt-1 font-mono text-xl font-bold text-emerald-600">100% MATCH</p>
-              <p className="mt-0.5 text-[11px] text-emerald-600 font-semibold">Zero Float Leakage (₹0.00)</p>
+              <p className="mt-0.5 text-[11px] text-emerald-600 font-semibold">Zero Float Leakage (UPI Ready)</p>
             </div>
           </div>
           <div className="rounded-lg border border-border bg-surface p-2.5 flex items-center justify-between">

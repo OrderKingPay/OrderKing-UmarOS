@@ -2077,7 +2077,7 @@ export const DEFAULT_BYPASS_DIALS: CommercialBypassDialsState = {
   refereeFirstOrderDiscountInr: 100,
   milestoneFiveFriendsBonusInr: 500,
   viralOneTapShareCampaignActive: true,
-  viralShareTemplate: "OrderKing pe direct restaurant prices aur KingPay 0% fee ke saath khana mangao! Mera code use karo aur ₹100 pao.",
+  viralShareTemplate: "OrderKing pe direct restaurant prices aur KingPay Direct UPI ke saath khana mangao! Mera code use karo aur ₹100 pao.",
 
   updatedAt: new Date().toISOString(),
   updatedBy: "SYSTEM",

@@ -1227,7 +1227,7 @@ function AssistantPage() {
               >
                 {growthPlaybook.estimatedDailyLeakagePaise > 0
                   ? `-${formatINR(growthPlaybook.estimatedDailyLeakagePaise)} / day`
-                  : "₹0.00 Leakage (100% In-Stock)"}
+                  : "UPI Ready Leakage (100% In-Stock)"}
               </div>
               <p className="text-[11px] text-muted">
                 {menuAudit.outOfStock.length > 0

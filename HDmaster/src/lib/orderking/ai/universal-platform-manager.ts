@@ -410,7 +410,7 @@ export class UniversalPlatformManager {
           qrMatrixUrl,
           status: "UPI_READY_GENUINE",
         };
-        summary = `Generated 0% Fee King Pay UPI QR and Intent Link for ₹${amountInr.toLocaleString("en-IN")} direct to ${vpa}.`;
+        summary = `Generated Direct UPI King Pay UPI QR and Intent Link for ₹${amountInr.toLocaleString("en-IN")} direct to ${vpa}.`;
         shareableUrl = qrMatrixUrl;
         break;
       }

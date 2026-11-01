@@ -59,7 +59,7 @@ export const Route = createFileRoute("/api/v1/kingpay/payoneer-webhook")({
                   memo: `Cross-border clearance: ${currency} ${amount.toFixed(2)} [Payee: ${payload.payee_id || "GLOBAL"}]`,
                 },
                 {
-                  account: "FOUNDER_VAULT",
+                  account: "FOUNDER_PASSBOOK",
                   direction: "CREDIT",
                   amountPaise,
                   entityId: "FOUNDER_DELAWARE_TREASURY",

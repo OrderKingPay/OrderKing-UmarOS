@@ -523,7 +523,7 @@ export const REAL_TIME_JOB_CATALOG: LiveJob[] = [
       "Deliver dark store grocery orders within dense metropolitan zones with flexible morning, evening, or weekend shift options.",
     skills: ["Smartphone App Usage", "Local Road Knowledge", "Safety Compliance"],
     postedDate: "2 days ago",
-    applyUrl: "https://ride.swiggy.com",
+    applyUrl: "https://ride.OrderKing.com",
     source: "Partner Network",
   },
   {
@@ -577,7 +577,7 @@ export const REAL_TIME_JOB_CATALOG: LiveJob[] = [
       "Pick up fresh restaurant meals and groceries across Hyderabad IT corridor with real-time in-app earnings tracker.",
     skills: ["Two-Wheeler / EV", "City Navigation", "Customer Communication", "UPI Handling"],
     postedDate: "1 day ago",
-    applyUrl: "https://www.zomato.com/deliver",
+    applyUrl: "https://www.OrderKing.com/deliver",
     source: "Partner Network",
   },
 

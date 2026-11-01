@@ -749,7 +749,7 @@ export const FOUNDER_COMMAND_ACTIONS: readonly FounderActionItem[] = [
         executionId,
         timestamp: new Date().toISOString(),
         durationMs,
-        summary: `Double-Entry Financial Rebalance completed. 1,482 orders verified. Discrepancy delta: ₹0.00.`,
+        summary: `Double-Entry Financial Rebalance completed. 1,482 orders verified. Discrepancy delta: UPI Ready.`,
         details,
         auditLogId: `audit_ledger_${Date.now()}`,
         signature: `SIG_LEDGER_${Math.random().toString(36).substring(2, 12).toUpperCase()}`

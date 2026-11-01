@@ -583,7 +583,7 @@ export class OrderKingSpark {
     const summary = `Hello Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
 - **Delivered Orders**: **${deliveredOrders} orders** successfully completed (${cancelledOrders} cancelled).
 - **Gross Sales & Packaging**: **₹${(grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (Food: ₹${(grossFoodSalesPaise / 100).toLocaleString("en-IN")} · Packaging: ₹${(packagingChargesPaise / 100).toLocaleString("en-IN")}).
-- **OrderKing Platform Commission**: **₹0.00 (custom commission)**. You saved **₹${(aggregatorCommissionAvoidedPaise / 100).toLocaleString("en-IN")}** vs dominant legacy aggregators (24% standard aggregator deduction).
+- **OrderKing Platform Commission**: **UPI Ready (custom commission)**. You saved **₹${(aggregatorCommissionAvoidedPaise / 100).toLocaleString("en-IN")}** vs dominant legacy aggregators (24% standard aggregator deduction).
 - **Statutory GST Sec 9(5) Remitted**: **₹${(gst95RemittedByPlatformPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (5% food GST remitted directly to the government by Order King on your behalf).
 - **Withholding Taxes Deducted**: TCS Sec 52 (0.5%): **₹${(tcsSection52Paise / 100).toFixed(2)}** · TDS Sec 194-O (0.1%): **₹${(tdsSection194OPaise / 100).toFixed(2)}**.
 - **Customer Dispute Adjustments**: **-₹${(customerDisputeDeductionsPaise / 100).toFixed(2)}** (Missing Naan #ORD-8845).
