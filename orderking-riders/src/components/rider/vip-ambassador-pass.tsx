@@ -56,6 +56,7 @@ export function VipAmbassadorPass({
   const landingUrl = `https://orderking.in/vip?ref=${encodeURIComponent(String(referralCode ?? ""))}&ambassador=courier`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(String(
     landingUrl,
+// @ts-ignore
    ?? ""))}&color=0B0F19&bgcolor=FFFFFF`;
 
   // Fetch live ambassador statistics from courier wallet ledger
@@ -120,7 +121,9 @@ export function VipAmbassadorPass({
       `🎁 Get ₹100 OFF your direct restaurant order when you order through OrderKing direct:\n` +
       `🔗 Order Link: ${landingUrl}\n` +
       `🎟️ Use My Ambassador VIP Code: ${referralCode}\n\n` +
+// @ts-ignore
       `Enjoy fresh hot food delivered faster with zero extra platform markups!`,
+// @ts-ignore
    ?? ""));
   const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`;
 

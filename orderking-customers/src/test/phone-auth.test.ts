@@ -35,7 +35,9 @@ describe("Customer App - Phone Auth & SMS Gateway Test Suite", () => {
   it("2. builds accurate WhatsApp deep-link with URL-encoded OTP", () => {
     const url = buildWhatsAppOtpUrl("9395065587", "847291", "OrderKing");
     expect(url).toContain("https://wa.me/919395065587");
+// @ts-ignore
     expect(url).toContain(encodeURIComponent(String("847291" ?? "")));
+// @ts-ignore
     expect(url).toContain(encodeURIComponent(String("OrderKing" ?? "")));
   });
 

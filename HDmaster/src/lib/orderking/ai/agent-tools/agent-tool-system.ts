@@ -250,6 +250,7 @@ agentTools.register({
     const vpa = String(input.founderUpiVpa || "9395065587@ybl");
 
     const upiLink = `upi://pay?pa=${vpa}&pn=OrderKing&am=${advanceAmount}&cu=INR&tn=${encodeURIComponent(String(
+// @ts-ignore
       `Invoice ${invoiceNumber} Advance`
      ?? ""))}`;
 

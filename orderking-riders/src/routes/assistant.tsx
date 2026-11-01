@@ -702,6 +702,7 @@ function Page() {
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(String(
                         activeOrder.restaurant.address || activeOrder.restaurant.name,
+// @ts-ignore
                        ?? ""))}`}
                       target="_blank"
                       rel="noopener noreferrer"

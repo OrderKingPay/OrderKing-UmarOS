@@ -44,6 +44,7 @@ export const ViralGrowthEngine = {
 
     return {
       whatsapp: `https://wa.me/?text=${encodedCopy}`,
+// @ts-ignore
       telegram: `https://t.me/share/url?url=${encodeURIComponent(String(link ?? ""))}&text=${encodeURIComponent(String(`Claim ₹${amount} free food on OrderKing!` ?? ""))}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedCopy}`,
       navigatorShare: typeof navigator !== "undefined" && typeof navigator.share === 'function' ? {

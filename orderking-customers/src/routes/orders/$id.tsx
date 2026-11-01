@@ -699,7 +699,7 @@ function OrderDetailPage() {
                 <div className="flex items-center justify-between pt-1 border-t border-border">
                   <span className="text-[11px] text-muted">Escalated to HDmaster Founder Operations at {submittedComplaint.createdAt}</span>
                   <a
-                    href={`/support?ticket=${encodeURIComponent(String(submittedComplaint.ticketId || "" ?? ""))}&orderId=${encodeURIComponent(String(id ?? ""))}`}
+                    href={`/support?ticket=${encodeURIComponent(String(submittedComplaint.ticketId || ""))}&orderId=${encodeURIComponent(String(id ?? ""))}`}
                     className="text-primary font-bold text-[11px] hover:underline"
                   >
                     💬 Contact Founder Support →

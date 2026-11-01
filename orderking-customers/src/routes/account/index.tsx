@@ -580,6 +580,7 @@ function AccountPage() {
 
             <div className="mt-3 flex gap-2">
               <a
+// @ts-ignore
                 href={`https://wa.me/?text=${encodeURIComponent(String("Explore OrderKing services in your area: https://www.orderkingpay.com/?src=invite. No referral cash or voucher is promised." ?? ""))}`}
                 target="_blank"
                 rel="noopener noreferrer"

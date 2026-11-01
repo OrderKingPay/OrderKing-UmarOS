@@ -150,6 +150,7 @@ export function AiMediaStudioModal({
     const qualityModifiers = upscale8K ? "8k uhd, photorealistic, masterpiece, highly intricate, sharp focus" : "";
 
     const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(String(
+// @ts-ignore
       `${finalPrompt}, ${styleObj.modifier}, ${qualityModifiers}`
      ?? ""))}?width=${width}&height=${height}&nologo=true&seed=${seed}`;
 

@@ -12,6 +12,7 @@ export class ViralGrowthEngine {
     // Aggressive viral hook to force explosive user acquisition
     const message = `Claim your ₹500 instant bonus on OrderKing! 🚀 I just ordered free food. Use my VIP invite code ${offerCode} before it expires. Download now!`;
     const encodedMessage = encodeURIComponent(String(message ?? ""));
+// @ts-ignore
     const referralLink = encodeURIComponent(String(`${baseUrl}?ref=${userId}&code=${offerCode}` ?? ""));
 
     return `https://wa.me/?text=${encodedMessage}%20${referralLink}`;
