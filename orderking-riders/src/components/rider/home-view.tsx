@@ -1742,7 +1742,7 @@ function OfferCard({
     offer.pickupLocation.lat !== 0 || offer.pickupLocation.lng !== 0;
   const mapsPickupUrl = hasPickupCoords
     ? `https://www.google.com/maps/dir/?api=1&destination=${offer.pickupLocation.lat},${offer.pickupLocation.lng}&travelmode=two-wheeler`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(String(`${offer.restaurant.name} ${offer.restaurant.address || offer.restaurant.area}` ?? ""))}`;
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${offer.restaurant.name} ${offer.restaurant.address || offer.restaurant.area}`)}`;
 
   // 30-second countdown timer calculations (Tier-1 standard)
   const maxTimerSec = 30;

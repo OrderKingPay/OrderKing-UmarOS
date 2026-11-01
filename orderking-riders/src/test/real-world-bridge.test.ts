@@ -31,7 +31,7 @@ describe("real-world-bridge: Indian Phone & WhatsApp Normalization", () => {
   it("generates 1-tap WhatsApp deep link with encoded message", () => {
     const url = generateWhatsAppDirectUrl("9876543210", "Order #OK-123 is arriving!");
     expect(url).toContain("https://wa.me/919876543210?text=");
-    expect(url).toContain(encodeURIComponent(String("Order #OK-123 is arriving!" ?? "")));
+    expect(url).toContain(encodeURIComponent("Order #OK-123 is arriving!"));
   });
 });
 

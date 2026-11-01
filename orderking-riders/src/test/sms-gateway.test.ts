@@ -62,8 +62,8 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
     it("generates 1-tap wa.me URL with pre-filled verification code", () => {
       const url = buildWhatsAppOtpUrl("9876543210", "482910", "OrderKing");
       expect(url).toContain("https://wa.me/919876543210?text=");
-      expect(url).toContain(encodeURIComponent(String("482910" ?? "")));
-      expect(url).toContain(encodeURIComponent(String("OrderKing Verification Code" ?? "")));
+      expect(url).toContain(encodeURIComponent("482910"));
+      expect(url).toContain(encodeURIComponent("OrderKing Verification Code"));
     });
 
     it("dispatches immediate WhatsApp deep link when channel is whatsapp", async () => {
