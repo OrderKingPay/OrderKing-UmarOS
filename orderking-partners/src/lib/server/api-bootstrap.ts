@@ -84,15 +84,53 @@ export function buildPartnerCustomizationState(): DynamicCustomizationState {
 }
 
 export const getBootstrap = createServerFn({ method: "GET" })
-  .middleware([authMiddleware])
-  .handler(async ({ context }) => {
+  .handler(async () => {
+    let userId: string | null = null;
+    try {
+      const { getSessionUser } = await import("@/lib/auth/verify.server");
+      const u = await getSessionUser();
+      userId = u?.id || null;
+    } catch {}
+
     const customization = buildPartnerCustomizationState();
     const bankingStatus = getBankingGatewayStatus();
+
+    if (!userId) {
+      return {
+        userId: null,
+        memberships: [],
+        branding: {
+          appName: platformConfig.brand.appName,
+          tagline: platformConfig.brand.tagline,
+          restaurantFacingBrandName: platformConfig.brand.restaurantFacingBrandName,
+          logo: platformConfig.brand.restaurantFacingLogo,
+          primary: platformConfig.theme.primary,
+          supportEmail: platformConfig.support.email,
+        },
+        customization,
+        featureFlags: platformConfig.featureFlags,
+        adapters: {
+          notifications: notificationChannelStatus(),
+          storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
+          dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
+          payments: {
+            connected: bankingStatus.readyForLivePayouts,
+            provider: bankingStatus.activeProvider,
+            status: bankingStatus.status,
+            instructions: bankingStatus.instructions,
+          },
+          banking: bankingStatus,
+          ai: { connected: Boolean(process.env.XAI_API_KEY), provider: process.env.XAI_API_KEY ? "xAI" : "NOT_CONNECTED" },
+        },
+        commissionOptionsBps: [...platformConfig.commission.allowedBps],
+      };
+    }
+
     try {
       const sql = await getSql();
-      const memberships = await loadMemberships(sql, context.userId);
+      const memberships = await loadMemberships(sql, userId);
       return {
-        userId: context.userId,
+        userId,
         memberships,
         branding: {
           appName: platformConfig.brand.appName,
@@ -122,7 +160,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
     } catch (error) {
       console.error("[getBootstrap] Failed DB connect:", error);
       return {
-        userId: context.userId,
+        userId,
         memberships: [],
         branding: {
           appName: platformConfig.brand.appName,
@@ -151,7 +189,6 @@ export const getBootstrap = createServerFn({ method: "GET" })
       };
     }
   });
-
 
 export const createRestaurantDraft = createServerFn({ method: "POST" })
   .middleware([authMiddleware])

@@ -129,23 +129,23 @@ async function sendViaFast2SMS(
 
     if (!res.ok) {
       const errText = await res.text().catch(() => "");
-      console.warn(`Fast2SMS Smart OTP HTTP ${res.status}, falling back to bulkV2 Quick SMS`);
+      console.warn(`Fast2SMS Smart OTP HTTP ${res.status}, falling back to bulkV2 Quick SMS: ${errText}`);
+    } else {
+      const json = (await res.json().catch(() => ({}))) as {
+        return?: boolean;
+        request_id?: string;
+        message?: string | string[];
+      };
+
+      if (json.return === false) {
+        const msg = Array.isArray(json.message)
+          ? json.message.join(", ")
+          : (json.message || "Fast2SMS Smart OTP rejected request");
+        console.warn(`Fast2SMS Smart OTP rejected (${msg}), falling back to bulkV2 Quick SMS`);
+      } else if (json.request_id || json.return === true) {
+        return { success: true, messageId: json.request_id || `F2S-SMART-${Date.now()}`, raw: json };
+      }
     }
-
-    const json = (await res.json()) as {
-      return?: boolean;
-      request_id?: string;
-      message?: string | string[];
-    };
-
-    if (json.return === false) {
-      const msg = Array.isArray(json.message)
-        ? json.message.join(", ")
-        : (json.message || "Fast2SMS Smart OTP rejected request");
-      console.warn(`Fast2SMS Smart OTP rejected (${msg}), falling back to bulkV2 Quick SMS`);
-    }
-
-    if (json.return !== false) { return { success: true, messageId: json.request_id || `F2S-SMART-${Date.now()}`, raw: json }; }
   }
 
   const route = (process.env.FAST2SMS_ROUTE || "q").trim().replace(/^["']|["']$/g, "").toLowerCase();

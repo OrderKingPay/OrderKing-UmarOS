@@ -317,6 +317,9 @@ function OnboardingPage() {
           },
         });
         targetRestaurantId = (draftRes as any)?.restaurantId || (draftRes as any)?.id || targetRestaurantId;
+        if (targetRestaurantId && typeof window !== "undefined") {
+          window.localStorage.setItem("orderking_restaurant_id", targetRestaurantId);
+        }
       }
 
       if (targetRestaurantId && !targetRestaurantId.startsWith("local_")) {

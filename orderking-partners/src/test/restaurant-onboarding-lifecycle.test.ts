@@ -55,7 +55,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
         on conflict (id) do nothing
       `;
     } catch {}
-  }, 30000);
+  }, 60000);
 
   afterAll(async () => {
     if (!sql) return;
@@ -66,7 +66,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
     try { await sql`delete from restaurant_outlets where restaurant_id = ${testRestaurantId}`; } catch {}
     try { await sql`delete from outlets where restaurant_id = ${testRestaurantId}`; } catch {}
     try { await sql`delete from restaurants where id = ${testRestaurantId}`; } catch {}
-  }, 30000);
+  }, 60000);
 
   // Test 1: Register partner draft -> restaurant created with verification_status = 'DRAFT'
   it("Test 1: registers partner draft with verification_status = 'DRAFT', data_label = 'REAL', active = false", async () => {

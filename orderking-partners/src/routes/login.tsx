@@ -1,13 +1,13 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo, type FormEvent } from "react";
-import { authClient, setPhoneSession } from "@/lib/auth/client";
+import { authClient, setPhoneSession, getPhoneSession } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { OrderKingMark } from "@/components/mark";
 import { useT } from "@/components/use-t";
 import { platformConfig } from "@/lib/platform-config";
-import { useMerchantBranding, useCommissionTokens } from "@orderking/ui";
+import { useMerchantBranding } from "@orderking/ui";
 import { cn } from "@/lib/utils";
 import {
   sendPartnerOtpFn,
@@ -57,8 +57,6 @@ function resolveIdentifierToEmail(rawInput: string): { email: string; isMobile: 
 function Login() {
   const t = useT();
   const branding = useMerchantBranding();
-  const commissionTokens = useCommissionTokens();
-  const { user } = useCurrentUserState();
 
   const [mode, setMode] = useState<"in" | "up">(() => {
     if (typeof window !== "undefined") {
@@ -92,7 +90,7 @@ function Login() {
   const cleanPhone = useMemo(() => sanitizeIndianPhone(mobileNumber), [mobileNumber]);
   const isPhoneValid = isValidIndianPhone(cleanPhone);
 
-  useEffect(() => { if (user && typeof window !== "undefined") { window.location.replace("/dashboard"); } }, [user]);
+  useEffect(() => { if (typeof window !== "undefined") { const s = getPhoneSession(); if (s?.user?.id) { window.location.replace("/dashboard"); } } }, []);
 
   // WebOTP API for 1-tap SMS autofill on mobile devices
   useEffect(() => {
