@@ -40,7 +40,6 @@ import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
-import { CURATED_RESTAURANTS } from "@/lib/predictive-search";
 
 // Curated high-resolution categories with distinct gradient colors (Biryani, Pizza, Rolls, Thali, Burgers, Desserts)
 const CURATED_FOOD_CATEGORIES = [
@@ -352,10 +351,7 @@ export function HomeFeed({
 
   // Filtered and sorted restaurants based on active controls
   const filteredRestaurants = useMemo(() => {
-    const raw: RestaurantCard[] =
-      list.data?.restaurants && list.data.restaurants.length > 0
-        ? list.data.restaurants
-        : CURATED_RESTAURANTS;
+    const raw: RestaurantCard[] = list.data?.restaurants ?? [];
 
     const matched = raw
       .filter((r) => {

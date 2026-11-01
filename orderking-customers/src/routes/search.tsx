@@ -37,8 +37,6 @@ import { useLocationStore } from "@/lib/stores/location";
 import {
   TRENDING_SEARCHES,
   TOP_CUISINES,
-  CURATED_DISHES,
-  CURATED_RESTAURANTS,
   RECENT_SEARCHES_KEY,
   getRecentSearches,
   saveRecentSearch,
@@ -172,19 +170,19 @@ function PredictiveSearchPage() {
         const res = await fetch(`/api/search?${params.toString()}`);
         if (!res.ok) {
           return {
-            restaurants: CURATED_RESTAURANTS,
-            dishes: CURATED_DISHES,
+            restaurants: [],
+            dishes: [],
           };
         }
         const data = await res.json();
         return {
-          restaurants: Array.isArray(data?.restaurants) && data.restaurants.length > 0 ? (data.restaurants as RestaurantCard[]) : CURATED_RESTAURANTS,
-          dishes: Array.isArray(data?.dishes) && data.dishes.length > 0 ? (data.dishes as SearchDishItem[]) : CURATED_DISHES,
+          restaurants: Array.isArray(data?.restaurants) ? (data.restaurants as RestaurantCard[]) : [],
+          dishes: Array.isArray(data?.dishes) ? (data.dishes as SearchDishItem[]) : [],
         };
       } catch {
         return {
-          restaurants: CURATED_RESTAURANTS,
-          dishes: CURATED_DISHES,
+          restaurants: [],
+          dishes: [],
         };
       }
     },
@@ -192,8 +190,8 @@ function PredictiveSearchPage() {
     placeholderData: (prev) => prev,
   });
 
-  const rawDishes = searchQuery.data?.dishes ?? CURATED_DISHES;
-  const rawRestaurants = searchQuery.data?.restaurants ?? CURATED_RESTAURANTS;
+  const rawDishes = searchQuery.data?.dishes ?? [];
+  const rawRestaurants = searchQuery.data?.restaurants ?? [];
 
   // Filtered live results
   const filteredDishes = useMemo(

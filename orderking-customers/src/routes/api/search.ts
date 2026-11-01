@@ -6,7 +6,6 @@ import { isOpenNow, type HourWindow } from "@/lib/hours";
 import { getMarketContext } from "@/lib/server/dynamic-sort";
 import type { RestaurantCard } from "@/lib/market-types";
 import { searchLimiter } from "@/lib/security/rate-limiter";
-import { CURATED_RESTAURANTS } from "@/lib/predictive-search";
 
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 import { getActiveDeliveryRadius, checkHazardZone } from "@/lib/geo/dynamic-radius";
@@ -240,7 +239,7 @@ export const Route = createFileRoute("/api/search")({
 
           const dishes: never[] = []; // Do not return static, unverified dish inventory.
 
-          const effectiveRestaurants = finalCards.length > 0 ? finalCards : CURATED_RESTAURANTS;
+          const effectiveRestaurants = finalCards;
           return new Response(JSON.stringify({ 
             restaurants: effectiveRestaurants,
             dishes,
