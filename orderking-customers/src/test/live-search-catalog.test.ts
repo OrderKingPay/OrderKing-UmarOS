@@ -3,7 +3,7 @@ import { Route } from "../routes/api/search";
 
 describe("Live Real Restaurant Catalog Verification", () => {
   it("loads authentic Connaught Place restaurants with real ratings and timing", async () => {
-    process.env.DATABASE_URL = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
+    process.env.DATABASE_URL = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres";
     const handler = (Route.options as any)?.server?.handlers?.GET;
     expect(handler).toBeDefined();
 
@@ -24,7 +24,7 @@ describe("Live Real Restaurant Catalog Verification", () => {
   }, 45000);
 
   it("validates dynamic shift geofencing in Sribhumi Core, Mumbai, and Bengaluru without cross-country bleeding", async () => {
-    process.env.DATABASE_URL = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
+    process.env.DATABASE_URL = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres";
     const handler = (Route.options as any)?.server?.handlers?.GET;
 
     // Sribhumi Core: Verified active territory with strict dynamic shift radius enforcement

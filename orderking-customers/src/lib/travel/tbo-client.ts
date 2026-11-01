@@ -175,8 +175,6 @@ export function getTboCredentials(customEnv?: Record<string, string>): TboCreden
   };
 
   const agencyCode =
-    getEnv("TBO_AGENCY_ID") ||
-    getEnv("VITE_TBO_AGENCY_ID") ||
     getEnv("TBO_CLIENT_ID") ||
     getEnv("TBO_AGENCY_CODE") ||
     getEnv("VITE_TBO_CLIENT_ID") ||
@@ -476,10 +474,8 @@ export function calculateTboFounderMargin(
 
 /**
  * Authenticates with TBO API Gateway using registered agency credentials.
- * Endpoint: POST {endpoint}/SharedServices/SharedData.svc/rest/Authenticate
- * With fallback to Sharedapi gateway.
  */
-export async function authenticateTBO(
+export async function authenticateTbo(
   creds?: TboCredentials | null,
   endUserIp = DEFAULT_END_USER_IP
 ): Promise<TboAuthResult> {
@@ -494,73 +490,54 @@ export async function authenticateTBO(
     };
   }
 
-  const payload = serializeTboAuthRequest(credentials, endUserIp);
-  const candidateUrls = [
-    `${credentials.endpoint}/SharedServices/SharedData.svc/rest/Authenticate`,
-    `http://Sharedapi.tektravels.com/SharedData.svc/rest/Authenticate`
-  ];
+  try {
+    const authUrl = `${credentials.endpoint}/SharedServices/SharedData.svc/rest/Authenticate`;
+    const payload = serializeTboAuthRequest(credentials, endUserIp);
 
-  let lastError = "";
+    const res = await fetch(authUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  for (const authUrl of candidateUrls) {
-    try {
-      const res = await fetch(authUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        lastError = `TBO API authentication returned HTTP ${res.status}: ${res.statusText}`;
-        continue;
-      }
-
-      const text = typeof res.text === "function" ? await res.text() : JSON.stringify(await (res as any).json());
-      let data: any;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        lastError = `TBO returned non-JSON response from ${authUrl}`;
-        continue;
-      }
-
-      if (data?.Status === 1 && data?.TokenId) {
-        return {
-          authenticated: true,
-          token: data.TokenId,
-          memberId: data.Member?.MemberId,
-          agencyId: data.Member?.AgencyId,
-          status: "active",
-          message: "TBO Session Authenticated successfully.",
-        };
-      }
-
-      if (data?.Error?.ErrorMessage) {
-        lastError = data.Error.ErrorMessage;
-      }
-    } catch (err: any) {
-      lastError = `TBO gateway unreachable: ${err?.message || "Network error"}`;
+    if (!res.ok) {
+      return {
+        authenticated: false,
+        status: "auth_failed",
+        message: `TBO API authentication returned HTTP ${res.status}: ${res.statusText}`,
+      };
     }
-  }
 
-  return {
-    authenticated: false,
-    status: "auth_failed",
-    message: lastError || "Failed to obtain valid TBO authentication token.",
-  };
+    const data: any = await res.json();
+    if (data?.Status === 1 && data?.TokenId) {
+      return {
+        authenticated: true,
+        token: data.TokenId,
+        memberId: data.Member?.MemberId,
+        agencyId: data.Member?.AgencyId,
+        status: "active",
+        message: "TBO Session Authenticated successfully.",
+      };
+    }
+
+    return {
+      authenticated: false,
+      status: "auth_failed",
+      message: data?.Error?.ErrorMessage || "Failed to obtain valid TBO authentication token.",
+    };
+  } catch (err: any) {
+    return {
+      authenticated: false,
+      status: "auth_failed",
+      message: `TBO gateway unreachable: ${err?.message || "Network error"}`,
+    };
+  }
 }
 
 /**
- * Backward compatibility alias for authenticateTBO
- */
-export const authenticateTbo = authenticateTBO;
-
-/**
  * Live Flight Search via TBO Air API.
- * Endpoint: POST {endpoint}/AirService.svc/rest/Search
- * With fallback to BookingEngineService_Air/AirService.svc/rest/Search
  */
-export async function searchFlightsTBO(
+export async function searchTboFlights(
   query: TboFlightSearchQuery,
   token?: string,
   endUserIp = DEFAULT_END_USER_IP
@@ -581,67 +558,38 @@ export async function searchFlightsTBO(
 
   let authToken = token;
   if (!authToken) {
-    const auth = await authenticateTBO(creds, endUserIp);
+    const auth = await authenticateTbo(creds, endUserIp);
     if (!auth.authenticated || !auth.token) {
       return { success: false, flights: [], error: auth.message };
     }
     authToken = auth.token;
   }
 
-  const payload = serializeTboFlightSearchRequest(query, authToken, endUserIp);
-  const searchEndpoints = [
-    `${creds.endpoint}/AirService.svc/rest/Search`,
-    `${creds.endpoint}/BookingEngineService_Air/AirService.svc/rest/Search`
-  ];
+  try {
+    const searchUrl = `${creds.endpoint}/BookingEngineService_Air/AirService.svc/rest/Search`;
+    const payload = serializeTboFlightSearchRequest(query, authToken, endUserIp);
 
-  let lastError = "";
+    const res = await fetch(searchUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  for (const searchUrl of searchEndpoints) {
-    try {
-      const res = await fetch(searchUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        lastError = `TBO Search returned HTTP ${res.status}`;
-        continue;
-      }
-
-      const text = typeof res.text === "function" ? await res.text() : JSON.stringify(await (res as any).json());
-      let data: any;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        lastError = "TBO search returned non-JSON";
-        continue;
-      }
-
-      if (data?.Response?.ResponseStatus === 1 || Array.isArray(data?.Response?.Results?.[0])) {
-        const results = data?.Response?.Results?.[0] || [];
-        return {
-          success: true,
-          flights: results,
-          traceId: data?.Response?.TraceId,
-        };
-      }
-
-      if (data?.Response?.Error?.ErrorMessage) {
-        lastError = data.Response.Error.ErrorMessage;
-      }
-    } catch (err: any) {
-      lastError = err?.message || "TBO flight search error";
+    if (!res.ok) {
+      return { success: false, flights: [], error: `TBO Search returned HTTP ${res.status}` };
     }
+
+    const data: any = await res.json();
+    const results = data?.Response?.Results?.[0] || [];
+    return {
+      success: true,
+      flights: results,
+      traceId: data?.Response?.TraceId,
+    };
+  } catch (err: any) {
+    return { success: false, flights: [], error: err?.message || "TBO flight search error" };
   }
-
-  return { success: false, flights: [], error: lastError || "TBO flight search error" };
 }
-
-/**
- * Backward compatibility alias for searchFlightsTBO
- */
-export const searchTboFlights = searchFlightsTBO;
 
 /**
  * Re-validates pricing, seat availability, and baggage/meal allowances before booking.

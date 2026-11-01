@@ -1185,11 +1185,11 @@ export function FounderCommandPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>PGLite Memory Cache:</span>
-                  <span className="text-purple-400 font-bold">Sync Status: ONLINE</span>
+                  <span className="text-purple-400 font-bold">Sync Status: NOT VERIFIED</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Section 79 Shield:</span>
-                  <span className="text-emerald-400 font-bold">ACTIVE (STATUTORY VERIFIED)</span>
+                  <span className="text-emerald-400 font-bold">ACTIVE (EVIDENCE PENDING)</span>
                 </div>
               </div>
             </div>
@@ -1199,13 +1199,13 @@ export function FounderCommandPage() {
           <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
               <Megaphone className="size-4 text-amber-400" />
-              <h3 className="text-sm font-bold text-fg">Fleet &amp; Kitchen Emergency Broadcast</h3>
+              <h3 className="text-sm font-bold text-fg">Fleet &amp; Kitchen Emergency Broadcast (Direct Provider Checkout)</h3>
             </div>
             <div className="flex flex-col sm:flex-row gap-2.5">
               <Input
                 value={broadcastMessage}
                 onChange={(e) => setBroadcastMessage(e.target.value)}
-                placeholder="Type emergency alert for fleet and kitchen networks..."
+                placeholder="Log emergency alert message (requires FCM/APNs push provider for live dispatch)..."
                 className="flex-1 bg-surface-2 text-sm"
               />
               <Button
@@ -1214,7 +1214,7 @@ export function FounderCommandPage() {
                 disabled={isBroadcasting}
                 className="bg-amber-500 text-black font-bold hover:bg-amber-400 shrink-0"
               >
-                Send Broadcast Notice 📢
+                Log Broadcast Notice 📢
               </Button>
             </div>
           </div>

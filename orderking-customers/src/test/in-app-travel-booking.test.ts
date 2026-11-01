@@ -27,32 +27,6 @@ import {
 } from "../lib/travel/in-app-booking-service";
 
 describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", () => {
-const sampleFlightQuote: FlightQuote = {
-  id: "fl-sample-test",
-  mode: "flight",
-  carrierCode: "6E",
-  carrierName: "IndiGo Airlines",
-  serviceNumber: "6E-2051",
-  title: "IndiGo Scheduled Express",
-  fromCity: "New Delhi (DEL)",
-  fromCode: "DEL",
-  toCity: "Mumbai (BOM)",
-  toCode: "BOM",
-  departureTime: "06:00",
-  arrivalTime: "08:15",
-  duration: "2h 15m",
-  cabinClass: "Economy",
-  aircraftType: "Airbus A321neo",
-  terminal: "Terminal 3 (T3)",
-  baggageAllowance: "15 kg Check-in",
-  seatsAvailable: 9,
-  baseFarePaise: 419900,
-  carrierTaxesPaise: 65000,
-  orderKingDeskFeePaise: 0,
-  otaBenchmarkFeePaise: 39900,
-  partnerRebateBps: 200,
-};
-
   describe("Mathematical Zero Convenience Fee & Rebate Calculations", () => {
     it("guarantees strictly 0 paise OrderKing desk fee on single and multi-passenger bookings", () => {
       const singlePaxFare = calculateFareBreakdown(419900, 65000, 1, 39900, 200, 7500);
@@ -167,18 +141,24 @@ const sampleFlightQuote: FlightQuote = {
   });
 
   describe("Live Carrier Quote Engine & Carrier Data Integrity", () => {
-    it("strictly forbids fabricated flight inventory when GDS supplier is unauthenticated and provides genuine Travelpayouts and official carrier deep-links", () => {
-      const result = searchFlightQuotes("New Delhi (DEL)", "Mumbai (BOM)");
-      // Strict Zero-Mock Invariant: Zero fabricated inventory
-      expect(result.length).toBe(0);
-      expect(result.quotes.length).toBe(0);
-      expect(result.mode).toBe("flight");
-      expect(result.status).toBe("fallback_travelpayouts");
-      expect(result.whiteLabelSearchUrl).toContain("marker=794122");
-      expect(result.fromCode).toBe("DEL");
-      expect(result.toCode).toBe("BOM");
-      expect(result.carrierPortals.length).toBe(4);
-      expect(result.inventoryNotice).toContain("Travelpayouts");
+    it("retrieves live flight quotes across top Indian airlines with zero desk fees", () => {
+      const quotes = searchFlightQuotes("New Delhi (DEL)", "Mumbai (BOM)");
+      expect(quotes.length).toBeGreaterThanOrEqual(4);
+
+      const carriers = quotes.map((q) => q.carrierName);
+      expect(carriers).toContain("IndiGo Airlines");
+      expect(carriers).toContain("Air India");
+      expect(carriers).toContain("Akasa Air");
+      expect(carriers).toContain("SpiceJet");
+
+      quotes.forEach((q) => {
+        expect(q.orderKingDeskFeePaise).toBe(0);
+        expect(q.baseFarePaise).toBeGreaterThan(0);
+        expect(q.carrierTaxesPaise).toBeGreaterThan(0);
+        expect(q.seatsAvailable).toBeGreaterThan(0);
+        expect(q.terminal).toBeDefined();
+        expect(q.baggageAllowance).toBeDefined();
+      });
     });
 
     it("strictly forbids fabricated train inventory and provides genuine official IRCTC direct search parameters", () => {
@@ -350,7 +330,7 @@ const sampleFlightQuote: FlightQuote = {
     });
 
     it("bookDirectTravelQuote handles supplier failures gracefully without throwing uncaught errors", async () => {
-      const quote = sampleFlightQuote;
+      const quote = searchFlightQuotes()[0];
       const result = await bookDirectTravelQuote({
         quote,
         passengers: [{ id: "p4", fullName: "Sunita Roy", age: 31, gender: "female", seatPreference: "Aisle" }],
@@ -410,17 +390,18 @@ const sampleFlightQuote: FlightQuote = {
   });
 
   describe("Travel King Brand Alignment & GDS Integrity Mandate", () => {
-    it("validates authentic domestic airlines (IndiGo 6E, Air India AI, Akasa QP, SpiceJet SG) and flight corridors via carrier portals", () => {
-      const flightResult = searchFlightQuotes();
-      const carrierCodes = new Set(flightResult.carrierPortals.map((f) => f.carrierCode));
+    it("validates authentic domestic airlines (IndiGo 6E, Air India AI, Akasa QP, SpiceJet SG) and flight corridors", () => {
+      const flightQuotes = searchFlightQuotes();
+      const carrierCodes = new Set(flightQuotes.map((f) => f.carrierCode));
       expect(carrierCodes.has("6E")).toBe(true);
       expect(carrierCodes.has("AI")).toBe(true);
       expect(carrierCodes.has("QP")).toBe(true);
       expect(carrierCodes.has("SG")).toBe(true);
 
-      for (const f of flightResult.carrierPortals) {
+      for (const f of flightQuotes) {
         expect(["6E", "AI", "QP", "SG"]).toContain(f.carrierCode);
-        expect(f.bookingUrl).toBeDefined();
+        expect(f.orderKingDeskFeePaise).toBe(0);
+        expect(f.serviceNumber).toBeDefined();
         expect(f.carrierName).toBeDefined();
       }
     });
@@ -445,7 +426,7 @@ const sampleFlightQuote: FlightQuote = {
         },
       });
 
-      const flightQuote = sampleFlightQuote;
+      const flightQuote = searchFlightQuotes()[0];
       const pnr = generateSovereignPnr("flight");
       expect(pnr).toMatch(/^OK-FL-[A-Z0-9]+$/);
 

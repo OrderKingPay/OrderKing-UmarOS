@@ -10,7 +10,7 @@ export const updateFSSAI = createServerFn({ method: "POST" })
     return withVendor(context.userId, data.restaurantId, "dashboard.view", async (sql, ctx) => {
       await sql`
         UPDATE restaurants
-        SET fssai_license_number = ${data.fssaiLicense}, fssai_number = ${data.fssaiLicense},
+        SET fssai_license = ${data.fssaiLicense},
             verification_status = 'PENDING'
         WHERE id = ${ctx.restaurantId}
       `;

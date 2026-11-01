@@ -166,9 +166,9 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         if (!error && Array.isArray(data)) {
           setLiveConfig((prev) => {
             const next = { ...prev };
-            for (const row of (data as any[])) {
-              if ((row.key || row.config_key) && (row.value || row.config_value)) {
-                next[(row.key || row.config_key)] = { ...(next[(row.key || row.config_key)] || {}), ...(row.value || row.config_value) };
+            for (const row of data as UmarOsConfigRow[]) {
+              if (row.key && row.value) {
+                next[row.key] = { ...(next[row.key] || {}), ...row.value };
               }
             }
             return next;
@@ -183,16 +183,16 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         "postgres_changes",
         { event: "*", schema: "public", table: "umar_os_config" },
         (payload: any) => {
-          const row = payload?.new as any;
+          const row = payload?.new as UmarOsConfigRow;
           if (row?.key && row?.value) {
             setLiveConfig((prev) => ({
               ...prev,
-              [(row.key || row.config_key)]: {
-                ...(prev[(row.key || row.config_key)] || {}),
-                ...(row.value || row.config_value),
+              [row.key]: {
+                ...(prev[row.key] || {}),
+                ...row.value,
               },
             }));
-            toast.info(`Realtime sync: ${(row.key || row.config_key)} updated in Supabase`, {
+            toast.info(`Realtime sync: ${row.key} updated in Supabase`, {
               duration: 2500,
             });
           }

@@ -12,7 +12,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
     return new Response(
       JSON.stringify({
         success: true,
-        service: "OrderKing Travel Concierge",
+        service: "OrderKing Sovereign VIP Travel & Air Concierge",
         status: "OPERATIONAL",
         conciergeDesk: {
           whatsappDesk: "https://wa.me/919876543210",
@@ -68,7 +68,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
         normalizedType === "CONCIERGE_INQUIRY" ||
         Boolean(clientName || name || clientPhone || phone || category || serviceCategory)
       ) {
-        const guestName = String(clientName || name || "Valued Guest").trim();
+        const guestName = String(clientName || name || "Valued Sovereign VIP Guest").trim();
         const guestPhone = String(clientPhone || phone || "").trim();
         const guestEmail = String(clientEmail || email || "").trim();
         const selectedCategory = String(category || serviceCategory || "Private Aviation & Jet Charter");
@@ -81,7 +81,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
         
         const summaryText = `VIP Request ${requestId}: ${selectedCategory} for ${pax} guest(s) on ${travelDateStr} (${originCity} to ${destCity})`;
         const waEncoded = encodeURIComponent(
-          `*OrderKing Travel Concierge Inquiry*\n` +
+          `*OrderKing Sovereign VIP Travel & Air Concierge Inquiry*\n` +
           `• *Request ID:* ${requestId}\n` +
           `• *Guest Name:* ${guestName}\n` +
           `• *Service:* ${selectedCategory}\n` +
@@ -97,7 +97,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
           success: true,
           status: "RECEIVED",
           requestId,
-          desk: "OrderKing Travel Concierge",
+          desk: "OrderKing Sovereign VIP Travel & Air Concierge",
           summary: summaryText,
           inquiry: {
             guestName,
@@ -135,7 +135,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
             JSON.stringify({
               success: false,
               code: "FLIGHT_SUPPLIER_NOT_CONNECTED",
-              error: "Direct GDS flight aggregator not connected. Please connect via OrderKing Travel Concierge.",
+              error: "Direct GDS flight aggregator not connected. Please connect via OrderKing Sovereign VIP Air Concierge.",
               disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
             }),
             { status: 503, headers: { "Content-Type": "application/json" } }

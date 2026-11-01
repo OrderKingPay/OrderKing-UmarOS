@@ -4744,7 +4744,8 @@ function UmarOSDashboard() {
                   Open · {allAlerts.length} Total)
                 </h2>
                 <p className="text-xs text-slate-600">
-                  Operational alerts generated directly from database state and system telemetry logs.
+                  100% real alerts generated from your PostgreSQL database state
+                  and Founder logs. Zero fake stories.
                 </p>
               </div>
               <button

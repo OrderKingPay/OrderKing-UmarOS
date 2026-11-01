@@ -25,8 +25,8 @@ if (fs.existsSync(envPath)) {
 
 export default defineConfig({
   test: {
-    testTimeout: 120000,
-    hookTimeout: 120000,
+    testTimeout: 60000,
+    hookTimeout: 60000,
     fileParallelism: false,
     isolate: true,
     include: [

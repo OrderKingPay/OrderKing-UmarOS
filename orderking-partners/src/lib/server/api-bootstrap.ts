@@ -161,7 +161,6 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
     ownerName: string;
     phone: string;
     email: string;
-    city?: string;
     address: string;
     landmark?: string;
     cuisine?: string;
@@ -286,8 +285,6 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     ownerName?: string;
     phone?: string;
     email?: string;
-    city?: string;
-    fboName?: string;
     address?: string;
     landmark?: string;
     serviceArea?: string;
@@ -296,8 +293,6 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     description?: string;
     gstin?: string;
     fssaiNumber?: string;
-    fssaiLicenseNumber?: string;
-    fssaiExpiryDate?: string;
     pan?: string;
     prepMinutes?: number;
     peakPrepMinutes?: number;
@@ -311,7 +306,6 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     bankAccount?: string;
     bankIfsc?: string;
     bankName?: string;
-    bankHolder?: string;
     openingTime?: string;
     closingTime?: string;
     businessStructure?: string;
@@ -334,11 +328,6 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         "description",
         "gstin",
         "fssai_number",
-        "fssai_license_number",
-        "fssai_expiry_date",
-        "fbo_name",
-        "city",
-        "bank_holder",
         "pan",
         "prep_minutes",
         "peak_prep_minutes",
@@ -360,11 +349,6 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         description: "description",
         gstin: "gstin",
         fssaiNumber: "fssai_number",
-        fssaiLicenseNumber: "fssai_license_number",
-        fssaiExpiryDate: "fssai_expiry_date",
-        fboName: "fbo_name",
-        city: "city",
-        bankHolder: "bank_holder",
         pan: "pan",
         prepMinutes: "prep_minutes",
         peakPrepMinutes: "peak_prep_minutes",
@@ -412,9 +396,6 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         }
         if (data.bankName !== undefined) {
           await sql`update restaurants set bank_name = ${String(data.bankName)}, updated_at = now() where id = ${ctx.restaurantId}`;
-        }
-        if (data.bankHolder !== undefined) {
-          await sql`update restaurants set bank_holder = ${String(data.bankHolder)}, updated_at = now() where id = ${ctx.restaurantId}`;
         }
       }
       if (data.commissionBps !== undefined) {

@@ -353,79 +353,12 @@ export class PgStore implements RiderStore {
          set online = $1,
              is_online = $2,
              is_active = $2,
-             zone_id = coalesce($3, zone_id),
-             vehicle_number = coalesce(nullif($5, ''), vehicle_number),
-             dl_number = coalesce(nullif($6, ''), dl_number),
-             pan = coalesce(nullif($7, ''), pan),
-             bank_account = coalesce(nullif($8, ''), bank_account),
-             bank_holder = coalesce(nullif($9, ''), bank_holder),
-             kyc_reject_reason = coalesce(nullif($10, ''), kyc_reject_reason)
+             zone_id = coalesce($3, zone_id)
          where id = $4`,
-        [
-          isOnline,
-          isOnlineBool,
-          primaryZone,
-          r.id,
-          r.vehicleRegistration ?? "",
-          r.licenceNumber ?? "",
-          r.governmentIdType ?? "",
-          r.payoutBankLast4 ? `XXXX${r.payoutBankLast4}` : "",
-          r.fullName ?? "",
-          r.kycRejectReason ?? "",
-        ],
+        [isOnline, isOnlineBool, primaryZone, r.id],
       );
     } catch {
-      // Column auto-handled by migration 0020 / 0021
-    }
-
-    // Harmonize real-time synchronization to rider_kyc table
-    try {
-      const kycStatusNormalized = r.kycStatus === "VERIFIED" ? "approved" : r.kycStatus === "REJECTED" ? "rejected" : "pending";
-      await this.sql.query(
-        `insert into rider_kyc (
-           id, rider_id, user_id, full_name, phone, vehicle_type, vehicle_number,
-           dl_number, pan, aadhaar_last4, bank_account, bank_ifsc, bank_holder,
-           document_urls, status, rejection_reason, verified_at, created_at, updated_at
-         ) values (
-           $1, $2, $3, $4, $5, $6, $7,
-           $8, $9, $10, $11, $12, $13,
-           $14::jsonb, $15, $16, case when $15 = 'approved' then now() else null end, now(), now()
-         )
-         on conflict (id) do update set
-           full_name = excluded.full_name,
-           phone = excluded.phone,
-           vehicle_type = excluded.vehicle_type,
-           vehicle_number = excluded.vehicle_number,
-           dl_number = excluded.dl_number,
-           pan = excluded.pan,
-           aadhaar_last4 = excluded.aadhaar_last4,
-           bank_account = excluded.bank_account,
-           bank_holder = excluded.bank_holder,
-           status = excluded.status,
-           rejection_reason = excluded.rejection_reason,
-           verified_at = case when excluded.status = 'approved' then now() else rider_kyc.verified_at end,
-           updated_at = now()`,
-        [
-          `kyc_${r.id}`,
-          r.id,
-          r.userId,
-          r.fullName,
-          r.phone || "",
-          r.vehicleType || "MOTORCYCLE",
-          r.vehicleRegistration || "",
-          r.licenceNumber || "",
-          r.governmentIdType || "",
-          r.governmentIdLast4 || "",
-          r.payoutBankLast4 ? `XXXX${r.payoutBankLast4}` : "",
-          "",
-          r.fullName,
-          "{}",
-          kycStatusNormalized,
-          r.kycRejectReason || null,
-        ],
-      );
-    } catch {
-      // rider_kyc table sync non-fatal if table not initialized
+      // Column auto-handled by migration 0020
     }
   }
 

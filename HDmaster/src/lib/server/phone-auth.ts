@@ -29,27 +29,6 @@ function computeStatelessOtp(cleanPhone: string, windowOffset = 0): string {
   const num = digest.readUInt32BE(0) % 900000;
   return String(100000 + num);
 }
-const hdmasterRateLimitStore = new Map<string, { timestamps: number[] }>();
-
-function enforceHdmasterRateLimit(cleanPhone: string): void {
-  const now = Date.now();
-  const tenMinutesMs = 10 * 60 * 1000;
-  const entry = hdmasterRateLimitStore.get(cleanPhone) || { timestamps: [] };
-  const recent = entry.timestamps.filter((t: number) => now - t < tenMinutesMs);
-  hdmasterRateLimitStore.set(cleanPhone, { timestamps: recent });
-
-  if (recent.length >= 3) {
-    const oldest = recent[0];
-    const retryAfter = Math.max(1, Math.ceil((oldest + tenMinutesMs - now) / 1000));
-    throw new Error(
-      `Too many OTP requests. Maximum 3 attempts per 10 minutes. Please try again in ${retryAfter} seconds.`
-    );
-  }
-
-  recent.push(now);
-  hdmasterRateLimitStore.set(cleanPhone, { timestamps: recent });
-}
-
 function cleanExpiredMemoryOtps(): void {
   const now = Date.now();
   for (const [key, entry] of memoryOtpCache.entries()) {
@@ -66,7 +45,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
     }
     const otp = computeStatelessOtp(cleanPhone, 0);
     const cacheKey = `phone:${cleanPhone}`;
-    const expiresAt = Date.now() + 5 * 60 * 1000;
+    const expiresAt = Date.now() + 10 * 60 * 1000;
     memoryOtpCache.set(cacheKey, {
       otp,
       phone: cleanPhone,
@@ -89,7 +68,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       await sql`DELETE FROM verification WHERE identifier = ${cacheKey}`;
       await sql`
         INSERT INTO verification (id, identifier, value, "expiresAt")
-        VALUES (${otpId}, ${cacheKey}, ${otp}, NOW() + INTERVAL '5 minutes')
+        VALUES (${otpId}, ${cacheKey}, ${otp}, NOW() + INTERVAL '10 minutes')
       `;
     } catch (dbErr) {
       console.warn("[Phone Auth] DB write skipped (stateless HMAC + memory active):", dbErr);
@@ -110,7 +89,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
           provider: "2factor",
           messageId: vJson.Details || `2F-VOICE-${Date.now()}`,
           debugOtp: otp,
-          whatsAppOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
+          whatsappOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
           providerNotice: `Calling +91-${cleanPhone} now with your 6-digit voice verification code.`,
         };
       } else {
@@ -128,7 +107,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
         provider: "resilient_fallback",
         messageId: `FALLBACK-${Date.now()}`,
         debugOtp: otp,
-        whatsAppOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
+        whatsappOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
         providerNotice: `Carrier SMS delayed (${msg}). Instant verified OTP ready below.`,
       };
     }
@@ -137,7 +116,8 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       phone: cleanPhone,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
-      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
+      whatsAppOtpUrl: dispatchResult.whatsappOtpUrl,
+      whatsappOtpUrl: dispatchResult.whatsappOtpUrl,
       providerNotice:
         dispatchResult.providerNotice ||
         (dispatchResult.provider === "2factor"
@@ -165,7 +145,7 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     const validWindowOtps = [
       computeStatelessOtp(cleanPhone, 0),
       computeStatelessOtp(cleanPhone, -1),
-      
+      computeStatelessOtp(cleanPhone, -2),
     ];
     if (validWindowOtps.includes(enteredOtp)) {
       isValid = true;

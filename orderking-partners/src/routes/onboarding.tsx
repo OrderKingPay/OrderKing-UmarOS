@@ -33,18 +33,6 @@ export const ORDERKING_LOCAL_ONLY_KEY = "orderking_partner_onboarding_local_only
 export function formatFriendlyError(err: unknown, defaultMsg: string): string {
   if (!err) return defaultMsg;
   const raw = err instanceof Error ? err.message : String(err);
-  const lower = (raw || "").toLowerCase();
-
-  if (lower.includes("invalid url") || lower.includes("url string")) {
-    return "Server connection is initializing or service URL is unreachable. Your onboarding draft is safely saved locally.";
-  }
-  if (lower.includes("failed to fetch") || lower.includes("network") || lower.includes("econnrefused")) {
-    return "Network connection issue. Your onboarding draft is safely saved locally.";
-  }
-  if (lower.includes("unauthorized") || lower.includes("401") || lower.includes("forbidden") || lower.includes("session")) {
-    return "Session requires verification. Your onboarding progress has been preserved locally.";
-  }
-
   return raw || defaultMsg;
 }
 
@@ -68,15 +56,6 @@ export function persistDraftLocally(data: {
       restaurantId: data.restaurantId,
       ...data.form,
       exemptFromGst: data.exemptFromGst ?? true,
-      onboardingFeeOption: data.onboardingFeeOption,
-      amortizedConsent: data.amortizedConsent,
-      executionMethod: data.executionMethod ?? "CLICKWRAP",
-      clickwrapSignatoryName: data.clickwrapSignatoryName,
-      clickwrapDesignation: data.clickwrapDesignation,
-      clickwrapConsent: data.clickwrapConsent,
-      covenantsAccepted: data.covenantsAccepted,
-      foodSafetyUndertakingAccepted: data.foodSafetyUndertakingAccepted,
-      privacyAndTaxAccepted: data.privacyAndTaxAccepted,
       savedAt: new Date().toISOString(),
     };
     window.localStorage.setItem(ORDERKING_ONBOARDING_DRAFT_KEY, JSON.stringify(payload));
@@ -586,9 +565,6 @@ function OnboardingPage() {
                     onChange={(e) => updateField("fssaiExpiryDate", e.target.value)}
                     className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
                   />
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Enter the actual FSSAI certificate expiry before submitting for review.
-                  </p>
                 </div>
                 <div>
                   <Label className="text-xs text-slate-300">10-Character PAN Card Number *</Label>

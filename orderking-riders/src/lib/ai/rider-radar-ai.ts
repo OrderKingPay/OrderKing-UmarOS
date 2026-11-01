@@ -1,4 +1,4 @@
-// Rider Radar AI: Intelligent Dispatch, Weather Surge, & Earnings Engine
+// Rider Radar AI: Sovereign Dispatch, Weather Surge, & Earnings Engine
 
 export interface RiderDispatchInstruction {
   stepNumber: number;
@@ -25,9 +25,7 @@ export interface EarningsOptimalGuidance {
   payoutAdvice: string;
 }
 
-export class RiderRadarAi {
-  // Backwards compatibility alias
-  public static readonly Sovereign = RiderRadarAi;
+export class RiderRadarAiSovereign {
   private static readonly COD_LIMIT_PAISE = 250_000; // ₹2,500 limit
 
   /**
@@ -147,5 +145,4 @@ export class RiderRadarAi {
   }
 }
 
-export const RiderRadarAiSovereign = RiderRadarAi;
-export const riderRadarAi = new RiderRadarAi();
+export const riderRadarAi = new RiderRadarAiSovereign();

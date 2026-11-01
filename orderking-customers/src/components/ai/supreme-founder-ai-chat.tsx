@@ -456,7 +456,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                 </div>
                 <div className="rounded-lg bg-surface-2 p-2 border border-border">
                   <span className="text-muted block text-[10px]">ABDM Sync Status</span>
-                  <span className="text-base font-black text-cyan-400 font-mono">ABHA CONNECTED</span>
+                  <span className="text-base font-black text-cyan-400 font-mono">STATUS PENDING</span>
                 </div>
               </div>
 

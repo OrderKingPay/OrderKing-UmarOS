@@ -112,7 +112,7 @@ export default function Home() {
               Awaiting live store telemetry: Verified kitchens onboarding in your district
             </h4>
             <p className="text-sm text-zinc-400 leading-relaxed">
-              Partner kitchens and premium verified dining venues in pincode <span className="text-amber-400 font-mono font-bold">{pincode}</span> are currently undergoing menu validation and KYC verification.
+              Partner kitchens and premium verified dining venues in pincode <span className="text-amber-400 font-mono font-bold">{pincode}</span> are currently undergoing menu validation and KYC verification. Zero mock entries are displayed.
             </p>
             <div className="pt-2">
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-xs text-zinc-300">

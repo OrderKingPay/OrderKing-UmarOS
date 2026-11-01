@@ -924,7 +924,7 @@ function SettingsPage() {
               </div>
               <div className="text-[11px] text-slate-300">
                 {effectiveBps === dineInBps
-                  ? `${dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} Dine-In Standard (Table QR)`
+                  ? `${dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} Dine-In Sovereign`
                   : effectiveBps === standardDeliveryBps
                     ? `${(standardDeliveryBps / 100).toFixed(0)}% Standard Delivery (Default)`
                     : `${(effectiveBps / 100).toFixed(1)}% Negotiated Tier for this Outlet`}

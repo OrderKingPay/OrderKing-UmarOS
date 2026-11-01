@@ -19,14 +19,13 @@ export function useVendor() {
         const d = JSON.parse(rawDraft);
         if (d && d.name && d.fssaiNumber && d.pan) {
           memberships = [{
+            id: d.restaurantId || "rest_local_verified",
             restaurantId: d.restaurantId || "rest_local_verified",
-            userId: "usr_local",
-            outletId: null,
+            name: d.name,
+            displayName: d.displayName || d.name,
+            city: d.city || "Guwahati",
             role: "OWNER",
-            restaurantName: d.displayName || d.name,
-            dataLabel: "VERIFIED",
-            verificationStatus: "APPROVED",
-            commissionBps: 2000,
+            status: "APPROVED",
           }];
         }
       }

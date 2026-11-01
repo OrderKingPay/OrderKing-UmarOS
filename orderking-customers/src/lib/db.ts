@@ -20,9 +20,6 @@ export function getDatabaseUrl() {
   if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
     url = url.replace('sslmode=require', 'sslmode=no-verify');
   }
-  if (url && url.includes('pooler.supabase.com') && !url.includes('sslmode=')) {
-    url += (url.includes('?') ? '&' : '?') + 'sslmode=no-verify&pgbouncer=true';
-  }
   return url;
 }
 export function getDbSource() { return 'neon'; }
@@ -126,9 +123,8 @@ function createNeonSql(): Promise<Sql> {
     const pool = new Pool({
       connectionString: url,
       ssl: isRemote ? { rejectUnauthorized: false } : undefined,
-      max: 5,
-      connectionTimeoutMillis: 30000,
-      idleTimeoutMillis: 30000,
+      max: 1,
+      connectionTimeoutMillis: 15000,
     });
     pool.on('error', (err: Error) => console.warn('[Postgres Pool Warning]:', err?.message));
     const run = async <T>(text: string, params: unknown[]) => {
@@ -151,7 +147,7 @@ function createNeonSql(): Promise<Sql> {
           } catch (err) {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|EPROTO|EPIPE|ECONNABORTED|closed abruptly/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected/i.test(msg);
             if (isTransient && attempt < 2) {
               await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
               continue;
@@ -179,7 +175,7 @@ function createNeonSql(): Promise<Sql> {
               client = undefined;
             }
             const msg = error instanceof Error ? error.message : String(error);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|EPROTO|EPIPE|ECONNABORTED|closed abruptly/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected/i.test(msg);
             if (isTransient && attempt < 2) {
               await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
               continue;

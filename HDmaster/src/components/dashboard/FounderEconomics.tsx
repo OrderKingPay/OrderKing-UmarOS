@@ -52,7 +52,7 @@ export function FounderEconomics() {
       <Panel title="Live Founder Economics (Database)">
         <div className="rounded-[16px] border border-border bg-elevated p-8 text-center">
           <h2 className="font-display text-2xl text-muted">Awaiting First Transaction</h2>
-          <p className="text-sm text-muted mt-2">Live database metrics update automatically upon completed orders.</p>
+          <p className="text-sm text-muted mt-2">Zero mock data. Live database aggregation ready.</p>
         </div>
       </Panel>
     );

@@ -339,7 +339,11 @@ function RestaurantPage() {
               </button>
 
               <div className="flex items-center gap-2">
-                {/* Real-world merchant menu status */}
+                {restaurant.card.dataLabel !== "REAL" && (
+                  <Badge tone="warn" className="shadow-md">
+                    {t("common.sample")}
+                  </Badge>
+                )}
                 {restaurant.card.promoted && (
                   <Badge className="bg-amber-500 text-zinc-950 font-bold shadow-md">
                     👑 {t("common.ad")}

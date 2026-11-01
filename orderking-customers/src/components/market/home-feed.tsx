@@ -38,7 +38,6 @@ import { useLocationStore } from "@/lib/stores/location";
 import { useCartStore } from "@/lib/stores/cart";
 import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
-import { CURATED_RESTAURANTS } from "@/lib/predictive-search";
 import { cn } from "@/lib/utils";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
@@ -307,40 +306,10 @@ export function HomeFeed({
         throw new Error(`Failed to fetch restaurants: HTTP ${response.status}`);
       }
       const data = await response.json();
-      let restaurants = Array.isArray(data?.restaurants) ? (data.restaurants as RestaurantCard[]) : [];
-      let isFallbackHub = false;
-
-      // If local GPS has no active kitchens within immediate shift radius,
-      // load flagship partner kitchens from New Delhi so the user ALWAYS has menus to browse and explore!
-      if (restaurants.length === 0 && !q && !selectedCategory) {
-        const fallbackParams = new URLSearchParams(params);
-        fallbackParams.set("lat", "28.6315");
-        fallbackParams.set("lng", "77.2167");
-        fallbackParams.set("zoneId", "del-cp");
-        try {
-          const fbRes = await fetch(`/api/search?${fallbackParams.toString()}`);
-          if (fbRes.ok) {
-            const fbData = await fbRes.json();
-            if (Array.isArray(fbData?.restaurants) && fbData.restaurants.length > 0) {
-              restaurants = fbData.restaurants;
-              isFallbackHub = true;
-            }
-          }
-        } catch {}
-
-        if (restaurants.length === 0) {
-          restaurants = CURATED_RESTAURANTS;
-          isFallbackHub = true;
-        }
-      }
-
       return {
-        restaurants,
-        deliveryAvailable: isFallbackHub ? false : Boolean(data?.deliveryAvailable),
-        isFallbackHub,
-        reason: isFallbackHub
-          ? "Viewing partner kitchens in Delhi NCR. Set your delivery address to check direct courier coverage."
-          : (data?.reason as string) || undefined,
+        restaurants: Array.isArray(data?.restaurants) ? (data.restaurants as RestaurantCard[]) : [],
+        deliveryAvailable: Boolean(data?.deliveryAvailable),
+        reason: (data?.reason as string) || undefined,
       };
     },
     staleTime: 1000 * 60 * 5,
@@ -902,21 +871,11 @@ export function HomeFeed({
             )}
           </div>
         ) : (
-          <>
-            {list.data?.isFallbackHub && (
-              <div className="mb-4 rounded-2xl bg-amber-50 border border-amber-200/80 p-3.5 flex items-center gap-3 text-amber-900 shadow-2xs">
-                <MapPin className="size-5 text-amber-600 shrink-0" />
-                <p className="text-xs font-semibold leading-relaxed">
-                  Kitchens at your exact pin are onboarding soon. You are currently browsing flagship partner restaurants. Doorstep courier delivery expanding to your location soon.
-                </p>
-              </div>
-            )}
-            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             {filteredRestaurants.map((restaurant) => (
               <KitchenCard key={restaurant.id} restaurant={restaurant} />
             ))}
           </div>
-          </>
         )}
       </section>
 

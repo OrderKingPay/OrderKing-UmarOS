@@ -59,7 +59,7 @@ export const DELIVERY_COMMISSION_TIER_LIST: readonly DeliveryCommissionTierMeta[
     key: "DINE_IN",
     bps: DELIVERY_COMMISSION_TIERS.DINE_IN,
     percentage: 0,
-    label: "0% Dine-In (Table QR)",
+    label: "0% Dine-In Sovereign",
     description: "custom commission for dine-in & customer pickup (self-fulfillment)",
   },
   {
