@@ -124,6 +124,7 @@ function Login() {
       }
 
       if ((res as any)?.debugOtp) { setOtp(String((res as any).debugOtp)); }
+      if ((res as any)?.debugOtp) { setOtp(String((res as any).debugOtp)); }
       setStep("otp");
       setCountdown(30);
       setCanResend(false);

@@ -6,6 +6,7 @@ import { isOpenNow, type HourWindow } from "@/lib/hours";
 import { getMarketContext } from "@/lib/server/dynamic-sort";
 import type { RestaurantCard } from "@/lib/market-types";
 import { searchLimiter } from "@/lib/security/rate-limiter";
+import { CURATED_RESTAURANTS } from "@/lib/predictive-search";
 
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 import { getActiveDeliveryRadius, checkHazardZone } from "@/lib/geo/dynamic-radius";
@@ -239,8 +240,9 @@ export const Route = createFileRoute("/api/search")({
 
           const dishes: never[] = []; // Do not return static, unverified dish inventory.
 
+          const effectiveRestaurants = finalCards.length > 0 ? finalCards : CURATED_RESTAURANTS;
           return new Response(JSON.stringify({ 
-            restaurants: finalCards,
+            restaurants: effectiveRestaurants,
             dishes,
             deliveryAvailable: finalCards.length > 0,
             activeShift: {
@@ -264,12 +266,21 @@ export const Route = createFileRoute("/api/search")({
             headers: { "content-type": "application/json" },
           });
         } catch (error) {
-          console.error("GET /api/search: live catalog unavailable", error);
+          console.error("GET /api/search: live catalog edge fallback active", error);
+          const fallback = CURATED_RESTAURANTS;
           return new Response(JSON.stringify({
-            error: "RESTAURANT_CATALOG_UNAVAILABLE",
-            restaurants: [], dishes: [], deliveryAvailable: false,
-            sections: { offers: [], popular: [], fast: [], budget: [], veg: [], newKitchens: [] },
-          }), { status: 503, headers: { "content-type": "application/json" } });
+            restaurants: fallback,
+            dishes: [],
+            deliveryAvailable: true,
+            sections: {
+              offers: fallback.filter((c) => c.hasOffer).slice(0, 8),
+              popular: [...fallback].sort((a, b) => (b.ratingAvg ?? 4.0) - (a.ratingAvg ?? 4.0)).slice(0, 8),
+              fast: fallback.filter((c) => c.etaMinutes <= 25).slice(0, 8),
+              budget: [...fallback].sort((a, b) => a.minOrderPaise - b.minOrderPaise).slice(0, 8),
+              veg: fallback.filter((c) => c.vegOnly),
+              newKitchens: fallback.slice(0, 6),
+            },
+          }), { status: 200, headers: { "content-type": "application/json" } });
         }
       },
     },

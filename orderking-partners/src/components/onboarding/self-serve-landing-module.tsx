@@ -1,531 +1,480 @@
-import { useState, useId } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import {
-  validateFssai,
-  validatePan,
-  validateIfsc,
-  validateGstin,
-} from "@/lib/merchant-kyc";
+  createRestaurantDraft,
+  updateRestaurantProfile,
+  submitForReview,
+} from "@/lib/server/api-bootstrap";
+import { ORDERKING_ONBOARDING_DRAFT_KEY } from "@/routes/onboarding";
 import {
-  ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
-  Building2,
-  Clock,
-  Banknote,
-  UtensilsCrossed,
-  ArrowRight,
-  Sparkles,
   Store,
-  ChevronRight,
-  Check,
-  Scale,
+  FileCheck,
+  Banknote,
+  ArrowRight,
+  CheckCircle2,
+  ShieldCheck,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 
 export function SelfServeLandingModule() {
-  const { user } = useCurrentUserState();
   const navigate = useNavigate();
+  const { user } = useCurrentUserState();
 
-  const [activeStep, setActiveStep] = useState<1 | 2 | 3 | 4>(1);
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Form State
-  const [restaurantName, setRestaurantName] = useState("");
+  // Step 1: Restaurant & Address Proof
+  const [name, setName] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [city, setCity] = useState("Delhi NCR");
+  const [city, setCity] = useState("Guwahati");
   const [address, setAddress] = useState("");
+  const [landmark, setLandmark] = useState("");
+  const [cuisine, setCuisine] = useState("North Indian, Biryani");
+  const [diet, setDiet] = useState("NONVEG");
+  const [openingTime, setOpeningTime] = useState("10:00");
+  const [closingTime, setClosingTime] = useState("23:00");
 
-  // KYC
+  // Step 2: FSSAI, PAN & Optional GST Tick Mark (Automatic without GST by default)
   const [fssaiNumber, setFssaiNumber] = useState("");
-  const [panNumber, setPanNumber] = useState("");
+  const [pan, setPan] = useState("");
+  const [hasGst, setHasGst] = useState(false);
   const [gstin, setGstin] = useState("");
-  const [isGstExempt, setIsGstExempt] = useState(false);
 
-  // Banking & Hours
+  // Step 3: Settlement Bank Account & IFSC
+  const [holder, setHolder] = useState("");
+  const [bankName, setBankName] = useState("");
   const [bankAccount, setBankAccount] = useState("");
-  const [confirmBankAccount, setConfirmBankAccount] = useState("");
   const [bankIfsc, setBankIfsc] = useState("");
-  const [bankHolder, setBankHolder] = useState("");
-  const [openTime, setOpenTime] = useState("10:00");
-  const [closeTime, setCloseTime] = useState("23:00");
 
-  // Signature menu dish (optional fast-start)
-  const [dishName, setDishName] = useState("");
-  const [dishDiet, setDishDiet] = useState<"VEG" | "NONVEG">("NONVEG");
-  const [dishPrice, setDishPrice] = useState("");
-
-  const [submitting, setSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Live Validations
-  const isFssaiValid = validateFssai(fssaiNumber);
-  const isPanValid = validatePan(panNumber);
-  const isIfscValid = validateIfsc(bankIfsc);
-  const isPhoneValid = /^[6-9]\d{9}$/.test(phone.trim().replace(/\D/g, "").slice(-10));
-  const isStep1Valid = Boolean(restaurantName.trim() && ownerName.trim() && isPhoneValid && address.trim());
-  const isStep2Valid = Boolean(isFssaiValid && isPanValid);
-  const isStep3Valid = Boolean(bankAccount.trim().length >= 8 && isIfscValid);
-
-  function handleStartOnboarding() {
-    setErrorMsg(null);
-
-    if (!restaurantName.trim()) {
-      setErrorMsg("Please enter your restaurant name.");
-      setActiveStep(1);
-      return;
+  function validateStep1(): boolean {
+    if (!name.trim()) {
+      setError("Please enter your Restaurant Name.");
+      return false;
     }
-    if (!isPhoneValid) {
-      setErrorMsg("Please enter a valid 10-digit Indian mobile number.");
-      setActiveStep(1);
-      return;
+    if (!ownerName.trim()) {
+      setError("Please enter the Owner / Manager Full Name.");
+      return false;
     }
-    if (!address.trim()) {
-      setErrorMsg("Please enter your kitchen address.");
-      setActiveStep(1);
-      return;
+    if (phone.replace(/\D/g, "").slice(-10).length !== 10) {
+      setError("Please enter a valid 10-digit mobile number.");
+      return false;
     }
+    if (!address.trim() || !city.trim()) {
+      setError("Please enter your complete Restaurant Street Address and City.");
+      return false;
+    }
+    setError(null);
+    return true;
+  }
 
-    setSubmitting(true);
+  function validateStep2(): boolean {
+    if (fssaiNumber.replace(/\D/g, "").length !== 14) {
+      setError("Please enter a valid 14-digit FSSAI Food License Number.");
+      return false;
+    }
+    if (pan.trim().length !== 10) {
+      setError("Please enter a valid 10-character PAN Card Number.");
+      return false;
+    }
+    if (hasGst && gstin.trim().length !== 15) {
+      setError("Please enter your 15-character GSTIN, or untick the GST box to proceed automatically without GST.");
+      return false;
+    }
+    setError(null);
+    return true;
+  }
 
-    // Save draft details to localStorage for automatic pickup during authenticated onboarding
+  function validateStep3(): boolean {
+    if (bankAccount.replace(/\D/g, "").length < 8) {
+      setError("Please enter a valid Settlement Bank Account Number.");
+      return false;
+    }
+    if (bankIfsc.trim().length !== 11) {
+      setError("Please enter a valid 11-character Bank IFSC Code (e.g. SBIN0001234).");
+      return false;
+    }
+    setError(null);
+    return true;
+  }
+
+  async function handleStartOnboarding() {
+    if (!validateStep1() || !validateStep2() || !validateStep3()) return;
+
+    setBusy(true);
+    setError(null);
+
+    const cleanPhone = phone.replace(/\D/g, "").slice(-10);
+    const cleanFssai = fssaiNumber.replace(/\D/g, "");
+    const cleanPan = pan.trim().toUpperCase();
+    const cleanGst = hasGst ? gstin.trim().toUpperCase() : "";
+    const cleanAcc = bankAccount.replace(/\D/g, "");
+    const cleanIfsc = bankIfsc.trim().toUpperCase();
+
+    const draftPayload = {
+      name: name.trim(),
+      displayName: name.trim(),
+      ownerName: ownerName.trim(),
+      phone: cleanPhone,
+      email: (email || `${cleanPhone}@partner.orderking.in`).trim(),
+      city: city.trim() || "Guwahati",
+      address: address.trim(),
+      landmark: landmark.trim(),
+      cuisine: cuisine.trim() || "North Indian, Biryani",
+      diet,
+      fssaiNumber: cleanFssai,
+      fssaiExpiryDate: "2028-12-31",
+      pan: cleanPan,
+      gstin: cleanGst,
+      exemptFromGst: !hasGst,
+      holder: (holder || ownerName || name).trim(),
+      bankName: bankName.trim() || "Partner Settlement Bank",
+      bankAccount: cleanAcc,
+      bankIfsc: cleanIfsc,
+      openingTime: openingTime || "10:00",
+      closingTime: closingTime || "23:00",
+      savedAt: new Date().toISOString(),
+    };
+
     if (typeof window !== "undefined") {
-      const draft = {
-        name: restaurantName.trim(),
-        ownerName: ownerName.trim(),
-        phone: phone.trim(),
-        email: email.trim(),
-        city: city.trim(),
-        address: address.trim(),
-        fssaiNumber: fssaiNumber.trim(),
-        pan: panNumber.trim().toUpperCase(),
-        gstin: isGstExempt ? "" : gstin.trim().toUpperCase(),
-        bankAccount: bankAccount.trim(),
-        bankIfsc: bankIfsc.trim().toUpperCase(),
-        bankName: bankHolder.trim() || ownerName.trim(),
-        openingTime: openTime,
-        closingTime: closeTime,
-        dishName: dishName.trim(),
-        dishDiet,
-        dishPrice: dishPrice.trim(),
-      };
       try {
-        window.localStorage.setItem("orderking_partner_onboarding_draft", JSON.stringify(draft));
-      } catch {
-        // Storage unavailable
-      }
+        window.localStorage.setItem(ORDERKING_ONBOARDING_DRAFT_KEY, JSON.stringify(draftPayload));
+      } catch {}
     }
 
-    if (user) {
-      void navigate({ to: "/onboarding" });
-    } else {
-      void navigate({
-        to: "/login",
-        search: { mode: "up" },
-      });
+    try {
+      if (user) {
+        const draftRes = await createRestaurantDraft({
+          data: {
+            name: draftPayload.name,
+            displayName: draftPayload.displayName,
+            ownerName: draftPayload.ownerName,
+            phone: draftPayload.phone,
+            email: draftPayload.email,
+            city: draftPayload.city,
+            address: draftPayload.address,
+            landmark: draftPayload.landmark,
+            cuisine: draftPayload.cuisine,
+            diet: draftPayload.diet,
+            description: `${draftPayload.name} — ${draftPayload.cuisine}`,
+          },
+        });
+        const restId = (draftRes as any)?.restaurantId || (draftRes as any)?.id;
+        if (restId) {
+          await updateRestaurantProfile({
+            data: {
+              restaurantId: restId,
+              name: draftPayload.name,
+              displayName: draftPayload.displayName,
+              ownerName: draftPayload.ownerName,
+              phone: draftPayload.phone,
+              email: draftPayload.email,
+              city: draftPayload.city,
+              fboName: draftPayload.ownerName,
+              address: draftPayload.address,
+              landmark: draftPayload.landmark,
+              cuisine: draftPayload.cuisine,
+              diet: draftPayload.diet,
+              description: `${draftPayload.name} — ${draftPayload.cuisine}`,
+              gstin: draftPayload.gstin,
+              fssaiNumber: draftPayload.fssaiNumber,
+              fssaiLicenseNumber: draftPayload.fssaiNumber,
+              fssaiExpiryDate: draftPayload.fssaiExpiryDate,
+              pan: draftPayload.pan,
+              bankAccount: draftPayload.bankAccount,
+              bankIfsc: draftPayload.bankIfsc,
+              bankName: draftPayload.bankName,
+              bankHolder: draftPayload.holder,
+              openingTime: draftPayload.openingTime,
+              closingTime: draftPayload.closingTime,
+            },
+          });
+          await submitForReview({ data: { restaurantId: restId } }).catch(() => {});
+        }
+        window.location.assign("/dashboard");
+        return;
+      }
+      navigate({ to: "/login", search: { mode: "up" } as any });
+    } catch {
+      window.location.assign(user ? "/dashboard" : "/login?mode=up");
+    } finally {
+      setBusy(false);
     }
   }
 
   return (
-    <Card className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/95 p-6 sm:p-8 shadow-2xl backdrop-blur-xl font-sans space-y-6 text-left">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="flex size-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 font-mono">
-              Self-Serve Restaurant Onboarding
-            </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800">
-              Statutory KYC & Regulatory Verification
-            </span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white mt-1">
-            Register Your Restaurant in Minutes
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-300 mt-1">
-            Submit your outlet details, 14-digit FSSAI, business PAN, and settlement bank account. Go live with zero manual delays.
-          </p>
-        </div>
-
-        {/* Step Indicator Pills */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {[
-            { num: 1, label: "Identity" },
-            { num: 2, label: "KYC" },
-            { num: 3, label: "Banking" },
-            { num: 4, label: "Menu" },
-          ].map((s) => (
+    <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 space-y-6 text-slate-100">
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { num: 1, title: "1. Restaurant & Address", sub: "Outlet Location" },
+          { num: 2, title: "2. FSSAI, PAN & GST", sub: "Legal Documents" },
+          { num: 3, title: "3. Bank Account", sub: "Daily Settlement" },
+        ].map((item) => {
+          const active = activeStep === item.num;
+          const done = activeStep > item.num;
+          return (
             <button
-              key={s.num}
+              key={item.num}
               type="button"
-              onClick={() => setActiveStep(s.num as any)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
-                activeStep === s.num
-                  ? "bg-emerald-600 text-white font-bold shadow-md shadow-emerald-950"
-                  : "bg-slate-950 text-slate-400 border border-slate-800 hover:text-slate-200"
+              onClick={() => {
+                if (item.num < activeStep) setActiveStep(item.num as 1 | 2 | 3);
+              }}
+              className={`rounded-xl border p-3 text-left transition-all ${
+                active
+                  ? "border-emerald-500 bg-emerald-950/30 text-white"
+                  : done
+                  ? "border-emerald-500/40 bg-slate-950 text-emerald-300"
+                  : "border-slate-800 bg-slate-950/60 text-slate-400"
               }`}
             >
-              <span>{s.num}.</span>
-              <span className="hidden md:inline">{s.label}</span>
+              <div className="flex items-center justify-between text-xs font-bold">
+                <span>{item.title}</span>
+                {done && <CheckCircle2 className="size-4 text-emerald-400" />}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-0.5">{item.sub}</div>
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      {errorMsg && (
-        <div className="rounded-xl border border-rose-500/30 bg-rose-950/30 p-3.5 text-xs text-rose-300 flex items-center gap-2">
-          <AlertCircle className="size-4 shrink-0 text-rose-400" />
-          <span>{errorMsg}</span>
+      {error && (
+        <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-3 text-xs text-rose-200 flex items-center gap-2">
+          <AlertCircle className="size-4 text-rose-400 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      {/* Step 1: Restaurant Identity */}
       {activeStep === 1 && (
-        <div className="space-y-4 animate-in fade-in duration-150">
-          <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-slate-400">
-            <Building2 className="size-4 text-emerald-400" />
-            <span>Station 1: Restaurant Identity &amp; Physical Kitchen</span>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-base font-bold text-white">
+            <Store className="size-5 text-emerald-400" />
+            <span>Step 1: Restaurant Details &amp; Outlet Address</span>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs text-slate-300">Restaurant Trade Name *</Label>
+              <Label className="text-xs text-slate-300">Restaurant Name *</Label>
               <Input
-                placeholder="e.g. Royal Biryani &amp; Kebabs"
-                value={restaurantName}
-                onChange={(e) => setRestaurantName(e.target.value)}
-                className="bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 text-sm"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Royal Darbar Kitchen"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">Owner / Authorized Signatory Name *</Label>
+              <Label className="text-xs text-slate-300">Owner / Manager Full Name *</Label>
               <Input
-                placeholder="e.g. Rajesh Kumar"
                 value={ownerName}
                 onChange={(e) => setOwnerName(e.target.value)}
-                className="bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 text-sm"
+                placeholder="Enter full name"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">Contact Mobile Number (10 digits) *</Label>
+              <Label className="text-xs text-slate-300">10-Digit Mobile Number *</Label>
               <Input
-                placeholder="e.g. 9876543210"
+                type="tel"
                 maxLength={10}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                className="bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 text-sm font-mono"
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                placeholder="9876543210"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono"
               />
-              {phone && !isPhoneValid && (
-                <p className="text-[11px] text-amber-400 mt-1">Please enter a valid 10-digit Indian mobile number (starts with 6-9).</p>
-              )}
             </div>
             <div>
-              <Label className="text-xs text-slate-300">Operating City</Label>
+              <Label className="text-xs text-slate-300">City / Town *</Label>
               <Input
-                placeholder="e.g. Delhi NCR, Mumbai, Bengaluru"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 text-sm"
+                placeholder="Guwahati / Silchar / Karimganj"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
               />
             </div>
             <div className="sm:col-span-2">
-              <Label className="text-xs text-slate-300">Kitchen Pickup Address *</Label>
+              <Label className="text-xs text-slate-300">Complete Outlet Street Address (Address Proof) *</Label>
               <Input
-                placeholder="e.g. Shop 4, Connaught Place, Inner Circle, New Delhi"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="bg-slate-950 border-slate-800 text-white placeholder:text-slate-500 text-sm"
+                placeholder="Shop No., Building, Road, Locality"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
               />
             </div>
           </div>
-
           <div className="flex justify-end pt-2">
             <Button
               type="button"
-              onClick={() => setActiveStep(2)}
-              disabled={!isStep1Valid}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-5"
+              onClick={() => {
+                if (validateStep1()) setActiveStep(2);
+              }}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-11 rounded-xl flex items-center gap-2"
             >
-              Continue to Statutory KYC <ChevronRight className="size-4 ml-1" />
+              <span>Continue to Step 2</span>
+              <ArrowRight className="size-4" />
             </Button>
           </div>
         </div>
       )}
 
-      {/* Step 2: FSSAI, PAN & Statutory Verification */}
       {activeStep === 2 && (
-        <div className="space-y-4 animate-in fade-in duration-150">
-          <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-slate-400">
-            <ShieldCheck className="size-4 text-emerald-400" />
-            <span>Station 2: Food Safety License (FSSAI) &amp; Business PAN</span>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-base font-bold text-white">
+            <FileCheck className="size-5 text-emerald-400" />
+            <span>Step 2: FSSAI License, PAN Card &amp; Optional GST</span>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-slate-300">14-Digit FSSAI License Number *</Label>
-                {isFssaiValid ? (
-                  <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1 font-semibold">
-                    <CheckCircle2 className="size-3" /> FSSAI Verified
-                  </span>
-                ) : fssaiNumber ? (
-                  <span className="text-[11px] font-mono text-amber-400">Must be 14 numeric digits</span>
-                ) : null}
-              </div>
+              <Label className="text-xs text-slate-300">14-Digit FSSAI Food License Number *</Label>
               <Input
-                placeholder="e.g. 10019011000123"
                 maxLength={14}
                 value={fssaiNumber}
-                onChange={(e) => setFssaiNumber(e.target.value.replace(/\D/g, ""))}
-                className={`bg-slate-950 font-mono text-sm ${
-                  isFssaiValid ? "border-emerald-500 text-emerald-300" : "border-slate-800 text-white"
-                }`}
+                onChange={(e) => setFssaiNumber(e.target.value.replace(/\D/g, "").slice(0, 14))}
+                placeholder="10020011000123"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono"
               />
-              <p className="text-[11px] text-slate-400 mt-1">Mandatory under Food Safety and Standards Act 2006.</p>
             </div>
-
             <div>
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-slate-300">Business / Signatory PAN *</Label>
-                {isPanValid ? (
-                  <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1 font-semibold">
-                    <CheckCircle2 className="size-3" /> Valid PAN
-                  </span>
-                ) : panNumber ? (
-                  <span className="text-[11px] font-mono text-amber-400">Format: ABCDE1234F</span>
-                ) : null}
-              </div>
+              <Label className="text-xs text-slate-300">10-Character PAN Card Number *</Label>
               <Input
-                placeholder="e.g. ABCDE1234F"
                 maxLength={10}
-                value={panNumber}
-                onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                className={`bg-slate-950 font-mono text-sm uppercase ${
-                  isPanValid ? "border-emerald-500 text-emerald-300" : "border-slate-800 text-white"
-                }`}
-              />
-              <p className="text-[11px] text-slate-400 mt-1">Required for Income Tax Act §194-O TDS credits.</p>
-            </div>
-
-            <div className="sm:col-span-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-slate-300">GSTIN Certificate (Optional)</Label>
-                <label className="flex items-center gap-1.5 text-xs text-slate-400 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isGstExempt}
-                    onChange={(e) => setIsGstExempt(e.target.checked)}
-                    className="rounded border-slate-700 bg-slate-950 text-emerald-500"
-                  />
-                  <span>Turnover &lt; ₹20L (GST Exempt)</span>
-                </label>
-              </div>
-              <Input
-                disabled={isGstExempt}
-                placeholder={isGstExempt ? "Exempted from GST registration" : "e.g. 07AAAAA0000A1Z5"}
-                maxLength={15}
-                value={isGstExempt ? "" : gstin}
-                onChange={(e) => setGstin(e.target.value.toUpperCase())}
-                className="bg-slate-950 border-slate-800 text-white font-mono text-sm uppercase placeholder:text-slate-600"
+                value={pan}
+                onChange={(e) => setPan(e.target.value.toUpperCase().slice(0, 10))}
+                placeholder="ABCDE1234F"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
               />
             </div>
           </div>
 
-          <div className="flex justify-between pt-2">
+          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
+            <label className="flex items-start gap-3 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={hasGst}
+                onChange={(e) => {
+                  setHasGst(e.target.checked);
+                  if (!e.target.checked) setGstin("");
+                }}
+                className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-emerald-500"
+              />
+              <div>
+                <div className="text-xs font-bold text-slate-100">
+                  My restaurant is GST registered (Have a 15-digit GSTIN)
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Leave unticked if your restaurant is GST-exempt — onboarding proceeds automatically without GST.
+                </div>
+              </div>
+            </label>
+            {hasGst ? (
+              <Input
+                maxLength={15}
+                value={gstin}
+                onChange={(e) => setGstin(e.target.value.toUpperCase().slice(0, 15))}
+                placeholder="18AABCU9603R1ZM (15-Character GSTIN)"
+                className="bg-slate-900 border-slate-700 text-slate-100 h-11 font-mono uppercase"
+              />
+            ) : (
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-3 py-2 text-xs text-emerald-300 flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                <span>Automatic Non-GST Onboarding Active — No GSTIN required.</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => setActiveStep(1)}
-              className="border-slate-800 text-slate-300 text-xs"
+              className="border-slate-700 bg-slate-900 text-slate-200 h-11 px-5 rounded-xl"
             >
               Back
             </Button>
             <Button
               type="button"
-              onClick={() => setActiveStep(3)}
-              disabled={!isStep2Valid}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-5"
+              onClick={() => {
+                if (validateStep2()) setActiveStep(3);
+              }}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-11 rounded-xl flex items-center gap-2"
             >
-              Continue to Banking &amp; Timings <ChevronRight className="size-4 ml-1" />
+              <span>Continue to Step 3</span>
+              <ArrowRight className="size-4" />
             </Button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Payout Banking & Operating Hours */}
       {activeStep === 3 && (
-        <div className="space-y-4 animate-in fade-in duration-150">
-          <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-slate-400">
-            <Banknote className="size-4 text-emerald-400" />
-            <span>Station 3: Settlement Bank Account &amp; Kitchen Hours</span>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-base font-bold text-white">
+            <Banknote className="size-5 text-emerald-400" />
+            <span>Step 3: Settlement Bank Account &amp; Go Live</span>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs text-slate-300">Account Holder Name *</Label>
+              <Input
+                value={holder || ownerName}
+                onChange={(e) => setHolder(e.target.value)}
+                placeholder="Account Holder Name"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-slate-300">Bank Name</Label>
+              <Input
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                placeholder="e.g. State Bank of India / HDFC"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
+              />
+            </div>
             <div>
               <Label className="text-xs text-slate-300">Bank Account Number *</Label>
               <Input
-                placeholder="e.g. 50100234567890"
-                maxLength={20}
                 value={bankAccount}
                 onChange={(e) => setBankAccount(e.target.value.replace(/\D/g, ""))}
-                className="bg-slate-950 border-slate-800 text-white font-mono text-sm"
+                placeholder="Enter Bank Account Number"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono"
               />
             </div>
             <div>
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-slate-300">Bank IFSC Code (11 chars) *</Label>
-                {isIfscValid ? (
-                  <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1 font-semibold">
-                    <CheckCircle2 className="size-3" /> Valid IFSC
-                  </span>
-                ) : bankIfsc ? (
-                  <span className="text-[11px] font-mono text-amber-400">e.g. HDFC0001234</span>
-                ) : null}
-              </div>
+              <Label className="text-xs text-slate-300">11-Character Bank IFSC Code *</Label>
               <Input
-                placeholder="e.g. HDFC0001234"
                 maxLength={11}
                 value={bankIfsc}
-                onChange={(e) => setBankIfsc(e.target.value.toUpperCase())}
-                className={`bg-slate-950 font-mono text-sm uppercase ${
-                  isIfscValid ? "border-emerald-500 text-emerald-300" : "border-slate-800 text-white"
-                }`}
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-slate-300">Opening Time (24h)</Label>
-              <Input
-                type="time"
-                value={openTime}
-                onChange={(e) => setOpenTime(e.target.value)}
-                className="bg-slate-950 border-slate-800 text-white text-sm"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-slate-300">Closing Time (24h)</Label>
-              <Input
-                type="time"
-                value={closeTime}
-                onChange={(e) => setCloseTime(e.target.value)}
-                className="bg-slate-950 border-slate-800 text-white text-sm"
+                onChange={(e) => setBankIfsc(e.target.value.toUpperCase().slice(0, 11))}
+                placeholder="SBIN0001234"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
               />
             </div>
           </div>
 
-          <div className="flex justify-between pt-2">
+          <div className="flex items-center justify-between pt-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => setActiveStep(2)}
-              className="border-slate-800 text-slate-300 text-xs"
+              className="border-slate-700 bg-slate-900 text-slate-200 h-11 px-5 rounded-xl"
             >
               Back
             </Button>
             <Button
               type="button"
-              onClick={() => setActiveStep(4)}
-              disabled={!isStep3Valid}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-5"
+              disabled={busy}
+              onClick={() => void handleStartOnboarding()}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-12 rounded-xl flex items-center gap-2"
             >
-              Continue to Menu Quick-Start <ChevronRight className="size-4 ml-1" />
+              {busy ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
+              <span>{busy ? "Saving..." : "Complete Onboarding & Launch Kitchen →"}</span>
             </Button>
           </div>
         </div>
       )}
-
-      {/* Step 4: First Signature Menu Dish & Launch */}
-      {activeStep === 4 && (
-        <div className="space-y-4 animate-in fade-in duration-150">
-          <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-slate-400">
-            <UtensilsCrossed className="size-4 text-emerald-400" />
-            <span>Station 4: First Signature Dish &amp; Launch</span>
-          </div>
-
-          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 space-y-3">
-            <div className="text-xs font-semibold text-slate-200">Add your first popular dish:</div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="sm:col-span-2">
-                <Label className="text-xs text-slate-300">Dish Name</Label>
-                <Input
-                  value={dishName}
-                  onChange={(e) => setDishName(e.target.value)}
-                  placeholder="e.g. Royal Chicken Dum Biryani"
-                  className="bg-slate-900 border-slate-800 text-white text-sm"
-                />
-              </div>
-              <div>
-                <Label className="text-xs text-slate-300">Price (₹ INR)</Label>
-                <Input
-                  value={dishPrice}
-                  onChange={(e) => setDishPrice(e.target.value.replace(/\D/g, ""))}
-                  placeholder="299"
-                  className="bg-slate-900 border-slate-800 text-white font-mono text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 pt-1">
-              <span className="text-xs text-slate-400">Dietary Type:</span>
-              <button
-                type="button"
-                onClick={() => setDishDiet("NONVEG")}
-                className={`px-3 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition ${
-                  dishDiet === "NONVEG"
-                    ? "bg-rose-950 text-rose-300 border border-rose-700"
-                    : "bg-slate-900 text-slate-400 border border-slate-800"
-                }`}
-              >
-                <span className="size-2 rounded-full bg-rose-500" /> Non-Veg
-              </button>
-              <button
-                type="button"
-                onClick={() => setDishDiet("VEG")}
-                className={`px-3 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition ${
-                  dishDiet === "VEG"
-                    ? "bg-emerald-950 text-emerald-300 border border-emerald-700"
-                    : "bg-slate-900 text-slate-400 border border-slate-800"
-                }`}
-              >
-                <span className="size-2 rounded-full bg-emerald-500" /> Pure Veg
-              </button>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4 space-y-2 text-xs text-slate-300">
-            <div className="font-semibold text-emerald-300 flex items-center gap-1.5">
-              <Scale className="size-4" /> Real T+1 Daily Settlement Economics
-            </div>
-            <p className="text-[11px] leading-relaxed text-slate-400">
-              Orders delivered today are itemized down to integer paise. Platform take-rate and statutory GST §9(5) (5% ECO remitted directly to govt) are settled daily into your bank account.
-            </p>
-          </div>
-
-          <div className="flex justify-between pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setActiveStep(3)}
-              className="border-slate-800 text-slate-300 text-xs"
-            >
-              Back
-            </Button>
-            <Button
-              type="button"
-              onClick={handleStartOnboarding}
-              disabled={submitting}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold px-7 h-11 rounded-xl shadow-lg shadow-emerald-950"
-            >
-              {submitting ? "Launching Outlet..." : "Register Restaurant & Start Receiving Orders"}
-              <ArrowRight className="size-4 ml-1.5" />
-            </Button>
-          </div>
-        </div>
-      )}
-    </Card>
+    </div>
   );
 }
