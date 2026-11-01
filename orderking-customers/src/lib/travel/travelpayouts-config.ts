@@ -63,7 +63,7 @@ export function validateWhiteLabelId(value: unknown): string | null {
 
 export function whiteLabelScriptUrl(value: unknown): string | null {
   const id = validateWhiteLabelId(value);
-  return id ? `https://tpwidg.com/wl_web/main.js?wl_id=${encodeURIComponent(id)}` : null;
+  return id ? `https://tpwidg.com/wl_web/main.js?wl_id=${encodeURIComponent(String(id ?? ""))}` : null;
 }
 
 /**

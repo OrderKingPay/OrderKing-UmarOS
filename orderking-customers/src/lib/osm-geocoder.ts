@@ -13,7 +13,7 @@ export async function searchRealPlaces(query: string, limit = 6): Promise<GeoSea
   const q = String(query || "").trim();
   if (q.length < 2) return [];
   try {
-    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&countrycodes=in&limit=${limit}&q=${encodeURIComponent(q)}`;
+    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&countrycodes=in&limit=${limit}&q=${encodeURIComponent(String(q ?? ""))}`;
     const res = await fetch(url, {
       headers: { "Accept-Language": "en-IN,en;q=0.9" },
     });

@@ -272,7 +272,7 @@ export function CabBookingEngine({
 
                   <div className="flex items-center gap-2">
                     <a
-                      href={`https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(drop)}`}
+                      href={`https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(String(drop ?? ""))}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => toast.success(`Opening Uber dispatch for ${pickup} ➔ ${drop}...`)}

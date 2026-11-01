@@ -102,7 +102,7 @@ export function getWhatsAppPhoneDigits(phone: string): string {
  */
 export function generateWhatsAppDirectUrl(phone: string, text: string): string {
   const digits = getWhatsAppPhoneDigits(phone);
-  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(String(text ?? ""))}`;
 }
 
 /**

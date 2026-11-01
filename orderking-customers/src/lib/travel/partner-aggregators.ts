@@ -232,7 +232,7 @@ export function createSignedTrackingToken(
     payload.clickId,
     payload.partner,
     payload.travelMode,
-    encodeURIComponent(payload.targetUrl),
+    encodeURIComponent(String(payload.targetUrl ?? "")),
     payload.userId || "",
     payload.subId || "",
     payload.grossAmountPaise || 0,
@@ -288,7 +288,7 @@ export function verifySignedTrackingToken(
       payload.clickId,
       payload.partner,
       payload.travelMode,
-      encodeURIComponent(payload.targetUrl),
+      encodeURIComponent(String(payload.targetUrl ?? "")),
       payload.userId || "",
       payload.subId || "",
       payload.grossAmountPaise || 0,
@@ -501,7 +501,7 @@ function createResultWrapper({
   };
 
   const signedToken = createSignedTrackingToken(payload);
-  const handshakeUrl = `/api/travel/partner-handshake?token=${encodeURIComponent(signedToken)}`;
+  const handshakeUrl = `/api/travel/partner-handshake?token=${encodeURIComponent(String(signedToken ?? ""))}`;
 
   return {
     partner,
@@ -654,9 +654,9 @@ export function generateConfirmTktTrainLink(
       throw new Error("Invalid Indian Railways PNR: must be exactly 10 digits.");
     }
 
-    const pnrUrl = `https://www.confirmtkt.com/pnr-status/${cleanPnr}?partner=${encodeURIComponent(
+    const pnrUrl = `https://www.confirmtkt.com/pnr-status/${cleanPnr}?partner=${encodeURIComponent(String(
       partnerId
-    )}&subId=${encodeURIComponent(subId)}`;
+     ?? ""))}&subId=${encodeURIComponent(String(subId ?? ""))}`;
 
     return createResultWrapper({
       partner: "confirmtkt",
@@ -680,13 +680,13 @@ export function generateConfirmTktTrainLink(
   let targetUrl: string;
   if (params.trainNumber) {
     const cleanTrain = params.trainNumber.replace(/\D/g, "");
-    targetUrl = `https://www.confirmtkt.com/train-running-status/${cleanTrain}?partner=${encodeURIComponent(
+    targetUrl = `https://www.confirmtkt.com/train-running-status/${cleanTrain}?partner=${encodeURIComponent(String(
       partnerId
-    )}&subId=${encodeURIComponent(subId)}`;
+     ?? ""))}&subId=${encodeURIComponent(String(subId ?? ""))}`;
   } else {
-    targetUrl = `https://www.confirmtkt.com/trains/${fromCode.toLowerCase()}-to-${toCode.toLowerCase()}?date=${formattedDate}&quota=${quota}&partner=${encodeURIComponent(
+    targetUrl = `https://www.confirmtkt.com/trains/${fromCode.toLowerCase()}-to-${toCode.toLowerCase()}?date=${formattedDate}&quota=${quota}&partner=${encodeURIComponent(String(
       partnerId
-    )}&subId=${encodeURIComponent(subId)}`;
+     ?? ""))}&subId=${encodeURIComponent(String(subId ?? ""))}`;
   }
 
   const routeSummary = `Train ${fromCode} ➔ ${toCode} on ${travelDate} [Quota: ${quota}]`;

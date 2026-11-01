@@ -1,6 +1,6 @@
 
 /**
- * 10,000x Mind-Reader Neural Craving Engine
+ * Customer Food Recommendation & Preference Engine
  * Predicts customer cravings with 99%+ accuracy using hyper-contextual signals:
  * - Time of day (Breakfast, Lunch Peak, Evening Snacks, Dinner Peak, Midnight Munchies)
  * - Weather & seasonal climate (Rainy comfort, Hot afternoon cooling, Winter warmth)

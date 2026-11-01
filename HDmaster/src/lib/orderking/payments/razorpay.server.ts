@@ -146,7 +146,7 @@ export async function createRazorpayOrder(input: {
  */
 export async function fetchRazorpayPayment(paymentId: string): Promise<RazorpayPayment> {
   if (!paymentId.trim()) throw new Error("paymentId is required");
-  return razorpay<RazorpayPayment>(`/payments/${encodeURIComponent(paymentId)}`, { method: "GET" });
+  return razorpay<RazorpayPayment>(`/payments/${encodeURIComponent(String(paymentId ?? ""))}`, { method: "GET" });
 }
 
 /**

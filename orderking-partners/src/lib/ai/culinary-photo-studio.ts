@@ -676,7 +676,7 @@ export function generateProceduralCulinaryCanvas(
       <text x="400" y="325" font-family="system-ui, sans-serif" font-size="16" fill="${baseColor}" text-anchor="middle font-weight="600"">${diet === "VEG" ? "● Pure Vegetarian" : diet === "EGG" ? "● Contains Egg" : "● Non-Vegetarian"}</text>
       <text x="400" y="355" font-family="system-ui, sans-serif" font-size="13" fill="#94a3b8" text-anchor="middle">Order King AI Culinary Studio · 4:3 Certified</text>
     </svg>`;
-    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    return `data:image/svg+xml;utf8,${encodeURIComponent(String(svg ?? ""))}`;
   }
 
   const canvas = document.createElement("canvas");

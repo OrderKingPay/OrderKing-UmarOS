@@ -181,9 +181,9 @@ export function ScanQrModal({
     transactionRef: merchantDynamicTxnRef,
     transactionNote: `OrderKing Order Settlement ${merchantDynamicTxnRef}`,
   });
-  const merchantQrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(
+  const merchantQrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(String(
     merchantUpiIntentUri
-  )}&bgcolor=FFFFFF&color=090D16`;
+   ?? ""))}&bgcolor=FFFFFF&color=090D16`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">

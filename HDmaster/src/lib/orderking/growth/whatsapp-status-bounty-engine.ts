@@ -89,7 +89,7 @@ export class WhatsAppStatusBountyEngine {
     referralCode?: string
   ): { statusShareUrl: string; shareCopy: string } {
     const town = townName.trim() || "Karimganj";
-    const refParam = referralCode ? `?ref=${encodeURIComponent(referralCode)}` : "";
+    const refParam = referralCode ? `?ref=${encodeURIComponent(String(referralCode ?? ""))}` : "";
     const cleanTrackingUrl = `${trackingUrl}${refParam}`;
 
     const shareCopy =
@@ -97,7 +97,7 @@ export class WhatsAppStatusBountyEngine {
       `Tap below to track real-time delivery and get 50% OFF (up to ₹100) on your first order:\n` +
       `👉 ${cleanTrackingUrl}`;
 
-    const encodedText = encodeURIComponent(shareCopy);
+    const encodedText = encodeURIComponent(String(shareCopy ?? ""));
     // WhatsApp Status / Direct share intent
     const statusShareUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
 
@@ -117,7 +117,7 @@ export class WhatsAppStatusBountyEngine {
     const now = Date.now();
     const town = req.townName || "Karimganj";
     const trackingJobId = req.dispatchJobId || req.orderId;
-    const trackingDeepLink = `https://www.orderkingpay.com/tracking/${encodeURIComponent(trackingJobId)}`;
+    const trackingDeepLink = `https://www.orderkingpay.com/tracking/${encodeURIComponent(String(trackingJobId ?? ""))}`;
     const { statusShareUrl, shareCopy } = this.generateViralStatusSharePayload(trackingDeepLink, town, req.userId);
 
     // 1. Campaign Active Dial Check

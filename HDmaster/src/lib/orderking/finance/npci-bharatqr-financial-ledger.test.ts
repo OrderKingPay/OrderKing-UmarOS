@@ -207,7 +207,7 @@ describe("👑 GUARANTEED FINTECH & SETTLEMENTS SPECIALIST AUDIT (2b420240)", ()
 
         // 3. Assert URI invariants
         assert.ok(uri.startsWith("upi://pay?"), "URI must begin with standard 'upi://pay?' scheme");
-        assert.ok(uri.includes(`pa=${encodeURIComponent(tc.vpa)}`), `URI must embed payee VPA '${tc.vpa}'`);
+        assert.ok(uri.includes(`pa=${encodeURIComponent(String(tc.vpa ?? ""))}`), `URI must embed payee VPA '${tc.vpa}'`);
         assert.ok(uri.includes("pn=OrderKingPay"), "URI must embed payee name 'OrderKingPay'");
         assert.ok(uri.includes(`am=${(tc.amountPaise / 100).toFixed(2)}`), "URI must embed 2-decimal amount");
         assert.ok(uri.includes("cu=INR"), "Currency must be strictly 'INR'");

@@ -247,7 +247,7 @@ export function buildRestaurantJsonLd(
         "@type": "ListItem",
         position: 3,
         name: restaurantArea,
-        item: `https://orderking.in/search?q=${encodeURIComponent(restaurantArea)}`,
+        item: `https://orderking.in/search?q=${encodeURIComponent(String(restaurantArea ?? ""))}`,
       },
       {
         "@type": "ListItem",

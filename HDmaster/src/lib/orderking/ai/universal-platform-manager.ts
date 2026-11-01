@@ -322,7 +322,7 @@ export class UniversalPlatformManager {
         }
         const rawPhone = recipient.replace(/[^0-9]/g, "");
         const text = params.payload.text || "Hello! We have prepared a zero-commission direct ordering and 0% UPI payment solution for your business. Let us know a convenient time to discuss.";
-        const clickToChatUrl = `https://api.whatsapp.com/send?phone=${rawPhone}&text=${encodeURIComponent(text)}`;
+        const clickToChatUrl = `https://api.whatsapp.com/send?phone=${rawPhone}&text=${encodeURIComponent(String(text ?? ""))}`;
         outputData = {
           recipientPhone: rawPhone,
           messageText: text,
@@ -343,7 +343,7 @@ export class UniversalPlatformManager {
           break;
         }
         const text = params.payload.text || "OrderKing System Alert: Real-time telemetry nominal.";
-        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(channel)}&text=${encodeURIComponent(text)}`;
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(String(channel ?? ""))}&text=${encodeURIComponent(String(text ?? ""))}`;
         outputData = {
           targetChannel: channel,
           text,
@@ -401,7 +401,7 @@ export class UniversalPlatformManager {
           break;
         }
         const upiIntentUrl = `upi://pay?pa=${vpa}&pn=OrderKing&am=${amountInr}&cu=INR&tn=Enterprise%20Scaffold`;
-        const qrMatrixUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiIntentUrl)}`;
+        const qrMatrixUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(String(upiIntentUrl ?? ""))}`;
         outputData = {
           vpa,
           amountInr,

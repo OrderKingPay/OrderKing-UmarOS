@@ -9,7 +9,7 @@ export interface AutoDispatchResult {
 }
 
 /**
- * 🚀 10000x STARLINK-LEVEL AI DISPATCH ENGINE
+ * 🚀 ZERO-HUMAN ALGORITHMIC DISPATCH ENGINE
  * 
  * Replaces human dispatchers with a hyper-optimized mathematical model.
  * - Uses the Haversine formula to calculate the exact curvature of the Earth.

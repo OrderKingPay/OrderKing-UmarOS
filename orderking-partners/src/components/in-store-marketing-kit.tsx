@@ -29,7 +29,7 @@ export function InStoreMarketingKit({
 
   const printAreaRef = useRef<HTMLDivElement>(null);
 
-  const customerOrderUrl = `https://orderkingpay.com/r/${restaurantId}?table=${encodeURIComponent(tableNumber)}&promo=DINEIN${discountPercent}&cashback=10`;
+  const customerOrderUrl = `https://orderkingpay.com/r/${restaurantId}?table=${encodeURIComponent(String(tableNumber ?? ""))}&promo=DINEIN${discountPercent}&cashback=10`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(customerOrderUrl);

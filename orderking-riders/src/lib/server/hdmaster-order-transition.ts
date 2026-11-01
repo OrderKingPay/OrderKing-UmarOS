@@ -50,7 +50,7 @@ export async function transitionLiveOrder(input: {
   if (!transition) return { skipped: true as const };
   const { url, token } = config();
   const correlationId = `rider:${input.riderId}:${input.orderId}:${input.action}`;
-  const response = await fetch(`${url}/v1/admin/orders/${encodeURIComponent(input.orderId)}/rider-transition`, {
+  const response = await fetch(`${url}/v1/admin/orders/${encodeURIComponent(String(input.orderId ?? ""))}/rider-transition`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -82,7 +82,7 @@ export async function ensureLiveRiderAssigned(input: {
 }) {
   const { url, token } = config();
   const correlationId = `rider:${input.riderId}:${input.orderId}:assign`;
-  const response = await fetch(`${url}/v1/admin/orders/${encodeURIComponent(input.orderId)}/rider-transition`, {
+  const response = await fetch(`${url}/v1/admin/orders/${encodeURIComponent(String(input.orderId ?? ""))}/rider-transition`, {
     method: "POST",
     headers: {
       "content-type": "application/json",

@@ -60,9 +60,9 @@ function UpiQrGeneratorTool() {
     payeeName.trim()
   )}&am=${amountFormattedRupees}&cu=INR&tn=${encodeURIComponent(note.trim())}&tr=${txnRef}`;
 
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(String(
     upiUri
-  )}&bgcolor=FFFFFF&color=090D16`;
+   ?? ""))}&bgcolor=FFFFFF&color=090D16`;
 
   const handleCopyLink = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -287,7 +287,7 @@ function SplitBillCalculatorTool() {
   const handleShareWhatsApp = () => {
     const text = `Hey! Here is your ${formatPaise(perPersonBasePaise)} share for our bill total of ${formatPaise(grandTotalPaise)} (${count} people split):\nPay here: ${shareUpiLink}`;
     if (typeof window !== "undefined") {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+      window.open(`https://wa.me/?text=${encodeURIComponent(String(text ?? ""))}`, "_blank");
     }
   };
 

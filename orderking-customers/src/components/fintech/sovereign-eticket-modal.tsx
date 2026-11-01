@@ -95,7 +95,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
     }
 
     // Direct WhatsApp Web / mobile URL without pop-up blocking issues
-    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(String(text ?? ""))}`;
     try {
       const a = document.createElement("a");
       a.href = waUrl;

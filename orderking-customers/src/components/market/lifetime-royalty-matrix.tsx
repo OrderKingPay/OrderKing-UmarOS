@@ -150,7 +150,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
 
   const handleWhatsAppShare = () => {
     const text = `👑 Hey! Order food on OrderKing with VIP restaurant pricing and zero surge fees.\n\nUse my personal link to get ₹50 instant food cash:\n${shareUrl}\n\n(PS: I get 1% lifetime royalty whenever you order. Join and build your own passive income empire too!)`;
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(String(text ?? ""))}`;
     window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
@@ -670,7 +670,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
             {/* Generated QR visual */}
             <div className="rounded-2xl border-2 border-slate-900 p-4 bg-white inline-block shadow-sm">
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(String(shareUrl ?? ""))}`}
                 alt="Referral QR Code"
                 loading="lazy"
                 decoding="async"

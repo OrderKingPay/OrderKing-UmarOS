@@ -156,7 +156,7 @@ function gateSigninUrl(ctx: InboundContext): string | undefined {
         : undefined;
     const signin = `https://${gateHost}/__gate/signin`;
     return gated
-      ? `${signin}?return_to=${encodeURIComponent(gated)}`
+      ? `${signin}?return_to=${encodeURIComponent(String(gated ?? ""))}`
       : signin;
   } catch {
     return undefined;

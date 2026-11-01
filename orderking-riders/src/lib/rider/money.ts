@@ -1440,7 +1440,7 @@ export function generateUpiQrUrl(
   size = 200,
 ): string {
   const intent = generateUpiDepositIntent(amountRupees, vpa, note);
-  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(intent)}`;
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(String(intent ?? ""))}`;
 }
 
 // ---------------------------------------------------------------------------

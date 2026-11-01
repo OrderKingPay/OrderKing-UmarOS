@@ -44,13 +44,13 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
   }, [user?.id]);
 
   const originUrl = typeof window !== "undefined" ? window.location.origin : "https://www.orderkingpay.com";
-  const shareUrl = `${originUrl}/?src=invite${referralCode ? `&ref=${encodeURIComponent(referralCode)}` : ""}`;
+  const shareUrl = `${originUrl}/?src=invite${referralCode ? `&ref=${encodeURIComponent(String(referralCode ?? ""))}` : ""}`;
 
   // Attractive, natural gift message for WhatsApp
   const giftMessage = `🍲 Craving hot food? Order on OrderKing — Delivered fresh from authentic local kitchens! Use my link for 50% OFF (up to ₹100) on your first order: ${shareUrl}`;
 
   const handleWhatsAppShare = () => {
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(giftMessage)}`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(String(giftMessage ?? ""))}`;
     window.open(waUrl, "_blank");
     toast.info("Opening WhatsApp to share the OrderKing link.");
   };

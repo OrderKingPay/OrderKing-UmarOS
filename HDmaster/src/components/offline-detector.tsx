@@ -1,25 +1,53 @@
 import { useEffect, useState } from "react";
 import { WifiOff, RefreshCw } from "lucide-react";
-export function OfflineDetector() {
-  const [offline, setOffline] = useState(false);
-  const checkConnectivity = async () => {
-    if (typeof window === "undefined") return;
-    if (navigator.onLine) {
-      setOffline(false);
-      return;
+
+export const DISMISS_STORAGE_KEY = "hdmaster_offline_banner_dismissed";
+
+export async function probeNetwork(timeoutMs: number = 1000): Promise<boolean> {
+  const isOnlineNavigator = typeof navigator !== "undefined" ? navigator.onLine : true;
+
+  try {
+    let controller: AbortController | undefined;
+    let timer: any;
+    if (typeof AbortController !== "undefined") {
+      controller = new AbortController();
+      timer = setTimeout(() => controller?.abort(), timeoutMs);
     }
+
     try {
-      const res = await fetch(window.location.origin + "/manifest.json", {
+      const res = await fetch("/api/ping", {
         method: "HEAD",
         cache: "no-store",
+        signal: controller?.signal,
       });
-      if (res.ok) {
-        setOffline(false);
-        return;
+      if (res.status === 404) {
+        await fetch("/api/health", {
+          method: "GET",
+          cache: "no-store",
+          signal: controller?.signal,
+        });
       }
-    } catch {}
-    setOffline(true);
+      return true;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  } catch {
+    if (isOnlineNavigator) {
+      return true;
+    }
+    return false;
+  }
+}
+
+export function OfflineDetector() {
+  const [offline, setOffline] = useState(false);
+
+  const checkConnectivity = async () => {
+    if (typeof window === "undefined") return;
+    const isReachable = await probeNetwork(1500);
+    setOffline(!isReachable);
   };
+
   useEffect(() => {
     void checkConnectivity();
     const onOnline = () => setOffline(false);
@@ -31,7 +59,9 @@ export function OfflineDetector() {
       window.removeEventListener("offline", onOffline);
     };
   }, []);
+
   if (!offline) return null;
+
   return (
     <div
       role="status"

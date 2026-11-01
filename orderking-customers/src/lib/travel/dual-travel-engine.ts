@@ -273,7 +273,7 @@ export function generateTravelpayoutsDomesticLink({
   const shortDate = day && month ? `${day}${month}` : "0112";
 
   const activeSubId = subId || "kingpay_domestic";
-  const subParam = `&sub_id=${encodeURIComponent(activeSubId)}`;
+  const subParam = `&sub_id=${encodeURIComponent(String(activeSubId ?? ""))}`;
   const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${shortDate}${destCode}${passengers}?marker=${activeMarker}&currency=${currency.toLowerCase()}${subParam}`;
 
   return {
@@ -339,7 +339,7 @@ export function generateTravelpayoutsFlightLink({
   }
 
   const activeSubId = subId || "kingpay_flight";
-  const subParam = `&sub_id=${encodeURIComponent(activeSubId)}`;
+  const subParam = `&sub_id=${encodeURIComponent(String(activeSubId ?? ""))}`;
   const classCode = cabinClass === "Business" || cabinClass === "First" ? "c" : "";
   const directAviasalesUrl = `https://www.aviasales.com/search/${origCode}${dateSegment}${passengers}${classCode}?marker=${activeMarker}&currency=${currency.toLowerCase()}${subParam}`;
 
@@ -401,7 +401,7 @@ export function generateTravelpayoutsHotelLink({
 
   if (partner === "booking_com") {
     const aid = (typeof process !== "undefined" ? process.env?.BOOKING_COM_AID : undefined) || "orderking_hotels";
-    const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${guests}&no_rooms=${rooms}&selected_currency=INR&aid=${aid}&label=${encodeURIComponent(subId)}`;
+    const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(String(cleanCity ?? ""))}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${guests}&no_rooms=${rooms}&selected_currency=INR&aid=${aid}&label=${encodeURIComponent(String(subId ?? ""))}`;
     return {
       url: bookingUrl,
       cleanCity,
@@ -414,7 +414,7 @@ export function generateTravelpayoutsHotelLink({
   }
 
   if (partner === "hotellook") {
-    const hotellookUrl = `https://search.hotellook.com/?destination=${encodeURIComponent(cleanCity)}&checkIn=${checkIn}&checkOut=${checkOut}&adults=${guests}&rooms=${rooms}&marker=${activeMarker}${subId ? `&sub_id=${encodeURIComponent(subId)}` : ""}`;
+    const hotellookUrl = `https://search.hotellook.com/?destination=${encodeURIComponent(String(cleanCity ?? ""))}&checkIn=${checkIn}&checkOut=${checkOut}&adults=${guests}&rooms=${rooms}&marker=${activeMarker}${subId ? `&sub_id=${encodeURIComponent(String(subId ?? ""))}` : ""}`;
     return {
       url: hotellookUrl,
       cleanCity,
@@ -428,7 +428,7 @@ export function generateTravelpayoutsHotelLink({
 
   // Default: Agoda partner with CID and tracking tag
   const cid = (typeof process !== "undefined" ? process.env?.AGODA_CID : undefined) || "1894215";
-  const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?city=${encodeURIComponent(cleanCity)}&checkin=${checkIn}&checkout=${checkOut}&rooms=${rooms}&adults=${guests}&cid=${cid}&tag=${encodeURIComponent(subId)}`;
+  const agodaUrl = `https://www.agoda.com/partners/partnersearch.aspx?city=${encodeURIComponent(String(cleanCity ?? ""))}&checkin=${checkIn}&checkout=${checkOut}&rooms=${rooms}&adults=${guests}&cid=${cid}&tag=${encodeURIComponent(String(subId ?? ""))}`;
   return {
     url: agodaUrl,
     cleanCity,
@@ -484,7 +484,7 @@ export function generateRedBusDomesticLink(
   const activeAffId = affiliateId || (typeof process !== "undefined" ? process.env?.REDBUS_AFFILIATE_ID : undefined) || "orderking_bus";
   const activeSubId = subId || "kingpay_bus";
 
-  const url = new URL(`https://www.redbus.in/bus-tickets/${encodeURIComponent(cleanSrc)}-to-${encodeURIComponent(cleanDest)}`);
+  const url = new URL(`https://www.redbus.in/bus-tickets/${encodeURIComponent(String(cleanSrc ?? ""))}-to-${encodeURIComponent(String(cleanDest ?? ""))}`);
   url.searchParams.set("onward", dateIso);
   url.searchParams.set("utm_source", "orderking");
   url.searchParams.set("utm_medium", "affiliate");
@@ -524,7 +524,7 @@ export interface DuffelInternationalOffer {
 
 export function generateDuffelInternationalLink(offerId: string): string {
   const clean = offerId.trim();
-  return clean ? `https://links.duffel.com/air/offers/${encodeURIComponent(clean)}` : "https://duffel.com";
+  return clean ? `https://links.duffel.com/air/offers/${encodeURIComponent(String(clean ?? ""))}` : "https://duffel.com";
 }
 
 // ============================================================================

@@ -126,26 +126,33 @@ function Login() {
         data: { phone: cleanPhone, otp: code },
       });
 
+      if (!res.success || !res.email || !res.password) {
+        throw new Error(res.error || "Verification failed. Invalid or expired OTP code.");
+      }
+
       // Synchronize Better Auth 90-day administrative session
+      const email = res.email || `${cleanPhone}@phone.orderkingpay.com`;
+      const password = res.password || `OK_${cleanPhone}!9A`;
+
       const signInRes = await authClient.signIn.email({
-        email: res.email,
-        password: res.password,
+        email,
+        password,
         callbackURL: "/app",
       });
 
       if (signInRes.error) {
         // If not registered yet, create the founder/operator account
         const signUpRes = await authClient.signUp.email({
-          email: res.email,
-          password: res.password,
+          email,
+          password,
           name: "Umar OS Administrator",
           callbackURL: "/app",
         });
         if (signUpRes.error) {
           // Retry sign-in
           await authClient.signIn.email({
-            email: res.email,
-            password: res.password,
+            email,
+            password,
             callbackURL: "/app",
           });
         }

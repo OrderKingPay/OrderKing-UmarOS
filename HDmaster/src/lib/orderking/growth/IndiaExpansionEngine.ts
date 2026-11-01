@@ -111,7 +111,7 @@ export class IndiaExpansionEngine {
     const message = template(roundedReward, metrics.pincode, progress.overallProgressPct, invite.url);
     
     return {
-      url: `https://wa.me/?text=${encodeURIComponent(message)}`,
+      url: `https://wa.me/?text=${encodeURIComponent(String(message ?? ""))}`,
       message,
       expectedRewardINR: roundedReward
     };

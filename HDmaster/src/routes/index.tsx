@@ -3936,9 +3936,9 @@ function UmarOSDashboard() {
 
                     <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
                       <a
-                        href={`https://www.google.com/search?q=${encodeURIComponent(
+                        href={`https://www.google.com/search?q=${encodeURIComponent(String(
                           trip.pnr + " live status"
-                        )}`}
+                         ?? ""))}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
@@ -4236,9 +4236,9 @@ function UmarOSDashboard() {
 
                     <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
                       <a
-                        href={`https://wa.me/?text=Hi%2C%20I%20am%20interested%20in%20the%20${encodeURIComponent(
+                        href={`https://wa.me/?text=Hi%2C%20I%20am%20interested%20in%20the%20${encodeURIComponent(String(
                           job.title
-                        )}%20opening%20in%20${encodeURIComponent(job.city)}.`}
+                         ?? ""))}%20opening%20in%20${encodeURIComponent(String(job.city ?? ""))}.`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"

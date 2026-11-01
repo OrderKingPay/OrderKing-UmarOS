@@ -81,7 +81,7 @@ export class InstantDeployEngine {
 </body>
 </html>`;
 
-    const liveUrl = `data:text/html;charset=utf-8,${encodeURIComponent(previewBundleHtml)}`;
+    const liveUrl = `data:text/html;charset=utf-8,${encodeURIComponent(String(previewBundleHtml ?? ""))}`;
     const targetDomain = `https://${slug}.orderking.in`;
 
     return {

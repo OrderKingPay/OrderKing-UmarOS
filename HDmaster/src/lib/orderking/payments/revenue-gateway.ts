@@ -110,7 +110,7 @@ export class RevenueGatewayService {
 
     return {
       upiLink: upiResult.rawUri,
-      qrPayload: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiResult.rawUri)}`,
+      qrPayload: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(String(upiResult.rawUri ?? ""))}`,
       transactionId: txnId,
       deepLinks: upiResult.deepLinks,
     };

@@ -161,7 +161,7 @@ export function ReceiveMoneyQrStudio({
     // Generate QR Code on change
   useEffect(() => {
     const uri = generateUpiUri();
-    const url = `https://api.qrserver.com/v1/create-qr-code/?size=480x480&data=${encodeURIComponent(uri)}&bgcolor=FFFFFF&color=0F172A`;
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=480x480&data=${encodeURIComponent(String(uri ?? ""))}&bgcolor=FFFFFF&color=0F172A`;
     setQrDataUrl(url);
   }, [upiId, payeeName, amount, note]);
 

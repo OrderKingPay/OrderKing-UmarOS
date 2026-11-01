@@ -167,8 +167,10 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           setLiveConfig((prev) => {
             const next = { ...prev };
             for (const row of data as UmarOsConfigRow[]) {
-              if (row.key && row.value) {
-                next[row.key] = { ...(next[row.key] || {}), ...row.value };
+              const k = row.config_key || row.key;
+              const v = row.config_value || row.value;
+              if (k && v) {
+                next[k] = { ...(next[k] || {}), ...v };
               }
             }
             return next;
@@ -184,15 +186,17 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         { event: "*", schema: "public", table: "umar_os_config" },
         (payload: any) => {
           const row = payload?.new as UmarOsConfigRow;
-          if (row?.key && row?.value) {
+          const k = row?.config_key || row?.key;
+          const v = row?.config_value || row?.value;
+          if (k && v) {
             setLiveConfig((prev) => ({
               ...prev,
-              [row.key]: {
-                ...(prev[row.key] || {}),
-                ...row.value,
+              [k]: {
+                ...(prev[k] || {}),
+                ...v,
               },
             }));
-            toast.info(`Realtime sync: ${row.key} updated in Supabase`, {
+            toast.info(`Realtime sync: ${k} updated in Supabase`, {
               duration: 2500,
             });
           }

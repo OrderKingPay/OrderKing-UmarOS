@@ -87,7 +87,7 @@ export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
       const prepMins = data.prepMinutes ? Math.max(5, Math.min(120, Math.round(data.prepMinutes))) : null;
       const from = localToCanonicalState(order.state);
       const to = canonicalTo(data.action);
-      const response = await fetch(`${coreUrl()}/v1/admin/orders/${encodeURIComponent(order.id)}/transition`, {
+      const response = await fetch(`${coreUrl()}/v1/admin/orders/${encodeURIComponent(String(order.id ?? ""))}/transition`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

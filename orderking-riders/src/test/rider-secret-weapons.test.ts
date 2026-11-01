@@ -69,8 +69,8 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
 
       expect(payload.googleMapsUrl).toBe("https://www.google.com/maps?q=26.15000,91.75000");
       expect(payload.whatsappDistressUrl).toContain("https://wa.me/?text=");
-      expect(payload.whatsappDistressUrl).toContain(encodeURIComponent("SOS-123456"));
-      expect(payload.whatsappDistressUrl).toContain(encodeURIComponent(payload.googleMapsUrl));
+      expect(payload.whatsappDistressUrl).toContain(encodeURIComponent(String("SOS-123456" ?? "")));
+      expect(payload.whatsappDistressUrl).toContain(encodeURIComponent(String(payload.googleMapsUrl ?? "")));
       expect(payload.smsDistressUrl).toContain("sms:?body=");
       expect(payload.distressMessage).toContain("Vikram Das");
       expect(payload.safetyDeskNote).toContain("EMERGENCY SOS 112 DISPATCH TRIGGERED (SOS-123456)");

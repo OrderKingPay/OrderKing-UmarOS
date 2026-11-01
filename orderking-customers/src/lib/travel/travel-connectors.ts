@@ -249,7 +249,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
               cabinClass,
               seatsAvailable: undefined,
               bookingUrl: item.link
-                ? `https://tp.media/r?marker=${getTravelpayoutsMarker()}&p=4114&u=${encodeURIComponent(item.link)}`
+                ? `https://tp.media/r?marker=${getTravelpayoutsMarker()}&p=4114&u=${encodeURIComponent(String(item.link ?? ""))}`
                 : buildOfficialAirlineDeepLink({
                     carrierCode: airline,
                     from: origin,
@@ -466,7 +466,7 @@ export async function searchLiveBuses(req: BusSearchRequest): Promise<BusSearchR
             farePaise: Math.round(Number(trip.fares?.[0] || 1200) * 100),
             startingFarePaise: Math.round(Number(trip.fares?.[0] || 1200) * 100),
             amenities: ["Live GPS", "AC", "Charging Port", "Blanket", "Water Bottle"],
-            bookingUrl: `https://www.redbus.in/bus-tickets/${encodeURIComponent(sourceCity)}-to-${encodeURIComponent(destinationCity)}`,
+            bookingUrl: `https://www.redbus.in/bus-tickets/${encodeURIComponent(String(sourceCity ?? ""))}-to-${encodeURIComponent(String(destinationCity ?? ""))}`,
           }));
 
           return {
@@ -520,7 +520,7 @@ export async function searchLiveHotels(req: HotelSearchRequest): Promise<HotelSe
   // Connect Travelpayouts Hotellook live hotel aggregator for Indian domestic & international stays
   if (travelpayoutsToken) {
     try {
-      const res = await fetch(`https://engine.hotellook.com/api/v2/lookup.json?query=${encodeURIComponent(city)}&lang=en&lookFor=both&limit=10`, {
+      const res = await fetch(`https://engine.hotellook.com/api/v2/lookup.json?query=${encodeURIComponent(String(city ?? ""))}&lang=en&lookFor=both&limit=10`, {
         signal: AbortSignal.timeout(8000),
       });
       if (res.ok) {
@@ -541,7 +541,7 @@ export async function searchLiveHotels(req: HotelSearchRequest): Promise<HotelSe
             roomType: "Deluxe Room",
             freeCancellation: true,
             breakfastIncluded: true,
-            bookingUrl: `https://tp.media/r?marker=${marker}&p=4115&u=${encodeURIComponent(`https://hotellook.com/search/${encodeURIComponent(city)}`)}`,
+            bookingUrl: `https://tp.media/r?marker=${marker}&p=4115&u=${encodeURIComponent(`https://hotellook.com/search/${encodeURIComponent(String(city ?? ""))}`)}`,
             provider: "partner_wholesale",
           }));
           return {

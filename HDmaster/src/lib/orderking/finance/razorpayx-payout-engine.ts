@@ -287,7 +287,7 @@ export async function fetchRazorpayXPayout(payoutId: string): Promise<Record<str
     throw new Error("Razorpay credentials missing from environment.");
   }
 
-  const response = await resilientFetch(`${RAZORPAY_API_BASE}/payouts/${encodeURIComponent(payoutId)}`, {
+  const response = await resilientFetch(`${RAZORPAY_API_BASE}/payouts/${encodeURIComponent(String(payoutId ?? ""))}`, {
     method: "GET",
     headers: {
       Authorization: getAuthHeader(creds),
@@ -314,7 +314,7 @@ export async function verifyRazorpayXPayoutOtp(
     throw new Error("Razorpay credentials missing from environment.");
   }
 
-  const response = await resilientFetch(`${RAZORPAY_API_BASE}/payouts/${encodeURIComponent(payoutId)}/otp`, {
+  const response = await resilientFetch(`${RAZORPAY_API_BASE}/payouts/${encodeURIComponent(String(payoutId ?? ""))}/otp`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

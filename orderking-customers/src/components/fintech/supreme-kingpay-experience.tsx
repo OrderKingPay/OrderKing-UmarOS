@@ -296,14 +296,14 @@ export function SupremeKingPayExperience() {
     100,
     Math.round((Number(upiAmountInr) || 1) * 100)
   );
-  const upiUri = `upi://pay?pa=${encodeURIComponent(
+  const upiUri = `upi://pay?pa=${encodeURIComponent(String(
     activePayeeVpa
-  )}&pn=OrderKingPay&am=${(parsedAmountPaise / 100).toFixed(
+   ?? ""))}&pn=OrderKingPay&am=${(parsedAmountPaise / 100).toFixed(
     2
   )}&cu=INR&tn=${encodeURIComponent(upiNote.trim())}`;
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(String(
     upiUri
-  )}&bgcolor=FFFFFF&color=080a10`;
+   ?? ""))}&bgcolor=FFFFFF&color=080a10`;
 
   const handleCopyUpiLink = async () => {
     try {
@@ -322,7 +322,7 @@ export function SupremeKingPayExperience() {
     )} to OrderKing (${activeDisplayVpa}) via UPI:\n${upiUri}`;
     if (typeof window !== "undefined") {
       window.open(
-        `https://wa.me/?text=${encodeURIComponent(text)}`,
+        `https://wa.me/?text=${encodeURIComponent(String(text ?? ""))}`,
         "_blank",
         "noopener,noreferrer"
       );
@@ -340,9 +340,9 @@ export function SupremeKingPayExperience() {
   );
   const perPersonPaise = Math.floor(totalSplitPaise / safePeopleCount);
   const splitRemainder = totalSplitPaise % safePeopleCount;
-  const splitShareUri = `upi://pay?pa=${encodeURIComponent(
+  const splitShareUri = `upi://pay?pa=${encodeURIComponent(String(
     activePayeeVpa
-  )}&pn=Split%20Bill&am=${(perPersonPaise / 100).toFixed(
+   ?? ""))}&pn=Split%20Bill&am=${(perPersonPaise / 100).toFixed(
     2
   )}&cu=INR&tn=Group%20Bill%20Share`;
 
@@ -365,7 +365,7 @@ export function SupremeKingPayExperience() {
     )} each.\nPay via UPI: ${splitShareUri}`;
     if (typeof window !== "undefined") {
       window.open(
-        `https://wa.me/?text=${encodeURIComponent(text)}`,
+        `https://wa.me/?text=${encodeURIComponent(String(text ?? ""))}`,
         "_blank",
         "noopener,noreferrer"
       );

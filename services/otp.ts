@@ -214,20 +214,14 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
  * to prevent gateway rejection.
  */
 export async function sendOtp2Factor(phone: string, otp: string): Promise<boolean> {
-  { const _f2sCheck = (process.env.FAST2SMS_API_KEY || "").trim();
-  const _tfCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
+  { var _f2sCheck = (process.env.FAST2SMS_API_KEY || "").trim();
+  var _tfCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
   if (!_tfCheck || _tfCheck === _f2sCheck || _tfCheck.length > 45) {
     console.info("[OTP] Skipping 2Factor fallback because OTP_2FACTOR_API_KEY matches FAST2SMS_API_KEY or is not a distinct 2Factor UUID.");
     return false;
   } }
-  const f2sKey = (process.env.FAST2SMS_API_KEY || "").trim();
-  const tfKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
-  if (!tfKey || tfKey === f2sKey || tfKey.length > 45) {
-    console.info("[OTP] Skipping 2Factor fallback because OTP_2FACTOR_API_KEY matches FAST2SMS_API_KEY or is not a distinct 2Factor UUID.");
-    return false;
-  }
-  const f2sKey = (process.env.FAST2SMS_API_KEY || "").trim();
-  const tfKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
+  var f2sKey = (process.env.FAST2SMS_API_KEY || "").trim();
+  var tfKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
   if (!tfKey || tfKey === f2sKey || tfKey.length > 45) {
     console.info("[OTP] Skipping 2Factor fallback because OTP_2FACTOR_API_KEY matches FAST2SMS_API_KEY or is not a distinct 2Factor UUID.");
     return false;
@@ -267,7 +261,7 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
   }
 
   const template = (process.env.TWOFACTOR_OTP_TEMPLATE || 'AUTOGEN').trim();
-  const url = `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/SMS/${cleanPhone}/${encodeURIComponent(cleanOtp)}/${encodeURIComponent(template)}`;
+  const url = `https://2factor.in/API/V1/${encodeURIComponent(String(apiKey ?? ""))}/SMS/${cleanPhone}/${encodeURIComponent(String(cleanOtp ?? ""))}/${encodeURIComponent(String(template ?? ""))}`;
 
   try {
     const resp = await axios.get(url, {
@@ -287,18 +281,13 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
  * Official Endpoint: https://2factor.in/API/V1/{API_KEY}/VOICE/{PHONE}/{OTP}
  */
 export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<boolean> {
-  { const _f2sCheck = (process.env.FAST2SMS_API_KEY || "").trim();
-  const _tfCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
+  { var _f2sCheck = (process.env.FAST2SMS_API_KEY || "").trim();
+  var _tfCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
   if (!_tfCheck || _tfCheck === _f2sCheck || _tfCheck.length > 45) {
     return false;
   } }
-  const f2sKey = (process.env.FAST2SMS_API_KEY || "").trim();
-  const tfKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
-  if (!tfKey || tfKey === f2sKey || tfKey.length > 45) {
-    return false;
-  }
-  const f2sKey = (process.env.FAST2SMS_API_KEY || "").trim();
-  const tfKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
+  var f2sKey = (process.env.FAST2SMS_API_KEY || "").trim();
+  var tfKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
   if (!tfKey || tfKey === f2sKey || tfKey.length > 45) {
     return false;
   }
@@ -325,7 +314,7 @@ export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<b
   const cleanOtp = String(otp || '').replace(/\D/g, '').trim();
   if (!cleanOtp) return false;
 
-  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/VOICE/${cleanPhone}/${encodeURIComponent(cleanOtp)}`;
+  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(String(apiKey ?? ""))}/VOICE/${cleanPhone}/${encodeURIComponent(String(cleanOtp ?? ""))}`;
 
   try {
     const resp = await axios.get(voiceUrl, {
@@ -355,7 +344,7 @@ export async function sendOtpMSG91(phone: string, otp: string): Promise<boolean>
 
   try {
     const resp = await axios.post(
-      `https://control.msg91.com/api/v5/otp?template_id=${encodeURIComponent(templateId)}&mobile=91${cleanPhone}&authkey=${encodeURIComponent(authKey)}&otp=${encodeURIComponent(cleanOtp)}`,
+      `https://control.msg91.com/api/v5/otp?template_id=${encodeURIComponent(String(templateId ?? ""))}&mobile=91${cleanPhone}&authkey=${encodeURIComponent(String(authKey ?? ""))}&otp=${encodeURIComponent(String(cleanOtp ?? ""))}`,
       {},
       { timeout: 8000 }
     );

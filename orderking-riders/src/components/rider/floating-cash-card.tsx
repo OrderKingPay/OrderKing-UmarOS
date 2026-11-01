@@ -100,8 +100,8 @@ export function FloatingCashCard({
   const [depositing, setDepositing] = useState(false);
 
   // Generate standard NPCI UPI Intent URI for 1-tap app launch
-  const upiIntent = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKing%20Treasury&am=${depositAmountRupees}&cu=INR&tn=FloatDeposit_${tierConfig.tier}_${Date.now().toString(36)}`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiIntent)}`;
+  const upiIntent = `upi://pay?pa=${encodeURIComponent(String(vpa ?? ""))}&pn=OrderKing%20Treasury&am=${depositAmountRupees}&cu=INR&tn=FloatDeposit_${tierConfig.tier}_${Date.now().toString(36)}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(String(upiIntent ?? ""))}`;
 
   async function handleConfirmDeposit() {
     if (depositAmountRupees <= 0) {

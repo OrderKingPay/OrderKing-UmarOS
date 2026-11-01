@@ -108,7 +108,7 @@ export function SocialPublishingStudio() {
     toast.info("Removed post from planner.");
   };
 
-  const whatsappShareHref = `https://wa.me/?text=${encodeURIComponent(fullPostText)}`;
+  const whatsappShareHref = `https://wa.me/?text=${encodeURIComponent(String(fullPostText ?? ""))}`;
   const xShareHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     fullPostText.slice(0, 275)
   )}`;

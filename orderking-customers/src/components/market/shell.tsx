@@ -542,7 +542,7 @@ export function CustomerShell({
 
 
       {/* Floating View Cart & 1-Tap Checkout Bar */}
-      {count > 0 && path !== "/cart" && path !== "/checkout" ? (
+      {count > 0 && !isKingPayDomain && path !== "/cart" && path !== "/checkout" ? (
         <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex flex-col items-center justify-center px-4 gap-1.5">
           <div className="pointer-events-auto flex min-h-12 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-r from-slate-950 via-[#18130d] to-slate-950 px-3.5 py-2.5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.45)] transition-all font-bold border border-amber-400/60 backdrop-blur-md">
             <div className="flex items-center gap-2">

@@ -60,7 +60,7 @@ export function WhatsAppShare({
 
   const handleWhatsAppDeepLink = () => {
     const { text } = getShareData();
-    const encoded = encodeURIComponent(text);
+    const encoded = encodeURIComponent(String(text ?? ""));
     const waUrl = `https://wa.me/?text=${encoded}`;
     
     // Try opening WhatsApp deep link

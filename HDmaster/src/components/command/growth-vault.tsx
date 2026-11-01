@@ -50,10 +50,10 @@ export function GrowthVaultView() {
             <span className="text-2xl">🏛️</span>
             <div>
               <h2 className="text-xl font-bold font-display text-amber-300">
-                10,000x Executive Growth, Grants, Awards &amp; Ad Domination Vault
+                Platform Growth, Institutional Dossiers &amp; Marketing Toolkits
               </h2>
               <p className="text-xs text-muted">
-                Pre-filled application dossiers for over ₹1.88 Crore in non-dilutive government grants, premier university keynotes (IIT/NIT), Meta/Google ad domination payloads, and orderking.in live domain routing.
+                Pre-filled application dossiers for over ₹1.88 Crore in non-dilutive government grants, premier university keynotes (IIT/NIT), Meta/Google advertising configurations, and orderking.in live domain routing.
               </p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export function GrowthVaultView() {
               subTab === "ads" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
-            <span>🚀</span> 100,000x Meta &amp; Google Ad Kits
+            <span>📢</span> Meta &amp; Google Ad Kits
           </button>
           <button
             type="button"
@@ -552,7 +552,7 @@ export function GrowthVaultView() {
                     <span className="font-semibold text-foreground">Formal Pitch Body:</span>
                     <div className="flex items-center gap-2">
                       <a
-                        href={`mailto:${currentKeynote.recipientEmail}?subject=${encodeURIComponent(currentKeynote.subjectLine)}&body=${encodeURIComponent(currentKeynote.emailBody)}`}
+                        href={`mailto:${currentKeynote.recipientEmail}?subject=${encodeURIComponent(String(currentKeynote.subjectLine ?? ""))}&body=${encodeURIComponent(String(currentKeynote.emailBody ?? ""))}`}
                         className="rounded bg-primary px-2.5 py-1 text-xs font-semibold text-primary-fg hover:opacity-90"
                       >
                         ✉️ Open in Mail Client
@@ -577,7 +577,7 @@ export function GrowthVaultView() {
       )}
 
       {/* -------------------------------------------------------------------- */}
-      {/* 3. META & GOOGLE 100,000X AD KITS */}
+      {/* 3. META & GOOGLE AD KITS */}
       {/* -------------------------------------------------------------------- */}
       {subTab === "ads" && (
         <div className="space-y-4">

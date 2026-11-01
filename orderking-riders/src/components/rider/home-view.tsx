@@ -127,7 +127,7 @@ const OPERATIONAL_SHIFT_SLOTS: ReadonlyArray<ShiftSlot> = [
     tag: "Night Operations",
     baseFarePaise: STATUTORY_BASE_FARE_PAISE,
     distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-    peakIncentiveNote: "Base ₹35 + ₹12/km · 24x7 SOS dispatch control support active",
+    peakIncentiveNote: "Base ₹35 + ₹12/km · 24x7 SOS rider safety support active",
   },
 ];
 
@@ -1742,7 +1742,7 @@ function OfferCard({
     offer.pickupLocation.lat !== 0 || offer.pickupLocation.lng !== 0;
   const mapsPickupUrl = hasPickupCoords
     ? `https://www.google.com/maps/dir/?api=1&destination=${offer.pickupLocation.lat},${offer.pickupLocation.lng}&travelmode=two-wheeler`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${offer.restaurant.name} ${offer.restaurant.address || offer.restaurant.area}`)}`;
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(String(`${offer.restaurant.name} ${offer.restaurant.address || offer.restaurant.area}` ?? ""))}`;
 
   // 30-second countdown timer calculations (Tier-1 standard)
   const maxTimerSec = 30;

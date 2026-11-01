@@ -14,9 +14,9 @@ export function GrowthWidget() {
   };
 
   const handleWhatsAppShare = () => {
-    const text = encodeURIComponent(
+    const text = encodeURIComponent(String(
       "Hey! Order food on OrderKing and get ₹20 off on your first order of ₹299+. Zero surge pricing! Order here: https://orderkingpay.com/offers?ref=KING50"
-    );
+     ?? ""));
     window.open(`https://wa.me/?text=${text}`, "_blank");
     toast.success("WhatsApp opened to share!");
   };

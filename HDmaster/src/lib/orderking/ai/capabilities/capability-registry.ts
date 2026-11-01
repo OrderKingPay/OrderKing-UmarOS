@@ -267,7 +267,7 @@ export class UniversalCapabilityRegistry {
             amountInr: amount,
             payeeVpa: "9395065587@ybl",
             upiLink,
-            qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`,
+            qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(String(upiLink ?? ""))}`,
             statutorySafeHarbor: "IT Act 2000 Section 79 Compliant",
           },
           timestamp: new Date().toISOString(),

@@ -1,5 +1,5 @@
 /**
- * OrderKing Executive Growth, Government Grants, Keynotes & 100,000x Ad Domination Toolkit
+ * OrderKing Executive Growth, Government Grants, Keynotes & Ad Configuration Toolkit
  *
  * Provides real, practical, production-ready:
  * 1. Government Grant Application Dossiers (Assam Startup ₹55L, MSME ₹15L, NIDHI-PRAYAS ₹10L, SISFS ₹20L)
@@ -292,7 +292,7 @@ Assam University, Silchar,
 
 It is a privilege to connect with you.
 
-OrderKing is a Barak Valley-founded technology platform dedicated to revolutionizing local commerce, food distribution, and micro-savings across Assam. 
+OrderKing is a Barak Valley-founded technology platform dedicated to advancing local commerce, food distribution, and micro-savings across Assam. 
 
 We would like to propose:
 1. A Keynote Guest Lecture on "Zero-Loss Economics: 2G Resilient FinTech & Hyperlocal Order Infrastructure".
@@ -314,7 +314,7 @@ https://orderking.in`,
 export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
   metaMarketingApiJson: {
     campaign_spec: {
-      name: "OrderKing_100000x_Karimganj_Domination",
+      name: "OrderKing_Karimganj_Local_Campaign",
       objective: "OUTCOME_APP_INSTALLS_AND_TRAFFIC",
       status: "ACTIVE",
       special_ad_categories: [],

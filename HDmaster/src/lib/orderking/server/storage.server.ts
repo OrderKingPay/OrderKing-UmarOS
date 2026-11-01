@@ -29,12 +29,12 @@ function hmac(key: Buffer | string, value: string): Buffer {
 function encodePath(path: string): string {
   return path
     .split("/")
-    .map((segment) => encodeURIComponent(segment))
+    .map((segment) => encodeURIComponent(String(segment ?? "")))
     .join("/");
 }
 
 function encodeQuery(value: string): string {
-  return encodeURIComponent(value).replace(/%20/g, "%20");
+  return encodeURIComponent(String(value ?? "")).replace(/%20/g, "%20");
 }
 
 function presignPutUrl(input: {

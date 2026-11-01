@@ -737,7 +737,7 @@ function localHumanMentorAnswer(
       const targetAddress = isPickup
         ? active.restaurant.address || active.restaurant.area
         : active.customer.address || active.customer.area;
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(targetAddress)}`;
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(String(targetAddress ?? ""))}`;
 
       if (lang === "bn") {
         return (

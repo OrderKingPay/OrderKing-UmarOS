@@ -1,4 +1,4 @@
-﻿export const TRAVELPAYOUTS_PROJECT_NAME = 'Orderkingpay' as const;
+export const TRAVELPAYOUTS_PROJECT_NAME = 'Orderkingpay' as const;
 export const TRAVELPAYOUTS_MARKER = '589554' as const;
 export type CabinClassCode = '' | 'w' | 'c' | 'f';
 export interface FlightSearchParams {
@@ -150,7 +150,7 @@ export function resolveWhiteLabelWidgetConfig(env: TravelpayoutsEnvConfig): {
   return {
     enabled: true,
     wlId: rawWlId,
-    scriptSrc: `https://tpwgts.com/wl_web/main.js?wl_id=${encodeURIComponent(rawWlId)}`,
+    scriptSrc: `https://tpwgts.com/wl_web/main.js?wl_id=${encodeURIComponent(String(rawWlId ?? ""))}`,
     marker: TRAVELPAYOUTS_MARKER,
     reasonIfDisabled: null,
   };

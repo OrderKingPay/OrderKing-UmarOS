@@ -21,7 +21,7 @@ export const getMyHDmasterOrder = createServerFn({ method: "GET" })
     const baseUrl = process.env.HDMASTER_URL?.replace(/\/$/, "");
     const token = process.env.ORDERKING_SERVICE_TOKEN?.trim() || process.env.ORDERKING_SERVICE_TOKEN?.trim();
     if (!baseUrl || !token) throw new Error("HDmaster integration is not configured.");
-    const response = await fetch(`${baseUrl}/v1/admin/customer-order?orderId=${encodeURIComponent(data.orderId)}&customerRef=${encodeURIComponent(context.userId)}`, { headers: { authorization: `Bearer ${token}` }, cache: "no-store" });
+    const response = await fetch(`${baseUrl}/v1/admin/customer-order?orderId=${encodeURIComponent(String(data.orderId ?? ""))}&customerRef=${encodeURIComponent(String(context.userId ?? ""))}`, { headers: { authorization: `Bearer ${token}` }, cache: "no-store" });
     const payload = (await response.json().catch(() => ({}))) as { data?: any; error?: string };
     if (!response.ok) throw new Error(payload.error ?? `HDmaster order read failed (${response.status})`);
     const row = payload.data;

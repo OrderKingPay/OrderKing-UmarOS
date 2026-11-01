@@ -804,7 +804,7 @@ export function TravelPage() {
     setCheckingPnr(true);
     setPnrLiveResult(null);
     try {
-      const res = await fetch("/api/travel/pnr-status?pnr=" + encodeURIComponent(clean), { cache: "no-store" });
+      const res = await fetch("/api/travel/pnr-status?pnr=" + encodeURIComponent(String(clean ?? "")), { cache: "no-store" });
       const result = await res.json().catch(() => null);
       if (res.ok && result?.source === "verified_provider" && result.data) {
         setPnrLiveResult(result.data);
@@ -2263,7 +2263,7 @@ export function TravelPage() {
                   onClick={() => {
                     const cleanSource = busFrom.replace(/\(.*\)/, "").trim().toLowerCase();
                     const cleanDest = busTo.replace(/\(.*\)/, "").trim().toLowerCase();
-                    const redBusUrl = `https://www.redbus.in/bus-tickets/${encodeURIComponent(cleanSource)}-to-${encodeURIComponent(cleanDest)}?onward=${busDate}`;
+                    const redBusUrl = `https://www.redbus.in/bus-tickets/${encodeURIComponent(String(cleanSource ?? ""))}-to-${encodeURIComponent(String(cleanDest ?? ""))}?onward=${busDate}`;
                     toast.success(`Opening redBus tickets for ${busFrom} ➔ ${busTo}...`);
                     window.open(redBusUrl, "_blank", "noopener,noreferrer");
                   }}
@@ -2406,7 +2406,7 @@ export function TravelPage() {
                 <Button
                   type="button"
                   onClick={() => {
-                    const uberUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(cabDrop)}`;
+                    const uberUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(String(cabDrop ?? ""))}`;
                     toast.success(`Opening provider checkout for ${cabPickup} ➔ ${cabDrop}...`);
                     window.open(uberUrl, "_blank", "noopener,noreferrer");
                   }}

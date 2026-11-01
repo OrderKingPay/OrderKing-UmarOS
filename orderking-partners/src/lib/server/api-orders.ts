@@ -465,7 +465,7 @@ export const requestRiderDispatch = createServerFn({ method: "POST" })
 
       let dispatchResult: any = null;
       try {
-        const res = await fetch(`${coreUrl()}/v1/admin/orders/${encodeURIComponent(data.orderId)}/dispatch-rider`, {
+        const res = await fetch(`${coreUrl()}/v1/admin/orders/${encodeURIComponent(String(data.orderId ?? ""))}/dispatch-rider`, {
           method: "POST",
           headers: {
             "content-type": "application/json",

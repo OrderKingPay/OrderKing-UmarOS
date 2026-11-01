@@ -31,7 +31,7 @@ export const ViralGrowthEngine = {
     const baseUrl = typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL 
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` 
       : "https://www.orderkingpay.com";
-    return `${baseUrl}/?ref=${encodeURIComponent(referralCode)}`;
+    return `${baseUrl}/?ref=${encodeURIComponent(String(referralCode ?? ""))}`;
   },
 
   /**
@@ -40,11 +40,11 @@ export const ViralGrowthEngine = {
   createViralShareIntent(referralCode: string, amount: number = 500) {
     const link = this.generateDeepLink(referralCode);
     const copy = `Explore OrderKing services: ${link}. Referral cash and promotional credits are not active.`;
-    const encodedCopy = encodeURIComponent(copy);
+    const encodedCopy = encodeURIComponent(String(copy ?? ""));
 
     return {
       whatsapp: `https://wa.me/?text=${encodedCopy}`,
-      telegram: `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(`Claim ₹${amount} free food on OrderKing!`)}`,
+      telegram: `https://t.me/share/url?url=${encodeURIComponent(String(link ?? ""))}&text=${encodeURIComponent(String(`Claim ₹${amount} free food on OrderKing!` ?? ""))}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedCopy}`,
       navigatorShare: typeof navigator !== "undefined" && typeof navigator.share === 'function' ? {
         title: "OrderKing Welcome Bonus",
@@ -153,13 +153,13 @@ export const ViralGrowthEngine = {
 
 
 /**
- * OrderKing Omni-Prestige, Government Grants, Awards & 100,000x Hyper-Viral Engine
+ * OrderKing Enterprise Growth, Institutional Dossiers & Local Advertising Engine
  *
  * Implements:
  * 1. Genuine Government & Global Cloud Subsidies Vault (Over ₹3.74 Crore)
  * 2. Prestigious Awards & National Founder Recognition Dossiers
  * 3. Academic & University Keynote Invitations Engine (IIT Guwahati, NIT Silchar, Assam University, IIM Calcutta)
- * 4. Meta & Google Ads 100,000x Local Geofence Campaign Generators
+ * 4. Meta & Google Ads Local Geofence Campaign Generators
  * 5. WhatsApp Status 1-Tap Viral Loop & Community Distribution
  * 6. Founder Direct Cash Flow, Subsidies Collection & Bank Deposit Engine
  */
@@ -649,16 +649,16 @@ export function generateViralShareUrl(payload: ViralSharePayload, platform: Vira
   switch (platform) {
     case "WHATSAPP_STATUS":
     case "WHATSAPP_CHAT":
-      return `https://api.whatsapp.com/send?text=${encodeURIComponent(fullText)}`;
+      return `https://api.whatsapp.com/send?text=${encodeURIComponent(String(fullText ?? ""))}`;
 
     case "FACEBOOK":
-      return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}&quote=${encodeURIComponent(fullText)}`;
+      return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(String(link ?? ""))}&quote=${encodeURIComponent(String(fullText ?? ""))}`;
 
     case "TWITTER_X":
-      return `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullText)}`;
+      return `https://twitter.com/intent/tweet?text=${encodeURIComponent(String(fullText ?? ""))}`;
 
     case "TELEGRAM":
-      return `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(fullText)}`;
+      return `https://t.me/share/url?url=${encodeURIComponent(String(link ?? ""))}&text=${encodeURIComponent(String(fullText ?? ""))}`;
 
     default:
       return link;
@@ -1209,7 +1209,7 @@ export function generateAutoBookingDossier(
 }
 
 // ---------------------------------------------------------------------------
-// 6. 100,000x META MARKETING API v21.0 & GOOGLE ADS PMAX PAYLOAD GENERATOR
+// 6. META MARKETING API v21.0 & GOOGLE ADS PMAX PAYLOAD GENERATOR
 // ---------------------------------------------------------------------------
 
 export type MetaMarketingApiPayload = {

@@ -76,7 +76,7 @@ export const cancelOrderViaHDmaster = createServerFn({ method: "POST" })
   .handler(async ({ context, data }: any) => {
     if (!data.orderId || !data.idempotencyKey || data.idempotencyKey.length < 8) throw new Error("Order ID and idempotency key are required.");
     const { baseUrl, token } = hdmasterConfig();
-    const response = await fetch(`${baseUrl}/v1/admin/customer-orders/${encodeURIComponent(data.orderId)}/cancel`, {
+    const response = await fetch(`${baseUrl}/v1/admin/customer-orders/${encodeURIComponent(String(data.orderId ?? ""))}/cancel`, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${token}`, "Idempotency-Key": data.idempotencyKey },
       body: JSON.stringify({ customerRef: context.userId, reason: data.reason }),

@@ -66,5 +66,5 @@ export async function enqueueNotification(job: NotificationJob): Promise<{ id: s
 export function whatsappSupportUrl(number: string, text: string): string | null {
   const digits = number.replace(/\D/g, "");
   if (digits.length < 10) return null;
-  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(String(text ?? ""))}`;
 }

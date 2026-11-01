@@ -158,12 +158,12 @@ function DashboardPage() {
               Register Your Restaurant &amp; Complete Statutory KYC
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Your partner account is ready. Complete your restaurant profile, 14-digit FSSAI registration, GSTIN/PAN credentials, and settlement bank details to start receiving customer orders.
+              Your partner account is ready. Complete your restaurant profile, FSSAI registration, and bank details to start receiving customer orders.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800">
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
                 <div className="text-[10px] uppercase font-mono text-slate-400">Food Safety Compliance</div>
-                <div className="text-sm font-semibold text-slate-100 mt-0.5">14-Digit FSSAI Mandatory</div>
+                <div className="text-sm font-semibold text-slate-100 mt-0.5">14-Digit FSSAI Food Safety</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
                 <div className="text-[10px] uppercase font-mono text-slate-400">Tax &amp; Accounting</div>
@@ -171,7 +171,7 @@ function DashboardPage() {
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
                 <div className="text-[10px] uppercase font-mono text-slate-400">Payout Ledger</div>
-                <div className="text-sm font-semibold text-emerald-400 mt-0.5">Integer-Paise NEFT/IMPS</div>
+                <div className="text-sm font-semibold text-emerald-400 mt-0.5">Direct Bank Settlement</div>
               </div>
             </div>
             <div className="flex flex-wrap gap-3 pt-2">
@@ -239,7 +239,7 @@ function DashboardPage() {
                 {d?.restaurantName ?? vendor.selected?.restaurantName ?? "Restaurant Operations Center"}
               </h2>
               <p className="text-xs text-slate-400">
-                Self-service kitchen dispatch, 1-tap prep-time throttling, and statutory integer-paise sales telemetry.
+                Live kitchen orders, dispatch tracking, prep time controls, and daily payout settlements.
               </p>
             </div>
 

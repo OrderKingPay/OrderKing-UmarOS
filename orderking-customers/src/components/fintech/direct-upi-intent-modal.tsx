@@ -79,9 +79,9 @@ export function DirectUpiIntentModal({
   const activeQrPayload = qrFormat === "bharatqr" ? bharatQr.emvcoPayload : universalIntentUrl;
 
   // High-res QR code image generated dynamically
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&data=${encodeURIComponent(
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&data=${encodeURIComponent(String(
     activeQrPayload
-  )}&bgcolor=FFFFFF&color=090D16`;
+   ?? ""))}&bgcolor=FFFFFF&color=090D16`;
 
   // Countdown timer for dynamic intent
   useEffect(() => {

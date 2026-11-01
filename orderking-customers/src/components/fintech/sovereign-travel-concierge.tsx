@@ -47,7 +47,7 @@ export function SovereignTravelConcierge({
     setPnrResult(null);
     setPnrError(null);
     try {
-      const r = await fetch("/api/travel/pnr-status?pnr=" + encodeURIComponent(value), {
+      const r = await fetch("/api/travel/pnr-status?pnr=" + encodeURIComponent(String(value ?? "")), {
         cache: "no-store",
       });
       const body = await r.json().catch(() => null);
@@ -77,7 +77,7 @@ export function SovereignTravelConcierge({
     setFlightError(null);
     try {
       const r = await fetch(
-        "/api/travel/flight-tracker?flightNumber=" + encodeURIComponent(value),
+        "/api/travel/flight-tracker?flightNumber=" + encodeURIComponent(String(value ?? "")),
         { cache: "no-store" }
       );
       const body = await r.json().catch(() => null);

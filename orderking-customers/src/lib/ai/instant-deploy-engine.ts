@@ -83,7 +83,7 @@ export class InstantDeployEngine {
 </body>
 </html>`;
 
-    const previewDataUri = `data:text/html;charset=utf-8,${encodeURIComponent(generatedHtml)}`;
+    const previewDataUri = `data:text/html;charset=utf-8,${encodeURIComponent(String(generatedHtml ?? ""))}`;
     const bundleBytes = new TextEncoder().encode(generatedHtml).length;
 
     return {

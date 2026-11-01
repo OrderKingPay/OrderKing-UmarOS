@@ -175,7 +175,7 @@ export function generateWhatsAppConciergeUrl(inquiry: {
     (inquiry.specialRequests ? `• *Special Notes:* ${inquiry.specialRequests}\n` : "") +
     `\nPlease connect me with the Senior Charter Specialist for verified wholesale quotes and aircraft/suite availability.`;
 
-  return `https://wa.me/919876543210?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/919876543210?text=${encodeURIComponent(String(text ?? ""))}`;
 }
 
 export interface CarrierQuote {

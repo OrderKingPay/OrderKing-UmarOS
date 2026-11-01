@@ -200,7 +200,7 @@ const TRENDING_DISCOVERY_ITEMS = [
   { label: "💼 Scan $80+/hr Remote Contracts", query: "Scan high-paying $80+/hr remote software contracts and generate Upwork bids" },
   { label: "⚡ Scaffold Hospital ERP System", query: "Scaffold a complete Sribhumi hospital ERP system with React 19, database schema, and live preview" },
   { label: "🌐 Universal Platform Enforcer (GitHub/WhatsApp/Dominant Legacy Aggregator)", query: "Connect and integrate external platforms to force task execution with zero data leak" },
-  { label: "🎬 World's #1 Fastest 4K Video Studio (9:16 & 16:9)", query: "Create and edit fastest 4K video commercial with realistic voiceover and auto subtitles" },
+  { label: "🎬 4K Video Studio (9:16 & 16:9)", query: "Create and edit fastest 4K video commercial with realistic voiceover and auto subtitles" },
   { label: "🧹 Clean & Purge Storage Bloat", query: "purge_trigger" },
 ];
 
@@ -1184,10 +1184,10 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white tracking-wide">
-                World's #1 Fastest Video &amp; Image Studio
+                4K Video &amp; Image Studio
               </span>
               <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[9px] font-bold">
-                100,000X TURBO
+                WEBCODECS TURBO
               </Badge>
             </div>
             <span className="text-[10px] text-slate-400">
@@ -1399,7 +1399,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
           className="flex-1 text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow"
         >
           <Zap className="size-3 mr-1.5" />
-          <span>{isExporting ? "Rendering at 100,000x..." : "1-Click Re-Render with Edits"}</span>
+          <span>{isExporting ? "Rendering video..." : "1-Click Re-Render with Edits"}</span>
         </Button>
 
         <Button
@@ -2829,7 +2829,7 @@ function FounderWorkHub({
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <span>Universal Platform &amp; App Enforcer Matrix</span>
                   <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-[9px] font-mono">
-                    100,000X CONNECTOR
+                    API CONNECTOR
                   </Badge>
                 </h3>
                 <p className="text-[11px] text-slate-400">
@@ -2882,7 +2882,7 @@ function FounderWorkHub({
         </div>
       )}
 
-      {/* DECK 2: World's #1 Fastest Video & Image Creation Studio */}
+      {/* DECK 2: 4K Video & Image Creation Studio */}
       {(selectedCategory === "all" || selectedCategory === "video") && (
         <div className="rounded-2xl border border-purple-500/20 bg-[#171717] p-5 shadow-xl space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
@@ -2892,9 +2892,9 @@ function FounderWorkHub({
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span>World's #1 Fastest Video &amp; Image Creation Studio</span>
+                  <span>4K Video &amp; Image Creation Studio</span>
                   <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[9px] font-bold">
-                    100,000X TURBO
+                    WEBCODECS TURBO
                   </Badge>
                 </h3>
                 <p className="text-[11px] text-slate-400">
@@ -4335,7 +4335,7 @@ export function PremiumFounderAiChat({
                       type="button"
                       onClick={() => setIsMediaStudioOpen(true)}
                       className="px-3 py-1 rounded-full bg-[#1e1e1e] hover:bg-purple-500/20 text-purple-300 hover:text-purple-200 border border-purple-500/30 text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm"
-                      title="World's #1 Fastest 4K Video Studio: 100,000x Turbo WebCodecs 60 FPS in all aspect ratios"
+                      title="4K Video Studio: WebCodecs 60 FPS in all aspect ratios"
                     >
                       <Film className="size-3 text-purple-400" />
                       <span>4K Video Studio</span>
@@ -4784,7 +4784,7 @@ export function PremiumFounderAiChat({
                       type="button"
                       onClick={() => setIsMediaStudioOpen(true)}
                       className="px-2.5 py-1 rounded-full bg-[#1e1e1e]/90 hover:bg-purple-500/20 text-purple-300 hover:text-purple-200 border border-purple-500/30 text-[10.5px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm backdrop-blur-sm"
-                      title="World's #1 Fastest 4K Video Studio: 100,000x Turbo WebCodecs 60 FPS in all aspect ratios"
+                      title="4K Video Studio: WebCodecs 60 FPS in all aspect ratios"
                     >
                       <Film className="size-3 text-purple-400" />
                       <span>4K Video Studio</span>

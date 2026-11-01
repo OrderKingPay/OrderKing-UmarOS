@@ -617,7 +617,7 @@ export function buildTwoWheelerNavigationLinks(
   const lng = Number(point?.lng) || 0;
   return {
     androidIntentUri: `google.navigation:q=${lat},${lng}&mode=b`,
-    geoUri: `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(label)})&mode=b`,
+    geoUri: `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(String(label ?? ""))})&mode=b`,
     webUrl: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=two-wheeler`,
   };
 }

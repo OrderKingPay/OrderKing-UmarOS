@@ -151,7 +151,7 @@ export function formatWhatsAppDispatchMessage(params: WhatsAppDispatchParams): s
 export function generateWhatsAppDispatchUrl(params: WhatsAppDispatchParams): string {
   const cleanPhone = (params.recipientPhone || DEFAULT_DISPATCH_PHONE).replace(/[^0-9]/g, "");
   const text = formatWhatsAppDispatchMessage(params);
-  const encoded = encodeURIComponent(text);
+  const encoded = encodeURIComponent(String(text ?? ""));
   return `https://wa.me/${cleanPhone}?text=${encoded}`;
 }
 

@@ -78,7 +78,7 @@ export function AppBuilderStudio() {
     {
       id: "customer_pwa",
       label: "Customer Ordering Link",
-      url: `${cleanDomain}/?city=${encodeURIComponent(config.defaultCity)}`,
+      url: `${cleanDomain}/?city=${encodeURIComponent(String(config.defaultCity ?? ""))}`,
       desc: "Share on WhatsApp or Instagram bio so customers can order directly.",
     },
     {
@@ -96,9 +96,9 @@ export function AppBuilderStudio() {
     {
       id: "whatsapp_direct",
       label: "WhatsApp Click-to-Order",
-      url: `https://wa.me/${config.supportPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+      url: `https://wa.me/${config.supportPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(String(
         `Hi ${config.shortName}, I would like to place a food order.`
-      )}`,
+       ?? ""))}`,
       desc: "Direct WhatsApp chat link for customer support or phone orders.",
     },
   ];

@@ -273,7 +273,7 @@ export function getViralSharePayload(
  */
 export function openWhatsAppDirect(whatsappMessage: string): void {
   if (typeof window === "undefined") return;
-  const encoded = encodeURIComponent(whatsappMessage);
+  const encoded = encodeURIComponent(String(whatsappMessage ?? ""));
   const waUrl = `https://api.whatsapp.com/send?text=${encoded}`;
   window.open(waUrl, "_blank", "noopener,noreferrer");
 }

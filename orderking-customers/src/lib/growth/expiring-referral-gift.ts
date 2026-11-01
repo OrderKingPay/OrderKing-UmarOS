@@ -51,17 +51,17 @@ export function checkGiftExpiry(issuedAtTimestampMs: number): ExpiringGiftStatus
  */
 export function createExpiringViralShare(referralCode: string, originUrl = "https://orderkingpay.com") {
   const cleanCode = referralCode.trim() || "FOUNDER50";
-  const deepLink = `${originUrl}/?ref=${encodeURIComponent(cleanCode)}`;
+  const deepLink = `${originUrl}/?ref=${encodeURIComponent(String(cleanCode ?? ""))}`;
   
   const headline = `🎁 ₹${GIFT_REWARD_RUPEES} Gift for your next meal on OrderKing!`;
   const bodyText = `${headline}\n\nTap below to claim ₹${GIFT_REWARD_RUPEES} off your order. ⚠️ Hurry, this gift expires in 7 days!\n\n👉 Order now: ${deepLink}`;
-  const encodedText = encodeURIComponent(bodyText);
+  const encodedText = encodeURIComponent(String(bodyText ?? ""));
 
   return {
     deepLink,
     shareText: bodyText,
     whatsappUrl: `https://api.whatsapp.com/send?text=${encodedText}`,
-    telegramUrl: `https://t.me/share/url?url=${encodeURIComponent(deepLink)}&text=${encodeURIComponent(headline + " (Expires in 7 days)")}`,
+    telegramUrl: `https://t.me/share/url?url=${encodeURIComponent(String(deepLink ?? ""))}&text=${encodeURIComponent(headline + " (Expires in 7 days)")}`,
     twitterUrl: `https://twitter.com/intent/tweet?text=${encodedText}`,
     canNativeShare: typeof navigator !== "undefined" && typeof navigator.share === "function",
   };

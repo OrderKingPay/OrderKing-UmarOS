@@ -194,8 +194,8 @@ export function getPoliteFloatingCashMessage(params: {
   }
 
   const recommendedDepositInr = Math.max(100, Math.ceil(balanceInr / 100) * 100);
-  const upiIntentUrl = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKing%20Treasury&am=${recommendedDepositInr}&cu=INR&tn=FloatDeposit_${tierConfig.tier}`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiIntentUrl)}`;
+  const upiIntentUrl = `upi://pay?pa=${encodeURIComponent(String(vpa ?? ""))}&pn=OrderKing%20Treasury&am=${recommendedDepositInr}&cu=INR&tn=FloatDeposit_${tierConfig.tier}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(String(upiIntentUrl ?? ""))}`;
 
   if (tone === "LIMIT_REACHED") {
     return {

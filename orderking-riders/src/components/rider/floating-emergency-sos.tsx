@@ -127,7 +127,7 @@ export function FloatingEmergencySOS() {
     if (typeof navigator !== "undefined" && navigator.share) {
       navigator.share({ title: "OrderKing Emergency SOS", text, url: mapsShareUrl }).catch(() => {});
     } else {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+      window.open(`https://wa.me/?text=${encodeURIComponent(String(text ?? ""))}`, "_blank");
     }
   };
 

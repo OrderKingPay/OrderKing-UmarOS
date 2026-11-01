@@ -42,7 +42,7 @@ function safePath(path: unknown) {
 
 export async function getRepositoryStatus(repo: unknown) {
   const { owner } = config();
-  const data = await github(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repoName(repo))}`);
+  const data = await github(`/repos/${encodeURIComponent(String(owner ?? ""))}/${encodeURIComponent(repoName(repo))}`);
   return {
     name: data.name,
     fullName: data.full_name,
@@ -58,7 +58,7 @@ export async function getRepositoryStatus(repo: unknown) {
 export async function getRecentCommits(repo: unknown, limit = 10) {
   const { owner } = config();
   const bounded = Math.min(20, Math.max(1, Math.floor(limit)));
-  const data = await github(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repoName(repo))}/commits?per_page=${bounded}`);
+  const data = await github(`/repos/${encodeURIComponent(String(owner ?? ""))}/${encodeURIComponent(repoName(repo))}/commits?per_page=${bounded}`);
   return Array.isArray(data) ? data.map((item) => ({
     sha: item.sha,
     message: (item.commit as Record<string, unknown> | undefined)?.message,
@@ -72,7 +72,7 @@ export async function inspectFile(repo: unknown, path: unknown, ref?: unknown) {
   const { owner } = config();
   const encodedPath = safePath(path);
   const refQuery = typeof ref === "string" && ref.trim() ? `?ref=${encodeURIComponent(ref.trim())}` : "";
-  const data = await github(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repoName(repo))}/contents/${encodedPath}${refQuery}`);
+  const data = await github(`/repos/${encodeURIComponent(String(owner ?? ""))}/${encodeURIComponent(repoName(repo))}/contents/${encodedPath}${refQuery}`);
   if (data.type !== "file" || typeof data.content !== "string") throw new Error("GitHub path is not a text file");
   const content = Buffer.from(data.content.replace(/\n/g, ""), "base64").toString("utf8");
   return { repo: repoName(repo), path: data.path, sha: data.sha, size: data.size, content: content.slice(0, 40_000) };
@@ -83,7 +83,7 @@ export async function searchCode(query: unknown, repo?: unknown) {
   const { owner } = config();
   const repository = repo ? repoName(repo) : null;
   const qualifiers = `${query.trim()}${repository ? ` repo:${owner}/${repository}` : ` org:${owner}`}`;
-  const data = await github(`/search/code?q=${encodeURIComponent(qualifiers)}&per_page=20`);
+  const data = await github(`/search/code?q=${encodeURIComponent(String(qualifiers ?? ""))}&per_page=20`);
   const items = Array.isArray(data.items) ? data.items : [];
   return items.map((item) => ({ name: item.name, path: item.path, repo: (item.repository as Record<string, unknown> | undefined)?.full_name, url: item.html_url, sha: item.sha }));
 }
@@ -92,11 +92,11 @@ export async function inspectCi(repo: unknown, runId?: unknown) {
   const { owner } = config();
   const repository = repoName(repo);
   if (runId != null && String(runId).trim()) {
-    const jobs = await github(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/actions/runs/${encodeURIComponent(String(runId))}/jobs?per_page=100`);
+    const jobs = await github(`/repos/${encodeURIComponent(String(owner ?? ""))}/${encodeURIComponent(String(repository ?? ""))}/actions/runs/${encodeURIComponent(String(runId))}/jobs?per_page=100`);
     const items = Array.isArray(jobs.jobs) ? jobs.jobs : [];
     return { runId: String(runId), jobs: items.map((job) => ({ id: job.id, name: job.name, status: job.status, conclusion: job.conclusion, startedAt: job.started_at, completedAt: job.completed_at })) };
   }
-  const runs = await github(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/actions/runs?per_page=10`);
+  const runs = await github(`/repos/${encodeURIComponent(String(owner ?? ""))}/${encodeURIComponent(String(repository ?? ""))}/actions/runs?per_page=10`);
   const items = Array.isArray(runs.workflow_runs) ? runs.workflow_runs : [];
   return items.map((run) => ({ id: run.id, name: run.name, status: run.status, conclusion: run.conclusion, headSha: run.head_sha, branch: run.head_branch, createdAt: run.created_at, updatedAt: run.updated_at, url: run.html_url }));
 }

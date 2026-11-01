@@ -884,7 +884,7 @@ export function FounderCommandPage() {
                     className="text-xs font-bold"
                     onClick={() => {
                       const msg = `Hi Rider Partner! Welcome to OrderKing Fleet. Register for delivery fleet here: ${window.location.origin}/join-fleet`;
-                      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+                      window.open(`https://wa.me/?text=${encodeURIComponent(String(msg ?? ""))}`, "_blank");
                     }}
                   >
                     <Share2 className="size-3.5 mr-1" />
@@ -975,7 +975,7 @@ export function FounderCommandPage() {
                     className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md"
                     onClick={() => {
                       const msg = `👑 OrderKing is available in ${launchTown}!\n🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ Local neighborhood delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
-                      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+                      window.open(`https://wa.me/?text=${encodeURIComponent(String(msg ?? ""))}`, "_blank");
                     }}
                   >
                     <Share2 className="size-3.5 mr-1.5" />

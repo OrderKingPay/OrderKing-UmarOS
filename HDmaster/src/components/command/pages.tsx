@@ -1912,8 +1912,8 @@ function MarketingPage() {
         </div>
       </Panel>
 
-      {/* Omni-Prestige, Government Grants Vault & 100,000x Hyper-Viral Growth Switchboard */}
-      <Panel title="👑 Omni-Prestige, ₹3.74 Cr+ Government Grants & 100,000x Hyper-Viral Growth Switchboard">
+      {/* /* Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard */}
+      <Panel title="🏛️ Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard">
         <div className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-4 text-xs">
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
@@ -2220,7 +2220,7 @@ function MarketingPage() {
                 onClick={() => {
                   if (typeof navigator !== "undefined" && navigator.clipboard) {
                     void navigator.clipboard.writeText(
-                      "INSTITUTIONAL KEYNOTE & AWARD DOSSIER: OrderKing founder-led hyperlocal tech revolutionizing Assam and Northeast India. Highlighting 0% kitchen commission, 2G offline resilience, and local youth employment."
+                      "INSTITUTIONAL KEYNOTE & DOSSIER: OrderKing founder-led hyperlocal tech operations across Assam and Northeast India. Highlighting kitchen economics, 2G offline resilience, and local youth employment."
                     );
                     toast.success("Institutional Keynote & Award Dossier copied to clipboard!");
                   }
@@ -2232,7 +2232,7 @@ function MarketingPage() {
 
             <div className="rounded-xl border border-border bg-elevated p-4 text-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-sm">📍 100,000x Meta &amp; Google Local Ad Engine</h4>
+                <h4 className="font-semibold text-sm">📍 Meta &amp; Google Local Ad Engine</h4>
                 <span className="text-[10px] font-bold uppercase text-blue-600">100% Geofenced</span>
               </div>
               <div className="space-y-1.5 text-muted">
@@ -3317,7 +3317,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/20 text-pink-800 dark:text-pink-300 transition-all"
-                  onClick={() => runPreset("autonomous_mind_reader_telemetry: Real-time telemetry monitoring of 10,000x customer mind-reader craving accuracy, conversion uplift, and click-through rates", "operations")}
+                  onClick={() => runPreset("autonomous_mind_reader_telemetry: Real-time telemetry monitoring of customer order preference accuracy, conversion uplift, and click-through rates", "operations")}
                 >
                   <span className="font-semibold">🎯 1-Click Mind-Reader Craving Telemetry &amp; Accuracy Audit</span>
                   <p className="text-[11px] text-muted">Monitor 99.1% craving accuracy, +28.4% quick-add conversion uplift &amp; cart drop-off reduction.</p>
@@ -4061,7 +4061,7 @@ function SettingsPage() {
             <span>⚡</span> Dynamic Demand &amp; Off-Peak Sales Stimulator
           </h3>
           <span className="text-[11px] rounded bg-amber-500/20 px-2 py-0.5 text-amber-300 font-mono">
-            10,000x Algorithmic Revenue Booster
+            Algorithmic Revenue Optimization
           </span>
         </div>
         <p className="text-xs text-muted">
@@ -5082,7 +5082,7 @@ export function ApprovalsPage() {
         />
         <MetricCard
           label="Execution Accuracy"
-          value="10,000x Deterministic"
+          value="Algorithmic Deterministic"
           source="SQL-VERIFIED"
           hint="Zero LLM financial hallucinations"
           tone="success"
@@ -5195,7 +5195,7 @@ export function ApprovalsPage() {
           <div className="rounded-[24px] border border-border bg-surface p-6">
             <h2 className="font-display text-xl font-medium mb-1">Active AI Workforce Deployment</h2>
             <p className="text-sm text-muted mb-6">
-              Coordinated digital workforce operating with 10,000x accuracy and zero human payroll overhead.
+              Autonomous operations engine running scheduled automated tasks.
             </p>
 
             <div className="grid gap-4 md:grid-cols-2">

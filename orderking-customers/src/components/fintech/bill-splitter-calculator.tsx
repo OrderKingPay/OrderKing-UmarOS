@@ -32,7 +32,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
       grandTotalPaise
     )} (${count} people split):\nPay here via UPI: ${shareUpiLink}`;
     if (typeof window !== "undefined") {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+      window.open(`https://wa.me/?text=${encodeURIComponent(String(text ?? ""))}`, "_blank");
     }
   };
 

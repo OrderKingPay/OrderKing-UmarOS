@@ -36,7 +36,7 @@ export function getTwoWheelerNavigationUris(point: GeoPoint, label = "Destinatio
   const lng = Number(point?.lng) || 0;
   return {
     intentUri: `google.navigation:q=${lat},${lng}&mode=b`,
-    geoUri: `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(label)})&mode=b`,
+    geoUri: `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(String(label ?? ""))})&mode=b`,
     webUrl: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=two-wheeler`,
   };
 }
@@ -45,7 +45,7 @@ export function getTwoWheelerNavigationUris(point: GeoPoint, label = "Destinatio
  * Direct Apple Maps Turn-by-Turn navigation URL.
  */
 export function appleMapsUrl(point: GeoPoint, label = "Destination"): string {
-  return `https://maps.apple.com/?daddr=${point.lat},${point.lng}&q=${encodeURIComponent(label)}&dirflg=d`;
+  return `https://maps.apple.com/?daddr=${point.lat},${point.lng}&q=${encodeURIComponent(String(label ?? ""))}&dirflg=d`;
 }
 
 /**

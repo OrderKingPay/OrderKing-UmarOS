@@ -53,10 +53,10 @@ export function VipAmbassadorPass({
   const cleanId = (riderId || "FLEET786").replace(/[^a-zA-Z0-9]/g, "").slice(-6).toUpperCase();
   const referralCode = `OK-VIP-${cleanId}`;
 
-  const landingUrl = `https://orderking.in/vip?ref=${encodeURIComponent(referralCode)}&ambassador=courier`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(
+  const landingUrl = `https://orderking.in/vip?ref=${encodeURIComponent(String(referralCode ?? ""))}&ambassador=courier`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(String(
     landingUrl,
-  )}&color=0B0F19&bgcolor=FFFFFF`;
+   ?? ""))}&color=0B0F19&bgcolor=FFFFFF`;
 
   // Fetch live ambassador statistics from courier wallet ledger
   const loadStats = async () => {
@@ -115,13 +115,13 @@ export function VipAmbassadorPass({
     }
   };
 
-  const whatsappMessage = encodeURIComponent(
+  const whatsappMessage = encodeURIComponent(String(
     `👑 Exclusive OrderKing VIP Invitation from ${cleanName}!\n\n` +
       `🎁 Get ₹100 OFF your direct restaurant order when you order through OrderKing direct:\n` +
       `🔗 Order Link: ${landingUrl}\n` +
       `🎟️ Use My Ambassador VIP Code: ${referralCode}\n\n` +
       `Enjoy fresh hot food delivered faster with zero extra platform markups!`,
-  );
+   ?? ""));
   const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`;
 
   // Interactive royalty calculator math

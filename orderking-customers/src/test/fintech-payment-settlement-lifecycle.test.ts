@@ -229,7 +229,7 @@ describe("Phase 4: End-to-End Fintech Payment & Settlement Engine Lifecycle", ()
 
       const upiUri = buildNPCIUpiIntentUrl(upiParams);
       expect(upiUri).toContain("upi://pay?");
-      expect(upiUri).toContain(`pa=${encodeURIComponent(verifiedFounderVpa)}`);
+      expect(upiUri).toContain(`pa=${encodeURIComponent(String(verifiedFounderVpa ?? ""))}`);
       expect(upiUri).toContain("pn=OrderKingPay");
       expect(upiUri).toContain("am=485.00");
       expect(upiUri).toContain("cu=INR");

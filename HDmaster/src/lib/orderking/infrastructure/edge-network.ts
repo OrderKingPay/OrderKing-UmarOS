@@ -105,7 +105,7 @@ export class ExtremeNetworkEngine {
     
     // Convert to base64 for transmission
     if (typeof btoa !== 'undefined') {
-        return btoa(unescape(encodeURIComponent(compressedString)));
+        return btoa(unescape(encodeURIComponent(String(compressedString ?? ""))));
     }
     
     return Buffer.from(compressedString).toString('base64');

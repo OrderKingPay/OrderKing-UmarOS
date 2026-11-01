@@ -64,7 +64,7 @@ export function buildWhatsAppOtpUrl(
   appName = "OrderKing",
 ): string {
   const text = `*${appName} Verification Code*\nYour one-time login OTP is: *${otp}*\n\nValid for 10 minutes. Do not share this code with anyone.`;
-  return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(String(text ?? ""))}`;
 }
 
 /**
@@ -228,11 +228,11 @@ async function sendVia2Factor(
   const cleanKey = (apiKey || "").trim().replace(/^["']|["']$/g, "");
   const template = (process.env.TWOFACTOR_OTP_TEMPLATE || "").trim();
   const url = template
-    ? `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/+91${cleanPhone}/${otp}/${encodeURIComponent(template)}`
-    : `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/+91${cleanPhone}/AUTOGEN`;
+    ? `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/+91${cleanPhone}/${otp}/${encodeURIComponent(String(template ?? ""))}`
+    : `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/+91${cleanPhone}/AUTOGEN`;
   if (!template) {
     // 2factor-voice-backup: also trigger voice call with exact 6-digit OTP in case operator scrubs SMS without DLT template
-    void fetch(`https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/VOICE/+91${cleanPhone}/${otp}`).catch(() => null);
+    void fetch(`https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/VOICE/+91${cleanPhone}/${otp}`).catch(() => null);
   }
 
   let json: { Status?: string; Details?: string } | undefined;
@@ -263,7 +263,7 @@ async function sendVia2Factor(
   }
 
   // Automatic Voice Call Failover Corridor (24x7)
-  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/VOICE/+91${cleanPhone}/${otp}`;
+  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/VOICE/+91${cleanPhone}/${otp}`;
   try {
     const vRes = await fetchWithTimeout(
       voiceUrl,
@@ -1090,10 +1090,12 @@ export async function handleVerifyPartnerOtp(data: {
   let finalMatched = isMatched;
   if (!finalMatched) {
     try {
-      const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY;
-      const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
-      const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
-      if (tfJson.Status === "Success") finalMatched = true;
+      var tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim();
+      if (tfKey) {
+        const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(String(tfKey ?? ""))}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
+        const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+        if (tfJson.Status === "Success") finalMatched = true;
+      }
     } catch {}
   }
   if (!finalMatched) {
@@ -1162,7 +1164,7 @@ export async function verifyVia2Factor(phone: string, otp: string): Promise<bool
   ).trim();
   try {
     const res = await fetch(
-      `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/SMS/VERIFY3/+91${cleanPhone}/${encodeURIComponent(cleanOtp)}`,
+      `https://2factor.in/API/V1/${encodeURIComponent(String(apiKey ?? ""))}/SMS/VERIFY3/+91${cleanPhone}/${encodeURIComponent(String(cleanOtp ?? ""))}`,
       { method: "GET" }
     );
     const data = (await res.json().catch(() => ({}))) as { Status?: string; Details?: string };

@@ -73,8 +73,8 @@ export function createEmergencyDistressPayload(
 
   const googleMapsUrl = `https://www.google.com/maps?q=${lat.toFixed(5)},${lng.toFixed(5)}`;
   const distressMessage = `🚨 EMERGENCY DISTRESS ALERT (${incidentId}): I am OrderKing Rider ${riderName} (${riderPhone}) and need immediate assistance. Live Location: ${googleMapsUrl}${audioBeaconActive ? " [Audio Beacon ACTIVE]" : ""}${deliveryId ? ` (Trip #${deliveryId})` : ""}`;
-  const whatsappDistressUrl = `https://wa.me/?text=${encodeURIComponent(distressMessage)}`;
-  const smsDistressUrl = `sms:?body=${encodeURIComponent(distressMessage)}`;
+  const whatsappDistressUrl = `https://wa.me/?text=${encodeURIComponent(String(distressMessage ?? ""))}`;
+  const smsDistressUrl = `sms:?body=${encodeURIComponent(String(distressMessage ?? ""))}`;
   const safetyDeskNote = `EMERGENCY SOS 112 DISPATCH TRIGGERED (${incidentId}) - Priority 1 Distress Beacon. Lat: ${lat}, Lng: ${lng}, Audio: ${audioBeaconActive ? "RECORDING" : "OFF"}${deliveryId ? `, Order: ${deliveryId}` : ""}`;
 
   return {

@@ -289,10 +289,10 @@ export function generateFounderClientInvoice(params: {
   const vpa = params.founderUpiVpa || "9395065587@ybl";
   const invNum = `INV-${Date.now().toString().slice(-6)}`;
   const advance = Math.round(params.amountInr * 0.5);
-  const upiLink = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKingPay&am=${advance}&tn=${encodeURIComponent(
+  const upiLink = `upi://pay?pa=${encodeURIComponent(String(vpa ?? ""))}&pn=OrderKingPay&am=${advance}&tn=${encodeURIComponent(String(
     `Advance-${invNum}`
-  )}&cu=INR`;
-  const qrPayload = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+   ?? ""))}&cu=INR`;
+  const qrPayload = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(String(upiLink ?? ""))}`;
 
   const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN", {
     day: "numeric",
@@ -458,9 +458,9 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       .trim() || "Futuristic OrderKing luxury food delivery hub with golden drones and neon lights, 8k octane render";
 
     const seed = Math.floor(Math.random() * 999999);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(String(
       rawPrompt + ", 8k resolution, cinematic lighting, photorealistic, commercial grade, award winning"
-    )}?width=1024&height=1024&nologo=true&seed=${seed}`;
+     ?? ""))}?width=1024&height=1024&nologo=true&seed=${seed}`;
 
     // Auto-save to Media Storage Vault
     mediaStorageVault.addItem({
@@ -877,7 +877,7 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
     };
   }
 
-  // 2. World-Class Fastest Video & Image Creation & Editing Studio
+  // 2. Video & Image Creation & Editing Studio
   if (
     q.includes("edit video") ||
     q.includes("create video") ||
@@ -924,7 +924,7 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
       thumbnailUrl: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1080&auto=format&fit=crop",
       isLongForm,
       exportFormat: "MP4_H265",
-      renderSpeedMultiplier: "100,000x Realtime WebCodecs Turbo (World's #1 Fastest)",
+      renderSpeedMultiplier: "Realtime WebCodecs 60 FPS Hardware Accelerated",
       commercialRightsCertified: true,
     };
 
@@ -944,14 +944,14 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
       { stepNumber: 2, totalSteps: 5, label: `Configuring Frame Canvas [${aspectRatio}]`, status: "COMPLETED", detail: `Target: ${aspectRatio} · Resolution: 4K Ultra HD · Duration: ${duration}` },
       { stepNumber: 3, totalSteps: 5, label: "Acoustic Voiceover & Subtitles Synthesis", status: "COMPLETED", detail: "Voice: Aria Ultra-Realistic Female · Dynamic animated karaoke subtitles generated" },
       { stepNumber: 4, totalSteps: 5, label: "Applying 8K Cinematic HDR Color Grade", status: "COMPLETED", detail: "Dynamic range balanced, volumetric motion blur applied" },
-      { stepNumber: 5, totalSteps: 5, label: "Encoding at 100,000x Realtime Speed", status: "COMPLETED", detail: "World #1 fastest export · Zero token charges · Ready in Media Vault" },
+      { stepNumber: 5, totalSteps: 5, label: "Encoding at Realtime Speed", status: "COMPLETED", detail: "Hardware accelerated export · Ready in Media Vault" },
     ];
 
-    const responseMarkdown = `### 🎬 World-Class Fastest Video & Image Creation Studio
+    const responseMarkdown = `### 🎬 Video & Image Creation Studio
 - **Project**: **"${promptText}"**
 - **Aspect Ratio**: **${aspectRatio}** (${isReel ? "Vertical Reel / Shorts" : aspectRatio === "16:9" ? "Cinematic Widescreen (YouTube/Commercial)" : aspectRatio})
 - **Duration**: **${duration}** (${isLongForm ? "Long-Form Commercial Presentation" : "High-Impact Commercial Spot"})
-- **Resolution**: **4K Ultra HD (60 FPS)** | **Export Pipeline**: **100,000x Turbo WebCodecs**
+- **Resolution**: **4K Ultra HD (60 FPS)** | **Export Pipeline**: **Hardware Accelerated WebCodecs**
 - **Acoustic Voiceover**: Ultra-realistic Young Female Voice (\`${videoConfig.voiceoverLanguage}\`) with **Auto-Animated Subtitles**.
 - **Commercial Rights**: **100% Verified Commercial License** (Ready for client pitches, TV broadcast, or social ads).
 

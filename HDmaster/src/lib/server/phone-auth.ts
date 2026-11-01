@@ -81,15 +81,17 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
           process.env.TWO_FACTOR_API_KEY ||
           "";
         const vRes = await fetch(
-          `https://2factor.in/API/V1/${encodeURIComponent(twoFactorKey)}/VOICE/+91${cleanPhone}/${otp}`
+          `https://2factor.in/API/V1/${encodeURIComponent(String(twoFactorKey ?? ""))}/VOICE/+91${cleanPhone}/${otp}`
         );
         const vJson = (await vRes.json().catch(() => ({}))) as { Status?: string; Details?: string };
+        const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(String("OrderKing OTP: " + otp ?? ""))}`;
         dispatchResult = {
           success: true,
           provider: "2factor",
           messageId: vJson.Details || `2F-VOICE-${Date.now()}`,
           debugOtp: otp,
-          whatsappOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
+          whatsAppOtpUrl: waUrl,
+          whatsappOtpUrl: waUrl,
           providerNotice: `Calling +91-${cleanPhone} now with your 6-digit voice verification code.`,
         };
       } else {
@@ -102,12 +104,14 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
+      const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(String("OrderKing OTP: " + otp ?? ""))}`;
       dispatchResult = {
         success: true,
         provider: "resilient_fallback",
         messageId: `FALLBACK-${Date.now()}`,
         debugOtp: otp,
-        whatsappOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
+        whatsAppOtpUrl: waUrl,
+        whatsappOtpUrl: waUrl,
         providerNotice: `Carrier SMS delayed (${msg}). Instant verified OTP ready below.`,
       };
     }
@@ -116,8 +120,8 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       phone: cleanPhone,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
-      whatsAppOtpUrl: dispatchResult.whatsappOtpUrl,
-      whatsappOtpUrl: dispatchResult.whatsappOtpUrl,
+      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
+      whatsappOtpUrl: dispatchResult.whatsAppOtpUrl,
       providerNotice:
         dispatchResult.providerNotice ||
         (dispatchResult.provider === "2factor"
@@ -177,9 +181,9 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     // Verify against 2Factor VERIFY3 endpoint for AUTOGEN OTPs
     if (!isValid) {
       try {
-        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY;
+        var tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim();
         const tfRes = await fetch(
-          `https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`
+          `https://2factor.in/API/V1/${encodeURIComponent(String(tfKey ?? ""))}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`
         );
         if (tfRes.ok) {
           const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
@@ -261,7 +265,11 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     };
   });
 
-export const requestAdminPhoneOtpFn = requestPhoneOtpFn;
+export const requestAdminPhoneOtpFn = createServerFn({ method: "POST" })
+  .validator((input: { phone: string; channel?: "sms" | "whatsapp" | "voice"; name?: string }) => input)
+  .handler(async ({ data }) => {
+    return requestPhoneOtpFn({ data });
+  });
 export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
   .validator((input: { phone: string; code?: string; otp?: string; name?: string }) => input)
   .handler(async ({ data }) => {
@@ -282,8 +290,8 @@ export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
     let isTfValid = isMatched;
     if (!isTfValid) {
       try {
-        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY;
-        const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`);
+        var tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim();
+        const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(String(tfKey ?? ""))}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`);
         const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
         if (tfJson.Status === "Success") isTfValid = true;
       } catch {}

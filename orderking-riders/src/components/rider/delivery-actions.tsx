@@ -327,7 +327,7 @@ export function DeliveryActions({
         )}
 
         <a
-          href={`https://wa.me/?text=${encodeURIComponent(`Hi, I am your OrderKing delivery partner for Order #${d.orderCode}!`)}`}
+          href={`https://wa.me/?text=${encodeURIComponent(String(`Hi, I am your OrderKing delivery partner for Order #${d.orderCode}!` ?? ""))}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-center text-xs font-medium text-emerald-700 dark:text-emerald-400 transition hover:bg-emerald-500/20"

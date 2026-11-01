@@ -162,6 +162,7 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
     phone: string;
     email: string;
     address: string;
+    city?: string;
     landmark?: string;
     cuisine?: string;
     diet?: string;
@@ -286,6 +287,7 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     phone?: string;
     email?: string;
     address?: string;
+    city?: string;
     landmark?: string;
     serviceArea?: string;
     cuisine?: string;
@@ -293,6 +295,8 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     description?: string;
     gstin?: string;
     fssaiNumber?: string;
+    fssaiLicenseNumber?: string;
+    fboName?: string;
     pan?: string;
     prepMinutes?: number;
     peakPrepMinutes?: number;
@@ -310,6 +314,7 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     closingTime?: string;
     businessStructure?: string;
     commissionBps?: number;
+    [key: string]: any;
   }) => d)
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");

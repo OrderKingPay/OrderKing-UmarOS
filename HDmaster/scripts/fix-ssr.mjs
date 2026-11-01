@@ -97,13 +97,23 @@ for (const targetDir of targets) {
 			if (env) {
 				Object.assign(processModule.env, env);
 			}
-			return await nitroApp.fetch(cfReq);
+			const nitroRes = await nitroApp.fetch(cfReq);
+			if (nitroRes.status >= 500 && cfReq.method === 'GET' && !cfReq.url.includes('/api/')) {
+				if (env.ASSETS) {
+					try {
+						const staticRes = await env.ASSETS.fetch(new Request(new URL("/", cfReq.url)));
+						if (staticRes && staticRes.status < 400) return staticRes;
+					} catch {}
+				}
+			}
+			return nitroRes;
 		} catch (workerErr) {
 			console.error("[OrderKing Umar OS Edge Worker] Trapped unhandled SSR exception:", workerErr);
 			const url = new URL(cfReq.url);
 			if (env.ASSETS) {
 				try {
-					return await env.ASSETS.fetch(new Request(new URL("/offline.html", url)));
+					const staticFallback = await env.ASSETS.fetch(new Request(new URL("/", url)));
+					if (staticFallback && staticFallback.status < 400) return staticFallback;
 				} catch {}
 			}
 			return new Response("<!DOCTYPE html><html><head><meta http-equiv='refresh' content='2'><title>Umar OS</title></head><body style='font-family:sans-serif;text-align:center;padding:40px;background:#0d3b2e;color:#fff;'><h2>👑 Umar OS Edge Recovery</h2><p>Auto-refreshing live session...</p></body></html>", {

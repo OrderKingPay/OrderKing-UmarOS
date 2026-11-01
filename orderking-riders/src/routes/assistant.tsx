@@ -700,9 +700,9 @@ function Page() {
                       Open Delivery Screen →
                     </Link>
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(String(
                         activeOrder.restaurant.address || activeOrder.restaurant.name,
-                      )}`}
+                       ?? ""))}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-[11px] text-[#E5A93C] underline"

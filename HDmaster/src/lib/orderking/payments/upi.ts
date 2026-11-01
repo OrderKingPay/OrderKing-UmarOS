@@ -238,7 +238,7 @@ export function generateDynamicQrContract(input: DynamicQrInput): DynamicQrContr
   const idempotencyKey = `upi_qr_${input.transactionRef}_${amountPaise}`;
 
   // Deterministic QR generation endpoint
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&margin=10&data=${encodeURIComponent(upiIntent.rawUri)}`;
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&margin=10&data=${encodeURIComponent(String(upiIntent.rawUri ?? ""))}`;
 
   const contract: DynamicQrContract = {
     contractVersion: "2026.1",

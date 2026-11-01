@@ -466,7 +466,7 @@ export interface TrainQuoteQueryResult {
 export function buildOfficialIrctcSearchUrl(fromCode: string, toCode: string, journeyDate: string): string {
   const cleanFrom = fromCode.replace(/[^A-Za-z]/g, "").toUpperCase();
   const cleanTo = toCode.replace(/[^A-Za-z]/g, "").toUpperCase();
-  return `https://www.irctc.co.in/nget/train-search?from=${encodeURIComponent(cleanFrom)}&to=${encodeURIComponent(cleanTo)}&date=${encodeURIComponent(journeyDate)}`;
+  return `https://www.irctc.co.in/nget/train-search?from=${encodeURIComponent(String(cleanFrom ?? ""))}&to=${encodeURIComponent(String(cleanTo ?? ""))}&date=${encodeURIComponent(String(journeyDate ?? ""))}`;
 }
 
 export function searchTrainQuotes(

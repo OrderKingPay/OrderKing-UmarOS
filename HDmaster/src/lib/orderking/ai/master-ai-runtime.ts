@@ -2466,7 +2466,7 @@ export async function executeTool(
           viralReelsScriptsCount: 3,
           influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
         },
-        verdict: "Over ₹4.79 Crore in non-dilutive capital, 7 premier university keynote invitations, and 100,000x Meta/Google local geofenced reach activated with zero debt and zero equity dilution.",
+        verdict: "Over ₹4.79 Crore in non-dilutive capital, 7 premier university keynote invitations, and Meta/Google local geofenced reach activated with zero debt and zero equity dilution.",
       };
     }
 
@@ -2535,7 +2535,7 @@ export async function executeTool(
           influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
           googleLocalSeoSchema: "FoodDeliveryService JSON-LD schema deployed for #1 Google Search & Maps ranking",
         },
-        verdict: "100,000x force advertising engine primed. Dominates mobile screens across Facebook, Instagram, Google Maps, Search, and WhatsApp Status with sub-₹150 daily budget.",
+        verdict: "Local advertising engine primed. Dominates mobile screens across Facebook, Instagram, Google Maps, Search, and WhatsApp Status with sub-₹150 daily budget.",
       };
     }
 

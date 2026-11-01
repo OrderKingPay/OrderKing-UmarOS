@@ -171,7 +171,7 @@ export async function signIn(
  */
 function openSignInPopup(providerId: string): Window | null {
   const origin = window.location.origin;
-  const url = `${origin}/auth/popup?providerId=${encodeURIComponent(providerId)}`;
+  const url = `${origin}/auth/popup?providerId=${encodeURIComponent(String(providerId ?? ""))}`;
   // Unique name per attempt so a prior attempt stuck on the SPA is not reused.
   const name = `grok-signin-${Date.now()}`;
   return window.open(url, name, "popup,width=500,height=650");

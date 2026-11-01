@@ -189,7 +189,7 @@ export function TrainBookingEngine({
       toast.error("Indian Railways limits Tatkal bookings to 4 passengers maximum.");
       return;
     }
-    const irctcUrl = `${IRCTC_OFFICIAL_SEARCH_URL}?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&date=${encodeURIComponent(journeyDate)}`;
+    const irctcUrl = `${IRCTC_OFFICIAL_SEARCH_URL}?from=${encodeURIComponent(String(fromCode ?? ""))}&to=${encodeURIComponent(String(toCode ?? ""))}&date=${encodeURIComponent(String(journeyDate ?? ""))}`;
     toast.success(`Redirecting to official IRCTC e-Ticketing System (NGeT) for ${fromCode} ➔ ${toCode}...`);
     window.open(irctcUrl, "_blank", "noopener,noreferrer");
   };
@@ -206,7 +206,7 @@ export function TrainBookingEngine({
     window.open(officialPnrUrl, "_blank", "noopener,noreferrer");
   };
 
-  const irctcDirectSearchUrl = `${IRCTC_OFFICIAL_SEARCH_URL}?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&date=${encodeURIComponent(journeyDate)}`;
+  const irctcDirectSearchUrl = `${IRCTC_OFFICIAL_SEARCH_URL}?from=${encodeURIComponent(String(fromCode ?? ""))}&to=${encodeURIComponent(String(toCode ?? ""))}&date=${encodeURIComponent(String(journeyDate ?? ""))}`;
 
   const handleCopySearchLink = () => {
     navigator.clipboard.writeText(irctcDirectSearchUrl);
