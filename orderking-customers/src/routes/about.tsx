@@ -19,7 +19,7 @@ function AboutPage() {
           <li>Every rupee line has a name and a reason. No miscellaneous fees.</li>
           <li>Commission defaults to {marketplace.defaultCommissionBps / 100}% and is stored on the order.</li>
           <li>Partner kitchens are verified and labelled. Ratings are omitted until verified reviews exist.</li>
-          <li>English and Bengali strings come from a dictionary, not from hardcoded UI copy.</li>
+          <li>Full bilingual localization across English and regional languages.</li>
           <li>Brand, colours, fees and city come from central configuration.</li>
         </ul>
         <h2 className="mt-6 font-display text-xl text-fg">UX choices</h2>

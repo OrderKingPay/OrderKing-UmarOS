@@ -2011,7 +2011,7 @@ export function UmarOS_AI_Terminal() {
               <div>
                 <h3 className="text-sm font-bold text-slate-900">PostgreSQL Canonical Telemetry Inspection</h3>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Direct database queries against orders, couriers, restaurants, refunds, and double-entry ledger. Zero mock data.
+                  Direct database queries against orders, couriers, restaurants, refunds, and double-entry ledger.
                 </p>
               </div>
               <Button

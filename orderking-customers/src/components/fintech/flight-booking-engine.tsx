@@ -355,7 +355,7 @@ export function FlightBookingEngine({
                     Compare &amp; Book Flights: {originCode} ➔ {destinationCode}
                   </h4>
                   <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-                    Zero fake prices or simulated inventory. Query real-time airline tariffs and verified seat availability across all Indian carriers via our official Travelpayouts integration.
+                    Query real-time airline tariffs and verified seat availability across all Indian carriers via our official Travelpayouts integration.
                   </p>
                 </div>
 

@@ -596,7 +596,7 @@ export function searchTrainQuotes(
     status: (isAuth ? "authenticated" : "unauthenticated") as "unauthenticated" | "authenticated",
     inventoryNotice: isAuth
       ? "Indian Railways PRS (Passenger Reservation System) inventory is live queried."
-      : "Indian Railways PRS (Passenger Reservation System) inventory is unauthenticated in-app. In accordance with CRIS/IRCTC regulations, synthetic or mock train seat allocation is strictly prohibited. Please search and book live on the official IRCTC portal: " + officialSearchUrl,
+      : "Indian Railways PRS reservation: Please search and complete your live train booking on the official IRCTC portal: " + officialSearchUrl,
     fromCity: from,
     fromCode,
     toCity: to,

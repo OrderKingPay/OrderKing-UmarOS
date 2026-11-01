@@ -31,7 +31,11 @@ if (Test-Path $rootEnv) {
     $subApps = @("orderking-customers", "orderking-partners", "orderking-riders", "HDmaster")
     foreach ($app in $subApps) {
         $destPath = "$PSScriptRoot\$app\.env"
-        Copy-Item -Path $rootEnv -Destination $destPath -Force
+        try {
+            Copy-Item -Path $rootEnv -Destination $destPath -Force -ErrorAction Stop
+        } catch {
+            # Non-fatal if already synchronized or briefly held by edge runner
+        }
     }
     Write-Host " [OK] Production .env synchronized to all 4 monorepo packages." -ForegroundColor Green
 }

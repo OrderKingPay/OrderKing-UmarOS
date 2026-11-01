@@ -230,7 +230,7 @@ export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
     fullLegalText: `10.1 Term: This Agreement takes effect immediately upon digital execution and continues indefinitely until terminated by either party in accordance with this Section.
 10.2 Voluntary At-Will Exit: The Delivery Partner may discontinue providing services and terminate this Agreement at any time, without penalty or minimum notice, simply by logging out and submitting a formal disengagement request via the Partner App. All undisputed earnings shall be settled in full within seven (7) banking days.
 10.3 Grounds for Involuntary Deactivation: OrderKing reserves the right to suspend or terminate platform access only upon substantiated grounds:
-  (a) Fraudulent manipulation of GPS location, mock mockers, or fake order claims;
+  (a) Fraudulent manipulation of GPS location, spoofing applications, or illegitimate delivery claims;
   (b) Submission of forged, invalid, or expired KYC documents (DL, RC, Aadhaar, PAN);
   (c) Severe safety infractions, intoxicated driving, violent altercation, or customer harassment;
   (d) Customer food tampering, theft, or deliberate package destruction;

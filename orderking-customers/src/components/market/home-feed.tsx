@@ -38,6 +38,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { useCartStore } from "@/lib/stores/cart";
 import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
+import { CURATED_RESTAURANTS } from "@/lib/predictive-search";
 import { cn } from "@/lib/utils";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
@@ -326,6 +327,11 @@ export function HomeFeed({
             }
           }
         } catch {}
+
+        if (restaurants.length === 0) {
+          restaurants = CURATED_RESTAURANTS;
+          isFallbackHub = true;
+        }
       }
 
       return {

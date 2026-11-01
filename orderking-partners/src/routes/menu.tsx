@@ -1251,13 +1251,13 @@ function MenuPage() {
                   </span>
                 </div>
                 <h3 className="text-sm font-bold text-white mt-0.5">
-                  Statutory KYC Verification Pending
+                  Complete Restaurant Verification to Unlock Menu
                 </h3>
                 <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
                   Under Indian statutory regulations (FSSAI 14-digit registration, PAN, Bank IFSC, and GSTIN rules),
                   this restaurant's digital menu is locked in{" "}
                   <span className="font-mono font-semibold text-amber-300">PENDING_VERIFICATION</span> state.
-                  Live customer catalogue display and item editing are locked until statutory KYC is approved.
+                  Live customer ordering and item editing unlock immediately upon verified FSSAI and bank details.
                 </p>
               </div>
             </div>

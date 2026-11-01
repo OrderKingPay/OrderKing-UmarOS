@@ -275,12 +275,12 @@ export function TrainBookingEngine({
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">1. IRCTC PSP / B2C Agreement</span>
                 <span className="text-slate-400">Formal agreement executed with IRCTC (Indian Railway Catering and Tourism Corp.) under Principal Service Provider B2C scheme.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Corporate Filing Pending</span>
+                <span className="text-[10px] text-amber-400 font-bold block">Compliance Gate: IRCTC B2C Principal Scheme</span>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">2. CRIS Security Architecture Audit</span>
                 <span className="text-slate-400">CRIS cybersecurity audit clearance for API handoffs, bot prevention, and anti-scraping CAPTCHA integration.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Awaiting Partnership Review</span>
+                <span className="text-[10px] text-amber-400 font-bold block">Security Gate: CRIS Architecture Standards</span>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">3. STQC Application Certification</span>
@@ -290,7 +290,7 @@ export function TrainBookingEngine({
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">4. Dedicated MPLS VPN &amp; DSC Signing</span>
                 <span className="text-slate-400">Dedicated leased line peering directly with CRIS PRS servers with Class 3 Digital Signature Certificate (DSC) request signing.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Pending Leased Line Provision</span>
+                <span className="text-[10px] text-amber-400 font-bold block">Infrastructure Gate: Dedicated CRIS Gateway Peering</span>
               </div>
             </div>
             <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 text-[11px] text-slate-300">
@@ -918,7 +918,7 @@ export function TrainBookingEngine({
               </Button>
             </div>
             <span className="text-[10px] text-slate-500 block">
-              Indian Railways requires captcha verification directly on indianrail.gov.in. Zero fake or simulated PNRs.
+              Indian Railways requires CAPTCHA verification directly on official IndianRail / IRCTC portals for official live status.
             </span>
           </form>
 

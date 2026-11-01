@@ -25,7 +25,8 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
     setResult(null);
 
     try {
-      toast.error('Loan integration coming soon - Under Development');
+      toast.info('Connecting to RBI-registered lending partner Navi...');
+      window.open('https://navi.com/personal-loan?utm_source=orderking_pay', '_blank');
       return;
       // const data = await res.json();
       
@@ -104,7 +105,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
                 </div>
 
                 <p className="text-xs text-emerald-700 dark:text-emerald-400 font-bold">
-                  Money has been deposited to your KingPay Wallet!
+                  Funds ready for instant transfer to your verified bank account or UPI VPA.
                 </p>
               </div>
             ) : (

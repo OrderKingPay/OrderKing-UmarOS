@@ -100,7 +100,7 @@ export async function getSessionUser(
 export async function requireUserId(bearerToken?: string): Promise<string> {
   if (!authConfigured && !gateIdentityEnabled()) {
     throw new Error(
-      "Auth is not configured. DEV_USER_ID mock has been eliminated.",
+      "Authentication service is not configured.",
     );
   }
   const user = await getSessionUser(bearerToken);

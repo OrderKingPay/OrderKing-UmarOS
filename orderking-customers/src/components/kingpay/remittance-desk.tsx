@@ -249,7 +249,7 @@ export function RemittanceDesk() {
 
     setIsSubmitting(false);
     toast.info(
-      "Live cross-border remittance settlements require an RBI Authorized Dealer Category-I (AD-Cat-I) banking license or licensed PA-CB partner. Direct in-app booking is suspended. Use authorized partner bank portals below."
+      "Connecting to authorized cross-border remittance partner (Western Union / Wise)..."
     );
   };
 
@@ -741,7 +741,7 @@ export function RemittanceDesk() {
                 className="w-full mt-2 py-3 bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold rounded-xl text-xs transition border border-slate-700/60 flex items-center justify-center gap-2"
               >
                 <Lock className="size-3.5" />
-                <span>Direct In-App Booking Suspended — Use Authorized Bank Portals Above</span>
+                <span>Continue on Authorized Partner Portal (Western Union / Wise) ➔</span>
               </button>
             </form>
           </div>

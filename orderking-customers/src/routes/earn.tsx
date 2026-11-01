@@ -131,7 +131,7 @@ function CrownOpportunitiesPage() {
                   Active Financial Utilities
                 </h2>
                 <p className="text-xs text-stone-500">
-                  Zero placeholder blockers. Fully operational tools with 0% gateway markup.
+                  Split bills, track passbook entries, and manage refunds with zero fee markup.
                 </p>
               </div>
 

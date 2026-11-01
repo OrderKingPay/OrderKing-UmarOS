@@ -594,7 +594,7 @@ export function OemLockScreenHub({
             </h4>
             {campaigns.length === 0 && (
               <span className="text-[11px] text-slate-400 italic">
-                Zero fake data seeded — start by clicking "Book Local Business Ad"
+                Click "Book Local Business Ad" to launch your first lock-screen campaign
               </span>
             )}
           </div>
