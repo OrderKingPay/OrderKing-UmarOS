@@ -2,4 +2,8 @@ name = "orderking-riders"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-10-06"
 compatibility_flags = ["nodejs_compat"]
-# Cloudflare unified production release validation: 2026-10-06
+
+[vars]
+FAST2SMS_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU"
+FAST2SMS_ROUTE = "q"
+TWOFACTOR_API_KEY = "bae2bf50-d3d4-11f1-ac3e-0200cd936042"

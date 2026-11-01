@@ -680,14 +680,38 @@ export const requestInstantPayoutFn = createServerFn({ method: "POST" })
 
 const globalOtpRef = globalThis as typeof globalThis & {
   __riderOtpStore__?: Map<string, { otp: string; expiresAt: number; channel: string }>;
+  __riderOtpRateLimitStore__?: Map<string, { timestamps: number[] }>;
 };
 globalOtpRef.__riderOtpStore__ ??= new Map();
+globalOtpRef.__riderOtpRateLimitStore__ ??= new Map();
 const riderOtpStore = globalOtpRef.__riderOtpStore__;
+const riderRateLimitStore = globalOtpRef.__riderOtpRateLimitStore__;
 
+function enforceRiderRateLimit(cleanPhone: string): void {
+  const now = Date.now();
+  const tenMinutesMs = 10 * 60 * 1000;
+  const entry = riderRateLimitStore.get(cleanPhone) || { timestamps: [] };
+  const recent = entry.timestamps.filter((t: number) => now - t < tenMinutesMs);
+  riderRateLimitStore.set(cleanPhone, { timestamps: recent });
+
+  if (recent.length >= 3) {
+    const oldest = recent[0];
+    const retryAfter = Math.max(1, Math.ceil((oldest + tenMinutesMs - now) / 1000));
+    throw new RiderError(
+      "RATE_LIMIT_EXCEEDED",
+      `Too many OTP requests. Maximum 3 attempts per 10 minutes. Please try again in ${retryAfter} seconds.`,
+      429,
+    );
+  }
+
+  recent.push(now);
+  riderRateLimitStore.set(cleanPhone, { timestamps: recent });
+}
 export const sendRiderOtpFn = createServerFn({ method: "POST" })
   .validator((input: { phone: string; channel?: "sms" | "whatsapp" }) => input)
   .handler(async ({ data }) => {
     const cleanPhone = sanitizeIndianPhone(data.phone || "");
+    enforceRiderRateLimit(cleanPhone);
     if (!isValidIndianPhone(cleanPhone)) {
       throw new RiderError(
         "INVALID_PHONE",
@@ -699,7 +723,7 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
     const randomBuffer = new Uint32Array(1);
     crypto.getRandomValues(randomBuffer);
     const otp = computeRiderStatelessOtp(cleanPhone, 0);
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes validity
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes validity
     const channel = data.channel || "sms";
 
     riderOtpStore.set(cleanPhone, { otp, expiresAt, channel });
@@ -746,16 +770,19 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     }
 
     const record = riderOtpStore.get(cleanPhone);
-    const isMatched = [computeRiderStatelessOtp(cleanPhone, 0), computeRiderStatelessOtp(cleanPhone, -1), computeRiderStatelessOtp(cleanPhone, -2)].includes(cleanOtp) || Boolean(record && record.otp === cleanOtp && record.expiresAt > Date.now());
+    const isMatched = [computeRiderStatelessOtp(cleanPhone, 0), computeRiderStatelessOtp(cleanPhone, -1), ].includes(cleanOtp) || Boolean(record && record.otp === cleanOtp && record.expiresAt > Date.now());
 
     let finalMatched = isMatched;
   if (!finalMatched) {
-    try {
-      const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
-      const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
-      const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
-      if (tfJson.Status === "Success") finalMatched = true;
-    } catch {}
+    const fast2SmsKey = (process.env.FAST2SMS_API_KEY || "").trim();
+    const tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.OTP_2FACTOR_API_KEY || "").trim();
+    if (tfKey && tfKey !== fast2SmsKey && tfKey !== "bae2bf50-d3d4-11f1-ac3e-0200cd936042" && tfKey !== "xxx") {
+      try {
+        const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
+        const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+        if (tfJson.Status === "Success") finalMatched = true;
+      } catch {}
+    }
   }
   if (!finalMatched) {
       if (record && record.expiresAt <= Date.now()) {

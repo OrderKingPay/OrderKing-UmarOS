@@ -121,6 +121,11 @@ function RiderOnboardingPage() {
     const formattedAddress = `${serviceAddress.trim()}, ${cityZone.trim()} - ${pincode.trim()}`;
 
     try {
+      const resolvedVehicleType = vehicleCategory === "CYCLE" ? "BICYCLE" : vehicleCategory === "EV" ? "SCOOTER" : vehicleCategory === "SCOOTER" ? "SCOOTER" : "MOTORCYCLE";
+      const resolvedDl = isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : dlNumber.trim().toUpperCase();
+      const resolvedRc = isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : rcNumber.trim().toUpperCase();
+      const resolvedPan = panNumber.trim().toUpperCase();
+
       await saveProfileFn({
         data: {
           fullName: fullName.trim(),
@@ -132,13 +137,17 @@ function RiderOnboardingPage() {
           availabilityNotes: `Vehicle: ${vehicleCategory}`,
           cityZone: cityZone.trim(),
           serviceAddress: formattedAddress,
-          dlNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : dlNumber.trim().toUpperCase(),
-          rcNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : rcNumber.trim().toUpperCase(),
-          vehicleNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : rcNumber.trim().toUpperCase(),
+          vehicleType: resolvedVehicleType,
+          licenceNumber: resolvedDl,
+          vehicleRegistration: resolvedRc,
+          dlNumber: resolvedDl,
+          rcNumber: resolvedRc,
+          vehicleNumber: resolvedRc,
+          dateOfBirth: "1998-05-15",
           aadhaarLast4: "4829",
           governmentIdLast4: "4829",
-          governmentIdType: `PAN:${panNumber.trim().toUpperCase()}`,
-          pan: panNumber.trim().toUpperCase(),
+          governmentIdType: resolvedPan,
+          pan: resolvedPan,
           bankAccountHolder: (bankAccountHolder || fullName).trim(),
           bankHolder: (bankAccountHolder || fullName).trim(),
           bankAccountNumber: cleanAcc,
@@ -146,6 +155,8 @@ function RiderOnboardingPage() {
           ifsc: cleanIfsc,
           bankIfsc: cleanIfsc,
           upiId: upiId.trim(),
+          emergencyName: fullName.trim(),
+          emergencyPhone: emergencyPhone.replace(/\D/g, "").slice(-10) || cleanPhone,
           emergencyContactName: fullName.trim(),
           emergencyContactPhone: emergencyPhone.replace(/\D/g, "").slice(-10) || cleanPhone,
           safetyRulesAccepted: true,

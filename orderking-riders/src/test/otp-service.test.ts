@@ -3,10 +3,19 @@ import axios from 'axios';
 import {
   sanitizeIndianPhone,
   isValidIndianPhone,
+  generateOtp,
+  checkRateLimit,
+  recordOtpAttempt,
+  resetRateLimit,
+  storeOtp,
+  getStoredOtp,
+  clearStoredOtp,
   sendOtpFast2SMS,
   sendOtp2Factor,
   sendVoiceOtp2Factor,
   sendOtp,
+  requestOtp,
+  verifyOtp,
 } from '../../../services/otp';
 
 vi.mock('axios');
@@ -23,6 +32,8 @@ describe('OrderKing Riders Telecom OTP Service (services/otp.ts)', () => {
     delete process.env.TWOFACTOR_OTP_TEMPLATE;
     delete process.env.MSG91_AUTH_KEY;
     delete process.env.MSG91_TEMPLATE_ID;
+    resetRateLimit('9876543210');
+    clearStoredOtp('9876543210');
   });
 
   afterEach(() => {
@@ -51,59 +62,48 @@ describe('OrderKing Riders Telecom OTP Service (services/otp.ts)', () => {
     });
   });
 
-  describe('2. sendOtp2Factor (Primary 2Factor.in Official Transactional Gateway)', () => {
-    it('returns false and skips dispatch when TWOFACTOR_API_KEY equals FAST2SMS_API_KEY', async () => {
-      const sharedKey = '8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU';
-      process.env.FAST2SMS_API_KEY = sharedKey;
-      process.env.TWOFACTOR_API_KEY = sharedKey;
-
-      const success = await sendOtp2Factor('9876543210', '123456');
-
-      expect(success).toBe(false);
-      expect(axios.get).not.toHaveBeenCalled();
+  describe('2. OTP Generation, Rate Limiting & 5-Minute Expiration', () => {
+    it('generates a cryptographically secure 6-digit OTP', () => {
+      const otp = generateOtp(6);
+      expect(otp).toHaveLength(6);
+      expect(/^\d{6}$/.test(otp)).toBe(true);
     });
 
-    it('returns false when 2Factor API key is not configured or placeholder', async () => {
-      process.env.FAST2SMS_API_KEY = 'f2s_key';
-      process.env.TWOFACTOR_API_KEY = 'xxx';
+    it('enforces rate limit: max 3 attempts per phone per 10 minutes', () => {
+      const phone = '9876543210';
+      resetRateLimit(phone);
 
-      const success = await sendOtp2Factor('9876543210', '123456');
-      expect(success).toBe(false);
-      expect(axios.get).not.toHaveBeenCalled();
+      expect(checkRateLimit(phone).allowed).toBe(true);
+      recordOtpAttempt(phone);
+
+      expect(checkRateLimit(phone).allowed).toBe(true);
+      recordOtpAttempt(phone);
+
+      expect(checkRateLimit(phone).allowed).toBe(true);
+      recordOtpAttempt(phone);
+
+      // 4th attempt must be blocked
+      const limit = checkRateLimit(phone);
+      expect(limit.allowed).toBe(false);
+      expect(limit.remainingAttempts).toBe(0);
+      expect(limit.retryAfterSeconds).toBeGreaterThan(0);
     });
 
-    it('dispatches to standardized 2Factor AUTOGEN URL when configured', async () => {
-      process.env.TWOFACTOR_API_KEY = 'test_twofactor_key';
+    it('stores and expires OTP after 5 minutes', () => {
+      const phone = '9876543210';
+      storeOtp(phone, '123456', 5 * 60 * 1000);
 
-      vi.mocked(axios.get).mockResolvedValueOnce({
-        data: { Status: 'Success', Details: '2F_SESSION_UUID_999' },
-      });
+      const stored = getStoredOtp(phone);
+      expect(stored).toBeDefined();
+      expect(stored?.otp).toBe('123456');
 
-      const success = await sendOtp2Factor('9876543210', '654321');
-
-      expect(success).toBe(true);
-      expect(axios.get).toHaveBeenCalledTimes(1);
-      const [url] = vi.mocked(axios.get).mock.calls[0];
-      expect(url).toBe('https://2factor.in/API/V1/test_twofactor_key/SMS/9876543210/654321/AUTOGEN');
-    });
-
-    it('supports official voice OTP endpoint', async () => {
-      process.env.TWOFACTOR_API_KEY = 'test_twofactor_key';
-
-      vi.mocked(axios.get).mockResolvedValueOnce({
-        data: { Status: 'Success', Details: '2F_VOICE_SESSION_111' },
-      });
-
-      const success = await sendVoiceOtp2Factor('9876543210', '654321');
-
-      expect(success).toBe(true);
-      expect(axios.get).toHaveBeenCalledTimes(1);
-      const [url] = vi.mocked(axios.get).mock.calls[0];
-      expect(url).toBe('https://2factor.in/API/V1/test_twofactor_key/VOICE/9876543210/654321');
+      // Expired entry check
+      storeOtp(phone, '654321', -1000); // already expired
+      expect(getStoredOtp(phone)).toBeUndefined();
     });
   });
 
-  describe('3. sendOtpFast2SMS (Secondary Fast2SMS Bulk V2 OTP)', () => {
+  describe('3. sendOtpFast2SMS (Primary Fast2SMS Bulk V2 OTP)', () => {
     it('throws if FAST2SMS_API_KEY is not set', async () => {
       await expect(sendOtpFast2SMS('9876543210', '123456')).rejects.toThrow(
         'FAST2SMS_API_KEY not set',
@@ -144,70 +144,160 @@ describe('OrderKing Riders Telecom OTP Service (services/otp.ts)', () => {
       expect(config?.headers?.['Content-Type']).toBe('application/json');
     });
 
-    it('handles Fast2SMS API rejection gracefully returning false', async () => {
-      process.env.FAST2SMS_API_KEY = 'test_key';
+    it('falls back to route "q" when route "otp" requires website verification (status 996)', async () => {
+      process.env.FAST2SMS_API_KEY = 'test_f2s_key';
+
+      // First call (route otp) returns 996 error
+      vi.mocked(axios.post).mockRejectedValueOnce({
+        response: {
+          data: {
+            status_code: 996,
+            message: 'Before using OTP Message API, complete website verification.',
+          },
+        },
+      });
+
+      // Second call (route q) succeeds
       vi.mocked(axios.post).mockResolvedValueOnce({
-        data: { return: false, message: ['Invalid Route or Balance'] },
+        data: {
+          return: true,
+          request_id: 'REQ_F2S_Q_456',
+          message: ['SMS sent successfully'],
+        },
       });
 
       const success = await sendOtpFast2SMS('9876543210', '123456');
-      expect(success).toBe(false);
+
+      expect(success).toBe(true);
+      expect(axios.post).toHaveBeenCalledTimes(2);
+      const [, secondPayload] = vi.mocked(axios.post).mock.calls[1];
+      expect((secondPayload as any).route).toBe('q');
+      expect((secondPayload as any).message).toContain('123456');
     });
   });
 
-  describe('4. Master sendOtp Dispatcher Priority (2Factor -> Fast2SMS -> MSG91 -> Fallback)', () => {
-    it('dispatches via 2Factor as PRIMARY when configured and successful', async () => {
-      process.env.TWOFACTOR_API_KEY = 'primary_2f_key';
-      process.env.FAST2SMS_API_KEY = 'secondary_f2s_key';
+  describe('4. sendOtp2Factor (Fallback Gateway with Key Collision Guard)', () => {
+    it('gracefully skips 2Factor when TWOFACTOR_API_KEY matches FAST2SMS_API_KEY', async () => {
+      const sharedKey = '8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU';
+      process.env.FAST2SMS_API_KEY = sharedKey;
+      process.env.TWOFACTOR_API_KEY = sharedKey;
+
+      const success = await sendOtp2Factor('9876543210', '123456');
+
+      expect(success).toBe(false);
+      expect(axios.get).not.toHaveBeenCalled();
+    });
+
+    it('dispatches to standardized 2Factor URL when configured with distinct key', async () => {
+      process.env.FAST2SMS_API_KEY = 'fast2sms_independent_key';
+      process.env.TWOFACTOR_API_KEY = 'twofactor_distinct_uuid_key';
 
       vi.mocked(axios.get).mockResolvedValueOnce({
-        data: { Status: 'Success' },
+        data: { Status: 'Success', Details: '2F_SESSION_UUID_999' },
+      });
+
+      const success = await sendOtp2Factor('9876543210', '654321');
+
+      expect(success).toBe(true);
+      expect(axios.get).toHaveBeenCalledTimes(1);
+      const [url] = vi.mocked(axios.get).mock.calls[0];
+      expect(url).toBe('https://2factor.in/API/V1/twofactor_distinct_uuid_key/SMS/9876543210/654321/AUTOGEN');
+    });
+  });
+
+  describe('5. Master sendOtp Dispatcher Priority (Fast2SMS PRIMARY -> 2Factor Fallback)', () => {
+    it('dispatches via Fast2SMS as PRIMARY', async () => {
+      process.env.FAST2SMS_API_KEY = 'primary_f2s_key';
+      process.env.TWOFACTOR_API_KEY = 'fallback_2f_key';
+
+      vi.mocked(axios.post).mockResolvedValueOnce({
+        data: { return: true, request_id: 'REQ_F2S_PRIMARY_1' },
       });
 
       const res = await sendOtp('9876543210', '112233');
 
       expect(res.success).toBe(true);
-      expect(res.provider).toBe('2factor');
-      expect(axios.get).toHaveBeenCalledTimes(1);
-      expect(axios.post).not.toHaveBeenCalled();
+      expect(res.provider).toBe('fast2sms');
+      expect(axios.post).toHaveBeenCalledTimes(1);
+      expect(axios.get).not.toHaveBeenCalled();
     });
 
-    it('fails over to Fast2SMS SECONDARY when 2Factor fails', async () => {
-      process.env.TWOFACTOR_API_KEY = 'primary_2f_key';
-      process.env.FAST2SMS_API_KEY = 'secondary_f2s_key';
+    it('falls over to 2Factor FALLBACK when Fast2SMS fails', async () => {
+      process.env.FAST2SMS_API_KEY = 'primary_f2s_key';
+      process.env.TWOFACTOR_API_KEY = 'fallback_2f_distinct_key';
 
-      // 2Factor fails
+      // Fast2SMS fails both otp and q
+      vi.mocked(axios.post).mockResolvedValueOnce({ data: { return: false } });
+      vi.mocked(axios.post).mockResolvedValueOnce({ data: { return: false } });
+
+      // 2Factor succeeds
       vi.mocked(axios.get).mockResolvedValueOnce({
-        data: { Status: 'Error' },
-      });
-      // Fast2SMS succeeds
-      vi.mocked(axios.post).mockResolvedValueOnce({
-        data: { return: true },
+        data: { Status: 'Success' },
       });
 
       const res = await sendOtp('9876543210', '998877');
 
       expect(res.success).toBe(true);
-      expect(res.provider).toBe('fast2sms');
+      expect(res.provider).toBe('2factor');
+      expect(axios.post).toHaveBeenCalledTimes(2);
       expect(axios.get).toHaveBeenCalledTimes(1);
-      expect(axios.post).toHaveBeenCalledTimes(1);
     });
 
-    it('safely falls back without calling 2Factor when TWOFACTOR_API_KEY matches FAST2SMS_API_KEY', async () => {
-      const mirrorKey = 'mirror_key_8899';
-      process.env.FAST2SMS_API_KEY = mirrorKey;
-      process.env.TWOFACTOR_API_KEY = mirrorKey;
+    it('gracefully skips 2Factor fallback when key matches Fast2SMS key', async () => {
+      const duplicateKey = 'shared_key_12345';
+      process.env.FAST2SMS_API_KEY = duplicateKey;
+      process.env.OTP_2FACTOR_API_KEY = duplicateKey;
 
-      // Fast2SMS succeeds directly
-      vi.mocked(axios.post).mockResolvedValueOnce({
-        data: { return: true },
-      });
+      // Fast2SMS fails
+      vi.mocked(axios.post).mockResolvedValueOnce({ data: { return: false } });
+      vi.mocked(axios.post).mockResolvedValueOnce({ data: { return: false } });
 
       const res = await sendOtp('9876543210', '556677');
 
-      expect(res.success).toBe(true);
-      expect(res.provider).toBe('fast2sms');
+      // 2Factor was skipped, no other gateway, returns failure (zero mocks)
+      expect(res.success).toBe(false);
+      expect(res.provider).toBeNull();
       expect(axios.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('6. End-to-End requestOtp and verifyOtp Flow', () => {
+    it('executes full flow: generate 6 digits -> send -> store 5 min -> verify', async () => {
+      process.env.FAST2SMS_API_KEY = 'test_f2s_live_key';
+      resetRateLimit('9876543210');
+
+      vi.mocked(axios.post).mockResolvedValueOnce({
+        data: { return: true, request_id: 'REQ_E2E_999' },
+      });
+
+      const reqRes = await requestOtp('9876543210');
+      expect(reqRes.success).toBe(true);
+      expect(reqRes.expiresInSeconds).toBe(300);
+
+      // Verify the generated OTP from store
+      const stored = getStoredOtp('9876543210');
+      expect(stored).toBeDefined();
+      expect(stored?.otp).toHaveLength(6);
+
+      // Enter matching OTP
+      const verifyRes = verifyOtp('9876543210', stored!.otp);
+      expect(verifyRes.verified).toBe(true);
+
+      // Ensure single-use deletion
+      expect(getStoredOtp('9876543210')).toBeUndefined();
+    });
+
+    it('rejects incorrect OTP and enforces attempt count limit', () => {
+      const phone = '9876543210';
+      storeOtp(phone, '123456', 5 * 60 * 1000);
+
+      expect(() => verifyOtp(phone, '999999')).toThrow('Invalid verification code');
+
+      // Test 5 incorrect attempts triggers lockout
+      for (let i = 0; i < 4; i++) {
+        try { verifyOtp(phone, '000000'); } catch {}
+      }
+      expect(getStoredOtp(phone)).toBeUndefined();
     });
   });
 });

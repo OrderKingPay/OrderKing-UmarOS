@@ -17,6 +17,7 @@ vi.mock("@tanstack/react-start/server", () => ({
 }));
 
 import { getSql } from "../lib/db";
+import * as razorpayServer from "../lib/server/razorpay.server";
 import {
   prepareParcelRazorpayOrder,
   submitParcelOrder,
@@ -24,14 +25,30 @@ import {
 
 describe("Parcel Order Database Storage & Server RPC Integration", () => {
   it("refuses Razorpay order creation without verified provider integration", async () => {
-    await expect(prepareParcelRazorpayOrder({
-      data: {
-        distanceKm: 5.0,
-        packageType: "DOCUMENTS",
-        isNight: false,
-        receipt: `rcpt_test_${Date.now()}`,
-      },
-    })).rejects.toThrow("Secure online parcel payment");
+    const origKey = process.env.RAZORPAY_KEY_ID;
+    const origSecret = process.env.RAZORPAY_KEY_SECRET;
+    delete process.env.RAZORPAY_KEY_ID;
+    delete process.env.RAZORPAY_KEY_SECRET;
+    const configSpy = vi.spyOn(razorpayServer, "getRazorpayConfig").mockReturnValue({
+      keyId: undefined,
+      keySecret: undefined,
+      webhookSecret: undefined,
+      hasCredentials: false,
+    });
+    try {
+      await expect(prepareParcelRazorpayOrder({
+        data: {
+          distanceKm: 5.0,
+          packageType: "DOCUMENTS",
+          isNight: false,
+          receipt: `rcpt_test_${Date.now()}`,
+        },
+      })).rejects.toThrow("Secure online parcel payment");
+    } finally {
+      configSpy.mockRestore();
+      if (origKey) process.env.RAZORPAY_KEY_ID = origKey;
+      if (origSecret) process.env.RAZORPAY_KEY_SECRET = origSecret;
+    }
   });
 
   it(

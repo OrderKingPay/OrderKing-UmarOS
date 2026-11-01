@@ -1,4 +1,4 @@
-import { UMAROS_PLATFORM_DIRECTORY, answerFounderPlatformQuestion } from "~/lib/umar-platform-guide";
+import { UMAROS_PLATFORM_DIRECTORY, answerFounderPlatformQuestion } from "@/lib/umar-platform-guide";
 import { useState, useRef, useEffect } from "react";
 import { Mic, Terminal, Send, XCircle } from "lucide-react";
 import { executeConversationalCommand } from "../routes/api/v1/founder/execute";

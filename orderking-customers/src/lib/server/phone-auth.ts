@@ -35,6 +35,31 @@ function cleanExpiredMemoryOtps(): void {
     if (entry.expiresAt < now) memoryOtpCache.delete(key);
   }
 }
+// Rate limiter: Max 3 OTP attempts per phone per 10 minutes
+interface RateLimitEntry {
+  timestamps: number[];
+}
+const phoneRateLimitStore = new Map<string, RateLimitEntry>();
+
+function enforcePhoneRateLimit(cleanPhone: string): void {
+  const now = Date.now();
+  const tenMinutesMs = 10 * 60 * 1000;
+  const entry = phoneRateLimitStore.get(cleanPhone) || { timestamps: [] };
+  const recent = entry.timestamps.filter((t) => now - t < tenMinutesMs);
+  phoneRateLimitStore.set(cleanPhone, { timestamps: recent });
+
+  if (recent.length >= 3) {
+    const oldest = recent[0];
+    const retryAfter = Math.max(1, Math.ceil((oldest + tenMinutesMs - now) / 1000));
+    throw new Error(
+      `Too many OTP requests for this number. Maximum 3 attempts allowed per 10 minutes. Please try again in ${retryAfter} seconds.`
+    );
+  }
+
+  recent.push(now);
+  phoneRateLimitStore.set(cleanPhone, { timestamps: recent });
+}
+
 export const requestPhoneOtpFn = createServerFn({ method: "POST" })
   .validator((input: { phone: string; channel?: "sms" | "whatsapp" | "voice"; name?: string }) => input)
   .handler(async ({ data }) => {
@@ -43,9 +68,12 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
     if (!isValidIndianPhone(cleanPhone)) {
       throw new Error("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
     }
+    // Enforce rate limit: max 3 attempts per phone per 10 minutes
+    enforcePhoneRateLimit(cleanPhone);
+
     const otp = computeStatelessOtp(cleanPhone, 0);
     const cacheKey = `phone:${cleanPhone}`;
-    const expiresAt = Date.now() + 10 * 60 * 1000;
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes validity
     memoryOtpCache.set(cacheKey, {
       otp,
       phone: cleanPhone,
@@ -68,7 +96,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       await sql`DELETE FROM verification WHERE identifier = ${cacheKey}`;
       await sql`
         INSERT INTO verification (id, identifier, value, "expiresAt")
-        VALUES (${otpId}, ${cacheKey}, ${otp}, NOW() + INTERVAL '10 minutes')
+        VALUES (${otpId}, ${cacheKey}, ${otp}, NOW() + INTERVAL '5 minutes')
       `;
     } catch (dbErr) {
       console.warn("[Phone Auth] DB write skipped (stateless HMAC + memory active):", dbErr);
@@ -89,7 +117,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
           provider: "2factor",
           messageId: vJson.Details || `2F-VOICE-${Date.now()}`,
           debugOtp: otp,
-          whatsappOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
+          whatsAppOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
           providerNotice: `Calling +91-${cleanPhone} now with your 6-digit voice verification code.`,
         };
       } else {
@@ -107,7 +135,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
         provider: "resilient_fallback",
         messageId: `FALLBACK-${Date.now()}`,
         debugOtp: otp,
-        whatsappOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
+        whatsAppOtpUrl: `https://wa.me/91${cleanPhone}?text=${encodeURIComponent("OrderKing OTP: " + otp)}`,
         providerNotice: `Carrier SMS delayed (${msg}). Instant verified OTP ready below.`,
       };
     }
@@ -116,8 +144,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       phone: cleanPhone,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
-      whatsAppOtpUrl: dispatchResult.whatsappOtpUrl,
-      whatsappOtpUrl: dispatchResult.whatsappOtpUrl,
+      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
       providerNotice:
         dispatchResult.providerNotice ||
         (dispatchResult.provider === "2factor"
@@ -141,11 +168,10 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     const cacheKey = `phone:${cleanPhone}`;
     const memEntry = memoryOtpCache.get(cacheKey);
     let isValid = false;
-    // 1. Check stateless cryptographic HMAC time windows (current, -5m, -10m)
+    // 1. Check stateless cryptographic HMAC time windows (current bucket and previous bucket = 5m)
     const validWindowOtps = [
       computeStatelessOtp(cleanPhone, 0),
       computeStatelessOtp(cleanPhone, -1),
-      computeStatelessOtp(cleanPhone, -2),
     ];
     if (validWindowOtps.includes(enteredOtp)) {
       isValid = true;
@@ -174,10 +200,11 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
       } catch {}
     }
     
-    // Verify against 2Factor VERIFY3 endpoint for AUTOGEN OTPs
-    if (!isValid) {
+    // Verify against 2Factor VERIFY3 endpoint for AUTOGEN OTPs (only if valid independent 2Factor key is configured)
+    const fast2SmsKey = (process.env.FAST2SMS_API_KEY || "").trim();
+    const tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.OTP_2FACTOR_API_KEY || "").trim();
+    if (!isValid && tfKey && tfKey !== fast2SmsKey && tfKey !== "bae2bf50-d3d4-11f1-ac3e-0200cd936042" && tfKey !== "xxx") {
       try {
-        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
         const tfRes = await fetch(
           `https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`
         );

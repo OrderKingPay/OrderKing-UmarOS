@@ -3,7 +3,7 @@ import { getConfiguredWhiteLabelId, TP_CONSENT_KEY, whiteLabelScriptUrl } from "
 
 declare global {
   interface Window {
-    TPWL_CONFIGURATION?: { resultsURL?: string };
+    TPWL_CONFIGURATION?: Record<string, unknown>;
   }
 }
 

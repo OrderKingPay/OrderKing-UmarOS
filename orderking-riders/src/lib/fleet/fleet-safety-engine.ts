@@ -1,5 +1,5 @@
 /**
- * Sovereign Fleet Safety & Offline Handover Engine
+ * Fleet Safety & Compliance Handover Engine
  * Council Domain 6: Rider Fleet Safety, Low Battery Optimization & Doorstep Verification.
  */
 

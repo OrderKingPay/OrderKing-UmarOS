@@ -135,8 +135,9 @@ function readEnv(key: string): string | undefined {
     // Ignore import.meta access errors in non-Vite environments
   }
   try {
-    if (typeof process !== "undefined" && process.env?.[key]) {
-      return process.env[key];
+    const proc = (globalThis as unknown as { process?: { env?: Record<string, string> } }).process;
+    if (proc?.env?.[key]) {
+      return proc.env[key];
     }
   } catch {
     // Ignore process.env access errors in browser-only environments

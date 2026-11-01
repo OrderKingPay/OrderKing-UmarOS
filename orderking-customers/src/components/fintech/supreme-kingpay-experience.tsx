@@ -230,34 +230,6 @@ export function SupremeKingPayExperience() {
   // Universal Deep Search Query
   const [universalSearch, setUniversalSearch] = useState("");
 
-  // My Vehicle Garage State (Permanent Retention & Expiry Tracker)
-  const [garageVehicles, setGarageVehicles] = useState([
-    {
-      id: "veh-1",
-      regNo: "AS-10-AB-1234",
-      model: "Hero Splendor Plus (Black)",
-      type: "2-Wheeler",
-      insuranceExpiryDays: 14,
-      pucExpiryDays: 12,
-      pucValidUntil: "15 Nov 2026",
-      fastagBalancePaise: 42000,
-      insurer: "Bajaj Allianz",
-    },
-    {
-      id: "veh-2",
-      regNo: "AS-10-CD-5678",
-      model: "Maruti Suzuki Swift VXi",
-      type: "4-Wheeler",
-      insuranceExpiryDays: 68,
-      pucExpiryDays: 84,
-      pucValidUntil: "20 Jan 2027",
-      fastagBalancePaise: 85000,
-      insurer: "HDFC ERGO",
-    },
-  ]);
-  const [newRegInput, setNewRegInput] = useState("");
-  const [isAddingVehicle, setIsAddingVehicle] = useState(false);
-
   // Dynamic location
   const currentCity =
     location?.cityName && location.cityName !== "Locating..."
@@ -640,24 +612,24 @@ export function SupremeKingPayExperience() {
               </div>
             </Link>
 
-            {/* Tile 7: My Garage & Insurance */}
+            {/* Tile 7: Direct UPI & QR Pay */}
             <button
               type="button"
-              onClick={() => setActiveDesk("garage")}
-              className="group rounded-2xl border border-rose-500/30 bg-gradient-to-br from-[#1a0f14]/95 via-[#130a0e]/95 to-[#0b0508]/95 hover:border-rose-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(244,63,94,0.22)] transform-gpu will-change-transform text-left cursor-pointer"
+              onClick={() => setActiveDesk("pay")}
+              className="group rounded-2xl border border-amber-500/30 bg-gradient-to-br from-[#1a140d]/95 via-[#120e09]/95 to-[#0a0805]/95 hover:border-amber-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(245,158,11,0.22)] transform-gpu will-change-transform text-left cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <div className="size-8 sm:size-9 rounded-xl bg-rose-400/15 border border-rose-400/30 flex items-center justify-center text-rose-400 group-hover:scale-105 transition shrink-0 shadow-[0_2px_8px_rgba(244,63,94,0.2)]">
-                  <Car className="size-4 sm:size-4.5" />
+                <div className="size-8 sm:size-9 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-400 group-hover:scale-105 transition shrink-0 shadow-[0_2px_8px_rgba(245,158,11,0.2)]">
+                  <QrCode className="size-4 sm:size-4.5" />
                 </div>
-                <ChevronRight className="size-3.5 text-slate-600 group-hover:text-rose-400 transition" />
+                <ChevronRight className="size-3.5 text-slate-600 group-hover:text-amber-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-rose-300 transition truncate flex items-center gap-1">
-                  <span>🚗</span> <span>My Garage</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-amber-300 transition truncate flex items-center gap-1">
+                  <span>⚡</span> <span>Scan &amp; Pay UPI</span>
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                  RC, PUC &amp; 1-Click Insurance
+                  Direct NPCI UPI · 0% Fee
                 </p>
               </div>
             </button>
@@ -684,240 +656,31 @@ export function SupremeKingPayExperience() {
               </div>
             </button>
 
-            {/* Tile 9: Pre-Approved Loans & Wealth */}
-            <button
-              type="button"
-              onClick={() => setActiveDesk("wealth")}
-              className="group rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#0a1811]/95 via-[#06110b]/95 to-[#030906]/95 hover:border-emerald-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(16,185,129,0.22)] transform-gpu will-change-transform text-left cursor-pointer"
+            {/* Tile 9: Local Parcel & Courier */}
+            <Link
+              to="/parcel"
+              className="group rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#0a1811]/95 via-[#06110b]/95 to-[#030906]/95 hover:border-emerald-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(16,185,129,0.22)] transform-gpu will-change-transform text-left no-underline"
             >
               <div className="flex items-center justify-between">
                 <div className="size-8 sm:size-9 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition shrink-0 shadow-[0_2px_8px_rgba(16,185,129,0.2)]">
-                  <Percent className="size-4 sm:size-4.5" />
+                  <Package className="size-4 sm:size-4.5" />
                 </div>
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-emerald-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
                 <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate flex items-center gap-1">
-                  <span>💰</span> <span>Local Parcel &amp; Courier</span>
+                  <span>📦</span> <span>Local Parcel &amp; Courier</span>
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                  Point-to-Point Pickup & Drop · ₹30 Base
+                  Point-to-Point Pickup &amp; Drop · ₹30 Base
                 </p>
               </div>
-            </button>
+            </Link>
           </div>
         </section>
       )}
 
-      {/* ─── DEDICATED DESK 1: MY VEHICLE GARAGE (OPENED ONLY WHEN TAPPED) ─── */}
-      {activeDesk === "garage" && (
-        <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <button
-              type="button"
-              onClick={() => setActiveDesk(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>← Back to KingPay</span>
-            </button>
-            <span className="text-xs font-black uppercase tracking-wider text-rose-400">
-              🚗 Vehicle Garage &amp; Insurance Desk
-            </span>
-          </div>
-
-          <section
-            id="garage-desk"
-            aria-label="My Vehicle Garage and Insurance Desk"
-            className="rounded-[28px] border border-rose-500/30 bg-gradient-to-br from-[#12090e]/95 via-[#0c0609]/95 to-[#070305]/95 p-4 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-4"
-          >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rose-950/60 pb-3.5">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
-              <Car className="size-5" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
-                <span>My Vehicle Garage</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold uppercase">
-                  Police Fine &amp; Expiry Shield
-                </span>
-              </h3>
-              <p className="text-[11px] text-slate-400">
-                Track RC, PUC, FASTag and renew insurance in 1 tap (Earn ₹500–₹1,500 partner rebate)
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setIsAddingVehicle((v) => !v)}
-            className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-xs font-bold transition active:scale-95 cursor-pointer"
-          >
-            <PlusCircle className="size-3.5 text-rose-400" />
-            <span>{isAddingVehicle ? "Close" : "+ Add Vehicle"}</span>
-          </button>
-        </div>
-
-        {/* ─── AUTOMATED 15-DAY EXPIRY RADAR ALERT (MoRTH / MV ACT DEFENSE) ─── */}
-        {garageVehicles.some((v) => checkVehicleExpiryAlert(v).hasAlert) && (
-          <div
-            role="alert"
-            className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/40 text-amber-200 flex items-start gap-3 shadow-lg animate-in fade-in duration-200"
-          >
-            <div className="size-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
-              <AlertTriangle className="size-4 text-amber-400 animate-pulse" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-black uppercase tracking-wider text-amber-400">
-                  🚨 Automated 15-Day Expiry Alert Active
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
-                  MoRTH &amp; RTO Expiry Radar
-                </span>
-              </div>
-              <p className="text-xs text-slate-300 mt-1">
-                One or more vehicles require immediate PUC or insurance renewal within 15 days to avoid statutory traffic fines up to ₹10,000 under the Motor Vehicles Act.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Add vehicle input field */}
-        {isAddingVehicle && (
-          <div className="p-3.5 rounded-2xl bg-black/40 border border-rose-500/30 space-y-2.5 animate-in fade-in duration-200">
-            <span className="text-xs font-bold text-rose-300 block">Enter Vehicle Registration Number:</span>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={newRegInput}
-                onChange={(e) => setNewRegInput(e.target.value.toUpperCase())}
-                placeholder="e.g. AS-10-AB-9876 or DL-01-XY-1234"
-                className="flex-1 h-10 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-xs font-bold uppercase focus:border-rose-400 outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  if (!newRegInput.trim()) {
-                    toast.error("Please enter a valid registration number.");
-                    return;
-                  }
-                  setGarageVehicles((prev) => [
-                    ...prev,
-                    {
-                      id: `veh-${Date.now()}`,
-                      regNo: newRegInput.trim(),
-                      model: "Private Vehicle (Verified via mParivahan)",
-                      type: "Motor Vehicle",
-                      insuranceExpiryDays: 320,
-                      pucExpiryDays: 365,
-                      pucValidUntil: "30 Oct 2027",
-                      fastagBalancePaise: 50000,
-                      insurer: "Digit Insurance",
-                    },
-                  ]);
-                  setNewRegInput("");
-                  setIsAddingVehicle(false);
-                  toast.success(`Vehicle ${newRegInput.trim()} added to your Garage!`);
-                }}
-                className="h-10 px-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs transition active:scale-95"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Vehicle list */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {garageVehicles.map((veh) => {
-            const expiryStatus = checkVehicleExpiryAlert(veh);
-            return (
-              <div
-                key={veh.id}
-                className="p-3.5 rounded-2xl border border-slate-800 bg-[#070b12]/80 flex flex-col justify-between gap-3 shadow-inner"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs sm:text-sm font-black text-white bg-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-700">
-                        {veh.regNo}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-semibold">{veh.type}</span>
-                    </div>
-                    <h4 className="text-xs font-bold text-slate-200 mt-1">{veh.model}</h4>
-                  </div>
-                  <span
-                    className={cn(
-                      "text-[10px] font-black px-2 py-0.5 rounded-full border",
-                      expiryStatus.isInsuranceExpiringSoon
-                        ? "bg-rose-500/20 text-rose-300 border-rose-500/50 animate-pulse"
-                        : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                    )}
-                  >
-                    {expiryStatus.isInsuranceExpiringSoon
-                      ? `🚨 15-Day Alert: Expires in ${veh.insuranceExpiryDays}d`
-                      : `Active (${veh.insuranceExpiryDays}d)`}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-[11px] bg-black/30 p-2.5 rounded-xl border border-slate-800/80">
-                  <div>
-                    <span className="text-slate-500 block text-[9.5px]">PUC Status:</span>
-                    <span className="font-bold text-slate-200 flex items-center gap-1">
-                      <span>{veh.pucValidUntil}</span>
-                      {expiryStatus.isPucExpiringSoon && (
-                        <span className="text-[9.5px] font-black text-amber-400 bg-amber-400/10 px-1 rounded border border-amber-400/30">
-                          ⚠️ {veh.pucExpiryDays}d left
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block text-[9.5px]">FASTag Balance:</span>
-                    <span className="font-bold text-emerald-400 font-mono">{formatPaise(veh.fastagBalancePaise)}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
-                  <span className="text-[10px] text-slate-400 truncate">Insurer: {veh.insurer}</span>
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={buildMotorInsuranceAffiliateUrl("policybazaar", veh.regNo)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        toast.success(`Opening PolicyBazaar 1-Click Renewal for ${veh.regNo} with partner affiliate tracking.`);
-                      }}
-                      className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:brightness-110 text-white font-black text-[11px] transition active:scale-95 shadow-sm inline-flex items-center gap-1 no-underline"
-                    >
-                      <span>PolicyBazaar (1-Click)</span>
-                      <ExternalLink className="size-3" />
-                    </a>
-                    <a
-                      href={buildMotorInsuranceAffiliateUrl("acko", veh.regNo)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        toast.success(`Opening Acko 1-Click Renewal for ${veh.regNo} with partner affiliate tracking.`);
-                      }}
-                      className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 hover:text-white border border-purple-500/30 font-black text-[11px] transition active:scale-95 inline-flex items-center gap-1 no-underline"
-                    >
-                      <span>Acko</span>
-                      <ExternalLink className="size-3" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-    </div>
-  )}
-
-  {/* ─── DEDICATED DESK 2: DAILY BILLS & RECHARGE (OPENED ONLY WHEN TAPPED) ─── */}
+      {/* ─── DEDICATED DESK 2: DAILY BILLS & RECHARGE (OPENED ONLY WHEN TAPPED) ─── */}
   {activeDesk === "bills" && (
     <div className="space-y-4 animate-in fade-in duration-200">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800">

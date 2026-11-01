@@ -152,7 +152,7 @@ export function validatePan(rawInput: string | null | undefined): PanValidationR
   }
 
   // Extract PAN from composite string like "AADHAAR_PAN:ABCDE1234F"
-  const clean = rawInput.replace(/^AADHAAR_PAN:/i, "").trim().toUpperCase();
+  const clean = rawInput.replace(/^(AADHAAR_PAN:|PAN:)/i, "").trim().toUpperCase();
 
   // Indian PAN format: 5 letters, 4 numbers, 1 letter
   if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(clean)) {

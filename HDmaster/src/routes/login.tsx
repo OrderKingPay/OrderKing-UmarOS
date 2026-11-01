@@ -125,6 +125,9 @@ function Login() {
       const res = await verifyAdminPhoneOtpFn({
         data: { phone: cleanPhone, otp: code },
       });
+      if (!res.email || !res.password) {
+        throw new Error("Missing authentication credentials");
+      }
 
       // Synchronize Better Auth 90-day administrative session
       const signInRes = await authClient.signIn.email({
