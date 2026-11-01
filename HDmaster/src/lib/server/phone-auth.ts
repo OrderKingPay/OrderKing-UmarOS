@@ -79,7 +79,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
         const twoFactorKey =
           process.env.TWOFACTOR_API_KEY ||
           process.env.TWO_FACTOR_API_KEY ||
-          "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
+          "";
         const vRes = await fetch(
           `https://2factor.in/API/V1/${encodeURIComponent(twoFactorKey)}/VOICE/+91${cleanPhone}/${otp}`
         );
@@ -177,7 +177,7 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     // Verify against 2Factor VERIFY3 endpoint for AUTOGEN OTPs
     if (!isValid) {
       try {
-        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
+        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY;
         const tfRes = await fetch(
           `https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`
         );
@@ -282,7 +282,7 @@ export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
     let isTfValid = isMatched;
     if (!isTfValid) {
       try {
-        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
+        const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY;
         const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`);
         const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
         if (tfJson.Status === "Success") isTfValid = true;

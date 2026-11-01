@@ -266,21 +266,12 @@ export const Route = createFileRoute("/api/search")({
             headers: { "content-type": "application/json" },
           });
         } catch (error) {
-          console.error("GET /api/search: live catalog edge fallback active", error);
-          const fallback = CURATED_RESTAURANTS;
+          console.error("GET /api/search: live catalog unavailable", error);
           return new Response(JSON.stringify({
-            restaurants: fallback,
-            dishes: [],
-            deliveryAvailable: true,
-            sections: {
-              offers: fallback.filter((c) => c.hasOffer).slice(0, 8),
-              popular: [...fallback].sort((a, b) => (b.ratingAvg ?? 4.0) - (a.ratingAvg ?? 4.0)).slice(0, 8),
-              fast: fallback.filter((c) => c.etaMinutes <= 25).slice(0, 8),
-              budget: [...fallback].sort((a, b) => a.minOrderPaise - b.minOrderPaise).slice(0, 8),
-              veg: fallback.filter((c) => c.vegOnly),
-              newKitchens: fallback.slice(0, 6),
-            },
-          }), { status: 200, headers: { "content-type": "application/json" } });
+            error: "RESTAURANT_CATALOG_UNAVAILABLE",
+            restaurants: [], dishes: [], deliveryAvailable: false,
+            sections: { offers: [], popular: [], fast: [], budget: [], veg: [], newKitchens: [] },
+          }), { status: 503, headers: { "content-type": "application/json" } });
         }
       },
     },

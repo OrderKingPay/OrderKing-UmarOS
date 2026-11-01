@@ -2,16 +2,23 @@ import { describe, it, expect } from "vitest";
 import {
   ALL_UTILITY_BILLERS,
   UTILITY_CATEGORIES,
+  POPULAR_RECHARGE_PLANS,
   type UtilityBiller,
+  type MobileRechargePlan,
 } from "../components/fintech/utilities-bill-engine";
-import { buildNPCIUpiIntentUrl, isValidVPA } from "../lib/payments/npci-upi-intent";
+import {
+  buildNPCIUpiIntentUrl,
+  generateAppDeepLink,
+  isValidVPA,
+} from "../lib/payments/npci-upi-intent";
 
 describe("Utilities Bill Payments Engine Specification Suite", () => {
   describe("1. Category Grid Integrity", () => {
-    it("contains all 6 mandatory Indian utility categories", () => {
+    it("contains all 6 mandatory Indian utility categories plus broadband", () => {
       const categoryIds = UTILITY_CATEGORIES.map((c) => c.id);
       expect(categoryIds).toContain("electricity");
       expect(categoryIds).toContain("mobile");
+      expect(categoryIds).toContain("broadband");
       expect(categoryIds).toContain("dth");
       expect(categoryIds).toContain("fastag");
       expect(categoryIds).toContain("lpg");
@@ -170,6 +177,126 @@ describe("Utilities Bill Payments Engine Specification Suite", () => {
           expect(text).not.toContain(slogan);
         });
       });
+    });
+  });
+
+  describe("5. PhonePe Parity Mobile Recharge Plans Grid", () => {
+    it("provides popular plans grid with ₹199, ₹299, ₹349, ₹666, and ₹2999 across major operators", () => {
+      const benchmarkPrices = [199, 299, 349, 666, 2999];
+      const operators: Array<"JIO" | "AIRTEL" | "VI" | "BSNL"> = ["JIO", "AIRTEL", "VI", "BSNL"];
+
+      operators.forEach((op) => {
+        const opPlans = POPULAR_RECHARGE_PLANS.filter((p) => p.operatorCode === op);
+        const opPrices = opPlans.map((p) => p.priceRupees);
+
+        benchmarkPrices.forEach((price) => {
+          expect(
+            opPrices,
+            `Operator ${op} must contain benchmark plan ₹${price}`
+          ).toContain(price);
+        });
+      });
+    });
+
+    it("verifies Jio True 5G Unlimited ₹349 plan details", () => {
+      const jio349 = POPULAR_RECHARGE_PLANS.find(
+        (p) => p.operatorCode === "JIO" && p.priceRupees === 349
+      );
+      expect(jio349).toBeDefined();
+      expect(jio349?.validity).toBe("28 Days");
+      expect(jio349?.data).toContain("2.5 GB/Day");
+      expect(jio349?.voice).toBe("Unlimited");
+      expect(jio349?.badge).toContain("True 5G Unlimited");
+    });
+
+    it("verifies Airtel Unlimited 5G ₹349 plan details", () => {
+      const airtel349 = POPULAR_RECHARGE_PLANS.find(
+        (p) => p.operatorCode === "AIRTEL" && p.priceRupees === 349
+      );
+      expect(airtel349).toBeDefined();
+      expect(airtel349?.validity).toBe("28 Days");
+      expect(airtel349?.data).toContain("2.0 GB/Day");
+      expect(airtel349?.voice).toBe("Unlimited");
+      expect(airtel349?.badge).toContain("Unlimited 5G");
+    });
+
+    it("verifies Annual ₹2999 365 Days plan across operators", () => {
+      const annualPlans = POPULAR_RECHARGE_PLANS.filter((p) => p.priceRupees === 2999);
+      expect(annualPlans.length).toBeGreaterThanOrEqual(4);
+      annualPlans.forEach((p) => {
+        expect(p.category).toBe("annual");
+        expect(parseInt(p.validity)).toBeGreaterThanOrEqual(365);
+      });
+    });
+  });
+
+  describe("6. Broadband & Fiber Billers Verification", () => {
+    it("verifies Broadband category contains Airtel, JioFiber, BSNL, and ACT", () => {
+      const broadbandBillers = ALL_UTILITY_BILLERS.filter((b) => b.category === "broadband");
+      expect(broadbandBillers.length).toBeGreaterThanOrEqual(4);
+
+      const codes = broadbandBillers.map((b) => b.code);
+      expect(codes).toContain("AIRTELBB");
+      expect(codes).toContain("JIOFIBER");
+      expect(codes).toContain("BSNLBB");
+      expect(codes).toContain("ACTFIBER");
+    });
+  });
+
+  describe("7. Direct UPI App Deep-Linking & Intent Schema", () => {
+    it("generates correct PhonePe, Google Pay, and Paytm deep-links with MCC 4814 for telecom", () => {
+      const vpa = "9395065587@ybl";
+      const intentParams = {
+        vpa,
+        payeeName: "OrderKing Telecom",
+        amountInRupees: 349,
+        currency: "INR" as const,
+        transactionRef: "RCG-JIO-986401",
+        transactionNote: "JIO 9864012345",
+        merchantCategoryCode: "4814", // Telecom
+        mode: "02",
+      };
+
+      const phonepeUrl = generateAppDeepLink("phonepe", intentParams);
+      expect(phonepeUrl.startsWith("phonepe://pay?")).toBe(true);
+      expect(phonepeUrl).toContain("pa=9395065587%40ybl");
+      expect(phonepeUrl).toContain("am=349.00");
+      expect(phonepeUrl).toContain("mc=4814");
+
+      const gpayUrl = generateAppDeepLink("gpay", intentParams);
+      expect(gpayUrl.startsWith("tez://upi/pay?")).toBe(true);
+      expect(gpayUrl).toContain("pa=9395065587%40ybl");
+      expect(gpayUrl).toContain("am=349.00");
+
+      const paytmUrl = generateAppDeepLink("paytm", intentParams);
+      expect(paytmUrl.startsWith("paytmmp://pay?")).toBe(true);
+      expect(paytmUrl).toContain("pa=9395065587%40ybl");
+      expect(paytmUrl).toContain("am=349.00");
+    });
+  });
+
+  describe("8. Zero-Barrier & Zero-Suspension Audit", () => {
+    it("verifies no fake 'BBPS authorization' or 'Settlement Suspended' barriers exist", () => {
+      const allText = JSON.stringify(ALL_UTILITY_BILLERS).toLowerCase();
+      expect(allText).not.toContain("suspended");
+      expect(allText).not.toContain("coming soon");
+      expect(allText).not.toContain("pending authorization");
+    });
+  });
+
+  describe("9. Statutory GST Tax Invoice (GSTIN 18AFXPH9838M1Z9) Integrity", () => {
+    it("verifies statutory tax calculations on ₹349 recharge (18% GST SAC 9984)", () => {
+      const totalAmount = 349;
+      const taxableValue = parseFloat((totalAmount / 1.18).toFixed(2));
+      const totalGst = parseFloat((totalAmount - taxableValue).toFixed(2));
+      const cgst = parseFloat((totalGst / 2).toFixed(2));
+      const sgst = parseFloat((totalGst - cgst).toFixed(2));
+
+      expect(taxableValue).toBe(295.76);
+      expect(totalGst).toBe(53.24);
+      expect(cgst).toBe(26.62);
+      expect(sgst).toBe(26.62);
+      expect(taxableValue + cgst + sgst).toBe(totalAmount);
     });
   });
 });

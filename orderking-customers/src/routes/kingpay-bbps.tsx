@@ -19,14 +19,14 @@ function KingPayBBPS() {
       {/* Header */}
       <div className="px-4 sm:px-6 pt-8 pb-4 bg-[#0B0F17] border-b border-slate-800 flex items-center gap-4 sticky top-0 z-40">
         <Link
-          to="/kingpay-wallet"
+          to="/king-pay"
           className="size-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition"
         >
           <ChevronLeft className="size-5" />
         </Link>
         <div>
-          <h1 className="text-lg sm:text-xl font-black text-white tracking-tight">Utilities</h1>
-          <p className="text-xs text-slate-400">Electricity, mobile, DTH, FASTag, gas &amp; water</p>
+          <h1 className="text-lg sm:text-xl font-black text-white tracking-tight">Recharge &amp; Bill Pay</h1>
+          <p className="text-xs text-slate-400">Mobile, electricity, broadband, DTH, FASTag &amp; gas</p>
         </div>
       </div>
 

@@ -53,16 +53,25 @@ describe("Customer App - Phone Auth & SMS Gateway Test Suite", () => {
   });
 
   it("4. falls back to resilient zero-lockout emergency mode when keys are unconfigured", async () => {
-    const result = await dispatchOtpSms({
-      phone: "9395065587",
-      otp: "654321",
-      channel: "sms",
-    });
+    const envBackup = { ...process.env };
+    delete process.env.FAST2SMS_API_KEY;
+    delete process.env.TWOFACTOR_API_KEY;
+    delete process.env.OTP_2FACTOR_API_KEY;
+    delete process.env.META_WHATSAPP_TOKEN;
+    try {
+      const result = await dispatchOtpSms({
+        phone: "9395065587",
+        otp: "654321",
+        channel: "sms",
+      });
 
-    expect(result.success).toBe(true);
-    expect(result.provider).toBe("resilient_fallback");
-    expect(result.debugOtp).toBe("654321");
-    expect(result.whatsAppOtpUrl).toBeDefined();
+      expect(result.success).toBe(true);
+      expect(result.provider).toBe("resilient_fallback");
+      expect(result.debugOtp).toBe("654321");
+      expect(result.whatsAppOtpUrl).toBeDefined();
+    } finally {
+      process.env = envBackup;
+    }
   });
 
   it("5. identifies fast2sms when valid key is present", () => {

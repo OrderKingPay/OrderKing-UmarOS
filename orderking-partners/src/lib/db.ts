@@ -7,10 +7,20 @@ export type DbSource = "neon" | "pglite";
 // "unset" — otherwise production would silently run on the PGLite fallback.
 export function getDatabaseUrl() {
   const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
-  let url = raw && raw.trim() ? raw : undefined;
-  if (url && url.includes('your_supabase_pooler')) url = undefined;
+  let url = raw && typeof raw === 'string' ? raw.trim() : undefined;
+  if (url) {
+    if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+      url = url.slice(1, -1).trim();
+    }
+  }
+  if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
+    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
+  }
   if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
     url = url.replace('sslmode=require', 'sslmode=no-verify');
+  }
+  if (url && url.includes('pooler.supabase.com') && !url.includes('sslmode=')) {
+    url += (url.includes('?') ? '&' : '?') + 'sslmode=no-verify&pgbouncer=true';
   }
   return url;
 }
@@ -112,7 +122,13 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INTERVAL, identity);
     const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing");
     const isRemote = url.includes("neon.tech") || url.includes("sslmode=") || url.includes("supabase.co") || !url.includes("localhost");
-    const pool = new Pool({ connectionString: url, ssl: isRemote ? { rejectUnauthorized: false } : undefined, max: 1, connectionTimeoutMillis: 15000 });
+    const pool = new Pool({
+      connectionString: url,
+      ssl: isRemote ? { rejectUnauthorized: false } : undefined,
+      connectionTimeoutMillis: 30000,
+      idleTimeoutMillis: 30000,
+      max: 5,
+    });
     const run = async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
@@ -133,7 +149,7 @@ function createNeonSql(): Promise<Sql> {
           } catch (err) {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|ETIMEDOUT|ECONNABORTED|EPROTO|EPIPE|closed abruptly/i.test(msg);
             if (isTransient && attempt < 2) {
               await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
               continue;
@@ -161,7 +177,7 @@ function createNeonSql(): Promise<Sql> {
               client = undefined;
             }
             const msg = error instanceof Error ? error.message : String(error);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|ETIMEDOUT|ECONNABORTED|EPROTO|EPIPE|closed abruptly/i.test(msg);
             if (isTransient && attempt < 2) {
               await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
               continue;
