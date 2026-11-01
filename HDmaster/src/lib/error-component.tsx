@@ -1,4 +1,4 @@
-import type { ErrorComponentProps } from "@tanstack/react-router";
+import { isRedirect, type ErrorComponentProps } from "@tanstack/react-router";
 import { AlertTriangle, RotateCcw, LayoutDashboard, RefreshCw, ShieldCheck } from "lucide-react";
 import { isChunkLoadError, triggerSelfHealingReload } from "@/lib/lazy-retry";
 import { SlowNetworkFallbackCard } from "@/components/ui/slow-network-fallback";
@@ -13,6 +13,14 @@ export function isNetworkTimeoutError(error: unknown): boolean {
 }
 
 export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
+  if (isRedirect(error)) {
+    throw error;
+  }
+  const rawMessage = error instanceof Error ? error.message : typeof error === "string" ? error : "";
+  if (typeof window !== "undefined" && (rawMessage.includes("Failed to get session") || rawMessage.includes("Unauthorized"))) {
+    window.location.replace("/login");
+    return null;
+  }
   const isChunk = isChunkLoadError(error);
   const isNetwork = isNetworkTimeoutError(error);
   const message =

@@ -356,7 +356,13 @@ export function CommandShell() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  if (isPending || (user && session.isPending)) {
+  const [sessionTimedOut, setSessionTimedOut] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setSessionTimedOut(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!sessionTimedOut && (isPending || (user && session.isPending))) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-bg text-muted">
         <OrderKingMark className="size-10" />

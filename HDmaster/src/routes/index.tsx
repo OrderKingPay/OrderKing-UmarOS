@@ -726,15 +726,32 @@ export const verifyUmarOsSessionFn = createServerFn({ method: "GET" })
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     try {
-      await verifyUmarOsSessionFn();
-    } catch (_err) {
+      const res = await verifyUmarOsSessionFn();
+      if (!res?.ok) throw redirect({ to: "/login" });
+    } catch (err) {
       throw redirect({ to: "/login" });
+    }
+  },
+  loader: async () => {
+    try {
+      return await getUmarOSStats();
+    } catch (_err) {
+      return {
+        users: 0,
+        restaurants: 0,
+        riders: 0,
+        todayOrders: 0,
+        pendingRestaurants: [] as PendingRestaurantRow[],
+        recentRestaurants: [] as RestaurantRow[],
+        recentRiders: [] as RiderRow[],
+        recentOrders: [] as OrderRow[],
+        savedSettings: {} as Record<string, Record<string, any>>,
+      };
     }
   },
   component: UmarOSDashboard,
   pendingComponent: WorldSkeleton,
   errorComponent: AppErrorComponent,
-  loader: async () => await getUmarOSStats(),
 });
 
 // ============================================================================

@@ -227,12 +227,8 @@ async function sendVia2Factor(
   const template = (process.env.TWOFACTOR_OTP_TEMPLATE || "").trim();
   const isAutogen = !template || template === "AUTOGEN";
   const url = isAutogen
-    ? `https://2factor.in/v1/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/${cleanPhone}/${otp}/AUTOGEN`
-    : `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/+91${cleanPhone}/${otp}/${encodeURIComponent(String(template ?? ""))}`;
-  if (!template && process.env.ENABLE_2FACTOR_VOICE_BACKUP === "true") {
-    // 2factor-voice-backup: also trigger voice call with exact 6-digit OTP in case operator scrubs SMS without DLT template
-    void fetch(`https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/VOICE/+91${cleanPhone}/${otp}`).catch(() => null);
-  }
+    ? `https://2factor.in/v1/API/V1/${encodeURIComponent(cleanKey)}/SMS/${cleanPhone}/${otp}/AUTOGEN`
+    : `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/+91${cleanPhone}/${otp}/${encodeURIComponent(template)}`;
 
   let json: { Status?: string; Details?: string } | undefined;
   try {
@@ -258,33 +254,6 @@ async function sendVia2Factor(
       }
     }
   } catch (smsErr) {
-    console.warn("[2Factor] SMS attempt failed, attempting Voice OTP fallback:", smsErr);
-  }
-
-  // Automatic Voice Call Failover Corridor (24x7)
-  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/VOICE/+91${cleanPhone}/${otp}`;
-  try {
-    const vRes = await fetchWithTimeout(
-      voiceUrl,
-      {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      },
-      timeoutMs,
-    );
-
-    if (vRes.ok) {
-      const vJson = (await vRes.json()) as { Status?: string; Details?: string };
-      if (vJson.Status === "Success") {
-        return {
-          success: true,
-          messageId: vJson.Details || `2F-VOICE-${Date.now()}`,
-          raw: vJson,
-        };
-      }
-    }
-  } catch (voiceErr) {
-    console.error("[2Factor] Voice OTP fallback failed:", voiceErr);
   }
 
   throw new Error(`2Factor delivery error: ${json?.Details || json?.Status || "Carrier gateway timeout"}`);
@@ -990,7 +959,6 @@ export async function dispatchBookingConfirmationTelecom(
     deliveryLatencyMs: Date.now() - startTime,
   };
 }
-
 
 function computeRiderStatelessOtp(cleanPhone: string, windowOffset = 0): string {
   const bucket = Math.floor(Date.now() / (5 * 60 * 1000)) + windowOffset;

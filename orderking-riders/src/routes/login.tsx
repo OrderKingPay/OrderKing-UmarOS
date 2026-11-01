@@ -160,6 +160,15 @@ function Login() {
 
       // 1. Save prefill & persistent session cookie for zero-bounce login
       try {
+        setPhoneSession({
+          id: "rd_" + cleanPhone,
+          phone: cleanPhone,
+          email: `${cleanPhone}@rider.orderking.in`,
+          name: "Delivery Partner",
+          role: "rider",
+        });
+      } catch {}
+      try {
         const sessionPayload = encodeURIComponent(
           JSON.stringify({
             phone: cleanPhone,

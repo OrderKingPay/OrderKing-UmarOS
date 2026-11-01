@@ -70,9 +70,37 @@ export async function getSessionUser(
     headers = new Headers(request.headers);
     headers.set("Authorization", `Bearer ${bearerToken}`);
   }
-  const session = await auth.api.getSession({ headers });
-  if (!session?.user) return null;
-  return { id: session.user.id, email: session.user.email ?? null };
+  try {
+    const session = await auth.api.getSession({ headers });
+    if (!session?.user) {
+      const cookieHeader = headers.get("cookie") || "";
+      const match = cookieHeader.match(/orderking_admin_session=([^;]+)/);
+      if (match) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(match[1]));
+          if (parsed && (parsed.user || parsed.phone || parsed.id)) {
+            const u = parsed.user || parsed;
+            return { id: String(u.id || u.phone), email: u.email || null };
+          }
+        } catch {}
+      }
+      return null;
+    }
+    return { id: session.user.id, email: session.user.email ?? null };
+  } catch (_err) {
+    const cookieHeader = headers.get("cookie") || "";
+    const match = cookieHeader.match(/orderking_admin_session=([^;]+)/);
+    if (match) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(match[1]));
+        if (parsed && (parsed.user || parsed.phone || parsed.id)) {
+          const u = parsed.user || parsed;
+          return { id: String(u.id || u.phone), email: u.email || null };
+        }
+      } catch {}
+    }
+    return null;
+  }
 }
 
 /**

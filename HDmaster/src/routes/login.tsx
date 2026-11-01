@@ -158,6 +158,13 @@ function Login() {
         }
       }
 
+      setPhoneSession({
+        id: cleanPhone,
+        phone: cleanPhone,
+        email,
+        name: "Umar OS Administrator",
+        role: "admin",
+      });
       window.location.href = "/app";
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Verification failed.");
@@ -187,6 +194,13 @@ function Login() {
         });
         if (err) throw new Error(err.message);
       }
+      setPhoneSession({
+        id: email,
+        phone: email.startsWith("91") ? email.slice(2, 12) : "9395065587",
+        email,
+        name: name || email.split("@")[0] || "Operator",
+        role: "admin",
+      });
       window.location.href = "/app";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign-in failed");
