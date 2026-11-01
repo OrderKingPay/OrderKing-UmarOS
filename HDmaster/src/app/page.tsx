@@ -41,7 +41,7 @@ export default function Home() {
             </button>
           </form>
           <p className="mt-6 text-xs text-zinc-500 text-center">
-            * We strictly enforce location verification to guarantee 100% genuine menus and transparent pricing. Zero fake catalogue items.
+            * Location-verified menus with transparent pricing. Only KYC-approved partner listings shown.
           </p>
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function Home() {
               Awaiting live store telemetry: Verified kitchens onboarding in your district
             </h4>
             <p className="text-sm text-zinc-400 leading-relaxed">
-              Partner kitchens and premium verified dining venues in pincode <span className="text-amber-400 font-mono font-bold">{pincode}</span> are currently undergoing menu validation and KYC verification. Zero mock entries are displayed.
+              Partner kitchens in pincode <span className="text-amber-400 font-mono font-bold">{pincode}</span> are undergoing menu validation and KYC verification. Only verified listings will appear.
             </p>
             <div className="pt-2">
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-xs text-zinc-300">

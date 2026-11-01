@@ -2146,7 +2146,7 @@ function SettingsPage() {
                         Smart Affiliate Travel
                       </div>
                       <p className="text-[10px] text-slate-500 leading-snug">
-                        Official deep-links to IRCTC Indian Railways and airlines without mock generators.
+                        Official deep-links to IRCTC Indian Railways and airline booking portals.
                       </p>
                     </div>
                   </div>
