@@ -191,6 +191,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           const row = payload?.new as UmarOsConfigRow;
 // @ts-ignore
           const k = row?.config_key || row?.key;
+// @ts-ignore
           const v = row?.config_value || row?.value;
           if (k && v) {
             setLiveConfig((prev) => ({

@@ -220,6 +220,12 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
     console.info("[OTP] Skipping 2Factor fallback because OTP_2FACTOR_API_KEY matches FAST2SMS_API_KEY or is not a distinct 2Factor UUID.");
     return false;
   } }
+  { var _f2sCheck = (process.env.FAST2SMS_API_KEY || "").trim();
+  var _tfCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
+  if (!_tfCheck || _tfCheck === _f2sCheck || _tfCheck.length > 45) {
+    console.info("[OTP] Skipping 2Factor fallback because OTP_2FACTOR_API_KEY matches FAST2SMS_API_KEY or is not a distinct 2Factor UUID.");
+    return false;
+  } }
   var f2sKey = (process.env.FAST2SMS_API_KEY || "").trim();
   var tfKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
   if (!tfKey || tfKey === f2sKey || tfKey.length > 45) {
@@ -281,6 +287,11 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
  * Official Endpoint: https://2factor.in/API/V1/{API_KEY}/VOICE/{PHONE}/{OTP}
  */
 export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<boolean> {
+  { var _f2sCheck = (process.env.FAST2SMS_API_KEY || "").trim();
+  var _tfCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
+  if (!_tfCheck || _tfCheck === _f2sCheck || _tfCheck.length > 45) {
+    return false;
+  } }
   { var _f2sCheck = (process.env.FAST2SMS_API_KEY || "").trim();
   var _tfCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
   if (!_tfCheck || _tfCheck === _f2sCheck || _tfCheck.length > 45) {
