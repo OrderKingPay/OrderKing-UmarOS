@@ -159,20 +159,20 @@ function Page() {
   const [dlNumber, setDlNumber] = useState("");
   const [rcNumber, setRcNumber] = useState("");
   const [panNumber, setPanNumber] = useState("");
-  const [aadhaarLast4, setAadhaarLast4] = useState("4829");
+  const [aadhaarLast4, setAadhaarLast4] = useState("");
   const [aadhaarMode, setAadhaarMode] = useState<"LAST4" | "DIGILOCKER">("LAST4");
-  const [digilockerLinked, setDigilockerLinked] = useState(true);
+  const [digilockerLinked, setDigilockerLinked] = useState(false);
   const [bankAccountHolder, setBankAccountHolder] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [confirmBankAccountNumber, setConfirmBankAccountNumber] = useState("");
   const [ifsc, setIfsc] = useState("");
   const [upiId, setUpiId] = useState("");
   const [docs, setDocs] = useState<KycDocsState>({
-    dlFrontBack: { name: "dl_verified.pdf", uploadedAt: new Date().toISOString(), verified: true } as any,
-    rcCopy: { name: "rc_verified.pdf", uploadedAt: new Date().toISOString(), verified: true } as any,
-    panCopy: { name: "pan_verified.pdf", uploadedAt: new Date().toISOString(), verified: true } as any,
-    aadhaarMasked: { name: "id_verified.pdf", uploadedAt: new Date().toISOString(), verified: true } as any,
-    partnerSelfie: { name: "selfie_verified.jpg", uploadedAt: new Date().toISOString(), verified: true } as any,
+    dlFrontBack: null,
+    rcCopy: null,
+    panCopy: null,
+    aadhaarMasked: null,
+    partnerSelfie: null,
   });
 
   function handleDigiLockerConnect() {

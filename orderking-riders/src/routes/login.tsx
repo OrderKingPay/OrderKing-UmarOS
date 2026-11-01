@@ -32,11 +32,7 @@ const PRIMARY_LANGUAGES: ReadonlyArray<{ code: LocaleCode; label: string; native
   { code: "te", label: "Telugu", native: "తెలుగు" },
 ];
 
-function computeRiderFallbackOtp(phone: string): string {
-  const tail = parseInt(phone.slice(-6) || "123456", 10);
-  const bucket = Math.floor(Date.now() / 600000);
-  return String(((tail * 7 + bucket * 13 + 135791) % 900000) + 100000);
-}
+
 
 function sanitizePhone(input: string): string {
   return input.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
@@ -133,18 +129,13 @@ function Login() {
         window.open(res.whatsAppOtpUrl, "_blank");
       }
 
-      const autoCode = String((res as any)?.debugOtp || (res as any)?.otp || (res as any)?.code || computeRiderFallbackOtp(cleanPhone));
-      setOtp(autoCode);
+      setOtp("");
       setStep("otp");
       setCountdown(30);
       setCanResend(false);
-
-    } catch {
-      const autoCode = computeRiderFallbackOtp(cleanPhone);
-      setOtp(autoCode);
-      setStep("otp");
-      setCountdown(30);
-      setCanResend(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to dispatch OTP. Please try again.";
+      setError(msg);
     } finally {
       setPending(false);
     }
@@ -487,7 +478,7 @@ function Login() {
                     <Label htmlFor="otp-input" className="text-xs font-semibold text-[#94A3B8]">
                       6-Digit OTP Code
                     </Label>
-                    <span className="text-[11px] font-mono text-emerald-400">Code Ready: {otp || "Auto-filled"}</span>
+                    <span className="text-[11px] font-mono text-[#94A3B8]">Valid for 10 mins</span>
                   </div>
 
                   {/* Tier-1 Benchmark 6 Individual Digit Slots */}

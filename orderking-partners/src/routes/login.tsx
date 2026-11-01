@@ -45,11 +45,7 @@ function resolveIdentifierToEmail(rawInput: string): { email: string; isMobile: 
   };
 }
 
-function computeFallbackOtp(phone: string): string {
-  const tail = parseInt(phone.slice(-6) || "123456", 10);
-  const bucket = Math.floor(Date.now() / 600000);
-  return String(((tail * 7 + bucket * 13 + 135791) % 900000) + 100000);
-}
+
 
 function Login() {
   const [mode, setMode] = useState<"in" | "up">(() => {
@@ -64,7 +60,7 @@ function Login() {
   const [otpStep, setOtpStep] = useState<"phone" | "code">("phone");
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpCode, setOtpCode] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState<string | null>(null);
+  
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
@@ -115,22 +111,15 @@ function Login() {
       const res = await sendPartnerOtpFn({
         data: { phone: cleanPhone, channel },
       });
-      const code = String((res as any)?.debugOtp || (res as any)?.otp || computeFallbackOtp(cleanPhone));
-      setGeneratedOtp(code);
-      setOtpCode(code);
       if (channel === "whatsapp" && (res as any)?.whatsAppOtpUrl && typeof window !== "undefined") {
         window.open((res as any).whatsAppOtpUrl, "_blank");
       }
       setOtpStep("code");
       setCountdown(30);
       setCanResend(false);
-    } catch {
-      const fallback = computeFallbackOtp(cleanPhone);
-      setGeneratedOtp(fallback);
-      setOtpCode(fallback);
-      setOtpStep("code");
-      setCountdown(30);
-      setCanResend(false);
+      setOtpCode("");
+    } catch (err: any) {
+      setError(err?.message || "Failed to dispatch verification OTP. Please try again.");
     } finally {
       setWorking(false);
     }
@@ -158,10 +147,8 @@ function Login() {
           isNew = Boolean(verifyRes.isNewUser || mode === "up");
           credential = verifyRes.credential || credential;
         }
-      } catch {
-        if (generatedOtp && code !== generatedOtp) {
-          throw new Error("Invalid verification code. Please check the 6-digit code shown above.");
-        }
+      } catch (verifyErr: any) {
+        throw new Error(verifyErr?.message || "Invalid verification code. Please check the code or request a new one.");
       }
 
       setPhoneSession({
@@ -382,12 +369,7 @@ function Login() {
                     </button>
                   </div>
 
-                  {generatedOtp && (
-                    <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 px-3.5 py-2.5 text-xs text-emerald-200 flex items-center justify-between">
-                      <span>Instant Verification Code: <strong className="font-mono text-sm text-emerald-300">{generatedOtp}</strong></span>
-                      <span className="text-[10px] uppercase font-mono bg-emerald-500/20 px-2 py-0.5 rounded text-emerald-300">Auto-Filled</span>
-                    </div>
-                  )}
+                  
 
                   <div>
                     <Label htmlFor="otp-input" className="text-xs text-slate-300">6-Digit OTP Code</Label>
@@ -422,6 +404,33 @@ function Login() {
                     {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
                     <span>{mode === "up" ? "Verify & Start Onboarding →" : "Verify & Open Partner Dashboard →"}</span>
                   </Button>
+
+                  <div className="pt-2 flex flex-col gap-2">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <span>Didn't receive the code?</span>
+                      {canResend ? (
+                        <button
+                          type="button"
+                          onClick={() => void handleSendOtp("sms")}
+                          className="font-bold text-emerald-400 hover:underline flex items-center gap-1"
+                        >
+                          <RefreshCw className="size-3" />
+                          Resend via SMS
+                        </button>
+                      ) : (
+                        <span className="text-slate-500">Resend in {countdown}s</span>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => void handleSendOtp("whatsapp")}
+                      className="w-full rounded-xl border border-slate-800 bg-slate-950/60 py-2 text-xs font-semibold text-emerald-400 hover:bg-slate-800 transition flex items-center justify-center gap-1.5"
+                    >
+                      <MessageCircle className="size-3.5 text-emerald-400" />
+                      Resend via WhatsApp
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

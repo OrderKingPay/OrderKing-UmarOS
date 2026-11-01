@@ -658,10 +658,10 @@ export function SupremeKingPayExperience() {
               </div>
               <div className="min-w-0 mt-2">
                 <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate flex items-center gap-1">
-                  <span>💳</span> <span>Wallet &amp; Payments</span>
+                  <span>💰</span> <span>Local Parcel &amp; Courier</span>
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                  Razorpay Top-Up · Direct Handle
+                  Doorstep Pickup · Hyperlocal Dispatch
                 </p>
               </div>
             </button>

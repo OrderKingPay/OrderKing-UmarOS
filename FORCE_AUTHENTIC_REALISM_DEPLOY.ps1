@@ -473,21 +473,8 @@ if (Test-Path $walletLegacyPath) {
 # ==============================================================================
 Write-Host "[5/6] Upgrading Rider & Partner OTP Verification Resilience and Auditing Brand Copy..." -ForegroundColor Cyan
 
-foreach ($loginFile in @(
-    (Join-Path $RepoRoot "orderking-riders\src\routes\login.tsx"),
-    (Join-Path $RepoRoot "orderking-partners\src\routes\login.tsx"),
-    (Join-Path $RepoRoot "orderking-customers\src\routes\login.tsx"),
-    (Join-Path $RepoRoot "HDmaster\src\routes\login.tsx")
-)) {
-    if (Test-Path $loginFile) {
-        $loginText = Get-Content -Path $loginFile -Raw
-        if ($loginText -match "debugOtp" -and $loginText -notmatch "Auto-filled verification code") {
-            $loginText = $loginText -replace 'setStep\("otp"\);', 'setStep("otp"); if ((res as any)?.debugOtp) { setOtp((res as any).debugOtp); }'
-            Set-Content -Path $loginFile -Value $loginText -Encoding UTF8
-            Write-Host "  -> Enabled automatic OTP pre-fill fallback in $loginFile when SMS carrier is delayed" -ForegroundColor Green
-        }
-    }
-}
+# Zero-Mock Realism: Human-style OTP entry via SMS and WhatsApp corridors only.
+# No artificial test pre-fills or debugOtp leakage to client routes.
 
 # Strip any visible "Zomato" or "Swiggy" strings from UI components across all 4 apps
 foreach ($app in @("HDmaster", "orderking-customers", "orderking-partners", "orderking-riders")) {

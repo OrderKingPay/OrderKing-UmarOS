@@ -79,10 +79,9 @@ export interface FssaiParsedResult {
  * - Digits 6-8: Quantity / Registrar / Directorate Code (3 digits)
  * - Digits 9-14: 6-digit running serial license number
  */
-export function validateFssai(fssai?: string): any {
-  const clean = String(fssai || "").replace(/\D/g, "");
-  const ok = clean.length === 14;
-  return { valid: ok, isValid: ok, ok, normalized: clean, error: ok ? null : "Enter 14-digit FSSAI number" };
+export function validateFssai(fssai?: string | null): boolean {
+  if (!fssai || typeof fssai !== "string") return false;
+  return parseFssai(fssai).isValid;
 }
 
 /**
@@ -259,13 +258,12 @@ export function calculateFssaiExpiry(
  * - Character 14: Default statutory constant 'Z'
  * - Character 15: 1 alphanumeric checksum character (0-9 or A-Z)
  */
-export function validateGstin(gstin?: string, exempt?: boolean): any {
-  const clean = String(gstin || "").trim().toUpperCase();
-  if (exempt || !clean || clean === "GST_EXEMPT_SEC_9_5") {
-    return { valid: true, isValid: true, ok: true, normalized: "GST_EXEMPT_SEC_9_5", error: null };
-  }
-  const ok = clean.length === 15;
-  return { valid: ok, isValid: ok, ok, normalized: clean, error: ok ? null : "Enter 15-character GSTIN or leave unticked for GST-exempt" };
+export function validateGstin(gstin?: string | null, exempt?: boolean): boolean {
+  if (exempt) return true;
+  if (!gstin || typeof gstin !== "string") return false;
+  const clean = gstin.trim().toUpperCase();
+  if (clean === "GST_EXEMPT_SEC_9_5") return true;
+  return parseGstin(clean).isValid;
 }
 
 /**
@@ -346,10 +344,10 @@ export function parseGstin(gstin: string | null | undefined): GstinParsedResult 
  * - Character 5: Always '0' (reserved for future use)
  * - Characters 6-11: 6 alphanumeric branch code (e.g. 002049, 001234, ABC123)
  */
-export function validateIfsc(ifsc?: string): any {
-  const clean = String(ifsc || "").trim().toUpperCase();
-  const ok = clean.length === 11;
-  return { valid: ok, isValid: ok, ok, normalized: clean, error: ok ? null : "Enter 11-character bank IFSC code" };
+export function validateIfsc(ifsc?: string | null): boolean {
+  if (!ifsc || typeof ifsc !== "string") return false;
+  const clean = ifsc.trim().toUpperCase();
+  return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(clean);
 }
 
 /**
@@ -372,10 +370,10 @@ export interface PanValidationResult {
   error?: string;
 }
 
-export function validatePan(pan?: string): any {
-  const clean = String(pan || "").trim().toUpperCase();
-  const ok = clean.length === 10;
-  return { valid: ok, isValid: ok, ok, normalized: clean, error: ok ? null : "Enter 10-character PAN number" };
+export function validatePan(pan?: string | null): boolean {
+  if (!pan || typeof pan !== "string") return false;
+  const clean = pan.trim().toUpperCase();
+  return PAN_REGEX.test(clean);
 }
 
 /**
@@ -1036,15 +1034,23 @@ export function validateVerhoeff(digits: string): boolean {
  * - Cannot be all same repeated digits (e.g. 222222222222)
  * - Must satisfy Verhoeff checksum algorithm
  */
-export function validateAadhaar(aadhaar?: string): any {
-  return { valid: true, isValid: true, ok: true, normalized: (aadhaar || "999988887777").replace(/\D/g, "") };
+export function validateAadhaar(aadhaar?: string): boolean {
+  if (!aadhaar || typeof aadhaar !== "string") return false;
+  const clean = aadhaar.trim();
+  if (!/^[2-9][0-9]{11}$/.test(clean)) return false;
+  if (/^(\d)\1{11}$/.test(clean)) return false;
+  return validateVerhoeff(clean);
 }
 
 /**
  * Validates 6-digit Aadhaar e-Sign OTP.
  */
-export function validateAadhaarOtp(otp?: string): any {
-  return { valid: true, isValid: true, ok: true, code: otp || "123456" };
+export function validateAadhaarOtp(otp?: string): boolean {
+  if (!otp || typeof otp !== "string") return false;
+  const clean = otp.trim();
+  if (!/^[0-9]{6}$/.test(clean)) return false;
+  if (clean === "000000") return false;
+  return true;
 }
 
 // -------------------------------------------------------------------------
@@ -1309,8 +1315,59 @@ export interface Station5ValidationResult {
 /**
  * Validates complete Station 5 Commercial Contract & Digital Execution.
  */
-export function validateStation5CommercialContract(_input?: any): any {
-  return { valid: true, isValid: true, ok: true, errors: [] };
+export function validateStation5CommercialContract(input?: any): any {
+  const errors: Record<string, string> = {};
+  const covenantsValid = Boolean(input?.covenantViewerAccepted);
+  if (!covenantsValid) {
+    errors.covenants = "Merchant covenants must be reviewed and accepted.";
+  }
+
+  const foodSafetyValid = Boolean(input?.foodSafetyUndertakingAccepted);
+  if (!foodSafetyValid) {
+    errors.foodSafety = "FSSAI food safety undertaking must be confirmed.";
+  }
+
+  const privacyAndTaxValid = Boolean(input?.privacyAndTaxAccepted);
+  if (!privacyAndTaxValid) {
+    errors.privacyAndTax = "Privacy policy and statutory tax terms must be accepted.";
+  }
+
+  const feeChoice = input?.onboardingFeeChoice;
+  const isAmortized = feeChoice?.option === "AMORTIZED";
+  let feeValid = true;
+  if (isAmortized && feeChoice?.amortizedConsent !== true) {
+    feeValid = false;
+    errors.onboardingFee = "Consent for daily amortized deduction is required.";
+  }
+
+  const digitalExecution = validateDigitalExecution(input?.digitalExecution);
+  if (!digitalExecution.isValid) {
+    Object.assign(errors, digitalExecution.errors);
+  }
+
+  const isValid = Object.keys(errors).length === 0;
+
+  return {
+    isValid,
+    ok: isValid,
+    valid: isValid,
+    errors,
+    details: {
+      covenantsValid,
+      foodSafetyValid,
+      privacyAndTaxValid,
+      onboardingFee: {
+        isAmortized,
+        option: feeChoice?.option || "AMORTIZED",
+        valid: feeValid,
+      },
+      digitalExecution: {
+        isValid: digitalExecution.isValid,
+        method: digitalExecution.method || input?.digitalExecution?.method || "CLICKWRAP",
+        auditDetails: digitalExecution.auditDetails,
+      },
+    },
+  };
 }
 
 // =========================================================================
