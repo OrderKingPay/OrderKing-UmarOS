@@ -21,7 +21,7 @@ export type LedgerAccountType =
   | "COMMISSION_ESCROW"
   | "GST_OUTPUT_LIABILITY"
   | "REFUND_CLEARING"
-  | "FOUNDER_PASSBOOK"
+  | "FOUNDER_VAULT"
   | "CUSTOMER_CASH_IN"
   | "BANK_CLEARING"
   | "SUBSCRIPTION_REVENUE"
@@ -117,7 +117,7 @@ export interface DynamicTravelCheckoutSplitParams {
   convenienceFeePaise?: number;
   providerName?: string; // default: "TBO_B2B_187051"
   paymentMethod?: "NPCI_UPI" | "DIRECT_UPI" | "KING_PAY" | "BANK_TRANSFER" | "RAZORPAY_ONLINE";
-  founderAccount?: "PLATFORM_FEE_REVENUE" | "FOUNDER_PASSBOOK";
+  founderAccount?: "PLATFORM_FEE_REVENUE" | "FOUNDER_VAULT";
   founderEntityId?: string;
   idempotencyKey: string;
 }
@@ -1264,7 +1264,7 @@ export class CanonicalLedger {
    * Binds dynamic travel checkout split-settlement with exact 4-way balanced double-entry accounting:
    * - DEBIT: Bank Clearing (BANK_CLEARING) — Full Customer Paid Amount via NPCI UPI
    * - CREDIT: TBO B2B Settlement Account (TRAVEL_PROVIDER_PAYABLE) — Wholesale Net Paise
-   * - CREDIT: Founder Fee Revenue Account (PLATFORM_FEE_REVENUE / FOUNDER_PASSBOOK) — Net Retained Margin + Convenience Fee
+   * - CREDIT: Founder Fee Revenue Account (PLATFORM_FEE_REVENUE / FOUNDER_VAULT) — Net Retained Margin + Convenience Fee
    * - CREDIT: Closed-Loop Food Wallet Float (CUSTOMER_WALLET) — ₹200 / 20,000 paise reward per booking
    *
    * Invariant: Debits - Credits === 0 paise exact. Fail-closed if funds are insufficient or fractional.
@@ -1301,7 +1301,7 @@ export class CanonicalLedger {
       : `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`;
 
     const founderAccount: LedgerAccountType = params.founderAccount || "PLATFORM_FEE_REVENUE";
-    const founderEntityId = params.founderEntityId || "FOUNDER_PASSBOOK";
+    const founderEntityId = params.founderEntityId || "FOUNDER_VAULT";
     const providerEntityId = params.providerName || "TBO_B2B_187051";
 
     const entries: LedgerEntry[] = [

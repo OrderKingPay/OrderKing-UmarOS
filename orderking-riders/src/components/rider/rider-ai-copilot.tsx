@@ -161,7 +161,7 @@ export function RiderAiCopilot({
               : `• Duty Status: ${h.rider.status}. Tap any field support topic below for step-by-step assistance.`,
             unreconciledPaise > 0
               ? `• COD Hand-Float: ${formatINR(unreconciledPaise)} collected (${formatINR(Math.max(0, COD_FLOAT_LIMIT_PAISE - unreconciledPaise))} remaining before the ₹2,500 limit).`
-              : `• COD Hand-Float: UPI Ready pending cash.`,
+              : `• COD Hand-Float: ₹0.00 pending cash.`,
           ];
 
           setMessages([

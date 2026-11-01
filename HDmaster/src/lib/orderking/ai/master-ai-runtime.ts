@@ -1615,7 +1615,7 @@ export async function executeTool(
       });
 
       return {
-        status: "FOUNDER_PASSBOOK_AUDITED_CONFIDENTIAL",
+        status: "FOUNDER_VAULT_AUDITED_CONFIDENTIAL",
         timestamp: new Date().toISOString(),
         confidentialityLevel: "STRICTLY_RESTRICTED_FOUNDER_CEO_ONLY",
         vaultSummary,
@@ -2129,7 +2129,7 @@ export async function executeTool(
         platformConvenienceFeesPaise: 20_000_000,
       });
       return {
-        status: "FOUNDER_PASSBOOK_TELEMETRY_ACTIVE",
+        status: "FOUNDER_VAULT_TELEMETRY_ACTIVE",
         timestamp: new Date().toISOString(),
         vault,
         result: "Founder Private Cash Vault verified with integer-paise accuracy and zero leakage.",

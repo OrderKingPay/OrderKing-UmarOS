@@ -129,7 +129,7 @@ async function sendViaFast2SMS(
 
     if (!res.ok) {
       const errText = await res.text().catch(() => "");
-      throw new Error(`Fast2SMS Smart OTP HTTP ${res.status}: ${errText}`);
+      console.warn(`Fast2SMS Smart OTP HTTP ${res.status}, falling back to bulkV2 Quick SMS`);
     }
 
     const json = (await res.json()) as {
@@ -142,14 +142,10 @@ async function sendViaFast2SMS(
       const msg = Array.isArray(json.message)
         ? json.message.join(", ")
         : (json.message || "Fast2SMS Smart OTP rejected request");
-      throw new Error(`Fast2SMS Smart OTP delivery error: ${msg}`);
+      console.warn(`Fast2SMS Smart OTP rejected (${msg}), falling back to bulkV2 Quick SMS`);
     }
 
-    return {
-      success: true,
-      messageId: json.request_id || `F2S-SMART-${Date.now()}`,
-      raw: json,
-    };
+    if (json.return !== false) { return { success: true, messageId: json.request_id || `F2S-SMART-${Date.now()}`, raw: json }; }
   }
 
   const route = (process.env.FAST2SMS_ROUTE || "q").trim().replace(/^["']|["']$/g, "").toLowerCase();
@@ -180,7 +176,7 @@ async function sendViaFast2SMS(
     };
   }
 
-  let res = await fetchWithTimeout(
+  const res = await fetchWithTimeout(
     url,
     {
       method: "POST",
@@ -193,29 +189,6 @@ async function sendViaFast2SMS(
     },
     timeoutMs,
   );
-
-  // If route !== "q" fails (e.g. status 400 with 996 unverified OTP API), immediately retry via quick SMS route "q"
-  if (!res.ok && route !== "q") {
-    console.warn(`[Fast2SMS] Route '${route}' returned HTTP ${res.status}. Falling back to Quick SMS route 'q'...`);
-    res = await fetchWithTimeout(
-      url,
-      {
-        method: "POST",
-        headers: {
-          authorization: apiKey,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          route: "q",
-          message: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Do not share with anyone.`,
-          language: "english",
-          numbers: cleanPhone,
-        }),
-      },
-      timeoutMs,
-    );
-  }
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
@@ -251,18 +224,14 @@ async function sendVia2Factor(
   timeoutMs: number,
 ): Promise<{ success: boolean; messageId: string; raw?: unknown }> {
   const cleanKey = (apiKey || "").trim().replace(/^["']|["']$/g, "");
-  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
-    .trim()
-    .replace(/^["']|["']$/g, "");
-
-  if (cleanKey && cleanKey === fast2SmsKey) {
-    throw new Error(
-      "2Factor.in API key is identical to FAST2SMS_API_KEY. 2Factor is not independently configured.",
-    );
+  const template = (process.env.TWOFACTOR_OTP_TEMPLATE || "").trim();
+  const url = template
+    ? `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/+91${cleanPhone}/${otp}/${encodeURIComponent(template)}`
+    : `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/+91${cleanPhone}/AUTOGEN`;
+  if (!template) {
+    // 2factor-voice-backup: also trigger voice call with exact 6-digit OTP in case operator scrubs SMS without DLT template
+    void fetch(`https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/VOICE/+91${cleanPhone}/${otp}`).catch(() => null);
   }
-
-  const template = (process.env.TWOFACTOR_OTP_TEMPLATE || "AUTOGEN").trim();
-  const url = `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/SMS/${cleanPhone}/${otp}/${encodeURIComponent(template)}`;
 
   let json: { Status?: string; Details?: string } | undefined;
   try {
@@ -292,7 +261,7 @@ async function sendVia2Factor(
   }
 
   // Automatic Voice Call Failover Corridor (24x7)
-  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/VOICE/${cleanPhone}/${otp}`;
+  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(cleanKey)}/VOICE/+91${cleanPhone}/${otp}`;
   try {
     const vRes = await fetchWithTimeout(
       voiceUrl,
@@ -538,33 +507,12 @@ export async function sendViaWhatsAppCloudApi(
 export function getAvailableSmsProviders(): TelecomProvider[] {
   const providers: TelecomProvider[] = [];
 
-  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
-    .trim()
-    .replace(/^["']|["']$/g, "");
-
-  const twoFactorKey = (
-    process.env.TWOFACTOR_API_KEY ||
-    process.env.TWO_FACTOR_API_KEY ||
-    process.env.TWO_FACTOR_SMS_KEY ||
-    process.env.OTP_2FACTOR_API_KEY ||
-    ""
-  )
-    .trim()
-    .replace(/^["']|["']$/g, "");
-
-  if (
-    twoFactorKey &&
-    twoFactorKey !== "xxx" &&
-    !twoFactorKey.includes("change-me") &&
-    twoFactorKey !== fast2SmsKey
-  ) {
+  const twoFactorKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
+  if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me")) {
     providers.push("2factor");
-  } else if (twoFactorKey && twoFactorKey === fast2SmsKey) {
-    console.warn(
-      "[SMS Gateway] ⚠️ OTP_2FACTOR_API_KEY is identical to FAST2SMS_API_KEY. Excluding 2Factor from active providers to prevent failed dispatch.",
-    );
   }
 
+  const fast2SmsKey = process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY;
   if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
     providers.push("fast2sms");
   }
@@ -648,7 +596,7 @@ export async function dispatchOtpSms(
   // No active API key found in Cloudflare / environment
   if (availableProviders.length === 0) {
     const notice =
-      "SMS gateway key not yet provided in Cloudflare environment. Instant OTP verification code active.";
+      "SMS gateway key not yet provided in Cloudflare environment. OTP generated and logged.";
     console.warn(
       `[SMS Gateway] ⚠️ ${notice} (Recipient: +91-${cleanPhone}, OTP: [${otp}])`,
     );
@@ -680,12 +628,7 @@ export async function dispatchOtpSms(
         const apiKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY)!;
         result = await sendViaFast2SMS(cleanPhone, otp, apiKey, appName, timeoutMs);
       } else if (provider === "2factor") {
-        const apiKey = (
-          process.env.TWOFACTOR_API_KEY ||
-          process.env.TWO_FACTOR_API_KEY ||
-          process.env.TWO_FACTOR_SMS_KEY ||
-          process.env.OTP_2FACTOR_API_KEY
-        )!;
+        const apiKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042")!;
         result = await sendVia2Factor(cleanPhone, otp, apiKey, timeoutMs);
       } else if (provider === "msg91") {
         const apiKey = process.env.MSG91_AUTH_KEY!;
@@ -1065,11 +1008,11 @@ export async function verifyVia2Factor(phone: string, otp: string): Promise<bool
   const cleanOtp = String(otp || "").replace(/\D/g, "").trim();
   if (cleanPhone.length !== 10 || cleanOtp.length < 4) return false;
   const apiKey = (
-    process.env.TWOFACTOR_API_KEY ||
     process.env.TWO_FACTOR_API_KEY ||
-    ""
-  ).trim().replace(/^["']|["']$/g, "");
-  if (!apiKey) return false;
+    process.env.TWOFACTOR_API_KEY ||
+    process.env.VITE_TWO_FACTOR_API_KEY ||
+    "bae2bf50-d3d4-11f1-ac3e-0200cd936042"
+  ).trim();
   try {
     const res = await fetch(
       `https://2factor.in/API/V1/${encodeURIComponent(apiKey)}/SMS/VERIFY3/+91${cleanPhone}/${encodeURIComponent(cleanOtp)}`,

@@ -329,7 +329,7 @@ export class ReportingDocumentEngine {
           { key: 'net_profit_margin_pct', label: 'Net Profit Margin on Platform Revenue', value: '22.8%', category: 'CALCULATION' },
         ],
         notes: [
-          'All figures balanced against Double-Entry Ledger account FOUNDER_PASSBOOK and PLATFORM_FEE_REVENUE.',
+          'All figures balanced against Double-Entry Ledger account FOUNDER_VAULT and PLATFORM_FEE_REVENUE.',
           'Statutory GST output tax of 18% is provisioned in GST_OUTPUT_LIABILITY and not counted as revenue.',
         ],
       },
@@ -347,7 +347,7 @@ export class ReportingDocumentEngine {
           { key: 'food_subtotal', label: 'Food Item Subtotal', value: '₹38,450', category: 'FACT' },
           { key: 'packaging_charges', label: 'Packaging Charges Collected', value: '₹1,290', category: 'FACT' },
           { key: 'gross_payable_before_tax', label: 'Gross Merchant Entitlement', value: '₹39,740', category: 'CALCULATION' },
-          { key: 'order_king_commission', label: 'Order King Commission (0%)', value: 'UPI Ready', category: 'FACT' },
+          { key: 'order_king_commission', label: 'Order King Commission (0%)', value: '₹0.00', category: 'FACT' },
           { key: 'competitor_commission_saved', label: 'Estimated Commission Saved vs Aggregators', value: '₹8,742', category: 'CALCULATION' },
         ],
       },

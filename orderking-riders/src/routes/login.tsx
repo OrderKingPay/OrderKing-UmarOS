@@ -32,14 +32,6 @@ const PRIMARY_LANGUAGES: ReadonlyArray<{ code: LocaleCode; label: string; native
   { code: "te", label: "Telugu", native: "తెలుగు" },
 ];
 
-
-
-function computeRiderFallbackOtp(phone: string): string {
-  const tail = parseInt(phone.slice(-6) || "123456", 10);
-  const bucket = Math.floor(Date.now() / 600000);
-  return String(((tail * 7 + bucket * 13 + 135791) % 900000) + 100000);
-}
-
 function sanitizePhone(input: string): string {
   return input.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "");
 }
@@ -131,18 +123,13 @@ function Login() {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
 
-      if (channel === "whatsapp" && res.whatsAppOtpUrl && typeof window !== "undefined") {
-        window.open(res.whatsAppOtpUrl, "_blank");
-      }
-
-      setOtp("");
-      const autoCode = String((res as any)?.debugOtp || (res as any)?.otp || (res as any)?.code || computeRiderFallbackOtp(cleanPhone));
-      setOtp(autoCode);
+      if ((res as any)?.debugOtp) { setOtp(String((res as any).debugOtp)); }
       setStep("otp");
       setCountdown(30);
       setCanResend(false);
+
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to dispatch OTP. Please try again.";
+      const msg = err instanceof Error ? err.message : "Failed to send OTP.";
       setError(msg);
     } finally {
       setPending(false);
@@ -163,17 +150,9 @@ function Login() {
     setError(null);
 
     try {
-      let verifyRes: any;
-      try {
-        verifyRes = await verifyRiderOtpFn({ data: { phone: cleanPhone, otp: cleanCode } });
-      } catch {
-        verifyRes = {
-          ok: true,
-          email: `${cleanPhone}@rider.orderking.in`,
-          credential: `OK_RDR_${cleanPhone}_2026`,
-          destination: "/onboarding",
-        };
-      }
+      const verifyRes = await verifyRiderOtpFn({
+        data: { phone: cleanPhone, otp: cleanCode },
+      });
 
       if (!verifyRes.ok) {
         throw new Error("Invalid verification code. Please check or request a new code.");
@@ -389,20 +368,13 @@ function Login() {
                       type="tel"
                       inputMode="numeric"
                       pattern="[0-9]*"
-                      maxLength={14}
+                      maxLength={10}
                       autoFocus
                       required
                       placeholder="e.g. 9876543210"
                       value={mobileNumber}
                       onChange={(e) => {
-                        const raw = e.target.value;
-                        const digits = raw.replace(/\D/g, "");
-                        const val =
-                          digits.length === 12 && digits.startsWith("91")
-                            ? digits.slice(2)
-                            : digits.length === 11 && digits.startsWith("0")
-                            ? digits.slice(1)
-                            : digits.replace(/^(?:91|0)(?=\d{10}$)/, "").slice(0, 10);
+                        const val = e.target.value.replace(/\D/g, "").slice(0, 10);
                         setMobileNumber(val);
                         if (error) setError(null);
                       }}
@@ -486,7 +458,7 @@ function Login() {
                     <Label htmlFor="otp-input" className="text-xs font-semibold text-[#94A3B8]">
                       6-Digit OTP Code
                     </Label>
-                    <span className="text-[11px] font-mono text-[#94A3B8]">Valid for 10 mins</span>
+                    <span className="text-[11px] text-[#64748B]">Auto-detecting SMS</span>
                   </div>
 
                   {/* Tier-1 Benchmark 6 Individual Digit Slots */}
@@ -604,4 +576,3 @@ function Login() {
     </main>
   );
 }
-

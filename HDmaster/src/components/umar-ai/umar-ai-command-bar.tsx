@@ -184,16 +184,15 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         { event: "*", schema: "public", table: "umar_os_config" },
         (payload: any) => {
           const row = payload?.new as UmarOsConfigRow;
-          const configKey = row?.key;
-          if (configKey && row?.value) {
+          if (row?.key && row?.value) {
             setLiveConfig((prev) => ({
               ...prev,
-              [configKey]: {
-                ...((prev as any)[configKey] || {}),
+              [row.key]: {
+                ...(prev[row.key] || {}),
                 ...row.value,
               },
             }));
-            toast.info(`Realtime sync: ${configKey} updated in Supabase`, {
+            toast.info(`Realtime sync: ${row.key} updated in Supabase`, {
               duration: 2500,
             });
           }
@@ -236,7 +235,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
 
     const parsed = parseNaturalLanguageConfigCommand(text);
     if (!parsed) {
-      toast.success("Founder directive executed & synced across UmarOS. For 1-click restaurant onboarding/unboarding, open the OrderKing tab below.");
+      toast.error("Directive executed & synced across UmarOS.");
       return;
     }
 
@@ -472,7 +471,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
             placeholder={
               isListening
                 ? "Listening... speak command now..."
-                : "Ask any question or type a directive (e.g. 'how to onboard a restaurant', 'set food platform fee to 12', 'commission 18%')..."
+                : "Type directive (e.g. 'set food platform fee to 12' or 'set remit fee to 1.5')..."
             }
             className="w-full h-11 pl-10 pr-24 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-white placeholder:text-slate-500 font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
           />

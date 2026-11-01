@@ -85,7 +85,7 @@ describe("King AI Culinary Photo Studio & Taxonomy Engine", () => {
 
   test("strictly enforces zero competitor names and zero forbidden terms", () => {
     const serialized = JSON.stringify(CULINARY_PHOTO_DATABASE).toLowerCase();
-    const forbiddenTerms = [["z", "o", "m", "a", "t", "o"].join(""), "OrderKing", "umar"];
+    const forbiddenTerms = [["z", "o", "m", "a", "t", "o"].join(""), "swiggy", "umar"];
     for (const term of forbiddenTerms) {
       assert.ok(!serialized.includes(term));
     }

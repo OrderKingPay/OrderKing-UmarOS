@@ -492,7 +492,7 @@ export function MonthlyGstr1InvoiceModal({
                     <td className="p-2 border border-slate-300 text-right font-mono text-slate-500">—</td>
                     <td className="p-2 border border-slate-300 text-right font-mono text-slate-500">—</td>
                     <td className="p-2 border border-slate-300 text-right font-mono text-slate-500 font-semibold">
-                      UPI Ready <span className="text-[9px] text-slate-400 block font-normal">(Fleet Remitted)</span>
+                      ₹0.00 <span className="text-[9px] text-slate-400 block font-normal">(Fleet Remitted)</span>
                     </td>
                   </tr>
 

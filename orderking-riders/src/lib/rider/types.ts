@@ -254,12 +254,6 @@ export type RiderProfile = {
   vehicleType: VehicleType;
   vehicleRegistration: string | null;
   licenceNumber?: string | null;
-  dlNumber?: string | null;
-  vehicleNumber?: string | null;
-  pan?: string | null;
-  bankAccount?: string | null;
-  bankIfsc?: string | null;
-  bankHolder?: string | null;
   insuranceRef?: string | null;
   payoutUpi?: string | null;
   payoutBankLast4?: string | null;

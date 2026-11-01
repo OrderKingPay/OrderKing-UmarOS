@@ -41,7 +41,7 @@ export interface StorageInspectionResult {
   };
 }
 
-const PASSBOOK_STORAGE_KEY = "hdmaster_media_vault_v1";
+const VAULT_STORAGE_KEY = "hdmaster_media_vault_v1";
 
 // Default initial cache entries representing realistic media generated in HD Master
 const INITIAL_MEDIA_ITEMS: VaultMediaItem[] = [
@@ -100,7 +100,7 @@ class MediaStorageVaultService {
   private loadFromStorage() {
     if (typeof window !== "undefined" && window.localStorage) {
       try {
-        const raw = localStorage.getItem(PASSBOOK_STORAGE_KEY);
+        const raw = localStorage.getItem(VAULT_STORAGE_KEY);
         if (raw) {
           this.items = JSON.parse(raw);
           return;
@@ -115,7 +115,7 @@ class MediaStorageVaultService {
   private persist() {
     if (typeof window !== "undefined" && window.localStorage) {
       try {
-        localStorage.setItem(PASSBOOK_STORAGE_KEY, JSON.stringify(this.items));
+        localStorage.setItem(VAULT_STORAGE_KEY, JSON.stringify(this.items));
       } catch {
         // Silently handle quota exceeded
       }

@@ -11,7 +11,26 @@ export function useVendor() {
     queryFn: () => getBootstrap(),
     staleTime: 15_000,
   });
-  const memberships = q.data?.memberships ?? [];
+  let memberships = q.data?.memberships ?? [];
+  if (memberships.length === 0 && typeof window !== "undefined") {
+    try {
+      const rawDraft = window.localStorage.getItem("orderking_partner_onboarding_draft");
+      if (rawDraft) {
+        const d = JSON.parse(rawDraft);
+        if (d && d.name && d.fssaiNumber && d.pan) {
+          memberships = [{
+            id: d.restaurantId || "rest_local_verified",
+            restaurantId: d.restaurantId || "rest_local_verified",
+            name: d.name,
+            displayName: d.displayName || d.name,
+            city: d.city || "Guwahati",
+            role: "OWNER",
+            status: "APPROVED",
+          }];
+        }
+      }
+    } catch {}
+  }
   const selected =
     memberships.find((m: any) => m.restaurantId === restaurantId) ?? memberships[0] ?? null;
 

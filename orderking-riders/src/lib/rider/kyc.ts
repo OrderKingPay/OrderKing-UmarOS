@@ -290,7 +290,7 @@ export function evaluateCmvrRule2uVehicleCompliance(
 
 export type AutomatedKycEvaluationResult = {
   approved: boolean;
-  kycStatus: KycStatus;
+  kycStatus: "VERIFIED" | "REJECTED";
   cmvrRule2uExempt: boolean;
   statutorySummary: string;
   reasons: string[];
@@ -372,7 +372,7 @@ export function evaluateAutomatedOnboarding(rider: RiderProfile): AutomatedKycEv
 
   return {
     approved,
-    kycStatus: approved ? "VERIFIED" : "UNDER_REVIEW",
+    kycStatus: approved ? "VERIFIED" : "REJECTED",
     cmvrRule2uExempt: vehicleCheck.cmvrExempt,
     statutorySummary: approved
       ? `Statutory verification verified. Vehicle: ${rider.vehicleType} (${vehicleCheck.cmvrExempt ? "CMVR Rule 2(u) Exempt" : "MVA 1988 Compliant"}). Section 194-O PAN: ${panCheck.pan}.`

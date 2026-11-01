@@ -509,7 +509,7 @@ Na koi monthly charge hai, na menu upload ka paisa, na koi mandatory ad pack.
 
 Hamara commission sirf tabhi katega jab khana customer tak deliver hoga aur payment aayegi. Sirf 8 popular items se shuru karenge, 5 minute mein paper contract sign ho jata hai. Ye lijiye written agreement copy.`,
     operationalCommitment: "100% ₹0 onboarding fee guarantee. Paper contract signed in under 3 minutes. Zero mandatory promotional deductions.",
-    fieldMove: "Hand over the physical physical 1-page paper agreement with large bold print: 'ONBOARDING FEE: UPI Ready' and 'COMMISSION: 22% FLAT'.",
+    fieldMove: "Hand over the physical physical 1-page paper agreement with large bold print: 'ONBOARDING FEE: ₹0.00' and 'COMMISSION: 22% FLAT'.",
   },
 ];
 

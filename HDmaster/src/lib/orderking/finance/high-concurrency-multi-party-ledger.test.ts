@@ -717,7 +717,7 @@ describe("👑 HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", 
       const founderCredit = credits.find((e) => e.account === "PLATFORM_FEE_REVENUE");
       assert.ok(founderCredit);
       assert.strictEqual(founderCredit.amountPaise, 39_900);
-      assert.strictEqual(founderCredit.entityId, "FOUNDER_PASSBOOK");
+      assert.strictEqual(founderCredit.entityId, "FOUNDER_VAULT");
 
       const walletCredit = credits.find((e) => e.account === "CUSTOMER_WALLET");
       assert.ok(walletCredit);
@@ -765,7 +765,7 @@ describe("👑 HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", 
       assert.strictEqual(walletBalance, 2_000);
     });
 
-    test("executes hotel booking checkout split with default ₹200 food float and FOUNDER_PASSBOOK account", async () => {
+    test("executes hotel booking checkout split with default ₹200 food float and FOUNDER_VAULT account", async () => {
       const ledger = new CanonicalLedger();
       const customerUserId = "cust_travel_hotel_003";
       const customerPaidPaise = 275_000;  // ₹2,750.00
@@ -778,7 +778,7 @@ describe("👑 HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", 
         customerPaidPaise,
         wholesaleNetPaise,
         userId: customerUserId,
-        founderAccount: "FOUNDER_PASSBOOK",
+        founderAccount: "FOUNDER_VAULT",
         idempotencyKey: `htl_split_dyn_${Date.now()}`,
       });
 
@@ -786,7 +786,7 @@ describe("👑 HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", 
       // Founder revenue = 275,000 - 230,000 - 20,000 = 25,000 paise (₹250.00)
       assert.strictEqual(result.splitSummary.founderFeeRevenuePaise, 25_000);
 
-      const founderCredit = result.transaction.entries.find((e) => e.account === "FOUNDER_PASSBOOK");
+      const founderCredit = result.transaction.entries.find((e) => e.account === "FOUNDER_VAULT");
       assert.ok(founderCredit);
       assert.strictEqual(founderCredit.amountPaise, 25_000);
 

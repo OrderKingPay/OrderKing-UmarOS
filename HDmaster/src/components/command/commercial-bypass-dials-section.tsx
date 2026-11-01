@@ -106,7 +106,7 @@ export function CommercialBypassDialsSection() {
   const [milestoneFiveFriendsBonusInr, setMilestoneFiveFriendsBonusInr] = useState(500);
   const [viralOneTapShareCampaignActive, setViralOneTapShareCampaignActive] = useState(true);
   const [viralShareTemplate, setViralShareTemplate] = useState(
-    "OrderKing pe direct restaurant prices aur KingPay Direct UPI ke saath khana mangao! Mera code use karo aur ₹100 pao."
+    "OrderKing pe direct restaurant prices aur KingPay 0% fee ke saath khana mangao! Mera code use karo aur ₹100 pao."
   );
 
   const [isTestingSoundbox, setIsTestingSoundbox] = useState(false);

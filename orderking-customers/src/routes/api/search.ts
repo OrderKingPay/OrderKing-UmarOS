@@ -80,14 +80,19 @@ export const Route = createFileRoute("/api/search")({
         try {
           const sql = await getSql();
 
-          const hasValidCoords = Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0 && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-          // Default browsing anchor to Connaught Place / Delhi NCR if coords not provided
-          const searchLat = hasValidCoords ? lat : 28.6315;
-          const searchLng = hasValidCoords ? lng : 77.2167;
-          const deliveryActive = hasValidCoords ? isDeliveryActiveInLocation(lat, lng) : false;
+          if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat === 0 || lng === 0 ||
+              lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+            return unavailable("Choose your delivery location to check availability.");
+          }
+
+          // Active delivery zone validation (e.g. Karimganj, Delhi NCR / Connaught Place, Mumbai, Bengaluru, etc.)
+          const deliveryActive = isDeliveryActiveInLocation(lat, lng);
+          if (!deliveryActive) {
+            return unavailable("Verified food delivery is not available at this location yet.");
+          }
 
           // Threat-Zone Exclusion: Block delivery if customer falls inside active hazard sector
-          const hazardCheck = checkHazardZone({ lat: searchLat, lng: searchLng });
+          const hazardCheck = checkHazardZone({ lat, lng });
           if (hazardCheck.inHazardZone && hazardCheck.deliveryBlocked) {
             return unavailable(hazardCheck.reason || "Deliveries currently paused in this sector for fleet safety.");
           }
@@ -166,7 +171,7 @@ export const Route = createFileRoute("/api/search")({
 
           query += ` ORDER BY r.promoted DESC, r.name`;
 
-          const origin = { lat: searchLat, lng: searchLng };
+          const origin = { lat, lng };
           const rows = await sql.query<any>(query, params);
           
           const promos = await sql<{ id: string; restaurant_id: string | null; name_en: string }>`
@@ -177,9 +182,8 @@ export const Route = createFileRoute("/api/search")({
           for (const row of rows) {
             const offer = promos.find((p) => !p.restaurant_id || p.restaurant_id === row.id);
             const dist = distanceKm(origin, { lat: row.lat, lng: row.lng });
-            // For live delivery address within active zone, enforce shift radius; when browsing from afar, show browsing distance
-            if (hasValidCoords && deliveryActive && dist > activeShift.radiusKm) continue;
-            const displayDist = dist > 50 ? Math.round((1.2 + (cards.length * 0.4)) * 10) / 10 : Math.round(dist * 10) / 10;
+            // Contracted operational shift delivery radius enforcement (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)
+            if (dist > activeShift.radiusKm) continue;
 
             // Destination hazard check
             const destHazard = checkHazardZone({ lat: row.lat, lng: row.lng });
@@ -201,9 +205,9 @@ export const Route = createFileRoute("/api/search")({
               prepMinutes: prep,
               dataLabel: row.data_label,
               promoted: row.promoted,
-              distanceKm: displayDist,
+              distanceKm: Math.round(dist * 10) / 10,
               etaMinutes,
-              deliveryFeePaise: deliveryFee(displayDist, row.delivery_base_paise, row.delivery_per_km_paise, null),
+              deliveryFeePaise: deliveryFee(dist, row.delivery_base_paise, row.delivery_per_km_paise, null),
               minOrderPaise: row.min_order_paise ?? cfg.marketplace.minOrderPaise,
               open,
               hasOffer: Boolean(offer?.name_en),
@@ -215,44 +219,6 @@ export const Route = createFileRoute("/api/search")({
             };
             if (openNow && !card.open) continue;
             cards.push(card);
-          }
-
-          // If no kitchens found within strict immediate radius, provide catalog browsing fallback
-          if (cards.length === 0 && rows.length > 0) {
-            for (const row of rows) {
-              const offer = promos.find((p) => !p.restaurant_id || p.restaurant_id === row.id);
-              const dist = distanceKm(origin, { lat: row.lat, lng: row.lng });
-              const displayDist = dist > 50 ? Math.round((1.2 + (cards.length * 0.4)) * 10) / 10 : Math.round(dist * 10) / 10;
-              const open = row.open_override == null ? isOpenNow(hours.get(row.outlet_id) ?? [], cfg.business.timezone) : row.open_override;
-              const prep = row.prep_minutes || 15;
-              const travel = travelMinutes(displayDist, cfg.marketplace.riderSpeedKmh);
-              const etaMinutes = Math.max(25, Math.min(60, prep + (travel > 0 ? travel : 10)));
-
-              const card: RestaurantCard = {
-                id: row.id,
-                slug: row.slug,
-                name: row.name,
-                coverImage: row.cover_image,
-                cuisineSummary: row.cuisine_summary,
-                vegOnly: row.veg_only,
-                prepMinutes: prep,
-                dataLabel: row.data_label,
-                promoted: row.promoted,
-                distanceKm: displayDist,
-                etaMinutes,
-                deliveryFeePaise: deliveryFee(displayDist, row.delivery_base_paise, row.delivery_per_km_paise, null),
-                minOrderPaise: row.min_order_paise ?? cfg.marketplace.minOrderPaise,
-                open,
-                hasOffer: Boolean(offer?.name_en),
-                offerLabel: offer?.name_en ?? null,
-                zoneName: row.zone_name,
-                ratingAvg: num(row.rating_avg),
-                ratingCount: row.rating_count,
-                fssaiLicenseNumber: row.fssai_license_number || undefined,
-              };
-              if (openNow && !card.open) continue;
-              cards.push(card);
-            }
           }
 
           // Catalog responses include only database-backed restaurants.
@@ -276,8 +242,7 @@ export const Route = createFileRoute("/api/search")({
           return new Response(JSON.stringify({ 
             restaurants: finalCards,
             dishes,
-            deliveryAvailable: hasValidCoords && deliveryActive && finalCards.some(c => c.distanceKm <= activeShift.radiusKm),
-            reason: (!hasValidCoords || !deliveryActive) ? "Showing partner restaurants in Delhi NCR. Set your delivery address to check direct courier coverage." : undefined,
+            deliveryAvailable: finalCards.length > 0,
             activeShift: {
               tier: activeShift.tier,
               shiftName: activeShift.shiftName,

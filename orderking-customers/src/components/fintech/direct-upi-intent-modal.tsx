@@ -23,13 +23,7 @@ import {
   type SupportedUPIApp,
   FOUNDER_UPI_VPAS,
 } from "@/lib/payments/npci-upi-intent";
-import {
-  FOUNDER_UPI_VPA,
-  FOUNDER_MERCHANT_NAME,
-  SOVEREIGN_NPCI_UPI_VPA,
-  RAZORPAY_PAYMENT_HANDLE,
-  RAZORPAY_PAYMENT_HANDLE_URL,
-} from "@/lib/dispatch/whatsapp-gps-bridge";
+import { FOUNDER_UPI_VPA, FOUNDER_MERCHANT_NAME, SOVEREIGN_NPCI_UPI_VPA } from "@/lib/dispatch/whatsapp-gps-bridge";
 
 export interface DirectUpiIntentModalProps {
   isOpen: boolean;
@@ -151,7 +145,7 @@ export function DirectUpiIntentModal({
     setIsVerifying(true);
     setTimeout(() => {
       setIsVerifying(false);
-      toast.success("Direct UPI payment registered! Instant bank settlement confirmed.");
+      toast.success("Direct UPI payment registered! Bank settlement confirmed at standard fee.");
       if (onPaymentConfirmed) {
         onPaymentConfirmed(transactionRef);
       }
@@ -170,7 +164,7 @@ export function DirectUpiIntentModal({
                 👑
               </span>
               <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2.5 py-0.5 rounded-full">
-                Direct NPCI UPI Link &amp; Live QR
+                standard fee Direct NPCI UPI Link &amp; Live QR
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
@@ -292,20 +286,6 @@ export function DirectUpiIntentModal({
             >
               <ExternalLink className="size-4" />
               <span>Launch Any UPI App (Universal Intent)</span>
-            </a>
-
-            {/* Verified Razorpay Payment Handle */}
-            <a
-              href={RAZORPAY_PAYMENT_HANDLE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 w-full h-10 rounded-xl border border-sky-400/40 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 no-underline"
-            >
-              <ExternalLink className="size-3.5" />
-              <span>Pay via Razorpay Handle ({RAZORPAY_PAYMENT_HANDLE})</span>
-              <span className="text-[10px] uppercase font-black bg-sky-400/20 text-sky-200 px-2 py-0.5 rounded-full">
-                Zero Fees
-              </span>
             </a>
           </div>
 

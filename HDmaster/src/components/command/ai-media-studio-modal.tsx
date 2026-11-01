@@ -802,7 +802,7 @@ export function AiMediaStudioModal({
             </div>
           )}
 
-          {/* TAB 4: MEDIA PASSBOOK ARCHIVE */}
+          {/* TAB 4: MEDIA VAULT ARCHIVE */}
           {activeTab === "vault" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-border/60">

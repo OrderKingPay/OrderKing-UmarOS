@@ -168,7 +168,7 @@ export class RealMoneyOperatingEngine {
     if (params.channel === "RAZORPAY") paymentFee = Math.round(gross * 0.02);
     else if (params.channel === "STRIPE") paymentFee = Math.round(gross * 0.029) + 30;
     else if (params.channel === "WIRE") paymentFee = Math.round(gross * 0.01);
-    // KING_PAY_UPI = Direct UPI
+    // KING_PAY_UPI = 0% fee
 
     const infra = params.infraCost || Math.round(gross * 0.01);
     const ai = params.aiCost || Math.round(gross * 0.005);

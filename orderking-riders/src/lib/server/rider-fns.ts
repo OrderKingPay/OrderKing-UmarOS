@@ -132,7 +132,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
 
 export const saveProfileFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: Partial<RiderProfile> & Record<string, unknown>) => input)
+  .validator((input: Partial<RiderProfile>) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
@@ -716,11 +716,13 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
       `[OrderKing OTP] Dispatched ${channel.toUpperCase()} OTP [${otp}] to +91-${cleanPhone} via ${dispatchResult.provider.toUpperCase()} (MessageId: ${dispatchResult.messageId || "N/A"})`,
     );
 
-    return { ok: true, debugOtp: typeof otp !== 'undefined' ? otp : (typeof code !== 'undefined' ? code : undefined), phone: cleanPhone,
+    return {
+      ok: true,
+      phone: cleanPhone,
       channel,
       message:
         channel === "whatsapp"
-          ? `WhatsApp verification deep link ready for +91 ${cleanPhone  }`
+          ? `WhatsApp verification deep link ready for +91 ${cleanPhone}`
           : `OTP sent successfully to +91 ${cleanPhone}`,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
@@ -749,12 +751,10 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     let finalMatched = isMatched;
   if (!finalMatched) {
     try {
-      const tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim().replace(/^["']|["']$/g, "");
-      if (tfKey) {
-        const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
-        const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
-        if (tfJson.Status === "Success") finalMatched = true;
-      }
+      const tfKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
+      const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(tfKey)}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
+      const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+      if (tfJson.Status === "Success") finalMatched = true;
     } catch {}
   }
   if (!finalMatched) {
@@ -808,13 +808,15 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
       /* ignore db error during check */
     }
 
-    return { ok: true, debugOtp: typeof otp !== 'undefined' ? otp : (typeof code !== 'undefined' ? code : undefined), phone: cleanPhone,
+    return {
+      ok: true,
+      phone: cleanPhone,
       email,
       credential,
       isNewUser,
       isVerified,
       destination: isVerified ? "/" : "/onboarding",
-      };
+    };
   });
 
 

@@ -44,7 +44,7 @@ export const Route = createFileRoute("/api/v1/kingpay/stripe-webhook")({
             const customerId = (obj.customer || obj.id || "CUST_SAAS") as string;
             const subscriptionId = (obj.subscription || obj.id || "SUB_SAAS") as string;
 
-            // Post into Canonical Ledger under FOUNDER_PASSBOOK / BANK_CLEARING
+            // Post into Canonical Ledger under FOUNDER_VAULT / BANK_CLEARING
             await canonicalLedger.postTransaction({
               idempotencyKey: `stripe_${event.id}`,
               eventType: "STRIPE_ATLAS_USD_SUBSCRIPTION_COLLECTED",
@@ -58,7 +58,7 @@ export const Route = createFileRoute("/api/v1/kingpay/stripe-webhook")({
                   memo: `Stripe Atlas USD recurring billing: ${currency} ${(amountTotalCents / 100).toFixed(2)} [Customer: ${customerId}]`,
                 },
                 {
-                  account: "FOUNDER_PASSBOOK",
+                  account: "FOUNDER_VAULT",
                   direction: "CREDIT",
                   amountPaise: Math.round(amountTotalCents * 83),
                   entityId: "FOUNDER_DELAWARE_HOLDING",

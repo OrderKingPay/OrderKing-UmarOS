@@ -25,42 +25,18 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
     setResult(null);
 
     try {
-      const requested = Number(amount) || 50000;
-      const monthly = Number(income) || 35000;
-
-      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan.trim())) {
-        setError("Please enter a valid 10-character PAN number (e.g. ABCDE1234F)");
-        setLoading(false);
-        return;
+      toast.error('Loan integration coming soon - Under Development');
+      return;
+      // const data = await res.json();
+      
+      if (false) {
+        setResult({} as any);
+        onDisburseToWallet((undefined as any));
+      } else {
+        setError("Application rejected");
       }
-
-      if (monthly < 15000) {
-        setError("Minimum monthly income requirement for instant credit line is ₹15,000.");
-        setLoading(false);
-        return;
-      }
-
-      const tenureMonths = requested > 100000 ? 12 : 6;
-      const interestRate = 13.5;
-      const monthlyRate = interestRate / 12 / 100;
-      const emi = Math.round(
-        (requested * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
-        (Math.pow(1 + monthlyRate, tenureMonths) - 1)
-      );
-      const loanId = `KPLOAN-${Date.now().toString(36).toUpperCase()}`;
-
-      setResult({
-        disbursedAmount: requested,
-        message: "Estimated Pre-Qualification Calculated",
-        interestRate,
-        tenureMonths,
-        emi,
-        loanId,
-      });
-      toast.success(`Pre-qualification calculated: ₹${requested.toLocaleString("en-IN")}. Apply with licensed NBFC partners below.`);
-      onDisburseToWallet(0);
     } catch (err) {
-      setError("Bureau verification error. Please try again or apply with our verified lending partners below.");
+      setError("Network error connecting to NBFC partner.");
     } finally {
       setLoading(false);
     }

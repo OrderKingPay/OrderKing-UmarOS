@@ -166,8 +166,8 @@ describe("Rider Fleet & OTP Parity Suite (https://rider.orderkingpay.com/login)"
       walk(path.join(srcDir, "components"));
 
       const FORBIDDEN_COMPETITORS = [
-        "OrderKing",
-        "OrderKing",
+        "zomato",
+        "swiggy",
         "zepto",
         "blinkit",
         "dunzo",

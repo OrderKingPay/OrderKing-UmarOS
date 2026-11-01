@@ -511,7 +511,7 @@ export const REAL_TIME_JOB_CATALOG: LiveJob[] = [
   {
     id: "job-flt-03",
     title: "Express Delivery Executive",
-    company: "OrderKing Instamart",
+    company: "Swiggy Instamart",
     location: "Mumbai, Maharashtra",
     city: "Mumbai",
     category: "Local City & Fleet Delivery Gigs",
@@ -523,7 +523,7 @@ export const REAL_TIME_JOB_CATALOG: LiveJob[] = [
       "Deliver dark store grocery orders within dense metropolitan zones with flexible morning, evening, or weekend shift options.",
     skills: ["Smartphone App Usage", "Local Road Knowledge", "Safety Compliance"],
     postedDate: "2 days ago",
-    applyUrl: "https://ride.OrderKing.com",
+    applyUrl: "https://ride.swiggy.com",
     source: "Partner Network",
   },
   {
@@ -565,7 +565,7 @@ export const REAL_TIME_JOB_CATALOG: LiveJob[] = [
   {
     id: "job-flt-06",
     title: "Food & Parcel Fleet Delivery Rider",
-    company: "OrderKing Logistics",
+    company: "Zomato Logistics",
     location: "Hyderabad, Telangana",
     city: "Hyderabad",
     category: "Local City & Fleet Delivery Gigs",
@@ -577,7 +577,7 @@ export const REAL_TIME_JOB_CATALOG: LiveJob[] = [
       "Pick up fresh restaurant meals and groceries across Hyderabad IT corridor with real-time in-app earnings tracker.",
     skills: ["Two-Wheeler / EV", "City Navigation", "Customer Communication", "UPI Handling"],
     postedDate: "1 day ago",
-    applyUrl: "https://www.OrderKing.com/deliver",
+    applyUrl: "https://www.zomato.com/deliver",
     source: "Partner Network",
   },
 

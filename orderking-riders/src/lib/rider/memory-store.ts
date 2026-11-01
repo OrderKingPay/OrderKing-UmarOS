@@ -29,7 +29,6 @@ export class MemoryStore implements RiderStore {
   riders = new Map<string, RiderProfile>();
   ridersByUser = new Map<string, string>();
   documents: Array<RiderDocument & { userId: string }> = [];
-  riderKyc = new Map<string, unknown>();
   offers = new Map<string, DispatchOffer>();
   offerUser = new Map<string, string>();
   deliveries = new Map<string, Delivery>();
@@ -79,10 +78,6 @@ export class MemoryStore implements RiderStore {
       coolingOffReason: r.coolingOffReason ?? discState.coolingOffReason,
     });
   }
-  async upsertRiderKyc(kyc: any): Promise<void> {
-    this.riderKyc.set(kyc.id, kyc);
-  }
-
   async upsertRider(rider: RiderProfile) {
     const rawNotes = rider.availabilityNotes ?? "";
     const { cleanNotes } = parseDisciplineNotes(rawNotes);

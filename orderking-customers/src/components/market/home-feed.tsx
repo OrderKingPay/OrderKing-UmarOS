@@ -1,4 +1,4 @@
-﻿import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
@@ -344,9 +344,10 @@ export function HomeFeed({
     ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId)
     : true;
 
-  const isZeroDeliveryInRadius = Boolean(
-    list.data && list.data.restaurants && list.data.restaurants.length === 0
-  );
+  const isZeroDeliveryInRadius =
+    !isDeliveryActive ||
+    (list.data && list.data.restaurants.length === 0) ||
+    (list.data && list.data.deliveryAvailable === false);
 
   // Filtered and sorted restaurants based on active controls
   const filteredRestaurants = useMemo(() => {
@@ -409,25 +410,6 @@ export function HomeFeed({
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 bg-[#FCFAF7] text-gray-900 font-sans">
 
-
-      {/* Informative Hub Banner when browsing outside immediate delivery radius */}
-      {list.data?.deliveryAvailable === false && list.data?.restaurants && list.data.restaurants.length > 0 && (
-        <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-950 text-xs mb-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <MapPin className="size-4 text-amber-600 shrink-0" />
-            <span className="truncate">
-              {list.data.reason || "Showing verified partner kitchens in active delivery hub. Tap to set your delivery address."}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setLocDialogOpen(true)}
-            className="shrink-0 px-3 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition cursor-pointer"
-          >
-            Change
-          </button>
-        </div>
-      )}
 
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
       {!q && !isZeroDeliveryInRadius && (
@@ -498,7 +480,7 @@ export function HomeFeed({
       {/* 2. SECONDARY QUICK FILTER PILLS (Distinct Color Background when active) & RESULT COUNT */}
       {(list.data?.restaurants?.length ?? 0) > 0 && <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
         <div className="flex items-center gap-2 shrink-0">
-          {/* Pure Veg Filter: OrderKing standard green dot & badge */}
+          {/* Pure Veg Filter: Zomato standard green dot & badge */}
           <button
             type="button"
             onClick={() => setDietFilter(dietFilter === "veg" ? "all" : "veg")}
@@ -713,10 +695,10 @@ export function HomeFeed({
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
-                      Kitchens at this exact pin are onboarding soon — switch to a nearby food hub or use live KingPay services here
+                      Restaurants at this exact pin are onboarding soon — switch to a nearby active zone or use KingPay services below.
                     </h3>
                     <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-md mx-auto">
-                      Tap Change Location below to switch to the nearest active restaurant zone (Guwahati, Silchar, Karimganj, New Delhi), or use KingPay right at your location for instant UPI & utility bills, IRCTC train & flight bookings, local courier, AI tutor, and hyperlocal jobs.
+                      If this isn't where you are right now, you can update your location to check delivery. Even without food delivery here, all other KingPay services are active and ready to use.
                     </p>
                   </div>
                   <div className="pt-1">
@@ -957,4 +939,3 @@ export function HomeFeed({
     </div>
   );
 }
-
