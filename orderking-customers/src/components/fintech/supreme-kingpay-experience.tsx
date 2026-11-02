@@ -684,27 +684,26 @@ export function SupremeKingPayExperience() {
               </div>
             </button>
 
-            {/* Tile 9: Pre-Approved Loans & Wealth */}
-            <button
-              type="button"
-              onClick={() => setActiveDesk("wealth")}
-              className="group rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#0a1811]/95 via-[#06110b]/95 to-[#030906]/95 hover:border-emerald-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(16,185,129,0.22)] transform-gpu will-change-transform text-left cursor-pointer"
+            {/* Tile 9: Local Parcel & Courier */}
+            <Link
+              to={"/parcel" as any}
+              className="group rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#0a1811]/95 via-[#06110b]/95 to-[#030906]/95 hover:border-emerald-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(16,185,129,0.22)] transform-gpu will-change-transform no-underline"
             >
               <div className="flex items-center justify-between">
                 <div className="size-8 sm:size-9 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition shrink-0 shadow-[0_2px_8px_rgba(16,185,129,0.2)]">
-                  <Percent className="size-4 sm:size-4.5" />
+                  <Package className="size-4 sm:size-4.5" />
                 </div>
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-emerald-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
                 <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate flex items-center gap-1">
-                  <span>💰</span> <span>Local Parcel &amp; Courier</span>
+                  <span>📦</span> <span>Local Parcel &amp; Courier</span>
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                  Point-to-Point Pickup & Drop · ₹30 Base
+                  Point-to-Point Pickup &amp; Drop · ₹30 Base
                 </p>
               </div>
-            </button>
+            </Link>
           </div>
         </section>
       )}
