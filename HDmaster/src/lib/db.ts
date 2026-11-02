@@ -6,7 +6,7 @@ export type DbSource = "neon" | "pglite";
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
-export function getDatabaseUrl() {
+export function getDatabaseUrl(): string {
   const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
   let url = raw && typeof raw === 'string' ? raw.trim() : undefined;
   if (url) {
@@ -14,9 +14,14 @@ export function getDatabaseUrl() {
       url = url.slice(1, -1).trim();
     }
   }
-  if (url && url.includes('your_supabase_pooler')) url = undefined;
+  if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
+    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
+  }
   if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
     url = url.replace('sslmode=require', 'sslmode=no-verify');
+  }
+  if (url && url.includes('pooler.supabase.com') && !url.includes('sslmode=')) {
+    url += (url.includes('?') ? '&' : '?') + 'sslmode=no-verify&pgbouncer=true';
   }
   return url;
 }
@@ -116,13 +121,14 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const url = getDatabaseUrl(); const resolvedUrl = url || "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
+    const url = getDatabaseUrl();
     const isRemote = url.includes("neon.tech") || url.includes("sslmode=") || url.includes("supabase.co") || !url.includes("localhost");
-    const pool = new Pool({ connectionString: resolvedUrl,
+    const pool = new Pool({
+      connectionString: url,
       ssl: isRemote ? { rejectUnauthorized: false } : undefined,
-      connectionTimeoutMillis: 20000,
+      connectionTimeoutMillis: 30000,
       idleTimeoutMillis: 30000,
-      max: 1,
+      max: 5,
     });
     pool.on('error', (err: any) => console.warn('[Postgres Pool Warning]:', err?.message));
     const run = async <T>(text: string, params: unknown[]) => {
