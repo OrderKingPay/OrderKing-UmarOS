@@ -25,6 +25,7 @@ import {
   Crown,
   Building2,
   Briefcase,
+  Eye,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { LocationDialog } from "@/components/market/location-dialog";
@@ -857,6 +858,51 @@ export function HomeFeed({
                         </span>
                       </div>
                     </Link>
+                  </div>
+                </div>
+
+                {/* Honest "Explore Flagship Menus (Viewing Only)" */}
+                <div
+                  data-testid="flagship-viewing-mode-card"
+                  className="rounded-2xl border border-stone-200/90 bg-white p-4 sm:p-5 shadow-xs text-center space-y-3"
+                >
+                  <div className="flex items-center justify-center gap-2 text-stone-600">
+                    <Eye className="size-4 text-amber-600" />
+                    <span className="text-xs font-black uppercase tracking-wider text-amber-800">
+                      Viewing Mode
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="text-sm sm:text-base font-black text-gray-950">
+                      Explore Flagship Menus (Viewing Only)
+                    </h4>
+                    <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5 font-medium">
+                      Preview live food menus and cuisine selections in viewing mode without doorstep delivery to your current pin.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                    {ACTIVE_FLAGSHIP_HUBS.map((hub) => (
+                      <button
+                        key={hub.id}
+                        type="button"
+                        onClick={() => {
+                          setLocation({
+                            label: hub.label,
+                            line1: hub.line1,
+                            lat: hub.lat,
+                            lng: hub.lng,
+                            cityId: hub.cityId,
+                            cityName: hub.cityName,
+                            zoneId: hub.zoneId,
+                            zoneName: hub.zoneName,
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-200 hover:border-amber-400 bg-stone-50 hover:bg-amber-50/60 text-xs font-bold text-gray-800 hover:text-amber-950 transition active:scale-95 cursor-pointer shadow-2xs"
+                      >
+                        <MapPin className="size-3 text-amber-600" />
+                        <span>Browse Flagship Hub ({hub.cityName}) — Viewing Mode</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
