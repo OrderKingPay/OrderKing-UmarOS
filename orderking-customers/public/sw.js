@@ -1,6 +1,6 @@
 "use strict";
 // OrderKing Tier-2/Tier-3 Low-Network Resilient Service Worker
-const SW_VERSION = "v5.5.3-error1101-immune";
+const SW_VERSION = "v6.0.0-authentic-overhaul";
 const CACHE_SHELL = `ok-shell-${SW_VERSION}`;
 const CACHE_MENUS = `ok-menus-${SW_VERSION}`;
 const CACHE_ASSETS = `ok-assets-${SW_VERSION}`;

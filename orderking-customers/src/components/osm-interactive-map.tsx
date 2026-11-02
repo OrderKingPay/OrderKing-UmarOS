@@ -126,7 +126,7 @@ export function OsmInteractiveMap({
           type="button"
           onClick={locateViaGps}
           className="flex size-8 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/90 text-amber-400 shadow-md hover:bg-slate-900"
-          title="Locate my current GPS position"
+          title="Use current location"
         >
           <LocateFixed className={`size-4 ${locating ? "animate-spin" : ""}`} />
         </button>
