@@ -186,7 +186,7 @@ export function PorterParcelEngine({
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         setPickupCoords({ lat, lng });
-        setPickupAddress(`Current GPS Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+        setPickupAddress(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
         toast.success("Pickup location updated from GPS.");
       },
       () => {
@@ -587,7 +587,7 @@ export function PorterParcelEngine({
               className="text-[11px] font-bold text-slate-300 hover:text-amber-400 flex items-center gap-1 cursor-pointer transition"
             >
               <Navigation className="size-3" />
-              Current GPS
+              Current Location
             </button>
           </div>
 

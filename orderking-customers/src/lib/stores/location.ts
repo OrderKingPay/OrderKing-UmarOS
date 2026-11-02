@@ -91,7 +91,19 @@ export const useLocationStore = create<State>()(
   persist(
     (set, get) => ({
       location: DEFAULT_LOCATION,
-      setLocation: (location) => set({ location }),
+      setLocation: (location) => {
+        const sanitized = { ...location };
+        if (!sanitized.zoneName || sanitized.zoneName === "Current GPS Position" || sanitized.zoneName === "Current Location") {
+          sanitized.zoneName = sanitized.cityName && sanitized.cityName !== "Current GPS Position" ? sanitized.cityName : DEFAULT_LOCATION.zoneName;
+        }
+        if (!sanitized.cityName || sanitized.cityName === "Current GPS Position" || sanitized.cityName === "Current Location" || sanitized.cityName === "Locating...") {
+          sanitized.cityName = DEFAULT_LOCATION.cityName;
+        }
+        if (!sanitized.label || sanitized.label.includes("Current GPS")) {
+          sanitized.label = `${sanitized.zoneName}, ${sanitized.cityName}`;
+        }
+        set({ location: sanitized });
+      },
       savedAddresses: DEFAULT_SAVED_ADDRESSES,
       addSavedAddress: (addr) => {
         const newAddress: SavedAddress = {
@@ -142,6 +154,11 @@ export const useLocationStore = create<State>()(
           !state.location ||
           !state.location.cityName ||
           state.location.cityName === "Locating..." ||
+          state.location.cityName === "Current GPS Position" ||
+          state.location.cityName === "Current Location" ||
+          state.location.zoneName === "Current GPS Position" ||
+          state.location.zoneName === "Current Location" ||
+          state.location.label?.includes("Current GPS") ||
           state.location.lat === 0 ||
           isNaN(state.location.lat)
         ) {

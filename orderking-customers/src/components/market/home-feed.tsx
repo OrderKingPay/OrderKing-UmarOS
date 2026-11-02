@@ -672,42 +672,37 @@ export function HomeFeed({
               </div>
             ) : (
               <div className="space-y-6">
+                {/* 1. Sleek Native Delivery Status Bar (Top Competitor Standard) */}
                 <div
                   role="status"
                   data-testid="food-availability-note"
-                  className="relative overflow-hidden rounded-3xl border border-amber-200/90 bg-gradient-to-b from-white via-white to-amber-50/20 p-6 sm:p-8 text-center shadow-[0_12px_36px_rgba(245,158,11,0.08),0_2px_8px_rgba(0,0,0,0.03)] backdrop-blur-xl w-full max-w-2xl mx-auto space-y-4"
+                  className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-950"
                 >
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600" />
-                  
-                  {/* Location badge if available */}
-                  {(location?.zoneName || location?.cityName) && (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-[11px] font-bold text-amber-900 shadow-2xs">
-                      <MapPin className="size-3 text-amber-600 shrink-0" />
-                      <span className="truncate max-w-[240px] sm:max-w-xs">{location.zoneName || location.cityName}</span>
-                    </div>
-                  )}
-
-                  <div className="relative mx-auto flex size-14 sm:size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 via-amber-600 to-orange-600 text-white shadow-[0_6px_20px_rgba(245,158,11,0.35)] ring-4 ring-amber-100">
-                    <MapPin className="size-6 sm:size-7 text-white drop-shadow-sm" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
-                      Restaurants at this exact pin are onboarding soon — switch to a nearby active zone or use KingPay services below.
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-md mx-auto">
-                      If this isn't where you are right now, you can update your location to check delivery. Even without food delivery here, all other KingPay services are active and ready to use.
-                    </p>
-                  </div>
-                  <div className="pt-1">
-                    <Button
-                      type="button"
-                      onClick={() => setLocDialogOpen(true)}
-                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs sm:text-sm px-6 py-2.5 shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.45)] transition active:scale-95 cursor-pointer border-0"
-                    >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500 text-white shrink-0 shadow-xs">
                       <MapPin className="size-4" />
-                      <span>Change Location</span>
-                    </Button>
+                    </div>
+                    <div className="text-left min-w-0">
+                      <span className="text-xs font-black block truncate text-gray-950">
+                        {location?.zoneName && !["Current GPS Position", "Current Location"].includes(location.zoneName)
+                          ? location.zoneName
+                          : location?.cityName && !["Locating...", "Current GPS Position"].includes(location.cityName)
+                          ? location.cityName
+                          : "Your Location"}
+                      </span>
+                      <span className="text-[11px] text-gray-600 block truncate font-medium">
+                        Doorstep food delivery expanding to this area soon · All KingPay services active 24/7
+                      </span>
+                    </div>
                   </div>
+                  <Button
+                    type="button"
+                    onClick={() => setLocDialogOpen(true)}
+                    className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer border-0"
+                  >
+                    <MapPin className="size-3" />
+                    <span>Change Location</span>
+                  </Button>
                 </div>
 
                 {/* Active KingPay Connected Services (3D Luxury Alignment) */}

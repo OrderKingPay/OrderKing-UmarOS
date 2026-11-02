@@ -252,12 +252,12 @@ export function CustomerShell({
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-0.5 leading-tight">
                     <span className={cn("text-xs font-black truncate", isDark ? "text-white" : "text-gray-950")}>
-                      {location?.zoneName || (location?.cityName && location.cityName !== "Locating..." ? location.cityName : "Connaught Place")}
+                      {location?.zoneName && !["Current GPS Position", "Current Location", "Detected Location"].includes(location.zoneName) ? location.zoneName : location?.cityName && !["Locating...", "Current GPS Position"].includes(location.cityName) ? location.cityName : "Select Location"}
                     </span>
                     <ChevronDown className="size-3 text-gray-500 shrink-0 group-hover:translate-y-0.5 transition-transform" />
                   </div>
                   <span className="text-[10px] text-gray-500 truncate hidden xs:block leading-tight">
-                    {location?.cityName && location.cityName !== "Locating..." ? `${location.cityName}, India` : "Select location"}
+                    {location?.cityName && !["Locating...", "Current GPS Position"].includes(location.cityName) ? `${location.cityName}, India` : "Select location"}
                   </span>
                 </div>
               </button>

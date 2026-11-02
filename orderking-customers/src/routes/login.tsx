@@ -33,6 +33,25 @@ function Login() {
     const t = setInterval(() => setResendTimer((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(t);
   }, [resendTimer]);
+  // Native WebOTP API for automatic SMS OTP verification on mobile (Tier-1 standard)
+  useEffect(() => {
+    if (!otpSent) return;
+    if (typeof window === "undefined" || !("OTPCredential" in window)) return;
+    const ac = new AbortController();
+    (navigator.credentials as any)?.get({
+      otp: { transport: ["sms"] },
+      signal: ac.signal,
+    }).then((otpCredential: any) => {
+      if (otpCredential?.code) {
+        const autoCode = String(otpCredential.code).replace(/\D/g, "").slice(0, 6);
+        if (autoCode.length === 6) {
+          setOtp(autoCode);
+          void handleVerifyOtp(autoCode);
+        }
+      }
+    }).catch(() => {});
+    return () => ac.abort();
+  }, [otpSent]);
   // Auto-submit as soon as 6 digits are entered
   useEffect(() => {
     if (otpSent && /^\d{6}$/.test(otp.trim()) && !busy) {
@@ -350,32 +369,6 @@ function Login() {
                 {providerNotice && (
                   <div className="rounded-xl bg-stone-100 px-3.5 py-2 text-[11px] font-semibold text-stone-700">
                     {providerNotice}
-                  </div>
-                )}
-                {/* Zero-Delay Instant Verified OTP Auto-Fill (When Carrier SMS / DLT Takes Time) */}
-                {instantOtp && (
-                  <div className="flex items-center justify-between rounded-2xl border-2 border-amber-400 bg-amber-50/90 px-3.5 py-2.5 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="size-4 text-amber-600 shrink-0" />
-                      <div>
-                        <span className="block text-[10px] font-black uppercase tracking-wider text-amber-900">
-                          Instant Verified Code Ready
-                        </span>
-                        <span className="font-mono text-base font-black tracking-widest text-stone-950">
-                          {instantOtp}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setOtp(instantOtp);
-                        void handleVerifyOtp(instantOtp);
-                      }}
-                      className="rounded-xl bg-stone-950 px-3 py-1.5 text-[11px] font-black text-amber-300 hover:bg-stone-800 cursor-pointer"
-                    >
-                      1-Tap Verify
-                    </button>
                   </div>
                 )}
                 <div>

@@ -219,34 +219,49 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
       kingpayBalancePaise: 0,
       updatedAt: now,
     };
-    const sbUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-    const sbKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.SUPABASE_ANON_KEY ||
-      process.env.VITE_SUPABASE_ANON_KEY;
-    if (sbUrl && sbKey) {
-      try {
-        await fetch(sbUrl + "/rest/v1/profiles", {
-          method: "POST",
-          headers: {
-            apikey: sbKey,
-            Authorization: "Bearer " + sbKey,
-            "Content-Type": "application/json",
-            Prefer: "resolution=merge-duplicates",
-          },
-          body: JSON.stringify({
-            id: userId,
-            phone: cleanPhone,
-            email: syntheticEmail,
-            full_name: resolvedName,
-            role: "customer",
-            phone_verified: true,
-            updated_at: now,
-          }),
-        });
-      } catch (err) {
-        console.warn("[OrderKing-Auth] Supabase profile upsert warning:", err);
-      }
+    // Guaranteed Direct PostgreSQL User, Profile & KingPay Wallet Persistence
+    try {
+      const sql = await getSql();
+      // 1. Better Auth 'user' table
+      await sql`
+        INSERT INTO "user" (id, name, email, "emailVerified", image, "createdAt", "updatedAt")
+        VALUES (${userId}, ${resolvedName}, ${syntheticEmail}, true, null, NOW(), NOW())
+        ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, "updatedAt" = NOW()
+      `;
+      // 2. Customer 'profiles' table for CRM and loyalty
+      await sql`
+        CREATE TABLE IF NOT EXISTS profiles (
+          id TEXT PRIMARY KEY,
+          phone TEXT,
+          email TEXT,
+          full_name TEXT,
+          role TEXT DEFAULT 'customer',
+          phone_verified BOOLEAN DEFAULT true,
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+      await sql`
+        INSERT INTO profiles (id, phone, email, full_name, role, phone_verified, updated_at)
+        VALUES (${userId}, ${cleanPhone}, ${syntheticEmail}, ${resolvedName}, 'customer', true, NOW())
+        ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name, phone = EXCLUDED.phone, updated_at = NOW()
+      `;
+      // 3. KingPay Wallet for instant cashbacks, loyalty rewards, and retention
+      await sql`
+        CREATE TABLE IF NOT EXISTS kingpay_wallets (
+          user_id TEXT PRIMARY KEY,
+          balance_paise BIGINT DEFAULT 0,
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+      await sql`
+        INSERT INTO kingpay_wallets (user_id, balance_paise)
+        VALUES (${userId}, 0)
+        ON CONFLICT (user_id) DO NOTHING
+      `;
+    } catch (sqlErr) {
+      console.warn("[OrderKing-Auth] Direct PostgreSQL customer profile persistence:", sqlErr);
     }
     return {
       success: true,

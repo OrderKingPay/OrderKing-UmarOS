@@ -351,7 +351,7 @@ export function LocationDialog({
               </div>
               <div className="text-left">
                 <span className="text-xs sm:text-sm font-black tracking-tight block text-white">
-                  {locating ? "Detecting Precise GPS Location..." : "Use Current GPS Location"}
+                  {locating ? "Detecting location..." : "Use current location"}
                 </span>
                 <span className="text-[10px] text-emerald-100 font-semibold block">
                   Auto-detects nearest cloud kitchens in your radius

@@ -458,7 +458,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                 className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 <MapPin className="h-3 w-3 text-red-500" />
-                Current GPS
+                Current Location
               </button>
             </div>
 
