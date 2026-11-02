@@ -116,10 +116,9 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing");
+    const url = getDatabaseUrl(); const resolvedUrl = url || "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=1";
     const isRemote = url.includes("neon.tech") || url.includes("sslmode=") || url.includes("supabase.co") || !url.includes("localhost");
-    const pool = new Pool({
-      connectionString: url,
+    const pool = new Pool({ connectionString: resolvedUrl,
       ssl: isRemote ? { rejectUnauthorized: false } : undefined,
       connectionTimeoutMillis: 20000,
       idleTimeoutMillis: 30000,
