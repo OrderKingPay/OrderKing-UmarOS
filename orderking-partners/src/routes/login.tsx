@@ -312,7 +312,7 @@ function Login() {
           <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-300">
             <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
             <span>
-              Orderkingpay Merchant Platform · GSTIN 18AFXPH9838M1Z9 · T+1 Direct Payouts
+              Orderkingpay Merchant Platform · GSTIN 18AFXPH9838M1Z9 · Partner Settlements
             </span>
           </div>
         </div>
@@ -707,7 +707,7 @@ function Login() {
         {/* Security & Hospitality Guarantee */}
         <div className="text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
           <ShieldCheck className="size-3.5 text-emerald-400" />
-          <span>OrderKing Restaurant Partner Portal • Next-Day (T+1) & Standard Settlement Cycles</span>
+          <span>OrderKing Restaurant Partner</span>
         </div>
       </div>
     </main>

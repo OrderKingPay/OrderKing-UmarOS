@@ -349,40 +349,19 @@ export function SelfServeLandingModule() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
-            <label className="flex items-start gap-3 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={hasGst}
-                onChange={(e) => {
-                  setHasGst(e.target.checked);
-                  if (!e.target.checked) setGstin("");
-                }}
-                className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-emerald-500"
-              />
-              <div>
-                <div className="text-xs font-bold text-slate-100">
-                  My restaurant is GST registered (Have a 15-digit GSTIN)
-                </div>
-                <div className="text-[11px] text-slate-400 mt-0.5">
-                  Leave unticked if your restaurant is GST-exempt — onboarding proceeds automatically without GST.
-                </div>
-              </div>
-            </label>
-            {hasGst ? (
-              <Input
-                maxLength={15}
-                value={gstin}
-                onChange={(e) => setGstin(e.target.value.toUpperCase().slice(0, 15))}
-                placeholder="18AABCU9603R1ZM (15-Character GSTIN)"
-                className="bg-slate-900 border-slate-700 text-slate-100 h-11 font-mono uppercase"
-              />
-            ) : (
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-3 py-2 text-xs text-emerald-300 flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
-                <span>Automatic Non-GST Onboarding Active — No GSTIN required.</span>
-              </div>
-            )}
+          <div>
+            <Label className="text-xs text-slate-300">GSTIN (Optional — leave blank if not registered)</Label>
+            <Input
+              maxLength={15}
+              value={gstin}
+              onChange={(e) => {
+                const v = e.target.value.toUpperCase().slice(0, 15);
+                setGstin(v);
+                setHasGst(v.length > 0);
+              }}
+              placeholder="15-character GSTIN (Optional)"
+              className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
+            />
           </div>
 
           <div className="flex items-center justify-between pt-2">

@@ -46,7 +46,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     region: "Pan-India",
     greeting: "Order King Kitchen Desk & King AI Partner",
     statusHeader: "Live Kitchen & Storefront Status",
-    payoutHeader: "Verified Direct Payout & Earnings Ledger",
+    payoutHeader: "Verified Bank Settlement & Earnings Ledger",
     menuHeader: "Menu Studio & Kitchen Quality",
   },
   {
@@ -919,7 +919,7 @@ function AssistantPage() {
             </div>
           </div>
           <div className="rounded-lg border border-line bg-surface p-2">
-            <div className="text-[10px] font-semibold uppercase text-muted">Direct Payouts (Paise Precision)</div>
+            <div className="text-[10px] font-semibold uppercase text-muted">Bank Settlements (Paise Precision)</div>
             <div className="mt-0.5 font-mono font-bold text-leaf">
               {formatINR(settlements.data?.currentPayablePaise ?? 0)} Payable
             </div>
