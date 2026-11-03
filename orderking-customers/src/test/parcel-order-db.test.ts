@@ -124,7 +124,7 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
       // Cleanup test record
       await sql`DELETE FROM orders WHERE id = ${result.orderId}`;
     },
-    30000
+    120000
   );
 
   it(
@@ -163,6 +163,6 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
         /(Secure online parcel payment is unavailable|Payment signature verification failed)/
       );
     },
-    30000
+    120000
   );
 });

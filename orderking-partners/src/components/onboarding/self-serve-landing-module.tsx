@@ -28,7 +28,6 @@ export function SelfServeLandingModule() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Step 1: Restaurant & Address Proof
   const [name, setName] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [phone, setPhone] = useState("");
@@ -41,13 +40,11 @@ export function SelfServeLandingModule() {
   const [openingTime, setOpeningTime] = useState("10:00");
   const [closingTime, setClosingTime] = useState("23:00");
 
-  // Step 2: FSSAI, PAN & Optional GST Tick Mark (Automatic without GST by default)
   const [fssaiNumber, setFssaiNumber] = useState("");
   const [pan, setPan] = useState("");
   const [hasGst, setHasGst] = useState(false);
   const [gstin, setGstin] = useState("");
 
-  // Step 3: Settlement Bank Account & IFSC
   const [holder, setHolder] = useState("");
   const [bankName, setBankName] = useState("");
   const [bankAccount, setBankAccount] = useState("");

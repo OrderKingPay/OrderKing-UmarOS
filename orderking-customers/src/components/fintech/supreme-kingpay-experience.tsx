@@ -479,7 +479,7 @@ export function SupremeKingPayExperience() {
               <Crown className="size-3.5" />
             </div>
             <div>
-              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block leading-none">Vault</span>
+              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block leading-none">UPI Ready</span>
               <span className="text-xs font-black font-mono text-amber-300 leading-none">{formatPaise(walletBalancePaise)}</span>
             </div>
           </div>
