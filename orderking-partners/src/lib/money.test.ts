@@ -390,7 +390,7 @@ describe("money & Indian statutory settlement", () => {
   });
 
   it("smoothly calculates settlement across custom negotiated rates from 0% to 35%", () => {
-    // 1. 0% Sovereign Dine-In Tier
+    // 1. 0% Direct Dine-In Tier
     const s0 = computeRestaurantPayable({
       foodValuePaise: 50000,
       packingPaise: 0,
@@ -556,7 +556,7 @@ describe("money & Indian statutory settlement", () => {
     assert.ok(Number.isSafeInteger(s.restaurantPayablePaise));
   });
 
-  it("strictly enforces 0% dine-in commission on Table QR orders (sovereign ordering)", () => {
+  it("strictly enforces 0% dine-in commission on Table QR orders (direct table ordering)", () => {
     // ₹1,000 dine-in bill on Table QR ordering
     const sTableQr = computeRestaurantPayable({
       foodValuePaise: 100000,

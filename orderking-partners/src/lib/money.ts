@@ -77,7 +77,7 @@ export function percentOf(amount: Paise, percent: number): Paise {
 /**
  * Standard delivery commission tiers & negotiated take-rates.
  * Standard delivery is 28% (2800 bps) to properly fund delivery partner logistics.
- * Dine-in commission remains 0% (sovereign ordering).
+ * Dine-in commission remains 0% (direct table ordering).
  * Enterprise/growth tiers allow negotiated commission between 18% and 35%.
  */
 export const DELIVERY_COMMISSION_TIERS = {
@@ -103,7 +103,7 @@ export const DELIVERY_COMMISSION_TIER_LIST: readonly DeliveryCommissionTierMeta[
     key: "DINE_IN",
     bps: DELIVERY_COMMISSION_TIERS.DINE_IN,
     percentage: 0,
-    label: "0% Dine-In Sovereign",
+    label: "0% Dine-In Direct Ordering",
     description: "custom commission for dine-in & customer pickup (self-fulfillment)",
   },
   {

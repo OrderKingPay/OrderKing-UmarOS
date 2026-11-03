@@ -178,7 +178,8 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
   const search = (useRouterState({ select: (s) => (s?.location?.search as any)?.tab }) as unknown as string | undefined) ?? "";
   const inKingPay = /^\/(?:kingpay|king-pay)(?:\/|$)/.test(pathname);
   const inTravel = pathname.startsWith("/travel");
-  const isSuperApp = inKingPay || inTravel || pathname.startsWith("/tutor") || pathname.startsWith("/tutor-jobs");
+  const inTutor = pathname.startsWith("/tutor") || pathname.startsWith("/tutor-jobs");
+  const isSuperApp = inKingPay || inTravel || inTutor;
   const inActivity =
     (inTravel && (search === "trips" || pathname.includes("/trips"))) ||
     pathname.startsWith("/orders") ||
@@ -187,9 +188,17 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
   const inFood = !isSuperApp && !inActivity;
   const activeId = inActivity ? "activity" : inKingPay ? "kingpay" : inFood ? "food" : isSuperApp ? "kingpay" : null;
 
-  // Contextual Dynamic Tab 3: Food Orders vs Travel Bookings & PNRs (Zero layout shift)
-  const rightTab = isSuperApp
+  // Contextual Dynamic Tab 3:
+  // - In OrderKing (Food): My Food Orders (/orders)
+  // - In KingPay: Passbook & UPI Ledger (/kingpay/passbook)
+  // - In Travel: My Trips & PNRs (/travel?tab=trips)
+  // - In Tutor/Jobs: My Classes & Applications (/tutor-jobs/history)
+  const rightTab = inKingPay
+    ? { id: "activity", label: "Passbook", displayLabel: "📑 Passbook", to: "/kingpay/passbook", icon: Receipt }
+    : inTravel
     ? { id: "activity", label: "My Bookings & PNRs", displayLabel: "🧳 My Bookings & PNRs", to: "/travel?tab=trips", icon: Luggage }
+    : inTutor
+    ? { id: "activity", label: "My Classes & Jobs", displayLabel: "💼 Classes & Jobs", to: "/tutor-jobs/history", icon: Briefcase }
     : { id: "activity", label: "My Food Orders", displayLabel: "📋 My Food Orders", to: "/orders", icon: ClipboardList };
 
   const tabs = [
@@ -232,7 +241,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                 <span className="block w-full truncate text-center leading-tight">
                   <span className="xs:hidden">
                     {id === "activity"
-                      ? (isSuperApp ? "🧳 Bookings" : "📋 Orders")
+                      ? (inKingPay ? "📑 Passbook" : inTravel ? "🧳 Bookings" : inTutor ? "💼 Activity" : "📋 Orders")
                       : label}
                   </span>
                   <span className="hidden xs:inline">

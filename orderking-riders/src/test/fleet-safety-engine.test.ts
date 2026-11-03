@@ -17,7 +17,7 @@ import {
   STATUTORY_SAFETY_HELPLINES,
 } from "../lib/fleet/fleet-safety-engine";
 
-describe("Sovereign Fleet Safety & Doorstep Handover Engine", () => {
+describe("Rider Fleet Safety & Doorstep Handover Engine", () => {
   // ─────────────────────────────────────────────────────────────
   // 1. LOW BATTERY MODE & ADAPTIVE GPS PING INTERVAL (<20%)
   // ─────────────────────────────────────────────────────────────
