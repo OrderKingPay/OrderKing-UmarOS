@@ -173,7 +173,7 @@ switch ($Action.ToLower()) {
         Invoke-CheckedStep "[4/5] Deploying HDmaster -> admin.orderkingpay.com & hdmaster.pages.dev" {
             & $nodeExe $wranglerJs pages deploy HDmaster/dist --project-name=orderking-hdmaster --branch=main --commit-dirty=true
             if ($LASTEXITCODE -eq 0) {
-                & $nodeExe $wranglerJs pages deploy HDmaster/dist --project-name=hdmaster --branch=main --commit-dirty=true
+# Removed duplicate hdmaster project deploy (using orderking-hdmaster)
             }
         } -MaxRetries 3
 
