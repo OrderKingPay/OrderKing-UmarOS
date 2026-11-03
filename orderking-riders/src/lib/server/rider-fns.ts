@@ -751,7 +751,7 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     let finalMatched = isMatched;
   if (!finalMatched) {
     try {
-      var tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim();
+      var tfKey = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim();
       if (tfKey) {
         const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(String(tfKey ?? ""))}/SMS/VERIFY3/+91${cleanPhone}/${cleanOtp}`);
         const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };

@@ -528,7 +528,7 @@ export async function sendViaWhatsAppCloudApi(
 export function getAvailableSmsProviders(): TelecomProvider[] {
   const providers: TelecomProvider[] = [];
 
-  const twoFactorKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY || "").trim();
+  const twoFactorKey = (process.env.TWOFACTOR_API_KEY || process.env.OTP_2FACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY || "").trim();
   const f2sCompare = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
   if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me") && twoFactorKey.trim() !== f2sCompare && twoFactorKey.trim().length <= 45) {
     providers.push("2factor");
@@ -652,7 +652,7 @@ export async function dispatchOtpSms(
         const apiKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY)!;
         result = await sendViaFast2SMS(cleanPhone, otp, apiKey, appName, timeoutMs);
       } else if (provider === "2factor") {
-        const apiKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY)!;
+        const apiKey = (process.env.TWOFACTOR_API_KEY || process.env.OTP_2FACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY)!;
         result = await sendVia2Factor(cleanPhone, otp, apiKey, timeoutMs);
       } else if (provider === "msg91") {
         const apiKey = process.env.MSG91_AUTH_KEY!;
@@ -1021,6 +1021,7 @@ export async function verifyVia2Factor(phone: string, otp: string): Promise<bool
   const apiKey = (
     process.env.TWO_FACTOR_API_KEY ||
     process.env.TWOFACTOR_API_KEY ||
+    process.env.OTP_2FACTOR_API_KEY ||
     process.env.VITE_TWO_FACTOR_API_KEY ||
     ""
   ).trim();

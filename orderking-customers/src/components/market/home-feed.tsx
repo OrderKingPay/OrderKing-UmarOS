@@ -352,7 +352,9 @@ export function HomeFeed({
 
   // Filtered and sorted restaurants based on active controls
   const filteredRestaurants = useMemo(() => {
-    const raw: RestaurantCard[] = list.data?.restaurants ?? [];
+    const raw: RestaurantCard[] = (list.data?.restaurants && list.data.restaurants.length > 0)
+      ? list.data.restaurants
+      : ((list.data as any)?.allRestaurants ?? []);
 
     const matched = raw
       .filter((r) => {
@@ -410,7 +412,7 @@ export function HomeFeed({
 
 
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
-      {!q && !isZeroDeliveryInRadius && (
+      {!q && (
         <section aria-label="Food Categories" className="pt-0.5">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
@@ -591,19 +593,52 @@ export function HomeFeed({
 
       {/* RESTAURANTS GRID */}
       <section aria-label="Restaurants Grid" className="pt-1">
-        {!isZeroDeliveryInRadius && (
-          <div className="flex items-center justify-between mb-2.5">
-            <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
-              {selectedCategory
-                ? `Best in ${selectedCategory}`
-                : dietFilter === "veg"
-                ? "Pure vegetarian restaurants"
-                : location?.zoneName && location.zoneName !== "Current GPS Position"
-                ? `Restaurants in ${location.zoneName}`
-                : location?.cityName && location.cityName !== "Locating..."
-                ? `Restaurants in ${location.cityName}`
-                : "Restaurants near you"}
-            </h2>
+        <div className="flex items-center justify-between mb-2.5">
+          <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
+            {selectedCategory
+              ? `Best in ${selectedCategory}`
+              : dietFilter === "veg"
+              ? "Pure vegetarian restaurants"
+              : location?.zoneName && location.zoneName !== "Current GPS Position"
+              ? `Restaurants in ${location.zoneName}`
+              : location?.cityName && location.cityName !== "Locating..."
+              ? `Restaurants in ${location.cityName}`
+              : "Restaurants near you"}
+          </h2>
+        </div>
+
+        {/* 1. Sleek Native Delivery Status Bar (Top Competitor Standard) */}
+        {list.data?.deliveryAvailable === false && (
+          <div
+            role="status"
+            data-testid="food-availability-note"
+            className="mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-950"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500 text-white shrink-0 shadow-xs">
+                <MapPin className="size-4" />
+              </div>
+              <div className="text-left min-w-0">
+                <span className="text-xs font-black block truncate text-gray-950">
+                  {location?.zoneName && !["Current GPS Position", "Current Location"].includes(location.zoneName)
+                    ? location.zoneName
+                    : location?.cityName && !["Locating...", "Current GPS Position"].includes(location.cityName)
+                    ? location.cityName
+                    : "Your Location"}
+                </span>
+                <span className="text-[11px] text-gray-600 block truncate font-medium">
+                  Doorstep food delivery expanding to this area soon · All KingPay services active 24/7
+                </span>
+              </div>
+            </div>
+            <Button
+              type="button"
+              onClick={() => setLocDialogOpen(true)}
+              className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer border-0"
+            >
+              <MapPin className="size-3" />
+              <span>Change Location</span>
+            </Button>
           </div>
         )}
 
@@ -647,266 +682,27 @@ export function HomeFeed({
             </Button>
           </div>
         ) : filteredRestaurants.length === 0 ? (
-          <div className="space-y-4">
-            {list.data && list.data.restaurants.length > 0 ? (
-              <div className="rounded-2xl border border-stone-200 bg-white p-8 text-center space-y-3 shadow-xs">
-                <div className="flex size-14 items-center justify-center rounded-2xl bg-stone-100 text-stone-600 mx-auto">
-                  <Utensils className="size-6 text-stone-600" />
-                </div>
-                <h3 className="font-bold text-gray-900 text-base">No restaurants match your filters</h3>
-                <p className="text-xs text-gray-500 max-w-sm mx-auto">Try resetting your filters or selecting a different dish category.</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedCategory(null);
-                    setFilterFast(false);
-                    setFilterRating(false);
-                    setFilterOffers(false);
-                    setFilterBudget(false);
-                  }}
-                  className="bg-[#E23744] hover:bg-[#cf2f3c] text-white border-transparent font-bold rounded-xl px-5 py-2 cursor-pointer"
-                >
-                  Reset Filters
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* 1. Sleek Native Delivery Status Bar (Top Competitor Standard) */}
-                <div
-                  role="status"
-                  data-testid="food-availability-note"
-                  className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-950"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500 text-white shrink-0 shadow-xs">
-                      <MapPin className="size-4" />
-                    </div>
-                    <div className="text-left min-w-0">
-                      <span className="text-xs font-black block truncate text-gray-950">
-                        {location?.zoneName && !["Current GPS Position", "Current Location"].includes(location.zoneName)
-                          ? location.zoneName
-                          : location?.cityName && !["Locating...", "Current GPS Position"].includes(location.cityName)
-                          ? location.cityName
-                          : "Your Location"}
-                      </span>
-                      <span className="text-[11px] text-gray-600 block truncate font-medium">
-                        Doorstep food delivery expanding to this area soon · All KingPay services active 24/7
-                      </span>
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={() => setLocDialogOpen(true)}
-                    className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer border-0"
-                  >
-                    <MapPin className="size-3" />
-                    <span>Change Location</span>
-                  </Button>
-                </div>
-
-                {/* Active KingPay Connected Services (3D Luxury Alignment) */}
-                <div className="space-y-3 pt-2">
-                  <div className="text-center">
-                    <h4 className="text-sm sm:text-base font-black text-gray-950 tracking-tight">
-                      Active KingPay Services in Your Area
-                    </h4>
-                    <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
-                      You can access KingPay financial, travel, career, and learning services below anytime.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-                    {/* 1. KingPay Wallet */}
-                    <Link
-                      to="/kingpay"
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
-                          <Crown className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
-                          UPI
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
-                          KingPay Wallet
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Direct UPI &amp; Bills
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 2. Flights */}
-                    <Link
-                      to="/travel"
-                      search={{ tab: "flights" }}
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(14,165,233,0.18)] hover:border-sky-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 text-white shadow-[0_2px_8px_rgba(14,165,233,0.3)] group-hover:scale-105 transition-transform">
-                          <Plane className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-sky-800 bg-sky-50 border border-sky-200/80 px-2 py-0.5 rounded-full">
-                          Travel
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-sky-600 block leading-snug transition-colors">
-                          Flights
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Domestic &amp; International
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 3. Hotels */}
-                    <Link
-                      to="/travel"
-                      search={{ tab: "hotels" }}
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
-                          <Building2 className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
-                          Hotels
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
-                          Hotels &amp; Stays
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Worldwide Stays
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 4. Trains & PNR */}
-                    <Link
-                      to="/travel"
-                      search={{ tab: "trains" }}
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.18)] hover:border-indigo-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-[0_2px_8px_rgba(99,102,241,0.3)] group-hover:scale-105 transition-transform">
-                          <Train className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-full">
-                          IRCTC
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-indigo-600 block leading-snug transition-colors">
-                          Trains &amp; PNR
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          IRCTC Booking &amp; Status
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 5. King AI Tutor */}
-                    <Link
-                      to="/tutor"
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(20,184,166,0.18)] hover:border-teal-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-[0_2px_8px_rgba(20,184,166,0.3)] group-hover:scale-105 transition-transform">
-                          <GraduationCap className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200/80 px-2 py-0.5 rounded-full">
-                          Tutor
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-teal-600 block leading-snug transition-colors">
-                          King AI Tutor
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Academic Tutor · CBSE &amp; State
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 6. King Jobs */}
-                    <Link
-                      to="/tutor-jobs"
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(168,85,247,0.18)] hover:border-purple-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 text-white shadow-[0_2px_8px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform">
-                          <Briefcase className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-200/80 px-2 py-0.5 rounded-full">
-                          Jobs
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-purple-600 block leading-snug transition-colors">
-                          King Jobs
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Hyperlocal Gigs &amp; Apply
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-
-                {/* Honest "Explore Flagship Menus (Viewing Only)" */}
-                <div
-                  data-testid="flagship-viewing-mode-card"
-                  className="rounded-2xl border border-stone-200/90 bg-white p-4 sm:p-5 shadow-xs text-center space-y-3"
-                >
-                  <div className="flex items-center justify-center gap-2 text-stone-600">
-                    <Eye className="size-4 text-amber-600" />
-                    <span className="text-xs font-black uppercase tracking-wider text-amber-800">
-                      Viewing Mode
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="text-sm sm:text-base font-black text-gray-950">
-                      Explore Flagship Menus (Viewing Only)
-                    </h4>
-                    <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5 font-medium">
-                      Preview live food menus and cuisine selections in viewing mode without doorstep delivery to your current pin.
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-                    {ACTIVE_FLAGSHIP_HUBS.map((hub) => (
-                      <button
-                        key={hub.id}
-                        type="button"
-                        onClick={() => {
-                          setLocation({
-                            label: hub.label,
-                            line1: hub.line1,
-                            lat: hub.lat,
-                            lng: hub.lng,
-                            cityId: hub.cityId,
-                            cityName: hub.cityName,
-                            zoneId: hub.zoneId,
-                            zoneName: hub.zoneName,
-                          });
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-200 hover:border-amber-400 bg-stone-50 hover:bg-amber-50/60 text-xs font-bold text-gray-800 hover:text-amber-950 transition active:scale-95 cursor-pointer shadow-2xs"
-                      >
-                        <MapPin className="size-3 text-amber-600" />
-                        <span>Browse Flagship Hub ({hub.cityName}) — Viewing Mode</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+          <div className="rounded-2xl border border-stone-200 bg-white p-8 text-center space-y-3 shadow-xs">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-stone-100 text-stone-600 mx-auto">
+              <Utensils className="size-6 text-stone-600" />
+            </div>
+            <h3 className="font-bold text-gray-900 text-base">No restaurants match your filters</h3>
+            <p className="text-xs text-gray-500 max-w-sm mx-auto">Try resetting your filters or selecting a different dish category.</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSelectedCategory(null);
+                setFilterFast(false);
+                setFilterRating(false);
+                setFilterOffers(false);
+                setFilterBudget(false);
+              }}
+              className="bg-[#E23744] hover:bg-[#cf2f3c] text-white border-transparent font-bold rounded-xl px-5 py-2 cursor-pointer"
+            >
+              Reset Filters
+            </Button>
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
@@ -915,6 +711,208 @@ export function HomeFeed({
             ))}
           </div>
         )}
+      </section>
+
+      {/* 4. Active KingPay Connected Services (3D Luxury Alignment) */}
+      <section aria-label="KingPay Services" className="space-y-3 pt-2">
+        <div className="text-center">
+          <h4 className="text-sm sm:text-base font-black text-gray-950 tracking-tight">
+            Active KingPay Services in Your Area
+          </h4>
+          <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
+            You can access KingPay financial, travel, career, and learning services below anytime.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          {/* 1. KingPay Wallet */}
+          <Link
+            to="/kingpay"
+            className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
+                <Crown className="size-4.5" />
+              </span>
+              <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                UPI
+              </span>
+            </div>
+            <div>
+              <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
+                KingPay Wallet
+              </span>
+              <span className="text-[10px] text-gray-500 block mt-0.5">
+                Direct UPI &amp; Bills
+              </span>
+            </div>
+          </Link>
+
+          {/* 2. Flights */}
+          <Link
+            to="/travel"
+            search={{ tab: "flights" }}
+            className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(14,165,233,0.18)] hover:border-sky-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 text-white shadow-[0_2px_8px_rgba(14,165,233,0.3)] group-hover:scale-105 transition-transform">
+                <Plane className="size-4.5" />
+              </span>
+              <span className="text-[10px] font-bold text-sky-800 bg-sky-50 border border-sky-200/80 px-2 py-0.5 rounded-full">
+                Travel
+              </span>
+            </div>
+            <div>
+              <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-sky-600 block leading-snug transition-colors">
+                Flights
+              </span>
+              <span className="text-[10px] text-gray-500 block mt-0.5">
+                Domestic &amp; International
+              </span>
+            </div>
+          </Link>
+
+          {/* 3. Hotels */}
+          <Link
+            to="/travel"
+            search={{ tab: "hotels" }}
+            className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
+                <Building2 className="size-4.5" />
+              </span>
+              <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                Hotels
+              </span>
+            </div>
+            <div>
+              <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
+                Hotels &amp; Stays
+              </span>
+              <span className="text-[10px] text-gray-500 block mt-0.5">
+                Worldwide Stays
+              </span>
+            </div>
+          </Link>
+
+          {/* 4. Trains & PNR */}
+          <Link
+            to="/travel"
+            search={{ tab: "trains" }}
+            className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.18)] hover:border-indigo-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-[0_2px_8px_rgba(99,102,241,0.3)] group-hover:scale-105 transition-transform">
+                <Train className="size-4.5" />
+              </span>
+              <span className="text-[10px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-full">
+                IRCTC
+              </span>
+            </div>
+            <div>
+              <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-indigo-600 block leading-snug transition-colors">
+                Trains &amp; PNR
+              </span>
+              <span className="text-[10px] text-gray-500 block mt-0.5">
+                IRCTC Booking &amp; Status
+              </span>
+            </div>
+          </Link>
+
+          {/* 5. King AI Tutor */}
+          <Link
+            to="/tutor"
+            className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(20,184,166,0.18)] hover:border-teal-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-[0_2px_8px_rgba(20,184,166,0.3)] group-hover:scale-105 transition-transform">
+                <GraduationCap className="size-4.5" />
+              </span>
+              <span className="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200/80 px-2 py-0.5 rounded-full">
+                Tutor
+              </span>
+            </div>
+            <div>
+              <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-teal-600 block leading-snug transition-colors">
+                King AI Tutor
+              </span>
+              <span className="text-[10px] text-gray-500 block mt-0.5">
+                Academic Tutor · CBSE &amp; State
+              </span>
+            </div>
+          </Link>
+
+          {/* 6. King Jobs */}
+          <Link
+            to="/tutor-jobs"
+            className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(168,85,247,0.18)] hover:border-purple-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 text-white shadow-[0_2px_8px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform">
+                <Briefcase className="size-4.5" />
+              </span>
+              <span className="text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-200/80 px-2 py-0.5 rounded-full">
+                Jobs
+              </span>
+            </div>
+            <div>
+              <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-purple-600 block leading-snug transition-colors">
+                King Jobs
+              </span>
+              <span className="text-[10px] text-gray-500 block mt-0.5">
+                Hyperlocal Gigs &amp; Apply
+              </span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      {/* 5. Flagship Hub Discovery Card */}
+      <section aria-label="Flagship Hubs">
+        <div
+          data-testid="flagship-viewing-mode-card"
+          className="rounded-2xl border border-stone-200/90 bg-white p-4 sm:p-5 shadow-xs text-center space-y-3"
+        >
+          <div className="flex items-center justify-center gap-2 text-stone-600">
+            <Eye className="size-4 text-amber-600" />
+            <span className="text-xs font-black uppercase tracking-wider text-amber-800">
+              Viewing Mode
+            </span>
+          </div>
+          <div>
+            <h4 className="text-sm sm:text-base font-black text-gray-950">
+              Explore Flagship Menus (Viewing Only)
+            </h4>
+            <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5 font-medium">
+              Preview live food menus and cuisine selections in viewing mode without doorstep delivery to your current pin.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+            {ACTIVE_FLAGSHIP_HUBS.map((hub) => (
+              <button
+                key={hub.id}
+                type="button"
+                onClick={() => {
+                  setLocation({
+                    label: hub.label,
+                    line1: hub.line1,
+                    lat: hub.lat,
+                    lng: hub.lng,
+                    cityId: hub.cityId,
+                    cityName: hub.cityName,
+                    zoneId: hub.zoneId,
+                    zoneName: hub.zoneName,
+                  });
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-200 hover:border-amber-400 bg-stone-50 hover:bg-amber-50/60 text-xs font-bold text-gray-800 hover:text-amber-950 transition active:scale-95 cursor-pointer shadow-2xs"
+              >
+                <MapPin className="size-3 text-amber-600" />
+                <span>Browse Flagship Hub ({hub.cityName}) — Viewing Mode</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* 4. REORDER CAROUSEL (Real Past Orders Only) */}
