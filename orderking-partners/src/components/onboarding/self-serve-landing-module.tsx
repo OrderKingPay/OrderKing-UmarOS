@@ -49,6 +49,7 @@ export function SelfServeLandingModule() {
   const [bankName, setBankName] = useState("");
   const [bankAccount, setBankAccount] = useState("");
   const [bankIfsc, setBankIfsc] = useState("");
+  const [payoutCycle, setPayoutCycle] = useState<"EXPRESS_T1" | "STANDARD_T3">("STANDARD_T3");
 
   function validateStep1(): boolean {
     if (!name.trim()) {
@@ -134,6 +135,8 @@ export function SelfServeLandingModule() {
       bankName: bankName.trim() || "Partner Settlement Bank",
       bankAccount: cleanAcc,
       bankIfsc: cleanIfsc,
+      settlementCycle: payoutCycle,
+      earlySettlementFeeBps: payoutCycle === "EXPRESS_T1" ? 50 : 0,
       openingTime: openingTime || "10:00",
       closingTime: closingTime || "23:00",
       savedAt: new Date().toISOString(),
@@ -448,6 +451,46 @@ export function SelfServeLandingModule() {
                 placeholder="SBIN0001234"
                 className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
               />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
+            <Label className="text-xs font-bold text-slate-200">Select Settlement Payout Cycle *</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setPayoutCycle("STANDARD_T3")}
+                className={`rounded-xl border p-3 text-left transition-all ${
+                  payoutCycle === "STANDARD_T3"
+                    ? "border-emerald-500 bg-emerald-950/30 text-white"
+                    : "border-slate-800 bg-slate-900/60 text-slate-300"
+                }`}
+              >
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span>After Next-Day / Standard Cycle (T+3)</span>
+                  <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-emerald-300">0% Extra Fee</span>
+                </div>
+                <div className="text-[11px] text-slate-400 mt-1">
+                  Standard bank payout after T+2 / weekly settlement cycle with zero early-payout charge.
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPayoutCycle("EXPRESS_T1")}
+                className={`rounded-xl border p-3 text-left transition-all ${
+                  payoutCycle === "EXPRESS_T1"
+                    ? "border-emerald-500 bg-emerald-950/30 text-white"
+                    : "border-slate-800 bg-slate-900/60 text-slate-300"
+                }`}
+              >
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span>Next-Day Express Payout (Daily T+1)</span>
+                  <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300">+0.5% Fee + GST</span>
+                </div>
+                <div className="text-[11px] text-slate-400 mt-1">
+                  Receive next-morning (T+1) bank settlement for orders completed up to midnight (+0.5% liquidity fee).
+                </div>
+              </button>
             </div>
           </div>
 

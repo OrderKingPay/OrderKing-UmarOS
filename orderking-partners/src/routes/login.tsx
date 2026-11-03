@@ -707,7 +707,7 @@ function Login() {
         {/* Security & Hospitality Guarantee */}
         <div className="text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
           <ShieldCheck className="size-3.5 text-emerald-400" />
-          <span>OrderKing Restaurant Partner Portal • Direct Bank Payouts</span>
+          <span>OrderKing Restaurant Partner Portal • Next-Day (T+1) & Standard Settlement Cycles</span>
         </div>
       </div>
     </main>
