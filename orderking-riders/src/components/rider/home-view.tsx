@@ -1367,9 +1367,9 @@ export function HomeView() {
           {status === "OFFLINE" ? (
             <div className="space-y-1.5">
               <SwipeSlider
-                label={allReady ? "Swipe to Go Online" : "Confirm Readiness to Go Online"}
+                label={allReady ? "Swipe to Go Online" : "Tap or Swipe to Unlock Duty"}
                 variant="online"
-                disabled={!allReady || pending}
+                disabled={pending}
                 loading={pending}
                 onComplete={() => {
                   if (!allReady) {
