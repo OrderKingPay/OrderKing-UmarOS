@@ -59,7 +59,6 @@ import { FloatingCashCard } from "./floating-cash-card";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 import { calculateDailyMilestoneProgress, calculateTier1MilestoneBonus } from "@/lib/rider/gig-engine";
-import { VipAmbassadorPass } from "./vip-ambassador-pass";
 import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
@@ -635,76 +634,81 @@ export function HomeView() {
         const parsed = JSON.parse(cached);
         if (parsed?.rider?.id) return parsed;
       }
+      let phone = "9395065587";
+      let fullName = "Delivery Partner";
       const sessionRaw = window.localStorage.getItem("orderking_rider_session") || window.localStorage.getItem("orderking_rider_prefill");
       if (sessionRaw) {
-        const s = JSON.parse(sessionRaw);
-        const phone = s.phone || "9395065587";
-        return {
-          rider: {
-            id: `rd_${phone}`,
-            userId: phone,
-            fullName: "Delivery Partner",
-            phone: phone,
-            email: `${phone}@rider.orderking.in`,
-            photoUrl: null,
-            address: "",
-            emergencyName: "",
-            emergencyPhone: "",
-            dateOfBirth: null,
-            governmentIdType: null,
-            governmentIdLast4: null,
-            kycStatus: "VERIFIED",
-            kycRejectReason: null,
-            riderType: "DELIVERY_PARTNER",
-            vehicleType: "MOTORCYCLE",
-            vehicleRegistration: null,
-            licenceNumber: null,
-            insuranceRef: null,
-            payoutUpi: null,
-            payoutBankLast4: null,
-            preferredZones: [],
-            availabilityNotes: "",
-            status: "OFFLINE",
-            onlineSince: null,
-            locale: "en",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            dataMode: "LIVE",
-            consecutiveDeclines: 0,
-            coolingOffUntil: null,
-            coolingOffReason: null,
-          },
-          active: null,
-          offer: null,
-          today: { completedDeliveries: 0, totalEarnedPaise: 0, tipPaise: 0 },
-          pendingCashPaise: 0,
-          notifications: [],
-          config: {
-            appName: "OrderKing Rider",
-            payoutCurrency: "INR",
-            minPayoutPaise: 10000,
-            maxCashPaise: 200000,
-            volunteerEnabled: false,
-            supportPhone: "+911140000000",
-            sosPhone: "112",
-            legalEntity: "OrderKing Logistics Ltd",
-            discipline: {
-              enabled: true,
-              floatingCashLimitInr: 2000,
-              cancellationPenaltyBeforePickupInr: 25,
-              cancellationPenaltyPostPickupType: "FULL_ORDER" as const,
-              cancellationPenaltyPostPickupCustomInr: 150,
-              coolingOffConsecutiveRejections: 3,
-              coolingOffAcceptanceRateThresholdPct: 70,
-              coolingOffDurationMinutes: 15,
-              upiDepositVpa: "orderking.treasury@okaxis",
-            },
-          },
-          pocketBalancePaise: 0,
-          coolingOff: null,
-          activeDeliveries: [],
-        } as unknown as Home;
+        try {
+          const s = JSON.parse(sessionRaw);
+          if (s.phone) phone = s.phone;
+          if (s.fullName) fullName = s.fullName;
+        } catch {}
       }
+      return {
+        rider: {
+          id: `rd_${phone}`,
+          userId: phone,
+          fullName: fullName,
+          phone: phone,
+          email: `${phone}@rider.orderking.in`,
+          photoUrl: null,
+          address: "",
+          emergencyName: "",
+          emergencyPhone: "",
+          dateOfBirth: null,
+          governmentIdType: null,
+          governmentIdLast4: null,
+          kycStatus: "VERIFIED",
+          kycRejectReason: null,
+          riderType: "DELIVERY_PARTNER",
+          vehicleType: "MOTORCYCLE",
+          vehicleRegistration: null,
+          licenceNumber: null,
+          insuranceRef: null,
+          payoutUpi: null,
+          payoutBankLast4: null,
+          preferredZones: [],
+          availabilityNotes: "",
+          status: "OFFLINE",
+          onlineSince: null,
+          locale: "en",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          dataMode: "LIVE",
+          consecutiveDeclines: 0,
+          coolingOffUntil: null,
+          coolingOffReason: null,
+        },
+        active: null,
+        offer: null,
+        today: { completedDeliveries: 0, totalEarnedPaise: 0, tipPaise: 0 },
+        pendingCashPaise: 0,
+        notifications: [],
+        config: {
+          appName: "OrderKing Rider",
+          payoutCurrency: "INR",
+          minPayoutPaise: 10000,
+          maxCashPaise: 200000,
+          volunteerEnabled: false,
+          supportPhone: "+911140000000",
+          sosPhone: "112",
+          legalEntity: "OrderKing Logistics Ltd",
+          discipline: {
+            enabled: true,
+            floatingCashLimitInr: 2000,
+            cancellationPenaltyBeforePickupInr: 25,
+            cancellationPenaltyPostPickupType: "FULL_ORDER" as const,
+            cancellationPenaltyPostPickupCustomInr: 150,
+            coolingOffConsecutiveRejections: 3,
+            coolingOffAcceptanceRateThresholdPct: 70,
+            coolingOffDurationMinutes: 15,
+            upiDepositVpa: "orderking.treasury@okaxis",
+          },
+        },
+        pocketBalancePaise: 0,
+        coolingOff: null,
+        activeDeliveries: [],
+      } as unknown as Home;
     } catch {}
     return null;
   });
@@ -1092,7 +1096,7 @@ export function HomeView() {
 
             <div className="text-right">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                Pocket Balance
+                Floating Cash (COD)
               </p>
               <p className="font-mono text-xs sm:text-sm font-bold text-foreground">
                 {formatPaise(unreconciledPaise)}{" "}
@@ -1160,58 +1164,19 @@ export function HomeView() {
                 : ""}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+          <div className="flex items-center gap-2">
             <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
-            {status === "OFFLINE" ? (
-              <Button
-                size="sm"
-                onClick={() => {
-                  if (!helmetSelfie && !driverReadinessConfirmed) {
-                    toast.error("Please confirm driver readiness check first.");
-                    setSelfieModalOpen(true);
-                    return;
-                  }
-                  return go("ONLINE");
-                }}
-                disabled={pending}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs gap-1.5 shadow-sm active:scale-95 transition"
-              >
-                <Zap className="size-3.5 fill-current" />
-                1-Tap Go Online
-              </Button>
-            ) : status === "ONLINE" ? (
-              <div className="flex items-center gap-1.5">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={triggerManualGpsPing}
-                  disabled={gpsPinging}
-                  className="text-xs font-semibold gap-1.5 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 active:scale-95 transition"
-                  title="Send real-time GPS telemetry ping to database"
-                >
-                  <Radio className="size-3.5 animate-pulse text-emerald-500" />
-                  {gpsPinging ? "Pinging..." : "GPS Ping"}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => setConfirm("offline")}
-                  disabled={pending || Boolean(home.active)}
-                  className="text-xs font-bold gap-1 active:scale-95 transition"
-                >
-                  Go Offline
-                </Button>
-              </div>
-            ) : (
+            {status !== "OFFLINE" && (
               <Button
                 size="sm"
                 variant="outline"
                 onClick={triggerManualGpsPing}
                 disabled={gpsPinging}
-                className="text-xs font-semibold gap-1.5 border-amber-500/30 text-amber-600 hover:bg-amber-500/10 active:scale-95 transition"
+                className="text-xs font-semibold gap-1.5 border-border hover:bg-muted active:scale-95 transition"
+                title="Refresh GPS location"
               >
-                <Radio className="size-3.5 animate-pulse text-amber-500" />
-                {gpsPinging ? "Pinging..." : "GPS Ping"}
+                <Radio className="size-3 text-emerald-500" />
+                <span>{gpsPinging ? "Syncing..." : "GPS"}</span>
               </Button>
             )}
           </div>
@@ -1224,7 +1189,8 @@ export function HomeView() {
         ) : null}
 
         {(() => {
-          const tier1Bonus = calculateTier1MilestoneBonus(home.completedToday);
+          const completedCount = home.completedToday ?? 0;
+          const tier1Bonus = calculateTier1MilestoneBonus(completedCount);
           const totalEarningsPaise = (home.todayEarningsPaise || 0) + tier1Bonus.bonusPaise;
           return (
             <dl className="grid grid-cols-3 gap-2 text-center">
@@ -1233,7 +1199,7 @@ export function HomeView() {
                 value={formatPaise(totalEarningsPaise)}
                 subtext={tier1Bonus.bonusPaise > 0 ? `+₹${tier1Bonus.bonusRupees} Milestone` : undefined}
               />
-              <Stat label={t("completed")} value={String(home.completedToday)} />
+              <Stat label={t("completed")} value={String(completedCount)} />
               <Stat
                 label={t("onlineFor")}
                 value={status === "OFFLINE" ? "—" : formatDuration(onlineMs)}
@@ -1241,126 +1207,6 @@ export function HomeView() {
             </dl>
           );
         })()}
-
-        {/* Pre-Shift Driver Readiness & Automated Dispatch Synchronization */}
-        <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
-              {allReady ? (
-                <ShieldCheck className="size-4 text-emerald-500" />
-              ) : (
-                <Camera className="size-4 text-primary" />
-              )}
-              Pre-Shift Readiness &amp; Dispatch Sync
-            </span>
-            <span className="text-[11px] font-semibold">
-              {allReady ? (
-                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                  <CheckCircle2 className="size-3.5" /> Readiness Verified
-                </span>
-              ) : (
-                <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                  Readiness Check Required
-                </span>
-              )}
-            </span>
-          </div>
-
-          {/* Automated Driver Readiness Toggle & Dispatch Telemetry */}
-          <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-2.5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <span className="text-xs font-bold text-foreground block">
-                  Automated Driver Readiness
-                </span>
-                <span className="text-[11px] text-muted-foreground block">
-                  Confirms safety gear, thermal bag, GPS telemetry &amp; battery for dispatches
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={toggleDriverReadiness}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                  driverReadinessConfirmed ? "bg-emerald-600" : "bg-muted"
-                }`}
-                role="switch"
-                aria-checked={driverReadinessConfirmed}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                    driverReadinessConfirmed ? "translate-x-5" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Proximity & Dynamic KPT Dispatch Synchronization Indicators */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
-              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
-                <Radio className={`size-3.5 shrink-0 ${allReady ? "text-emerald-500 animate-pulse" : "text-muted-foreground"}`} />
-                <div>
-                  <span className="font-semibold text-foreground block">Proximity Dispatch Radar</span>
-                  <span className="text-[10px] text-muted-foreground">Operating zone radius &amp; corridor batching active</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
-                <Clock3 className={`size-3.5 shrink-0 ${allReady ? "text-amber-500" : "text-muted-foreground"}`} />
-                <div>
-                  <span className="font-semibold text-foreground block">Dynamic KPT Sync</span>
-                  <span className="text-[10px] text-muted-foreground">Arrival matched to food ready time (0-min dwell)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {helmetSelfie ? (
-            <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5">
-              <div className="flex items-center gap-3">
-                <img
-                  src={helmetSelfie}
-                  alt="Verified Helmet Selfie"
-                  className="size-12 rounded-lg object-cover border border-emerald-500/50 shadow-xs"
-                />
-                <div className="space-y-0.5 text-xs">
-                  <p className="font-bold text-emerald-900 dark:text-emerald-200">
-                    BIS Helmet &amp; Uniform Bag Verified
-                  </p>
-                  <p className="text-[11px] text-muted-foreground font-mono">
-                    Verified at {helmetVerifiedAt} · Shift Unlocked
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleClearHelmetSelfie}
-                className="text-xs text-muted-foreground hover:text-foreground gap-1"
-              >
-                <RotateCcw className="size-3" />
-                <span>Retake</span>
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-3 pt-0.5">
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {driverReadinessConfirmed
-                  ? "Readiness verified via automated checklist. You can also upload a live selfie anytime."
-                  : "Toggle automated readiness above or take a front-camera selfie wearing your strapped helmet and delivery bag."}
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setSelfieModalOpen(true)}
-                className="text-xs font-semibold gap-1.5 shrink-0"
-              >
-                <Camera className="size-3.5" />
-                <span>Take Selfie</span>
-              </Button>
-            </div>
-          )}
-        </div>
 
         {/* Authentic Swipe to Go Online / Offline Slider Bar with Status Indicator */}
         <div className="pt-1 space-y-2">
@@ -1538,27 +1384,6 @@ export function HomeView() {
         />
       )}
 
-      {/* Rider Benefits & Affiliate Ecosystem Quick Hub Card */}
-      <Card className="border-primary/20 bg-gradient-to-r from-emerald-500/10 via-primary/5 to-amber-500/10 p-3.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Gift className="size-4" />
-          </span>
-          <div>
-            <p className="text-xs font-bold text-foreground">Partner Benefits &amp; Affiliate Hub</p>
-            <p className="text-[11px] text-muted-foreground">
-              15% EV Discounts (Yulu, Zypp) · HPCL ₹2.50/L Cashback · ₹10L Insurance
-            </p>
-          </div>
-        </div>
-        <Link
-          to="/benefits"
-          className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition"
-        >
-          <span>View Hub</span>
-          <ArrowRight className="size-3.5" />
-        </Link>
-      </Card>
 
       {/* Operational Gig / Shift Slot Planner */}
       {sdui.isSectionVisible("shift_slots") && (
@@ -1640,20 +1465,7 @@ export function HomeView() {
         <DailyMilestoneCard completed={home.completedToday} performance={performance} />
       )}
 
-      {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
-      {sdui.isSectionVisible("vip_ambassador") && (
-        <VipAmbassadorPass
-          riderName={home.rider.fullName}
-          riderId={home.rider.id}
-          phone={home.rider.phone}
-          onCommissionCredited={() => void load()}
-        />
-      )}
-
-      {/* Self-Service Per-Order Payout Calculator */}
-      {sdui.isSectionVisible("payout_calculator") && (
-        <SelfServicePayoutCalculator />
-      )}
+      
 
       {home.notifications.length ? (
         <Card>
