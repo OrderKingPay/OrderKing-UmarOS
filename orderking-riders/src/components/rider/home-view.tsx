@@ -1150,36 +1150,27 @@ export function HomeView() {
       </header>
 
       {/* Duty Status & Pre-Shift Readiness Header */}
-      <section className="rounded-xl bg-card p-5 shadow-[var(--shadow-border)] space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("welcome")}</p>
-            <h1 className="mt-1 font-display text-3xl leading-none">
-              {home.rider.fullName || user?.displayName || "Partner"}
-            </h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {home.rider.vehicleType} · {home.rider.vehicleRegistration || "Verified Partner"}
-              {home.rider.preferredZones.length > 0
-                ? ` · Zones: ${home.rider.preferredZones.join(", ")}`
-                : ""}
-            </p>
-          </div>
+      <section className="rounded-xl bg-card p-4 shadow-[var(--shadow-border)] space-y-3">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
-            {status !== "OFFLINE" && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={triggerManualGpsPing}
-                disabled={gpsPinging}
-                className="text-xs font-semibold gap-1.5 border-border hover:bg-muted active:scale-95 transition"
-                title="Refresh GPS location"
-              >
-                <Radio className="size-3 text-emerald-500" />
-                <span>{gpsPinging ? "Syncing..." : "GPS"}</span>
-              </Button>
-            )}
+            <span className="text-xs text-muted-foreground font-medium">
+              {home.rider.vehicleRegistration || home.rider.vehicleType}
+            </span>
           </div>
+          {status !== "OFFLINE" && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={triggerManualGpsPing}
+              disabled={gpsPinging}
+              className="h-7 text-xs font-semibold gap-1 border-border hover:bg-muted active:scale-95 transition"
+              title="Refresh GPS location"
+            >
+              <Radio className="size-3 text-emerald-500" />
+              <span>{gpsPinging ? "Syncing..." : "GPS"}</span>
+            </Button>
+          )}
         </div>
 
         {kyc !== "VERIFIED" ? (
@@ -1309,10 +1300,7 @@ export function HomeView() {
               </span>
               <div>
                 <p className="text-xs font-bold text-foreground">
-                  Searching for Nearby Orders in {home.rider.preferredZones[0] || "Operating Service Zone"}
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Reposition closer to active surge hotspots on the heatmap below for higher frequency offers
+                  Finding orders near you
                 </p>
               </div>
             </div>
@@ -1351,7 +1339,7 @@ export function HomeView() {
             <Badge tone="offline">Duty Offline</Badge>
           </div>
           <CardMeta className="mt-1">
-            You are currently offline. Complete your pre-shift readiness check and tap <strong>{t("goOnline")}</strong> above to activate live dispatches and start earning.
+            You are offline. Go online above to start receiving orders.
           </CardMeta>
           <div className="pt-1">
             <MapPane
@@ -1394,10 +1382,9 @@ export function HomeView() {
                 <CalendarClock className="size-4" />
               </span>
               <div>
-                <CardTitle className="text-base">Operational Gig / Shift Slot Planner</CardTitle>
+                <CardTitle className="text-base">Shift Planner</CardTitle>
                 <p className="text-xs text-muted-foreground">
-                  Book shifts for {activeShiftDateIso} · {activeDayBookedSlots.length} slot
-                  {activeDayBookedSlots.length === 1 ? "" : "s"} ({bookedHoursTotal} hrs) booked
+                  {activeShiftDateIso} · {bookedHoursTotal} hrs booked
                 </p>
               </div>
             </div>
@@ -1451,7 +1438,7 @@ export function HomeView() {
                     onClick={() => toggleSlotBooking(slot.id)}
                     className="shrink-0"
                   >
-                    {isBooked ? "✓ Booked (Cancel)" : "Book Gig Slot"}
+                    {isBooked ? "Cancel Slot" : "Book Slot"}
                   </Button>
                 </div>
               );
