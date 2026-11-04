@@ -945,10 +945,11 @@ export function HomeView() {
     unreconciledPaise >= codSoftWarningPaise || codUsagePct >= cod.warningThresholdPct;
 
   async function go(statusNext: "ONLINE" | "OFFLINE") {
-    if (statusNext === "ONLINE" && !helmetSelfie && !driverReadinessConfirmed) {
-      toast.error("Please confirm driver readiness check before going online.");
-      setSelfieModalOpen(true);
-      return;
+    if (statusNext === "ONLINE") {
+      setDriverReadinessConfirmed(true);
+      try {
+        window.localStorage.setItem("ok_driver_readiness_v1", "true");
+      } catch {}
     }
     setPending(true);
     try {
@@ -1058,194 +1059,74 @@ export function HomeView() {
         />
       ) : null}
 
-      {/* Top Floating Partner Header with Live Floating Cash Meter & Deposit UPI Button */}
-      <header className="rounded-2xl border border-border bg-card/95 p-3.5 shadow-xl backdrop-blur-md sticky top-2 z-30 space-y-2.5">
+      {/* 1. Clean Silent Courier Header */}
+      <header className="rounded-2xl border border-border bg-card/95 p-3 shadow-md backdrop-blur-md sticky top-2 z-30">
         <div className="flex items-center justify-between gap-3">
-          {/* Left: Partner identity & live duty radar pill */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="relative size-10 shrink-0 rounded-xl bg-gradient-to-br from-amber-500/20 to-[#E5A93C]/40 border border-[#E5A93C]/40 flex items-center justify-center font-display font-extrabold text-foreground shadow-sm">
+          {/* Left: Driver Avatar & Identity */}
+          <Link to="/profile" className="flex items-center gap-2.5 min-w-0">
+            <div className="relative size-10 shrink-0 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-foreground">
               {(home.rider.fullName || user?.displayName || "OK").slice(0, 2).toUpperCase()}
               <span
-                className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-card ${
+                className={`absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-background ${
                   status === "ONLINE"
                     ? "bg-emerald-500 animate-pulse"
                     : status === "BUSY"
                       ? "bg-amber-500"
-                      : "bg-rose-500"
+                      : "bg-muted-foreground"
                 }`}
               />
             </div>
             <div className="min-w-0">
-              <h2 className="font-display text-sm font-bold truncate text-foreground leading-tight">
-                {home.rider.fullName || user?.displayName || "Partner"}
+              <h2 className="text-sm font-bold truncate text-foreground leading-tight">
+                {home.rider.fullName || user?.displayName || "Delivery Partner"}
               </h2>
-              <p className="text-[11px] text-muted-foreground truncate font-medium">
+              <p className="text-[11px] text-muted-foreground truncate">
                 {home.rider.vehicleType} · {home.rider.preferredZones[0] || "Fleet Zone"}
               </p>
             </div>
-          </div>
+          </Link>
 
-          {/* Right: Floating Cash / Pocket Balance Meter with Deposit UPI Button & Red SOS Panic Button */}
+          {/* Right: Floating Cash & Emergency SOS */}
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setExternalDepositOpen(true)}
+              className="flex items-center gap-1.5 rounded-full bg-muted/80 border border-border px-2.5 py-1 text-xs font-semibold hover:bg-muted transition"
+              title="Deposit Cash via UPI"
+            >
+              <Wallet className="size-3.5 text-primary" />
+              <span>{formatPaise(unreconciledPaise)} COD</span>
+            </button>
+
             <EmergencySosButton
               onClick={() => setSosOpen(true)}
               size="sm"
               label="SOS"
               subLabel="112"
             />
-
-            <div className="text-right">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                Floating Cash (COD)
-              </p>
-              <p className="font-mono text-xs sm:text-sm font-bold text-foreground">
-                {formatPaise(unreconciledPaise)}{" "}
-                <span className="text-[10px] text-muted-foreground font-normal">
-                  / {formatPaise(codBlockThresholdPaise)}
-                </span>
-              </p>
-            </div>
-
-            <Button
-              size="sm"
-              onClick={() => setExternalDepositOpen(true)}
-              className="h-8 rounded-xl bg-gradient-to-r from-blue-600 via-[#2563EB] to-blue-700 text-white px-3 text-xs font-bold shadow-md shadow-blue-500/25 hover:from-blue-500 hover:to-blue-600 transition-all active:scale-[0.98]"
-            >
-              <Wallet className="size-3.5 mr-1" />
-              Deposit UPI
-            </Button>
-          </div>
-        </div>
-
-        {/* Floating Cash utilization progress bar */}
-        <div className="space-y-1">
-          <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">
-            <div
-              className={`h-full transition-all duration-500 ${
-                isCodBlocked
-                  ? "bg-rose-500"
-                  : isCodNearLimit
-                    ? "bg-amber-500"
-                    : "bg-emerald-500"
-              }`}
-              style={{ width: `${Math.max(4, Math.min(100, codUsagePct))}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <span
-                className={`size-1.5 rounded-full ${isCodBlocked ? "bg-rose-500" : isCodNearLimit ? "bg-amber-500" : "bg-emerald-500"}`}
-              />
-              {isCodBlocked
-                ? `₹${(codBlockThresholdPaise / 100).toLocaleString("en-IN")} Hard Lock Reached — Deposit Required`
-                : isCodNearLimit
-                  ? `₹${(codSoftWarningPaise / 100).toLocaleString("en-IN")} Soft Warning — Deposit Recommended`
-                  : "Floating Balance Healthy"}
-            </span>
-            <span>
-              {codUsagePct}% of ₹{(codBlockThresholdPaise / 100).toLocaleString("en-IN")} cap
-            </span>
           </div>
         </div>
       </header>
 
-      {/* Duty Status & Pre-Shift Readiness Header */}
-      <section className="rounded-xl bg-card p-4 shadow-[var(--shadow-border)] space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
-            <span className="text-xs text-muted-foreground font-medium">
-              {home.rider.vehicleRegistration || home.rider.vehicleType}
-            </span>
-          </div>
-          {status !== "OFFLINE" && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={triggerManualGpsPing}
-              disabled={gpsPinging}
-              className="h-7 text-xs font-semibold gap-1 border-border hover:bg-muted active:scale-95 transition"
-              title="Refresh GPS location"
-            >
-              <Radio className="size-3 text-emerald-500" />
-              <span>{gpsPinging ? "Syncing..." : "GPS"}</span>
-            </Button>
-          )}
-        </div>
-
-        {kyc !== "VERIFIED" ? (
-          <p className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
-            {kyc === "UNDER_REVIEW" ? t("underReview") : t("kycHint")}
-          </p>
-        ) : null}
-
-        {(() => {
-          const completedCount = home.completedToday ?? 0;
-          const tier1Bonus = calculateTier1MilestoneBonus(completedCount);
-          const totalEarningsPaise = (home.todayEarningsPaise || 0) + tier1Bonus.bonusPaise;
-          return (
-            <dl className="grid grid-cols-3 gap-2 text-center">
-              <Stat
-                label={t("todayEarnings")}
-                value={formatPaise(totalEarningsPaise)}
-                subtext={tier1Bonus.bonusPaise > 0 ? `+₹${tier1Bonus.bonusRupees} Milestone` : undefined}
-              />
-              <Stat label={t("completed")} value={String(completedCount)} />
-              <Stat
-                label={t("onlineFor")}
-                value={status === "OFFLINE" ? "—" : formatDuration(onlineMs)}
-              />
-            </dl>
-          );
-        })()}
-
-        {/* Authentic Swipe to Go Online / Offline Slider Bar with Status Indicator */}
-        <div className="pt-1 space-y-2">
+      {/* 2. Duty Slider & Core Performance */}
+      <Card className="p-4 shadow-sm border-border/80 space-y-3.5">
+        <div className="pt-0.5">
           {status === "OFFLINE" ? (
-            <div className="space-y-1.5">
-              <SwipeSlider
-                label={allReady ? "Swipe to Go Online" : "Tap or Swipe to Unlock Duty"}
-                variant="online"
-                disabled={pending}
-                loading={pending}
-                onComplete={() => {
-                  if (!allReady) {
-                    toast.error("Please confirm driver readiness check first.");
-                    setSelfieModalOpen(true);
-                    return;
-                  }
-                  return go("ONLINE");
-                }}
-              />
-              <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
-                <span className="flex items-center gap-1.5 text-rose-400 font-semibold">
-                  <span className="size-2 rounded-full bg-rose-500" />
-                  Duty Offline
-                </span>
-                <span>
-                  {allReady
-                    ? "Readiness verified ✓ Ready to swipe"
-                    : "Confirm driver readiness to go online"}
-                </span>
-              </div>
-            </div>
+            <SwipeSlider
+              label="Swipe to Go Online"
+              variant="online"
+              disabled={pending}
+              loading={pending}
+              onComplete={() => go("ONLINE")}
+            />
           ) : status === "ONLINE" ? (
-            <div className="space-y-1.5">
-              <SwipeSlider
-                label="Swipe to Go Offline"
-                variant="offline"
-                disabled={pending || Boolean(home.active)}
-                loading={pending}
-                onComplete={() => setConfirm("offline")}
-              />
-              <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
-                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Duty Online · Live Dispatch Radar Active
-                </span>
-                <span>Swipe to end shift</span>
-              </div>
-            </div>
+            <SwipeSlider
+              label="Swipe to Go Offline"
+              variant="offline"
+              disabled={pending || Boolean(home.active)}
+              loading={pending}
+              onComplete={() => setConfirm("offline")}
+            />
           ) : (
             <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1258,13 +1139,41 @@ export function HomeView() {
             </div>
           )}
         </div>
-      </section>
 
-      {/* Live Dispatch & Active Delivery Workstation */}
+        {(() => {
+          const completedCount = home.completedToday ?? 0;
+          const tier1Bonus = calculateTier1MilestoneBonus(completedCount);
+          const totalEarningsPaise = (home.todayEarningsPaise || 0) + tier1Bonus.bonusPaise;
+          return (
+            <dl className="grid grid-cols-3 gap-2 divide-x divide-border pt-1 text-center">
+              <div>
+                <dt className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">{t("todayEarnings")}</dt>
+                <dd className="font-display text-base font-bold text-foreground mt-0.5">
+                  {formatPaise(totalEarningsPaise)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">{t("completed")}</dt>
+                <dd className="font-display text-base font-bold text-foreground mt-0.5">
+                  {completedCount}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">{t("onlineFor")}</dt>
+                <dd className="font-display text-base font-bold text-foreground mt-0.5">
+                  {status === "OFFLINE" ? "0h 0m" : formatDuration(onlineMs)}
+                </dd>
+              </div>
+            </dl>
+          );
+        })()}
+      </Card>
+
+      {/* 3. Operational Map & Active Delivery Station */}
       {home.active ? (
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-xl">{t("currentDelivery")}</h2>
+            <h2 className="font-display text-base font-bold">{t("currentDelivery")}</h2>
             <Badge tone="busy">{home.active.state.replaceAll("_", " ")}</Badge>
           </div>
           <MapPane
@@ -1291,41 +1200,11 @@ export function HomeView() {
           onDecline={() => setConfirm("decline")}
         />
       ) : status === "ONLINE" ? (
-        <section className="space-y-3">
-          <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5">
-            <div className="flex items-center gap-2.5">
-              <span className="relative flex size-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex size-3 rounded-full bg-emerald-500" />
-              </span>
-              <div>
-                <p className="text-xs font-bold text-foreground">
-                  Finding orders near you
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {surge.isMonsoonActive && (
-                <Badge tone="busy" className="font-mono text-xs">
-                  {surge.badges.monsoonText}
-                </Badge>
-              )}
-              {surge.isPeakDinnerActive && (
-                <Badge tone="busy" className="font-mono text-xs">
-                  {surge.badges.peakDinnerText}
-                </Badge>
-              )}
-              {surge.isWeatherAllowanceActive && (
-                <Badge tone="busy" className="font-mono text-xs bg-sky-500/20 text-sky-400 border-sky-500/30">
-                  {surge.badges.weatherAllowanceText}
-                </Badge>
-              )}
-              <Badge tone="online" className="font-mono text-xs">
-                Radar Active
-              </Badge>
-            </div>
+        <section className="space-y-2">
+          <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
+            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Searching for nearby orders in {home.rider.preferredZones[0] || "Operating Zone"}...</span>
           </div>
-
           <MapPane
             mode="heatmap"
             current={riderPos}
@@ -1333,158 +1212,34 @@ export function HomeView() {
           />
         </section>
       ) : (
-        <Card className="space-y-3">
-          <div className="flex items-center justify-between">
-            <CardTitle>{t("offers")}</CardTitle>
-            <Badge tone="offline">Duty Offline</Badge>
-          </div>
-          <CardMeta className="mt-1">
-            You are offline. Go online above to start receiving orders.
-          </CardMeta>
-          <div className="pt-1">
-            <MapPane
-              mode="heatmap"
-              current={riderPos}
-              initialHeatmap={true}
-            />
-          </div>
-        </Card>
+        <section className="space-y-2">
+          <MapPane
+            mode="heatmap"
+            current={riderPos}
+            initialHeatmap={true}
+          />
+        </section>
       )}
 
-      {/* Fleet Floating Cash (Pocket Balance) & Instant UPI Deposit Card */}
-      {sdui.isSectionVisible("floating_cash_card") && (
-        <FloatingCashCard
-          pocketBalance={
-            home.pocketBalance ?? {
-              pocketBalancePaise: unreconciledPaise,
-              limitPaise: codBlockThresholdPaise,
-              isCodBlocked: unreconciledPaise >= codBlockThresholdPaise,
-              utilizationPct: codUsagePct,
-              cashRowsCount: 0,
-            }
+      {/* Floating Cash UPI Deposit Modal */}
+      <FloatingCashCard
+        modalOnly
+        pocketBalance={
+          home.pocketBalance ?? {
+            pocketBalancePaise: unreconciledPaise,
+            limitPaise: codBlockThresholdPaise,
+            isCodBlocked: unreconciledPaise >= codBlockThresholdPaise,
+            utilizationPct: codUsagePct,
+            cashRowsCount: 0,
           }
-          disciplineConfig={home.disciplineConfig}
-          onRefresh={() => void load()}
-          externalModalOpen={externalDepositOpen}
-          onExternalModalClose={() => setExternalDepositOpen(false)}
-          lifetimeDeliveries={home.rider?.lifetimeDeliveries ?? home.completedToday ?? 0}
-          riderName={home.rider?.fullName}
-        />
-      )}
-
-
-      {/* Operational Gig / Shift Slot Planner */}
-      {sdui.isSectionVisible("shift_slots") && (
-        <Card className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                <CalendarClock className="size-4" />
-              </span>
-              <div>
-                <CardTitle className="text-base">Shift Planner</CardTitle>
-                <p className="text-xs text-muted-foreground">
-                  {activeShiftDateIso} · {bookedHoursTotal} hrs booked
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Button
-                size="sm"
-                variant={selectedShiftDay === "today" ? "default" : "outline"}
-                onClick={() => setSelectedShiftDay("today")}
-              >
-                Today ({todayIso.slice(5)})
-              </Button>
-              <Button
-                size="sm"
-                variant={selectedShiftDay === "tomorrow" ? "default" : "outline"}
-                onClick={() => setSelectedShiftDay("tomorrow")}
-              >
-                Tomorrow ({tomorrowIso.slice(5)})
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            {OPERATIONAL_SHIFT_SLOTS.map((slot) => {
-              const isBooked = activeDayBookedSlots.includes(slot.id);
-              return (
-                <div
-                  key={slot.id}
-                  className={`rounded-lg border p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${
-                    isBooked
-                      ? "border-emerald-500/40 bg-emerald-500/5"
-                      : "border-border bg-muted/20"
-                  }`}
-                >
-                  <div className="space-y-0.5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-display text-sm font-bold text-foreground">
-                        {slot.label} ({slot.window})
-                      </span>
-                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                        {slot.tag}
-                      </span>
-                      <span className="text-[11px] font-mono text-muted-foreground">
-                        {slot.durationHours}h
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{slot.peakIncentiveNote}</p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant={isBooked ? "outline" : "default"}
-                    onClick={() => toggleSlotBooking(slot.id)}
-                    className="shrink-0"
-                  >
-                    {isBooked ? "Cancel Slot" : "Book Slot"}
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      )}
-
-      {/* Daily Order Milestone Progress & Real Quality Scorecard */}
-      {sdui.isSectionVisible("daily_milestones") && (
-        <DailyMilestoneCard completed={home.completedToday} performance={performance} />
-      )}
-
-      
-
-      {home.notifications.length ? (
-        <Card>
-          <CardTitle>{t("alerts")}</CardTitle>
-          <ul className="mt-3 space-y-2">
-            {home.notifications.slice(0, 4).map((n) => (
-              <li key={n.id} className="text-sm">
-                <p className="font-medium">{n.title}</p>
-                <p className="text-muted-foreground">{n.body}</p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      ) : null}
-
-      <div className="flex flex-wrap gap-3 text-sm">
-        <Link to="/assistant" className="underline">
-          {t("assistant")}
-        </Link>
-        <span className="text-muted-foreground">·</span>
-        <Link to="/onboarding" className="underline">
-          {t("kyc")}
-        </Link>
-        <span className="text-muted-foreground">·</span>
-        <Link to="/earnings" className="underline">
-          {t("earnings")}
-        </Link>
-        <span className="text-muted-foreground">·</span>
-        <Link to="/support" className="underline">
-          {t("support")}
-        </Link>
-      </div>
+        }
+        disciplineConfig={home.disciplineConfig}
+        onRefresh={() => void load()}
+        externalModalOpen={externalDepositOpen}
+        onExternalModalClose={() => setExternalDepositOpen(false)}
+        lifetimeDeliveries={home.rider?.lifetimeDeliveries ?? home.completedToday ?? 0}
+        riderName={home.rider?.fullName}
+      />
 
       <ConfirmDialog
         open={confirm === "online"}

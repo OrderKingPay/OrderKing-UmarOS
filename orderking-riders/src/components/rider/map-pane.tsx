@@ -396,44 +396,7 @@ export function MapPane({
             </div>
           ) : null}
         </div>
-      ) : (
-        /* Standby Heatmap Surge Recommendations Bar */
-        <div className="p-3 border-t border-[#1E283D] bg-[#0E121B] space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 font-bold text-foreground">
-              <TrendingUp className="size-3.5 text-[#e5a93c]" />
-              <span>Nearby High-Demand Surge Hotspots</span>
-            </span>
-            <span className="text-[11px] font-semibold text-emerald-400">
-              Live Fleet Dispatches Active
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            {DEFAULT_DEMAND_HOTSPOTS.map((spot) => (
-              <div
-                key={spot.id}
-                className="rounded-xl border border-[#1E283D] bg-[#121723] p-2 space-y-1 transition hover:border-amber-500/40"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-medium text-muted-foreground truncate">
-                    {spot.name.split("&")[0]}
-                  </span>
-                  <span className="font-mono font-bold text-[11px] text-red-400">
-                    {spot.surgeMultiplier}x
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-300">
-                  <span>{spot.activeRestaurants} Outlets</span>
-                  <span className="text-[#e5a93c] font-semibold">
-                    {spot.demandLevel === "VERY_HIGH" ? "🔥 Surge" : "⚡ High"}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }

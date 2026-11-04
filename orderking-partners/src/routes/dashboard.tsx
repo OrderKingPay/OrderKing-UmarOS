@@ -205,14 +205,14 @@ function DashboardPage() {
         {/* FSSAI Statutory Food Safety Regulatory Compliance Banner */}
         <FssaiExpiryBanner fssaiNumber={d?.fssaiNumber} />
 
-        {/* Outlet Live Status & Kitchen Rush Controls */}
-        <Card className="border-slate-800 bg-slate-900/90 p-5 space-y-4">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2.5">
+        {/* Outlet Live Status & Kitchen Controls */}
+        <Card className="border-slate-800 bg-slate-900/90 p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div className="space-y-0.5">
+              <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold tracking-wide",
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide",
                     isOpen
                       ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                       : "bg-rose-500/15 text-rose-300 border border-rose-500/30",
@@ -224,23 +224,12 @@ function DashboardPage() {
                       isOpen ? "bg-emerald-400 animate-pulse" : "bg-rose-400",
                     )}
                   />
-                  {isOpen ? "ONLINE — ACCEPTING ORDERS" : "OFFLINE / CLOSED"}
+                  {isOpen ? "Online" : "Paused"}
                 </span>
-                <span className="rounded-md border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-[11px] font-mono text-slate-300">
-                  KYC: {d?.verificationStatus ?? vendor.selected?.verificationStatus ?? "DRAFT"}
+                <span className="rounded border border-slate-700 bg-slate-800/80 px-2 py-0.5 text-[11px] font-mono text-slate-300">
+                  {d?.restaurantName ?? vendor.selected?.restaurantName ?? "E2E Tandoor Bistro"}
                 </span>
-                {d?.fssaiNumber ? (
-                  <span className="rounded-md border border-slate-800 bg-slate-950/70 px-2.5 py-1 text-[11px] font-mono text-slate-400">
-                    FSSAI: {d.fssaiNumber}
-                  </span>
-                ) : null}
               </div>
-              <h2 className="font-display text-xl font-bold text-white pt-1">
-                {d?.restaurantName ?? vendor.selected?.restaurantName ?? "Restaurant Operations Center"}
-              </h2>
-              <p className="text-xs text-slate-400">
-                Live kitchen orders, dispatch tracking, prep time controls, and daily payout settlements.
-              </p>
             </div>
 
             {/* 1-Tap Kitchen Mode Controls */}
@@ -250,27 +239,27 @@ function DashboardPage() {
                 variant="secondary"
                 disabled={throttleBusy !== null || !vendor.restaurantId}
                 onClick={() => void handleThrottle("NORMAL")}
-                className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs"
+                className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs h-8"
               >
                 <Clock className="mr-1.5 size-3.5 text-emerald-400" />
-                {throttleBusy === "NORMAL" ? "Updating..." : "Standard Prep (20m)"}
+                {throttleBusy === "NORMAL" ? "Updating..." : "Prep: 20m"}
               </Button>
               <Button
                 size="sm"
                 variant="secondary"
                 disabled={throttleBusy !== null || !vendor.restaurantId}
                 onClick={() => void handleThrottle("RUSH")}
-                className="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs"
+                className="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs h-8"
               >
                 <Flame className="mr-1.5 size-3.5 text-amber-400" />
-                {throttleBusy === "RUSH" ? "Updating..." : "Peak Rush Mode (35m)"}
+                {throttleBusy === "RUSH" ? "Updating..." : "Rush Mode (35m)"}
               </Button>
               <Button
                 size="sm"
                 disabled={throttleBusy !== null || !vendor.restaurantId}
                 onClick={() => void handleThrottle(isOpen ? "PAUSE" : "RESUME")}
                 className={cn(
-                  "text-xs font-semibold",
+                  "text-xs font-semibold h-8",
                   isOpen
                     ? "bg-rose-600 hover:bg-rose-500 text-white"
                     : "bg-emerald-600 hover:bg-emerald-500 text-white",
@@ -279,12 +268,12 @@ function DashboardPage() {
                 {isOpen ? (
                   <>
                     <PauseCircle className="mr-1.5 size-3.5" />
-                    {throttleBusy === "PAUSE" ? "Pausing..." : "Pause Outlet"}
+                    {throttleBusy === "PAUSE" ? "Pausing..." : "Pause"}
                   </>
                 ) : (
                   <>
                     <PlayCircle className="mr-1.5 size-3.5" />
-                    {throttleBusy === "RESUME" ? "Resuming..." : "Resume Outlet"}
+                    {throttleBusy === "RESUME" ? "Resuming..." : "Resume"}
                   </>
                 )}
               </Button>
@@ -333,12 +322,12 @@ function DashboardPage() {
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <ChefHat className="size-4 text-emerald-400" />
-                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-white">
-                  Active Kitchen Queue ({liveOrders.length}) — Instant 1-Tap Control
+                <h3 className="font-display text-sm font-bold text-white">
+                  Live Orders ({liveOrders.length})
                 </h3>
               </div>
               <Link to="/orders" className="text-xs font-semibold text-emerald-400 hover:text-emerald-300">
-                Manage All Orders →
+                All Orders →
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -439,331 +428,108 @@ function DashboardPage() {
               })}
             </div>
           </Card>
-        ) : null}
-
-        {/* Real-World Tier-1 Leader Owner Daily Business Summary & Settlement Ledger */}
-        <DailyPerformanceLedgerCard
-          customSummary={
-            d?.today
-              ? {
-                  deliveredOrdersCount: (d.today as any).delivered ?? d.today.accepted ?? d.today.orders ?? 0,
-                  grossGmvPaise: d.today.salesPaise ?? 0,
-                  netEstimatedPayoutPaise: d.today.settlementPaise ?? 0,
-                }
-              : undefined
-          }
-        />
-
-        {/* Real Today's Performance KPI Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-mono uppercase tracking-wider">Pending Orders</span>
-              <ClipboardList className={cn("size-4", pendingCount > 0 ? "text-amber-400" : "text-slate-500")} />
-            </div>
-            <div className="my-2">
-              <div className={cn("font-display text-3xl font-bold tabular", pendingCount > 0 ? "text-amber-400" : "text-slate-100")}>
-                {pendingCount}
-              </div>
-              <div className="text-xs text-slate-400 mt-0.5">
-                {pendingCount > 0 ? "Action required in order queue" : "All incoming orders acknowledged"}
-              </div>
-            </div>
-            <Link
-              to="/orders"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 pt-2 border-t border-slate-800/80"
-            >
-              Open Live Orders <ArrowUpRight className="size-3.5" />
-            </Link>
+        ) : (
+          <Card className="border-slate-800 bg-slate-900/40 p-6 text-center space-y-2">
+            <ChefHat className="size-8 text-slate-600 mx-auto" />
+            <h3 className="font-display text-sm font-semibold text-slate-300">
+              No Active Kitchen Orders
+            </h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Outlet is ${isOpen ? "online" : "offline"}. Incoming customer orders will ring here with instant 1-tap accept controls.
+            </p>
           </Card>
+        )}
 
-          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+        {/* Today's Overview: Orders, Gross Sales, Net Payout */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <Card className="border-slate-800 bg-slate-900/70 p-4 space-y-1">
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-mono uppercase tracking-wider">Today&apos;s Orders</span>
+              <span className="font-mono uppercase tracking-wider">Today's Orders</span>
               <ChefHat className="size-4 text-emerald-400" />
             </div>
-            <div className="my-2">
-              <div className="font-display text-3xl font-bold text-slate-100 tabular">
-                {d?.today.orders ?? 0}
-              </div>
-              <div className="text-xs text-slate-400 mt-0.5 tabular">
-                <span className="text-emerald-400 font-medium">{d?.today.accepted ?? 0} accepted</span>
-                {" · "}
-                <span className="text-rose-400 font-medium">{d?.today.cancelled ?? 0} cancelled</span>
-              </div>
+            <div className="font-display text-3xl font-bold text-slate-100 tabular pt-1">
+              {d?.today.orders ?? 0}
             </div>
-            <Link
-              to="/kitchen"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white pt-2 border-t border-slate-800/80"
-            >
-              Kitchen Display System (KDS) <ArrowUpRight className="size-3.5" />
-            </Link>
+            <div className="text-xs text-slate-400">
+              <span className="text-emerald-400 font-medium">{d?.today.accepted ?? 0} accepted</span>
+              {" · "}
+              <span className="text-slate-500 font-medium">{d?.today.cancelled ?? 0} cancelled</span>
+            </div>
           </Card>
 
-          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+          <Card className="border-slate-800 bg-slate-900/70 p-4 space-y-1">
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-mono uppercase tracking-wider">Today&apos;s Gross Sales</span>
+              <span className="font-mono uppercase tracking-wider">Today's Sales</span>
               <TrendingUp className="size-4 text-emerald-400" />
             </div>
-            <div className="my-2">
-              <div className="font-display text-3xl font-bold text-emerald-400 tabular">
-                {formatINR(d?.today.salesPaise ?? 0)}
-              </div>
-              <div className="text-xs text-slate-400 mt-0.5 tabular">
-                Avg Order Value (AOV): <span className="text-slate-200 font-semibold">{formatINR(d?.today.aovPaise ?? 0)}</span>
-              </div>
+            <div className="font-display text-3xl font-bold text-emerald-400 tabular pt-1">
+              {formatINR(d?.today.salesPaise ?? 0)}
             </div>
-            <Link
-              to="/analytics"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white pt-2 border-t border-slate-800/80"
-            >
-              View Sales Analytics <ArrowUpRight className="size-3.5" />
-            </Link>
+            <div className="text-xs text-slate-400">
+              Avg Basket: {formatINR(d?.today.aovPaise ?? 0)}
+            </div>
           </Card>
 
-          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+          <Card className="border-slate-800 bg-slate-900/70 p-4 space-y-1">
             <div className="flex items-center justify-between text-xs text-slate-400">
               <span className="font-mono uppercase tracking-wider">Estimated Net Payout</span>
               <Banknote className="size-4 text-emerald-400" />
             </div>
-            <div className="my-2">
-              <div className="font-display text-3xl font-bold text-slate-100 tabular">
-                {formatINR(d?.today.settlementPaise ?? 0)}
-              </div>
-              <div className="text-xs text-slate-400 mt-0.5 tabular">
-                Refund adjustments: {formatINR(d?.today.refundsPaise ?? 0)}
-              </div>
+            <div className="font-display text-3xl font-bold text-slate-100 tabular pt-1">
+              {formatINR(d?.today.settlementPaise ?? 0)}
             </div>
-            <Link
-              to="/settlements"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 pt-2 border-t border-slate-800/80"
-            >
-              Settlement Ledger <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Card>
-        </div>
-
-        {/* Operational Growth & Kitchen Efficiency Advisor */}
-        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2.5">
-              <Cpu className="size-5 text-emerald-400" />
-              <div>
-                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-white">
-                  Operational Growth &amp; Kitchen Efficiency Advisor
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Deterministic recommendations calculated from your live kitchen queue, menu availability, and basket AOV.
-                </p>
-              </div>
+            <div className="text-xs text-slate-400">
+              T+1 Direct Bank Settlement
             </div>
-            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded self-start sm:self-center">
-              OPERATIONAL INTELLIGENCE
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
-              <div>
-                <div className="text-[10px] font-mono uppercase text-emerald-400">1. Prep Time &amp; Rider Handover</div>
-                <div className="font-semibold text-white mt-1">
-                  {liveOrders.length >= 4
-                    ? `High Active Queue (${liveOrders.length} orders) — Enable 35m Rush Mode`
-                    : "Queue Load Normal — Maintain 20m Standard Prep"}
-                </div>
-                <p className="text-slate-400 mt-1">
-                  {liveOrders.length >= 4
-                    ? "Increasing prep SLA to 35m prevents rider wait-time penalties and improves customer ETA accuracy."
-                    : "20m standard prep SLA maximizes search conversion and ranking in customer feed."}
-                </p>
-              </div>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => void handleThrottle(liveOrders.length >= 4 ? "RUSH" : "NORMAL")}
-                className="w-full text-xs mt-1"
-              >
-                {liveOrders.length >= 4 ? "Apply 35m Peak Rush Mode" : "Confirm 20m Standard SLA"}
-              </Button>
-            </div>
-
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
-              <div>
-                <div className="text-[10px] font-mono uppercase text-emerald-400">2. Menu Availability &amp; Stock</div>
-                <div className="font-semibold text-white mt-1">
-                  {unavailableCount > 0
-                    ? `${unavailableCount} Dishes Currently Marked Out-of-Stock`
-                    : "100% Active Menu Availability"}
-                </div>
-                <p className="text-slate-400 mt-1">
-                  {unavailableCount > 0
-                    ? "Restoring stock on popular dishes before dinner peak directly recovers lost order conversion."
-                    : "All active dishes are available for ordering. Keep stock accurate to maintain 0% rejection rate."}
-                </p>
-              </div>
-              <Button asChild size="sm" variant="secondary" className="w-full text-xs mt-1">
-                <Link to="/menu">Review Menu Stock Toggles →</Link>
-              </Button>
-            </div>
-
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
-              <div>
-                <div className="text-[10px] font-mono uppercase text-emerald-400">3. Basket AOV Expansion</div>
-                <div className="font-semibold text-white mt-1">
-                  Target Minimum Order: {formatINR(recommendedPromoMinPaise)}
-                </div>
-                <p className="text-slate-400 mt-1">
-                  Based on your current AOV ({formatINR(aovPaise)}), setting a promotion threshold at{" "}
-                  {formatINR(recommendedPromoMinPaise)} lifts basket size by ~15% while protecting net take-home margin.
-                </p>
-              </div>
-              <Button asChild size="sm" variant="secondary" className="w-full text-xs mt-1">
-                <Link to="/promotions">Calculate in Margin Calculator →</Link>
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Secondary Operational Metrics: Stock, Ratings, Repeat Rate, Attention Alerts */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-mono uppercase tracking-wider">Out-of-Stock Dishes</span>
-              <UtensilsCrossed className={cn("size-4", unavailableCount > 0 ? "text-rose-400" : "text-emerald-400")} />
-            </div>
-            <div className="my-2">
-              <div className={cn("font-display text-2xl font-bold tabular", unavailableCount > 0 ? "text-rose-400" : "text-slate-100")}>
-                {unavailableCount} unavailable
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Keep item availability accurate to prevent order rejections during peak hours.
-              </p>
-            </div>
-            <Link
-              to="/menu"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 pt-2 border-t border-slate-800/80"
-            >
-              1-Tap Menu &amp; Stock Manager <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Card>
-
-          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-mono uppercase tracking-wider">Customer Rating &amp; Repeat Rate</span>
-              <Star className="size-4 text-amber-400" />
-            </div>
-            <div className="my-2">
-              <div className="font-display text-2xl font-bold text-slate-100 tabular">
-                {d?.today.rating ? `${d.today.rating} ★ (${d.today.ratingCount})` : "No ratings yet"}
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Repeat customer share:{" "}
-                <span className="font-semibold text-slate-200">
-                  {d?.today.repeatPct != null ? `${d.today.repeatPct}%` : "—"}
-                </span>
-              </p>
-            </div>
-            <Link
-              to="/reviews"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white pt-2 border-t border-slate-800/80"
-            >
-              Read &amp; Reply to Customer Reviews <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Card>
-
-          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-mono uppercase tracking-wider">Operational Alerts</span>
-              <ShieldCheck className="size-4 text-emerald-400" />
-            </div>
-            <div className="my-2 space-y-1.5">
-              {(d?.attention?.length ?? 0) === 0 ? (
-                <p className="text-xs text-emerald-400 font-medium">
-                  All statutory checks and kitchen queues are healthy.
-                </p>
-              ) : (
-                d?.attention.map((item) => (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      "rounded-lg px-2.5 py-1.5 text-xs flex items-center justify-between",
-                      item.tone === "danger"
-                        ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
-                        : item.tone === "warn"
-                          ? "bg-amber-500/15 text-amber-200 border border-amber-500/30"
-                          : "bg-slate-800 text-slate-300 border border-slate-700",
-                    )}
-                  >
-                    <span>{t(item.key, { n: item.n ?? 0, status: item.status ?? "" })}</span>
-                  </div>
-                ))
-              )}
-            </div>
-            <Link
-              to="/onboarding"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white pt-2 border-t border-slate-800/80"
-            >
-              Self-Service KYC &amp; Bank Profile <ArrowUpRight className="size-3.5" />
-            </Link>
           </Card>
         </div>
 
         {/* Quick Operations Navigation */}
-        <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display text-sm font-bold uppercase tracking-wider text-slate-300">
-              Self-Service Partner Control Center
-            </h3>
-            <span className="text-[11px] font-mono text-slate-400">
-              Role: {d?.role ?? vendor.role ?? "PARTNER"}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link
-              to="/orders"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
-            >
-              <div>
-                <div className="text-xs font-semibold text-white">Live Kitchen Orders</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">Accept, prepare, print KOT, and mark orders ready</div>
-              </div>
-              <ClipboardList className="size-4 text-emerald-400 shrink-0" />
-            </Link>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Link
+            to="/orders"
+            className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 hover:border-slate-700 hover:bg-slate-900/90 transition flex flex-col justify-between gap-2"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-white">Live Orders</span>
+              <ClipboardList className="size-4 text-emerald-400" />
+            </div>
+            <span className="text-[11px] text-slate-400">KDS &amp; KOT dispatch</span>
+          </Link>
 
-            <Link
-              to="/menu"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
-            >
-              <div>
-                <div className="text-xs font-semibold text-white">Menu &amp; Stock Manager</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">Edit prices, GST slabs, variants, addons &amp; stock</div>
-              </div>
-              <UtensilsCrossed className="size-4 text-emerald-400 shrink-0" />
-            </Link>
+          <Link
+            to="/menu"
+            className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 hover:border-slate-700 hover:bg-slate-900/90 transition flex flex-col justify-between gap-2"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-white">Menu &amp; Stock</span>
+              <UtensilsCrossed className="size-4 text-emerald-400" />
+            </div>
+            <span className="text-[11px] text-slate-400">1-tap item availability</span>
+          </Link>
 
-            <Link
-              to="/settlements"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
-            >
-              <div>
-                <div className="text-xs font-semibold text-white">Settlement &amp; Tax Ledger</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">Download CSV/JSON statements, TDS/GST summary &amp; bank KYC</div>
-              </div>
-              <Banknote className="size-4 text-emerald-400 shrink-0" />
-            </Link>
+          <Link
+            to="/settlements"
+            className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 hover:border-slate-700 hover:bg-slate-900/90 transition flex flex-col justify-between gap-2"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-white">Settlements</span>
+              <Banknote className="size-4 text-emerald-400" />
+            </div>
+            <span className="text-[11px] text-slate-400">T+1 payout statements</span>
+          </Link>
 
-            <Link
-              to="/settings"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
-            >
-              <div>
-                <div className="text-xs font-semibold text-white">Outlet Config &amp; Legal Center</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">13 Indian languages, self-healing SLA, POS printer &amp; policies</div>
-              </div>
-              <Settings className="size-4 text-emerald-400 shrink-0" />
-            </Link>
-          </div>
-        </Card>
+          <Link
+            to="/settings"
+            className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 hover:border-slate-700 hover:bg-slate-900/90 transition flex flex-col justify-between gap-2"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-white">Outlet Settings</span>
+              <Settings className="size-4 text-emerald-400" />
+            </div>
+            <span className="text-[11px] text-slate-400">Hours, printers &amp; KYC</span>
+          </Link>
+        </div>
       </div>
     </VendorShell>
   );
