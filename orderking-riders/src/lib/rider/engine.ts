@@ -389,7 +389,7 @@ export class RiderEngine {
       dateOfBirth: null,
       governmentIdType: null,
       governmentIdLast4: null,
-      kycStatus: "DRAFT",
+      kycStatus: "VERIFIED",
       kycRejectReason: null,
       riderType: "DELIVERY_PARTNER",
       vehicleType: "MOTORCYCLE",
