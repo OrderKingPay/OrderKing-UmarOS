@@ -1,4 +1,3 @@
-$env:NODE_OPTIONS = "--dns-result-order=ipv4first --max-old-space-size=4096"
 # OrderKing Unified Enterprise Deployment Script (PowerShell)
 # Supreme Engineer OMEGA (183f728c) - Production Deployment Architecture
 # Automatically sets working directory to repository root
@@ -6,6 +5,8 @@ $env:NODE_OPTIONS = "--dns-result-order=ipv4first --max-old-space-size=4096"
 param (
     [string]$Action = "status"
 )
+
+$env:NODE_OPTIONS = "--dns-result-order=ipv4first --max-old-space-size=4096"
 
 $ErrorActionPreference = "Stop"
 
