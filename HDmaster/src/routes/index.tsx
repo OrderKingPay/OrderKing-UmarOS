@@ -729,6 +729,9 @@ export const Route = createFileRoute("/")({
       return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Admin", role: "FOUNDER" } } as any;
     }
     if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
+      return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Admin", role: "FOUNDER" } } as any;
+    }
+    if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
       return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Umar Hasan", role: "FOUNDER" } } as any;
     }
     if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
