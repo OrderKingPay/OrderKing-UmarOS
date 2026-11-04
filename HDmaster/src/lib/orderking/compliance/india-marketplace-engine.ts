@@ -40,7 +40,7 @@ import {
 // ============================================================================
 
 export const INDIA_COMPLIANCE_RATES = {
-  // Food orders under Section 9(5) CGST Act (Platform/ECO pays without ITC)
+  // Food orders under GST Act (Platform/ECO pays without ITC)
   FOOD_GST_BPS: 500, // 5.00%
   FOOD_CGST_BPS: 250, // 2.50%
   FOOD_SGST_BPS: 250, // 2.50%
@@ -175,7 +175,7 @@ export interface Section95CalculationResult {
 }
 
 /**
- * Calculates statutory GST for Indian Food Delivery Platforms under Section 9(5) CGST Act 2017.
+ * Calculates statutory GST for Indian Food Delivery Platforms under GST Act 2017.
  * - 5% GST on Restaurant Food & Packaging is payable by the ECO (Platform) directly to the Govt,
  *   with Input Tax Credit (ITC) strictly blocked.
  * - 18% GST on Platform Convenience Fees and Delivery Fees is payable with full ITC eligibility.
@@ -1450,7 +1450,7 @@ export function generateStatutoryCreditNote(input: CreditNoteInputPaise): Statut
     originalOrderId: input.originalOrderId,
     restaurantId: input.restaurantId,
     restaurantGstin: input.restaurantGstin || "URP (Unregistered Person)",
-    platformGstin: input.platformGstin || "18AFXPH9838M1Z9",
+    platformGstin: input.platformGstin || "",
     reasonCode: input.reasonCode,
     reasonDescription: input.reasonDescription,
 

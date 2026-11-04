@@ -468,7 +468,7 @@ export function computeQuote(input: QuoteInput): Quote {
     Math.max(0, input.fees.serviceFeePaise) + applyBps(foodSubtotalPaise, input.fees.serviceFeeBps);
   const serviceFeePaise = platformFeePaise + smallCartFeePaise + marketplaceServiceFee;
 
-  // Statutory Tax Calculation: 5% food GST (Sec 9(5) CGST) + 18% services GST on platform fee and services
+  // Statutory Tax Calculation: 5% food GST (GST) + 18% services GST on platform fee and services
   const foodGstRateBps = input.fees.menuTaxBps ?? 500;
   const foodGstPaise = applyBps(foodAfterDiscounts, foodGstRateBps);
 
@@ -647,7 +647,7 @@ export function computeQuote(input: QuoteInput): Quote {
       amountPaise: taxPaise,
       source: "tax",
       fundedBy: "CUSTOMER",
-      reason: "Statutory 18% services GST on platform charges & Section 9(5) CGST compliance.",
+      reason: "Statutory 18% services GST on platform charges & GST compliance.",
     });
   }
   if (isPgPassThrough && pgFee.totalFeePaise > 0) {

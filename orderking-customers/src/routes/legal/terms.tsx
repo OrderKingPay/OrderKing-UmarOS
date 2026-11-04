@@ -22,7 +22,7 @@ function TermsPage() {
               Last Updated: October 2026
             </Badge>
             <Badge className="bg-amber-950/60 border-amber-500/40 text-amber-300 font-mono text-[10px]">
-              GSTIN: 18AFXPH9838M1Z9
+              GSTIN: 
             </Badge>
           </div>
 
@@ -53,7 +53,7 @@ function TermsPage() {
               <strong className="text-white">OrderKing</strong> and <strong className="text-white">KingPay</strong> is owned and operated by{" "}
               <strong className="text-white">Orderkingpay</strong>, an enterprise headquartered in Sribhumi, Assam - 788710, India,
               operating under Goods and Services Tax Identification Number (GSTIN){" "}
-              <span className="font-mono text-emerald-400 font-bold">18AFXPH9838M1Z9</span> (hereinafter referred to as the &quot;Company&quot;, &quot;OrderKing&quot;, &quot;We&quot;, &quot;Us&quot;, or &quot;Our&quot;).
+              <span className="font-mono text-emerald-400 font-bold"></span> (hereinafter referred to as the &quot;Company&quot;, &quot;OrderKing&quot;, &quot;We&quot;, &quot;Us&quot;, or &quot;Our&quot;).
             </p>
             <p>
               By accessing, browsing, registering, or transacting on the OrderKing or KingPay platforms, you (the &quot;User&quot;, &quot;Customer&quot;, or &quot;You&quot;)
@@ -110,7 +110,7 @@ function TermsPage() {
           <section className="space-y-3">
             <div className="flex items-center gap-2 text-base font-bold text-white border-b border-zinc-800/80 pb-2">
               <FileText className="size-4 text-emerald-400" />
-              <h2>4. Taxation &amp; Section 9(5) CGST Statutory Remittance</h2>
+              <h2>4. Taxation &amp; GST Statutory Remittance</h2>
             </div>
             <p>
               Orderkingpay operates as a registered Electronic Commerce Operator (ECO) subject to Section 9(5) of the Central Goods and Services Tax Act, 2017
@@ -118,7 +118,7 @@ function TermsPage() {
             </p>
             <p>
               The statutory GST liability on restaurant services supplied through the OrderKing electronic commerce platform is assessed, collected,
-              and remitted directly to the Central and State Governments under GSTIN <span className="font-mono text-emerald-400 font-bold">18AFXPH9838M1Z9</span>.
+              and remitted directly to the Central and State Governments under GSTIN <span className="font-mono text-emerald-400 font-bold"></span>.
               Tax invoices generated on the platform provide the statutory breakup of CGST, SGST, and any applicable TCS/TDS deductions.
             </p>
           </section>
@@ -146,7 +146,7 @@ function TermsPage() {
               <h2>6. Delivery Operations, Dynamic Tariffs &amp; Night Rider Safety</h2>
             </div>
             <p>
-              Delivery services are executed by independent gig delivery professionals operating within the framework of the Code on Social Security, 2020.
+              Delivery services are executed by independent gig delivery professionals operating within the framework of the Partner Terms.
               Delivery tariffs are calculated dynamically based on distance, time-of-day traffic, and severe weather protocols (rain surge).
             </p>
             <p>
@@ -197,7 +197,7 @@ function TermsPage() {
             </p>
             <div className="mt-2 rounded-lg bg-zinc-950/80 border border-zinc-800 p-3 font-mono text-xs space-y-1 text-zinc-300">
               <div><strong className="text-white">Designation:</strong> Grievance Officer, Orderkingpay</div>
-              <div><strong className="text-white">Statutory Entity:</strong> Orderkingpay (GSTIN: 18AFXPH9838M1Z9)</div>
+              <div><strong className="text-white">Statutory Entity:</strong> Orderkingpay (GSTIN: )</div>
               <div><strong className="text-white">Postal Address:</strong> Orderkingpay Operations Hub, Sribhumi, Assam - 788710, India</div>
               <div><strong className="text-white">Official Grievance Email:</strong> <a href="mailto:grievance@orderkingpay.com" className="text-emerald-400 underline">grievance@orderkingpay.com</a></div>
               <div><strong className="text-white">Statutory SLA:</strong> Acknowledged within 48 hours; resolved within 30 days of receipt.</div>

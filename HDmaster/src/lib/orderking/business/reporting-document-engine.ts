@@ -155,7 +155,7 @@ export class ReportingDocumentEngine {
 
       case 'GST_COMPLIANCE_SUMMARY':
         title = `GST & Statutory Tax Compliance Summary (${periodStart} to ${periodEnd})`;
-        summary = `Statutory Section 9(5) and Section 52 TCS tax report for Indian e-commerce compliance, output liability, and merchant invoice register.`;
+        summary = `Statutory Section 9(5) and TCS tax report for Indian e-commerce compliance, output liability, and merchant invoice register.`;
         sections = this.buildGSTCompliance(params);
         break;
 
@@ -484,7 +484,7 @@ export class ReportingDocumentEngine {
     return [
       {
         id: 'statutory_gst',
-        title: 'Statutory GST Tax Summary (Section 9(5) CGST Act)',
+        title: 'Statutory GST Tax Summary (GST Act)',
         metrics: [
           { key: 'total_taxable_value', label: 'Taxable Restaurant Supplies', value: '₹5,24,800.00', category: 'FACT' },
           { key: 'restaurant_gst_5pct', label: 'Restaurant Service GST Collected @ 5% (Sec 9(5))', value: '₹26,240.00', category: 'CALCULATION' },

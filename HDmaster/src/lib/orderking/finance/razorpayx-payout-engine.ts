@@ -6,7 +6,7 @@
  *
  * Strict Compliance:
  * 1. RBI Master Directions on Payment Aggregators & Gateways (PSSA 2007).
- * 2. Section 9(5) CGST, 1% TCS Section 52, 1% TDS Section 194-O statutory deductions preserved.
+ * 2. GST, 1% TCS Section 52, 1% TDS Section 194-O statutory deductions preserved.
  * 3. Double-entry canonical ledger recording for every rupee moved.
  * 4. Zero synthetic/mock data. Strict SafeInteger integer paise arithmetic.
  * 5. Multi-level credential resolution (RAZORPAYX_KEY_ID / RAZORPAY_KEY_ID, RAZORPAYX_KEY_SECRET / RAZORPAY_KEY_SECRET).

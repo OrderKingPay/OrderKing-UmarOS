@@ -3,7 +3,7 @@
  *
  * Official Aggregator Agency Application: #187051
  * Trade Name: Orderkingpay
- * GSTIN: 18AFXPH9838M1Z9 (Assam - 788710)
+ * GSTIN:  (Assam - 788710)
  *
  * Endpoints & Architecture:
  * - Production Gateway: https://api.tbotechnology.com
@@ -21,7 +21,7 @@
 
 export const TBO_APPLICATION_ID = "187051";
 export const TBO_TRADE_NAME = "Orderkingpay";
-export const TBO_GSTIN = "18AFXPH9838M1Z9";
+export const TBO_GSTIN = "";
 export const TBO_GST_ADDRESS = "Assam - 788710";
 export const TBO_GST_CONTACT = "9395065587";
 export const TBO_GST_EMAIL = "orderkingpay@gmail.com";

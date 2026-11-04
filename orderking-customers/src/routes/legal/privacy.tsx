@@ -16,13 +16,13 @@ function PrivacyPage() {
         <div className="border-b border-zinc-800 pb-6 mb-8">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <Badge className="bg-emerald-950/60 border-emerald-500/40 text-emerald-400 font-mono text-[10px] uppercase tracking-wider">
-              DPDP Act 2023 Compliant
+              Privacy Policy Compliant
             </Badge>
             <Badge className="bg-zinc-900 border-zinc-700 text-zinc-400 font-mono text-[10px]">
               Last Updated: October 2026
             </Badge>
             <Badge className="bg-amber-950/60 border-amber-500/40 text-amber-300 font-mono text-[10px]">
-              GSTIN: 18AFXPH9838M1Z9
+              GSTIN: 
             </Badge>
           </div>
 
@@ -44,7 +44,7 @@ function PrivacyPage() {
             </div>
             <p>
               This Privacy Policy applies to all personal data collected and processed by <strong className="text-white">Orderkingpay</strong>,
-              operating under Goods and Services Tax Identification Number (GSTIN) <span className="font-mono text-emerald-400 font-bold">18AFXPH9838M1Z9</span>,
+              operating under Goods and Services Tax Identification Number (GSTIN) <span className="font-mono text-emerald-400 font-bold"></span>,
               having its registered operations in Sribhumi, Assam - 788710, India (hereinafter designated as the &quot;Data Fiduciary&quot;, &quot;Company&quot;, &quot;OrderKing&quot;, &quot;We&quot;, &quot;Us&quot;, or &quot;Our&quot;).
             </p>
             <p>
@@ -71,7 +71,7 @@ function PrivacyPage() {
               </li>
               <li>
                 <strong className="text-white">Certain Legitimate Uses:</strong> Fulfilling consumer orders, executing deliveries via assigned delivery partners,
-                discharging statutory tax obligations under Section 9(5) CGST Act, 2017, and complying with court orders or regulatory mandates.
+                discharging statutory tax obligations under GST Act, 2017, and complying with court orders or regulatory mandates.
               </li>
             </ul>
           </section>
@@ -207,7 +207,7 @@ function PrivacyPage() {
             </p>
             <div className="mt-2 rounded-lg bg-zinc-950/80 border border-zinc-800 p-3 font-mono text-xs space-y-1 text-zinc-300">
               <div><strong className="text-white">Designation:</strong> Data Grievance Officer, Orderkingpay</div>
-              <div><strong className="text-white">Statutory Entity:</strong> Orderkingpay (GSTIN: 18AFXPH9838M1Z9)</div>
+              <div><strong className="text-white">Statutory Entity:</strong> Orderkingpay (GSTIN: )</div>
               <div><strong className="text-white">Operational Hub:</strong> Orderkingpay, Sribhumi, Assam - 788710, India</div>
               <div><strong className="text-white">Official Email:</strong> <a href="mailto:grievance@orderkingpay.com" className="text-emerald-400 underline">grievance@orderkingpay.com</a></div>
               <div><strong className="text-white">Statutory SLA:</strong> Acknowledged within 48 hours; resolved within 30 days of receipt.</div>

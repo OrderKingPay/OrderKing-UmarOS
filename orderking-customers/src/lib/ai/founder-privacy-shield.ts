@@ -19,7 +19,7 @@ export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", P
     supportEmail: "ops@orderking.in",
     publicPhone: "+91 8000 123 456",
     publicUpiVpa: "9395065587@ybl",
-    regulatoryJurisdiction: "Sribhumi, Assam - 788710 | GSTIN: 18AFXPH9838M1Z9",
+    regulatoryJurisdiction: "Sribhumi, Assam - 788710 | GSTIN: ",
   },
   KINGPAY: {
     appName: "King Pay",

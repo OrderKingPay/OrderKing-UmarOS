@@ -13,7 +13,7 @@
  *    - Nominal Early-Liquidity Fee: 0.5% (50 bps) + 18% GST on fee
  * 
  * Strict Statutory Compliance:
- * - Section 9(5) CGST Act: 5% GST collected from customer, remitted under OrderKing GSTIN
+ * - GST Act: 5% GST collected from customer, remitted under OrderKing GSTIN
  * - Section 52 CGST Act: 1% TCS on net food sales (0.5% CGST + 0.5% SGST)
  * - Section 194-O Income Tax Act: 1% TDS on gross sales for registered PANs
  * - 18% GST on platform service revenue (commissions, PG fees, early-liquidity fees)
@@ -212,7 +212,7 @@ export function calculateRestaurantWeeklySettlement(params: {
   const tcsDeduction = Math.round((netFoodSales * 100) / 10000); // 1% TCS
   const tdsDeduction = Math.round((netFoodSales * 100) / 10000); // 1% TDS
 
-  // Section 9(5) CGST Act: 5% Food GST remitted by platform under OrderKing GSTIN
+  // GST Act: 5% Food GST remitted by platform under OrderKing GSTIN
   const sec9_5FoodGst = Math.round((netFoodSales * 5) / 100);
 
   // Total deductions

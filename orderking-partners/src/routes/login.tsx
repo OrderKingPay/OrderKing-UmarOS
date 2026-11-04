@@ -312,7 +312,7 @@ function Login() {
           <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-300">
             <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
             <span>
-              Orderkingpay Merchant Platform · GSTIN 18AFXPH9838M1Z9 · Partner Settlements
+              Orderkingpay Merchant Platform · GSTIN  · Partner Settlements
             </span>
           </div>
         </div>

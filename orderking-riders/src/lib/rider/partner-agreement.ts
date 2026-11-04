@@ -1,7 +1,7 @@
 /**
  * Official Indian Delivery Partner Agreement
  * Compliant with:
- *  - The Code on Social Security, 2020 (Act No. 36 of 2020) — Chapter IX (Social Security for Gig & Platform Workers)
+ *  - The Partner Terms (Act No. 36 of 2020) — Chapter IX (Social Security for Gig & Platform Workers)
  *  - The Indian Contract Act, 1872 (Section 10 - Essential Conditions of Valid Contracts)
  *  - The Information Technology Act, 2000 (Sections 10A, 65B - Digital Assent & Electronic Records)
  *  - The Motor Vehicles Act, 1988 & CMVR 1989 (Rule 2(u) Commercial & Low-Speed EV Exemptions)
@@ -9,7 +9,7 @@
  *  - Digital Personal Data Protection Act, 2023 (DPDP Act - Telemetry & PII Masking)
  *  - Arbitration and Conciliation Act, 1996
  *
- * Brand: OrderKing Partner (Orderkingpay, Sribhumi, Assam - 788710 | GSTIN: 18AFXPH9838M1Z9)
+ * Brand: OrderKing Partner (Orderkingpay, Sribhumi, Assam - 788710 | GSTIN: )
  */
 
 export interface AgreementSection {
@@ -39,9 +39,9 @@ export interface PartnerAgreementMetadata {
 export const ORDERKING_PARTNER_AGREEMENT_METADATA: PartnerAgreementMetadata = {
   documentTitle: "OrderKing Independent Delivery Partner Service Agreement",
   companyName: "Orderkingpay",
-  cin: "18AFXPH9838M1Z9",
+  cin: "",
   governingLaw: "Republic of India",
-  complianceFramework: "Code on Social Security, 2020 (Act 36 of 2020)",
+  complianceFramework: "Partner Terms (Act 36 of 2020)",
   version: "v2026.1-CSS2020",
   effectiveDate: "2026-01-01",
   welfareFundRate: "1.5% of eligible turnover allocated to statutory Gig Workers Welfare Fund",
@@ -50,13 +50,13 @@ export const ORDERKING_PARTNER_AGREEMENT_METADATA: PartnerAgreementMetadata = {
   minimumFloorPayout: "INR 35 Base Floor Fare per completed delivery",
 };
 
-export const ORDERKING_PREAMBLE_TEXT = `This Independent Delivery Partner Service Agreement ("Agreement") is executed electronically by and between Orderkingpay, an enterprise having its registered office in Sribhumi, Assam - 788710, operating under GSTIN 18AFXPH9838M1Z9 (hereinafter referred to as "OrderKing" or "Platform", which expression shall unless repugnant to the context include its successors and assigns), and the Individual Applicant who completes the digital onboarding and verification flow (hereinafter referred to as the "Delivery Partner" or "Partner").
+export const ORDERKING_PREAMBLE_TEXT = `This Independent Delivery Partner Service Agreement ("Agreement") is executed electronically by and between Orderkingpay, an enterprise having its registered office in Sribhumi, Assam - 788710, operating under GSTIN  (hereinafter referred to as "OrderKing" or "Platform", which expression shall unless repugnant to the context include its successors and assigns), and the Individual Applicant who completes the digital onboarding and verification flow (hereinafter referred to as the "Delivery Partner" or "Partner").
 
 WHEREAS:
 A. OrderKing operates a digital technology platform and logistics network facilitating real-time discovery, ordering, and delivery of food, beverages, and grocery items from merchant establishments to end-consumers.
 B. The Delivery Partner is an autonomous, self-employed gig worker possessing the requisite legal capacity, transport equipment, and licences, who desires to provide independent delivery services on the OrderKing platform on a principal-to-principal basis.
 C. This Agreement is digitally executed pursuant to Section 10A of the Information Technology Act, 2000 and Section 10 of the Indian Contract Act, 1872 upon electronic assent by the Delivery Partner.
-D. The parties agree to adhere strictly to the social security mandates, welfare contributions, and safety provisions enacted under the Code on Social Security, 2020 (Act No. 36 of 2020).
+D. The parties agree to adhere strictly to the social security mandates, welfare contributions, and safety provisions enacted under the Partner Terms (Act No. 36 of 2020).
 
 NOW, THEREFORE, the parties hereby covenant and agree as follows:`;
 
@@ -65,17 +65,17 @@ export const ORDERKING_PARTNER_AGREEMENT_SECTIONS: AgreementSection[] = [
     id: "definitions",
     sectionNumber: "1",
     title: "Definitions and Statutory Interpretations",
-    statutoryBasis: "Section 2, Code on Social Security, 2020 & General Clauses Act, 1897",
+    statutoryBasis: "Section 2, Partner Terms & General Clauses Act, 1897",
     summary:
       "Defines key operational terms including Active Duty, Gig Worker, Base Fare, Distance Tariff, and Welfare Fund in conformity with Indian statutory law.",
     fullLegalText: `1.1 "Active Duty" means the duration during which the Delivery Partner is logged into the OrderKing Partner Mobile Application in "ONLINE" or "BUSY" status and is either awaiting, traveling towards a merchant, or executing an assigned delivery.
-1.2 "Aggregator" shall bear the meaning assigned under Section 2(2) of the Code on Social Security, 2020, referring to OrderKing as a digital intermediary connecting consumers, food businesses, and logistics partners.
+1.2 "Aggregator" shall bear the meaning assigned under Section 2(2) of the Partner Terms, referring to OrderKing as a digital intermediary connecting consumers, food businesses, and logistics partners.
 1.3 "Delivery Services" means the physical collection, transportation, temperature preservation, and doorstep handover of packaged food, beverages, or commodities from merchant establishments to designated consumer drop-off locations.
-1.4 "Gig Worker" shall have the statutory meaning defined in Section 2(35) of the Code on Social Security, 2020, being an individual who performs work or participates in a work arrangement and earns from such activities outside of traditional employer-employee relationships.
-1.5 "Social Security Fund" means the statutory fund established by the Central Government under Section 113 of the Code on Social Security, 2020 for the administration of gig worker and platform worker welfare benefits.
+1.4 "Gig Worker" shall have the statutory meaning defined in Section 2(35) of the Partner Terms, being an individual who performs work or participates in a work arrangement and earns from such activities outside of traditional employer-employee relationships.
+1.5 "Social Security Fund" means the statutory fund established by the Central Government under Section 113 of the Partner Terms for the administration of gig worker and platform worker welfare benefits.
 1.6 "Tamper-Evident Packaging" means packaging sealed by the Restaurant Partner with security stickers, tapes, or zip-ties designed to show evident visual indicators if opened prior to customer handover.`,
     keyHighlights: [
-      "Explicit statutory definition under Section 2(35) Code on Social Security, 2020",
+      "Explicit statutory definition under Section 2(35) Partner Terms",
       "Clear demarcation of Active Duty vs. Offline Personal Time",
       "Standard definitions for tamper-evident packaging and aggregator role",
     ],
@@ -84,14 +84,14 @@ export const ORDERKING_PARTNER_AGREEMENT_SECTIONS: AgreementSection[] = [
     id: "contractor-status",
     sectionNumber: "2",
     title: "Independent Contractor Status & Absolute Work Autonomy",
-    statutoryBasis: "Chapter IX, Code on Social Security, 2020 & Indian Contract Act, 1872",
+    statutoryBasis: "Chapter IX, Partner Terms & Indian Contract Act, 1872",
     summary:
       "Affirms principal-to-principal status, zero employee benefits, complete freedom to choose work hours, non-exclusivity, and freedom to decline orders.",
     fullLegalText: `2.1 Principal-to-Principal Engagement: The relationship between OrderKing and the Delivery Partner is strictly that of independent principal-to-principal contracting parties. Nothing in this Agreement shall be construed to create any partnership, joint venture, agency, franchise, master-servant, or employer-employee relationship between OrderKing and the Delivery Partner.
 2.2 Complete Discretion over Operating Hours: The Delivery Partner possesses absolute discretion and autonomy to decide when to log in, how long to remain available online, and when to log out of the OrderKing Partner Platform. OrderKing imposes zero mandatory minimum shifts, fixed reporting hours, or forced attendance quotas.
 2.3 Discretion over Delivery Offers: The Delivery Partner has the unfettered right to accept or decline any delivery task dispatched to them. Declining an offer shall never attract monetary fines or punitive civil damages.
 2.4 Multi-Platform Non-Exclusivity: The Delivery Partner is entirely free to provide delivery, transport, or any other commercial services to any other platform, aggregator, restaurant, or business enterprise concurrently, without restriction or platform penalty.
-2.5 Negation of Traditional Employment Benefits: The Delivery Partner expressly acknowledges that as an autonomous gig contractor, they are not entitled to, nor shall claim, benefits under traditional employer-employee legislations, including the Employees' Provident Funds and Miscellaneous Provisions Act, 1952, the Employees' State Insurance Act, 1948, the Payment of Gratuity Act, 1972, or the Industrial Disputes Act, 1947. Their statutory social welfare entitlements are governed exclusively by Chapter IX of the Code on Social Security, 2020.`,
+2.5 Negation of Traditional Employment Benefits: The Delivery Partner expressly acknowledges that as an autonomous gig contractor, they are not entitled to, nor shall claim, benefits under traditional employer-employee legislations, including the Employees' Provident Funds and Miscellaneous Provisions Act, 1952, the Employees' State Insurance Act, 1948, the Payment of Gratuity Act, 1972, or the Industrial Disputes Act, 1947. Their statutory social welfare entitlements are governed exclusively by Chapter IX of the Partner Terms.`,
     keyHighlights: [
       "100% Principal-to-Principal contract with zero employer-employee liability",
       "Complete autonomy: Partner controls log-in, log-out, and shift duration",
@@ -177,11 +177,11 @@ export const ORDERKING_PARTNER_AGREEMENT_SECTIONS: AgreementSection[] = [
     id: "social-security-fund",
     sectionNumber: "6",
     title: "Statutory Gig Worker Welfare & Social Security Fund Contributions",
-    statutoryBasis: "Chapter IX, Sections 112, 113 & 114, Code on Social Security, 2020",
+    statutoryBasis: "Chapter IX, Sections 112, 113 & 114, Partner Terms",
     summary:
       "Enforces OrderKing's 1-2% platform turnover contribution to the Central Social Security Fund, e-Shram UAN registration, and government welfare benefits.",
-    fullLegalText: `6.1 Statutory Welfare Mandate: In full adherence to Chapter IX of the Code on Social Security, 2020 (Act No. 36 of 2020), OrderKing confirms its statutory standing as an Aggregator and undertakes to comply with all notified rules framed by the Central Government and State Governments for gig and platform workers.
-6.2 Platform Welfare Cess Contribution: Pursuant to Section 114 of the Code on Social Security, 2020, OrderKing contributes between 1% to 2% of its eligible annual platform turnover (subject to a statutory ceiling of 5% of aggregate payments made to gig workers) into the National Social Security Fund for Gig and Platform Workers. No portion of this aggregator contribution shall be deducted or recovered from the Delivery Partner's payout.
+    fullLegalText: `6.1 Statutory Welfare Mandate: In full adherence to Chapter IX of the Partner Terms (Act No. 36 of 2020), OrderKing confirms its statutory standing as an Aggregator and undertakes to comply with all notified rules framed by the Central Government and State Governments for gig and platform workers.
+6.2 Platform Welfare Cess Contribution: Pursuant to Section 114 of the Partner Terms, OrderKing contributes between 1% to 2% of its eligible annual platform turnover (subject to a statutory ceiling of 5% of aggregate payments made to gig workers) into the National Social Security Fund for Gig and Platform Workers. No portion of this aggregator contribution shall be deducted or recovered from the Delivery Partner's payout.
 6.3 National e-Shram & UAN Integration: OrderKing actively facilitates the registration of all active delivery partners on the Ministry of Labour and Employment e-Shram portal to ensure every Partner obtains a valid 12-digit Universal Account Number (UAN), enabling seamless portability of welfare benefits across India.
 6.4 Scope of Social Security Coverage: Through the National Social Security Fund and allied schemes, Delivery Partners become eligible for:
   (a) Life and disability cover;
@@ -189,7 +189,7 @@ export const ORDERKING_PARTNER_AGREEMENT_SECTIONS: AgreementSection[] = [
   (c) Old age protection and skill upgradation schemes;
   (d) Emergency relief during declared natural calamities, epidemics, or force majeure events.`,
     keyHighlights: [
-      "Statutory compliance under Sections 112-114 of Code on Social Security, 2020",
+      "Statutory compliance under Sections 112-114 of Partner Terms",
       "OrderKing contributes 1% to 2% of platform turnover to Central Welfare Fund",
       "Zero deduction from rider earnings for aggregator welfare contribution",
       "Integration with e-Shram Portal for 12-digit Universal Account Number (UAN)",
@@ -247,7 +247,7 @@ export const ORDERKING_PARTNER_AGREEMENT_SECTIONS: AgreementSection[] = [
     title: "Confidentiality, Telemetry Telematics & Data Protection",
     statutoryBasis: "Digital Personal Data Protection Act, 2023 & IT Act, 2000",
     summary:
-      "Ensures customer phone number masking, strict non-solicitation, DPDP Act 2023 compliance, and transparent GPS telemetry tracking during active duty.",
+      "Ensures customer phone number masking, strict non-solicitation, Privacy Policy compliance, and transparent GPS telemetry tracking during active duty.",
     fullLegalText: `9.1 Customer Data Confidentiality: The Delivery Partner shall treat all customer details (including full names, residential addresses, gate codes, and order notes) as strictly confidential.
 9.2 Non-Contact and Non-Solicitation: Under no circumstances shall the Delivery Partner:
   (a) Save customer telephone numbers or residential details to personal devices;
@@ -362,7 +362,7 @@ export function getFullAgreementLegalMarkdown(params?: {
     : new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
 
   let md = `# ${ORDERKING_PARTNER_AGREEMENT_METADATA.documentTitle.toUpperCase()}
-**Statutory Framework:** Compliant with the Code on Social Security, 2020 (Act No. 36 of 2020)  
+**Statutory Framework:** Compliant with the Partner Terms (Act No. 36 of 2020)  
 **Contract Reference ID:** \`${contractId}\`  
 **Execution Timestamp:** ${signedDate} IST  
 **Version:** ${ORDERKING_PARTNER_AGREEMENT_METADATA.version}  

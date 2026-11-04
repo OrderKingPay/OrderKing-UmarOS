@@ -891,7 +891,7 @@ export function LegacyAggregatorSwitchFlow({ rider, onSuccess }: LegacyAggregato
             />
             <span>
               I confirm that all submitted documents are authentic and accept the{" "}
-              <strong>Independent Delivery Partner Service Agreement (Code on Social Security, 2020)</strong>,{" "}
+              <strong>Independent Delivery Partner Service Agreement (Partner Terms)</strong>,{" "}
               <strong>Road Safety &amp; BIS Helmet Undertaking</strong>, and{" "}
               <strong>FSSAI Food Hygiene SOP</strong>.
             </span>

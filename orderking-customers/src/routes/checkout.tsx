@@ -1388,7 +1388,7 @@ function CheckoutPage() {
                           <span className="text-zinc-900 dark:text-zinc-100 font-bold">Govt Taxes (GST)</span>
                           <BillTooltip
                             title="Statutory GST Compliance"
-                            text="Includes 5% restaurant food GST levied under Section 9(5) CGST (collected and remitted by OrderKing as an Electronic Commerce Operator) plus statutory 18% services GST on platform charges."
+                            text="Includes 5% restaurant food GST levied under GST (collected and remitted by OrderKing as an Electronic Commerce Operator) plus statutory 18% services GST on platform charges."
                           />
                         </div>
                         <span className="tabular-nums font-bold text-zinc-900 dark:text-zinc-100">
@@ -1399,7 +1399,7 @@ function CheckoutPage() {
                       </div>
 
                       <div className="flex justify-between items-center text-[10px] text-zinc-500 dark:text-zinc-400 font-mono pt-1">
-                        <span>• Restaurant Food GST (Sec 9(5) CGST 5%)</span>
+                        <span>• Restaurant Food GST (GST 5%)</span>
                         <span>{quote.data.quote.taxBreakdown?.foodGstIncludedInMenu ? "Included in Item Prices" : formatPaise(quote.data.quote.taxBreakdown?.foodGstPaise ?? 0, { locale })}</span>
                       </div>
                       <div className="flex justify-between items-center text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">

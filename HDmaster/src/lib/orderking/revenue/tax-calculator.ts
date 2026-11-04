@@ -2,7 +2,7 @@
  * Indian Statutory Tax Engine for OrderKing
  * 
  * Strict Indian Statutory Compliance:
- * 1. Section 9(5) CGST Act 2017:
+ * 1. GST Act 2017:
  *    5% GST on restaurant food bills collected by the e-commerce operator (OrderKing)
  *    from the customer and remitted directly to the Government under OrderKing GSTIN.
  *    The restaurant does not pay output tax on delivery orders and does NOT collect this tax.
@@ -24,7 +24,7 @@
  */
 
 export const STATUTORY_TAX_RATES = {
-  /** Section 9(5) CGST Act: 5% GST on restaurant food delivery (SAC 99633) */
+  /** GST Act: 5% GST on restaurant food delivery (SAC 99633) */
   SEC_9_5_FOOD_GST_BPS: 500,
   SEC_9_5_CGST_BPS: 250,
   SEC_9_5_SGST_BPS: 250,
@@ -171,7 +171,7 @@ export interface ComprehensiveStatutoryTaxResult {
 }
 
 /**
- * Calculates Section 9(5) CGST Act 5% Food GST.
+ * Calculates GST Act 5% Food GST.
  * Collected from customer and remitted to the Government under OrderKing GSTIN.
  * The restaurant does not pay output tax on delivery orders and does NOT collect this tax.
  */
@@ -201,10 +201,10 @@ export function calculateSection9_5FoodGST(
     sgstPaise: sgst,
     igstPaise: igst,
     totalGstPaise: totalGst,
-    remittanceGstin: "18AFXPH9838M1Z9",
+    remittanceGstin: "",
     liabilityEntity: "ORDERKING_PLATFORM",
     isInterstate,
-    statutoryNote: "Section 9(5) CGST Act 2017: 5% GST collected from customer and remitted directly to Government under OrderKing GSTIN.",
+    statutoryNote: "GST Act 2017: 5% GST collected from customer and remitted directly to Government under OrderKing GSTIN.",
   };
 }
 
@@ -325,7 +325,7 @@ export function calculateComprehensiveStatutoryTax(
   // 2. Net taxable supply = Gross sales - Restaurant-funded discounts
   const netTaxableSupplyPaise = Math.max(0, grossSalesPaise - restDiscount);
 
-  // 3. Section 9(5) CGST Act: 5% GST remitted by platform
+  // 3. GST Act: 5% GST remitted by platform
   const sec9_5FoodGST = calculateSection9_5FoodGST(netTaxableSupplyPaise, isInterstate);
 
   // 4. Section 52 CGST Act: 1% TCS deducted from net restaurant sales

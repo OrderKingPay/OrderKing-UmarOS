@@ -148,7 +148,7 @@ export type PanValidationResult = {
 
 export function validatePan(rawInput: string | null | undefined): PanValidationResult {
   if (!rawInput) {
-    return { valid: false, pan: "", isIndividual: false, reason: "PAN Card is mandatory for Section 194-O TDS compliance" };
+    return { valid: false, pan: "", isIndividual: false, reason: "PAN Card is mandatory for TDS compliance" };
   }
 
   // Extract PAN from composite string like "AADHAAR_PAN:ABCDE1234F"
@@ -348,7 +348,7 @@ export function evaluateAutomatedOnboarding(rider: RiderProfile): AutomatedKycEv
     : rider.governmentIdType;
   const panCheck = validatePan(panInput);
   if (!panCheck.valid) {
-    reasons.push(panCheck.reason || "Valid PAN card is required for statutory Section 194-O TDS compliance");
+    reasons.push(panCheck.reason || "Valid PAN card is required for statutory TDS compliance");
   }
 
   // 6. CMVR Rule 2(u) Vehicle Compliance

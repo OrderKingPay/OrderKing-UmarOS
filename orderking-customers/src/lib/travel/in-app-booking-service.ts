@@ -987,7 +987,7 @@ export function issueSovereignETicket(params: {
     destination: params.quote.toCity,
     date: dateStr,
     totalPaise: fareCalc.totalCheckoutPaise,
-    platformGstin: "18AFXPH9838M1Z9",
+    platformGstin: "",
     tradeName: "Orderkingpay",
     sovereignGuarantee: "Direct Carrier Fare",
   });

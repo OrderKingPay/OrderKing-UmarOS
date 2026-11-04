@@ -105,8 +105,8 @@ export const settlementEngine = {
    * Computes statutory batch settlement strictly in integer paise for Standard or Express Daily cycles.
    * Aggregates line-by-line food values, packaging charges, restaurant discounts,
    * platform commission with 18% GST, gateway fees with 18% GST, penalties,
-   * 5% Section 9(5) CGST liability (remitted by platform under OrderKing GSTIN),
-   * 1% Section 52 TCS, 1% Section 194-O TDS, amortized onboarding fee,
+   * 5% GST liability (remitted by platform under OrderKing GSTIN),
+   * 1% TCS, 1% TDS, amortized onboarding fee,
    * 0.5% Express Daily early-liquidity fee (if EXPRESS_DAILY), promotional subsidies,
    * and refund adjustments with ZERO floating-point rounding drift.
    */
@@ -421,8 +421,8 @@ export const settlementEngine = {
         platformFundedDiscountPaise: 0,
         commissionBps: o.commissionBps ?? 1800,
         cycleType: "EXPRESS_DAILY",
-        tcsSec52Bps: 100, // Enforce 1% Section 52 TCS
-        tdsSec194OBps: 100, // Enforce 1% Section 194-O TDS
+        tcsSec52Bps: 100, // Enforce 1% TCS
+        tdsSec194OBps: 100, // Enforce 1% TDS
         sec9_5GstBps: 500, // Enforce 5% Section 9(5) Food GST
       });
     });

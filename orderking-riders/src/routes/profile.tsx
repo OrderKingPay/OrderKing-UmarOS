@@ -47,7 +47,7 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
     id: "agreement",
     title: "Independent Delivery Partner Agreement",
     subtitle: "Scope of principal-to-principal gig engagement, rate card & partner rights",
-    statuteBadge: "Code on Social Security, 2020",
+    statuteBadge: "Partner Terms",
     clauses: [
       {
         heading: "1. Independent Gig Engagement",

@@ -17,7 +17,7 @@
  * 5. Statutory Retention Conflict Resolution:
  *    - Under Section 36 CGST Act, 2017, all books of account, invoices, credit notes,
  *      and tax settlement ledgers must be retained for seventy-two (72) months (6 years).
- *    - Under DPDP Act 2023 Section 8(7), non-financial personal data (GPS telemetry, breadcrumbs)
+ *    - Under Privacy Policy Section 8(7), non-financial personal data (GPS telemetry, breadcrumbs)
  *      must be purged after operational fulfillment (max 90 days).
  */
 
@@ -119,13 +119,13 @@ export function maskCustomerPhoneNumber(phone: string | null | undefined): strin
 }
 
 /**
- * Validates a DPDP Act 2023 consent record.
+ * Validates a Privacy Policy consent record.
  */
 export function validateDpdpConsentRecord(record: DpdpConsentRecord): DpdpConsentValidationResult {
   const errors: string[] = [];
 
   if (!record.dataPrincipalId || record.dataPrincipalId.trim().length === 0) {
-    errors.push("Data Principal ID is mandatory under DPDP Act 2023");
+    errors.push("Data Principal ID is mandatory under Privacy Policy");
   }
 
   if (!record.consentedPurposes || record.consentedPurposes.length === 0) {
@@ -205,7 +205,7 @@ export interface DpdpDataPrincipalSummary {
 }
 
 /**
- * Generates statutory personal data summary pursuant to Section 11 of DPDP Act 2023.
+ * Generates statutory personal data summary pursuant to Section 11 of Privacy Policy.
  */
 export function generateDataPrincipalSummary(
   principalId: string,
@@ -216,7 +216,7 @@ export function generateDataPrincipalSummary(
     dataPrincipalType: principalType,
     processedCategories: [
       "Contact Details (Masked Telephone, Delivery Address)",
-      "Financial Transaction & Invoicing Ledgers (Section 9(5) CGST Act, TCS, TDS)",
+      "Financial Transaction & Invoicing Ledgers (GST Act, TCS, TDS)",
       "Live GPS Logistics Telemetry (Active Duty / In-Transit Only)",
     ],
     dataFiduciariesSharedWith: [
@@ -225,7 +225,7 @@ export function generateDataPrincipalSummary(
       "Goods & Services Tax Network (GSTN - Mandatory Table 3.1.1 E-Commerce Reporting)",
     ],
     statutoryRetentionNotice:
-      "Financial and statutory tax ledgers are retained for seventy-two (72) months in accordance with Section 36 of the CGST Act, 2017. Ephemeral GPS telemetry is purged within 90 days pursuant to Section 8(7) DPDP Act 2023.",
+      "Financial and statutory tax ledgers are retained for seventy-two (72) months in accordance with Section 36 of the CGST Act, 2017. Ephemeral GPS telemetry is purged within 90 days pursuant to Section 8(7) Privacy Policy.",
     dpoGrievanceDesk: DPDP_OFFICIAL_DPO,
     rightsAvailable: [
       "Section 11: Right to Access Summary of Personal Data",

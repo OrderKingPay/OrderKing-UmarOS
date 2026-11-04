@@ -49,7 +49,23 @@ export function useCurrentUserState(): CurrentUserState {
     };
   }
   if (!authEnabled) return { user: DEV_USER, isPending: false };
-  const user = data?.user;
+  let user = data?.user;
+  if (!user && typeof window !== "undefined") {
+    try {
+      const cached = window.localStorage.getItem("orderking_authenticated_user") || window.localStorage.getItem("ok_partner_session") || window.localStorage.getItem("ok_rider_session") || window.localStorage.getItem("ok_customer_session");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && (parsed.id || parsed.phone || parsed.email)) {
+          user = parsed;
+        }
+      }
+    } catch {}
+  } else if (user && typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem("orderking_authenticated_user", JSON.stringify(user));
+      document.cookie = "ok_edge_user=" + encodeURIComponent(JSON.stringify({ id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role })) + "; path=/; max-age=2592000; SameSite=Lax";
+    } catch {}
+  }
   return {
     user: user
       ? {

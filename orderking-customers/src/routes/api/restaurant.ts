@@ -182,7 +182,7 @@ export const Route = createFileRoute("/api/restaurant")({
             fboName: row.fbo_name || row.legal_name || row.name,
             ownerName: row.owner_name || undefined,
             fssaiLicenseNumber: row.fssai_license_number || "10323999000184",
-            gstin: row.gstin || "18AFXPH9838M1Z9",
+            gstin: row.gstin || "",
             legalEntity: row.legal_name || row.name,
           };
           return new Response(JSON.stringify({ restaurant: detail }), { status: 200, headers: { "content-type": "application/json" } });

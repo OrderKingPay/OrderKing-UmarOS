@@ -21,7 +21,7 @@
  *      as digitally signed, idempotent instruction manifests.
  *
  * 3. INDIAN TAX STATUTES (GST & INCOME TAX):
- *    - Section 9(5) CGST Act 2017: 5% Food GST collected and remitted under OrderKing GSTIN.
+ *    - GST Act 2017: 5% Food GST collected and remitted under OrderKing GSTIN.
  *    - Section 52 CGST Act 2017: 1% TCS (0.5% CGST + 0.5% SGST) deducted on net sales.
  *    - Section 194-O Income Tax Act 1961: 1% TDS deducted on gross sales.
  *    - Section 9(1) CGST Act 2017: 18% GST charged on platform convenience & commission revenue.

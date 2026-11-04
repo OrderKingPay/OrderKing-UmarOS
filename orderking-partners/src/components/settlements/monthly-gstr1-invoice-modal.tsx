@@ -318,7 +318,7 @@ export function MonthlyGstr1InvoiceModal({
                   </div>
                   <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-mono text-slate-700">
                     <div>
-                      <span className="font-bold text-slate-900">GSTIN:</span> 18AFXPH9838M1Z9
+                      <span className="font-bold text-slate-900">GSTIN:</span> 
                     </div>
                     <div>
                       <span className="font-bold text-slate-900">PAN:</span> AFXPH9838M
@@ -517,7 +517,7 @@ export function MonthlyGstr1InvoiceModal({
                     </tr>
                   )}
 
-                  {/* 4. Section 9(5) CGST (2.5%) + SGST (2.5%) Food GST Platform Liability */}
+                  {/* 4. GST (2.5%) + SGST (2.5%) Food GST Platform Liability */}
                   <tr className="bg-emerald-50/40 hover:bg-emerald-50">
                     <td className="p-2 border border-slate-300">
                       <div className="font-bold text-emerald-900 flex items-center gap-1">
@@ -525,7 +525,7 @@ export function MonthlyGstr1InvoiceModal({
                         Section 9(5) Food GST Platform Liability (5%)
                       </div>
                       <div className="text-[10px] text-emerald-800 leading-snug">
-                        Collected and remitted directly to Government Treasury under Orderkingpay GSTIN 18AFXPH9838M1Z9.
+                        Collected and remitted directly to Government Treasury under Orderkingpay GSTIN .
                         (Statutory platform liability - ₹0 debited from merchant payout).
                       </div>
                     </td>
@@ -682,9 +682,9 @@ export function MonthlyGstr1InvoiceModal({
                 Chartered Accountant (CA) Statutory Compliance Notes
               </div>
               <p className="text-[10px] text-slate-600 leading-relaxed">
-                1. <strong>Section 9(5) CGST Act 2017:</strong> Orderkingpay, being an Electronic
+                1. <strong>GST Act 2017:</strong> Orderkingpay, being an Electronic
                 Commerce Operator (ECO), has discharged 5% GST on the restaurant supply facilitated during the period under its
-                GSTIN 18AFXPH9838M1Z9. The restaurant partner is not required to pay GST again on this turnover under Table 3.1.1(i)
+                GSTIN . The restaurant partner is not required to pay GST again on this turnover under Table 3.1.1(i)
                 of Form GSTR-3B.
               </p>
               <p className="text-[10px] text-slate-600 leading-relaxed">

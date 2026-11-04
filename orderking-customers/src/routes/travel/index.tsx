@@ -982,7 +982,7 @@ export function TravelPage() {
           <div>
             <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
               <span className="inline-flex items-center gap-1">
-                <Crown className="size-3.5 text-amber-400" /> OrderKing Travel · Travel King Desk (GSTIN: 18AFXPH9838M1Z9)
+                <Crown className="size-3.5 text-amber-400" /> OrderKing Travel · Travel King Desk (GSTIN: )
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
@@ -3582,7 +3582,7 @@ export function TravelPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-xs text-slate-600">
-                    <span>Statutory Taxes &amp; GST (Orderkingpay GSTIN: 18AFXPH9838M1Z9)</span>
+                    <span>Statutory Taxes &amp; GST (Orderkingpay GSTIN: )</span>
                     <span className="font-mono font-bold">
                       {inAppBookingModal.type === "flight" && formatPaise(inAppBookingModal.data.taxesPaise || 45100)}
                       {inAppBookingModal.type === "train" && `₹${Math.round((inAppBookingModal.data.selectedClassFare || 2240) * 0.05).toLocaleString("en-IN")}`}

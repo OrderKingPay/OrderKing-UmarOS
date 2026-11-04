@@ -155,7 +155,7 @@ Key Commercial Terms:
 - Standard High-Tea Platter: ₹65.00/head (Tea, Savory, Sweet).
 - Executive Lunch Buffet / Platter: ₹180.00/head (Rice, 2 Veg, 1 Non-Veg/Paneer, Dal, Sweet).
 - Dedicated logistics dispatch with on-site serving staff if required.
-- Full compliance with Central University financial guidelines and Section 9(5) CGST provisions.
+- Full compliance with Central University financial guidelines and GST provisions.
 
 Submitted with highest regards,
 Hasan

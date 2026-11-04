@@ -20,7 +20,7 @@ export const Route = createFileRoute("/api/travel/booking-confirmed")({
           JSON.stringify({
             status: "HEALTHY",
             service: "OrderKing Travel PNR & WhatsApp/SMS Dispatch Engine",
-            gstin: "18AFXPH9838M1Z9",
+            gstin: "",
             supportedChannels: [
               "Meta WhatsApp Cloud API v21.0",
               "Fast2SMS DLT",

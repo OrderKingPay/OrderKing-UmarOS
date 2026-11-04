@@ -416,7 +416,7 @@ On OrderKing at 22% transparent commission:
 • Food Subtotal: ₹300.00
 • Commission (22%): -₹66.00
 • GST on Commission (18%): -₹11.88
-• Section 194-O TDS (0.1%): -₹0.30
+• TDS (0.1%): -₹0.30
 • Net payable to your bank: ₹221.82
 
 You save ₹28.02 extra pure cash on EVERY single ₹300 order. At 300 orders a month, that is over ₹8,400 in direct savings, credited T+1 daily into your bank account.`,

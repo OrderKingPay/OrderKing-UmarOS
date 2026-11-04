@@ -142,7 +142,7 @@ export const STATUTORY_TAX_RATES = {
   COMMISSION_CGST_BPS: 900,
   COMMISSION_SGST_BPS: 900,
 
-  /** 5% GST on Restaurant Services (Section 9(5) CGST Act 2017) - Platform Liability remitted to Govt */
+  /** 5% GST on Restaurant Services (GST Act 2017) - Platform Liability remitted to Govt */
   SEC9_5_FOOD_GST_BPS: 500,
   SEC9_5_CGST_BPS: 250,
   SEC9_5_SGST_BPS: 250,
@@ -283,7 +283,7 @@ export type SettlementBreakdown = {
   tcsSgstPaise: Paise;
   tdsSec194OPaise: Paise;
 
-  // Statutory Platform Tax Liability (remitted directly by platform to Govt under Sec 9(5) CGST Act; NOT debited from restaurant)
+  // Statutory Platform Tax Liability (remitted directly by platform to Govt under GST Act; NOT debited from restaurant)
   sec9_5GstPaise: Paise;
   sec9_5CgstPaise: Paise;
   sec9_5SgstPaise: Paise;

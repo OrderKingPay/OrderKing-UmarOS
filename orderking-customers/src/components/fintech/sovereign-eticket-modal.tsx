@@ -379,7 +379,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
             <div className="flex items-center gap-2">
               <span className="font-black text-slate-800">Orderkingpay</span>
               <span className="px-1.5 py-0.5 rounded bg-white border border-slate-300 font-mono text-[10px] font-bold text-slate-900">
-                GSTIN: 18AFXPH9838M1Z9
+                GSTIN: 
               </span>
             </div>
             <div className="text-right text-[10px] text-slate-500">
