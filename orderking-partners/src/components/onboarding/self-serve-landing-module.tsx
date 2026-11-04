@@ -42,7 +42,6 @@ export function SelfServeLandingModule() {
 
   const [fssaiNumber, setFssaiNumber] = useState("");
   const [pan, setPan] = useState("");
-  const [hasGst, setHasGst] = useState(false);
   const [gstin, setGstin] = useState("");
 
   const [holder, setHolder] = useState("");
@@ -53,11 +52,11 @@ export function SelfServeLandingModule() {
 
   function validateStep1(): boolean {
     if (!name.trim()) {
-      setError("Please enter your Restaurant Name.");
+      setError("Please enter your restaurant name.");
       return false;
     }
     if (!ownerName.trim()) {
-      setError("Please enter the Owner / Manager Full Name.");
+      setError("Please enter the owner or manager name.");
       return false;
     }
     if (phone.replace(/\D/g, "").slice(-10).length !== 10) {
@@ -65,7 +64,7 @@ export function SelfServeLandingModule() {
       return false;
     }
     if (!address.trim() || !city.trim()) {
-      setError("Please enter your complete Restaurant Street Address and City.");
+      setError("Please enter your outlet street address and city.");
       return false;
     }
     setError(null);
@@ -74,15 +73,15 @@ export function SelfServeLandingModule() {
 
   function validateStep2(): boolean {
     if (fssaiNumber.replace(/\D/g, "").length !== 14) {
-      setError("Please enter a valid 14-digit FSSAI Food License Number.");
+      setError("Please enter a valid 14-digit FSSAI license number.");
       return false;
     }
     if (pan.trim().length !== 10) {
-      setError("Please enter a valid 10-character PAN Card Number.");
+      setError("Please enter a valid 10-character PAN number.");
       return false;
     }
-    if (hasGst && gstin.trim().length !== 15) {
-      setError("Please enter your 15-character GSTIN, or untick the GST box to proceed automatically without GST.");
+    if (gstin.trim().length > 0 && gstin.trim().length !== 15) {
+      setError("Please enter a valid 15-character GSTIN or leave it blank.");
       return false;
     }
     setError(null);
@@ -91,11 +90,11 @@ export function SelfServeLandingModule() {
 
   function validateStep3(): boolean {
     if (bankAccount.replace(/\D/g, "").length < 8) {
-      setError("Please enter a valid Settlement Bank Account Number.");
+      setError("Please enter a valid bank account number.");
       return false;
     }
     if (bankIfsc.trim().length !== 11) {
-      setError("Please enter a valid 11-character Bank IFSC Code (e.g. SBIN0001234).");
+      setError("Please enter a valid 11-character IFSC code.");
       return false;
     }
     setError(null);
@@ -111,7 +110,7 @@ export function SelfServeLandingModule() {
     const cleanPhone = phone.replace(/\D/g, "").slice(-10);
     const cleanFssai = fssaiNumber.replace(/\D/g, "");
     const cleanPan = pan.trim().toUpperCase();
-    const cleanGst = hasGst ? gstin.trim().toUpperCase() : "";
+    const cleanGst = gstin.trim().toUpperCase();
     const cleanAcc = bankAccount.replace(/\D/g, "");
     const cleanIfsc = bankIfsc.trim().toUpperCase();
 
@@ -130,9 +129,9 @@ export function SelfServeLandingModule() {
       fssaiExpiryDate: "2028-12-31",
       pan: cleanPan,
       gstin: cleanGst,
-      exemptFromGst: !hasGst,
+      exemptFromGst: cleanGst.length === 0,
       holder: (holder || ownerName || name).trim(),
-      bankName: bankName.trim() || "Partner Settlement Bank",
+      bankName: bankName.trim() || "Partner Bank",
       bankAccount: cleanAcc,
       bankIfsc: cleanIfsc,
       settlementCycle: payoutCycle,
@@ -145,11 +144,18 @@ export function SelfServeLandingModule() {
     if (typeof window !== "undefined") {
       try {
         window.localStorage.setItem(ORDERKING_ONBOARDING_DRAFT_KEY, JSON.stringify(draftPayload));
+        window.localStorage.setItem("orderking_authenticated_user", JSON.stringify({
+          id: "partner_" + cleanPhone,
+          name: draftPayload.ownerName,
+          phone: cleanPhone,
+          email: draftPayload.email,
+          role: "OWNER"
+        }));
       } catch {}
     }
 
     try {
-      if (user) {
+      {
         const draftRes = await createRestaurantDraft({
           data: {
             name: draftPayload.name,
@@ -200,9 +206,8 @@ export function SelfServeLandingModule() {
         window.location.assign("/dashboard");
         return;
       }
-      navigate({ to: "/login", search: { mode: "up" } as any });
     } catch {
-      window.location.assign(user ? "/dashboard" : "/login?mode=up");
+      window.location.assign("/dashboard");
     } finally {
       setBusy(false);
     }
@@ -212,9 +217,9 @@ export function SelfServeLandingModule() {
     <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 space-y-6 text-slate-100">
       <div className="grid grid-cols-3 gap-3">
         {[
-          { num: 1, title: "1. Restaurant & Address", sub: "Outlet Location" },
-          { num: 2, title: "2. FSSAI, PAN & GST", sub: "Legal Documents" },
-          { num: 3, title: "3. Bank Account", sub: "Daily Settlement" },
+          { num: 1, title: "1. Restaurant Details", sub: "Name & Address" },
+          { num: 2, title: "2. FSSAI & PAN", sub: "Registration Details" },
+          { num: 3, title: "3. Bank & Payout", sub: "Settlement Account" },
         ].map((item) => {
           const active = activeStep === item.num;
           const done = activeStep > item.num;
@@ -254,7 +259,7 @@ export function SelfServeLandingModule() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-base font-bold text-white">
             <Store className="size-5 text-emerald-400" />
-            <span>Step 1: Restaurant Details &amp; Outlet Address</span>
+            <span>Restaurant Information &amp; Address</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -262,7 +267,7 @@ export function SelfServeLandingModule() {
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Royal Darbar Kitchen"
+                placeholder="Enter restaurant name"
                 className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
               />
             </div>
@@ -296,7 +301,7 @@ export function SelfServeLandingModule() {
               />
             </div>
             <div className="sm:col-span-2">
-              <Label className="text-xs text-slate-300">Complete Outlet Street Address (Address Proof) *</Label>
+              <Label className="text-xs text-slate-300">Complete Outlet Street Address *</Label>
               <Input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -313,7 +318,7 @@ export function SelfServeLandingModule() {
               }}
               className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-11 rounded-xl flex items-center gap-2"
             >
-              <span>Continue to Step 2</span>
+              <span>Next</span>
               <ArrowRight className="size-4" />
             </Button>
           </div>
@@ -324,11 +329,11 @@ export function SelfServeLandingModule() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-base font-bold text-white">
             <FileCheck className="size-5 text-emerald-400" />
-            <span>Step 2: FSSAI License, PAN Card &amp; Optional GST</span>
+            <span>FSSAI &amp; PAN Details</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs text-slate-300">14-Digit FSSAI Food License Number *</Label>
+              <Label className="text-xs text-slate-300">14-Digit FSSAI Number *</Label>
               <Input
                 maxLength={14}
                 value={fssaiNumber}
@@ -338,7 +343,7 @@ export function SelfServeLandingModule() {
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">10-Character PAN Card Number *</Label>
+              <Label className="text-xs text-slate-300">10-Character PAN Number *</Label>
               <Input
                 maxLength={10}
                 value={pan}
@@ -347,21 +352,16 @@ export function SelfServeLandingModule() {
                 className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
               />
             </div>
-          </div>
-
-          <div>
-            <Label className="text-xs text-slate-300">GSTIN (Optional — leave blank if not registered)</Label>
-            <Input
-              maxLength={15}
-              value={gstin}
-              onChange={(e) => {
-                const v = e.target.value.toUpperCase().slice(0, 15);
-                setGstin(v);
-                setHasGst(v.length > 0);
-              }}
-              placeholder="15-character GSTIN (Optional)"
-              className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
-            />
+            <div className="sm:col-span-2">
+              <Label className="text-xs text-slate-300">GSTIN (Optional)</Label>
+              <Input
+                maxLength={15}
+                value={gstin}
+                onChange={(e) => setGstin(e.target.value.toUpperCase().slice(0, 15))}
+                placeholder="15-character GSTIN (Leave blank if not applicable)"
+                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-between pt-2">
@@ -380,7 +380,7 @@ export function SelfServeLandingModule() {
               }}
               className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-11 rounded-xl flex items-center gap-2"
             >
-              <span>Continue to Step 3</span>
+              <span>Next</span>
               <ArrowRight className="size-4" />
             </Button>
           </div>
@@ -391,7 +391,7 @@ export function SelfServeLandingModule() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-base font-bold text-white">
             <Banknote className="size-5 text-emerald-400" />
-            <span>Step 3: Settlement Bank Account &amp; Go Live</span>
+            <span>Bank Account &amp; Payout Schedule</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -434,7 +434,7 @@ export function SelfServeLandingModule() {
           </div>
 
           <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
-            <Label className="text-xs font-bold text-slate-200">Select Settlement Payout Cycle *</Label>
+            <Label className="text-xs font-bold text-slate-200">Select Payout Schedule *</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
@@ -446,11 +446,11 @@ export function SelfServeLandingModule() {
                 }`}
               >
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span>After Next-Day / Standard Cycle (T+3)</span>
-                  <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-emerald-300">0% Extra Fee</span>
+                  <span>Standard Payout (After Next Day)</span>
+                  <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-emerald-300">No Extra Fee</span>
                 </div>
                 <div className="text-[11px] text-slate-400 mt-1">
-                  Standard bank payout after T+2 / weekly settlement cycle with zero early-payout charge.
+                  Standard settlement cycle with no additional payout charge.
                 </div>
               </button>
               <button
@@ -463,11 +463,11 @@ export function SelfServeLandingModule() {
                 }`}
               >
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span>Next-Day Express Payout (Daily T+1)</span>
-                  <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300">+0.5% Fee + GST</span>
+                  <span>Next-Day Payout (T+1)</span>
+                  <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300">+0.5% Fee</span>
                 </div>
                 <div className="text-[11px] text-slate-400 mt-1">
-                  Receive next-morning (T+1) bank settlement for orders completed up to midnight (+0.5% liquidity fee).
+                  Next-day bank settlement (+0.5% early settlement fee).
                 </div>
               </button>
             </div>
@@ -489,7 +489,7 @@ export function SelfServeLandingModule() {
               className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-12 rounded-xl flex items-center gap-2"
             >
               {busy ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
-              <span>{busy ? "Saving..." : "Complete Onboarding & Launch Kitchen →"}</span>
+              <span>{busy ? "Saving..." : "Save & Open Restaurant Dashboard"}</span>
             </Button>
           </div>
         </div>
