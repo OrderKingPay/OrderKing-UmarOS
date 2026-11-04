@@ -24,11 +24,11 @@ type StateFilter = "ALL" | "NEEDS_ACTION" | "PREPARING" | "READY" | "DELIVERED" 
 
 const STATE_PILLS: { id: StateFilter; label: string }[] = [
   { id: "ALL", label: "All" },
-  { id: "NEEDS_ACTION", label: "Placed (Needs Action)" },
+  { id: "NEEDS_ACTION", label: "New" },
   { id: "PREPARING", label: "Preparing" },
   { id: "READY", label: "Ready" },
   { id: "DELIVERED", label: "Delivered" },
-  { id: "CANCELLED", label: "Rejected / Cancelled" },
+  { id: "CANCELLED", label: "Cancelled" },
 ];
 
 function startContinuousAlarm() {
@@ -290,30 +290,25 @@ function OrdersPage() {
           </div>
         </div>
       ) : (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2.5">
-            <Flame className="size-4 text-amber-400" />
-            <div>
-              <span className="font-bold text-slate-200">Kitchen Rush / Overload Buffer Mode:</span>
-              <span className="text-slate-400 ml-1.5">
-                Experiencing high ticket surge? Add a prep buffer and dynamically push back rider arrival windows.
-              </span>
-            </div>
+        <div className="rounded-xl border border-slate-800 bg-slate-900/60 px-3.5 py-2 flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <Flame className="size-3.5 text-amber-400" />
+            <span className="font-semibold text-slate-300">Kitchen Prep Buffer:</span>
           </div>
-          <div className="flex items-center gap-2 font-mono">
+          <div className="flex items-center gap-1.5 font-mono">
             <button
               type="button"
               onClick={() => rush.activate(10)}
-              className="px-3 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 border border-amber-500/60 text-amber-300 font-bold text-xs transition cursor-pointer"
+              className="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-300 font-bold text-xs transition cursor-pointer"
             >
-              +10m Rush
+              +10m
             </button>
             <button
               type="button"
               onClick={() => rush.activate(15)}
-              className="px-3 py-1 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-500/60 text-rose-300 font-bold text-xs transition cursor-pointer"
+              className="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-rose-300 font-bold text-xs transition cursor-pointer"
             >
-              +15m Rush (Surge)
+              +15m
             </button>
           </div>
         </div>
