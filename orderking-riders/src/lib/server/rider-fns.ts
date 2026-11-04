@@ -45,88 +45,73 @@ export const bootstrapRiderFn = createServerFn({ method: "POST" })
 
 export const getHomeFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => {
+  .handler(async ({ context }): Promise<Awaited<ReturnType<RiderEngine["home"]>>> => {
     let lastError: unknown;
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         const e = await engine();
         await e.ensureRider({ id: context.userId });
         let home = await e.home(context.userId);
-      if (process.env.HDMASTER_URL && process.env.ORDERKING_SERVICE_TOKEN) {
-        try {
-          const offers = await fetchLiveOffers(context.userId);
-          if (offers && offers.length > 0) {
-            const o = offers[0];
-            const existingOffer = await e.getStore().getOpenOfferForRider(home.rider.id);
-            if (!existingOffer || existingOffer.orderCode !== o.order_id) {
-              if (existingOffer) {
-                 await e.getStore().casOffer(existingOffer.id, home.rider.id, "EXPIRED");
-              }
-              const restaurant = { id: o.restaurant_id ?? "live_restaurant", name: o.restaurant_name ?? "Restaurant", area: "", address: o.restaurant_address ?? "", location: { lat: o.restaurant_lat ?? 0, lng: o.restaurant_lng ?? 0 }, phoneMasked: "XXX", specialPickupInstructions: null, preparationStatus: "READY" as const };
-              const customer = { displayName: o.customer_name ?? "Customer", area: o.zone_name ?? "", address: o.customer_address ?? o.zone_name ?? "", contactMasked: null, contactAllowed: false, instructions: null };
-              await e.getStore().insertDelivery({
-                pickupLocation: { lat: Number(o.restaurant_lat) || 0, lng: Number(o.restaurant_lng) || 0 }, dropLocation: { lat: Number(o.customer_lat) || 0, lng: Number(o.customer_lng) || 0 }, packageCount: 1, cod: false, codAmountPaise: 0, pickupVerification: "ORDER_CODE", pickupCode: "0000", otpRequired: true, arrivedRestaurantAt: null, expectedReadyAt: null, pickedUpAt: null, arrivedCustomerAt: null, deliveredAt: null, waitStartedAt: null, contactAttempts: 0, cancelReason: null, failReason: null, updatedAt: o.offered_at,
-                id: o.order_id,
-                orderCode: o.order_id,
-                orderId: o.order_id,
-                offerId: o.id,
-                userId: context.userId,
-                riderId: home.rider.id,
-                state: "OFFERED",
-                dataMode: "LIVE",
-                expectedPayoutPaise: enforcePayoutFloor(o.total_paise),
-                // expectedDistanceM: o.distance_m ?? 0,
-                // expectedEtaSeconds: o.eta_seconds ?? 0,
-                restaurant,
-                customer,
-                // pickupWindowStart: o.offered_at,
-                // pickupWindowEnd: o.expires_at,
-                // dropoffWindowStart: o.offered_at,
-                // dropoffWindowEnd: o.expires_at,
-                // routeScore: o.score,
-                createdAt: o.offered_at,
-              });
-              const plainOtp = (o.delivery_otp && String(o.delivery_otp).trim().length === 4) ? String(o.delivery_otp).trim() : generateOtp(4);
-              const secret = newOtpSecret(plainOtp);
-              await e.getStore().saveOtp(
-                {
-                  deliveryId: o.order_id,
-                  hash: secret.hash,
-                  salt: secret.salt,
-                  attempts: 0,
-                  verifiedAt: null,
-                  simulatedPlain: plainOtp,
-                },
-                context.userId,
-              );
-              await e.getStore().insertOffer({
+        if (process.env.HDMASTER_URL && process.env.ORDERKING_SERVICE_TOKEN) {
+          try {
+            const offers = await fetchLiveOffers(context.userId);
+            if (offers && offers.length > 0) {
+              const o = offers[0];
+              const existingOffer = await e.getStore().getOpenOfferForRider(home.rider.id);
+              if (!existingOffer || existingOffer.orderCode !== o.order_id) {
+                if (existingOffer) {
+                   await e.getStore().casOffer(existingOffer.id, home.rider.id, "EXPIRED");
+                }
+                const restaurant = { id: o.restaurant_id ?? "live_restaurant", name: o.restaurant_name ?? "Restaurant", area: "", address: o.restaurant_address ?? "", location: { lat: o.restaurant_lat ?? 0, lng: o.restaurant_lng ?? 0 }, phoneMasked: "XXX", specialPickupInstructions: null, preparationStatus: "READY" as const };
+                const customer = { displayName: o.customer_name ?? "Customer", area: o.zone_name ?? "", address: o.customer_address ?? o.zone_name ?? "", contactMasked: null, contactAllowed: false, instructions: null };
+                await e.getStore().insertDelivery({
+                  pickupLocation: { lat: Number(o.restaurant_lat) || 0, lng: Number(o.restaurant_lng) || 0 }, dropLocation: { lat: Number(o.customer_lat) || 0, lng: Number(o.customer_lng) || 0 }, packageCount: 1, cod: false, codAmountPaise: 0, pickupVerification: "ORDER_CODE", pickupCode: "0000", otpRequired: true, arrivedRestaurantAt: null, expectedReadyAt: null, pickedUpAt: null, arrivedCustomerAt: null, deliveredAt: null, waitStartedAt: null, contactAttempts: 0, cancelReason: null, failReason: null, updatedAt: o.offered_at,
+                  id: o.order_id,
+                  orderCode: o.order_id,
+                  orderId: o.order_id,
+                  offerId: o.id,
+                  userId: context.userId,
+                  riderId: home.rider.id,
+                  state: "OFFERED",
+                  dataMode: "LIVE",
+                  expectedPayoutPaise: enforcePayoutFloor(o.total_paise),
+                  restaurant,
+                  customer,
+                  createdAt: o.offered_at,
+                });
+                const plainOtp = (o.delivery_otp && String(o.delivery_otp).trim().length === 4) ? String(o.delivery_otp).trim() : generateOtp(4);
+                const secret = newOtpSecret(plainOtp);
+                await e.getStore().saveOtp(
+                  {
+                    deliveryId: o.order_id,
+                    hash: secret.hash,
+                    salt: secret.salt,
+                    attempts: 0,
+                    verifiedAt: null,
+                    simulatedPlain: plainOtp,
+                  },
+                  context.userId,
+                );
+                await e.getStore().insertOffer({
                   pickupLocation: { lat: Number(o.restaurant_lat) || 0, lng: Number(o.restaurant_lng) || 0 }, dropLocation: { lat: Number(o.customer_lat) || 0, lng: Number(o.customer_lng) || 0 },
-                id: o.id,
-                orderCode: o.order_id,
-                riderId: home.rider.id,
-                dataMode: "LIVE",
-                status: "OPEN", approxDistanceKm: 0, estimatedTravelKm: 0, estimatedTotalRouteKm: 0, cod: false, codAmountPaise: 0, packageCount: 1, createdAt: new Date().toISOString(), dropArea: "Local",
-                expectedPayoutPaise: enforcePayoutFloor(o.total_paise),
-                // expectedDistanceM: o.distance_m ?? 0,
-                // expectedEtaSeconds: o.eta_seconds ?? 0,
-                restaurant,
-                customer,
-                // pickupWindowStart: o.offered_at,
-                // pickupWindowEnd: o.expires_at,
-                // dropoffWindowStart: o.offered_at,
-                // dropoffWindowEnd: o.expires_at,
-                // offeredAt: o.offered_at,
-                expiresAt: o.expires_at,
-                // routeScore: o.score,
-              }, context.userId);
-              home = await e.home(context.userId);
+                  id: o.id,
+                  orderCode: o.order_id,
+                  riderId: home.rider.id,
+                  dataMode: "LIVE",
+                  status: "OPEN", approxDistanceKm: 0, estimatedTravelKm: 0, estimatedTotalRouteKm: 0, cod: false, codAmountPaise: 0, packageCount: 1, createdAt: new Date().toISOString(), dropArea: "Local",
+                  expectedPayoutPaise: enforcePayoutFloor(o.total_paise),
+                  restaurant,
+                  customer,
+                  expiresAt: o.expires_at,
+                }, context.userId);
+                home = await e.home(context.userId);
+              }
             }
+          } catch (err) {
+            console.error("Failed to fetch live offers", err);
           }
-        } catch (err) {
-          console.error("Failed to fetch live offers", err);
         }
-      }
-      return home;
+        return home;
       } catch (err) {
         lastError = err;
         console.warn(`[getHomeFn] Attempt ${attempt + 1} failed:`, err);
@@ -137,6 +122,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
     }
     console.error("[getHomeFn] Edge DB pool transient disconnect; returning resilient baseline for:", context.userId, lastError);
     const phone = context.userId;
+    const nowIso = new Date().toISOString();
     return {
       rider: {
         id: `rd_${phone}`,
@@ -165,43 +151,55 @@ export const getHomeFn = createServerFn({ method: "GET" })
         status: "OFFLINE" as const,
         onlineSince: null,
         locale: "en" as const,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: nowIso,
+        updatedAt: nowIso,
         dataMode: "LIVE" as const,
         consecutiveDeclines: 0,
         coolingOffUntil: null,
         coolingOffReason: null,
       },
-      active: null,
       offer: null,
-      today: { completedDeliveries: 0, totalEarnedPaise: 0, tipPaise: 0 },
-      pendingCashPaise: 0,
-      notifications: [],
-      config: {
-        appName: "OrderKing Rider",
-        payoutCurrency: "INR",
-        minPayoutPaise: 10000,
-        maxCashPaise: 200000,
-        volunteerEnabled: false,
-        supportPhone: "+911140000000",
-        sosPhone: "112",
-        legalEntity: "OrderKing Logistics Ltd",
-        discipline: {
-          enabled: true,
-          floatingCashLimitInr: 2000,
-          cancellationPenaltyBeforePickupInr: 25,
-          cancellationPenaltyPostPickupType: "FULL_ORDER" as const,
-          cancellationPenaltyPostPickupCustomInr: 150,
-          coolingOffConsecutiveRejections: 3,
-          coolingOffAcceptanceRateThresholdPct: 70,
-          coolingOffDurationMinutes: 15,
-          upiDepositVpa: "orderking.treasury@okaxis",
-        },
-      },
-      pocketBalancePaise: 0,
-      coolingOff: null,
+      active: null,
       activeDeliveries: [],
-    };
+      isBatchedActive: false,
+      todayEarningsPaise: 0,
+      completedToday: 0,
+      pendingCashPaise: 0,
+      pocketBalance: {
+        pocketBalancePaise: 0,
+        collectedCodPaise: 0,
+        remittedCodPaise: 0,
+        earnedPaise: 0,
+        settledPaise: 0,
+        currentLimitPaise: 200000,
+        limitUtilizationPct: 0,
+        status: "NORMAL" as const,
+        isNearLimit: false,
+        isBreached: false,
+      },
+      coolingOff: {
+        isActive: false,
+        remainingMinutes: 0,
+        until: null,
+        reason: null,
+      },
+      disciplineConfig: {
+        enabled: true,
+        floatingCashLimitInr: 2000,
+        cancellationPenaltyBeforePickupInr: 25,
+        cancellationPenaltyPostPickupType: "FULL_ORDER" as const,
+        cancellationPenaltyPostPickupCustomInr: 150,
+        coolingOffConsecutiveRejections: 3,
+        coolingOffAcceptanceRateThresholdPct: 70,
+        coolingOffDurationMinutes: 15,
+        upiDepositVpa: "orderking.treasury@okaxis",
+      },
+      onlineSince: null,
+      notifications: [],
+      simulatedOtp: null,
+      cash: null,
+      dataMode: "LIVE" as const,
+    } as unknown as Awaited<ReturnType<RiderEngine["home"]>>;
   });
 
 export const saveProfileFn = createServerFn({ method: "POST" })
