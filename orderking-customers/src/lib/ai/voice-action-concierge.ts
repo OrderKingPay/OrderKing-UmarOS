@@ -6,7 +6,7 @@
  * 1. Max 1-2 sentence brevity across English, Hindi, Bengali, and Assamese/Sylheti.
  * 2. Dynamic language detection with automatic voice mirroring.
  * 3. Intent-to-action parsing:
- *    - CHECKOUT_POPUP (dish, quantity, integer paise, 5% GST, CCPA packaging cap).
+ *    - CHECKOUT_POPUP (dish, quantity, integer paise, 5% Sec 9(5) CGST, CCPA packaging cap).
  *    - KINGPAY_POPUP (scan QR, bills, wallet, VPA routing).
  * 4. Founder Profit Defense: Zero discount leak when users request coupons/discounts.
  * 5. Single clarifying question behavior on ambiguous inputs.
@@ -397,7 +397,7 @@ export function processVoiceActionConcierge(input: string): VoiceConciergeRespon
     const unitPricePaise = Math.floor(dish.pricePaise);
     const packagingPaise = 3000; // ₹30.00 standard packaging cap
     const foodSubtotalPaise = unitPricePaise * qty;
-    // GST: 5% on food + packaging
+    // Section 9(5) CGST: 5% on food + packaging
     const taxablePaise = foodSubtotalPaise + packagingPaise;
     const foodGstPaise = Math.round((taxablePaise * 500) / 10000);
     const totalPricePaise = taxablePaise + foodGstPaise;

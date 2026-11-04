@@ -104,7 +104,7 @@ export interface RiderSettlementStatement {
   };
   deductions: {
     codCashCollectedPaise: number;
-    tdsSection194OPaise: number; // 1% TDS if applicable
+    tdsSection194OPaise: number; // 1% Section 194-O TDS if applicable
     netDeductionsPaise: number;
   };
   netDisbursementPaise: number; // Positive = platform pays rider; Negative = rider deposits COD cash
@@ -413,7 +413,7 @@ export class FounderCommandDials {
       input.waitTimePaise +
       disputeCredits;
 
-    // Statutory TDS: 1% on gross payout for registered gig workers
+    // Statutory Section 194-O TDS: 1% on gross payout for registered gig workers
     const tdsSection194OPaise = Math.round(grossEarningsPaise * 0.01);
     const netDeductionsPaise = input.codCashCollectedPaise + tdsSection194OPaise;
     const netDisbursementPaise = grossEarningsPaise - netDeductionsPaise;

@@ -16,7 +16,7 @@ export const DEFAULT_BRANDING: Branding = {
   legalCompanyName: "Orderkingpay",
   appStoreName: "OrderKing Partner",
   invoiceBrand: "Orderkingpay",
-  gstin: "",
+  gstin: "18AFXPH9838M1Z9",
 };
 
 export const DEFAULT_FLAGS: FeatureFlags = {

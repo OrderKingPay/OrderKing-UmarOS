@@ -77,7 +77,7 @@ export function percentOf(amount: Paise, percent: number): Paise {
 /**
  * Standard delivery commission tiers & negotiated take-rates.
  * Standard delivery is 28% (2800 bps) to properly fund delivery partner logistics.
- * Dine-in commission remains 0% (direct table ordering).
+ * Dine-in commission remains 0% (sovereign ordering).
  * Enterprise/growth tiers allow negotiated commission between 18% and 35%.
  */
 export const DELIVERY_COMMISSION_TIERS = {
@@ -103,7 +103,7 @@ export const DELIVERY_COMMISSION_TIER_LIST: readonly DeliveryCommissionTierMeta[
     key: "DINE_IN",
     bps: DELIVERY_COMMISSION_TIERS.DINE_IN,
     percentage: 0,
-    label: "0% Dine-In Direct Ordering",
+    label: "0% Dine-In Sovereign",
     description: "custom commission for dine-in & customer pickup (self-fulfillment)",
   },
   {
@@ -142,7 +142,7 @@ export const STATUTORY_TAX_RATES = {
   COMMISSION_CGST_BPS: 900,
   COMMISSION_SGST_BPS: 900,
 
-  /** 5% GST on Restaurant Services (GST Act 2017) - Platform Liability remitted to Govt */
+  /** 5% GST on Restaurant Services (Section 9(5) CGST Act 2017) - Platform Liability remitted to Govt */
   SEC9_5_FOOD_GST_BPS: 500,
   SEC9_5_CGST_BPS: 250,
   SEC9_5_SGST_BPS: 250,
@@ -283,7 +283,7 @@ export type SettlementBreakdown = {
   tcsSgstPaise: Paise;
   tdsSec194OPaise: Paise;
 
-  // Statutory Platform Tax Liability (remitted directly by platform to Govt under GST Act; NOT debited from restaurant)
+  // Statutory Platform Tax Liability (remitted directly by platform to Govt under Sec 9(5) CGST Act; NOT debited from restaurant)
   sec9_5GstPaise: Paise;
   sec9_5CgstPaise: Paise;
   sec9_5SgstPaise: Paise;

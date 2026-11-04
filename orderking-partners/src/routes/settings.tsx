@@ -104,7 +104,7 @@ const LEGAL_SECTIONS = [
     badge: "Tax & Settlements",
     body: [
       "Integer-Paise Settlement Formula: Net Restaurant Payable = (Food Value + Packaging Charges − Restaurant Discount) − Platform Commission + Platform-Funded Promo − Refund Adjustments.",
-      "GST on Restaurant Services (GST Act, 2017): For notified restaurant dining and delivery services, 5% GST is collected from the customer and remitted directly to the Government by Order King under Section 9(5) without debiting your payout.",
+      "GST on Restaurant Services (Section 9(5) CGST Act, 2017): For notified restaurant dining and delivery services, 5% GST is collected from the customer and remitted directly to the Government by Order King under Section 9(5) without debiting your payout.",
       "Tax Collected at Source (Section 52 CGST Act): Where applicable on net taxable supplies, 1% TCS (0.5% CGST + 0.5% SGST or 1% IGST) is deposited with the Government and credited to your GSTR-8 ledger.",
       "Tax Deducted at Source (Section 194-O Income Tax Act, 1961): TDS of 1% under Section 194-O is credited directly against your registered PAN, backed by quarterly Form 16A certificates.",
     ],
@@ -660,7 +660,7 @@ function SettingsPage() {
                       className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500"
                     />
                     <span className="text-[11px] text-slate-300 leading-tight">
-                      I consent to receive automated evening shift reports via Order King WhatsApp Business API in accordance with the Privacy Policy.
+                      I consent to receive automated evening shift reports via Order King WhatsApp Business API in accordance with the DPDP Act 2023.
                     </span>
                   </label>
 
@@ -924,7 +924,7 @@ function SettingsPage() {
               </div>
               <div className="text-[11px] text-slate-300">
                 {effectiveBps === dineInBps
-                  ? `${dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} Dine-In Direct Ordering`
+                  ? `${dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} Dine-In Sovereign`
                   : effectiveBps === standardDeliveryBps
                     ? `${(standardDeliveryBps / 100).toFixed(0)}% Standard Delivery (Default)`
                     : `${(effectiveBps / 100).toFixed(1)}% Negotiated Tier for this Outlet`}

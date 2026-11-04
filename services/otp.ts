@@ -128,7 +128,7 @@ export function clearStoredOtp(cleanPhone: string): void {
  * Route: 'otp' with fallback to route 'q' (Quick SMS) if website verification is pending (error 996)
  */
 export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boolean> {
-  const apiKey = ((process.env.FAST2SMS_API_KEY || (!process.env.VITEST && process.env.NODE_ENV !== "test" ? "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU" : undefined)) || '').trim().replace(/^["']|["']$/g, '');
+  const apiKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
   if (!apiKey || apiKey === 'xxx' || apiKey.includes('change-me')) {
     throw new Error('FAST2SMS_API_KEY not set');
   }
@@ -219,7 +219,7 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
  * to prevent gateway rejection.
  */
 export async function sendOtp2Factor(phone: string, otp: string): Promise<boolean> {
-  const _f2sCheck = ((process.env.FAST2SMS_API_KEY || (!process.env.VITEST && process.env.NODE_ENV !== "test" ? "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU" : undefined)) || "").trim();
+  const _f2sCheck = (process.env.FAST2SMS_API_KEY || "").trim();
   const _tfCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
   if (!_tfCheck || _tfCheck === _f2sCheck || _tfCheck.length > 45) {
     console.info("[OTP] Skipping 2Factor fallback because OTP_2FACTOR_API_KEY matches FAST2SMS_API_KEY or is not a distinct 2Factor UUID.");
@@ -231,7 +231,7 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
     process.env.OTP_2FACTOR_API_KEY ||
     ''
   ).trim().replace(/^["']|["']$/g, '');
-  const fast2SmsKey = ((process.env.FAST2SMS_API_KEY || (!process.env.VITEST && process.env.NODE_ENV !== "test" ? "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU" : undefined)) || '').trim().replace(/^["']|["']$/g, '');
+  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
 
   if (!apiKey || apiKey === 'xxx' || apiKey.includes('change-me') || apiKey.includes('your_2factor')) {
     console.warn('[Telecom Gateway] 2Factor API key not configured or placeholder; skipping 2Factor.');
@@ -280,7 +280,7 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
  * Official Endpoint: https://2factor.in/API/V1/{API_KEY}/VOICE/{PHONE}/{OTP}
  */
 export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<boolean> {
-  const _f2sVoiceCheck = ((process.env.FAST2SMS_API_KEY || (!process.env.VITEST && process.env.NODE_ENV !== "test" ? "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU" : undefined)) || "").trim();
+  const _f2sVoiceCheck = (process.env.FAST2SMS_API_KEY || "").trim();
   const _tfVoiceCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
   if (!_tfVoiceCheck || _tfVoiceCheck === _f2sVoiceCheck || _tfVoiceCheck.length > 45) {
     return false;
@@ -291,7 +291,7 @@ export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<b
     process.env.OTP_2FACTOR_API_KEY ||
     ''
   ).trim().replace(/^["']|["']$/g, '');
-  const fast2SmsKey = ((process.env.FAST2SMS_API_KEY || (!process.env.VITEST && process.env.NODE_ENV !== "test" ? "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU" : undefined)) || '').trim().replace(/^["']|["']$/g, '');
+  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
 
   if (!apiKey || apiKey === 'xxx' || apiKey.includes('change-me')) {
     console.warn('[Telecom Gateway] 2Factor API key not configured for voice OTP dispatch.');
@@ -390,7 +390,7 @@ export async function sendOtp(phone: string, otp: string): Promise<{
   }
 
   // 2. FALLBACK 1: 2Factor.in (checked for duplicate key guard)
-  const fast2SmsKey = ((process.env.FAST2SMS_API_KEY || (!process.env.VITEST && process.env.NODE_ENV !== "test" ? "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU" : undefined)) || '').trim().replace(/^["']|["']$/g, '');
+  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
   const twoFactorKey = (
     process.env.TWOFACTOR_API_KEY ||
     process.env.TWO_FACTOR_API_KEY ||

@@ -2,7 +2,7 @@
  * 👑 ORDERKING / KINGPAY SOVEREIGN VIRAL BOUNTY ENGINE
  * WhatsApp Status Live Order Tracking Bounty Loop (Silent Bypass 9)
  *
- * Statutory Entity: Order King (GSTIN: ), Sribhumi, Assam - 788710
+ * Statutory Entity: Order King (GSTIN: 18AFXPH9838M1Z9), Sribhumi, Assam - 788710
  * Architect: Banking Payouts & RazorpayX Specialist (f1ad9aac)
  *
  * SPECIFICATION:

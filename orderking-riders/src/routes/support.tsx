@@ -541,7 +541,7 @@ function Page() {
             </h2>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            Direct 1-tap escalation to Indian emergency responders and statutory authorities under the Partner Terms (MoLE) & IT Act, 2000.
+            Direct 1-tap escalation to Indian emergency responders and statutory authorities under the Code on Social Security, 2020 (MoLE) & IT Act, 2000.
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
             <a

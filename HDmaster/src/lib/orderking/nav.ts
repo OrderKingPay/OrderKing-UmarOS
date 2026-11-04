@@ -953,7 +953,7 @@ export const UMAR_OS_BOTTOM_HUBS: BottomNavHub[] = [
             id: "db-pitr-backups",
             subCategory: "Disaster Recovery",
             label: "Point-in-Time Recovery & Snapshot Readiness",
-            description: "Monitor automated encrypted backups and Privacy Policy data retention compliance.",
+            description: "Monitor automated encrypted backups and DPDP Act 2023 data retention compliance.",
             to: "/app/health",
             query: { subsystem: "backups" },
             badge: "DPDP 2023",

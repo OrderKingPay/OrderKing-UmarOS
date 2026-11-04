@@ -958,7 +958,7 @@ function RestaurantPage() {
                     GSTIN / Tax ID
                   </span>
                   <p className="font-mono font-black text-zinc-900 dark:text-zinc-100 text-xs">
-                    {(restaurant as any).gstin || ""}
+                    {(restaurant as any).gstin || "18AFXPH9838M1Z9"}
                   </p>
                 </div>
               </div>

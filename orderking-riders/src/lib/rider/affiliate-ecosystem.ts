@@ -339,7 +339,7 @@ export const RIDER_AFFILIATE_PARTNERS = {
     },
   ],
   insurance: {
-    statute: "Partner Terms Compliant",
+    statute: "Code on Social Security, 2020 Compliant",
     accidentalDeathCover: "₹10,00,000 (₹10 Lakh Cover)",
     disabilityCover: "₹10,00,000 Total Disability Protection",
     hospitalizationCover: "₹1,00,000 Emergency Medical Cover",

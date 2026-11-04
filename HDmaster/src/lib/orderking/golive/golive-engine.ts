@@ -299,7 +299,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (validateGstin(config.legal.gstinNumber)) {
     legalScore += 7;
   } else {
-    legalBlockers.push("Invalid or missing GSTIN. Cannot legally collect restaurant GST or execute TCS.");
+    legalBlockers.push("Invalid or missing GSTIN. Cannot legally collect restaurant GST or execute Section 52 TCS.");
     criticalBlockers.push("Compliance: Valid 15-digit GSTIN is mandatory under CGST Act.");
   }
 
@@ -319,7 +319,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.legal.tcsSection52Enabled && config.legal.enforceRestaurantFssaiGate) {
     legalScore += 6;
   } else {
-    legalWarnings.push("TCS or Restaurant FSSAI enforcement gate is disabled.");
+    legalWarnings.push("Section 52 TCS or Restaurant FSSAI enforcement gate is disabled.");
   }
 
   const legalPillar: GoLivePillarScore = {

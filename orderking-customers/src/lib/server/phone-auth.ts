@@ -78,7 +78,6 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
       if (data.channel === "voice") {
         const twoFactorKey =
           process.env.TWOFACTOR_API_KEY ||
-          process.env.OTP_2FACTOR_API_KEY ||
           process.env.TWO_FACTOR_API_KEY ||
           "";
         const vRes = await fetch(
@@ -181,7 +180,7 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
     // Verify against 2Factor VERIFY3 endpoint for AUTOGEN OTPs
     if (!isValid) {
       try {
-        const tfKey: string = (process.env.TWOFACTOR_API_KEY || process.env.OTP_2FACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim();
+        const tfKey: string = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim();
         if (tfKey.length > 0) {
           const tfRes = await fetch(
             `https://2factor.in/API/V1/${encodeURIComponent(String(tfKey ?? ""))}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`

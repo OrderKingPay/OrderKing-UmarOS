@@ -139,7 +139,7 @@ export function buildEmailTaxInvoiceMessage(data: EmailTaxDocumentPayload): { su
     `TCS Collected (Sec 52): ${tcs}`,
     `Net Disbursed Payable: ${net}`,
     ``,
-    `This is a digitally signed computer-generated document under GST Act, 2017 and Section 194-O of the Income Tax Act, 1961.`,
+    `This is a digitally signed computer-generated document under Section 9(5) CGST Act, 2017 and Section 194-O of the Income Tax Act, 1961.`,
     ``,
     `View and download your official statement: https://${platformConfig.brand.domain}/settlements`,
     ``,

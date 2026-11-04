@@ -16,7 +16,7 @@ import { validateIndianBankIFSC } from "../compliance/india-marketplace-engine";
  * 100% Autonomous, Zero-Human-Touch Dual Financial Reconciliation System.
  * - Standard Cycle: Auto-aggregates all previous week's orders (Mon-Sun), disbursed Wednesday.
  * - Express Daily Cycle: Auto-aggregates yesterday's net earnings for early payout with a nominal 0.5% liquidity fee.
- * - Applies exact Indian Statutory Tax logic (GST, 1% TCS Sec 52, 1% TDS Sec 194-O, 18% GST).
+ * - Applies exact Indian Statutory Tax logic (Section 9(5) CGST, 1% TCS Sec 52, 1% TDS Sec 194-O, 18% GST).
  * - Implements strict Founder Protection: Any discrepancy or deficit instantly pauses the payout and escalates.
  * - Founder NEVER bears a loss. The platform commission is absolute.
  */

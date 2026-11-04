@@ -158,7 +158,7 @@ export function SettlementsDesk() {
   function downloadCsvVoucher(batch?: Settlement) {
     const rows: string[][] = [
       ["Orderkingpay - Official Partner Settlement & Section 194-O Tax Voucher"],
-      ["Platform GSTIN", ""],
+      ["Platform GSTIN", "18AFXPH9838M1Z9"],
       ["Partner Name", rider?.fullName || "Verified Delivery Partner"],
       ["Partner ID", rider?.id || "N/A"],
       ["Registered Mobile", rider?.phone || "N/A"],
@@ -312,7 +312,7 @@ export function SettlementsDesk() {
                 </span>
               </div>
               <p className="leading-relaxed text-slate-700">
-                <strong>Monday–Sunday Sweep:</strong> Full multi-day statutory reconciliation and cumulative tax summary disbursed every Wednesday at 14:00 IST via NEFT/IMPS with TDS compliance.
+                <strong>Monday–Sunday Sweep:</strong> Full multi-day statutory reconciliation and cumulative tax summary disbursed every Wednesday at 14:00 IST via NEFT/IMPS with Section 194-O TDS compliance.
               </p>
             </div>
           </div>
@@ -592,7 +592,7 @@ export function SettlementsDesk() {
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Under the <strong>Income Tax Act, 1961</strong> and the{" "}
-              <strong>Partner Terms</strong>, your delivery earnings with{" "}
+              <strong>Code on Social Security, 2020</strong>, your delivery earnings with{" "}
               {DEFAULT_BRANDING.legalCompanyName} are recorded as independent delivery partner service payouts.
             </p>
             <ul className="space-y-1.5 text-xs text-muted-foreground list-disc pl-4">

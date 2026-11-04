@@ -2498,7 +2498,7 @@ export async function executeTool(
           statutoryChecksPassed: [
             "Udyam MSME Certificate Valid",
             "DPIIT Recognition Number Verified",
-            "Section 194-O & GST Compliant",
+            "Section 194-O & Section 9(5) CGST Compliant",
             "Bank Account Linked with GSTIN for Direct RTGS Disbursal",
           ],
         },

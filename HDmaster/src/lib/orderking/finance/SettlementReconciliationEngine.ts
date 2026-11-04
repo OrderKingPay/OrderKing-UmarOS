@@ -2,7 +2,7 @@
  * SettlementReconciliationEngine
  * 
  * Strict Indian Statutory Tax Compliance & Dual Settlement Reconciliation Engine:
- * 1. GST Act 2017:
+ * 1. Section 9(5) CGST Act 2017:
  *    5% GST on restaurant food bills collected by the platform and remitted directly
  *    under OrderKing GSTIN (the restaurant does not pay output tax on delivery orders).
  * 2. Section 52 CGST Act 2017:
@@ -96,7 +96,7 @@ export interface OrderReconciliationStatement {
   tdsSection194OPaise: number;
   totalStatutoryWithholdingsPaise: number;
 
-  // GST Act (Platform Liability remitted under OrderKing GSTIN; NOT debited from merchant)
+  // Section 9(5) CGST Act (Platform Liability remitted under OrderKing GSTIN; NOT debited from merchant)
   sec9_5FoodGstPaise: number;
   sec9_5RemittanceGstin: string;
 
@@ -185,7 +185,7 @@ export interface SettlementResult {
 export class SettlementReconciliationEngine {
   /**
    * Generates order-level reconciliation statement in exact SafeInteger paise.
-   * Complies with GST, TCS, TDS, and 18% GST.
+   * Complies with Section 9(5) CGST, Section 52 TCS, Section 194-O TDS, and 18% GST.
    */
   public reconcileOrder(input: OrderReconciliationInput): OrderReconciliationStatement {
     const baseFood = assertSafePaise(input.foodValuePaise, "foodValuePaise");
@@ -217,7 +217,7 @@ export class SettlementReconciliationEngine {
 
     // 5. Statutory Withholdings
     // Section 52 CGST Act: 0.5% TCS on Net Taxable Supply
-    // Per Circular 167/23/2021-GST, TCS does NOT apply to restaurant services under Section 9(5).
+    // Per Circular 167/23/2021-GST, Section 52 TCS does NOT apply to restaurant services under Section 9(5).
     // Furthermore, unregistered food vendors (<₹20L annual turnover) have zero TCS liability.
     const isUnregistered =
       input.merchantHasGstin === false ||
@@ -242,7 +242,7 @@ export class SettlementReconciliationEngine {
     const hasValidPan = input.hasValidPan ?? Boolean(input.panNumber && input.panNumber.length === 10);
     const tds = calculateSection194OTDS(grossSalesPaise, hasValidPan, input.panNumber);
 
-    // GST Act: 5% Food GST remitted by Platform (NOT debited from merchant; ZERO tax penalty for unregistered food vendors)
+    // Section 9(5) CGST Act: 5% Food GST remitted by Platform (NOT debited from merchant; ZERO tax penalty for unregistered food vendors)
     const sec9_5 = calculateSection9_5FoodGST(netTaxableSupplyPaise, isInterstate);
 
     // 6. Express Daily (T+1) Early Liquidity Fee (0.5% + 18% GST)
@@ -412,11 +412,11 @@ export class SettlementReconciliationEngine {
 
   /**
    * Backward-compatible calculateSettlement method using BigInt.
-   * Under GST Act, platform remits food tax under OrderKing GSTIN,
+   * Under Section 9(5) CGST Act, platform remits food tax under OrderKing GSTIN,
    * so partner payout is Subtotal - Platform Fee - Deductions.
    */
   public calculateSettlement(order: OrderFinancials): SettlementResult {
-    // 5% Food GST under GST Act remitted by platform
+    // 5% Food GST under Section 9(5) CGST Act remitted by platform
     const taxAmount = (order.subtotal * order.taxRateBps) / 10000n;
 
     // Platform Fee (e.g. commission + 18% GST)

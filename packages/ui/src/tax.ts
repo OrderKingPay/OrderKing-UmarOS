@@ -29,7 +29,7 @@
 // ============================================================================
 
 export const STATUTORY_TAX_RATES = {
-  /** GST Act: 5% GST on restaurant food delivery (SAC 99633) - Platform pays without ITC */
+  /** Section 9(5) CGST Act: 5% GST on restaurant food delivery (SAC 99633) - Platform pays without ITC */
   FOOD_GST_BPS: 500, // 5.00%
   FOOD_CGST_BPS: 250, // 2.50%
   FOOD_SGST_BPS: 250, // 2.50%
@@ -184,7 +184,7 @@ export interface Section95OutputPaise {
 }
 
 /**
- * Calculates GST Act taxes for food delivery orders with zero floating-point drift.
+ * Calculates Section 9(5) CGST Act taxes for food delivery orders with zero floating-point drift.
  * - Restaurant Food & Packaging: 5% GST payable by platform ECO, strictly WITHOUT Input Tax Credit (ITC).
  * - Platform Convenience & Delivery Fees: 18% GST payable with full Input Tax Credit eligibility.
  */
@@ -361,22 +361,22 @@ export interface StatutoryWithholdingResultPaise {
   netTaxableSupplyPaise: number; // grossSales - restaurantDiscount
   grossSalesPaise: number;
 
-  // TCS (1% on net taxable supply; strictly 0 for unregistered vendors <₹20L or Sec 9(5) food)
+  // Section 52 TCS (1% on net taxable supply; strictly 0 for unregistered vendors <₹20L or Sec 9(5) food)
   tcsRateBps: number;
   tcsSection52Paise: number;
   tcsCgstPaise: number;
   tcsSgstPaise: number;
   tcsIgstPaise: number;
 
-  // TDS (1% on gross sales with PAN, 5% without PAN)
+  // Section 194-O TDS (1% on gross sales with PAN, 5% without PAN)
   tdsRateBps: number;
   tdsSection194OPaise: number;
   hasValidPan: boolean;
 
-  // GST Act & Unregistered Vendor Status
+  // Section 9(5) CGST Act & Unregistered Vendor Status
   isUnregisteredVendor: boolean;
   taxPenaltyPaise: number; // Strictly 0 paise penalty
-  platformRemittanceGstin: "";
+  platformRemittanceGstin: "18AFXPH9838M1Z9";
 
   totalWithholdingPaise: number;
 }
@@ -434,7 +434,7 @@ export function calculateStatutoryWithholding(
     hasValidPan,
     isUnregisteredVendor,
     taxPenaltyPaise: 0, // Zero tax penalty
-    platformRemittanceGstin: "",
+    platformRemittanceGstin: "18AFXPH9838M1Z9",
     totalWithholdingPaise: tcsSection52Paise + tdsSection194OPaise,
   };
 }
@@ -677,7 +677,7 @@ export function generateAutomatedCreditNote(input: CreditNoteInputPaise): Statut
     originalOrderId: input.originalOrderId,
     restaurantId: input.restaurantId,
     restaurantGstin: input.restaurantGstin || "URP (Unregistered Person)",
-    platformGstin: input.platformGstin || "",
+    platformGstin: input.platformGstin || "18AFXPH9838M1Z9",
     reasonCode: input.reasonCode,
     reasonDescription: input.reasonDescription,
 

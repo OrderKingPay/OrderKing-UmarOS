@@ -67,18 +67,11 @@ export const Route = createFileRoute("/api/search")({
         const url = new URL(request.url);
         const rawQ = url.searchParams.get("q") || "";
         const q = rawQ.trim().slice(0, 80);
-        let lat = parseFloat(url.searchParams.get("lat") || "0");
-        let lng = parseFloat(url.searchParams.get("lng") || "0");
+        const lat = parseFloat(url.searchParams.get("lat") || "0");
+        const lng = parseFloat(url.searchParams.get("lng") || "0");
         const veg = url.searchParams.get("veg") === "true";
         const openNow = url.searchParams.get("openNow") === "true";
         const category = (url.searchParams.get("category") || "").slice(0, 50);
-
-        // Native Top Competitor Standard: Fallback to Launch Flagship (Connaught Place, New Delhi) if coordinates invalid
-        if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat === 0 || lng === 0 ||
-            lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-          lat = 28.6315;
-          lng = 77.2167;
-        }
 
         const unavailable = (reason: string) => new Response(JSON.stringify({
           restaurants: [], deliveryAvailable: false, reason,
@@ -87,12 +80,22 @@ export const Route = createFileRoute("/api/search")({
         try {
           const sql = await getSql();
 
+          if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat === 0 || lng === 0 ||
+              lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+            return unavailable("Choose your delivery location to check availability.");
+          }
+
           // Active delivery zone validation (e.g. Karimganj, Delhi NCR / Connaught Place, Mumbai, Bengaluru, etc.)
           const deliveryActive = isDeliveryActiveInLocation(lat, lng);
+          if (!deliveryActive) {
+            return unavailable("Verified food delivery is not available at this location yet.");
+          }
 
-          // Threat-Zone Exclusion: Check if customer falls inside active hazard sector
+          // Threat-Zone Exclusion: Block delivery if customer falls inside active hazard sector
           const hazardCheck = checkHazardZone({ lat, lng });
-          const isHazardBlocked = Boolean(hazardCheck.inHazardZone && hazardCheck.deliveryBlocked);
+          if (hazardCheck.inHazardZone && hazardCheck.deliveryBlocked) {
+            return unavailable(hazardCheck.reason || "Deliveries currently paused in this sector for fleet safety.");
+          }
 
           // Evaluate Active Operational Shift Delivery Radius (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)
           const activeShift = getActiveDeliveryRadius();
@@ -175,13 +178,16 @@ export const Route = createFileRoute("/api/search")({
             select id, restaurant_id, name_en from promotions where active = true
           `;
           const hours = await loadHours();
-          const inRadiusCards: RestaurantCard[] = [];
-          const allCards: RestaurantCard[] = [];
+          const cards: RestaurantCard[] = [];
           for (const row of rows) {
             const offer = promos.find((p) => !p.restaurant_id || p.restaurant_id === row.id);
             const dist = distanceKm(origin, { lat: row.lat, lng: row.lng });
+            // Contracted operational shift delivery radius enforcement (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)
+            if (dist > activeShift.radiusKm) continue;
+
+            // Destination hazard check
             const destHazard = checkHazardZone({ lat: row.lat, lng: row.lng });
-            const isDestBlocked = Boolean(destHazard.inHazardZone && destHazard.deliveryBlocked);
+            if (destHazard.inHazardZone && destHazard.deliveryBlocked) continue;
             const open = row.open_override == null ? isOpenNow(hours.get(row.outlet_id) ?? [], cfg.business.timezone) : row.open_override;
             
             // Set realistic delivery estimate (25-30m+) so users can browse dishes and menus with accurate ETAs
@@ -212,21 +218,14 @@ export const Route = createFileRoute("/api/search")({
               fssaiLicenseNumber: row.fssai_license_number || undefined,
             };
             if (openNow && !card.open) continue;
-
-            allCards.push(card);
-            // In-radius active delivery check
-            if (deliveryActive && !isHazardBlocked && !isDestBlocked && dist <= activeShift.radiusKm) {
-              inRadiusCards.push(card);
-            }
+            cards.push(card);
           }
 
-          // Top Competitor Native Standard: If in-radius kitchens exist, serve them.
-          // If customer is outside direct delivery radius, keep restaurants strictly to inRadiusCards (for radius isolation tests)
-          // while returning allRestaurants for home feed viewing so users never face a blank screen or roadblock!
-          const hasLocalDelivery = inRadiusCards.length > 0;
+          // Catalog responses include only database-backed restaurants.
+          const finalCards = cards;
 
           const marketContext = getMarketContext();
-          const sortFn = (a: RestaurantCard, b: RestaurantCard) => {
+          finalCards.sort((a, b) => {
             if (a.open !== b.open) return a.open ? -1 : 1;
             if (a.promoted !== b.promoted) return a.promoted ? -1 : 1;
             if (marketContext.sortStrategy === "lowest_price_first") {
@@ -236,19 +235,15 @@ export const Route = createFileRoute("/api/search")({
               return a.etaMinutes - b.etaMinutes || a.prepMinutes - b.prepMinutes || a.distanceKm - b.distanceKm;
             }
             return a.etaMinutes - b.etaMinutes || a.distanceKm - b.distanceKm;
-          };
-          inRadiusCards.sort(sortFn);
-          allCards.sort(sortFn);
+          });
 
-          const finalCards = hasLocalDelivery ? inRadiusCards : allCards;
           const dishes: never[] = []; // Do not return static, unverified dish inventory.
 
+          const effectiveRestaurants = finalCards;
           return new Response(JSON.stringify({ 
-            restaurants: inRadiusCards,
-            allRestaurants: allCards,
+            restaurants: effectiveRestaurants,
             dishes,
-            deliveryAvailable: hasLocalDelivery,
-            reason: hasLocalDelivery ? undefined : "Doorstep food delivery expanding to this area soon · All KingPay services active 24/7",
+            deliveryAvailable: finalCards.length > 0,
             activeShift: {
               tier: activeShift.tier,
               shiftName: activeShift.shiftName,

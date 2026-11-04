@@ -110,7 +110,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Partner Terms
+                Code on Social Security, 2020
               </span>
               <span className="text-[11px] font-bold text-slate-500">
                 UmarOS Compliance Center
@@ -249,7 +249,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                 Executed Independent Delivery Partner Agreements
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Every delivery partner is legally bound under the Partner Terms via digital assent.
+                Every delivery partner is legally bound under the Code on Social Security, 2020 via digital assent.
               </p>
             </div>
             <button
@@ -285,7 +285,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-slate-600">
                       <span className="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-medium border border-emerald-200">
-                        Partner Terms
+                        Code on Social Security, 2020
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -354,7 +354,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                 Official OrderKing Delivery Partner Agreement (13 Statutory Sections)
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Structured in accordance with Indian gig worker standards under the Partner Terms.
+                Structured in accordance with Indian gig worker standards under the Code on Social Security, 2020.
               </p>
             </div>
 

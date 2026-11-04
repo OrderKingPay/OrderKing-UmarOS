@@ -709,7 +709,7 @@ export async function loadDailyTPlus1PayoutBatch(ctx: AccessContext): Promise<Da
       commissionBps: commBps,
     });
 
-    // 5% Food GST remitted under GST Act
+    // 5% Food GST remitted under Section 9(5) CGST Act
     const foodGst = Math.round((calc.netFoodSalesPaise * 5) / 100);
 
     totalDeliveredOrders += calc.deliveredOrdersCount;
@@ -2039,7 +2039,7 @@ export const DEFAULT_BYPASS_DIALS: CommercialBypassDialsState = {
   section52TcsWithholdingActive: true,
   section194OTdsWithholdingActive: true,
   statutoryInvoiceDialect: "B2C_ECOM_CANONICAL",
-  platformGstin: "",
+  platformGstin: "18AFXPH9838M1Z9",
 
   virtualBrandClusteringEnabled: true,
   maxVirtualBrandsPerKitchen: 5,
@@ -2109,7 +2109,7 @@ export async function getCommercialBypassDials(ctx: AccessContext): Promise<Comm
         section52TcsWithholdingActive: v.section52TcsWithholdingActive !== false,
         section194OTdsWithholdingActive: v.section194OTdsWithholdingActive !== false,
         statutoryInvoiceDialect: v.statutoryInvoiceDialect === "B2B_REVERSE_CHARGE" ? "B2B_REVERSE_CHARGE" : "B2C_ECOM_CANONICAL",
-        platformGstin: str(v.platformGstin) || "",
+        platformGstin: str(v.platformGstin) || "18AFXPH9838M1Z9",
 
         // Dial 3
         virtualBrandClusteringEnabled: v.virtualBrandClusteringEnabled !== false,

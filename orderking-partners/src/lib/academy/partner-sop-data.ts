@@ -299,7 +299,7 @@ export const PARTNER_ACADEMY_MODULES: SopModule[] = [
       },
       {
         stepNumber: 3,
-        title: "Statutory GST/SGST 5% Remittance",
+        title: "Statutory Section 9(5) CGST/SGST 5% Remittance",
         instruction:
           "As an electronic commerce operator under GST Act Section 9(5), OrderKing directly deposits 5% GST on restaurant food delivery to the Government of India. Merchants do not pay this 5% again.",
         criticalInvariant:
@@ -307,7 +307,7 @@ export const PARTNER_ACADEMY_MODULES: SopModule[] = [
       },
       {
         stepNumber: 4,
-        title: "TCS (0.5%) & TDS (0.1%)",
+        title: "Section 52 TCS (0.5%) & Section 194-O TDS (0.1%)",
         instruction:
           "OrderKing deposits 0.5% Tax Collected at Source (TCS) and 0.1% Tax Deducted at Source (TDS) against your GSTIN and PAN. Download your monthly Form 26AS and GSTR-8 credit certificates to claim full input tax credit.",
       },

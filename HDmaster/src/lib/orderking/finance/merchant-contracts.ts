@@ -6,7 +6,7 @@
  * - Volume-based commission tier discounts with strict 8% floor protection.
  * - Dominant Legacy Aggregator-grade weekly settlement cycle (Monday 00:00:00 to Sunday 23:59:59 IST, Wednesday payout).
  * - Statutory Indian tax calculation on merchant statements:
- *   * 5% GST on food orders (collected and remitted by platform under GST Act 2017).
+ *   * 5% GST on food orders (collected and remitted by platform under Section 9(5) CGST Act 2017).
  *   * 18% GST on platform commission fee (SAC 9985 / Section 9(1) CGST Act 2017).
  *   * 1% TCS (Tax Collected at Source under Section 52 of CGST Act 2017).
  *   * 1% TDS (Tax Deducted at Source under Section 194-O of Income Tax Act 1961).
@@ -22,7 +22,7 @@ export const STATUTORY_RATES = {
   MIN_COMMISSION_BPS: 800,       // 8.00% statutory platform commission floor
   MAX_COMMISSION_BPS: 3500,      // 35.00% platform commission ceiling
   DEFAULT_COMMISSION_BPS: 1800,  // 18.00% standard negotiated baseline
-  FOOD_GST_BPS: 500,             // 5.00% GST on food orders under GST Act
+  FOOD_GST_BPS: 500,             // 5.00% GST on food orders under Section 9(5) CGST Act
   COMMISSION_GST_BPS: 1800,      // 18.00% GST on platform commission fee
   TCS_BPS: 100,                  // 1.00% TCS under Section 52 CGST Act
   TDS_BPS: 100,                  // 1.00% TDS under Section 194-O Income Tax Act
@@ -302,7 +302,7 @@ export function getPreviousWeeklySettlementCycle(referenceDate: Date | string = 
  * Detailed statutory Indian tax breakdown
  */
 export interface StatutoryTaxSchedule {
-  // 5% GST on food orders (GST Act 2017)
+  // 5% GST on food orders (Section 9(5) CGST Act 2017)
   foodGstSec9_5: {
     rateBps: number;
     taxableValuePaise: number;
@@ -450,7 +450,7 @@ export function generateMerchantWeeklySettlementStatement(
   );
   const halfCommissionGst = Math.round(commissionGstPaise / 2);
 
-  // 3. 5% GST on Food Orders under GST Act
+  // 3. 5% GST on Food Orders under Section 9(5) CGST Act
   // Collected by platform and remitted directly to Government treasury
   const foodGstPaise = Math.round(
     (netFoodSalesPaise * STATUTORY_RATES.FOOD_GST_BPS) / 10000

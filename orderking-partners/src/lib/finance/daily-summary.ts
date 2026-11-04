@@ -45,7 +45,7 @@ export interface DailyBusinessSummary {
   platformCommissionPaise: Paise;
   commissionGstPaise: Paise; // 18% on Platform Commission (SAC 9985)
   servicesGstTotalPaise: Paise; // Total GST on Services (Commission GST + PG GST)
-  sec9_5GstPaise: Paise; // 5% GST GST Act 2017 (Platform Liability)
+  sec9_5GstPaise: Paise; // 5% GST Section 9(5) CGST Act 2017 (Platform Liability)
   gatewayFeePaise: Paise; // 1.84% PG Fee
   gatewayFeeGstPaise: Paise; // 18% GST on PG Fee
   totalGatewayFeeWithGstPaise: Paise;
@@ -141,7 +141,7 @@ export function calculateDailyBusinessSummary(
     const commGst = mulBps(comm, STATUTORY_TAX_RATES.COMMISSION_GST_BPS);
     commissionGstPaise = addPaise(commissionGstPaise, commGst);
 
-    // 5% GST GST Act 2017 (Platform Liability on Restaurant Services)
+    // 5% GST Section 9(5) CGST Act 2017 (Platform Liability on Restaurant Services)
     const s95 = mulBps(taxableBase, STATUTORY_TAX_RATES.SEC9_5_FOOD_GST_BPS);
     sec9_5GstPaise = addPaise(sec9_5GstPaise, s95);
 

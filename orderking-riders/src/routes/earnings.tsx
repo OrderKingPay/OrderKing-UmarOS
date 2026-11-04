@@ -471,7 +471,7 @@ function Page() {
               <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Ambassador Royalties &amp; Bonuses + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
             </p>
             <p className="text-[11px]">
-              Compliant with the Partner Terms · Independent Delivery Partner Ledger
+              Compliant with the Code on Social Security, 2020 · Independent Delivery Partner Ledger
             </p>
           </div>
         </Card>

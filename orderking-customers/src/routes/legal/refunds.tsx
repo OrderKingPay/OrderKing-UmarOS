@@ -22,7 +22,7 @@ function RefundsPage() {
               Last Updated: October 2026
             </Badge>
             <Badge className="bg-amber-950/60 border-amber-500/40 text-amber-300 font-mono text-[10px]">
-              GSTIN: 
+              GSTIN: 18AFXPH9838M1Z9
             </Badge>
           </div>
 
@@ -144,7 +144,7 @@ function RefundsPage() {
             </p>
             <div className="mt-2 rounded-lg bg-zinc-950/80 border border-zinc-800 p-3 font-mono text-xs space-y-1 text-zinc-300">
               <div><strong className="text-white">Designation:</strong> Grievance Officer, Orderkingpay</div>
-              <div><strong className="text-white">Entity:</strong> Orderkingpay (GSTIN: )</div>
+              <div><strong className="text-white">Entity:</strong> Orderkingpay (GSTIN: 18AFXPH9838M1Z9)</div>
               <div><strong className="text-white">Address:</strong> Orderkingpay Operations Hub, Sribhumi, Assam - 788710, India</div>
               <div><strong className="text-white">Grievance Email:</strong> <a href="mailto:grievance@orderkingpay.com" className="text-emerald-400 underline">grievance@orderkingpay.com</a></div>
               <div><strong className="text-white">Statutory SLA:</strong> Ticket acknowledged within 48 hours; full resolution within 30 days.</div>

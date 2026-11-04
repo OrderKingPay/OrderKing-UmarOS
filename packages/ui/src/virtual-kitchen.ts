@@ -12,9 +12,9 @@
  *      premises to prevent KDS dispatch congestion, cross-contamination, and food safety failure.
  * 2. Food Safety and Standards (Labelling and Display) Regulations, 2020:
  *    - Dietary classifications (VEG, NON_VEG, EGG, MIXED) declared for each brand.
- * 3. GST Act 2017:
+ * 3. Section 9(5) CGST Act 2017:
  *    - 5% GST on prepared food supplies across all hosted virtual brands, remitted under
- *      OrderKing GSTIN () without ITC.
+ *      OrderKing GSTIN (18AFXPH9838M1Z9) without ITC.
  * 4. Consumer Protection (E-Commerce) Rules & CCPA Packaging Guardrails:
  *    - Packaging charges capped at statutory limits (₹50.00 / 5,000 paise ceiling).
  * 5. KDS & Thermal KOT Unified Routing:
@@ -37,9 +37,9 @@ export const MAX_VIRTUAL_BRANDS_PER_KITCHEN = 5;
 export const CCPA_MAX_PACKAGING_CHARGE_PAISE = 5000;
 
 /** Default OrderKing Statutory GSTIN (Assam, State Code 18) */
-export const ORDERKING_STATUTORY_GSTIN = "";
+export const ORDERKING_STATUTORY_GSTIN = "18AFXPH9838M1Z9";
 
-/** GST Food Tax Rate (500 bps = 5.00%) */
+/** Section 9(5) CGST Food Tax Rate (500 bps = 5.00%) */
 export const FOOD_GST_BPS = 500;
 
 export const CUISINE_CATEGORIES = [
@@ -487,7 +487,7 @@ export function setVirtualBrandActiveStatus(
 /**
  * Generates an authentic Kitchen Order Ticket (KOT) for thermal printing and KDS dispatch.
  * Embeds physical kitchen premises address, shared 14-digit FSSAI license,
- * virtual brand storefront name, GST calculations, and CCPA packaging caps.
+ * virtual brand storefront name, Section 9(5) CGST calculations, and CCPA packaging caps.
  */
 export function generateVirtualBrandDispatchTicket(
   kitchen: PhysicalCommercialKitchen,
@@ -530,7 +530,7 @@ export function generateVirtualBrandDispatchTicket(
   const requestedPacking = Math.max(0, Math.floor(input.packagingPaise ?? 0));
   const packagingPaise = Math.min(requestedPacking, brand.packagingChargeCapPaise);
 
-  // GST Food Tax: 5% on (subtotal + packaging)
+  // Section 9(5) CGST Food Tax: 5% on (subtotal + packaging)
   const taxableAmountPaise = subtotalPaise + packagingPaise;
   const foodGstPaise = Math.round((taxableAmountPaise * FOOD_GST_BPS) / 10000);
   const totalPaise = taxableAmountPaise + foodGstPaise;

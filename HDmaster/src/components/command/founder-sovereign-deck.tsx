@@ -422,7 +422,7 @@ export function FounderSovereignDeck() {
           <div className="rounded-2xl border border-white/15 bg-slate-900 p-5 shadow-lg space-y-3">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Banknote className="size-4 text-emerald-400" />
-              <span>Automated Statutory Settlement Ledger (TDS Deducted)</span>
+              <span>Automated Statutory Settlement Ledger (Section 194-O TDS Deducted)</span>
             </h3>
 
             <div className="overflow-x-auto">

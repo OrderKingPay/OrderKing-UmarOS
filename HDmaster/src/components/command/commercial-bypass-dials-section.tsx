@@ -223,7 +223,7 @@ export function CommercialBypassDialsSection() {
                 SILENT BYPASS 10
               </Badge>
               <Badge className="border-amber-500/40 bg-amber-500/10 text-amber-300 font-mono text-xs">
-                GSTIN: 
+                GSTIN: 18AFXPH9838M1Z9
               </Badge>
               <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-mono text-xs">
                 9 ACTIVE BYPASS CHANNELS
@@ -234,7 +234,7 @@ export function CommercialBypassDialsSection() {
               Consolidated Commercial Bypass Master Dials
             </h2>
             <p className="text-xs text-muted max-w-2xl">
-              Zero-aggregator sovereign dials: Direct NPCI UPI VPA routing, GST statutory dialects,
+              Zero-aggregator sovereign dials: Direct NPCI UPI VPA routing, Section 9(5) CGST statutory dialects,
               multi-brand kitchen virtualization, dynamic OTA convenience fee ceilings (₹499/₹1,299), rail Tatkal arbitrage,
               telecom carrier failovers, proximity dispatch perimeters, fleet garage RSA markers, and viral bounty credits.
             </p>
@@ -438,7 +438,7 @@ export function CommercialBypassDialsSection() {
               </div>
 
               <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-black/40 border border-zinc-800">
-                <span className="text-zinc-300">TCS (1%) & TDS (1%):</span>
+                <span className="text-zinc-300">Section 52 TCS (1%) & TDS (1%):</span>
                 <button
                   onClick={() => {
                     const nextVal = !section52TcsWithholdingActive;
@@ -464,7 +464,7 @@ export function CommercialBypassDialsSection() {
 
           <div className="pt-2 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-400 flex justify-between">
             <span>Platform GSTIN:</span>
-            <span className="text-amber-400 font-bold"></span>
+            <span className="text-amber-400 font-bold">18AFXPH9838M1Z9</span>
           </div>
         </div>
 

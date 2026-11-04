@@ -275,7 +275,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
           <div className="flex items-center justify-between text-xs text-stone-600">
             <span className="flex items-center gap-1">
               <span>Statutory Taxes (GST)</span>
-              <span className="text-[9.5px] text-stone-400 font-mono">GST</span>
+              <span className="text-[9.5px] text-stone-400 font-mono">Sec 9(5) CGST</span>
             </span>
             <span className="font-mono font-semibold text-gray-900">
               {taxPaise === 0 ? "Included" : formatPaise(taxPaise, { locale })}

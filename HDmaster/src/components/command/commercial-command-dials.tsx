@@ -132,7 +132,7 @@ export function CommercialCommandDials() {
                 </Badge>
               </div>
               <p className="text-xs text-slate-400">
-                Founder Operational Levers • GST Compliant • 100% SafeInteger Paise Engine
+                Founder Operational Levers • Section 9(5) CGST Compliant • 100% SafeInteger Paise Engine
               </p>
             </div>
           </div>
@@ -504,7 +504,7 @@ function PlatformFeeDialSection({
           <div className="rounded-lg bg-surface-2/40 p-2.5 text-[11px] text-slate-400 flex items-start gap-2">
             <Info className="size-4 text-cyan-400 shrink-0 mt-0.5" />
             <p>
-              Unlike legacy market leaders charging ₹9 - ₹12 with hidden commissions, OrderKing transparently reflects this fee directly into customer invoices with 100% GST tax adherence.
+              Unlike legacy market leaders charging ₹9 - ₹12 with hidden commissions, OrderKing transparently reflects this fee directly into customer invoices with 100% Section 9(5) CGST tax adherence.
             </p>
           </div>
         </div>
@@ -1304,7 +1304,7 @@ function WednesdayPayoutReleaseSection() {
             T+1 Daily Automated Payout Release Gateway
           </h2>
           <p className="text-xs text-muted">
-            Daily T+1 settlement reconciliation for deliveries recorded up to 23:59:59 IST with automated RazorpayX IMPS/NEFT/UPI disbursements and GST, 1% TCS, 1% TDS.
+            Daily T+1 settlement reconciliation for deliveries recorded up to 23:59:59 IST with automated RazorpayX IMPS/NEFT/UPI disbursements and Section 9(5) CGST, 1% TCS, 1% TDS.
           </p>
         </div>
 
@@ -1348,7 +1348,7 @@ function WednesdayPayoutReleaseSection() {
         <div className="flex items-center justify-between border-b border-border/40 pb-2">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
             <Scale className="size-4 text-amber-400" />
-            Statutory Reconciliation Breakdown (GST, 1% TCS, 1% TDS)
+            Statutory Reconciliation Breakdown (Section 9(5) CGST, 1% TCS, 1% TDS)
           </span>
           <span className="text-[11px] font-mono text-muted">100% SafeInteger Integer Paise</span>
         </div>
@@ -2280,7 +2280,7 @@ function TravelPartnerGovernanceSection() {
         </div>
 
         <p className="text-xs text-slate-300">
-          Official Aggregator Agency Application #187051 (Orderkingpay, GSTIN: ). Synchronize gateway credentials and authenticate upstream session tokens for live air/rail/hotel ticketing.
+          Official Aggregator Agency Application #187051 (Orderkingpay, GSTIN: 18AFXPH9838M1Z9). Synchronize gateway credentials and authenticate upstream session tokens for live air/rail/hotel ticketing.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">

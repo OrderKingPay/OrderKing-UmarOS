@@ -477,7 +477,7 @@ function Login() {
 
         <div className="mt-6 pt-4 border-t border-[#1E283D] flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
           <ShieldCheck className="size-3.5 text-emerald-400" />
-          <span>Statutory Integrity · GSTIN  · 90-Day Session</span>
+          <span>Statutory Integrity · GSTIN 18AFXPH9838M1Z9 · 90-Day Session</span>
         </div>
       </div>
     </main>

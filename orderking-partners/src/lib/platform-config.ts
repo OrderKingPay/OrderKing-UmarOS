@@ -59,7 +59,7 @@ export const DELIVERY_COMMISSION_TIER_LIST: readonly DeliveryCommissionTierMeta[
     key: "DINE_IN",
     bps: DELIVERY_COMMISSION_TIERS.DINE_IN,
     percentage: 0,
-    label: "0% Dine-In Direct Ordering",
+    label: "0% Dine-In Sovereign",
     description: "custom commission for dine-in & customer pickup (self-fulfillment)",
   },
   {
@@ -187,7 +187,7 @@ export const platformConfig = {
     allowCustom: true,
   },
   notifications: { smsProvider: "NOT_CONNECTED", whatsappProvider: "NOT_CONNECTED", pushProvider: "NOT_CONNECTED", smsSender: "", whatsappSender: "" },
-  legal: { gstInformation: "", fssaiInformation: "20324125000042", supportPhone: "+91 9395065587", supportEmail: "partners@orderking.in", socialLinks: { instagram: "", facebook: "", x: "" } },
+  legal: { gstInformation: "18AFXPH9838M1Z9", fssaiInformation: "20324125000042", supportPhone: "+91 9395065587", supportEmail: "partners@orderking.in", socialLinks: { instagram: "", facebook: "", x: "" } },
   support: { phone: "", email: "partners@orderking.in", helpCenter: "" },
   featureFlags: {
     restaurant_ai: true,

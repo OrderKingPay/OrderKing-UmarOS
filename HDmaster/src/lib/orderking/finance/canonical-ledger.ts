@@ -605,7 +605,7 @@ export class CanonicalLedger {
 
   /**
    * Settles food order and concierge add-on pairing revenue via double-entry accounting.
-   * - Withholds 5% GST under CGST Act Section 9(5) under OrderKing GSTIN .
+   * - Withholds 5% GST under CGST Act Section 9(5) under OrderKing GSTIN 18AFXPH9838M1Z9.
    * - Enforces zero floating-point rounding (100% integer paise).
    * - Credits restaurant payable for food and add-ons net of platform fee and Sec 9(5) liability.
    */
@@ -634,7 +634,7 @@ export class CanonicalLedger {
     const packagingPaise = Math.min(5000, Math.max(0, Math.floor(params.packagingPaise ?? 3000)));
     const grossFoodAndAddOnsPaise = dishSubtotalPaise + addOnsSubtotalPaise + packagingPaise;
 
-    // GST Act: 5% withholding on composite food + add-on supply
+    // Section 9(5) CGST Act: 5% withholding on composite food + add-on supply
     const foodGst9_5Paise = Math.round((grossFoodAndAddOnsPaise * 500) / 10000);
     const totalCustomerPaidPaise = grossFoodAndAddOnsPaise + foodGst9_5Paise;
 
@@ -674,8 +674,8 @@ export class CanonicalLedger {
         account: "FOOD_GST_9_5_LIABILITY",
         direction: "CREDIT",
         amountPaise: foodGst9_5Paise,
-        entityId: "GSTIN:",
-        memo: `GST 5% withholding on food & concierge add-ons for order #${params.orderId}`,
+        entityId: "GSTIN:18AFXPH9838M1Z9",
+        memo: `Section 9(5) CGST 5% withholding on food & concierge add-ons for order #${params.orderId}`,
       },
       {
         account: "RESTAURANT_PAYABLE",

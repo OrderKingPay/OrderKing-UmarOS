@@ -4,8 +4,8 @@
  * Autonomous Settlement Batch Generation & RazorpayX Nodal Payout Dispatcher.
  * 
  * Strict Compliance:
- * 1. Statutory GST (5% platform liability remitted to Government without debiting merchant net).
- * 2. TCS (1%) & TDS (1%).
+ * 1. Statutory Section 9(5) CGST (5% platform liability remitted to Government without debiting merchant net).
+ * 2. Section 52 TCS (1%) & Section 194-O TDS (1%).
  * 3. 18% GST on platform service commission.
  * 4. BigInt / SafeInteger integer paise double-entry accounting.
  * 5. Full RazorpayX nodal account automated execution.
@@ -26,7 +26,7 @@ export interface PayoutBatchItem {
   gstOnCommissionPaise: number;
   tcsPaise: number;
   tdsPaise: number;
-  foodGstPaise: number; // GST platform remittance
+  foodGstPaise: number; // Sec 9(5) CGST platform remittance
   status: 'PENDING' | 'READY_FOR_PAYOUT' | 'PAID' | 'ESCALATED';
   batchId?: string;
 }
@@ -37,9 +37,9 @@ export interface PayoutBatchItem {
  * - Net Food Sales = Gross Food - Restaurant Discounts
  * - Dynamic contract commission (default 1200 bps / 12%)
  * - 18% GST on Commission
- * - TCS (1%)
- * - TDS (1%)
- * - GST (5% platform liability remitted directly to Government)
+ * - Section 52 TCS (1%)
+ * - Section 194-O TDS (1%)
+ * - Section 9(5) CGST (5% platform liability remitted directly to Government)
  * - Integer paise double-entry accounting
  */
 export async function generatePayoutBatch(date: string): Promise<PayoutBatchItem[]> {

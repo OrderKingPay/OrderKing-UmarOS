@@ -1,6 +1,6 @@
 /**
  * OrderKing Digital Contract Engine
- * Generates official Indian Delivery Partner Agreements compliant with the Partner Terms.
+ * Generates official Indian Delivery Partner Agreements compliant with the Code on Social Security, 2020.
  * Enforces mandatory UmarOS admin review and approval for legal compliance.
  *
  * Brand: OrderKing Partner (OrderKing Foods Private Limited)
@@ -42,16 +42,16 @@ export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
   {
     sectionNumber: "1",
     title: "Definitions and Statutory Interpretations",
-    statutoryBasis: "Section 2, Partner Terms & General Clauses Act, 1897",
+    statutoryBasis: "Section 2, Code on Social Security, 2020 & General Clauses Act, 1897",
     summary: "Defines Active Duty, Gig Worker, Base Fare, Distance Tariff, and Welfare Fund in conformity with Indian statutory law.",
     fullLegalText: `1.1 "Active Duty" means the duration during which the Delivery Partner is logged into the OrderKing Partner Mobile Application in "ONLINE" or "BUSY" status and is either awaiting, traveling towards a merchant, or executing an assigned delivery.
-1.2 "Aggregator" shall bear the meaning assigned under Section 2(2) of the Partner Terms, referring to OrderKing as a digital intermediary connecting consumers, food businesses, and logistics partners.
+1.2 "Aggregator" shall bear the meaning assigned under Section 2(2) of the Code on Social Security, 2020, referring to OrderKing as a digital intermediary connecting consumers, food businesses, and logistics partners.
 1.3 "Delivery Services" means the physical collection, transportation, temperature preservation, and doorstep handover of packaged food, beverages, or commodities from merchant establishments to designated consumer drop-off locations.
-1.4 "Gig Worker" shall have the statutory meaning defined in Section 2(35) of the Partner Terms, being an individual who performs work or participates in a work arrangement and earns from such activities outside of traditional employer-employee relationships.
-1.5 "Social Security Fund" means the statutory fund established by the Central Government under Section 113 of the Partner Terms for the administration of gig worker and platform worker welfare benefits.
+1.4 "Gig Worker" shall have the statutory meaning defined in Section 2(35) of the Code on Social Security, 2020, being an individual who performs work or participates in a work arrangement and earns from such activities outside of traditional employer-employee relationships.
+1.5 "Social Security Fund" means the statutory fund established by the Central Government under Section 113 of the Code on Social Security, 2020 for the administration of gig worker and platform worker welfare benefits.
 1.6 "Tamper-Evident Packaging" means packaging sealed by the Restaurant Partner with security stickers, tapes, or zip-ties designed to show evident visual indicators if opened prior to customer handover.`,
     keyHighlights: [
-      "Explicit statutory definition under Section 2(35) Partner Terms",
+      "Explicit statutory definition under Section 2(35) Code on Social Security, 2020",
       "Clear demarcation of Active Duty vs. Offline Personal Time",
       "Standard definitions for tamper-evident packaging and aggregator role"
     ]
@@ -59,13 +59,13 @@ export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
   {
     sectionNumber: "2",
     title: "Independent Contractor Status & Absolute Work Autonomy",
-    statutoryBasis: "Chapter IX, Partner Terms & Indian Contract Act, 1872",
+    statutoryBasis: "Chapter IX, Code on Social Security, 2020 & Indian Contract Act, 1872",
     summary: "Affirms principal-to-principal status, zero employee benefits, complete freedom to choose work hours, non-exclusivity, and freedom to decline orders.",
     fullLegalText: `2.1 Principal-to-Principal Engagement: The relationship between OrderKing and the Delivery Partner is strictly that of independent principal-to-principal contracting parties. Nothing in this Agreement shall be construed to create any partnership, joint venture, agency, franchise, master-servant, or employer-employee relationship between OrderKing and the Delivery Partner.
 2.2 Complete Discretion over Operating Hours: The Delivery Partner possesses absolute discretion and autonomy to decide when to log in, how long to remain available online, and when to log out of the OrderKing Partner Platform. OrderKing imposes zero mandatory minimum shifts, fixed reporting hours, or forced attendance quotas.
 2.3 Discretion over Delivery Offers: The Delivery Partner has the unfettered right to accept or decline any delivery task dispatched to them. Declining an offer shall never attract monetary fines or punitive civil damages.
 2.4 Multi-Platform Non-Exclusivity: The Delivery Partner is entirely free to provide delivery, transport, or any other commercial services to any other platform, aggregator, restaurant, or business enterprise concurrently, without restriction or platform penalty.
-2.5 Negation of Traditional Employment Benefits: The Delivery Partner expressly acknowledges that as an autonomous gig contractor, they are not entitled to, nor shall claim, benefits under traditional employer-employee legislations, including the Employees' Provident Funds and Miscellaneous Provisions Act, 1952, the Employees' State Insurance Act, 1948, the Payment of Gratuity Act, 1972, or the Industrial Disputes Act, 1947. Their statutory social welfare entitlements are governed exclusively by Chapter IX of the Partner Terms.`,
+2.5 Negation of Traditional Employment Benefits: The Delivery Partner expressly acknowledges that as an autonomous gig contractor, they are not entitled to, nor shall claim, benefits under traditional employer-employee legislations, including the Employees' Provident Funds and Miscellaneous Provisions Act, 1952, the Employees' State Insurance Act, 1948, the Payment of Gratuity Act, 1972, or the Industrial Disputes Act, 1947. Their statutory social welfare entitlements are governed exclusively by Chapter IX of the Code on Social Security, 2020.`,
     keyHighlights: [
       "100% Principal-to-Principal contract with zero employer-employee liability",
       "Complete autonomy: Partner controls log-in, log-out, and shift duration",
@@ -144,10 +144,10 @@ export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
   {
     sectionNumber: "6",
     title: "Statutory Gig Worker Welfare & Social Security Fund Contributions",
-    statutoryBasis: "Chapter IX, Sections 112, 113 & 114, Partner Terms",
+    statutoryBasis: "Chapter IX, Sections 112, 113 & 114, Code on Social Security, 2020",
     summary: "Enforces OrderKing's 1-2% platform turnover contribution to the Central Social Security Fund, e-Shram UAN registration, and government welfare benefits.",
-    fullLegalText: `6.1 Statutory Welfare Mandate: In full adherence to Chapter IX of the Partner Terms (Act No. 36 of 2020), OrderKing confirms its statutory standing as an Aggregator and undertakes to comply with all notified rules framed by the Central Government and State Governments for gig and platform workers.
-6.2 Platform Welfare Cess Contribution: Pursuant to Section 114 of the Partner Terms, OrderKing contributes between 1% to 2% of its eligible annual platform turnover (subject to a statutory ceiling of 5% of aggregate payments made to gig workers) into the National Social Security Fund for Gig and Platform Workers. No portion of this aggregator contribution shall be deducted or recovered from the Delivery Partner's payout.
+    fullLegalText: `6.1 Statutory Welfare Mandate: In full adherence to Chapter IX of the Code on Social Security, 2020 (Act No. 36 of 2020), OrderKing confirms its statutory standing as an Aggregator and undertakes to comply with all notified rules framed by the Central Government and State Governments for gig and platform workers.
+6.2 Platform Welfare Cess Contribution: Pursuant to Section 114 of the Code on Social Security, 2020, OrderKing contributes between 1% to 2% of its eligible annual platform turnover (subject to a statutory ceiling of 5% of aggregate payments made to gig workers) into the National Social Security Fund for Gig and Platform Workers. No portion of this aggregator contribution shall be deducted or recovered from the Delivery Partner's payout.
 6.3 National e-Shram & UAN Integration: OrderKing actively facilitates the registration of all active delivery partners on the Ministry of Labour and Employment e-Shram portal to ensure every Partner obtains a valid 12-digit Universal Account Number (UAN), enabling seamless portability of welfare benefits across India.
 6.4 Scope of Social Security Coverage: Through the National Social Security Fund and allied schemes, Delivery Partners become eligible for:
   (a) Life and disability cover;
@@ -155,7 +155,7 @@ export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
   (c) Old age protection and skill upgradation schemes;
   (d) Emergency relief during declared natural calamities, epidemics, or force majeure events.`,
     keyHighlights: [
-      "Statutory compliance under Sections 112-114 of Partner Terms",
+      "Statutory compliance under Sections 112-114 of Code on Social Security, 2020",
       "OrderKing contributes 1% to 2% of platform turnover to Central Welfare Fund",
       "Zero deduction from rider earnings for aggregator welfare contribution",
       "Integration with e-Shram Portal for 12-digit Universal Account Number (UAN)",
@@ -207,7 +207,7 @@ export const OFFICIAL_RIDER_SECTIONS: LegalSectionDetail[] = [
     sectionNumber: "9",
     title: "Confidentiality, Telemetry Telematics & Data Protection",
     statutoryBasis: "Digital Personal Data Protection Act, 2023 & IT Act, 2000",
-    summary: "Ensures customer phone number masking, strict non-solicitation, Privacy Policy compliance, and transparent GPS telemetry tracking during active duty.",
+    summary: "Ensures customer phone number masking, strict non-solicitation, DPDP Act 2023 compliance, and transparent GPS telemetry tracking during active duty.",
     fullLegalText: `9.1 Customer Data Confidentiality: The Delivery Partner shall treat all customer details (including full names, residential addresses, gate codes, and order notes) as strictly confidential.
 9.2 Non-Contact and Non-Solicitation: Under no circumstances shall the Delivery Partner:
   (a) Save customer telephone numbers or residential details to personal devices;
@@ -308,7 +308,7 @@ export const OFFICIAL_MERCHANT_SECTIONS: LegalSectionDetail[] = [
 1.4 "Principal-to-Principal Status": The engagement between OrderKing and the Restaurant Partner is strictly on a principal-to-principal basis. Neither party is the agent, legal representative, partner, or joint venturer of the other.`,
     keyHighlights: [
       "Principal-to-Principal commercial contracting relationship",
-      "Statutory definition of OrderKing as ECO under GST Act",
+      "Statutory definition of OrderKing as ECO under Section 9(5) CGST Act",
       "Statutory definition of Restaurant Partner as licensed FBO under FSSAI 2006"
     ]
   },
@@ -396,17 +396,17 @@ export const OFFICIAL_MERCHANT_SECTIONS: LegalSectionDetail[] = [
 7.2 Input Tax Credit (ITC) Inadmissibility: The Restaurant Partner acknowledges that under Notification No. 17/2021-CT(R), the 5% GST on restaurant food delivery is discharged without the benefit of Input Tax Credit (ITC). Neither OrderKing nor the Restaurant Partner may claim ITC against this food tax liability.
 7.3 Segregation in Tax Invoices & GSTR-3B: Invoices issued by OrderKing for food delivery supplies shall distinctly show the 5% Section 9(5) GST discharged by OrderKing under Table 3.1.1(i) of GSTR-3B. The Restaurant Partner shall report such turnover in Table 3.1.1(ii) of their respective GSTR-3B as supplies on which ECO pays tax.`,
     keyHighlights: [
-      "OrderKing directly remits 5% GST under GST Act",
+      "OrderKing directly remits 5% GST under Section 9(5) CGST Act",
       "Input Tax Credit (ITC) strictly blocked under Notification 17/2021-CT(R)",
       "Statutory segregation in GSTR-3B Table 3.1.1(i) and Table 3.1.1(ii)"
     ]
   },
   {
     sectionNumber: "8",
-    title: "TCS & TDS Statutory Withholding",
+    title: "Section 52 TCS & Section 194-O TDS Statutory Withholding",
     statutoryBasis: "Section 52, CGST Act, 2017 & Section 194-O, Income Tax Act, 1961",
     summary: "Enforces 1% Tax Collected at Source (TCS) and 1% Income Tax TDS withholding on merchant sales with automated Form 16A and GSTR-8 returns.",
-    fullLegalText: `8.1 TCS Withholding: Pursuant to Section 52 of the CGST Act, 2017, OrderKing shall collect Tax Collected at Source (TCS) at the statutory rate of 1% (0.5% CGST + 0.5% SGST or 1% IGST) on the net value of taxable supplies made through the platform. OrderKing shall deposit the collected TCS and file monthly GSTR-8 returns.
+    fullLegalText: `8.1 Section 52 TCS Withholding: Pursuant to Section 52 of the CGST Act, 2017, OrderKing shall collect Tax Collected at Source (TCS) at the statutory rate of 1% (0.5% CGST + 0.5% SGST or 1% IGST) on the net value of taxable supplies made through the platform. OrderKing shall deposit the collected TCS and file monthly GSTR-8 returns.
 8.2 Section 194-O Income Tax TDS: Pursuant to Section 194-O of the Income Tax Act, 1961, OrderKing shall deduct Tax Deducted at Source (TDS) at the statutory rate of 1% on the gross amount of sales facilitated through the digital marketplace.
 8.3 Statutory PAN Validation & Form 16A: The Restaurant Partner shall furnish a valid Permanent Account Number (PAN). In the absence of a valid PAN, TDS shall be withheld at the higher penal rate of 5% pursuant to Section 206AA. OrderKing shall furnish quarterly Form 16A certificates for all tax deductions made.`,
     keyHighlights: [
@@ -428,8 +428,8 @@ export const OFFICIAL_MERCHANT_SECTIONS: LegalSectionDetail[] = [
       - Platform Commission Fee
       - GST on Platform Commission (18%)
       - Section 9(5) Food GST (5%)
-      - TCS (1%)
-      - TDS (1%)
+      - Section 52 TCS (1%)
+      - Section 194-O TDS (1%)
       + Section 34 Statutory Credit Notes for Refunds/Cancellations.
 9.4 Section 34 CGST Act Automated Credit Notes: Where an order is cancelled, refunded, or subject to post-sale discount, OrderKing shall automatically generate a statutory GST Credit Note reversing platform commission, commission GST, TCS, and Section 9(5) tax in strict adherence to Section 34 of the CGST Act.`,
     keyHighlights: [
@@ -446,7 +446,7 @@ export const OFFICIAL_MERCHANT_SECTIONS: LegalSectionDetail[] = [
     summary: "Guarantees virtual telephone bridging, customer PII masking, strict non-solicitation, and 72-month statutory financial ledger retention under Section 36 CGST Act.",
     fullLegalText: `10.1 Customer Telephony Privacy Masking: Pursuant to Section 8 of the Digital Personal Data Protection Act, 2023, OrderKing routes all merchant-to-customer communications through virtualized telephone proxy bridges. The Restaurant Partner shall never receive the customer's true telephone number.
 10.2 Purpose Limitation & Non-Solicitation: Customer personal data (including names and delivery instructions) is disclosed solely for the purpose of food preparation and packaging. The Restaurant Partner shall not export, harvest, store, or utilize customer contact details for off-platform promotional messaging, marketing spam, or unsolicited communication.
-10.3 Right to Oblivion & Tax Retention Balance: Upon receipt of a Data Principal Erasure Request under Section 12 of the Privacy Policy, customer identifying details shall be cryptographically shredded. However, pursuant to Section 36 of the CGST Act, 2017, all underlying financial transaction ledgers, tax invoices, and credit notes shall be preserved for seventy-two (72) months in anonymized format for statutory audit compliance.`,
+10.3 Right to Oblivion & Tax Retention Balance: Upon receipt of a Data Principal Erasure Request under Section 12 of the DPDP Act 2023, customer identifying details shall be cryptographically shredded. However, pursuant to Section 36 of the CGST Act, 2017, all underlying financial transaction ledgers, tax invoices, and credit notes shall be preserved for seventy-two (72) months in anonymized format for statutory audit compliance.`,
     keyHighlights: [
       "Virtual VoIP telephone bridge ensures zero customer phone disclosure",
       "Strict purpose limitation and complete ban on marketing solicitation",
@@ -506,7 +506,7 @@ export const OFFICIAL_MERCHANT_SECTIONS: LegalSectionDetail[] = [
 export class DigitalContractEngine {
   /**
    * Generates a strict legal contractor agreement for a delivery rider,
-   * fully compliant with Chapter IX of the Partner Terms.
+   * fully compliant with Chapter IX of the Code on Social Security, 2020.
    * Branded exclusively as OrderKing Partner.
    */
   public generateRiderAgreement(
@@ -519,7 +519,7 @@ export class DigitalContractEngine {
     
     console.log(`[CONTRACT ENGINE] Generating official OrderKing Independent Delivery Partner Agreement for Rider ${riderId}`);
     console.log(`[CONTRACT ENGINE] Verified Aadhar: ${aadharNumber}, PAN: ${panNumber}`);
-    console.log(`[CONTRACT ENGINE] Compliance: Partner Terms (Sections 112-114), Motor Vehicles Act, 1988, FSSAI 2006, IT Act, 2000.`);
+    console.log(`[CONTRACT ENGINE] Compliance: Code on Social Security, 2020 (Sections 112-114), Motor Vehicles Act, 1988, FSSAI 2006, IT Act, 2000.`);
     console.log(`[CONTRACT ENGINE] Welfare Fund: 1.5% platform contribution allocated; Group Accidental Insurance: ₹10,00,000 active.`);
     console.log(`[CONTRACT ENGINE] STATUS: Awaiting mandatory final approval from UmarOS Compliance Center.`);
 
@@ -530,12 +530,12 @@ export class DigitalContractEngine {
       documentType: 'INDEPENDENT_CONTRACTOR_AGREEMENT',
       status: 'PENDING_SIGNATURE',
       umarOsApprovalStatus: 'PENDING',
-      contentSummary: 'Official OrderKing Independent Delivery Partner Agreement (Partner Terms Compliant), outlining principal-to-principal status, welfare fund contribution, accidental insurance coverage, dispute resolution, code of conduct, and transparent payout terms.',
+      contentSummary: 'Official OrderKing Independent Delivery Partner Agreement (Code on Social Security, 2020 Compliant), outlining principal-to-principal status, welfare fund contribution, accidental insurance coverage, dispute resolution, code of conduct, and transparent payout terms.',
       legalSections: OFFICIAL_RIDER_SECTIONS,
       welfareFundRate: '1.5% of eligible platform turnover',
       accidentalInsuranceCover: 'INR 10,00,000 Accidental Death & Total Disability',
       hospitalizationCover: 'INR 1,00,000 Emergency Medical Expense',
-      statutoryAct: 'Partner Terms (Act 36 of 2020)',
+      statutoryAct: 'Code on Social Security, 2020 (Act 36 of 2020)',
       governingLaw: 'Laws of the Republic of India',
       digitalSignatureRef: `SIG-DIGITAL-${riderId}-${Date.now()}`
     };
@@ -543,8 +543,8 @@ export class DigitalContractEngine {
 
   /**
    * Generates an official Merchant Partner Agreement for a restaurant partner,
-   * fully compliant with FSSAI Act 2006, CGST Act Section 9(5), TCS, TDS,
-   * Privacy Policy, and T+1 Daily Settlements.
+   * fully compliant with FSSAI Act 2006, CGST Act Section 9(5), Section 52 TCS, Section 194-O TDS,
+   * DPDP Act 2023, and T+1 Daily Settlements.
    * Branded exclusively for OrderKing Partner Network.
    */
   public generateRestaurantPartnerAgreement(
@@ -558,7 +558,7 @@ export class DigitalContractEngine {
     
     console.log(`[CONTRACT ENGINE] Generating official OrderKing Merchant Partner Agreement for Restaurant ${restaurantId}`);
     console.log(`[CONTRACT ENGINE] Verified FSSAI: ${fssai}, GSTIN: ${gst}`);
-    console.log(`[CONTRACT ENGINE] Terms included: Platform commission rate (${commissionRate}%), GST Act (5% GST without ITC), TCS (1%), TDS (1%), T+1 Daily Settlements (Midnight Cutoff, 10:00 AM Dispatch), Privacy Policy privacy governance.`);
+    console.log(`[CONTRACT ENGINE] Terms included: Platform commission rate (${commissionRate}%), Section 9(5) CGST Act (5% GST without ITC), Section 52 TCS (1%), Section 194-O TDS (1%), T+1 Daily Settlements (Midnight Cutoff, 10:00 AM Dispatch), DPDP Act 2023 privacy governance.`);
     console.log(`[CONTRACT ENGINE] STATUS: Awaiting mandatory final approval from UmarOS Compliance Center.`);
 
     return {
@@ -568,7 +568,7 @@ export class DigitalContractEngine {
       documentType: 'MERCHANT_PARTNER_AGREEMENT',
       status: 'PENDING_SIGNATURE',
       umarOsApprovalStatus: 'PENDING',
-      contentSummary: 'Official OrderKing Restaurant Partner Agreement compliant with FSSAI Act 2006, CGST Act Section 9(5), TCS, TDS, Privacy Policy, and T+1 Daily Settlements.',
+      contentSummary: 'Official OrderKing Restaurant Partner Agreement compliant with FSSAI Act 2006, CGST Act Section 9(5), Section 52 TCS, Section 194-O TDS, DPDP Act 2023, and T+1 Daily Settlements.',
       legalSections: OFFICIAL_MERCHANT_SECTIONS,
       fssaiNumber: fssai,
       gstin: gst,
@@ -595,7 +595,7 @@ export class DigitalContractEngine {
       };
     }
 
-    console.log(`[UmarOS ADMIN] Contract ${contract.contractId} meets official OrderKing Partner Terms compliance criteria. FINAL APPROVAL GRANTED.`);
+    console.log(`[UmarOS ADMIN] Contract ${contract.contractId} meets official OrderKing Code on Social Security, 2020 compliance criteria. FINAL APPROVAL GRANTED.`);
     console.log(`[UmarOS ADMIN] SUCCESS: Entity ${contract.entityId} is officially onboarded into OrderKing Fleet.`);
 
     return {

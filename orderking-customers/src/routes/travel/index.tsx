@@ -2,7 +2,6 @@ import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
-import { TravelpayoutsWhiteLabel } from "@/components/fintech/travelpayouts-white-label";
 import {
   type SovereignETicket,
   type Passenger,
@@ -557,7 +556,6 @@ const AUTHENTIC_LUXURY_HOTELS: LuxuryHotelProperty[] = [
 export function TravelPage() {
   const searchTab = useRouterState({ select: (s) => (s?.location?.search as any)?.tab }) as unknown as string | undefined;
   const sectionHash = (useRouterState({ select: (s) => s?.location?.hash }) as unknown as string) ?? "";
-  const [flightMode, setFlightMode] = useState<"whitelabel" | "direct">("whitelabel");
 
   const [activeTab, setActiveTab] = useState<TravelTab>(() => {
     if (typeof window !== "undefined") {
@@ -982,7 +980,7 @@ export function TravelPage() {
           <div>
             <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
               <span className="inline-flex items-center gap-1">
-                <Crown className="size-3.5 text-amber-400" /> OrderKing Travel · Travel King Desk (GSTIN: )
+                <Crown className="size-3.5 text-amber-400" /> OrderKing Travel · Travel King Desk (GSTIN: 18AFXPH9838M1Z9)
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
@@ -1191,49 +1189,6 @@ export function TravelPage() {
           {activeTab === "flights" && (
             <div className="space-y-6">
               
-              {/* Flight Booking Mode: Travelpayouts Live White Label vs Direct In-App (TBO Assisted) */}
-              <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-sky-50 via-white to-blue-50 border border-sky-200">
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setFlightMode("whitelabel")}
-                    className={cn(
-                      "px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5",
-                      flightMode === "whitelabel"
-                        ? "bg-sky-600 text-white shadow-sm ring-2 ring-sky-400/40"
-                        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
-                    )}
-                  >
-                    <Plane className="size-3.5" />
-                    <span>Live Flight Comparison (Travelpayouts)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFlightMode("direct")}
-                    className={cn(
-                      "px-3.5 py-2 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5",
-                      flightMode === "direct"
-                        ? "bg-sky-600 text-white shadow-sm ring-2 ring-sky-400/40"
-                        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
-                    )}
-                  >
-                    <Briefcase className="size-3.5" />
-                    <span>Direct In-App Booking (Assisted TBO Channel)</span>
-                  </button>
-                </div>
-                <span className="text-[11px] font-bold text-slate-500">
-                  {flightMode === "whitelabel"
-                    ? "Official Carrier Live Price Comparison (100+ Airlines)"
-                    : "Zero Convenience Fee · Instant E-Ticket Issuance"}
-                </span>
-              </div>
-
-              {flightMode === "whitelabel" && (
-                <div className="rounded-3xl border border-sky-200/80 bg-white p-3 sm:p-5 shadow-sm">
-                  <TravelpayoutsWhiteLabel subId="kingpay_travel_page" />
-                </div>
-              )}
-
               {/* Concession Fare Selector */}
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -3582,7 +3537,7 @@ export function TravelPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-xs text-slate-600">
-                    <span>Statutory Taxes &amp; GST (Orderkingpay GSTIN: )</span>
+                    <span>Statutory Taxes &amp; GST (Orderkingpay GSTIN: 18AFXPH9838M1Z9)</span>
                     <span className="font-mono font-bold">
                       {inAppBookingModal.type === "flight" && formatPaise(inAppBookingModal.data.taxesPaise || 45100)}
                       {inAppBookingModal.type === "train" && `₹${Math.round((inAppBookingModal.data.selectedClassFare || 2240) * 0.05).toLocaleString("en-IN")}`}

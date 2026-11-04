@@ -728,21 +728,6 @@ export const Route = createFileRoute("/")({
     if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
       return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Admin", role: "FOUNDER" } } as any;
     }
-    if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
-      return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Admin", role: "FOUNDER" } } as any;
-    }
-    if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
-      return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Umar Hasan", role: "FOUNDER" } } as any;
-    }
-    if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
-      return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Umar Hasan", role: "FOUNDER" } } as any;
-    }
-    if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
-      return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Umar Hasan", role: "FOUNDER" } } as any;
-    }
-    if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
-      return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Umar Hasan", role: "FOUNDER" } } as any;
-    }
     try {
       const res = await verifyUmarOsSessionFn();
       if (!res?.ok) throw redirect({ to: "/login" });
@@ -2856,7 +2841,7 @@ function UmarOSDashboard() {
                         ? "Protected"
                         : "Off"
                     }
-                    sub="Privacy Policy privacy"
+                    sub="DPDP Act 2023 privacy"
                   />
                 </div>
               )}
@@ -3421,7 +3406,7 @@ function UmarOSDashboard() {
                   desc: "Automated 0.1% TDS accounting and Form 16A reconciliation for eligible gross restaurant partner sales.",
                 },
                 {
-                  title: "Partner Terms",
+                  title: "Code on Social Security, 2020",
                   badge: "Gig Rider Welfare",
                   desc: "Supports e-Shram registration, accidental insurance coverage, transparent per-order + rain payouts, and emergency SOS support.",
                 },
@@ -3694,7 +3679,7 @@ function UmarOSDashboard() {
             </h2>
             <p className="text-xs text-slate-600">
               Customer accounts are stored in the PostgreSQL `profiles` table
-              with Privacy Policy phone masking and zero third-party data resale.
+              with DPDP Act 2023 phone masking and zero third-party data resale.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <ResultMetricCard
@@ -3710,7 +3695,7 @@ function UmarOSDashboard() {
               <ResultMetricCard
                 label="Phone Number Privacy"
                 value="Masked"
-                sub="Privacy Policy Compliant"
+                sub="DPDP Act 2023 Compliant"
               />
             </div>
           </section>

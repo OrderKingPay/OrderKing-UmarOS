@@ -1199,7 +1199,7 @@ export function generateAutoBookingDossier(
       statutoryDeclarations: [
         "Applicant confirms entity is incorporated under Indian Companies Act / registered under MSME Udyam.",
         "Zero foreign corporate control; 100% founder sovereign Indian equity holding.",
-        "Compliant with Section 194-O Income Tax Act and GST Act.",
+        "Compliant with Section 194-O Income Tax Act and Section 9(5) CGST Act.",
         "Bank account verified and matched with PAN/GSTIN for direct DBT/RTGS grant credit.",
       ],
     },
