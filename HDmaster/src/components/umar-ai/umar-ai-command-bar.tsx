@@ -562,7 +562,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           <div className="text-sm font-black text-emerald-400 mt-0.5">
             ₹{foodPlatformFee}
           </div>
-          <div className="text-[9px] text-slate-400">Live</div>
+          <div className="text-[9px] text-slate-400">umar_os_config.founder_fees</div>
         </div>
 
         <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80">
@@ -573,7 +573,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           <div className="text-sm font-black text-sky-400 mt-0.5">
             {remitFee}%
           </div>
-          <div className="text-[9px] text-slate-400">Live</div>
+          <div className="text-[9px] text-slate-400">umar_os_config.founder_fees</div>
         </div>
 
         <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80">
@@ -606,7 +606,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           <div className="text-sm font-black text-rose-400 mt-0.5">
             {commissionRate}%
           </div>
-          <div className="text-[9px] text-slate-400">Live</div>
+          <div className="text-[9px] text-slate-400">umar_os_config.economics</div>
         </div>
 
         <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80">

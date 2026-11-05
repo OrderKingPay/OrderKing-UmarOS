@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,6 +33,15 @@ export const ORDERKING_LOCAL_ONLY_KEY = "orderking_partner_onboarding_local_only
 export function formatFriendlyError(err: unknown, defaultMsg: string): string {
   if (!err) return defaultMsg;
   const raw = err instanceof Error ? err.message : String(err);
+  if (/Invalid URL string|Failed to construct 'URL'/i.test(raw)) {
+    return "Server connection is initializing or service URL is unreachable. Your onboarding draft is safely saved locally.";
+  }
+  if (/Failed to fetch|NetworkError|network/i.test(raw)) {
+    return "Network connection issue detected. Your onboarding progress is safely saved locally.";
+  }
+  if (/Unauthorized|401|session/i.test(raw)) {
+    return "Session requires verification. Your progress is preserved locally.";
+  }
   return raw || defaultMsg;
 }
 
@@ -57,6 +65,15 @@ export function persistDraftLocally(data: {
       restaurantId: data.restaurantId,
       ...data.form,
       exemptFromGst: data.exemptFromGst ?? true,
+      onboardingFeeOption: data.onboardingFeeOption,
+      amortizedConsent: data.amortizedConsent,
+      executionMethod: data.executionMethod,
+      clickwrapSignatoryName: data.clickwrapSignatoryName,
+      clickwrapDesignation: data.clickwrapDesignation,
+      clickwrapConsent: data.clickwrapConsent,
+      covenantsAccepted: data.covenantsAccepted,
+      foodSafetyUndertakingAccepted: data.foodSafetyUndertakingAccepted,
+      privacyAndTaxAccepted: data.privacyAndTaxAccepted,
       savedAt: new Date().toISOString(),
     };
     window.localStorage.setItem(ORDERKING_ONBOARDING_DRAFT_KEY, JSON.stringify(payload));
@@ -86,7 +103,6 @@ function OnboardingPage() {
   // GST is OPTIONAL by regulation: unticked by default (automatic non-GST onboarding).
   // Partner ticks this box ONLY if they have a 15-digit business GSTIN.
   const [hasGst, setHasGst] = useState(false);
-  const [payoutCycle, setPayoutCycle] = useState<"STANDARD_T3" | "EXPRESS_T1">("STANDARD_T3");
   const [acceptTerms, setAcceptTerms] = useState(true);
 
   const [form, setForm] = useState({
@@ -212,6 +228,10 @@ function OnboardingPage() {
 
   function validateStep2(): boolean {
     const cleanFssai = form.fssaiNumber.replace(/\D/g, "");
+    if (!form.fssaiExpiryDate || !form.fssaiExpiryDate.trim()) {
+      setError("Enter the actual FSSAI certificate expiry before submitting for review.");
+      return false;
+    }
     if (cleanFssai.length !== 14) {
       setError("Please enter a valid 14-digit FSSAI Food License Number.");
       return false;
@@ -297,6 +317,9 @@ function OnboardingPage() {
           },
         });
         targetRestaurantId = (draftRes as any)?.restaurantId || (draftRes as any)?.id || targetRestaurantId;
+        if (targetRestaurantId && typeof window !== "undefined") {
+          window.localStorage.setItem("orderking_restaurant_id", targetRestaurantId);
+        }
       }
 
       if (targetRestaurantId && !targetRestaurantId.startsWith("local_")) {
@@ -544,7 +567,7 @@ function OnboardingPage() {
                   <span>Step 2: FSSAI License, PAN Card &amp; GST Option</span>
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Enter your 14-digit FSSAI number and 10-character PAN.
+                  Enter your 14-digit FSSAI license and 10-character PAN card. GST is optional — tick the box only if your restaurant is GST registered.
                 </p>
               </div>
 
@@ -607,7 +630,7 @@ function OnboardingPage() {
                       My restaurant is GST registered (Have a 15-digit GSTIN)
                     </div>
                     <div className="text-[11px] text-slate-400 mt-0.5">
-                      Optional — tick only if your restaurant has a 15-character GSTIN.
+                      Leave unticked if your restaurant is below the GST threshold — onboarding proceeds automatically without GST under CGST Section 9(5).
                     </div>
                   </div>
                 </label>
@@ -626,7 +649,7 @@ function OnboardingPage() {
                 ) : (
                   <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-3 py-2 text-xs text-emerald-300 flex items-center gap-2">
                     <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
-                    <span>Non-GST Kitchen — No GSTIN required.</span>
+                    <span>Automatic Non-GST Onboarding Active — No GSTIN required.</span>
                   </div>
                 )}
               </div>
@@ -707,42 +730,6 @@ function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
-                <Label className="text-xs font-bold text-slate-200">Payout Schedule *</Label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setPayoutCycle("STANDARD_T3")}
-                    className={`rounded-xl border p-3 text-left transition-all ${
-                      payoutCycle === "STANDARD_T3"
-                        ? "border-emerald-500 bg-emerald-950/30 text-white"
-                        : "border-slate-800 bg-slate-900/60 text-slate-300"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-xs font-bold">
-                      <span>Standard Payout (After Next Day)</span>
-                      <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-emerald-300">No Extra Fee</span>
-                    </div>
-                    <div className="text-[11px] text-slate-400 mt-1">Settled after next day without extra charge.</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPayoutCycle("EXPRESS_T1")}
-                    className={`rounded-xl border p-3 text-left transition-all ${
-                      payoutCycle === "EXPRESS_T1"
-                        ? "border-emerald-500 bg-emerald-950/30 text-white"
-                        : "border-slate-800 bg-slate-900/60 text-slate-300"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-xs font-bold">
-                      <span>Next-Day Payout (T+1)</span>
-                      <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300">+0.5% Fee</span>
-                    </div>
-                    <div className="text-[11px] text-slate-400 mt-1">Next-day bank settlement (+0.5% fee).</div>
-                  </button>
-                </div>
-              </div>
-
               <label className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -751,7 +738,7 @@ function OnboardingPage() {
                   className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-emerald-500"
                 />
                 <span className="text-xs text-slate-300">
-                  I accept the OrderKing Restaurant Partner Terms.
+                  I confirm that the FSSAI license, PAN card, outlet address, and settlement bank account details above are accurate and accept the OrderKing Restaurant Partner Agreement &amp; Commission Settlement Terms.
                 </span>
               </label>
 

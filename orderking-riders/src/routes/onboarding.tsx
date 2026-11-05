@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Button } from "@/components/ui/button";

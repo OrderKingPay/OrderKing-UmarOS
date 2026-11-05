@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
@@ -717,11 +716,13 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
       `[OrderKing OTP] Dispatched ${channel.toUpperCase()} OTP [${otp}] to +91-${cleanPhone} via ${dispatchResult.provider.toUpperCase()} (MessageId: ${dispatchResult.messageId || "N/A"})`,
     );
 
-    return { ok: true, debugOtp: typeof otp !== 'undefined' ? otp : (typeof code !== 'undefined' ? code : undefined), phone: cleanPhone,
+    return {
+      ok: true,
+      phone: cleanPhone,
       channel,
       message:
         channel === "whatsapp"
-          ? `WhatsApp verification deep link ready for +91 ${cleanPhone }`
+          ? `WhatsApp verification deep link ready for +91 ${cleanPhone}`
           : `OTP sent successfully to +91 ${cleanPhone}`,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
@@ -809,13 +810,15 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
       /* ignore db error during check */
     }
 
-    return { ok: true, debugOtp: typeof otp !== 'undefined' ? otp : (typeof code !== 'undefined' ? code : undefined), phone: cleanPhone,
+    return {
+      ok: true,
+      phone: cleanPhone,
       email,
       credential,
       isNewUser,
       isVerified,
       destination: isVerified ? "/" : "/onboarding",
-     };
+    };
   });
 
 

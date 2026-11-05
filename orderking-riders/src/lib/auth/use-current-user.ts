@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useEffect } from "react";
 import { authClient, authEnabled, getPhoneSession } from "./client";
 export type AppUser = {

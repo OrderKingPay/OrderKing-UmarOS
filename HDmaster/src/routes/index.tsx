@@ -725,9 +725,6 @@ export const verifyUmarOsSessionFn = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
-    if (typeof process === "undefined" || (!process.env.VITEST && process.env.NODE_ENV !== "test")) {
-      return { user: { id: "founder_umar", email: "hasanahanaf2019@gmail.com", name: "Admin", role: "FOUNDER" } } as any;
-    }
     try {
       const res = await verifyUmarOsSessionFn();
       if (!res?.ok) throw redirect({ to: "/login" });
@@ -2029,7 +2026,7 @@ function UmarOSDashboard() {
       category: "Rider Fleet",
       title: "Action Needed: Add Your First Delivery Rider",
       whatHappened:
-        "Active riders currently has 0 verified delivery riders.",
+        "PostgreSQL `riders` table currently has 0 verified delivery riders.",
       recommendedAction:
         "Onboard local delivery riders and configure per-order base payout in OrderKing.",
       actionButtonLabel: "Go to Riders Setup",
@@ -2047,7 +2044,7 @@ function UmarOSDashboard() {
       category: "Live Orders",
       title: "0 Orders Recorded So Far — Ready for First Customer Order",
       whatHappened:
-        "Total orders has 0 orders. Checkout and delivery pipelines are standing by.",
+        "PostgreSQL `orders` table has 0 orders. Checkout and delivery pipelines are standing by.",
       recommendedAction:
         "Verify your Customer App banner and delivery fee settings to welcome your first orders.",
       actionButtonLabel: "Review OrderKing Dashboard",
@@ -2607,14 +2604,14 @@ function UmarOSDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
-                    Live Overview
+                    Box 1 · Live Result (What Is Happening Now)
                   </span>
                   <h2 className="text-base font-black text-slate-900 mt-1.5">
                     Real-Time Numbers for {currentWorld.navLabel}
                   </h2>
                 </div>
                 <span className="text-xs text-slate-500 font-medium">
-                  
+                  100% Real PostgreSQL Data
                 </span>
               </div>
 
@@ -2623,7 +2620,7 @@ function UmarOSDashboard() {
                   <ResultMetricCard
                     label="Customers Registered"
                     value={String(loaderData.users)}
-                    sub="Registered users"
+                    sub="PostgreSQL `profiles` table"
                   />
                   <ResultMetricCard
                     label="Active Restaurants"
@@ -2633,12 +2630,12 @@ function UmarOSDashboard() {
                   <ResultMetricCard
                     label="Verified Delivery Riders"
                     value={String(loaderData.riders)}
-                    sub="Active riders"
+                    sub="PostgreSQL `riders` table"
                   />
                   <ResultMetricCard
                     label="Total Orders"
                     value={String(loaderData.todayOrders)}
-                    sub="Total orders"
+                    sub="PostgreSQL `orders` table"
                   />
                 </div>
               )}
@@ -2908,7 +2905,7 @@ function UmarOSDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
-                    Quick Actions
+                    Box 2 · Action Needed (What To Do Next)
                   </span>
                   <h2 className="text-base font-black text-slate-900 mt-1.5">
                     Recommended Next Steps in {currentWorld.navLabel}
@@ -3678,7 +3675,7 @@ function UmarOSDashboard() {
               PostgreSQL)
             </h2>
             <p className="text-xs text-slate-600">
-              Customer accounts are stored in the Registered users
+              Customer accounts are stored in the PostgreSQL `profiles` table
               with DPDP Act 2023 phone masking and zero third-party data resale.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
