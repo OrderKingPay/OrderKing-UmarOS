@@ -155,42 +155,42 @@ describe('Root Telecom OTP Service (services/otp.ts)', () => {
     });
   });
 
-  describe('4. Master sendOtp Dispatcher Priority (2Factor -> Fast2SMS -> MSG91 -> Fallback)', () => {
-    it('dispatches via 2Factor as PRIMARY when configured and successful', async () => {
-      process.env.TWOFACTOR_API_KEY = 'primary_2f_key';
-      process.env.FAST2SMS_API_KEY = 'secondary_f2s_key';
+  describe('4. Master sendOtp Dispatcher Priority (Fast2SMS PRIMARY -> 2Factor Fallback)', () => {
+    it('dispatches via Fast2SMS as PRIMARY', async () => {
+      process.env.FAST2SMS_API_KEY = 'primary_f2s_key';
+      process.env.TWOFACTOR_API_KEY = 'fallback_2f_key';
 
-      vi.mocked(axios.get).mockResolvedValueOnce({
-        data: { Status: 'Success' },
+      vi.mocked(axios.post).mockResolvedValueOnce({
+        data: { return: true, request_id: 'REQ_F2S_PRIMARY_1' },
       });
 
       const res = await sendOtp('9876543210', '112233');
 
       expect(res.success).toBe(true);
-      expect(res.provider).toBe('2factor');
-      expect(axios.get).toHaveBeenCalledTimes(1);
-      expect(axios.post).not.toHaveBeenCalled();
+      expect(res.provider).toBe('fast2sms');
+      expect(axios.post).toHaveBeenCalledTimes(1);
+      expect(axios.get).not.toHaveBeenCalled();
     });
 
-    it('fails over to Fast2SMS SECONDARY when 2Factor fails', async () => {
-      process.env.TWOFACTOR_API_KEY = 'primary_2f_key';
-      process.env.FAST2SMS_API_KEY = 'secondary_f2s_key';
+    it('falls over to 2Factor FALLBACK when Fast2SMS fails', async () => {
+      process.env.FAST2SMS_API_KEY = 'primary_f2s_key';
+      process.env.TWOFACTOR_API_KEY = 'fallback_2f_distinct_key';
 
-      // 2Factor fails
+      // Fast2SMS fails both otp and q
+      vi.mocked(axios.post).mockResolvedValueOnce({ data: { return: false } });
+      vi.mocked(axios.post).mockResolvedValueOnce({ data: { return: false } });
+
+      // 2Factor succeeds
       vi.mocked(axios.get).mockResolvedValueOnce({
-        data: { Status: 'Error' },
-      });
-      // Fast2SMS succeeds
-      vi.mocked(axios.post).mockResolvedValueOnce({
-        data: { return: true },
+        data: { Status: 'Success', Details: '2F_FALLBACK_OK' },
       });
 
       const res = await sendOtp('9876543210', '998877');
 
       expect(res.success).toBe(true);
-      expect(res.provider).toBe('fast2sms');
+      expect(res.provider).toBe('2factor');
+      expect(axios.post).toHaveBeenCalledTimes(2);
       expect(axios.get).toHaveBeenCalledTimes(1);
-      expect(axios.post).toHaveBeenCalledTimes(1);
     });
 
     it('safely falls back without calling 2Factor when TWOFACTOR_API_KEY matches FAST2SMS_API_KEY', async () => {

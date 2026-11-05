@@ -36,7 +36,7 @@ function cleanExpiredMemoryOtps(): void {
   }
 }
 export const requestPhoneOtpFn = createServerFn({ method: "POST" })
-  .validator((input: { phone: string; channel?: "sms" | "whatsapp" | "voice"; name?: string }) => input)
+  .validator((input: { phone: string; channel?: "sms" | "whatsapp"; name?: string }) => input)
   .handler(async ({ data }) => {
     cleanExpiredMemoryOtps();
     const cleanPhone = sanitizeIndianPhone(data.phone);
@@ -75,34 +75,13 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
     }
     let dispatchResult: DispatchOtpResult;
     try {
-      if (data.channel === "voice") {
-        const twoFactorKey =
-          process.env.TWOFACTOR_API_KEY ||
-          process.env.TWO_FACTOR_API_KEY ||
-          "";
-        const vRes = await fetch(
-          `https://2factor.in/API/V1/${encodeURIComponent(String(twoFactorKey ?? ""))}/VOICE/+91${cleanPhone}/${otp}`
-        );
-        const vJson = (await vRes.json().catch(() => ({}))) as { Status?: string; Details?: string };
-// @ts-ignore
-        const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(String("OrderKing OTP: " + otp ?? ""))}`;
-        dispatchResult = {
-          success: true,
-          provider: "2factor",
-          messageId: vJson.Details || `2F-VOICE-${Date.now()}`,
-          debugOtp: otp,
-          whatsAppOtpUrl: waUrl,
-          whatsappOtpUrl: waUrl,
-          providerNotice: `Calling +91-${cleanPhone} now with your 6-digit voice verification code.`,
-        };
-      } else {
-        dispatchResult = await dispatchOtpSms({
-          phone: cleanPhone,
-          otp,
-          channel: data.channel === "whatsapp" ? "whatsapp" : "sms",
-          appName: "OrderKing",
-        });
-      }
+      // Strictly SMS and WhatsApp only: NO voice call to user per founder mandate
+      dispatchResult = await dispatchOtpSms({
+        phone: cleanPhone,
+        otp,
+        channel: data.channel === "whatsapp" ? "whatsapp" : "sms",
+        appName: "OrderKing",
+      });
     } catch (err: unknown) {
 // @ts-ignore
       const msg = err instanceof Error ? err.message : String(err);

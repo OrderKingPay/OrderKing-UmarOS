@@ -86,7 +86,7 @@ function getSupabaseClient(): SupabaseClient | null {
   const url =
     (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_SUPABASE_URL) ||
     (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_SUPABASE_URL) ||
-    "https://ksudiiukjevwrybgjkzg.supabase.co";
+    "https://wziksbrumklcktrlgedb.supabase.co";
 
   const key =
     (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_SUPABASE_ANON_KEY) ||

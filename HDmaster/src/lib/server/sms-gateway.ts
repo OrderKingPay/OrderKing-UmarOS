@@ -291,8 +291,8 @@ async function sendVia2Factor(
   const cleanKey = (apiKey || "").trim().replace(/^["']|["']$/g, "");
   const template = (process.env.TWOFACTOR_OTP_TEMPLATE || "").trim();
   const url = template
-    ? `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/+91${cleanPhone}/${otp}/${encodeURIComponent(String(template ?? ""))}`
-    : `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/+91${cleanPhone}/AUTOGEN`;
+    ? `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/${cleanPhone}/${otp}/${encodeURIComponent(String(template ?? ""))}`
+    : `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/${cleanPhone}/${otp}/AUTOGEN`;
 
   let json: { Status?: string; Details?: string } | undefined;
   try {
@@ -539,7 +539,14 @@ export async function sendViaWhatsAppCloudApi(
 }
 
 export function getAvailableSmsProviders(): TelecomProvider[] {
-  const providers: TelecomProvider[] = [];
+  const providers: TelecomProvider[] = [];const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
+    providers.push("fast2sms");
+  }
+
+  
 
   const twoFactorKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY;
   const f2sCompare = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
@@ -547,12 +554,7 @@ export function getAvailableSmsProviders(): TelecomProvider[] {
     providers.push("2factor");
   }
 
-  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
-    .trim()
-    .replace(/^["']|["']$/g, "");
-  if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
-    providers.push("fast2sms");
-  }
+  
 
   const msg91Key = process.env.MSG91_AUTH_KEY;
   if (msg91Key && msg91Key !== "xxx" && !msg91Key.includes("change-me")) {

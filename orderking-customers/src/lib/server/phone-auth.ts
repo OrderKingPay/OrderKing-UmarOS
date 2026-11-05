@@ -36,7 +36,7 @@ function cleanExpiredMemoryOtps(): void {
   }
 }
 export const requestPhoneOtpFn = createServerFn({ method: "POST" })
-  .validator((input: { phone: string; channel?: "sms" | "whatsapp" | "voice"; name?: string }) => input)
+  .validator((input: { phone: string; channel?: "sms" | "whatsapp"; name?: string }) => input)
   .handler(async ({ data }) => {
     cleanExpiredMemoryOtps();
     const cleanPhone = sanitizeIndianPhone(data.phone);

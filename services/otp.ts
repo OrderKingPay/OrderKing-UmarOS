@@ -375,7 +375,7 @@ export async function sendOtp(phone: string, otp: string): Promise<{
     throw new Error('OTP code must be exactly 6 digits.');
   }
 
-  // 1. PRIMARY: Fast2SMS modern Bulk V2
+  // 1. PRIMARY: Fast2SMS modern Bulk V2 (route: 'otp' -> fallback route: 'q')
   try {
     const fast2smsOk = await sendOtpFast2SMS(cleanPhone, cleanOtp);
     if (fast2smsOk) {
@@ -389,7 +389,7 @@ export async function sendOtp(phone: string, otp: string): Promise<{
     console.warn('[Telecom Gateway] Fast2SMS primary failed, checking fallback:', (err as any)?.message || err);
   }
 
-  // 2. FALLBACK 1: 2Factor.in (checked for duplicate key guard)
+  // 2. FALLBACK 1: 2Factor.in Official Transactional Gateway
   const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
   const twoFactorKey = (
     process.env.TWOFACTOR_API_KEY ||

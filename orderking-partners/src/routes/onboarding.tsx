@@ -34,15 +34,6 @@ export const ORDERKING_LOCAL_ONLY_KEY = "orderking_partner_onboarding_local_only
 export function formatFriendlyError(err: unknown, defaultMsg: string): string {
   if (!err) return defaultMsg;
   const raw = err instanceof Error ? err.message : String(err);
-  if (/invalid\s*url/i.test(raw)) {
-    return "Server connection is initializing or service URL is unreachable. Your application details are safely saved locally.";
-  }
-  if (/failed to fetch|network|offline|econnrefused/i.test(raw)) {
-    return "Network connection issue. Your details have been safely saved locally. You can retry once connection is restored.";
-  }
-  if (/unauthorized|forbidden|session|401|403/i.test(raw)) {
-    return "Session requires verification. Your onboarding progress has been preserved locally. Please log in again to sync.";
-  }
   return raw || defaultMsg;
 }
 
@@ -66,15 +57,6 @@ export function persistDraftLocally(data: {
       restaurantId: data.restaurantId,
       ...data.form,
       exemptFromGst: data.exemptFromGst ?? true,
-      onboardingFeeOption: data.onboardingFeeOption,
-      amortizedConsent: data.amortizedConsent,
-      executionMethod: data.executionMethod,
-      clickwrapSignatoryName: data.clickwrapSignatoryName,
-      clickwrapDesignation: data.clickwrapDesignation,
-      clickwrapConsent: data.clickwrapConsent,
-      covenantsAccepted: data.covenantsAccepted,
-      foodSafetyUndertakingAccepted: data.foodSafetyUndertakingAccepted,
-      privacyAndTaxAccepted: data.privacyAndTaxAccepted,
       savedAt: new Date().toISOString(),
     };
     window.localStorage.setItem(ORDERKING_ONBOARDING_DRAFT_KEY, JSON.stringify(payload));
@@ -232,10 +214,6 @@ function OnboardingPage() {
     const cleanFssai = form.fssaiNumber.replace(/\D/g, "");
     if (cleanFssai.length !== 14) {
       setError("Please enter a valid 14-digit FSSAI Food License Number.");
-      return false;
-    }
-    if (!form.fssaiExpiryDate || form.fssaiExpiryDate.trim() === "") {
-      setError("Enter the actual FSSAI certificate expiry before submitting for review.");
       return false;
     }
     const cleanPan = form.pan.trim().toUpperCase();
