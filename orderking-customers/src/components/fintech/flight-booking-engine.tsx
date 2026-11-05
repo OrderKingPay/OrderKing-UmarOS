@@ -21,6 +21,7 @@ import { formatPaise } from "@/lib/money";
 import { toast } from "sonner";
 import {
   searchFlightQuotes,
+  fetchLiveFlightQuotesTBO,
   type FlightQuote,
 } from "@/lib/travel/in-app-booking-service";
 import {
@@ -68,13 +69,58 @@ export function FlightBookingEngine({
     loadTravelpayoutsWhiteLabelScript();
   }, []);
 
-  // Live quotes
-  const quotes = searchFlightQuotes(
-    from.trim() || "New Delhi (DEL)",
-    to.trim() || "Mumbai (BOM)",
-    departureDate,
-    cabinClass
+  // Live quotes with TBO Enterprise GDS (#187051) and official carrier fallback
+  const [quotes, setQuotes] = useState<FlightQuote[]>(() =>
+    searchFlightQuotes(
+      initialFrom.trim() || "New Delhi (DEL)",
+      initialTo.trim() || "Mumbai (BOM)",
+      new Date().toISOString().split("T")[0],
+      "Economy"
+    )
   );
+  const [isLoadingLive, setIsLoadingLive] = useState(false);
+  const [liveSource, setLiveSource] = useState<"tbo_gds" | "official_direct">("official_direct");
+
+  useEffect(() => {
+    let active = true;
+    setIsLoadingLive(true);
+    fetchLiveFlightQuotesTBO(
+      from.trim() || "New Delhi (DEL)",
+      to.trim() || "Mumbai (BOM)",
+      departureDate,
+      cabinClass,
+      passengersCount
+    )
+      .then((res) => {
+        if (active && res && res.length > 0) {
+          setQuotes(res);
+          const isTbo = res.some((q) => q.id.startsWith("tbo-"));
+          setLiveSource(isTbo ? "tbo_gds" : "official_direct");
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setQuotes(
+            searchFlightQuotes(
+              from.trim() || "New Delhi (DEL)",
+              to.trim() || "Mumbai (BOM)",
+              departureDate,
+              cabinClass
+            )
+          );
+          setLiveSource("official_direct");
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setIsLoadingLive(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [from, to, departureDate, cabinClass, passengersCount]);
 
   const handleSwapRoute = () => {
     const temp = from;
@@ -297,9 +343,17 @@ export function FlightBookingEngine({
         <div className="flex items-center justify-between">
           <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
             <span>Available Domestic Flights ({quotes.length})</span>
-            <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-              Direct Carrier Net Tariff
-            </span>
+            {liveSource === "tbo_gds" ? (
+              <span className="text-xs font-bold text-sky-700 bg-sky-100 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                <span className="size-1.5 rounded-full bg-sky-500 animate-pulse" />
+                Live TBO Enterprise GDS (#187051)
+              </span>
+            ) : (
+              <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                <span className="size-1.5 rounded-full bg-emerald-500" />
+                Official Carrier Direct Fares (₹0 Platform Markup)
+              </span>
+            )}
           </h3>
           <span className="text-xs text-slate-500 font-bold hidden sm:inline">
             Direct Official Airline Deep-Links &amp; Live Tariff Benchmarks

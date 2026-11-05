@@ -38,6 +38,19 @@ interface Props {
   initialTo?: string;
 }
 
+export function buildRedBusUrl(from: string, to: string, date: string): string {
+  const sanitize = (s: string) =>
+    s
+      .replace(/\(.*?\)/g, "")
+      .replace(/[^a-zA-Z0-9\s]/g, "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+  const fromCity = sanitize(from) || "bengaluru";
+  const toCity = sanitize(to) || "goa";
+  return `https://www.redbus.in/bus-tickets/${encodeURIComponent(fromCity)}-to-${encodeURIComponent(toCity)}?onward=${encodeURIComponent(date)}`;
+}
+
 export function BusBookingEngine({
   walletBalance = 0,
   onDeductWallet,
@@ -311,7 +324,7 @@ export function BusBookingEngine({
                   </div>
 
                   <a
-                    href={`https://www.redbus.in/bus-tickets/${encodeURIComponent((q.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((q.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`}
+                    href={buildRedBusUrl(q.fromCity || from, q.toCity || to, journeyDate)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => {
@@ -445,7 +458,7 @@ export function BusBookingEngine({
                 </span>
               </div>
               <a
-                href={`https://www.redbus.in/bus-tickets/${encodeURIComponent((currentQuote.fromCity || from).replace(/\(.*\)/, "").trim().toLowerCase())}-to-${encodeURIComponent((currentQuote.toCity || to).replace(/\(.*\)/, "").trim().toLowerCase())}?onward=${journeyDate}`}
+                href={buildRedBusUrl(currentQuote.fromCity || from, currentQuote.toCity || to, journeyDate)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => toast.success(`Redirecting to redBus to finalize ${selectedSeatIds.join(", ")} berths...`)}

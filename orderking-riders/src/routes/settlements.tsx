@@ -157,7 +157,7 @@ export function SettlementsDesk() {
 
   function downloadCsvVoucher(batch?: Settlement) {
     const rows: string[][] = [
-      ["Orderkingpay - Official Partner Settlement & Section 194-O Tax Voucher"],
+      ["OrderKing - Partner Settlement Summary"],
       ["Platform GSTIN", "18AFXPH9838M1Z9"],
       ["Partner Name", rider?.fullName || "Verified Delivery Partner"],
       ["Partner ID", rider?.id || "N/A"],
@@ -250,14 +250,14 @@ export function SettlementsDesk() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
                     <ShieldCheck className="size-3.5 text-emerald-700" />
-                    Order King Autonomous Treasury &amp; Tax Desk
+                    Settlements &amp; Payouts
                   </span>
                   <span className="text-[11px] font-semibold text-slate-500">
                     Zero-Commission Partner Ledger
                   </span>
                 </div>
                 <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-slate-900">
-                  Daily &amp; Weekly Payouts, Bank Mandate &amp; Tax Statements
+                  Payouts &amp; Bank Account
                 </h1>
               </div>
             </div>
@@ -296,9 +296,7 @@ export function SettlementsDesk() {
                   In ~{nextPayoutWindow.hoursRemaining}h
                 </span>
               </div>
-              <p className="leading-relaxed text-slate-700">
-                <strong>00:00–23:59:59 Midnight Cutoff:</strong> Shifts worked until 12:00 AM reconcile at 00:05 AM. Net payout releases next day between <strong>10:00 AM &amp; 12:00 PM IST</strong> directly to your UPI handle or Bank A/C.
-              </p>
+              <p className="leading-relaxed text-slate-700">Daily earnings are transferred next day between <strong>10:00 AM &amp; 12:00 PM IST</strong> to your registered account.</p>
             </div>
 
             <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4 text-xs text-slate-800 space-y-2">
@@ -311,9 +309,7 @@ export function SettlementsDesk() {
                   In ~{nextWeeklyPayout.hoursRemaining}h
                 </span>
               </div>
-              <p className="leading-relaxed text-slate-700">
-                <strong>Monday–Sunday Sweep:</strong> Full multi-day statutory reconciliation and cumulative tax summary disbursed every Wednesday at 14:00 IST via NEFT/IMPS with Section 194-O TDS compliance.
-              </p>
+              <p className="leading-relaxed text-slate-700">Weekly cycle earnings are settled every Wednesday afternoon directly to your registered account.</p>
             </div>
           </div>
         </div>

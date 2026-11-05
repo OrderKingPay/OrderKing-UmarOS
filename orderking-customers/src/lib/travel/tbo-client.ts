@@ -175,8 +175,10 @@ export function getTboCredentials(customEnv?: Record<string, string>): TboCreden
   };
 
   const agencyCode =
+    getEnv("TBO_AGENCY_ID") ||
     getEnv("TBO_CLIENT_ID") ||
     getEnv("TBO_AGENCY_CODE") ||
+    getEnv("VITE_TBO_AGENCY_ID") ||
     getEnv("VITE_TBO_CLIENT_ID") ||
     getEnv("VITE_TBO_AGENCY_CODE") ||
     TBO_APPLICATION_ID;
@@ -475,6 +477,8 @@ export function calculateTboFounderMargin(
 /**
  * Authenticates with TBO API Gateway using registered agency credentials.
  */
+export const authenticateTBO = authenticateTbo;
+
 export async function authenticateTbo(
   creds?: TboCredentials | null,
   endUserIp = DEFAULT_END_USER_IP
@@ -537,7 +541,7 @@ export async function authenticateTbo(
 /**
  * Live Flight Search via TBO Air API.
  */
-export async function searchTboFlights(
+export async function searchFlightsTBO(
   query: TboFlightSearchQuery,
   token?: string,
   endUserIp = DEFAULT_END_USER_IP
@@ -566,30 +570,42 @@ export async function searchTboFlights(
   }
 
   try {
-    const searchUrl = `${creds.endpoint}/BookingEngineService_Air/AirService.svc/rest/Search`;
+    const endpoint = creds.endpoint.replace(/\/$/, "");
+    const primaryUrl = `${endpoint}/AirService.svc/rest/Search`;
     const payload = serializeTboFlightSearchRequest(query, authToken, endUserIp);
 
-    const res = await fetch(searchUrl, {
+    let res = await fetch(primaryUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+
+    if (res.status === 404) {
+      const fallbackUrl = `${endpoint}/BookingEngineService_Air/AirService.svc/rest/Search`;
+      res = await fetch(fallbackUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }
 
     if (!res.ok) {
       return { success: false, flights: [], error: `TBO Search returned HTTP ${res.status}` };
     }
 
     const data: any = await res.json();
-    const results = data?.Response?.Results?.[0] || [];
+    const results = data?.Response?.Results?.[0] || data?.Response?.Results || [];
     return {
       success: true,
-      flights: results,
+      flights: Array.isArray(results) ? results : [results],
       traceId: data?.Response?.TraceId,
     };
   } catch (err: any) {
     return { success: false, flights: [], error: err?.message || "TBO flight search error" };
   }
 }
+
+export const searchTboFlights = searchFlightsTBO;
 
 /**
  * Re-validates pricing, seat availability, and baggage/meal allowances before booking.

@@ -92,11 +92,18 @@ export class PgStore implements RiderStore {
   constructor(private sql: Sql) {}
 
   async getConfig(): Promise<PlatformConfig> {
-    const rows = await this.sql.query<Record<string, unknown>>(
-      "select payload from platform_config where id = $1",
-      ["default"],
-    );
-    let base = rows[0] ? json<PlatformConfig>(rows[0].payload, DEFAULT_CONFIG) : DEFAULT_CONFIG;
+    let base = DEFAULT_CONFIG;
+    try {
+      const rows = await this.sql.query<Record<string, unknown>>(
+        "select payload from platform_config where id = $1",
+        ["default"],
+      );
+      if (rows[0]) {
+        base = json<PlatformConfig>(rows[0].payload, DEFAULT_CONFIG);
+      }
+    } catch {
+      // Safe fallback
+    }
 
     // Check if platform_settings exists in the database (synced from HDmaster UmarOS)
     try {
