@@ -158,7 +158,6 @@ export function SettlementsDesk() {
   function downloadCsvVoucher(batch?: Settlement) {
     const rows: string[][] = [
       ["OrderKing - Partner Settlement Summary"],
-      ["Platform GSTIN", "18AFXPH9838M1Z9"],
       ["Partner Name", rider?.fullName || "Verified Delivery Partner"],
       ["Partner ID", rider?.id || "N/A"],
       ["Registered Mobile", rider?.phone || "N/A"],
@@ -252,9 +251,7 @@ export function SettlementsDesk() {
                     <ShieldCheck className="size-3.5 text-emerald-700" />
                     Settlements &amp; Payouts
                   </span>
-                  <span className="text-[11px] font-semibold text-slate-500">
-                    Zero-Commission Partner Ledger
-                  </span>
+                  <span className="text-[11px] font-semibold text-slate-500">Verified Payout Ledger</span>
                 </div>
                 <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-slate-900">
                   Payouts &amp; Bank Account

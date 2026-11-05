@@ -361,7 +361,7 @@ function SelfServicePayoutCalculator() {
           <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">
-                Statutory Base Fare (first {baseDistanceKm} km)
+                Base Fare (first {baseDistanceKm} km)
               </dt>
               <dd className="font-mono">{formatPaise(baseFarePaise)}</dd>
             </div>
