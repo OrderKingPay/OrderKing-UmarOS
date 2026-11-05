@@ -1120,6 +1120,9 @@ importers:
 
   packages/statutory-core:
     devDependencies:
+      '@types/node':
+        specifier: ^22.16.5
+        version: 22.20.4
       '@types/react':
         specifier: ^19.2.0
         version: 19.3.0

@@ -19,7 +19,6 @@ export function useVendor() {
         const d = JSON.parse(rawDraft);
         if (d && d.name && d.fssaiNumber && d.pan) {
           memberships = [{
-// @ts-ignore
             id: d.restaurantId || "rest_local_verified",
             restaurantId: d.restaurantId || "rest_local_verified",
             name: d.name,
