@@ -543,7 +543,7 @@ export class TPlus1NodalPayoutProcessor {
         netDisbursablePaise,
         beneficiary,
         payoutMode,
-        compositePayoutPayload,
+        compositePayoutPayload: compositePayload,
         status: batchStatus,
         reason: statusReason,
         payoutId,

@@ -181,6 +181,49 @@ export interface OtaTravelBookingResult {
   };
 }
 
+
+export interface EdTechAffiliateCommissionParams {
+  enrollmentId: string;
+  courseId: string;
+  courseName: string;
+  partnerInstitute: string;
+  studentId: string;
+  studentName?: string;
+  courseFeePaise: number;
+  commissionAmountPaise: number; // ₹2,500.00 (250,000 paise) to ₹7,500.00 (750,000 paise)
+  studentCashbackPaise?: number; // Optional student scholarship / cashback in integer paise
+  affiliateTrackingId: string;
+  idempotencyKey: string;
+  platformAccount?: LedgerAccountType;
+  platformEntityId?: string;
+}
+
+export interface EdTechAffiliateCommissionResult {
+  transaction: LedgerTransaction;
+  summary: {
+    enrollmentId: string;
+    courseId: string;
+    courseName: string;
+    partnerInstitute: string;
+    studentId: string;
+    courseFeePaise: number;
+    commissionAmountPaise: number;
+    retainedPlatformRevenuePaise: number;
+    studentCashbackPaise: number;
+    affiliateTrackingId: string;
+    doubleEntryVariancePaise: number;
+    accountsCredited: {
+      platformFeeRevenue: number;
+      customerWallet?: number;
+    };
+    accountDebited: {
+      account: LedgerAccountType;
+      entityId: string;
+      amountPaise: number;
+    };
+  };
+}
+
 export class CanonicalLedger {
   private inMemoryChainState = "0000000000000000000000000000000000000000000000000000000000000000";
   private inMemoryTransactions = new Map<string, LedgerTransaction>();
@@ -1375,6 +1418,126 @@ export class CanonicalLedger {
         accountDebited: {
           account: debitAccount,
           amountPaise: customerPaidPaise,
+        },
+      },
+    };
+  }
+
+  /**
+   * Binds placement-guaranteed EdTech course affiliate monetization with balanced double-entry accounting:
+   * - Validates statutory commission boundary: strictly between ₹2,500 (250,000 paise) and ₹7,500 (750,000 paise).
+   * - Enforces authentic affiliate tracking ID format (OK-AFF-*).
+   * - DEBIT: Bank Clearing (BANK_CLEARING) — Institutional partner receivables from partner institute.
+   * - CREDIT: Platform Fee Revenue (PLATFORM_FEE_REVENUE) — Retained platform monetization margin.
+   * - CREDIT: Customer Closed-Loop Wallet (CUSTOMER_WALLET) — Optional student career scholarship / cashback.
+   *
+   * Invariant: Total Debits === Total Credits (zero paise variance). Fail-closed if bounds or inputs are invalid.
+   */
+  public async recordEdTechAffiliateCommission(
+    params: EdTechAffiliateCommissionParams
+  ): Promise<EdTechAffiliateCommissionResult> {
+    const courseFeePaise = assertSafePaise(params.courseFeePaise, "courseFeePaise");
+    const commissionAmountPaise = assertSafePaise(params.commissionAmountPaise, "commissionAmountPaise");
+
+    // Statutory mandate: commissions must range strictly between ₹2,500 and ₹7,500 per confirmed enrollment
+    const MIN_COMMISSION_PAISE = 250_000; // ₹2,500.00
+    const MAX_COMMISSION_PAISE = 750_000; // ₹7,500.00
+
+    if (commissionAmountPaise < MIN_COMMISSION_PAISE || commissionAmountPaise > MAX_COMMISSION_PAISE) {
+      throw new Error(
+        `STATUTORY VIOLATION: EdTech affiliate commission must be between ₹2,500 (250,000 paise) and ₹7,500 (750,000 paise). Received: ${commissionAmountPaise} paise.`
+      );
+    }
+
+    // Validate affiliate tracking ID format
+    if (!params.affiliateTrackingId || !/^OK-AFF-[A-Z0-9]+-[A-Z0-9]+$/i.test(params.affiliateTrackingId.trim())) {
+      throw new Error(
+        `INVALID AFFILIATE TRACKING ID: Tracking ID '${params.affiliateTrackingId}' does not conform to OrderKing affiliate convention (OK-AFF-<COURSE>-<SLUG>).`
+      );
+    }
+
+    const studentCashbackPaise = params.studentCashbackPaise !== undefined
+      ? assertSafePaise(params.studentCashbackPaise, "studentCashbackPaise")
+      : 0;
+
+    if (studentCashbackPaise > commissionAmountPaise) {
+      throw new Error(
+        `FAIL-CLOSED: Student scholarship/cashback (${studentCashbackPaise} paise) cannot exceed gross commission (${commissionAmountPaise} paise).`
+      );
+    }
+
+    const retainedPlatformRevenuePaise = commissionAmountPaise - studentCashbackPaise;
+    const partnerDebitEntity = `EDTECH_PARTNER:${params.partnerInstitute.replace(/[^a-zA-Z0-9_]/g, "_")}`;
+    const platformAccount: LedgerAccountType = params.platformAccount || "PLATFORM_FEE_REVENUE";
+    const platformEntityId = params.platformEntityId || "PLATFORM_TREASURY";
+
+    const entries: LedgerEntry[] = [
+      {
+        account: "BANK_CLEARING",
+        direction: "DEBIT",
+        amountPaise: commissionAmountPaise,
+        entityId: partnerDebitEntity,
+        memo: `Institutional EdTech commission receivable from ${params.partnerInstitute} for enrollment #${params.enrollmentId} (${params.courseName})`,
+      },
+      {
+        account: platformAccount,
+        direction: "CREDIT",
+        amountPaise: retainedPlatformRevenuePaise,
+        entityId: platformEntityId,
+        memo: `Platform fee revenue earned on EdTech course ${params.courseName} (Tracking ID: ${params.affiliateTrackingId})`,
+      },
+    ];
+
+    if (studentCashbackPaise > 0) {
+      entries.push({
+        account: "CUSTOMER_WALLET",
+        direction: "CREDIT",
+        amountPaise: studentCashbackPaise,
+        entityId: params.studentId,
+        memo: `Career cohort scholarship reward credited to KingPay wallet for enrollment #${params.enrollmentId}`,
+      });
+    }
+
+    // Mathematical verification of zero-paise double-entry variance
+    const totalDebits = entries.filter((e) => e.direction === "DEBIT").reduce((s, e) => s + e.amountPaise, 0);
+    const totalCredits = entries.filter((e) => e.direction === "CREDIT").reduce((s, e) => s + e.amountPaise, 0);
+    const doubleEntryVariancePaise = totalDebits - totalCredits;
+
+    if (doubleEntryVariancePaise !== 0) {
+      throw new Error(
+        `CRITICAL FINANCIAL DEFECT: Imbalanced double-entry journal! Debits (${totalDebits}) !== Credits (${totalCredits}), variance: ${doubleEntryVariancePaise} paise.`
+      );
+    }
+
+    const tx = await this.postTransaction({
+      idempotencyKey: params.idempotencyKey,
+      eventType: "EDTECH_AFFILIATE_COMMISSION_RECORDED",
+      orderId: params.enrollmentId,
+      entries,
+    });
+
+    return {
+      transaction: tx,
+      summary: {
+        enrollmentId: params.enrollmentId,
+        courseId: params.courseId,
+        courseName: params.courseName,
+        partnerInstitute: params.partnerInstitute,
+        studentId: params.studentId,
+        courseFeePaise,
+        commissionAmountPaise,
+        retainedPlatformRevenuePaise,
+        studentCashbackPaise,
+        affiliateTrackingId: params.affiliateTrackingId,
+        doubleEntryVariancePaise,
+        accountsCredited: {
+          platformFeeRevenue: retainedPlatformRevenuePaise,
+          ...(studentCashbackPaise > 0 ? { customerWallet: studentCashbackPaise } : {}),
+        },
+        accountDebited: {
+          account: "BANK_CLEARING",
+          entityId: partnerDebitEntity,
+          amountPaise: commissionAmountPaise,
         },
       },
     };
