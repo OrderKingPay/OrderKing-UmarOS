@@ -195,7 +195,7 @@ export function StandaloneExporterModal({
             {/* Embed Code Snippet */}
             <div className="space-y-1.5 pt-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400">Embeddable Widget &lt;iframe&gt;:</span>
+                <span className="text-xs font-semibold text-slate-400">Embeddable Widget <iframe>:</span>
                 <button
                   type="button"
                   onClick={handleCopyEmbed}

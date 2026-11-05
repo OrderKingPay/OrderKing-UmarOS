@@ -53,10 +53,10 @@ function TermsPage() {
               <strong className="text-white">OrderKing</strong> and <strong className="text-white">KingPay</strong> is owned and operated by{" "}
               <strong className="text-white">Orderkingpay</strong>, an enterprise headquartered in Sribhumi, Assam - 788710, India,
               operating under Goods and Services Tax Identification Number (GSTIN){" "}
-              <span className="font-mono text-emerald-400 font-bold">18AFXPH9838M1Z9</span> (hereinafter referred to as the &quot;Company&quot;, &quot;OrderKing&quot;, &quot;We&quot;, &quot;Us&quot;, or &quot;Our&quot;).
+              <span className="font-mono text-emerald-400 font-bold">18AFXPH9838M1Z9</span> (hereinafter referred to as the "Company", "OrderKing", "We", "Us", or "Our").
             </p>
             <p>
-              By accessing, browsing, registering, or transacting on the OrderKing or KingPay platforms, you (the &quot;User&quot;, &quot;Customer&quot;, or &quot;You&quot;)
+              By accessing, browsing, registering, or transacting on the OrderKing or KingPay platforms, you (the "User", "Customer", or "You")
               expressly agree to be bound by these Terms of Service, our Privacy Policy, our Cancellation &amp; Refund Policy, and all applicable
               statutory guidelines of the Republic of India.
             </p>
@@ -75,7 +75,7 @@ function TermsPage() {
             </p>
             <p>
               The Company provides an algorithmic and telemetric communication infrastructure facilitating transactions between independent third-party
-              merchants (&quot;Restaurant Partners&quot;), independent gig logistics professionals (&quot;Delivery Partners&quot;), and end consumers.
+              merchants ("Restaurant Partners"), independent gig logistics professionals ("Delivery Partners"), and end consumers.
               The Company neither manufactures, prepares, nor retails food items directly, nor does it control the physical culinary preparation
               or ingredient quality of merchant catalogs, except where mandated under applicable food safety standards.
             </p>

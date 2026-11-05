@@ -16,9 +16,9 @@ export const Route = createFileRoute("/api/og")({
         const sanitize = (text: string) =>
           text
             .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
+            .replace(/</g, "<")
+            .replace(/>/g, ">")
+            .replace(/"/g, """)
             .replace(/'/g, "&apos;");
 
         const safeTitle = sanitize(title.length > 34 ? title.substring(0, 31) + "..." : title);

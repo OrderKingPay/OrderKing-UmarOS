@@ -2212,7 +2212,7 @@ You can ask me anything across software engineering, architecture, business anal
                 </p>
                 {liveTranscript && (
                   <div className="mt-1.5 text-xs font-mono text-cyan-300 bg-white px-2 py-0.5 rounded border border-cyan-500/30">
-                    🎤 &quot;{liveTranscript}&quot;
+                    🎤 "{liveTranscript}"
                   </div>
                 )}
               </div>
@@ -2295,7 +2295,7 @@ You can ask me anything across software engineering, architecture, business anal
               <div className="max-w-xl text-center px-4">
                 <p className="text-sm font-medium text-gray-400 leading-relaxed min-h-[44px]">
                   {liveTranscript ? (
-                    <span className="text-cyan-300">&quot;{liveTranscript}&quot;</span>
+                    <span className="text-cyan-300">"{liveTranscript}"</span>
                   ) : isSpeaking ? (
                     <span className="text-amber-300">King AI is speaking...</span>
                   ) : (

@@ -1,8 +1,9 @@
+import { ZomatoPartnerPlatformApp } from "../components/zomato-partner/ZomatoPartnerPlatformApp";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { getPhoneSession } from "@/lib/auth/client";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({ component: ZomatoPartnerPlatformApp });
 
 function Home() {
   const { user } = useCurrentUserState();

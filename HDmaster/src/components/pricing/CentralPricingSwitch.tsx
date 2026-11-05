@@ -907,7 +907,7 @@ export function CentralPricingSwitch() {
                 <div className="bg-white p-3.5 rounded-lg border border-slate-200">
                   <div className="flex justify-between items-center mb-1">
                     <label className="block text-xs font-bold text-slate-800">
-                      Slab 3 (&gt;6 km) Rate
+                      Slab 3 (>6 km) Rate
                     </label>
                     <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.slab3RateInr}/km</span>
                   </div>
@@ -938,7 +938,7 @@ export function CentralPricingSwitch() {
                 <div className="bg-white p-3.5 rounded-lg border border-slate-200">
                   <div className="flex justify-between items-center mb-1">
                     <label className="block text-xs font-bold text-slate-800">
-                      LDO Bonus (&gt;8 km)
+                      LDO Bonus (>8 km)
                     </label>
                     <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.ldoBonusInr}</span>
                   </div>

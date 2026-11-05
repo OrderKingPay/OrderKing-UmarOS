@@ -175,16 +175,16 @@ function MyTripsPage() {
                   <div className="p-3 rounded-xl bg-slate-950/70 border border-white/10 space-y-1">
                     <span className="font-bold text-white block">Confirmed E-Tickets Cancellation:</span>
                     <p className="text-[11px] leading-relaxed">
-                      • <strong>&gt;48 hrs:</strong> Flat clerkage (1A/EC: ₹240+GST, 2A/1st: ₹200+GST, 3A/CC: ₹180+GST, SL: ₹120, 2S: ₹60).<br />
+                      • <strong>>48 hrs:</strong> Flat clerkage (1A/EC: ₹240+GST, 2A/1st: ₹200+GST, 3A/CC: ₹180+GST, SL: ₹120, 2S: ₹60).<br />
                       • <strong>48h to 12h:</strong> 25% of fare (or flat minimum) + 5% GST on AC.<br />
                       • <strong>12h to 4h:</strong> 50% of fare (or flat minimum) + 5% GST on AC.<br />
-                      • <strong>&lt;4 hrs / Post-Charting:</strong> Direct refund blocked; online TDR required.
+                      • <strong><4 hrs / Post-Charting:</strong> Direct refund blocked; online TDR required.
                     </p>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-950/70 border border-white/10 space-y-1">
                     <span className="font-bold text-white block">TDR Lifecycle &amp; Gateway SLA:</span>
                     <p className="text-[11px] leading-relaxed">
-                      • <strong>TDR Grounds:</strong> Train delayed &gt;3 hrs, coach AC failure, route diversion.<br />
+                      • <strong>TDR Grounds:</strong> Train delayed >3 hrs, coach AC failure, route diversion.<br />
                       • <strong>Audit Authority:</strong> Railway Zonal CCM (Claims) with 30-90 days verification.<br />
                       • <strong>Settlement Timeline:</strong> <strong>T+2 to T+5 Banking Days</strong> directly to source payment gateway.<br />
                       • <strong>OrderKing Guarantee:</strong> Strictly ₹0 platform cancellation penalty.
