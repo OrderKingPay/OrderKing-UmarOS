@@ -94,9 +94,7 @@ function Login() {
         }
       }
       const modeLabel =
-        selectedChannel === "voice"
-          ? "Automated voice call initiated to"
-          : selectedChannel === "whatsapp"
+        selectedChannel === "whatsapp"
           ? "WhatsApp verification ready for"
           : "6-digit OTP dispatched to";
       setSuccessMsg(`${modeLabel} +91 ${cleanNumber}`);

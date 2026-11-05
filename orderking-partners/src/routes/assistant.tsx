@@ -11,6 +11,19 @@ export const Route = createFileRoute("/assistant")({
   component: PartnerSparkAssistantPage,
 });
 
+export const INDIAN_CONSTITUTIONAL_LANGUAGES = [
+  { code: "en", label: "English", native: "English" },
+  { code: "hi", label: "Hindi", native: "हिन्दी" },
+  { code: "bn", label: "Bengali", native: "বাংলা" },
+  { code: "gu", label: "Gujarati", native: "ગુજરાતી" },
+  { code: "kn", label: "Kannada", native: "ಕನ್ನಡ" },
+  { code: "ml", label: "Malayalam", native: "മലയാളം" },
+  { code: "mr", label: "Marathi", native: "मराठी" },
+  { code: "pa", label: "Punjabi", native: "ਪੰਜਾਬੀ" },
+  { code: "ta", label: "Tamil", native: "தமிழ்" },
+  { code: "te", label: "Telugu", native: "తెలుగు" },
+] as const;
+
 interface ChatMsg {
   id: string;
   role: "assistant" | "user";

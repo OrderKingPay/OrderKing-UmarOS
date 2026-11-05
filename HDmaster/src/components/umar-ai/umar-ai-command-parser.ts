@@ -43,8 +43,9 @@ export interface CommandHistoryItem {
 export function parseNaturalLanguageConfigCommand(
   raw: string,
   _activeConfigs?: Record<string, Record<string, any>>
-): ParsedCommandResult {
+): ParsedCommandResult | null {
   const prompt = (raw || "").trim();
+  if (!prompt) return null;
   const lower = prompt.toLowerCase();
 
   const makeResult = (
@@ -67,9 +68,133 @@ export function parseNaturalLanguageConfigCommand(
     actionUrl,
   });
 
+  // Food Platform Fee (e.g., "set food platform fee to 12", "set platform fee to ₹15")
+  const foodFeeMatch = lower.match(/(?:food\s+)?platform\s+fee\s*(?:to|=|at|:)?\s*₹?\s*(\d+(?:\.\d+)?)/i);
+  if (foodFeeMatch) {
+    const fee = parseFloat(foodFeeMatch[1] ?? "12");
+    return makeResult(
+      "FEE_UPDATE",
+      "founder_fees",
+      {
+        food_platform_fee: fee,
+        platform_fee_paise: Math.round(fee * 100),
+        food_platform_fee_inr: fee,
+        food_platform_fee_paise: Math.round(fee * 100),
+      },
+      "Food Platform Fee",
+      `₹${fee}`,
+      `Updated Food Platform Fee to ₹${fee} across all customer checkouts.`
+    );
+  }
+
+  // KingPay Remittance Fee (e.g., "set remit fee to 1.5", "set remittance fee to 2.25%")
+  const remitMatch = lower.match(/(?:kingpay\s+)?remit(?:tance)?\s+fee\s*(?:to|=|at|:)?\s*(\d+(?:\.\d+)?)\s*%?/i);
+  if (remitMatch) {
+    const pct = parseFloat(remitMatch[1] ?? "1.5");
+    return makeResult(
+      "FEE_UPDATE",
+      "founder_fees",
+      {
+        remit_fee: pct,
+        kingpay_remit_fee_pct: pct,
+      },
+      "KingPay Fee",
+      `${pct}%`,
+      `Updated KingPay Remittance Fee to ${pct}% in real time.`
+    );
+  }
+
+  // Travel PNR Convenience Fee (e.g., "set travel pnr fee to 35")
+  const pnrMatch = lower.match(/(?:travel\s+|pnr\s+)(?:pnr\s+)?fee\s*(?:to|=|at|:)?\s*₹?\s*(\d+(?:\.\d+)?)/i);
+  if (pnrMatch) {
+    const fee = parseFloat(pnrMatch[1] ?? "29");
+    return makeResult(
+      "FEE_UPDATE",
+      "founder_fees",
+      {
+        travel_pnr_convenience_fee_inr: fee,
+        travel_pnr_fee_inr: fee,
+        travel_pnr_fee_paise: Math.round(fee * 100),
+      },
+      "Travel PNR Fee",
+      `₹${fee}`,
+      `Updated Travel & PNR Fee to ₹${fee}.`
+    );
+  }
+
+  // Wallet Cashback (e.g., "set wallet cashback to 10")
+  const cashbackMatch = lower.match(/(?:wallet\s+)?cashback\s*(?:to|=|at|:)?\s*₹?\s*(\d+(?:\.\d+)?)/i);
+  if (cashbackMatch) {
+    const amt = parseFloat(cashbackMatch[1] ?? "5");
+    return makeResult(
+      "FEE_UPDATE",
+      "founder_fees",
+      {
+        wallet_cashback_reward_inr: amt,
+        wallet_cashback_inr: amt,
+        wallet_cashback_paise: Math.round(amt * 100),
+      },
+      "Wallet Cashback",
+      `₹${amt}`,
+      `Updated Cashback reward to ₹${amt}.`
+    );
+  }
+
+  // Restaurant Commission (e.g., "set restaurant commission to 18%")
+  const commMatch = lower.match(/(?:restaurant\s+)?commission\s*(?:to|=|at|:)?\s*(\d+(?:\.\d+)?)\s*%?/i);
+  if (commMatch) {
+    const pct = parseFloat(commMatch[1] ?? "18");
+    return makeResult(
+      "COMMISSION_UPDATE",
+      "economics",
+      {
+        default_commission_percent: pct,
+        restaurant_commission_pct: pct,
+        platform_commission_pct: pct,
+      },
+      "Restaurant Commission",
+      `${pct}%`,
+      `Updated Restaurant Partner Commission rate to ${pct}%.`
+    );
+  }
+
+  // Dynamic Surge Multiplier (e.g., "set surge multiplier to 1.4")
+  const surgeMatch = lower.match(/surge(?:\s+rate|\s+multiplier|\s+pricing)?.*?(?:to|=|at|:|\s)\s*(\d+(?:\.\d+)?)\s*x?/i);
+  if (surgeMatch) {
+    const mult = parseFloat(surgeMatch[1] ?? "1.0");
+    return makeResult(
+      "SURGE_UPDATE",
+      "economics",
+      {
+        surge_multiplier: mult,
+        surge_active: mult > 1,
+      },
+      "Surge Multiplier",
+      `${mult}x`,
+      `Updated live delivery surge multiplier to ${mult}x.`
+    );
+  }
+
+  // Base Delivery Fee (e.g., "set delivery fee to 35")
+  const deliveryFeeMatch = lower.match(/(?:base\s+)?delivery\s+fee\s*(?:to|=|at|:)?\s*₹?\s*(\d+(?:\.\d+)?)/i);
+  if (deliveryFeeMatch) {
+    const fee = parseFloat(deliveryFeeMatch[1] ?? "35");
+    return makeResult(
+      "FEE_UPDATE",
+      "economics",
+      {
+        base_delivery_fee_inr: fee,
+        base_delivery_fee_paise: Math.round(fee * 100),
+      },
+      "Delivery Fee",
+      `₹${fee}`,
+      `Updated Base Delivery Fee to ₹${fee}.`
+    );
+  }
+
   // Layout & Position Controls (Up, Down, Left, Right, Reorder)
-  if (/(move|shift|reorder|position|up|down|left|right)/i.test(lower)) {
-    const dirMatch = lower.match(/(up|down|left|right|top|bottom)/i);
+  if (/\b(move|shift|reorder|position)\b/i.test(lower) || /\b(up|down|left|right)\b/i.test(lower)) {
+    const dirMatch = lower.match(/\b(up|down|left|right|top|bottom)\b/i);
     const dir = (dirMatch?.[1] || "up").toUpperCase();
     return makeResult(
       "OPERATIONAL_GUIDANCE",
@@ -82,7 +207,7 @@ export function parseNaturalLanguageConfigCommand(
   }
 
   // Color, Theme & Option Customizer Controls
-  if (/(color|theme|palette|style|dark|light|emerald|gold|crimson|blue|option|customize)/i.test(lower)) {
+  if (/\b(color|theme|palette|style|dark|light|emerald|gold|crimson|blue|option|customize)\b/i.test(lower)) {
     return makeResult(
       "OPERATIONAL_GUIDANCE",
       "ui_theme_control",
@@ -94,7 +219,7 @@ export function parseNaturalLanguageConfigCommand(
   }
 
   // Purge / Delete / Remove / Clean Controls
-  if (/(purge|delete|remove|clean|clear|wipe|reset)/i.test(lower) && !/restaurant|partner|kitchen/i.test(lower)) {
+  if (/\b(purge|delete|remove|clean|clear|wipe|reset)\b/i.test(lower) && !/restaurant|partner|kitchen/i.test(lower)) {
     return makeResult(
       "OPERATIONAL_GUIDANCE",
       "autonomous_ops",
@@ -105,6 +230,7 @@ export function parseNaturalLanguageConfigCommand(
     );
   }
 
+  // Restaurant Partner Management & Onboarding
   if (
     /(?:how|where|can\s+i|steps?\s+to|guide|process)?.*(?:onboard|unboard|offboard|register|add|edit|approve|verify|remove|suspend|delete).*(?:restaurant|kitchen|partner|vendor|merchant)/i.test(lower) ||
     /(?:restaurant|kitchen|partner).*(?:onboard|unboard|offboard|registration|kyc|gst|fssai|edit|delete)/i.test(lower)
@@ -140,6 +266,7 @@ export function parseNaturalLanguageConfigCommand(
     );
   }
 
+  // Rider Fleet Management & Onboarding
   if (/(?:onboard|unboard|add|edit|delete|approve|verify|manage).*(?:rider|delivery\s+partner|driver|fleet)/i.test(lower)) {
     return makeResult(
       "PARTNER_ONBOARDING",
@@ -156,84 +283,7 @@ export function parseNaturalLanguageConfigCommand(
     );
   }
 
-  const foodFeeMatch = lower.match(/(?:food\s+)?platform\s+fee\s*(?:to|=|at|:)?\s*₹?\s*(\d+(?:\.\d+)?)/i);
-  if (foodFeeMatch) {
-    const fee = parseFloat(foodFeeMatch[1] ?? "12");
-    return makeResult(
-      "FEE_UPDATE",
-      "founder_fees",
-      { food_platform_fee_inr: fee, food_platform_fee_paise: Math.round(fee * 100) },
-      "Food Platform Fee",
-      `₹${fee}`,
-      `Updated Food Platform Fee to ₹${fee} across all customer checkouts.`
-    );
-  }
-
-  const remitMatch = lower.match(/(?:kingpay\s+)?remit(?:tance)?\s+fee\s*(?:to|=|at|:)?\s*(\d+(?:\.\d+)?)\s*%?/i);
-  if (remitMatch) {
-    const pct = parseFloat(remitMatch[1] ?? "1.5");
-    return makeResult(
-      "FEE_UPDATE",
-      "founder_fees",
-      { kingpay_remit_fee_pct: pct },
-      "KingPay Fee",
-      `${pct}%`,
-      `Updated KingPay Fee to ${pct}% in real time.`
-    );
-  }
-
-  const pnrMatch = lower.match(/(?:travel\s+|pnr\s+)(?:pnr\s+)?fee\s*(?:to|=|at|:)?\s*₹?\s*(\d+(?:\.\d+)?)/i);
-  if (pnrMatch) {
-    const fee = parseFloat(pnrMatch[1] ?? "29");
-    return makeResult(
-      "FEE_UPDATE",
-      "founder_fees",
-      { travel_pnr_fee_inr: fee, travel_pnr_fee_paise: Math.round(fee * 100) },
-      "Travel PNR Fee",
-      `₹${fee}`,
-      `Updated Travel & PNR Fee to ₹${fee}.`
-    );
-  }
-
-  const cashbackMatch = lower.match(/(?:wallet\s+)?cashback\s*(?:to|=|at|:)?\s*₹?\s*(\d+(?:\.\d+)?)/i);
-  if (cashbackMatch) {
-    const amt = parseFloat(cashbackMatch[1] ?? "5");
-    return makeResult(
-      "FEE_UPDATE",
-      "founder_fees",
-      { wallet_cashback_inr: amt, wallet_cashback_paise: Math.round(amt * 100) },
-      "Wallet Cashback",
-      `₹${amt}`,
-      `Updated Cashback reward to ₹${amt}.`
-    );
-  }
-
-  const commMatch = lower.match(/commission\s*(?:to|=|at|:)?\s*(\d+(?:\.\d+)?)\s*%?/i);
-  if (commMatch) {
-    const pct = parseFloat(commMatch[1] ?? "18");
-    return makeResult(
-      "COMMISSION_UPDATE",
-      "economics",
-      { restaurant_commission_pct: pct, platform_commission_pct: pct },
-      "Restaurant Commission",
-      `${pct}%`,
-      `Updated Restaurant Partner Commission rate to ${pct}%.`
-    );
-  }
-
-  const surgeMatch = lower.match(/surge(?:\s+rate|\s+multiplier|\s+pricing)?.*?(?:to|=|at|:|\s)\s*(\d+(?:\.\d+)?)\s*x?/i);
-  if (surgeMatch) {
-    const mult = parseFloat(surgeMatch[1] ?? "1.0");
-    return makeResult(
-      "SURGE_UPDATE",
-      "economics",
-      { surge_multiplier: mult, surge_active: mult > 1 },
-      "Surge Multiplier",
-      `${mult}x`,
-      `Updated live delivery surge multiplier to ${mult}x.`
-    );
-  }
-
+  // Payout and Settlement
   if (/payout|settle|settlement|neft|imps|ledger/i.test(lower)) {
     return makeResult(
       "PAYOUT_AUTOMATION",
@@ -249,6 +299,7 @@ export function parseNaturalLanguageConfigCommand(
     );
   }
 
+  // Fallback for number and fee-like directive
   const anyNumberMatch = lower.match(/(\d+(?:\.\d+)?)/);
   if (anyNumberMatch && /fee|rate|price|charge|tax|bonus|pay/i.test(lower)) {
     const val = parseFloat(anyNumberMatch[1]);
@@ -262,16 +313,6 @@ export function parseNaturalLanguageConfigCommand(
     );
   }
 
-  return makeResult(
-    "OPERATIONAL_GUIDANCE",
-    "autonomous_ops",
-    {
-      last_founder_directive: prompt,
-      executed_at: new Date().toISOString(),
-      autonomous_mode: "active",
-    },
-    "Founder Directive",
-    "Executed",
-    `Directive executed ("${prompt}") and synced across all OrderKing platforms.`
-  );
+  // Unrecognized input
+  return null;
 }

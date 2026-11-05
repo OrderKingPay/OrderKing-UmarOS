@@ -248,7 +248,7 @@ export const verifyPhoneOtpFn = createServerFn({ method: "POST" })
   });
 
 export const requestAdminPhoneOtpFn = createServerFn({ method: "POST" })
-  .validator((input: { phone: string; channel?: "sms" | "whatsapp" | "voice"; name?: string }) => input)
+  .validator((input: { phone: string; channel?: "sms" | "whatsapp"; name?: string }) => input)
   .handler(async ({ data }) => {
     return requestPhoneOtpFn({ data });
   });
