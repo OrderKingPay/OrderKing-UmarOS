@@ -17,9 +17,19 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
     throw error;
   }
   const rawMessage = error instanceof Error ? error.message : typeof error === "string" ? error : "";
-  if (typeof window !== "undefined" && (rawMessage.includes("Failed to get session") || rawMessage.includes("Unauthorized"))) {
-    window.location.replace("/login");
-    return null;
+  const isAuthError = /failed to get session|unauthorized|session expired|invalid session/i.test(rawMessage);
+  if (isAuthError) {
+    if (typeof window !== "undefined") {
+      window.location.replace("/login");
+      return null;
+    }
+    return (
+      <script
+        dangerouslySetInnerHTML={{
+          __html: 'window.location.replace("/login");',
+        }}
+      />
+    );
   }
   const isChunk = isChunkLoadError(error);
   const isNetwork = isNetworkTimeoutError(error);
