@@ -1472,7 +1472,7 @@ function OfferCard({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E5A93C]">
-              ★ {payout.labels.guaranteedEarningsTitle}
+              Estimated Payout
             </p>
             <p className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-white drop-shadow-[0_0_12px_rgba(229,169,60,0.4)]">
               {formatPaise(offer.expectedPayoutPaise)}
@@ -1524,7 +1524,7 @@ function OfferCard({
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
           <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Floor Fare</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-emerald-500 dark:text-emerald-300">{formatPaise(offer.expectedPayoutPaise)}</p>
-          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">custom commission</p>
+          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">Guaranteed</p>
         </div>
       </div>
 

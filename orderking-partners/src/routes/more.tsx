@@ -181,7 +181,7 @@ function MorePage() {
 
           {items.map((item) => {
             const meta = NAV_ITEM_METADATA[item.to];
-            const isKingAi = item.to === "/assistant";
+            const isKingAi = (item.to as string) === "/assistant";
             return (
               <Link
                 key={item.to}

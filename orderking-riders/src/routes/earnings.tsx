@@ -236,7 +236,7 @@ function Page() {
                 {payout.labels.rateCardTitle}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Exact Indian delivery matrix · SafeInteger paise arithmetic (100 paise = 1 INR)
+                Transparent per-order payout structure
               </p>
             </div>
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
@@ -252,7 +252,7 @@ function Page() {
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
               <span className="font-semibold text-foreground block">Progressive Distance</span>
               <span className="text-muted-foreground">
-                {payout.formattedDistanceRate}/km · Slabs up to ₹{payout.slabs.slab4RatePerKmPaise / 100}/km + ₹{payout.slabs.ldoBonusPaise / 100} LDO Bonus
+                {payout.formattedDistanceRate}/km
               </span>
             </div>
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
@@ -434,11 +434,11 @@ function Page() {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <CardTitle className="text-base">Settlement &amp; Payout Schedule</CardTitle>
-                <Badge tone="online">Wednesday NEFT/IMPS</Badge>
+                <CardTitle className="text-base">Weekly Settlement</CardTitle>
+                <Badge tone="online">Every Wednesday</Badge>
               </div>
               <CardMeta>
-                Weekly Wednesday Settlement: Orders from Monday 00:00:00 to Sunday 23:59:59 are settled automatically every Wednesday afternoon at 14:00 IST via automated NEFT/IMPS to your verified bank account or UPI ID registered during KYC onboarding.
+                Earnings are transferred automatically every Wednesday to your verified bank account or UPI.
               </CardMeta>
             </div>
             <Button
@@ -448,24 +448,15 @@ function Page() {
               className="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-1.5 shadow-sm"
             >
               <Zap className="size-3.5" />
-              {instantPayoutBusy ? "Dispatched..." : "1-Tap Instant UPI Cashout"}
+              {instantPayoutBusy ? "Processing..." : "Instant Cashout"}
             </Button>
           </div>
 
           {instantPayoutNotice ? (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-900 dark:text-amber-200">
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">
               {instantPayoutNotice}
             </div>
           ) : null}
-
-          <div className="border-t border-border pt-2.5 text-xs text-muted-foreground space-y-1">
-            <p>
-              <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Referral Incentives + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
-            </p>
-            <p className="text-[11px]">
-              Compliant with the Code on Social Security, 2020 · Independent Delivery Partner Ledger
-            </p>
-          </div>
         </Card>
 
         {/* Itemized Statement with Category Filter & Self-Service Dispute Logger */}

@@ -47,21 +47,13 @@ export const PRIMARY_NAV = [
   { to: "/kds", key: "nav.kitchen", icon: ChefHat, perm: "kitchen.view" as Permission },
   { to: "/menu", key: "nav.menu", icon: UtensilsCrossed, perm: "menu.view" as Permission },
   { to: "/settlements", key: "nav.settlements", icon: Wallet, perm: "settlements.view" as Permission },
-  { to: "/more", key: "nav.more", icon: MoreHorizontal, perm: "dashboard.view" as Permission },
 ] as const;
 
 export const MORE_NAV = [
   { to: "/dashboard", key: "nav.home", icon: Home, perm: "dashboard.view" as Permission },
-  { to: "/dining", key: "nav.dining", icon: CalendarDays, perm: "orders.view" as Permission },
-  { to: "/promotions", key: "nav.promotions", icon: Tag, perm: "promotions.view" as Permission },
-  { to: "/analytics", key: "nav.analytics", icon: LineChart, perm: "analytics.view" as Permission },
-  { to: "/reviews", key: "nav.reviews", icon: Star, perm: "reviews.view" as Permission },
   { to: "/hours", key: "nav.hours", icon: Clock3, perm: "hours.edit" as Permission },
-  { to: "/academy", key: "nav.academy", icon: GraduationCap, perm: "dashboard.view" as Permission },
-  { to: "/assistant", key: "nav.assistant", icon: Sparkles, perm: "assistant.use" as Permission },
-  { to: "/notifications", key: "nav.notifications", icon: Bell, perm: "notifications.view" as Permission },
-  { to: "/onboarding", key: "nav.onboarding", icon: Store, perm: "onboarding.edit" as Permission },
   { to: "/settings", key: "nav.settings", icon: Settings, perm: "settings.view" as Permission },
+  { to: "/onboarding", key: "nav.onboarding", icon: Store, perm: "onboarding.edit" as Permission },
 ] as const;
 
 export function VendorShell({

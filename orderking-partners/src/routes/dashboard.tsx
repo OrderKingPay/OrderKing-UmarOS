@@ -155,23 +155,23 @@ function DashboardPage() {
               </span>
             </div>
             <h2 className="font-display text-2xl font-bold text-slate-100">
-              Register Your Restaurant &amp; Complete Statutory KYC
+              Register Your Restaurant
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Your partner account is ready. Complete your restaurant profile, FSSAI registration, and bank details to start receiving customer orders.
+              Complete your restaurant profile, FSSAI registration, and bank details to start receiving customer orders.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800">
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Food Safety Compliance</div>
-                <div className="text-sm font-semibold text-slate-100 mt-0.5">14-Digit FSSAI Food Safety</div>
+                <div className="text-[10px] uppercase font-mono text-slate-400">Step 1</div>
+                <div className="text-sm font-semibold text-slate-100 mt-0.5">Restaurant Details</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Tax &amp; Accounting</div>
-                <div className="text-sm font-semibold text-slate-100 mt-0.5">CGST §9(5) &amp; TDS §194-O</div>
+                <div className="text-[10px] uppercase font-mono text-slate-400">Step 2</div>
+                <div className="text-sm font-semibold text-slate-100 mt-0.5">FSSAI &amp; Documents</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Payout Ledger</div>
-                <div className="text-sm font-semibold text-emerald-400 mt-0.5">Direct Bank Settlement</div>
+                <div className="text-[10px] uppercase font-mono text-slate-400">Step 3</div>
+                <div className="text-sm font-semibold text-emerald-400 mt-0.5">Bank Payout Details</div>
               </div>
             </div>
             <div className="flex flex-wrap gap-3 pt-2">
@@ -435,7 +435,7 @@ function DashboardPage() {
               No Active Kitchen Orders
             </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Outlet is ${isOpen ? "online" : "offline"}. Incoming customer orders will ring here with instant 1-tap accept controls.
+              Outlet is {isOpen ? "online" : "offline"}. Incoming customer orders will ring here with instant 1-tap accept controls.
             </p>
           </Card>
         )}

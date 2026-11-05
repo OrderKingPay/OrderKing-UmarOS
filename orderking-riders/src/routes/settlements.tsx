@@ -584,45 +584,11 @@ export function SettlementsDesk() {
         </Card>
 
         {/* 5. STATUTORY TAX COMPLIANCE & SELF-SERVICE DISPUTE DESK */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="space-y-3">
-            <div className="flex items-center gap-2">
-              <FileText className="size-5 text-primary" />
-              <CardTitle>Statutory Tax &amp; Social Security Certificate Note</CardTitle>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Under the <strong>Income Tax Act, 1961</strong> and the{" "}
-              <strong>Code on Social Security, 2020</strong>, your delivery earnings with{" "}
-              {DEFAULT_BRANDING.legalCompanyName} are recorded as independent delivery partner service payouts.
-            </p>
-            <ul className="space-y-1.5 text-xs text-muted-foreground list-disc pl-4">
-              <li>
-                <strong>Direct Rider Remittance:</strong> 100% of your calculated delivery fare, incentives, and customer tips are remitted without platform service fee deductions.
-              </li>
-              <li>
-                <strong>Income Proof for Bank Loans &amp; ITR-4:</strong> Use the{" "}
-                <em>Download CSV Voucher</em> or <em>Print / Save PDF</em> buttons above as verified proof of commercial gig earnings.
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="space-y-3">
-            <CardTitle>Self-Service Settlement Reconciliation Desk</CardTitle>
-            <CardMeta>
-              Missing a wait-time payout, tip, or COD reconciliation? Log an auditable ledger ticket directly to Order King Treasury.
-            </CardMeta>
-            <form onSubmit={handleRaiseReconciliationTicket} className="space-y-2.5 pt-1">
-              <Input
-                placeholder="Describe order code, batch date, or payout discrepancy..."
-                value={disputeNote}
-                onChange={(e) => setDisputeNote(e.target.value)}
-                required
-              />
-              <Button type="submit" size="sm" disabled={submittingDispute || !disputeNote.trim()}>
-                {submittingDispute ? "Submitting Ledger Ticket..." : "Log Settlement Reconciliation Ticket"}
-              </Button>
-            </form>
-          </Card>
+        <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card text-xs text-muted-foreground">
+          <span>Need assistance with a payout or settlement?</span>
+          <Link to="/support" className="font-semibold text-primary hover:underline">
+            Contact Fleet Support →
+          </Link>
         </div>
       </div>
     </AppShell>

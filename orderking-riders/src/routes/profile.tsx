@@ -286,10 +286,10 @@ function Page() {
               </span>
               <div>
                 <CardTitle className="text-base">
-                  Self-Service Payout, Zones &amp; Emergency Contact
+                  Payout &amp; Preferences
                 </CardTitle>
                 <p className="text-xs text-muted-foreground">
-                  Update your settlement UPI, preferred zones, and emergency contact anytime without resetting KYC verification
+                  Settlement UPI, preferred zones, and emergency contact
                 </p>
               </div>
             </div>
@@ -439,79 +439,14 @@ function Page() {
           </div>
         </Card>
 
-        {/* Rider Partner Legal, Agreements & Compliance Center */}
-        <Card className="space-y-3">
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <CardTitle>Rider Partner Legal, Agreements &amp; Compliance Center</CardTitle>
-              <CardMeta className="mt-1">
-                {DEFAULT_BRANDING.legalCompanyName} · {DEFAULT_BRANDING.domain}
-              </CardMeta>
-            </div>
-            <Badge tone="online">Statutory</Badge>
-          </div>
-          <p className="text-xs text-muted-foreground">{t("legalNote")}</p>
-
-          <div className="space-y-2.5 pt-1">
-            {LEGAL_SECTIONS.map((sec) => {
-              const isOpen = openLegalId === sec.id;
-              const Icon =
-                sec.id === "agreement" ? FileText : sec.id === "privacy" ? Lock : Scale;
-              return (
-                <div
-                  key={sec.id}
-                  className="rounded-lg border border-border bg-muted/20 overflow-hidden"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setOpenLegalId(isOpen ? null : sec.id)}
-                    className="w-full flex items-center justify-between gap-3 p-3.5 text-left hover:bg-muted/40 transition"
-                  >
-                    <div className="flex items-start gap-2.5">
-                      <Icon className="size-4 text-primary mt-0.5 shrink-0" />
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-display text-sm font-bold text-foreground">
-                            {sec.title}
-                          </span>
-                          <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-primary">
-                            {sec.statuteBadge}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{sec.subtitle}</p>
-                      </div>
-                    </div>
-                    {isOpen ? (
-                      <ChevronUp className="size-4 text-muted-foreground shrink-0" />
-                    ) : (
-                      <ChevronDown className="size-4 text-muted-foreground shrink-0" />
-                    )}
-                  </button>
-
-                  {isOpen ? (
-                    <div className="border-t border-border bg-card p-3.5 space-y-2.5 text-xs">
-                      {sec.clauses.map((clause) => (
-                        <div key={clause.heading} className="space-y-1">
-                          <p className="font-semibold text-foreground">{clause.heading}</p>
-                          <p className="text-muted-foreground leading-relaxed">{clause.body}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-
-        <div className="flex items-center gap-3 text-sm">
-          <Link to="/assistant" className="underline">
-            {t("assistant")}
-          </Link>
-          <span className="text-muted-foreground">·</span>
-          <Link to="/support" className="underline">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground pt-3 border-t border-border">
+          <Link to="/support" className="hover:underline">
             {t("support")}
           </Link>
+          <span>·</span>
+          <span className="cursor-pointer hover:underline">Terms of Service</span>
+          <span>·</span>
+          <span className="cursor-pointer hover:underline">Privacy Policy</span>
         </div>
       </div>
     </AppShell>
