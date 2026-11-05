@@ -475,10 +475,9 @@ export class MilitaryAntiFraudShield {
   // ==========================================================================
 
   public checkDispatchThrottle(minIntervalSec = 3): ValidationResult {
-    const isTest = typeof process !== "undefined" && Boolean(process.env?.VITEST || process.env?.NODE_ENV === "test");
     const now = Date.now();
     const intervalMs = minIntervalSec * 1000;
-    if (!isTest && now - this.dispatchRateLimits.lastRunTimestamp < intervalMs) {
+    if (now - this.dispatchRateLimits.lastRunTimestamp < intervalMs) {
       this.rateLimitViolations++;
       return {
         valid: false,

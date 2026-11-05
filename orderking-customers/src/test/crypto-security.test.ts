@@ -43,7 +43,7 @@ describe("Zero-Trust Security & Anti-Hacking Guard", () => {
     });
 
     it("resets limits after window expires", async () => {
-      const limiter = new MemorySafeRateLimiter({ windowMs: 50, maxRequests: 2, maxEntries: 10 });
+      const limiter = new MemorySafeRateLimiter({ windowMs: 200, maxRequests: 2, maxEntries: 10 });
       const ip = "10.0.0.1";
 
       expect(limiter.isAllowed(ip).allowed).toBe(true);
@@ -51,7 +51,7 @@ describe("Zero-Trust Security & Anti-Hacking Guard", () => {
       expect(limiter.isAllowed(ip).allowed).toBe(false);
 
       // Wait for window to expire
-      await new Promise((resolve) => setTimeout(resolve, 60));
+      await new Promise((resolve) => setTimeout(resolve, 250));
       expect(limiter.isAllowed(ip).allowed).toBe(true);
     });
   });

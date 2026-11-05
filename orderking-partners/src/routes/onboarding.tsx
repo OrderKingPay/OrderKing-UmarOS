@@ -34,14 +34,14 @@ export const ORDERKING_LOCAL_ONLY_KEY = "orderking_partner_onboarding_local_only
 export function formatFriendlyError(err: unknown, defaultMsg: string): string {
   if (!err) return defaultMsg;
   const raw = err instanceof Error ? err.message : String(err);
-  if (/Invalid URL string|Failed to construct 'URL'/i.test(raw)) {
-    return "Server connection is initializing or service URL is unreachable. Your onboarding draft is safely saved locally.";
+  if (/invalid\s*url/i.test(raw)) {
+    return "Server connection is initializing or service URL is unreachable. Your application details are safely saved locally.";
   }
-  if (/Failed to fetch|NetworkError|network/i.test(raw)) {
-    return "Network connection issue detected. Your onboarding progress is safely saved locally.";
+  if (/failed to fetch|network|offline|econnrefused/i.test(raw)) {
+    return "Network connection issue. Your details have been safely saved locally. You can retry once connection is restored.";
   }
-  if (/Unauthorized|401|session/i.test(raw)) {
-    return "Session requires verification. Your progress is preserved locally.";
+  if (/unauthorized|forbidden|session|401|403/i.test(raw)) {
+    return "Session requires verification. Your onboarding progress has been preserved locally. Please log in again to sync.";
   }
   return raw || defaultMsg;
 }
@@ -50,9 +50,9 @@ export function persistDraftLocally(data: {
   restaurantId?: string | null;
   form: Record<string, any>;
   exemptFromGst?: boolean;
-  onboardingFeeOption?: OnboardingFeeOption | string;
+  onboardingFeeOption?: OnboardingFeeOption;
   amortizedConsent?: boolean;
-  executionMethod?: "CLICKWRAP" | "AADHAAR_ESIGN" | string;
+  executionMethod?: "CLICKWRAP" | "AADHAAR_ESIGN";
   clickwrapSignatoryName?: string;
   clickwrapDesignation?: string;
   clickwrapConsent?: boolean;
@@ -60,9 +60,9 @@ export function persistDraftLocally(data: {
   foodSafetyUndertakingAccepted?: boolean;
   privacyAndTaxAccepted?: boolean;
 }) {
-  if (typeof window === "undefined" || !window.localStorage) return;
+  if (typeof window === "undefined") return;
   try {
-        const payload = {
+    const payload = {
       restaurantId: data.restaurantId,
       ...data.form,
       exemptFromGst: data.exemptFromGst ?? true,
@@ -232,6 +232,10 @@ function OnboardingPage() {
     const cleanFssai = form.fssaiNumber.replace(/\D/g, "");
     if (cleanFssai.length !== 14) {
       setError("Please enter a valid 14-digit FSSAI Food License Number.");
+      return false;
+    }
+    if (!form.fssaiExpiryDate || form.fssaiExpiryDate.trim() === "") {
+      setError("Enter the actual FSSAI certificate expiry before submitting for review.");
       return false;
     }
     const cleanPan = form.pan.trim().toUpperCase();
@@ -578,7 +582,7 @@ function OnboardingPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">FSSAI Valid Until (Enter the actual FSSAI certificate expiry before submitting for review.)</Label>
+                  <Label className="text-xs text-slate-300">FSSAI Valid Until</Label>
                   <Input
                     type="date"
                     value={form.fssaiExpiryDate}

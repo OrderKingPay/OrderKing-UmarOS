@@ -811,7 +811,9 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
       /* ignore db error during check */
     }
 
-    return { ok: true, debugOtp: typeof otp !== 'undefined' ? otp : (typeof code !== 'undefined' ? code : undefined), phone: cleanPhone,
+    return {
+      ok: true,
+      phone: cleanPhone,
       email,
       credential,
       isNewUser,

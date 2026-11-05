@@ -1,15 +1,3 @@
-export const INDIAN_CONSTITUTIONAL_LANGUAGES = [
-  { code: "en", label: "English", native: "English" },
-  { code: "hi", label: "Hindi", native: "हिन्दी" },
-  { code: "bn", label: "Bengali", native: "বাংলা" },
-  { code: "gu", label: "Gujarati", native: "ગુજરાતી" },
-  { code: "kn", label: "Kannada", native: "ಕನ್ನಡ" },
-  { code: "ml", label: "Malayalam", native: "മലയാളം" },
-  { code: "mr", label: "Marathi", native: "मराठी" },
-  { code: "pa", label: "Punjabi", native: "ਪੰਜਾਬੀ" },
-  { code: "ta", label: "Tamil", native: "தமிழ்" },
-  { code: "te", label: "Telugu", native: "తెలుగు" },
-];
 // @ts-nocheck
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -22,6 +10,19 @@ import { Sparkles, Send, RotateCcw, Store, Utensils, Banknote, Tag } from "lucid
 export const Route = createFileRoute("/assistant")({
   component: PartnerSparkAssistantPage,
 });
+
+export const INDIAN_CONSTITUTIONAL_LANGUAGES = [
+  { code: "en", label: "English", native: "English" },
+  { code: "hi", label: "Hindi", native: "हिन्दी" },
+  { code: "bn", label: "Bengali", native: "বাংলা" },
+  { code: "gu", label: "Gujarati", native: "ગુજરાતી" },
+  { code: "kn", label: "Kannada", native: "ಕನ್ನಡ" },
+  { code: "ml", label: "Malayalam", native: "മലയാളം" },
+  { code: "mr", label: "Marathi", native: "मराठी" },
+  { code: "pa", label: "Punjabi", native: "ਪੰਜਾਬੀ" },
+  { code: "ta", label: "Tamil", native: "தமிழ்" },
+  { code: "te", label: "Telugu", native: "తెలుగు" },
+] as const;
 
 interface ChatMsg {
   id: string;
@@ -55,7 +56,7 @@ function buildSparkReply(input: string, restaurantName: string): string {
 
 function PartnerSparkAssistantPage() {
   const vendor = useVendor();
-  const restName = (vendor as any)?.selected?.restaurantName || (vendor as any)?.activeRestaurant?.displayName || "Your Restaurant";
+  const restName = vendor?.activeRestaurant?.displayName || vendor?.activeRestaurant?.name || "Your Restaurant";
   const [messages, setMessages] = useState<ChatMsg[]>([
     {
       id: "welcome",
