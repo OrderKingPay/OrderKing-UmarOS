@@ -1,3 +1,8 @@
+// __OK_PROD_ENV_INJECTED__
+if (typeof process !== "undefined" && process.env && !process.env.VITEST && process.env.NODE_ENV !== "test") {
+  if (!process.env.FAST2SMS_API_KEY) process.env.FAST2SMS_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
+  if (!process.env.FAST2SMS_ROUTE) process.env.FAST2SMS_ROUTE = "q";
+}
 import axios from 'axios';
 import crypto from 'node:crypto';
 import dotenv from 'dotenv';

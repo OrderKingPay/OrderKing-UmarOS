@@ -440,7 +440,7 @@ export function GrowthVaultView() {
                   </div>
                 </div>
 
-                {/* Direct Payout Method */}
+                {/* Bank Settlement Method */}
                 <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3">
                   <span className="font-semibold text-emerald-300">🏦 Direct Bank Account Disbursal: </span>
                   <span className="text-muted">{currentGrant.payoutMethod}</span>
