@@ -377,13 +377,6 @@ export function CommandShell() {
   const payload = session.data && session.data.ok ? session.data : null;
   const employee = payload?.employee;
   if (session.data && !session.data.ok) {
-    if (session.data.error === "Unauthorized" || (session.data as any).status === 401) {
-      if (typeof window !== "undefined") {
-        window.location.assign("/login");
-        return null;
-      }
-      return <RedirectToSignIn />;
-    }
     return (
       <main className="grid min-h-screen place-items-center bg-bg p-6 text-fg">
         <div className="max-w-md rounded-[24px] border border-border bg-surface p-6">

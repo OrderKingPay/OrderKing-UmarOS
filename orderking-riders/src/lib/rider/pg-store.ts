@@ -264,15 +264,9 @@ export class PgStore implements RiderStore {
   }
 
   async getRiderByUserId(userId: string) {
-    const digits = userId.replace(/\D/g, "");
-    const cleanPhone = digits.length >= 10 ? digits.slice(-10) : "";
     const rows = await this.sql.query<Record<string, unknown>>(
-      `select * from riders 
-       where user_id = $1 
-          or (phone is not null and $2 <> '' and right(regexp_replace(phone, '[^0-9]', '', 'g'), 10) = $2)
-          or email = $3
-       order by updated_at desc limit 1`,
-      [userId, cleanPhone, cleanPhone ? `${cleanPhone}@rider.orderking.in` : ""],
+      "select * from riders where user_id = $1",
+      [userId],
     );
     return rows[0] ? riderFromRow(rows[0]) : null;
   }

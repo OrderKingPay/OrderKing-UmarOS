@@ -38,7 +38,6 @@ export interface FloatingCashCardProps {
   lifetimeDeliveries?: number;
   riderName?: string;
   trustTier?: string;
-  modalOnly?: boolean;
 }
 
 export function FloatingCashCard({
@@ -50,7 +49,6 @@ export function FloatingCashCard({
   lifetimeDeliveries = 0,
   riderName,
   trustTier,
-  modalOnly = false,
 }: FloatingCashCardProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -145,8 +143,7 @@ export function FloatingCashCard({
 
   return (
     <>
-      {!modalOnly && (
-        <Card
+      <Card
         className={`border p-4 transition-all ${
           isBlocked
             ? "border-amber-400/80 bg-amber-50/70 dark:border-amber-800/60 dark:bg-amber-950/20"
@@ -155,52 +152,156 @@ export function FloatingCashCard({
               : "border-border bg-card"
         }`}
       >
-        {/* Card Header */}
-        <div className="flex items-center justify-between gap-3">
+        {/* Card Header & Dynamic Trust Tier */}
+        <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Wallet className="size-4" />
+            <div
+              className={`flex size-10 items-center justify-center rounded-xl shadow-xs transition-colors ${
+                isBlocked
+                  ? "bg-amber-600 text-white"
+                  : isWarning
+                    ? "bg-amber-500 text-white"
+                    : "bg-primary text-primary-foreground"
+              }`}
+            >
+              {isBlocked ? <Coffee className="size-5" /> : <Wallet className="size-5" />}
             </div>
             <div>
-              <CardTitle className="text-sm font-bold">
-                Floating Cash (COD)
-              </CardTitle>
-              <p className="text-xs text-muted-foreground font-mono">
-                Cash in Hand: ₹{balanceInr.toLocaleString("en-IN")} / ₹{limitInr.toLocaleString("en-IN")}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <CardTitle className="text-sm font-bold tracking-tight">
+                  {cod.labels.limitTitle || "Pocket Balance (Cash on Delivery)"}
+                </CardTitle>
+
+                {/* Trust Tier Badge */}
+                <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-[10.5px] font-bold text-primary">
+                  <Crown className="size-3 text-amber-500" />
+                  {tierConfig.title}
+                </span>
+
+                {/* Polite Status Badge */}
+                <Badge tone={politeMsg.badgeTone} className="text-[10px] font-semibold">
+                  {politeMsg.badgeLabel}
+                </Badge>
+              </div>
+
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Dynamic Trust Limit: ₹{limitInr.toLocaleString("en-IN")} · Reconciled every Wednesday or via UPI
               </p>
             </div>
           </div>
 
-          <Button
-            size="sm"
-            onClick={() => setModalOpen(true)}
-            className="text-xs font-semibold h-8 bg-primary text-primary-foreground"
-          >
-            Deposit UPI
-          </Button>
+          <div className="text-right shrink-0">
+            <span className="font-mono text-lg font-extrabold text-foreground">
+              ₹{balanceInr.toLocaleString("en-IN")}
+            </span>
+            <p className="text-[11px] text-muted-foreground font-mono">
+              / ₹{limitInr.toLocaleString("en-IN")}
+            </p>
+          </div>
         </div>
 
         {/* Utilization Progress Bar */}
-        <div className="mt-2.5 space-y-1">
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className="mt-3 space-y-1">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className={`h-full transition-all duration-500 ${
                 isBlocked
-                  ? "bg-rose-500"
+                  ? "bg-amber-600"
                   : isWarning
                     ? "bg-amber-500"
-                    : "bg-emerald-500"
+                    : "bg-emerald-600"
               }`}
               style={{ width: `${Math.min(100, utilizationPct)}%` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-muted-foreground">
+          <div className="flex justify-between text-[10.5px] text-muted-foreground">
             <span>{utilizationPct}% holding capacity</span>
-            <span>₹{headroomInr.toLocaleString("en-IN")} limit remaining</span>
+            <span>
+              {isBlocked
+                ? "Safe cap reached · Relax for 2 mins & clear via UPI"
+                : `₹${headroomInr.toLocaleString("en-IN")} headroom remaining`}
+            </span>
+          </div>
+        </div>
+
+        {/* Next Tier Progression Teaser */}
+        {tierProgression.nextTier && (
+          <div className="mt-2.5 flex items-center justify-between rounded-lg bg-muted/40 px-2.5 py-1.5 text-[11px] text-muted-foreground border border-border/50">
+            <span className="flex items-center gap-1.5 font-medium text-foreground">
+              <Sparkles className="size-3.5 text-amber-500" />
+              <span>Next: {tierProgression.nextTier.title}</span>
+            </span>
+            <span>
+              Complete <strong className="text-primary font-bold">{tierProgression.deliveriesNeededForNextTier}</strong> more trips to unlock ₹{tierProgression.nextTier.floatingCashLimitInr.toLocaleString("en-IN")} limit
+            </span>
+          </div>
+        )}
+
+        {/* Polite Human-Style Empathic Alert Notice */}
+        {isBlocked ? (
+          <div className="mt-3 rounded-xl border border-amber-300 bg-amber-100/70 p-3 text-xs text-amber-950 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-100 space-y-1.5">
+            <div className="flex items-start gap-2">
+              <Coffee className="size-4 shrink-0 text-amber-700 dark:text-amber-400 mt-0.5" />
+              <div>
+                <p className="font-bold text-amber-900 dark:text-amber-200">
+                  {politeMsg.headline}
+                </p>
+                <p className="mt-0.5 leading-relaxed text-amber-900/90 dark:text-amber-200/90">
+                  {politeMsg.greetingAndStatus} {politeMsg.suggestedAction}
+                </p>
+              </div>
+            </div>
+            <div className="border-t border-amber-300/60 pt-1.5 text-[11px] text-amber-800 dark:text-amber-300 flex items-center justify-between">
+              <span>{politeMsg.prepaidOrdersUninterruptedNotice}</span>
+              <span className="font-semibold">{politeMsg.chaiBreakEncouragement}</span>
+            </div>
+          </div>
+        ) : isWarning ? (
+          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50/80 p-2.5 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+            <AlertTriangle className="size-4 shrink-0 text-amber-600 mt-0.5" />
+            <div className="space-y-0.5">
+              <p className="font-semibold">{politeMsg.headline}</p>
+              <p className="text-muted-foreground leading-relaxed">
+                {politeMsg.suggestedAction} (Prepaid deliveries continue uninterrupted).
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Action Row */}
+        <div className="mt-3 pt-2.5 border-t border-border/60 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[11px] text-muted-foreground">
+            Offsets in Wednesday payout · Zero penalty
+          </span>
+          <div className="flex items-center gap-2">
+            {balanceInr > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={launchUpiApp}
+                className="text-xs font-semibold"
+                title="Launch installed UPI App directly on mobile"
+              >
+                <ExternalLink className="mr-1 size-3.5" />
+                1-Tap UPI
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant={isBlocked ? "default" : "outline"}
+              className={
+                isBlocked
+                  ? "bg-amber-600 hover:bg-amber-700 text-white font-bold"
+                  : "font-semibold"
+              }
+              onClick={() => setModalOpen(true)}
+            >
+              <QrCode className="mr-1.5 size-3.5" />
+              Scan QR / Deposit
+            </Button>
           </div>
         </div>
       </Card>
-      )}
 
       {/* Instant Floating Cash Deposit Modal */}
       {modalOpen && (

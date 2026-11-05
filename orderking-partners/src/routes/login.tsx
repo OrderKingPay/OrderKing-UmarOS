@@ -207,29 +207,39 @@ function Login() {
         role: "partner",
       });
 
-      // 3. Resilient Better-Auth synchronization with fail-safe error boundary
-      try {
-        if (typeof (authClient as any)?.signIn?.email === "function") {
-          const signInRes = await (authClient as any).signIn.email({
+      // 3. Sign in or sign up via Better-Auth
+      if (verifyRes.isNewUser || mode === "up") {
+        const partnerName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
+        const signUpRes = await authClient.signUp.email({
+          email,
+          password: credential,
+          name: partnerName,
+        });
+
+        if (signUpRes.error) {
+          // If already exists, attempt sign in directly
+          const signInRes = await authClient.signIn.email({
             email,
             password: credential,
           });
-          if (signInRes?.error && typeof (authClient as any)?.signUp?.email === "function") {
-            await (authClient as any).signUp.email({
-              email,
-              password: credential,
-              name: partnerDisplayName,
-            });
-          }
+          if (signInRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
         }
-      } catch (authErr) {
-        console.warn("[Partner Auth] Edge session active via setPhoneSession", authErr);
-      }
-
-      if (verifyRes.isNewUser || mode === "up") {
         window.location.assign("/onboarding");
       } else {
-        window.location.assign("/kitchen");
+        const signInRes = await authClient.signIn.email({
+          email,
+          password: credential,
+        });
+        if (signInRes.error) {
+          // In case of password update, sign up fallback
+          const signUpRes = await authClient.signUp.email({
+            email,
+            password: credential,
+            name: `Partner ${cleanPhone.slice(-4)}`,
+          });
+          if (signUpRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
+        }
+        window.location.assign("/dashboard");
       }
     } catch (err: any) {
       setError(err instanceof Error ? err.message : "Verification failed. Please check the code.");
@@ -257,24 +267,20 @@ function Login() {
         const defaultName =
           name.trim() ||
           (resolved.isMobile ? `Partner ${identifier.trim().slice(-4)}` : resolved.email.split("@")[0]);
-        if (typeof (authClient as any)?.signUp?.email === "function") {
-          const res = await (authClient as any).signUp.email({
-            email: resolved.email,
-            password,
-            name: defaultName,
-          });
-          if (res?.error) throw new Error(res.error.message || t("auth.error"));
-        }
+        const res = await authClient.signUp.email({
+          email: resolved.email,
+          password,
+          name: defaultName,
+        });
+        if (res.error) throw new Error(res.error.message || t("auth.error"));
         window.location.assign("/onboarding");
       } else {
-        if (typeof (authClient as any)?.signIn?.email === "function") {
-          const res = await (authClient as any).signIn.email({
-            email: resolved.email,
-            password,
-          });
-          if (res?.error) throw new Error(res.error.message || t("auth.error"));
-        }
-        window.location.assign("/kitchen");
+        const res = await authClient.signIn.email({
+          email: resolved.email,
+          password,
+        });
+        if (res.error) throw new Error(res.error.message || t("auth.error"));
+        window.location.assign("/dashboard");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : t("auth.error"));
@@ -306,7 +312,7 @@ function Login() {
           <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-300">
             <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
             <span>
-              Orderkingpay Merchant Platform · GSTIN 18AFXPH9838M1Z9 · Partner Settlements
+              Orderkingpay Merchant Platform · GSTIN 18AFXPH9838M1Z9 · T+1 Direct Payouts
             </span>
           </div>
         </div>
@@ -701,7 +707,7 @@ function Login() {
         {/* Security & Hospitality Guarantee */}
         <div className="text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
           <ShieldCheck className="size-3.5 text-emerald-400" />
-          <span>OrderKing Restaurant Partner</span>
+          <span>OrderKing Restaurant Partner Portal • Direct Bank Payouts</span>
         </div>
       </div>
     </main>

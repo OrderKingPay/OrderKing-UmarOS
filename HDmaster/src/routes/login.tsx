@@ -134,32 +134,28 @@ function Login() {
       const email = res.email || `${cleanPhone}@phone.orderkingpay.com`;
       const password = res.password || `OK_${cleanPhone}!9A`;
 
-      try {
-        if (typeof (authClient as any)?.signIn?.email === "function") {
-          const signInRes = await (authClient as any).signIn.email({
+      const signInRes = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: "/app",
+      });
+
+      if (signInRes.error) {
+        // If not registered yet, create the founder/operator account
+        const signUpRes = await authClient.signUp.email({
+          email,
+          password,
+          name: "Umar OS Administrator",
+          callbackURL: "/app",
+        });
+        if (signUpRes.error) {
+          // Retry sign-in
+          await authClient.signIn.email({
             email,
             password,
             callbackURL: "/app",
           });
-
-          if (signInRes?.error && typeof (authClient as any)?.signUp?.email === "function") {
-            const signUpRes = await (authClient as any).signUp.email({
-              email,
-              password,
-              name: "Umar OS Administrator",
-              callbackURL: "/app",
-            });
-            if (signUpRes?.error) {
-              await (authClient as any).signIn.email({
-                email,
-                password,
-                callbackURL: "/app",
-              });
-            }
-          }
         }
-      } catch (authErr) {
-        console.warn("[Admin Auth] Better-Auth sync deferred; session active via setPhoneSession", authErr);
       }
 
       setPhoneSession({

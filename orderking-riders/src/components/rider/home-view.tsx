@@ -28,6 +28,7 @@ import { Link } from "@tanstack/react-router";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import {
   ArrowRight,
+  Calculator,
   CalendarClock,
   Camera,
   CheckCircle2,
@@ -58,6 +59,7 @@ import { FloatingCashCard } from "./floating-cash-card";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 import { calculateDailyMilestoneProgress, calculateTier1MilestoneBonus } from "@/lib/rider/gig-engine";
+import { VipAmbassadorPass } from "./vip-ambassador-pass";
 import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
@@ -273,6 +275,131 @@ function DailyMilestoneCard({
         </div>
       ) : null}
     </section>
+  );
+}
+
+function SelfServicePayoutCalculator() {
+  const { payout, surge } = useRiderCustomization();
+  const [open, setOpen] = useState(false);
+  const [distanceKm, setDistanceKm] = useState("3.5");
+  const [waitMinutes, setWaitMinutes] = useState("0");
+  const [multiPackage, setMultiPackage] = useState(false);
+
+  const parsedDist = Math.max(0, Number.parseFloat(distanceKm) || 0);
+  const parsedWait = Math.max(0, Math.floor(Number.parseFloat(waitMinutes) || 0));
+  const baseFarePaise = payout.baseFarePaise;
+  const baseDistanceKm = payout.baseDistanceKm;
+  const distanceRatePaise = payout.distanceRatePerKmPaise;
+  const billableDistanceKm = Math.max(0, parsedDist - baseDistanceKm);
+  const extraDistancePaise = Math.round(billableDistanceKm * distanceRatePaise);
+  const baseAndDistancePaise = baseFarePaise + extraDistancePaise;
+  const waitBonusPaise = calculateRestaurantWaitPayPaise(parsedWait, 6, 100);
+  const multiPkgBonusPaise = multiPackage ? 500 : 0;
+  const weatherBonusPaise = surge.isWeatherAllowanceActive ? surge.weatherAllowancePaise : 0;
+  const totalEstimatedPaise =
+    baseAndDistancePaise + waitBonusPaise + multiPkgBonusPaise + weatherBonusPaise;
+
+  return (
+    <Card className="space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
+            <Calculator className="size-4" />
+          </span>
+          <div>
+            <CardTitle className="text-base">Self-Service Per-Order Payout Calculator</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Verify exact statutory earnings for any distance, wait time, or multi-package order
+            </p>
+          </div>
+        </div>
+        <Button size="sm" variant="outline" onClick={() => setOpen((v) => !v)}>
+          {open ? "Hide" : "Calculate"}
+        </Button>
+      </div>
+
+      {open ? (
+        <div className="space-y-3 border-t border-border pt-3 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <Label className="text-xs">Total Route Distance (km)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="0.5"
+                value={distanceKm}
+                onChange={(e) => setDistanceKm(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Restaurant Wait Time (mins)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={waitMinutes}
+                onChange={(e) => setWaitMinutes(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            <div className="flex flex-col justify-end">
+              <button
+                type="button"
+                onClick={() => setMultiPackage((v) => !v)}
+                className={`rounded-md border px-3 py-2 text-left font-medium transition ${
+                  multiPackage
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-muted/30 text-muted-foreground"
+                }`}
+              >
+                {multiPackage ? "✓ Multi-Package (+₹5.00)" : "Single Package Order"}
+              </button>
+            </div>
+          </div>
+
+          <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
+            <div className="flex justify-between">
+              <dt className="text-muted-foreground">
+                Statutory Base Fare (first {baseDistanceKm} km)
+              </dt>
+              <dd className="font-mono">{formatPaise(baseFarePaise)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-muted-foreground">
+                Distance Pay ({billableDistanceKm.toFixed(1)} extra km ×{" "}
+                {formatPaise(distanceRatePaise)}/km)
+              </dt>
+              <dd className="font-mono">{formatPaise(extraDistancePaise)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-muted-foreground">
+                Kitchen Wait Compensation (₹1/min after 6 mins grace)
+              </dt>
+              <dd className="font-mono">{formatPaise(waitBonusPaise)}</dd>
+            </div>
+            {multiPackage ? (
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Multi-Package Handling Bonus</dt>
+                <dd className="font-mono">{formatPaise(multiPkgBonusPaise)}</dd>
+              </div>
+            ) : null}
+            {surge.isWeatherAllowanceActive ? (
+              <div className="flex justify-between text-sky-500 dark:text-sky-400">
+                <dt>{surge.badges.weatherAllowanceText}</dt>
+                <dd className="font-mono font-semibold">+{formatPaise(surge.weatherAllowancePaise)}</dd>
+              </div>
+            ) : null}
+            <div className="flex justify-between border-t border-border pt-1.5 font-bold text-sm text-foreground">
+              <dt>Base Floor Order Payout (excl. Customer Tip)</dt>
+              <dd className="font-mono text-emerald-600 dark:text-emerald-400">
+                {formatPaise(totalEstimatedPaise)}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      ) : null}
+    </Card>
   );
 }
 
@@ -500,92 +627,7 @@ export function HomeView() {
   const { t } = useI18n();
   const { sdui, payout, surge, weather, cod } = useRiderCustomization();
   const user = useCurrentUser();
-  const [home, setHome] = useState<Home | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const cached = window.localStorage.getItem("orderking_rider_cached_home");
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed?.rider?.id) return parsed;
-      }
-      let phone = "9395065587";
-      let fullName = "Delivery Partner";
-      const sessionRaw = window.localStorage.getItem("orderking_rider_session") || window.localStorage.getItem("orderking_rider_prefill");
-      if (sessionRaw) {
-        try {
-          const s = JSON.parse(sessionRaw);
-          if (s.phone) phone = s.phone;
-          if (s.fullName) fullName = s.fullName;
-        } catch {}
-      }
-      return {
-        rider: {
-          id: `rd_${phone}`,
-          userId: phone,
-          fullName: fullName,
-          phone: phone,
-          email: `${phone}@rider.orderking.in`,
-          photoUrl: null,
-          address: "",
-          emergencyName: "",
-          emergencyPhone: "",
-          dateOfBirth: null,
-          governmentIdType: null,
-          governmentIdLast4: null,
-          kycStatus: "VERIFIED",
-          kycRejectReason: null,
-          riderType: "DELIVERY_PARTNER",
-          vehicleType: "MOTORCYCLE",
-          vehicleRegistration: null,
-          licenceNumber: null,
-          insuranceRef: null,
-          payoutUpi: null,
-          payoutBankLast4: null,
-          preferredZones: [],
-          availabilityNotes: "",
-          status: "OFFLINE",
-          onlineSince: null,
-          locale: "en",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          dataMode: "LIVE",
-          consecutiveDeclines: 0,
-          coolingOffUntil: null,
-          coolingOffReason: null,
-        },
-        active: null,
-        offer: null,
-        today: { completedDeliveries: 0, totalEarnedPaise: 0, tipPaise: 0 },
-        pendingCashPaise: 0,
-        notifications: [],
-        config: {
-          appName: "OrderKing Rider",
-          payoutCurrency: "INR",
-          minPayoutPaise: 10000,
-          maxCashPaise: 200000,
-          volunteerEnabled: false,
-          supportPhone: "+911140000000",
-          sosPhone: "112",
-          legalEntity: "OrderKing Logistics Ltd",
-          discipline: {
-            enabled: true,
-            floatingCashLimitInr: 2000,
-            cancellationPenaltyBeforePickupInr: 25,
-            cancellationPenaltyPostPickupType: "FULL_ORDER" as const,
-            cancellationPenaltyPostPickupCustomInr: 150,
-            coolingOffConsecutiveRejections: 3,
-            coolingOffAcceptanceRateThresholdPct: 70,
-            coolingOffDurationMinutes: 15,
-            upiDepositVpa: "orderking.treasury@okaxis",
-          },
-        },
-        pocketBalancePaise: 0,
-        coolingOff: null,
-        activeDeliveries: [],
-      } as unknown as Home;
-    } catch {}
-    return null;
-  });
+  const [home, setHome] = useState<Home | null>(null);
   const [performance, setPerformance] = useState<RiderPerformance | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -713,17 +755,10 @@ export function HomeView() {
   const load = useCallback(async () => {
     try {
       const data = await withRetry(getHomeFn);
-      if (data && data.rider) {
-        setHome(data);
-        setError(null);
-        try {
-          window.localStorage.setItem("orderking_rider_cached_home", JSON.stringify(data));
-        } catch {}
-      }
+      setHome(data);
+      setError(null);
     } catch (e) {
-      const msg = errorMessage(e, t("connectionLostBody"));
-      console.warn("Rider home load warning:", msg);
-      setError(msg);
+      setError(errorMessage(e, t("connectionLostBody")));
     }
   }, [t]);
 
@@ -752,26 +787,28 @@ export function HomeView() {
     2,
   );
 
-  if (!home) {
+  if (!home && !error) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-40 w-full rounded-xl" />
         <Skeleton className="h-32 w-full rounded-xl" />
-        {error ? (
-          <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium">
-            <span>Connecting to fleet dispatch...</span>
-            <Button size="sm" variant="outline" onClick={() => void load()}>
-              {t("retry")}
-            </Button>
-          </div>
-        ) : null}
       </div>
+    );
+  }
+  if (!home) {
+    return (
+      <Card>
+        <CardTitle>{t("connectionLost")}</CardTitle>
+        <CardMeta className="mt-2">{error}</CardMeta>
+        <Button className="mt-4" onClick={() => void load()}>
+          {t("retry")}
+        </Button>
+      </Card>
     );
   }
 
   // OrderKing Partner Verification Block
-  const kycStatusNormalized = (home.rider.kycStatus || "").toUpperCase();
-  const isVerified = ["VERIFIED", "APPROVED", "ACTIVE", "DRAFT"].includes(kycStatusNormalized);
+  const isVerified = home.rider.kycStatus === "VERIFIED" || (home.rider.kycStatus as string) === "APPROVED";
   if (!isVerified) {
     return (
       <div className="space-y-4">
@@ -819,11 +856,10 @@ export function HomeView() {
     unreconciledPaise >= codSoftWarningPaise || codUsagePct >= cod.warningThresholdPct;
 
   async function go(statusNext: "ONLINE" | "OFFLINE") {
-    if (statusNext === "ONLINE") {
-      setDriverReadinessConfirmed(true);
-      try {
-        window.localStorage.setItem("ok_driver_readiness_v1", "true");
-      } catch {}
+    if (statusNext === "ONLINE" && !helmetSelfie && !driverReadinessConfirmed) {
+      toast.error("Please confirm driver readiness check before going online.");
+      setSelfieModalOpen(true);
+      return;
     }
     setPending(true);
     try {
@@ -933,74 +969,361 @@ export function HomeView() {
         />
       ) : null}
 
-      {/* 1. Clean Silent Courier Header */}
-      <header className="rounded-2xl border border-border bg-card/95 p-3 shadow-md backdrop-blur-md sticky top-2 z-30">
+      {/* Top Floating Partner Header with Live Floating Cash Meter & Deposit UPI Button */}
+      <header className="rounded-2xl border border-border bg-card/95 p-3.5 shadow-xl backdrop-blur-md sticky top-2 z-30 space-y-2.5">
         <div className="flex items-center justify-between gap-3">
-          {/* Left: Driver Avatar & Identity */}
-          <Link to="/profile" className="flex items-center gap-2.5 min-w-0">
-            <div className="relative size-10 shrink-0 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-foreground">
+          {/* Left: Partner identity & live duty radar pill */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="relative size-10 shrink-0 rounded-xl bg-gradient-to-br from-amber-500/20 to-[#E5A93C]/40 border border-[#E5A93C]/40 flex items-center justify-center font-display font-extrabold text-foreground shadow-sm">
               {(home.rider.fullName || user?.displayName || "OK").slice(0, 2).toUpperCase()}
               <span
-                className={`absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-background ${
+                className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-card ${
                   status === "ONLINE"
                     ? "bg-emerald-500 animate-pulse"
                     : status === "BUSY"
                       ? "bg-amber-500"
-                      : "bg-muted-foreground"
+                      : "bg-rose-500"
                 }`}
               />
             </div>
             <div className="min-w-0">
-              <h2 className="text-sm font-bold truncate text-foreground leading-tight">
-                {home.rider.fullName || user?.displayName || "Delivery Partner"}
+              <h2 className="font-display text-sm font-bold truncate text-foreground leading-tight">
+                {home.rider.fullName || user?.displayName || "Partner"}
               </h2>
-              <p className="text-[11px] text-muted-foreground truncate">
+              <p className="text-[11px] text-muted-foreground truncate font-medium">
                 {home.rider.vehicleType} · {home.rider.preferredZones[0] || "Fleet Zone"}
               </p>
             </div>
-          </Link>
+          </div>
 
-          {/* Right: Floating Cash & Emergency SOS */}
+          {/* Right: Floating Cash / Pocket Balance Meter with Deposit UPI Button & Red SOS Panic Button */}
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setExternalDepositOpen(true)}
-              className="flex items-center gap-1.5 rounded-full bg-muted/80 border border-border px-2.5 py-1 text-xs font-semibold hover:bg-muted transition"
-              title="Deposit Cash via UPI"
-            >
-              <Wallet className="size-3.5 text-primary" />
-              <span>{formatPaise(unreconciledPaise)} COD</span>
-            </button>
-
             <EmergencySosButton
               onClick={() => setSosOpen(true)}
               size="sm"
               label="SOS"
               subLabel="112"
             />
+
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+                Pocket Balance
+              </p>
+              <p className="font-mono text-xs sm:text-sm font-bold text-foreground">
+                {formatPaise(unreconciledPaise)}{" "}
+                <span className="text-[10px] text-muted-foreground font-normal">
+                  / {formatPaise(codBlockThresholdPaise)}
+                </span>
+              </p>
+            </div>
+
+            <Button
+              size="sm"
+              onClick={() => setExternalDepositOpen(true)}
+              className="h-8 rounded-xl bg-gradient-to-r from-blue-600 via-[#2563EB] to-blue-700 text-white px-3 text-xs font-bold shadow-md shadow-blue-500/25 hover:from-blue-500 hover:to-blue-600 transition-all active:scale-[0.98]"
+            >
+              <Wallet className="size-3.5 mr-1" />
+              Deposit UPI
+            </Button>
+          </div>
+        </div>
+
+        {/* Floating Cash utilization progress bar */}
+        <div className="space-y-1">
+          <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 ${
+                isCodBlocked
+                  ? "bg-rose-500"
+                  : isCodNearLimit
+                    ? "bg-amber-500"
+                    : "bg-emerald-500"
+              }`}
+              style={{ width: `${Math.max(4, Math.min(100, codUsagePct))}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <span
+                className={`size-1.5 rounded-full ${isCodBlocked ? "bg-rose-500" : isCodNearLimit ? "bg-amber-500" : "bg-emerald-500"}`}
+              />
+              {isCodBlocked
+                ? `₹${(codBlockThresholdPaise / 100).toLocaleString("en-IN")} Hard Lock Reached — Deposit Required`
+                : isCodNearLimit
+                  ? `₹${(codSoftWarningPaise / 100).toLocaleString("en-IN")} Soft Warning — Deposit Recommended`
+                  : "Floating Balance Healthy"}
+            </span>
+            <span>
+              {codUsagePct}% of ₹{(codBlockThresholdPaise / 100).toLocaleString("en-IN")} cap
+            </span>
           </div>
         </div>
       </header>
 
-      {/* 2. Duty Slider & Core Performance */}
-      <Card className="p-4 shadow-sm border-border/80 space-y-3.5">
-        <div className="pt-0.5">
+      {/* Duty Status & Pre-Shift Readiness Header */}
+      <section className="rounded-xl bg-card p-5 shadow-[var(--shadow-border)] space-y-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("welcome")}</p>
+            <h1 className="mt-1 font-display text-3xl leading-none">
+              {home.rider.fullName || user?.displayName || "Partner"}
+            </h1>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {home.rider.vehicleType} · {home.rider.vehicleRegistration || "Verified Partner"}
+              {home.rider.preferredZones.length > 0
+                ? ` · Zones: ${home.rider.preferredZones.join(", ")}`
+                : ""}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+            <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
+            {status === "OFFLINE" ? (
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (!helmetSelfie && !driverReadinessConfirmed) {
+                    toast.error("Please confirm driver readiness check first.");
+                    setSelfieModalOpen(true);
+                    return;
+                  }
+                  return go("ONLINE");
+                }}
+                disabled={pending}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs gap-1.5 shadow-sm active:scale-95 transition"
+              >
+                <Zap className="size-3.5 fill-current" />
+                1-Tap Go Online
+              </Button>
+            ) : status === "ONLINE" ? (
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={triggerManualGpsPing}
+                  disabled={gpsPinging}
+                  className="text-xs font-semibold gap-1.5 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 active:scale-95 transition"
+                  title="Send real-time GPS telemetry ping to database"
+                >
+                  <Radio className="size-3.5 animate-pulse text-emerald-500" />
+                  {gpsPinging ? "Pinging..." : "GPS Ping"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setConfirm("offline")}
+                  disabled={pending || Boolean(home.active)}
+                  className="text-xs font-bold gap-1 active:scale-95 transition"
+                >
+                  Go Offline
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={triggerManualGpsPing}
+                disabled={gpsPinging}
+                className="text-xs font-semibold gap-1.5 border-amber-500/30 text-amber-600 hover:bg-amber-500/10 active:scale-95 transition"
+              >
+                <Radio className="size-3.5 animate-pulse text-amber-500" />
+                {gpsPinging ? "Pinging..." : "GPS Ping"}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {kyc !== "VERIFIED" ? (
+          <p className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
+            {kyc === "UNDER_REVIEW" ? t("underReview") : t("kycHint")}
+          </p>
+        ) : null}
+
+        {(() => {
+          const tier1Bonus = calculateTier1MilestoneBonus(home.completedToday);
+          const totalEarningsPaise = (home.todayEarningsPaise || 0) + tier1Bonus.bonusPaise;
+          return (
+            <dl className="grid grid-cols-3 gap-2 text-center">
+              <Stat
+                label={t("todayEarnings")}
+                value={formatPaise(totalEarningsPaise)}
+                subtext={tier1Bonus.bonusPaise > 0 ? `+₹${tier1Bonus.bonusRupees} Milestone` : undefined}
+              />
+              <Stat label={t("completed")} value={String(home.completedToday)} />
+              <Stat
+                label={t("onlineFor")}
+                value={status === "OFFLINE" ? "—" : formatDuration(onlineMs)}
+              />
+            </dl>
+          );
+        })()}
+
+        {/* Pre-Shift Driver Readiness & Automated Dispatch Synchronization */}
+        <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+              {allReady ? (
+                <ShieldCheck className="size-4 text-emerald-500" />
+              ) : (
+                <Camera className="size-4 text-primary" />
+              )}
+              Pre-Shift Readiness &amp; Dispatch Sync
+            </span>
+            <span className="text-[11px] font-semibold">
+              {allReady ? (
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-3.5" /> Readiness Verified
+                </span>
+              ) : (
+                <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  Readiness Check Required
+                </span>
+              )}
+            </span>
+          </div>
+
+          {/* Automated Driver Readiness Toggle & Dispatch Telemetry */}
+          <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-bold text-foreground block">
+                  Automated Driver Readiness
+                </span>
+                <span className="text-[11px] text-muted-foreground block">
+                  Confirms safety gear, thermal bag, GPS telemetry &amp; battery for dispatches
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={toggleDriverReadiness}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
+                  driverReadinessConfirmed ? "bg-emerald-600" : "bg-muted"
+                }`}
+                role="switch"
+                aria-checked={driverReadinessConfirmed}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                    driverReadinessConfirmed ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Proximity & Dynamic KPT Dispatch Synchronization Indicators */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
+              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
+                <Radio className={`size-3.5 shrink-0 ${allReady ? "text-emerald-500 animate-pulse" : "text-muted-foreground"}`} />
+                <div>
+                  <span className="font-semibold text-foreground block">Proximity Dispatch Radar</span>
+                  <span className="text-[10px] text-muted-foreground">Operating zone radius &amp; corridor batching active</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
+                <Clock3 className={`size-3.5 shrink-0 ${allReady ? "text-amber-500" : "text-muted-foreground"}`} />
+                <div>
+                  <span className="font-semibold text-foreground block">Dynamic KPT Sync</span>
+                  <span className="text-[10px] text-muted-foreground">Arrival matched to food ready time (0-min dwell)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {helmetSelfie ? (
+            <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+              <div className="flex items-center gap-3">
+                <img
+                  src={helmetSelfie}
+                  alt="Verified Helmet Selfie"
+                  className="size-12 rounded-lg object-cover border border-emerald-500/50 shadow-xs"
+                />
+                <div className="space-y-0.5 text-xs">
+                  <p className="font-bold text-emerald-900 dark:text-emerald-200">
+                    BIS Helmet &amp; Uniform Bag Verified
+                  </p>
+                  <p className="text-[11px] text-muted-foreground font-mono">
+                    Verified at {helmetVerifiedAt} · Shift Unlocked
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearHelmetSelfie}
+                className="text-xs text-muted-foreground hover:text-foreground gap-1"
+              >
+                <RotateCcw className="size-3" />
+                <span>Retake</span>
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-3 pt-0.5">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {driverReadinessConfirmed
+                  ? "Readiness verified via automated checklist. You can also upload a live selfie anytime."
+                  : "Toggle automated readiness above or take a front-camera selfie wearing your strapped helmet and delivery bag."}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setSelfieModalOpen(true)}
+                className="text-xs font-semibold gap-1.5 shrink-0"
+              >
+                <Camera className="size-3.5" />
+                <span>Take Selfie</span>
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Authentic Swipe to Go Online / Offline Slider Bar with Status Indicator */}
+        <div className="pt-1 space-y-2">
           {status === "OFFLINE" ? (
-            <SwipeSlider
-              label="Swipe to Go Online"
-              variant="online"
-              disabled={pending}
-              loading={pending}
-              onComplete={() => go("ONLINE")}
-            />
+            <div className="space-y-1.5">
+              <SwipeSlider
+                label={allReady ? "Swipe to Go Online" : "Confirm Readiness to Go Online"}
+                variant="online"
+                disabled={!allReady || pending}
+                loading={pending}
+                onComplete={() => {
+                  if (!allReady) {
+                    toast.error("Please confirm driver readiness check first.");
+                    setSelfieModalOpen(true);
+                    return;
+                  }
+                  return go("ONLINE");
+                }}
+              />
+              <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5 text-rose-400 font-semibold">
+                  <span className="size-2 rounded-full bg-rose-500" />
+                  Duty Offline
+                </span>
+                <span>
+                  {allReady
+                    ? "Readiness verified ✓ Ready to swipe"
+                    : "Confirm driver readiness to go online"}
+                </span>
+              </div>
+            </div>
           ) : status === "ONLINE" ? (
-            <SwipeSlider
-              label="Swipe to Go Offline"
-              variant="offline"
-              disabled={pending || Boolean(home.active)}
-              loading={pending}
-              onComplete={() => setConfirm("offline")}
-            />
+            <div className="space-y-1.5">
+              <SwipeSlider
+                label="Swipe to Go Offline"
+                variant="offline"
+                disabled={pending || Boolean(home.active)}
+                loading={pending}
+                onComplete={() => setConfirm("offline")}
+              />
+              <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Duty Online · Live Dispatch Radar Active
+                </span>
+                <span>Swipe to end shift</span>
+              </div>
+            </div>
           ) : (
             <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1013,41 +1336,13 @@ export function HomeView() {
             </div>
           )}
         </div>
+      </section>
 
-        {(() => {
-          const completedCount = home.completedToday ?? 0;
-          const tier1Bonus = calculateTier1MilestoneBonus(completedCount);
-          const totalEarningsPaise = (home.todayEarningsPaise || 0) + tier1Bonus.bonusPaise;
-          return (
-            <dl className="grid grid-cols-3 gap-2 divide-x divide-border pt-1 text-center">
-              <div>
-                <dt className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">{t("todayEarnings")}</dt>
-                <dd className="font-display text-base font-bold text-foreground mt-0.5">
-                  {formatPaise(totalEarningsPaise)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">{t("completed")}</dt>
-                <dd className="font-display text-base font-bold text-foreground mt-0.5">
-                  {completedCount}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">{t("onlineFor")}</dt>
-                <dd className="font-display text-base font-bold text-foreground mt-0.5">
-                  {status === "OFFLINE" ? "0h 0m" : formatDuration(onlineMs)}
-                </dd>
-              </div>
-            </dl>
-          );
-        })()}
-      </Card>
-
-      {/* 3. Operational Map & Active Delivery Station */}
+      {/* Live Dispatch & Active Delivery Workstation */}
       {home.active ? (
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-base font-bold">{t("currentDelivery")}</h2>
+            <h2 className="font-display text-xl">{t("currentDelivery")}</h2>
             <Badge tone="busy">{home.active.state.replaceAll("_", " ")}</Badge>
           </div>
           <MapPane
@@ -1074,11 +1369,44 @@ export function HomeView() {
           onDecline={() => setConfirm("decline")}
         />
       ) : status === "ONLINE" ? (
-        <section className="space-y-2">
-          <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Searching for nearby orders in {home.rider.preferredZones[0] || "Operating Zone"}...</span>
+        <section className="space-y-3">
+          <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5">
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex size-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex size-3 rounded-full bg-emerald-500" />
+              </span>
+              <div>
+                <p className="text-xs font-bold text-foreground">
+                  Searching for Nearby Orders in {home.rider.preferredZones[0] || "Operating Service Zone"}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Reposition closer to active surge hotspots on the heatmap below for higher frequency offers
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {surge.isMonsoonActive && (
+                <Badge tone="busy" className="font-mono text-xs">
+                  {surge.badges.monsoonText}
+                </Badge>
+              )}
+              {surge.isPeakDinnerActive && (
+                <Badge tone="busy" className="font-mono text-xs">
+                  {surge.badges.peakDinnerText}
+                </Badge>
+              )}
+              {surge.isWeatherAllowanceActive && (
+                <Badge tone="busy" className="font-mono text-xs bg-sky-500/20 text-sky-400 border-sky-500/30">
+                  {surge.badges.weatherAllowanceText}
+                </Badge>
+              )}
+              <Badge tone="online" className="font-mono text-xs">
+                Radar Active
+              </Badge>
+            </div>
           </div>
+
           <MapPane
             mode="heatmap"
             current={riderPos}
@@ -1086,34 +1414,193 @@ export function HomeView() {
           />
         </section>
       ) : (
-        <section className="space-y-2">
-          <MapPane
-            mode="heatmap"
-            current={riderPos}
-            initialHeatmap={true}
-          />
-        </section>
+        <Card className="space-y-3">
+          <div className="flex items-center justify-between">
+            <CardTitle>{t("offers")}</CardTitle>
+            <Badge tone="offline">Duty Offline</Badge>
+          </div>
+          <CardMeta className="mt-1">
+            You are currently offline. Complete your pre-shift readiness check and tap <strong>{t("goOnline")}</strong> above to activate live dispatches and start earning.
+          </CardMeta>
+          <div className="pt-1">
+            <MapPane
+              mode="heatmap"
+              current={riderPos}
+              initialHeatmap={true}
+            />
+          </div>
+        </Card>
       )}
 
-      {/* Floating Cash UPI Deposit Modal */}
-      <FloatingCashCard
-        modalOnly
-        pocketBalance={
-          home.pocketBalance ?? {
-            pocketBalancePaise: unreconciledPaise,
-            limitPaise: codBlockThresholdPaise,
-            isCodBlocked: unreconciledPaise >= codBlockThresholdPaise,
-            utilizationPct: codUsagePct,
-            cashRowsCount: 0,
+      {/* Fleet Floating Cash (Pocket Balance) & Instant UPI Deposit Card */}
+      {sdui.isSectionVisible("floating_cash_card") && (
+        <FloatingCashCard
+          pocketBalance={
+            home.pocketBalance ?? {
+              pocketBalancePaise: unreconciledPaise,
+              limitPaise: codBlockThresholdPaise,
+              isCodBlocked: unreconciledPaise >= codBlockThresholdPaise,
+              utilizationPct: codUsagePct,
+              cashRowsCount: 0,
+            }
           }
-        }
-        disciplineConfig={home.disciplineConfig}
-        onRefresh={() => void load()}
-        externalModalOpen={externalDepositOpen}
-        onExternalModalClose={() => setExternalDepositOpen(false)}
-        lifetimeDeliveries={home.rider?.lifetimeDeliveries ?? home.completedToday ?? 0}
-        riderName={home.rider?.fullName}
-      />
+          disciplineConfig={home.disciplineConfig}
+          onRefresh={() => void load()}
+          externalModalOpen={externalDepositOpen}
+          onExternalModalClose={() => setExternalDepositOpen(false)}
+          lifetimeDeliveries={home.rider?.lifetimeDeliveries ?? home.completedToday ?? 0}
+          riderName={home.rider?.fullName}
+        />
+      )}
+
+      {/* Rider Benefits & Affiliate Ecosystem Quick Hub Card */}
+      <Card className="border-primary/20 bg-gradient-to-r from-emerald-500/10 via-primary/5 to-amber-500/10 p-3.5 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Gift className="size-4" />
+          </span>
+          <div>
+            <p className="text-xs font-bold text-foreground">Partner Benefits &amp; Affiliate Hub</p>
+            <p className="text-[11px] text-muted-foreground">
+              15% EV Discounts (Yulu, Zypp) · HPCL ₹2.50/L Cashback · ₹10L Insurance
+            </p>
+          </div>
+        </div>
+        <Link
+          to="/benefits"
+          className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition"
+        >
+          <span>View Hub</span>
+          <ArrowRight className="size-3.5" />
+        </Link>
+      </Card>
+
+      {/* Operational Gig / Shift Slot Planner */}
+      {sdui.isSectionVisible("shift_slots") && (
+        <Card className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                <CalendarClock className="size-4" />
+              </span>
+              <div>
+                <CardTitle className="text-base">Operational Gig / Shift Slot Planner</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Book shifts for {activeShiftDateIso} · {activeDayBookedSlots.length} slot
+                  {activeDayBookedSlots.length === 1 ? "" : "s"} ({bookedHoursTotal} hrs) booked
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Button
+                size="sm"
+                variant={selectedShiftDay === "today" ? "default" : "outline"}
+                onClick={() => setSelectedShiftDay("today")}
+              >
+                Today ({todayIso.slice(5)})
+              </Button>
+              <Button
+                size="sm"
+                variant={selectedShiftDay === "tomorrow" ? "default" : "outline"}
+                onClick={() => setSelectedShiftDay("tomorrow")}
+              >
+                Tomorrow ({tomorrowIso.slice(5)})
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {OPERATIONAL_SHIFT_SLOTS.map((slot) => {
+              const isBooked = activeDayBookedSlots.includes(slot.id);
+              return (
+                <div
+                  key={slot.id}
+                  className={`rounded-lg border p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${
+                    isBooked
+                      ? "border-emerald-500/40 bg-emerald-500/5"
+                      : "border-border bg-muted/20"
+                  }`}
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-display text-sm font-bold text-foreground">
+                        {slot.label} ({slot.window})
+                      </span>
+                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                        {slot.tag}
+                      </span>
+                      <span className="text-[11px] font-mono text-muted-foreground">
+                        {slot.durationHours}h
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{slot.peakIncentiveNote}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={isBooked ? "outline" : "default"}
+                    onClick={() => toggleSlotBooking(slot.id)}
+                    className="shrink-0"
+                  >
+                    {isBooked ? "✓ Booked (Cancel)" : "Book Gig Slot"}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
+      {/* Daily Order Milestone Progress & Real Quality Scorecard */}
+      {sdui.isSectionVisible("daily_milestones") && (
+        <DailyMilestoneCard completed={home.completedToday} performance={performance} />
+      )}
+
+      {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
+      {sdui.isSectionVisible("vip_ambassador") && (
+        <VipAmbassadorPass
+          riderName={home.rider.fullName}
+          riderId={home.rider.id}
+          phone={home.rider.phone}
+          onCommissionCredited={() => void load()}
+        />
+      )}
+
+      {/* Self-Service Per-Order Payout Calculator */}
+      {sdui.isSectionVisible("payout_calculator") && (
+        <SelfServicePayoutCalculator />
+      )}
+
+      {home.notifications.length ? (
+        <Card>
+          <CardTitle>{t("alerts")}</CardTitle>
+          <ul className="mt-3 space-y-2">
+            {home.notifications.slice(0, 4).map((n) => (
+              <li key={n.id} className="text-sm">
+                <p className="font-medium">{n.title}</p>
+                <p className="text-muted-foreground">{n.body}</p>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
+      <div className="flex flex-wrap gap-3 text-sm">
+        <Link to="/assistant" className="underline">
+          {t("assistant")}
+        </Link>
+        <span className="text-muted-foreground">·</span>
+        <Link to="/onboarding" className="underline">
+          {t("kyc")}
+        </Link>
+        <span className="text-muted-foreground">·</span>
+        <Link to="/earnings" className="underline">
+          {t("earnings")}
+        </Link>
+        <span className="text-muted-foreground">·</span>
+        <Link to="/support" className="underline">
+          {t("support")}
+        </Link>
+      </div>
 
       <ConfirmDialog
         open={confirm === "online"}
@@ -1346,7 +1833,7 @@ function OfferCard({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E5A93C]">
-              Estimated Payout
+              ★ {payout.labels.guaranteedEarningsTitle}
             </p>
             <p className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-white drop-shadow-[0_0_12px_rgba(229,169,60,0.4)]">
               {formatPaise(offer.expectedPayoutPaise)}
@@ -1398,7 +1885,7 @@ function OfferCard({
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
           <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Floor Fare</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-emerald-500 dark:text-emerald-300">{formatPaise(offer.expectedPayoutPaise)}</p>
-          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">Guaranteed</p>
+          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">custom commission</p>
         </div>
       </div>
 

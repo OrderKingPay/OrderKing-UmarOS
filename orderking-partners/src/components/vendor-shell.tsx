@@ -47,13 +47,21 @@ export const PRIMARY_NAV = [
   { to: "/kds", key: "nav.kitchen", icon: ChefHat, perm: "kitchen.view" as Permission },
   { to: "/menu", key: "nav.menu", icon: UtensilsCrossed, perm: "menu.view" as Permission },
   { to: "/settlements", key: "nav.settlements", icon: Wallet, perm: "settlements.view" as Permission },
+  { to: "/more", key: "nav.more", icon: MoreHorizontal, perm: "dashboard.view" as Permission },
 ] as const;
 
 export const MORE_NAV = [
   { to: "/dashboard", key: "nav.home", icon: Home, perm: "dashboard.view" as Permission },
+  { to: "/dining", key: "nav.dining", icon: CalendarDays, perm: "orders.view" as Permission },
+  { to: "/promotions", key: "nav.promotions", icon: Tag, perm: "promotions.view" as Permission },
+  { to: "/analytics", key: "nav.analytics", icon: LineChart, perm: "analytics.view" as Permission },
+  { to: "/reviews", key: "nav.reviews", icon: Star, perm: "reviews.view" as Permission },
   { to: "/hours", key: "nav.hours", icon: Clock3, perm: "hours.edit" as Permission },
-  { to: "/settings", key: "nav.settings", icon: Settings, perm: "settings.view" as Permission },
+  { to: "/academy", key: "nav.academy", icon: GraduationCap, perm: "dashboard.view" as Permission },
+  { to: "/assistant", key: "nav.assistant", icon: Sparkles, perm: "assistant.use" as Permission },
+  { to: "/notifications", key: "nav.notifications", icon: Bell, perm: "notifications.view" as Permission },
   { to: "/onboarding", key: "nav.onboarding", icon: Store, perm: "onboarding.edit" as Permission },
+  { to: "/settings", key: "nav.settings", icon: Settings, perm: "settings.view" as Permission },
 ] as const;
 
 export function VendorShell({
@@ -139,7 +147,7 @@ export function VendorShell({
             <OrderKingMark className="size-8 text-chili" />
             <div>
               <div className="font-display text-base leading-tight">{branding.appName || t("app.name")}</div>
-              <div className="text-xs text-slate-400">{restaurantName ?? vendor.selected?.restaurantName ?? "Merchant Dashboard"}</div>
+              <div className="text-xs text-slate-400">{restaurantName ?? (branding.tagline || t("app.tagline"))}</div>
             </div>
           </div>
           <nav className="flex flex-1 flex-col gap-1 overflow-y-auto scrollbar-none" aria-label="Partner Navigation">
@@ -215,6 +223,16 @@ export function VendorShell({
                 </select>
                 <Languages className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
               </div>
+              <button
+                type="button"
+                className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-yellow-500/15 px-3 text-xs font-extrabold text-amber-300 hover:text-amber-200 hover:border-amber-400/60 hover:bg-amber-500/25 transition shadow-sm shadow-amber-500/10 cursor-pointer active:scale-95 shrink-0"
+                onClick={() => setSparkOpen(true)}
+                title="King AI — Restaurant Culinary & Growth Co-Pilot"
+                aria-label="Open King AI Assistant"
+              >
+                <Sparkles className="size-4 text-amber-400 animate-pulse" />
+                <span className="tracking-tight">King AI</span>
+              </button>
               {/* Merchant Outlet Emergency Pause / Operational Status Pill */}
               <OutletStatusPill
                 restaurantId={vendor.restaurantId}

@@ -389,7 +389,7 @@ export class RiderEngine {
       dateOfBirth: null,
       governmentIdType: null,
       governmentIdLast4: null,
-      kycStatus: "VERIFIED",
+      kycStatus: "DRAFT",
       kycRejectReason: null,
       riderType: "DELIVERY_PARTNER",
       vehicleType: "MOTORCYCLE",
@@ -565,9 +565,8 @@ export class RiderEngine {
     if (!confirmed) throw new RiderError("CONFIRM_REQUIRED", "Confirm this status change", 400);
     const rider = await this.requireRider(userId);
     const cfg = await this.cfg();
-    const isAllowedDuty = ["VERIFIED", "APPROVED", "ACTIVE", "UNDER_REVIEW", "SUBMITTED", "DRAFT"].includes((rider.kycStatus || "").toUpperCase());
-    if (status === "ONLINE" && cfg.dataMode === "LIVE" && !isAllowedDuty) {
-      throw new RiderError("KYC", "Onboarding verification is in progress. Please review your documents in Profile.", 403);
+    if (status === "ONLINE" && cfg.dataMode === "LIVE" && rider.kycStatus !== "VERIFIED") {
+      throw new RiderError("KYC", "Unverified partners cannot go online for live orders", 403);
     }
     if (status === "ONLINE") {
       const cooling = getCoolingOffInfo(rider.coolingOffUntil, rider.coolingOffReason);

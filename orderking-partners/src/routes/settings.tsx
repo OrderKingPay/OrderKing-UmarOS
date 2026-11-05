@@ -66,7 +66,60 @@ export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
 export const ALL_INDIAN_LANGUAGES = INDIAN_LANGUAGE_CATALOG;
 
-
+const LEGAL_SECTIONS = [
+  {
+    id: "commercial-terms",
+    title: "1. Culinary Partner Terms & Commercial Standards",
+    badge: "Commercial Standards",
+    body: [
+      "Order King Marketplace Role: Order King operates as a premier culinary marketplace platform under Section 79 of the Information Technology Act, 2000. The Restaurant Partner remains the master culinary creator, seller, and packager of all food and beverage creations listed on its digital storefront.",
+      "Order Acceptance & Kitchen Preparation: Upon receiving a customer order, the Restaurant Partner acknowledges acceptance within the prep window and prepares items with care within the published preparation time (Standard 20m or Rush 35m).",
+      "Menu Pricing Integrity & Packaging: Menu prices and dish packaging fees are configured directly by the Restaurant Partner in integer paise. Unexplained surcharges or off-ledger fees are strictly prohibited.",
+      "Fair Refund Attribution: Customer refunds triggered by missing items, packaging spills, or food quality issues are attributed to the Restaurant Partner ledger with a transparent reason code. Transit delays and delivery mishaps are fully protected and borne by the logistics network.",
+    ],
+  },
+  {
+    id: "privacy-dpdp",
+    title: "2. Partner Privacy & Guest Data Protection",
+    badge: "DPDP Act, 2023",
+    body: [
+      "Lawful & Respectful Data Handling: Under the Digital Personal Data Protection Act, 2023 (DPDP Act), Order King collects merchant KYC records (PAN, optional GSTIN if registered [turnover < ₹20L exempt], 14-digit FSSAI license, bank account & IFSC, authorized signatory details) solely to verify your kitchen, process fast direct bank payouts, and fulfill tax requirements.",
+      "Guest Privacy on Kitchen Tickets: Guest names, delivery notes, and masked contact numbers shared on Kitchen Order Tickets (KOT) are provided exclusively for order preparation and statutory receipts. Preserving guest privacy is paramount; phone numbers may not be extracted for external promotional messaging.",
+      "Secure Record Retention: Financial ledgers, settlement batches, and tax invoices are securely archived for 8 financial years in accordance with Indian financial reporting standards.",
+    ],
+  },
+  {
+    id: "fssai-undertaking",
+    title: "3. FSSAI Food Safety, Hygiene & Packaging Standards",
+    badge: "Food Safety",
+    body: [
+      "14-Digit FoSCoS License: The Restaurant Partner warrants that it maintains an active, valid 14-digit FSSAI License or Registration Certificate displayed on its storefront and printed on customer receipts.",
+      "Dedicated Prep & Dietary Labeling: Kitchens maintain dedicated prep surfaces, utensils, and storage for vegetarian and non-vegetarian dishes, clearly labeling every culinary creation with the official Green (Veg) or Red (Non-Veg) symbol.",
+      "Fresh & Tamper-Evident Packaging: All delivery orders must be packed in food-grade, tamper-evident containers before handover to our delivery partners, ensuring meals arrive in pristine condition.",
+    ],
+  },
+  {
+    id: "tax-settlement-policy",
+    title: "4. Settlement Transparency & Tax Guidelines",
+    badge: "Tax & Settlements",
+    body: [
+      "Integer-Paise Settlement Formula: Net Restaurant Payable = (Food Value + Packaging Charges − Restaurant Discount) − Platform Commission + Platform-Funded Promo − Refund Adjustments.",
+      "GST on Restaurant Services (Section 9(5) CGST Act, 2017): For notified restaurant dining and delivery services, 5% GST is collected from the customer and remitted directly to the Government by Order King under Section 9(5) without debiting your payout.",
+      "Tax Collected at Source (Section 52 CGST Act): Where applicable on net taxable supplies, 1% TCS (0.5% CGST + 0.5% SGST or 1% IGST) is deposited with the Government and credited to your GSTR-8 ledger.",
+      "Tax Deducted at Source (Section 194-O Income Tax Act, 1961): TDS of 1% under Section 194-O is credited directly against your registered PAN, backed by quarterly Form 16A certificates.",
+    ],
+  },
+  {
+    id: "grievance-redressal",
+    title: "5. Partner Concierge & Dedicated Support",
+    badge: "Dedicated Support",
+    body: [
+      `Dedicated Partner Escalation: Designated pursuant to the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021.`,
+      `Official Partner Support Email: ${platformConfig.support.email} (Include your Restaurant ID, Order Number, or Settlement Batch ID for immediate priority assistance).`,
+      "Prompt Care Commitment: All commercial, settlement, and operational inquiries are acknowledged within 24 hours with dedicated follow-through.",
+    ],
+  },
+] as const;
 
 function SettingsPage() {
   const t = useT();
@@ -101,7 +154,8 @@ function SettingsPage() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("STAFF");
   const [msg, setMsg] = useState<string | null>(null);
-  
+  const [openPolicyId, setOpenPolicyId] = useState<string | null>("commercial-terms");
+
   const [diagMsg, setDiagMsg] = useState<string | null>(null);
 
   // King AI Communications Engine State
@@ -1212,19 +1266,67 @@ function SettingsPage() {
           </Card>
         ) : null}
 
-        {/* Support & Legal Links */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-slate-800 bg-slate-900/60 text-xs text-slate-400">
-          <span>Need assistance with your outlet settings or partner agreement?</span>
-          <div className="flex items-center gap-3">
-            <span className="hover:text-slate-200 cursor-pointer">Terms of Service</span>
-            <span>·</span>
-            <span className="hover:text-slate-200 cursor-pointer">Privacy Policy</span>
-            <span>·</span>
-            <a href="mailto:support@orderkingpay.com" className="font-semibold text-emerald-400 hover:underline">
-              support@orderkingpay.com
-            </a>
+        {/* Restaurant Partner Standards & Charter */}
+        <Card id="partner-charter" className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck className="size-5 text-emerald-400" />
+              <div>
+                <h2 className="font-display text-base font-bold text-white">
+                  Restaurant Partner Charter &amp; Standards
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Commercial transparency, guest privacy protection, culinary safety guidelines, and dedicated partner care.
+                </p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
+              PARTNER CHARTER
+            </span>
           </div>
-        </div>
+
+          <div className="space-y-2.5">
+            {LEGAL_SECTIONS.map((sec) => {
+              const isOpen = openPolicyId === sec.id;
+              return (
+                <div
+                  key={sec.id}
+                  className="rounded-xl border border-slate-800 bg-slate-950/70 overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenPolicyId(isOpen ? null : sec.id)}
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-slate-900/60 transition"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <FileText className="size-4 text-emerald-400 shrink-0" />
+                      <span className="text-xs sm:text-sm font-semibold text-slate-100 truncate">
+                        {sec.title}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="hidden sm:inline-block rounded border border-slate-800 bg-slate-900 px-2 py-0.5 text-[10px] font-mono text-slate-400">
+                        {sec.badge}
+                      </span>
+                      {isOpen ? (
+                        <ChevronUp className="size-4 text-slate-400" />
+                      ) : (
+                        <ChevronDown className="size-4 text-slate-400" />
+                      )}
+                    </div>
+                  </button>
+                  {isOpen ? (
+                    <div className="px-4 pb-4 pt-1 border-t border-slate-800/80 space-y-2 text-xs text-slate-300 leading-relaxed">
+                      {sec.body.map((paragraph, idx) => (
+                        <p key={idx}>{paragraph}</p>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
       </div>
     </VendorShell>
   );

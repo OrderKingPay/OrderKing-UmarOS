@@ -1235,18 +1235,38 @@ function MenuPage() {
       {/* FSSAI Statutory Food Safety Regulatory Compliance Banner */}
       <FssaiExpiryBanner />
 
-      {/* Outlet Verification Status */}
+      {/* Statutory KYC Menu Locking Banner: Locked in PENDING_VERIFICATION */}
       {isMenuLocked && (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2.5">
-            <Lock className="size-4 text-amber-400 shrink-0" />
-            <span className="text-slate-200">
-              Menu editing is paused while your outlet details are being verified.
-            </span>
+        <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-4 shadow-sm space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-amber-500/10 border border-amber-500/30 p-2 text-amber-400 shrink-0">
+                <Lock className="size-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block size-2 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-bold">
+                    MENU STATUS: LOCKED ({menuStatus})
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-white mt-0.5">
+                  Statutory KYC Verification Pending
+                </h3>
+                <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                  Under Indian statutory regulations (FSSAI 14-digit registration, PAN, Bank IFSC, and GSTIN rules),
+                  this restaurant's digital menu is locked in{" "}
+                  <span className="font-mono font-semibold text-amber-300">PENDING_VERIFICATION</span> state.
+                  Live customer catalogue display and item editing are locked until statutory KYC is approved.
+                </p>
+              </div>
+            </div>
+            <Button asChild size="sm" className="bg-amber-600 hover:bg-amber-500 text-white shrink-0 font-medium">
+              <Link to="/onboarding">
+                <ShieldCheck className="mr-1.5 size-4" /> Complete Statutory KYC
+              </Link>
+            </Button>
           </div>
-          <Button asChild size="sm" variant="outline" className="border-amber-500/40 text-amber-300 hover:bg-amber-500/10 shrink-0">
-            <Link to="/onboarding">View Outlet Details</Link>
-          </Button>
         </div>
       )}
 

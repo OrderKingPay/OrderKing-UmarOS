@@ -9,6 +9,8 @@ import { useLocationStore } from "@/lib/stores/location";
 import { getLoyalty } from "@/lib/server/account";
 import { toast } from "sonner";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
+import { CompetitorBounty } from "@/components/CompetitorBounty";
+import { RetentionRoulette } from "@/components/RetentionRoulette";
 
 export const Route = createFileRoute("/rewards")({ component: RewardsPage });
 
@@ -298,6 +300,11 @@ function RewardsPage() {
         {/* WhatsApp Viral Bounties Acquisition Engine */}
         <WhatsAppViralBountiesWidget source="rewards_vault" />
 
+        {/* Delete Legacy Aggregator Bounty: ₹500 KingPay Wallet Switch Bounty */}
+        <CompetitorBounty className="mt-4" />
+
+        {/* Post-Order Dopamine Wheel & Retention Engine */}
+        <RetentionRoulette orderId="rewards_vault_spin" className="mt-4" />
 
         {/* Category Filters */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">

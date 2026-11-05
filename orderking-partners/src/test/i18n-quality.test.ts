@@ -3,7 +3,7 @@ import { en } from "../lib/i18n/en";
 import { bn } from "../lib/i18n/bn";
 import { platformConfig } from "../lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "../lib/i18n";
-import { INDIAN_CONSTITUTIONAL_LANGUAGES, type IndianLanguageSpec } from "../routes/assistant.tsx";
+import { INDIAN_CONSTITUTIONAL_LANGUAGES } from "../routes/assistant";
 
 describe("i18n Localization & Copy Quality Standards", () => {
   it("enforces brand name is 'Order King' (two words) with zero 'OrderKing' compound in English and Bengali", () => {
@@ -147,8 +147,8 @@ describe("i18n Localization & Copy Quality Standards", () => {
     ];
 
     const supported = platformConfig.localization.supportedLanguages as readonly string[];
-    const catalogCodes = INDIAN_LANGUAGE_CATALOG.map((l: any) => l.code as string);
-    const assistantCodes = INDIAN_CONSTITUTIONAL_LANGUAGES.map((l: IndianLanguageSpec) => l.code);
+    const catalogCodes = INDIAN_LANGUAGE_CATALOG.map((l) => l.code as string);
+    const assistantCodes = INDIAN_CONSTITUTIONAL_LANGUAGES.map((l) => l.code);
 
     for (const code of removedLanguageCodes) {
       expect(supported).not.toContain(code);
@@ -160,7 +160,7 @@ describe("i18n Localization & Copy Quality Standards", () => {
   it("enforces exactly 10 official benchmark languages in assistant language selector", () => {
     const expectedLanguages = ["en", "hi", "bn", "gu", "kn", "ml", "mr", "pa", "ta", "te"];
     expect(INDIAN_CONSTITUTIONAL_LANGUAGES.length).toBe(10);
-    const assistantCodes = INDIAN_CONSTITUTIONAL_LANGUAGES.map((l: IndianLanguageSpec) => l.code);
+    const assistantCodes = INDIAN_CONSTITUTIONAL_LANGUAGES.map((l) => l.code);
     expect(assistantCodes).toEqual(expectedLanguages);
   });
 });

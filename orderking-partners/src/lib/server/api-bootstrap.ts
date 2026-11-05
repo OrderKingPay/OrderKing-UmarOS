@@ -128,35 +128,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
 
     try {
       const sql = await getSql();
-      let memberships = await loadMemberships(sql, userId);
-      if (memberships.length === 0) {
-        const activeRest = await sql<{
-          id: string;
-          display_name: string | null;
-          name: string;
-          data_label: string;
-          verification_status: string;
-          commission_bps: number;
-        }>`
-          select id, display_name, name, data_label, verification_status, commission_bps
-          from restaurants
-          where active = true
-          order by created_at desc
-          limit 1
-        `;
-        if (activeRest.length > 0) {
-          memberships = [{
-            userId,
-            restaurantId: activeRest[0].id,
-            outletId: 'out_' + activeRest[0].id.slice(4),
-            role: 'OWNER' as const,
-            restaurantName: activeRest[0].display_name || activeRest[0].name,
-            dataLabel: (activeRest[0].data_label as any) ?? "REAL",
-            verificationStatus: activeRest[0].verification_status || "VERIFIED",
-            commissionBps: Number(activeRest[0].commission_bps || 1000),
-          }];
-        }
-      }
+      const memberships = await loadMemberships(sql, userId);
       return {
         userId,
         memberships,

@@ -1,15 +1,3 @@
-// __OK_PROD_SMS_ENV__
-if (typeof process !== "undefined" && process.env && !process.env.VITEST && process.env.NODE_ENV !== "test") {
-  if (!process.env.FAST2SMS_API_KEY && "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU") {
-    process.env.FAST2SMS_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
-  }
-  if (!process.env.WHATSAPP_ACCESS_TOKEN && "") {
-    process.env.WHATSAPP_ACCESS_TOKEN = "";
-  }
-  if (!process.env.WHATSAPP_PHONE_NUMBER_ID && "") {
-    process.env.WHATSAPP_PHONE_NUMBER_ID = "";
-  }
-}
 /**
  * OrderKing Real Telecom & SMS Gateway Dispatch Engine
  *
@@ -541,17 +529,17 @@ export async function sendViaWhatsAppCloudApi(
 export function getAvailableSmsProviders(): TelecomProvider[] {
   const providers: TelecomProvider[] = [];
 
+  const twoFactorKey = process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY;
+  const f2sCompare = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
+  if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me") && twoFactorKey.trim() !== f2sCompare && twoFactorKey.trim().length <= 45) {
+    providers.push("2factor");
+  }
+
   const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
     .trim()
     .replace(/^["']|["']$/g, "");
   if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
     providers.push("fast2sms");
-  }
-
-  const twoFactorKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY || "").trim();
-  const f2sCompare = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
-  if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me") && twoFactorKey.trim() !== f2sCompare && twoFactorKey.trim().length <= 45) {
-    providers.push("2factor");
   }
 
   const msg91Key = process.env.MSG91_AUTH_KEY;

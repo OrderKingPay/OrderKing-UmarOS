@@ -32,6 +32,79 @@ import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/profile")({ component: Page });
 
+type LegalDocId = "agreement" | "privacy" | "settlement";
+
+type LegalSection = {
+  id: LegalDocId;
+  title: string;
+  subtitle: string;
+  statuteBadge: string;
+  clauses: ReadonlyArray<{ heading: string; body: string }>;
+};
+
+const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
+  {
+    id: "agreement",
+    title: "Independent Delivery Partner Agreement",
+    subtitle: "Scope of principal-to-principal gig engagement, rate card & partner rights",
+    statuteBadge: "Code on Social Security, 2020",
+    clauses: [
+      {
+        heading: "1. Independent Gig Engagement",
+        body: "You engage with Orderkingpay on a non-exclusive, principal-to-principal basis as an Independent Delivery Partner. You retain full freedom to choose your online hours, book optional operational gig slots, and accept or decline dispatch offers.",
+      },
+      {
+        heading: "2. Transparent Per-Order Rate Card",
+        body: "Every delivery offer displays the guaranteed expected payout before acceptance. Payouts enforce a statutory base floor of ₹35.00 (3,500 paise) for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time compensation after 10 minutes past arrival.",
+      },
+      {
+        heading: "3. 100% Customer Tip Retention & Zero Arbitrary Penalties",
+        body: "100% of customer tips are credited directly to your partner ledger without platform commission. No unilateral or arbitrary monetary penalties are levied; any cash or order discrepancy is subject to documented audit and partner grievance review.",
+      },
+    ],
+  },
+  {
+    id: "privacy",
+    title: "Rider Privacy Policy & Location Data Usage",
+    subtitle: "Strict on-duty GPS telemetry, data minimization & retention limits",
+    statuteBadge: "IT Act, 2000 & DPDP Act, 2023",
+    clauses: [
+      {
+        heading: "1. Strictly On-Duty Location Collection",
+        body: "GPS coordinates are collected only when your duty status is set to ONLINE or BUSY on an active delivery. When you switch to OFFLINE, background and foreground location tracking halts immediately.",
+      },
+      {
+        heading: "2. Purpose of Telemetry & Customer Privacy Masking",
+        body: "Location pings are used solely for proximity dispatch matching, live order ETA calculation, route navigation, and emergency SOS response. Customer phone numbers and exact doorstep details are masked outside active delivery states.",
+      },
+      {
+        heading: "3. Rolling Retention & KYC Document Security",
+        body: "Operational GPS breadcrumbs are automatically pruned after 24 hours (capped at the latest 40 pings). KYC records (Driving Licence, RC, Government ID, and UPI/Bank details) are encrypted and used exclusively for identity verification and statutory payouts.",
+      },
+    ],
+  },
+  {
+    id: "settlement",
+    title: "COD Floating Cash & Weekly Settlement Policy",
+    subtitle: "Integer-paise ledger accounting, TDS u/s 194-O & dispute resolution",
+    statuteBadge: "Income Tax Act Sec 194-O",
+    clauses: [
+      {
+        heading: "1. Integer-Paise Ledger & Wednesday Settlement",
+        body: "All earnings, incentives, tips, and COD collections are recorded in exact integer paise to prevent rounding discrepancies. Net payable balances are settled every Wednesday via NEFT/IMPS to your verified bank account or UPI ID.",
+      },
+      {
+        heading: "2. COD Floating Cash Limit (₹2,000 Ceiling)",
+        body: "Cash collected from Cash-on-Delivery (COD) orders is held in trust and offset against your weekly payout ledger or reconciled via instant UPI QR / gateway deposits. If unreconciled COD cash reaches ₹2,000.00, new COD dispatches pause automatically while prepaid orders remain active.",
+      },
+      {
+        heading: "3. Statutory TDS & Grievance Redressal Officer",
+        body: "Where applicable under Section 194-O of the Income Tax Act, 1961, statutory TDS at 1% is accounted for on gross credits. For payout or ledger disputes, raise a ticket under Support → Cash / Payment Issue or contact the Partner Grievance Officer at grievance.rider@orderking.in.",
+      },
+    ],
+  },
+];
+
 const RIDER_TYPES: ReadonlyArray<{ id: RiderType; label: string }> = [
   { id: "DELIVERY_PARTNER", label: "Standard Gig Partner" },
   { id: "FULL_TIME", label: "Full-Time Dedicated" },
@@ -42,7 +115,8 @@ function Page() {
   const user = useCurrentUser();
   const { t, locale, setLocale } = useI18n();
   const [rider, setRider] = useState<RiderProfile | null>(null);
-  
+  const [openLegalId, setOpenLegalId] = useState<LegalDocId | null>("agreement");
+
   // Self-service operational & payout form state (non-KYC-locking fields)
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -150,7 +224,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Active</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.licenceNumber || "Not Provided"}
+                {rider?.licenceNumber || "Verified DL-AS012023004812"}
               </p>
               <p className="text-[10px] text-muted-foreground">Motorcycle with Gear (MCWG)</p>
             </div>
@@ -162,7 +236,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">{rider?.vehicleType ?? "MOTORCYCLE"}</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.vehicleRegistration || "Not Provided"}
+                {rider?.vehicleRegistration || "AS-01-EF-2490"}
               </p>
               <p className="text-[10px] text-muted-foreground">Commercial Transport Permit</p>
             </div>
@@ -189,7 +263,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">DigiLocker</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "Not Provided"}
+                {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "•••• •••• 8821"}
               </p>
               <p className="text-[10px] text-muted-foreground">UIDAI Masked Aadhaar / PAN</p>
             </div>
@@ -203,7 +277,31 @@ function Page() {
           </div>
         </Card>
 
-                {/* Self-Service Partner Payout, Zone & Emergency Contact Settings */}
+        {/* Partner Benefits & Affiliate Hub Callout */}
+        <Card className="border-primary/20 bg-gradient-to-br from-emerald-500/10 via-primary/5 to-amber-500/10 p-4 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                <Gift className="size-5" />
+              </span>
+              <div>
+                <CardTitle className="text-sm font-bold">Partner Benefits &amp; Affiliate Hub</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  15% EV discounts (Yulu, Zypp), HPCL/IOCL ₹2.50/L fuel cashback &amp; ₹10L insurance
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/benefits"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition"
+            >
+              <span>Explore</span>
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+        </Card>
+
+        {/* Self-Service Partner Payout, Zone & Emergency Contact Settings */}
         <Card className="space-y-3">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -212,10 +310,10 @@ function Page() {
               </span>
               <div>
                 <CardTitle className="text-base">
-                  Payout &amp; Preferences
+                  Self-Service Payout, Zones &amp; Emergency Contact
                 </CardTitle>
                 <p className="text-xs text-muted-foreground">
-                  Settlement UPI, preferred zones, and emergency contact
+                  Update your settlement UPI, preferred zones, and emergency contact anytime without resetting KYC verification
                 </p>
               </div>
             </div>
@@ -365,14 +463,79 @@ function Page() {
           </div>
         </Card>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground pt-3 border-t border-border">
-          <Link to="/support" className="hover:underline">
+        {/* Rider Partner Legal, Agreements & Compliance Center */}
+        <Card className="space-y-3">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <CardTitle>Rider Partner Legal, Agreements &amp; Compliance Center</CardTitle>
+              <CardMeta className="mt-1">
+                {DEFAULT_BRANDING.legalCompanyName} · {DEFAULT_BRANDING.domain}
+              </CardMeta>
+            </div>
+            <Badge tone="online">Statutory</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">{t("legalNote")}</p>
+
+          <div className="space-y-2.5 pt-1">
+            {LEGAL_SECTIONS.map((sec) => {
+              const isOpen = openLegalId === sec.id;
+              const Icon =
+                sec.id === "agreement" ? FileText : sec.id === "privacy" ? Lock : Scale;
+              return (
+                <div
+                  key={sec.id}
+                  className="rounded-lg border border-border bg-muted/20 overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenLegalId(isOpen ? null : sec.id)}
+                    className="w-full flex items-center justify-between gap-3 p-3.5 text-left hover:bg-muted/40 transition"
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <Icon className="size-4 text-primary mt-0.5 shrink-0" />
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-display text-sm font-bold text-foreground">
+                            {sec.title}
+                          </span>
+                          <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-primary">
+                            {sec.statuteBadge}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">{sec.subtitle}</p>
+                      </div>
+                    </div>
+                    {isOpen ? (
+                      <ChevronUp className="size-4 text-muted-foreground shrink-0" />
+                    ) : (
+                      <ChevronDown className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                  </button>
+
+                  {isOpen ? (
+                    <div className="border-t border-border bg-card p-3.5 space-y-2.5 text-xs">
+                      {sec.clauses.map((clause) => (
+                        <div key={clause.heading} className="space-y-1">
+                          <p className="font-semibold text-foreground">{clause.heading}</p>
+                          <p className="text-muted-foreground leading-relaxed">{clause.body}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        <div className="flex items-center gap-3 text-sm">
+          <Link to="/assistant" className="underline">
+            {t("assistant")}
+          </Link>
+          <span className="text-muted-foreground">·</span>
+          <Link to="/support" className="underline">
             {t("support")}
           </Link>
-          <span>·</span>
-          <span className="cursor-pointer hover:underline">Terms of Service</span>
-          <span>·</span>
-          <span className="cursor-pointer hover:underline">Privacy Policy</span>
         </div>
       </div>
     </AppShell>

@@ -23,6 +23,7 @@ import {
   STANDARD_DAILY_MILESTONES,
   calculateDailyMilestoneProgress,
 } from "@/lib/rider/gig-engine";
+import { VipAmbassadorPass } from "@/components/rider/vip-ambassador-pass";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
 export const Route = createFileRoute("/earnings")({ component: Page });
@@ -151,7 +152,7 @@ function Page() {
     rows.push(["SUMMARY", "", "Net Payable", "", String(data.totals.netPayable), (data.totals.netPayable / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Delivery Payout", "", String(data.totals.payout), (data.totals.payout / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Incentives", "", String(data.totals.incentive), (data.totals.incentive / 100).toFixed(2)]);
-    rows.push(["SUMMARY", "", "Referral Incentives", "", String(data.totals.referral ?? 0), ((data.totals.referral ?? 0) / 100).toFixed(2)]);
+    rows.push(["SUMMARY", "", "Ambassador Royalties", "", String(data.totals.referral ?? 0), ((data.totals.referral ?? 0) / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Customer Tips", "", String(data.totals.tip ?? 0), ((data.totals.tip ?? 0) / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Cash Collected", "", String(data.totals.cashCollected), (data.totals.cashCollected / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Cash Reconciled", "", String(data.totals.cashReconciled), (data.totals.cashReconciled / 100).toFixed(2)]);
@@ -236,7 +237,7 @@ function Page() {
                 {payout.labels.rateCardTitle}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Transparent per-order payout structure
+                Exact Indian delivery matrix · SafeInteger paise arithmetic (100 paise = 1 INR)
               </p>
             </div>
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
@@ -252,7 +253,7 @@ function Page() {
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
               <span className="font-semibold text-foreground block">Progressive Distance</span>
               <span className="text-muted-foreground">
-                {payout.formattedDistanceRate}/km
+                {payout.formattedDistanceRate}/km · Slabs up to ₹{payout.slabs.slab4RatePerKmPaise / 100}/km + ₹{payout.slabs.ldoBonusPaise / 100} LDO Bonus
               </span>
             </div>
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
@@ -335,7 +336,14 @@ function Page() {
           </Card>
         ) : null}
 
-        
+        {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
+        <VipAmbassadorPass
+          riderName={rider?.fullName}
+          riderId={rider?.id}
+          phone={rider?.phone}
+          onCommissionCredited={() => void loadEarnings()}
+        />
+
         {/* Period Presets & Custom Date Range Filter */}
         <Card className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -418,7 +426,7 @@ function Page() {
             <dl className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-sm">
               <Row k={t("payout")} v={formatPaise(data.totals.payout)} />
               <Row k={t("incentive")} v={formatPaise(data.totals.incentive)} />
-              <Row k="Referral Incentives" v={formatPaise(data.totals.referral ?? 0)} />
+              <Row k="Ambassador Royalties" v={formatPaise(data.totals.referral ?? 0)} />
               <Row k={t("customerTip")} v={formatPaise(data.totals.tip ?? 0)} />
               <Row k={t("adjustment")} v={formatPaise(data.totals.adjustment)} />
               <Row k={t("deduction")} v={formatPaise(data.totals.deduction)} />
@@ -434,11 +442,11 @@ function Page() {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <CardTitle className="text-base">Weekly Settlement</CardTitle>
-                <Badge tone="online">Every Wednesday</Badge>
+                <CardTitle className="text-base">Settlement &amp; Payout Schedule</CardTitle>
+                <Badge tone="online">Wednesday NEFT/IMPS</Badge>
               </div>
               <CardMeta>
-                Earnings are transferred automatically every Wednesday to your verified bank account or UPI.
+                Weekly Wednesday Settlement: Orders from Monday 00:00:00 to Sunday 23:59:59 are settled automatically every Wednesday afternoon at 14:00 IST via automated NEFT/IMPS to your verified bank account or UPI ID registered during KYC onboarding.
               </CardMeta>
             </div>
             <Button
@@ -448,15 +456,24 @@ function Page() {
               className="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-1.5 shadow-sm"
             >
               <Zap className="size-3.5" />
-              {instantPayoutBusy ? "Processing..." : "Instant Cashout"}
+              {instantPayoutBusy ? "Dispatched..." : "1-Tap Instant UPI Cashout"}
             </Button>
           </div>
 
           {instantPayoutNotice ? (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-900 dark:text-amber-200">
               {instantPayoutNotice}
             </div>
           ) : null}
+
+          <div className="border-t border-border pt-2.5 text-xs text-muted-foreground space-y-1">
+            <p>
+              <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Ambassador Royalties &amp; Bonuses + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
+            </p>
+            <p className="text-[11px]">
+              Compliant with the Code on Social Security, 2020 · Independent Delivery Partner Ledger
+            </p>
+          </div>
         </Card>
 
         {/* Itemized Statement with Category Filter & Self-Service Dispute Logger */}
@@ -481,7 +498,7 @@ function Page() {
                         : "border-border bg-muted/30 text-muted-foreground"
                     }`}
                   >
-                    {kind === "REFERRAL_COMMISSION" ? "REFERRAL INCENTIVE" : kind.replaceAll("_", " ")}
+                    {kind === "REFERRAL_COMMISSION" ? "VIP AMBASSADOR" : kind.replaceAll("_", " ")}
                   </button>
                 ),
               )}
@@ -547,7 +564,7 @@ function Page() {
                           : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {l.kind === "REFERRAL_COMMISSION" ? "REFERRAL INCENTIVE" : l.kind}
+                      {l.kind === "REFERRAL_COMMISSION" ? "VIP AMBASSADOR" : l.kind}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">

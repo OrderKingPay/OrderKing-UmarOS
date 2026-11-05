@@ -1,15 +1,3 @@
-// __OK_PROD_SMS_ENV__
-if (typeof process !== "undefined" && process.env && !process.env.VITEST && process.env.NODE_ENV !== "test") {
-  if (!process.env.FAST2SMS_API_KEY && "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU") {
-    process.env.FAST2SMS_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
-  }
-  if (!process.env.WHATSAPP_ACCESS_TOKEN && "") {
-    process.env.WHATSAPP_ACCESS_TOKEN = "";
-  }
-  if (!process.env.WHATSAPP_PHONE_NUMBER_ID && "") {
-    process.env.WHATSAPP_PHONE_NUMBER_ID = "";
-  }
-}
 /**
  * OrderKing Real Telecom & SMS Gateway Dispatch Engine
  *
