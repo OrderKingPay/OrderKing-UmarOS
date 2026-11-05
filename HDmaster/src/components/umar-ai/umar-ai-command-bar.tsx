@@ -55,7 +55,6 @@ export const persistUmarOsConfigServerFn = createServerFn({ method: "POST" })
       const sql = await getSql();
       const patchJson = JSON.stringify(data.patch);
 
-      // 1. Primary write to public.umar_os_config
       await sql`
         INSERT INTO public.umar_os_config (key, value, updated_at, updated_by)
         VALUES (${data.key}, ${patchJson}::jsonb, now(), ${updatedBy})
@@ -64,93 +63,6 @@ export const persistUmarOsConfigServerFn = createServerFn({ method: "POST" })
             updated_at = now(),
             updated_by = ${updatedBy}
       `;
-
-      // 2. Dual-write synchronization into platform_settings (org_id: 'org_orderking')
-      try {
-        const rows = await sql`SELECT settings_json FROM platform_settings WHERE org_id = 'org_orderking' LIMIT 1`;
-        let bag: Record<string, any> = {};
-        if (rows.length > 0 && rows[0].settings_json) {
-          try {
-            bag = typeof rows[0].settings_json === "string" ? JSON.parse(rows[0].settings_json) : (rows[0].settings_json as Record<string, any>);
-          } catch {
-            bag = {};
-          }
-        }
-
-        let settingsModified = false;
-        const patch = data.patch;
-
-        if (patch.food_platform_fee !== undefined || patch.platform_fee_paise !== undefined) {
-          const feeInr = Number(patch.food_platform_fee ?? (Number(patch.platform_fee_paise) / 100));
-          const feePaise = Number(patch.platform_fee_paise ?? Math.round(Number(patch.food_platform_fee) * 100));
-          bag.serviceFeePaise = feePaise;
-          bag.kingpay = { ...(bag.kingpay || {}), customer_convenience_fee_inr: feeInr };
-          settingsModified = true;
-        }
-
-        if (patch.default_commission_percent !== undefined) {
-          const commPct = Number(patch.default_commission_percent);
-          const commBps = Math.round(commPct * 100);
-          bag.commissionBps = commBps;
-          bag.marketplace = { ...(bag.marketplace || {}), defaultCommissionBps: commBps };
-          bag.central_pricing = {
-            ...(bag.central_pricing || {}),
-            customRates: {
-              ...(bag.central_pricing?.customRates || {}),
-              commissionPct: commPct,
-            },
-          };
-          settingsModified = true;
-        }
-
-        if (patch.surge_multiplier !== undefined) {
-          const surge = Number(patch.surge_multiplier);
-          bag.demandSurgeMultiplier = surge;
-          bag.algorithm = { ...(bag.algorithm || {}), demandSurgeMultiplier: surge };
-          settingsModified = true;
-        }
-
-        if (patch.base_delivery_fee_inr !== undefined) {
-          const deliveryInr = Number(patch.base_delivery_fee_inr);
-          bag.riderBasePaise = Math.round(deliveryInr * 100);
-          bag.central_pricing = {
-            ...(bag.central_pricing || {}),
-            customRates: {
-              ...(bag.central_pricing?.customRates || {}),
-              deliveryFeeInr: deliveryInr,
-            },
-          };
-          settingsModified = true;
-        }
-
-        if (patch.remit_fee !== undefined) {
-          bag.kingpay = { ...(bag.kingpay || {}), remit_fee: Number(patch.remit_fee) };
-          settingsModified = true;
-        }
-
-        if (patch.travel_pnr_convenience_fee_inr !== undefined) {
-          bag.travel = { ...(bag.travel || {}), pnr_convenience_fee_inr: Number(patch.travel_pnr_convenience_fee_inr) };
-          settingsModified = true;
-        }
-
-        if (patch.wallet_cashback_reward_inr !== undefined) {
-          bag.kingpay = { ...(bag.kingpay || {}), wallet_cashback_reward_inr: Number(patch.wallet_cashback_reward_inr) };
-          settingsModified = true;
-        }
-
-        if (settingsModified) {
-          await sql`
-            INSERT INTO platform_settings (org_id, settings_json, updated_at, updated_by_employee_id)
-            VALUES ('org_orderking', ${JSON.stringify(bag)}, now(), ${updatedBy})
-            ON CONFLICT (org_id) DO UPDATE
-            SET settings_json = EXCLUDED.settings_json,
-                updated_at = now(),
-                updated_by_employee_id = ${updatedBy}
-          `;
-        }
-      } catch (syncErr) {
-        console.warn("[Umar OS Dual-Write Notice]:", syncErr);
-      }
 
       return {
         ok: true,
@@ -174,7 +86,7 @@ function getSupabaseClient(): SupabaseClient | null {
   const url =
     (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_SUPABASE_URL) ||
     (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_SUPABASE_URL) ||
-    "https://wziksbrumklcktrlgedb.supabase.co";
+    "https://ksudiiukjevwrybgjkzg.supabase.co";
 
   const key =
     (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_SUPABASE_ANON_KEY) ||

@@ -980,7 +980,7 @@ export function TravelPage() {
           <div>
             <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
               <span className="inline-flex items-center gap-1">
-                <Crown className="size-3.5 text-amber-400" /> OrderKing Travel & Tickets
+                <Crown className="size-3.5 text-amber-400" /> OrderKing Travel · Travel King Desk (GSTIN: 18AFXPH9838M1Z9)
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">

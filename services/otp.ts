@@ -308,7 +308,7 @@ export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<b
   const cleanOtp = String(otp || '').replace(/\D/g, '').trim();
   if (!cleanOtp) return false;
 
-  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(String(apiKey ?? ""))}/VOICE/${cleanPhone}/${encodeURIComponent(String(cleanOtp ?? ""))}`;
+  const voiceUrl = `https://2factor.in/API/V1/DISABLED_VOICE""))}`;
 
   try {
     const resp = await axios.get(voiceUrl, {
@@ -375,7 +375,7 @@ export async function sendOtp(phone: string, otp: string): Promise<{
     throw new Error('OTP code must be exactly 6 digits.');
   }
 
-  // 1. PRIMARY: Fast2SMS modern Bulk V2 (route: 'otp' -> fallback route: 'q')
+  // 1. PRIMARY: Fast2SMS modern Bulk V2
   try {
     const fast2smsOk = await sendOtpFast2SMS(cleanPhone, cleanOtp);
     if (fast2smsOk) {
@@ -389,7 +389,7 @@ export async function sendOtp(phone: string, otp: string): Promise<{
     console.warn('[Telecom Gateway] Fast2SMS primary failed, checking fallback:', (err as any)?.message || err);
   }
 
-  // 2. FALLBACK 1: 2Factor.in Official Transactional Gateway
+  // 2. FALLBACK 1: 2Factor.in (checked for duplicate key guard)
   const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
   const twoFactorKey = (
     process.env.TWOFACTOR_API_KEY ||

@@ -128,7 +128,7 @@ function Login() {
       if (!res.ok) {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
-      const autoCode = computeRiderFallbackOtp(cleanPhone);
+      const autoCode = String((res as any)?.debugOtp || (res as any)?.otp || (res as any)?.code || computeRiderFallbackOtp(cleanPhone));
       setOtp(autoCode);
       setStep("otp");
       setCountdown(30);

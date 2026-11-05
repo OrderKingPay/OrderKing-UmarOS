@@ -3,12 +3,6 @@ if (typeof process !== "undefined" && process.env && !process.env.VITEST && proc
   if (!process.env.FAST2SMS_API_KEY && "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU") {
     process.env.FAST2SMS_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
   }
-  if (!process.env.TWOFACTOR_API_KEY && "bae2bf50-d3d4-11f1-ac3e-0200cd936042") {
-    process.env.TWOFACTOR_API_KEY = "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
-  }
-  if (!process.env.OTP_2FACTOR_API_KEY && "bae2bf50-d3d4-11f1-ac3e-0200cd936042") {
-    process.env.OTP_2FACTOR_API_KEY = "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
-  }
   if (!process.env.WHATSAPP_ACCESS_TOKEN && "") {
     process.env.WHATSAPP_ACCESS_TOKEN = "";
   }
@@ -296,8 +290,8 @@ async function sendVia2Factor(
   const cleanKey = (apiKey || "").trim().replace(/^["']|["']$/g, "");
   const template = (process.env.TWOFACTOR_OTP_TEMPLATE || "").trim();
   const url = template
-    ? `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/${cleanPhone}/${otp}/${encodeURIComponent(String(template ?? ""))}`
-    : `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/${cleanPhone}/${otp}/AUTOGEN`;
+    ? `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/+91${cleanPhone}/${otp}/${encodeURIComponent(String(template ?? ""))}`
+    : `https://2factor.in/API/V1/${encodeURIComponent(String(cleanKey ?? ""))}/SMS/+91${cleanPhone}/AUTOGEN`;
 
   let json: { Status?: string; Details?: string } | undefined;
   try {
@@ -544,14 +538,7 @@ export async function sendViaWhatsAppCloudApi(
 }
 
 export function getAvailableSmsProviders(): TelecomProvider[] {
-  const providers: TelecomProvider[] = [];const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
-    .trim()
-    .replace(/^["']|["']$/g, "");
-  if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
-    providers.push("fast2sms");
-  }
-
-  
+  const providers: TelecomProvider[] = [];
 
   const twoFactorKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY || "").trim();
   const f2sCompare = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
@@ -559,7 +546,12 @@ export function getAvailableSmsProviders(): TelecomProvider[] {
     providers.push("2factor");
   }
 
-  
+  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
+    providers.push("fast2sms");
+  }
 
   const msg91Key = process.env.MSG91_AUTH_KEY;
   if (msg91Key && msg91Key !== "xxx" && !msg91Key.includes("change-me")) {

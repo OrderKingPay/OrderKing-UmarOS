@@ -4,7 +4,7 @@ import { authClient, setPhoneSession } from "@/lib/auth/client";
 import { Wordmark } from "@/components/brand/wordmark";
 import { useBrand } from "@/components/providers";
 import { requestPhoneOtpFn, verifyPhoneOtpFn } from "@/lib/server/phone-auth";
-import { Phone, ShieldCheck, MessageSquare, Sparkles, ArrowRight, UserPlus, LogIn, CheckCircle2 } from "lucide-react";
+import { Phone, ShieldCheck, PhoneCall, MessageSquare, Sparkles, ArrowRight, UserPlus, LogIn, CheckCircle2 } from "lucide-react";
 export const Route = createFileRoute("/login")({ component: Login });
 function Login() {
   const { brand } = useBrand();
@@ -16,7 +16,7 @@ function Login() {
   const [phoneName, setPhoneName] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [channel, setChannel] = useState<"sms" | "whatsapp">("sms");
+  const [channel, setChannel] = useState<"sms" | "voice" | "whatsapp">("sms");
   const [providerNotice, setProviderNotice] = useState<string | null>(null);
   const [instantOtp, setInstantOtp] = useState<string | null>(null);
   const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
@@ -60,7 +60,7 @@ function Login() {
   }, [otp, otpSent]);
   const cleanIndianNumber = (raw: string) =>
     raw.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "").slice(0, 10);
-  const handleSendOtp = async (selectedChannel: "sms" | "whatsapp" = channel) => {
+  const handleSendOtp = async (selectedChannel: "sms" | "voice" | "whatsapp" = channel) => {
     const cleanNumber = cleanIndianNumber(phone);
     if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
       setError("Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).");
@@ -94,7 +94,9 @@ function Login() {
         }
       }
       const modeLabel =
-        selectedChannel === "whatsapp"
+        selectedChannel === "voice"
+          ? "Automated voice call initiated to"
+          : selectedChannel === "whatsapp"
           ? "WhatsApp verification ready for"
           : "6-digit OTP dispatched to";
       setSuccessMsg(`${modeLabel} +91 ${cleanNumber}`);
@@ -318,17 +320,31 @@ function Login() {
                   <span>{busy ? "Sending OTP..." : accountMode === "signup" ? "Create Account & Get OTP" : "Continue with Mobile OTP"}</span>
                   <ArrowRight className="size-4" />
                 </button>
-                {/* Instant WhatsApp Option */}
+                {/* Direct Voice Call & WhatsApp Instant Options */}
                 <div className="pt-1">
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void handleSendOtp("whatsapp")}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50/60 py-2.5 px-3 text-xs font-bold text-emerald-900 hover:bg-emerald-100 cursor-pointer transition"
-                  >
-                    <MessageSquare className="size-3.5 text-emerald-600" />
-                    <span>Get OTP via WhatsApp</span>
-                  </button>
+                  <p className="text-[11px] font-bold text-center text-stone-500 mb-2">
+                    Or receive your 6-digit code instantly via:
+                  </p>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void handleSendOtp("voice")}
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50 py-2.5 px-3 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 cursor-pointer"
+                    >
+                      <PhoneCall className="size-3.5 text-amber-600" />
+                      <span>OTP on Call</span>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void handleSendOtp("whatsapp")}
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/60 py-2.5 px-3 text-xs font-bold text-emerald-900 hover:bg-emerald-100 cursor-pointer"
+                    >
+                      <MessageSquare className="size-3.5 text-emerald-600" />
+                      <span>WhatsApp OTP</span>
+                    </button>
+                  </div>
                 </div>
               </>
             ) : (
@@ -379,15 +395,23 @@ function Login() {
                   <ShieldCheck className="size-4" />
                   <span>{busy ? "Verifying & Signing In..." : "Verify & Continue"}</span>
                 </button>
-                {/* Dual-Channel Resend Bar (Strictly SMS & WhatsApp, Zero Voice Calls) */}
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-stone-200">
+                {/* Multi-channel Resend Bar */}
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-stone-200">
                   <button
                     type="button"
                     disabled={busy || resendTimer > 0}
                     onClick={() => void handleSendOtp("sms")}
                     className="rounded-xl border border-stone-200 bg-stone-50 py-2 px-2 text-[11px] font-bold text-stone-700 hover:bg-stone-100 disabled:opacity-50 cursor-pointer"
                   >
-                    {resendTimer > 0 ? `Resend SMS (${resendTimer}s)` : "Resend SMS"}
+                    {resendTimer > 0 ? `SMS (${resendTimer}s)` : "Resend SMS"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void handleSendOtp("voice")}
+                    className="rounded-xl border border-amber-200 bg-amber-50/70 py-2 px-2 text-[11px] font-bold text-amber-900 hover:bg-amber-100 cursor-pointer"
+                  >
+                    📞 Call Me Now
                   </button>
                   <button
                     type="button"
@@ -398,7 +422,7 @@ function Login() {
                     }}
                     className="rounded-xl border border-emerald-200 bg-emerald-50/70 py-2 px-2 text-[11px] font-bold text-emerald-900 hover:bg-emerald-100 cursor-pointer"
                   >
-                    💬 WhatsApp OTP
+                    💬 WhatsApp
                   </button>
                 </div>
               </div>

@@ -194,66 +194,45 @@ export class SystemDiagnosticsEngine {
 
   private static async checkLedgerHealth(): Promise<ComponentHealth> {
     const t0 = Date.now();
-    try {
-      const integrity = await canonicalLedger.verifyLedgerChainIntegrity();
-      const transactions = await canonicalLedger.listTransactions();
-      const allBatches = await canonicalLedger.listSettlementBatches();
-      const pendingSettlements = allBatches.filter(
-        (b: any) => b.state === 'CALCULATED' || b.state === 'VALIDATED'
-      ).length;
-      const latencyMs = Date.now() - t0;
+    const integrity = await canonicalLedger.verifyLedgerChainIntegrity();
+    const transactions = await canonicalLedger.listTransactions();
+    const allBatches = await canonicalLedger.listSettlementBatches();
+    const pendingSettlements = allBatches.filter(
+      (b: any) => b.state === 'CALCULATED' || b.state === 'VALIDATED'
+    ).length;
+    const latencyMs = Date.now() - t0;
 
-      let status: SystemHealthStatus = 'HEALTHY';
-      let message = 'Canonical double-entry ledger is balanced and cryptographic chain is intact.';
-      let recommendation: string | undefined;
+    let status: SystemHealthStatus = 'HEALTHY';
+    let message = 'Canonical double-entry ledger is balanced and cryptographic chain is intact.';
+    let recommendation: string | undefined;
 
-      if (!integrity.isValid) {
-        status = 'CRITICAL';
-        message = `CRITICAL: Cryptographic ledger hash chain broken at transaction ID ${integrity.tamperedTxId}!`;
-        recommendation = 'Immediately investigate transaction tampering in journal storage.';
-      } else if (pendingSettlements > 50) {
-        status = 'DEGRADED';
-        message = `High settlement backlog: ${pendingSettlements} settlements awaiting validation/approval.`;
-        recommendation = 'Run batch settlement approval gate via Founder AI.';
-      }
-
-      return {
-        componentId: 'canonical_ledger',
-        name: 'Canonical Double-Entry Financial Ledger',
-        category: 'FINANCE',
-        status,
-        latencyMs: Math.max(1, latencyMs),
-        message,
-        metrics: {
-          journalEntriesCount: transactions.length,
-          balanced: true,
-          chainValid: integrity.isValid,
-          pendingSettlements,
-        },
-        lastCheckedAt: new Date().toISOString(),
-        incidentCount: status === 'HEALTHY' ? 0 : 1,
-        recommendation,
-      };
-    } catch (err: any) {
-      const latencyMs = Date.now() - t0;
-      return {
-        componentId: 'canonical_ledger',
-        name: 'Canonical Double-Entry Financial Ledger',
-        category: 'FINANCE',
-        status: 'CRITICAL',
-        latencyMs: Math.max(1, latencyMs),
-        message: `Ledger connectivity degraded: ${err?.message || 'Database error'}`,
-        metrics: {
-          journalEntriesCount: 0,
-          balanced: false,
-          chainValid: false,
-          pendingSettlements: 0,
-        },
-        lastCheckedAt: new Date().toISOString(),
-        incidentCount: 1,
-        recommendation: 'Check database connectivity and network pooler.',
-      };
+    if (!integrity.isValid) {
+      status = 'CRITICAL';
+      message = `CRITICAL: Cryptographic ledger hash chain broken at transaction ID ${integrity.tamperedTxId}!`;
+      recommendation = 'Immediately investigate transaction tampering in journal storage.';
+    } else if (pendingSettlements > 50) {
+      status = 'DEGRADED';
+      message = `High settlement backlog: ${pendingSettlements} settlements awaiting validation/approval.`;
+      recommendation = 'Run batch settlement approval gate via Founder AI.';
     }
+
+    return {
+      componentId: 'canonical_ledger',
+      name: 'Canonical Double-Entry Financial Ledger',
+      category: 'FINANCE',
+      status,
+      latencyMs: Math.max(1, latencyMs),
+      message,
+      metrics: {
+        journalEntriesCount: transactions.length,
+        balanced: true,
+        chainValid: integrity.isValid,
+        pendingSettlements,
+      },
+      lastCheckedAt: new Date().toISOString(),
+      incidentCount: status === 'HEALTHY' ? 0 : 1,
+      recommendation,
+    };
   }
 
   private static checkAIWorkforceHealth(): ComponentHealth {
