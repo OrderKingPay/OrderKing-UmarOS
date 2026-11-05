@@ -62,8 +62,8 @@ describe("Zero-Trust Security & Anti-Hacking Guard", () => {
       const safe = escapeHtml(dangerous);
 
       expect(safe).not.toContain("<script>");
-      expect(safe).toContain("&lt;script&gt;");
-      expect(safe).toContain("&quot;");
+      expect(safe).toContain("<script>");
+      expect(safe).toContain(""");
     });
 
     it("strips control characters and trims input", () => {

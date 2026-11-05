@@ -865,7 +865,7 @@ export function B2BSaaSSalesDeckGenerator() {
                         Door-to-Driver SLA
                       </span>
                       <div className="text-2xl md:text-3xl font-black text-emerald-400 my-2">
-                        &lt; 8.0 Minutes
+                        < 8.0 Minutes
                       </div>
                       <p className="text-[11px] text-slate-400">
                         Guaranteed courier assignment SLA ensuring zero cold-holding bag degradation

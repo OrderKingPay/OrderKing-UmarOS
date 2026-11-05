@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { handleLatestRequest, handleLatestPostRequest } from "@/lib/orderking/customization/sync-bus";
 
-// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/sync/customizations/latest")({
   server: {
     handlers: {

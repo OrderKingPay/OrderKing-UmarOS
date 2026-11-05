@@ -251,6 +251,54 @@ export class AITutor {
   public generateDeterministicNCERTSolution(query: string, board: Board = "CBSE", grade: Grade = 10): string {
     const q = query.toLowerCase();
 
+    // Zero-Hallucination Guardrail: Refutation of Perpetual Motion & Free Energy (First & Second Laws of Thermodynamics)
+    if (q.includes("perpetual motion") || q.includes("free energy") || q.includes("overunity") || q.includes("100% efficient heat engine")) {
+      return `### 1. Given Formula / Concept
+- **First Law of Thermodynamics (Conservation of Energy):**
+  \\[\\Delta U = Q - W\\]
+  Energy can neither be created nor destroyed in an isolated system.
+- **Second Law of Thermodynamics (Kelvin-Planck & Clausius Statements):**
+  - Kelvin-Planck: It is impossible for any device operating on a cycle to receive heat from a single reservoir and produce an equivalent amount of net work.
+  - Clausius: Heat cannot spontaneously flow from a colder body to a hotter body without external work input.
+  - Carnot Maximum Efficiency Invariant:
+  \\[\\eta_{\\text{max}} = 1 - \\frac{T_C}{T_H} < 1 \\quad (\\text{for } T_C > 0 \\text{ K})\\]
+- **Curriculum Standard:** NCERT Class 11 Physics Chapter 12 (${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (PMM of First Kind - PMM1):** A PMM1 purports to produce work without continuous net input of energy or matter. By First Law, \\(W = -\\Delta U\\); in a cyclic process, \\(\\oint dU = 0 \\implies W_{\\text{net}} = Q_{\\text{net}}\\). Without heat supply (\\(Q=0\\)), \\(W_{\\text{net}} = 0\\).
+- **Step 2 (PMM of Second Kind - PMM2):** A PMM2 claims to extract heat from a single thermal reservoir and convert it completely into work with 100% efficiency (\\(\\eta = 1\\)). By Kelvin-Planck statement and Carnot's Theorem:
+  \\[\\eta = 1 - \\frac{T_L}{T_H} < 100\\%\\]
+  Because absolute zero (\\(T_L = 0 \\text{ K}\\)) is unattainable by Third Law of Thermodynamics.
+- **Step 3 (Entropic Invariant):** For any spontaneous real process:
+  \\[\\Delta S_{\\text{universe}} = \\Delta S_{\\text{system}} + \\Delta S_{\\text{surroundings}} > 0\\]
+  A perpetual motion device would require \\(\\Delta S_{\\text{universe}} < 0\\), strictly violating the Second Law.
+
+### 3. Final Answer
+**Scientific Verdict:**
+\\[\\text{Perpetual Motion Machines (PMM1 and PMM2) are strictly physically impossible.}\\]
+- **Reason:** Violation of the fundamental conservation laws of physics as established in standard NCERT / State Board curricula.`;
+    }
+
+    // Zero-Hallucination Guardrail: Division by Zero & Arithmetic Invariants (Field Axioms of Real Numbers)
+    if (q.includes("division by zero") || q.includes("divide by zero") || q.includes("1=2") || q.includes("1 = 2") || q.includes("divide by 0")) {
+      return `### 1. Given Formula / Concept
+- **Field Axioms of Real Numbers (\\(\\mathbb{R}, +, \\cdot\\)):**
+  - Multiplicative Inverse Existence: For every \\(a \\in \\mathbb{R}\\) where \\(a \\neq 0\\), there exists a unique element \\(a^{-1} = \\frac{1}{a}\\) such that \\(a \\cdot a^{-1} = 1\\).
+  - Multiplicative Property of Zero: For every \\(x \\in \\mathbb{R}\\), \\(x \\cdot 0 = 0\\).
+- **Curriculum Standard:** NCERT Class 9 Mathematics Chapter 1 & Class 11 Foundations (${board}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Definition of Division as Inverse Multiplication):** By definition, \\(\\frac{a}{b} = c \\iff a = b \\cdot c\\).
+- **Step 2 (Case \\(a \\neq 0, b = 0\\)):** Setting \\(b = 0\\) gives \\(a = 0 \\cdot c = 0\\). But this contradicts our assumption \\(a \\neq 0\\). No real number \\(c\\) can satisfy this condition.
+- **Step 3 (Case \\(a = 0, b = 0\\)):** Setting \\(a = 0, b = 0\\) gives \\(0 = 0 \\cdot c\\). This holds true for ALL real numbers \\(c\\), meaning the quotient is non-unique and indeterminate.
+- **Step 4 (Refutation of '1 = 2' Fallacies):** Pseudomaths proofs that show \\(1 = 2\\) invariably start with \\(a = b\\), proceed to \\(a^2 - ab = a^2 - b^2 \\implies a(a - b) = (a + b)(a - b)\\), and divide by \\((a - b)\\). Since \\(a = b\\), \\(a - b = 0\\); dividing by zero produces the algebraic contradiction.
+
+### 3. Final Answer
+**Mathematical Verdict:**
+\\[\\frac{x}{0} \\text{ is strictly undefined for all } x \\in \\mathbb{R}.\\]
+- **Conclusion:** Division by zero is fundamentally invalid under the field axioms of mathematics.`;
+    }
+
     // Polynomial Zeroes & Coefficients (NCERT Class 10 Chapter 2)
     if (q.includes("polynomial") || q.includes("zeroes") || q.includes("roots of polynomial")) {
       return `### 1. Given Formula / Concept

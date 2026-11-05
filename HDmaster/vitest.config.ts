@@ -31,6 +31,7 @@ export default defineConfig({
       "src/lib/orderking/customization/client-sync.test.ts",
       "src/lib/orderking/payments/**/*.test.ts",
       "src/lib/orderking/security/umar-os-security-hardening.test.ts",
+      "src/lib/orderking/security/admin-lockdown-privacy.test.ts",
       "src/lib/orderking/customization/sync-bus.test.ts",
       "src/routes/customization-studio.test.ts",
       "src/lib/orderking/playbook/**/*.test.ts",

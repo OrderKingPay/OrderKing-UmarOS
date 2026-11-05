@@ -84,7 +84,6 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
           `https://2factor.in/API/V1/${encodeURIComponent(String(twoFactorKey ?? ""))}/VOICE/+91${cleanPhone}/${otp}`
         );
         const vJson = (await vRes.json().catch(() => ({}))) as { Status?: string; Details?: string };
-// @ts-ignore
         const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(String("OrderKing OTP: " + otp ?? ""))}`;
         dispatchResult = {
           success: true,
@@ -104,9 +103,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
         });
       }
     } catch (err: unknown) {
-// @ts-ignore
       const msg = err instanceof Error ? err.message : String(err);
-// @ts-ignore
       const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(String("OrderKing OTP: " + otp ?? ""))}`;
       dispatchResult = {
         success: true,

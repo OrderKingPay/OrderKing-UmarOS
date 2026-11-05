@@ -59,10 +59,12 @@ export async function getSessionUser(
   requestOverride?: Request,
 ): Promise<VerifiedUser | null> {
   let request: Request | null = requestOverride || null;
-  try {
-    request = getRequest();
-  } catch {
-    request = null;
+  if (!request) {
+    try {
+      request = getRequest();
+    } catch {
+      request = null;
+    }
   }
   let headers = request ? new Headers(request.headers) : new Headers();
   if (!headers.get("host")) {

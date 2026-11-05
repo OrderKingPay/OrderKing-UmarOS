@@ -157,7 +157,7 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      timeout: 8000,
+      timeout: 2800,
     });
 
     if (resp.data?.return) {
@@ -193,7 +193,7 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      timeout: 8000,
+      timeout: 2800,
     });
 
     if (qResp.data?.return) {
@@ -265,7 +265,7 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
   try {
     const resp = await axios.get(url, {
       headers: { Accept: 'application/json' },
-      timeout: 8000,
+      timeout: 2800,
     });
     return resp.data?.Status === 'Success';
   } catch (err: unknown) {

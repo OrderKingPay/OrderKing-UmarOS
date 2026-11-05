@@ -45,11 +45,11 @@ function PrivacyPage() {
             <p>
               This Privacy Policy applies to all personal data collected and processed by <strong className="text-white">Orderkingpay</strong>,
               operating under Goods and Services Tax Identification Number (GSTIN) <span className="font-mono text-emerald-400 font-bold">18AFXPH9838M1Z9</span>,
-              having its registered operations in Sribhumi, Assam - 788710, India (hereinafter designated as the &quot;Data Fiduciary&quot;, &quot;Company&quot;, &quot;OrderKing&quot;, &quot;We&quot;, &quot;Us&quot;, or &quot;Our&quot;).
+              having its registered operations in Sribhumi, Assam - 788710, India (hereinafter designated as the "Data Fiduciary", "Company", "OrderKing", "We", "Us", or "Our").
             </p>
             <p>
-              Under the Digital Personal Data Protection Act, 2023 (&quot;DPDP Act, 2023&quot;), the User transacting or registering on the OrderKing
-              and KingPay platforms is recognized as the &quot;Data Principal&quot;. We are committed to maintaining the highest degree of confidentiality,
+              Under the Digital Personal Data Protection Act, 2023 ("DPDP Act, 2023"), the User transacting or registering on the OrderKing
+              and KingPay platforms is recognized as the "Data Principal". We are committed to maintaining the highest degree of confidentiality,
               integrity, and transparency regarding the processing of your digital personal data.
             </p>
           </section>

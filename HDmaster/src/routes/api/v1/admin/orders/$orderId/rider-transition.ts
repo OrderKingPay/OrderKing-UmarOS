@@ -7,7 +7,9 @@ const ADMIN_ROLES = new Set(['SUPER_ADMIN', 'FOUNDER', 'ADMIN']);
 export const APIRoute = createAPIFileRoute('/api/v1/admin/orders/$orderId/rider-transition')({
   POST: async ({ request, params }: any) => {
     try {
-      const sessionUser = await getSessionUser();
+      const authHeader = request.headers.get('authorization');
+      const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : undefined;
+      const sessionUser = await getSessionUser(bearerToken, request);
       if (!sessionUser?.id) {
         return new Response(JSON.stringify({ error: 'Unauthorized' }), {
           status: 401,

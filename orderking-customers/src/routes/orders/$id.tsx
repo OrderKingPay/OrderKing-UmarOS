@@ -381,10 +381,7 @@ function OrderDetailPage() {
           </div>
         )}
 
-        {/* POST-ORDER RETENTION ROULETTE GAMIFICATION WHEEL */}
-        {order.status === "DELIVERED" && (
-          
-        )}
+
 
         {/* Dish Review Modal with 3-Photo Upload & ₹25 Gold Reward */}
         {order.status === "DELIVERED" && (

@@ -36,6 +36,44 @@ export function generateCurriculumFallback(data: { message: string; board: strin
   const query = (data.message || "").trim();
   const lower = query.toLowerCase();
 
+  // Zero-Hallucination Guardrail: Refutation of Perpetual Motion & Free Energy
+  if (lower.includes("perpetual motion") || lower.includes("free energy") || lower.includes("overunity") || lower.includes("100% efficient heat engine")) {
+    return `### 1. Given Formula / Concept
+- **First Law of Thermodynamics (Conservation of Energy):**
+  \\[\\Delta U = Q - W\\]
+- **Second Law of Thermodynamics (Kelvin-Planck & Clausius Invariants):**
+  - Impossible to convert heat from a single reservoir completely into work without cold sink rejection.
+  - Carnot Maximum Efficiency Invariant: \\[\\eta_{\\text{max}} = 1 - \\frac{T_C}{T_H} < 1\\]
+- **Curriculum Standard:** NCERT Class 11 Physics Chapter 12 & ${data.board} (${data.subject}).
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (First Kind PMM1 Refutation):** A machine creating energy from nothing violates First Law: in any cycle \\(\\oint dU = 0\\), hence net output work cannot exceed absorbed heat.
+- **Step 2 (Second Kind PMM2 Refutation):** A machine with 100% heat-to-work conversion violates Kelvin-Planck and Carnot's theorem because \\(T_C > 0 \\text{ K}\\).
+- **Step 3 (Entropic Growth):** All real macroscopic processes satisfy \\(\\Delta S_{\\text{univ}} > 0\\). Perpetual motion would require entropy reduction \\(\\Delta S_{\\text{univ}} < 0\\), an impossibility.
+
+### 3. Final Answer
+**Scientific Verdict:**
+\\[\\text{Perpetual Motion Machines are physically impossible under canonical thermodynamics.}\\]`;
+  }
+
+  // Zero-Hallucination Guardrail: Division by Zero & Arithmetic Invariants
+  if (lower.includes("division by zero") || lower.includes("divide by zero") || lower.includes("1=2") || lower.includes("1 = 2") || lower.includes("divide by 0")) {
+    return `### 1. Given Formula / Concept
+- **Field Axioms of Real Numbers (\\(\\mathbb{R}\\)):**
+  - Multiplicative inverse \\(a^{-1}\\) exists uniquely if and only if \\(a \\neq 0\\).
+  - Multiplicative zero property: \\(x \\cdot 0 = 0\\) for all \\(x \\in \\mathbb{R}\\).
+- **Curriculum Standard:** NCERT Class 9 Mathematics & All Indian Board Syllabi.
+
+### 2. Step-by-Step Derivation & Solution
+- **Step 1 (Inverse Definition):** If \\(\\frac{a}{0} = c\\), then by definition \\(a = 0 \\cdot c = 0\\). For non-zero \\(a\\), this produces an immediate contradiction.
+- **Step 2 (Indeterminacy):** For \\(a = 0\\), \\(0 = 0 \\cdot c\\) holds for every real number \\(c\\), rendering the result non-unique and indeterminate.
+- **Step 3 (Fallacy Refutation):** Sophisms claiming \\(1 = 2\\) invariably conceal an illicit step dividing both sides by \\((a - b) = 0\\).
+
+### 3. Final Answer
+**Mathematical Invariant:**
+\\[\\frac{x}{0} \\text{ is strictly undefined in real arithmetic.}\\]`;
+  }
+
   // If question is quadratic equation or formula
   if (lower.includes("quadratic") || lower.includes("ax^2") || lower.includes("ax2") || lower.includes("completing square")) {
     return `### 1. Given Formula / Concept

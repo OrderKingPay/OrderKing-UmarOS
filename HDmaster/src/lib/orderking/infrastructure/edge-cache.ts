@@ -47,8 +47,12 @@ export class HyperEdgeCache {
   private isSlowConnection(): boolean {
     if (typeof navigator === 'undefined') return false;
     
-    // @ts-ignore - Experimental Network Information API
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const nav = navigator as unknown as {
+      connection?: { effectiveType?: string; downlink?: number };
+      mozConnection?: { effectiveType?: string; downlink?: number };
+      webkitConnection?: { effectiveType?: string; downlink?: number };
+    };
+    const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
     
     if (connection) {
       if (['slow-2g', '2g', '3g'].includes(connection.effectiveType)) {

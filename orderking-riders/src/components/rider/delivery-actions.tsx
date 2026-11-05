@@ -818,7 +818,7 @@ export function DeliveryActions({
             <div className="rounded-md border border-border bg-muted/20 p-2.5 space-y-1">
               <p className="font-semibold text-foreground flex items-center gap-1.5">
                 <Clock3 className="size-3.5 text-primary" />
-                1. Kitchen Delay &gt; 10 Minutes
+                1. Kitchen Delay > 10 Minutes
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Tap <strong>{t("imAtRestaurant")}</strong> as soon as you reach the outlet and tap{" "}

@@ -16,7 +16,8 @@ async function resolveUserId(request: Request) {
   const token = process.env.ORDERKING_SERVICE_TOKEN?.trim();
   const userId = process.env.ORDERKING_SERVICE_USER_ID?.trim();
   if (token && userId && authorization === `Bearer ${token}`) return userId;
-  return requireUserId();
+  const bearerToken = authorization?.startsWith("Bearer ") ? authorization.slice(7).trim() : undefined;
+  return requireUserId(bearerToken, request);
 }
 
 export async function handleMasterAiHttp(request: Request) {

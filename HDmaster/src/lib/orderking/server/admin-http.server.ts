@@ -28,7 +28,8 @@ async function resolveAdminUserId(request: Request): Promise<string> {
   const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim();
   const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim();
   if (configuredToken && configuredUserId && authorization === `Bearer ${configuredToken}`) return configuredUserId;
-  return requireUserId();
+  const bearerToken = authorization?.startsWith("Bearer ") ? authorization.slice(7).trim() : undefined;
+  return requireUserId(bearerToken, request);
 }
 
 async function transitionRestaurantOrder(

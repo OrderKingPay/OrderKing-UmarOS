@@ -49,9 +49,7 @@ export class UniversalConnectorRegistry {
         if (action === "create_payment_link") {
           const vpa = input.founderVpa || "9395065587@ybl";
           return {
-// @ts-ignore
             upiLink: `upi://pay?pa=${vpa}&pn=OrderKingPay&am=${input.amountInr}&cu=INR&tn=${encodeURIComponent(String(input.description || "" ?? ""))}`,
-// @ts-ignore
             qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(String(`upi://pay?pa=${vpa}&pn=OrderKingPay&am=${input.amountInr}&cu=INR` ?? ""))}`,
             providerFee: 0,
           };
