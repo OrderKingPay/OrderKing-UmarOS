@@ -226,7 +226,7 @@ export function UmarOsSupremeGodEyeApp() {
                 onClick={() => flash('Delta-Compressed Edge Sync verified across all 4 apps')}
                 className="w-full rounded-lg bg-emerald-500/20 border border-emerald-500/40 py-1.5 font-bold text-emerald-300"
               >
-                ACTIVE (<50ms Edge)
+                ACTIVE (&lt;50ms Edge)
               </button>
             </div>
           </div>

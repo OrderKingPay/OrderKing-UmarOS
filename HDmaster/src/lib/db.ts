@@ -15,13 +15,14 @@ export function getDatabaseUrl(): string {
     }
   }
   if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
-    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
+    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=no-verify";
   }
+  if (url && url.includes('pooler.supabase.com') && url.includes(':6543')) { url = url.replace(':6543', ':5432').replace('&pgbouncer=true', '').replace('pgbouncer=true&', '').replace('?pgbouncer=true', ''); }
   if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
     url = url.replace('sslmode=require', 'sslmode=no-verify');
   }
   if (url && url.includes('pooler.supabase.com') && !url.includes('sslmode=')) {
-    url += (url.includes('?') ? '&' : '?') + 'sslmode=no-verify&pgbouncer=true';
+    url += (url.includes('?') ? '&' : '?') + 'sslmode=no-verify';
   }
   return url;
 }
@@ -151,7 +152,7 @@ function createNeonSql(): Promise<Sql> {
           } catch (err) {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|Client network socket|TLS|handshake|timeout exceeded|connection timeout/i.test(msg);
             if (isTransient && attempt < 4) {
               await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
               continue;
@@ -179,7 +180,7 @@ function createNeonSql(): Promise<Sql> {
               client = undefined;
             }
             const msg = error instanceof Error ? error.message : String(error);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|Client network socket|TLS|handshake|timeout exceeded|connection timeout/i.test(msg);
             if (isTransient && attempt < 3) {
               await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
               continue;

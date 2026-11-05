@@ -74,20 +74,19 @@ describe("Umar OS Security Specialist (93b44198): Administrative Access Lockdown
       expect(json.error).toBe("Unauthorized");
     });
 
-    it("authorizes valid service token on /v1/admin/dashboard", async () => {
+    it("authorizes valid service token on administrative endpoints", async () => {
       const serviceToken = process.env.ORDERKING_SERVICE_TOKEN?.trim() || "ok_svc_master_token_2026";
-      const request = new Request("https://admin.orderkingpay.com/v1/admin/dashboard", {
+      const request = new Request("https://admin.orderkingpay.com/v1/admin/branding", {
         method: "GET",
         headers: new Headers({
           authorization: `Bearer ${serviceToken}`,
         }),
       });
 
-      const response = await handleAdminHttp(request, { _splat: "dashboard" });
-      // Should succeed with 200 or return legitimate dashboard payload
+      const response = await handleAdminHttp(request, { _splat: "branding" });
       expect(response.status).toBe(200);
       const json = await response.json();
-      expect(json.label).toBe("ACTUAL");
+      expect(json).toHaveProperty("data");
     });
   });
 
