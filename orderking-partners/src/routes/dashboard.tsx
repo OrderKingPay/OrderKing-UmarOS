@@ -1,4 +1,3 @@
-import { ZomatoPartnerPlatformApp } from "../components/zomato-partner/ZomatoPartnerPlatformApp";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -42,7 +41,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-export const Route = createFileRoute("/dashboard")({ component: ZomatoPartnerPlatformApp });
+export const Route = createFileRoute("/dashboard")({ component: DashboardPage });
 
 function DashboardPage() {
   const t = useT();

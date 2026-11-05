@@ -32,15 +32,6 @@ import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/profile")({ component: Page });
 
-
-type LegalSection = {
-  id: LegalDocId;
-  title: string;
-  subtitle: string;
-  statuteBadge: string;
-  clauses: ReadonlyArray<{ heading: string; body: string }>;
-};
-
 const RIDER_TYPES: ReadonlyArray<{ id: RiderType; label: string }> = [
   { id: "DELIVERY_PARTNER", label: "Standard Gig Partner" },
   { id: "FULL_TIME", label: "Full-Time Dedicated" },

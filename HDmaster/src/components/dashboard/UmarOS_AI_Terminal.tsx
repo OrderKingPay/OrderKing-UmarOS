@@ -253,7 +253,7 @@ function DataChartCard({ item }: { item: RichMediaOutput }) {
           </span>
         </div>
         <span className="text-[11px] font-mono font-bold text-emerald-800">
-          Target SLA: <5.0m across all city zones
+          Target SLA: &lt;5.0m across all city zones
         </span>
       </div>
     </div>
@@ -539,7 +539,7 @@ function VideoOutputCard({ item }: { item: RichMediaOutput }) {
       {/* Telemetry Footer */}
       <div className="mt-3 pt-2.5 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-700 gap-2">
         <div className="flex items-center gap-3 font-mono text-[11px]">
-          <span>Handoff SLA: <strong className="text-slate-900">3.2m (Target: <5m)</strong></span>
+          <span>Handoff SLA: <strong className="text-slate-900">3.2m (Target: &lt;5m)</strong></span>
           <span>•</span>
           <span>Optical Quality Score: <strong className="text-emerald-700">99.8%</strong></span>
           <span>•</span>
@@ -1791,7 +1791,7 @@ export function UmarOS_AI_Terminal() {
                     </div>
                     <div className="flex justify-between items-center text-slate-800">
                       <span>Delay Penalty Wallet Credit:</span>
-                      <span className="font-mono font-bold text-emerald-800">₹50 (if >45m delay)</span>
+                      <span className="font-mono font-bold text-emerald-800">₹50 (if &gt;45m delay)</span>
                     </div>
                   </div>
                 </div>
@@ -1905,7 +1905,7 @@ export function UmarOS_AI_Terminal() {
                     </div>
                     <div className="flex justify-between items-center text-slate-800">
                       <span>Escalation Boundary:</span>
-                      <span className="font-mono font-bold text-slate-900">> ₹500 or Trust < 40</span>
+                      <span className="font-mono font-bold text-slate-900">&gt; ₹500 or Trust &lt; 40</span>
                     </div>
                   </div>
                 </div>

@@ -2195,7 +2195,7 @@ export function UmarOsVisualCustomizationStudio({
                     </div>
                     <div className="p-2 rounded bg-white border border-slate-200 space-y-1">
                       <div className="flex justify-between font-semibold text-[11px]">
-                        <span>Band 4 (>8 km)</span>
+                        <span>Band 4 (&gt;8 km)</span>
                         <span className="font-mono text-emerald-700 font-bold">₹{lastMileBand4RatePerKm}/km</span>
                       </div>
                       <input

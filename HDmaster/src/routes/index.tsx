@@ -1,4 +1,3 @@
-import { UmarOsSupremeGodEyeApp } from "../components/umaros-god-eye/UmarOsSupremeGodEyeApp";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { authMiddleware } from "@/lib/auth/middleware";
@@ -2496,7 +2495,6 @@ function UmarOSDashboard() {
           MAIN ACTIVE WORLD VIEWPORT (ONLY 1 WORLD RENDERS AT A TIME!)
       ===================================================================== */}
       <main className="max-w-7xl mx-auto px-4 pt-5 space-y-5">
-      <UmarOsSupremeGodEyeApp />
         {/* UMAR AI REAL-TIME NATURAL LANGUAGE COMMAND BAR */}
         <UmarAiCommandBar />
 

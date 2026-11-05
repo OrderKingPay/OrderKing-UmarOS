@@ -129,7 +129,7 @@ export function EmergencyRecoveryHub() {
           </div>
           <div className="rounded-lg bg-white/40 p-3 border border-rose-500/20">
             <span className="text-xs text-slate-400">MTTR (Mean Time to Recover)</span>
-            <div className="text-2xl font-bold text-teal-400">< 15 seconds</div>
+            <div className="text-2xl font-bold text-teal-400">&lt; 15 seconds</div>
           </div>
         </div>
       </div>

@@ -310,7 +310,7 @@ export function OrderKingCommandSuiteModal({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-black text-white">Weak / At-Risk Kitchen Detection</h3>
-                  <p className="text-xs text-zinc-400">Identifies kitchens with prep delays (>25m), cancellations, or low ratings</p>
+                  <p className="text-xs text-zinc-400">Identifies kitchens with prep delays (&gt;25m), cancellations, or low ratings</p>
                 </div>
                 <Badge className="bg-rose-500/20 text-rose-300">2 Kitchens Flagged</Badge>
               </div>

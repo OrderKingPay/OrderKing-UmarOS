@@ -311,7 +311,7 @@ export function TrainBookingEngine({
               <div className="space-y-2 bg-slate-950/80 p-3 rounded-xl border border-white/10">
                 <span className="font-bold text-white block">Confirmed Ticket Cancellation Charges (Before Chart Preparation):</span>
                 <ul className="list-disc list-inside space-y-1 text-slate-300">
-                  <li><strong>> 48 hours before departure:</strong> Flat clerkage per passenger:
+                  <li><strong>&gt; 48 hours before departure:</strong> Flat clerkage per passenger:
                     <br />• AC 1st / Executive: ₹240 + GST
                     <br />• AC 2 Tier / First: ₹200 + GST
                     <br />• AC 3 Tier / AC Chair / 3E: ₹180 + GST
@@ -329,7 +329,7 @@ export function TrainBookingEngine({
                 <ul className="list-disc list-inside space-y-1 text-slate-300">
                   <li><strong>RAC / Waitlist:</strong> Can be cancelled up to 30 mins before scheduled departure. Flat clerkage ₹60 + GST per passenger.</li>
                   <li><strong>Train Cancelled by Railways:</strong> 100% full refund automatically credited to your original bank/UPI account. No TDR filing required.</li>
-                  <li><strong>Train Running Late > 3 Hours:</strong> Full fare refund admissible if passenger does not travel; file TDR on IRCTC before actual departure.</li>
+                  <li><strong>Train Running Late &gt; 3 Hours:</strong> Full fare refund admissible if passenger does not travel; file TDR on IRCTC before actual departure.</li>
                   <li><strong>AC Failure in Coach:</strong> File TDR on IRCTC with GC (Guard Certificate) for fare difference refund between AC and Non-AC.</li>
                 </ul>
               </div>
