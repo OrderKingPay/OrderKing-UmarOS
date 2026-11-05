@@ -177,6 +177,17 @@ describe("Founder Master Command Center — Dials, Promos, TBO Sync & Dispute Qu
        ON CONFLICT (id) DO NOTHING`,
       [`tm_${testTicketId}_01`, testTicketId, orgId]
     );
+
+    // Ensure canonical default convenience fees for test suite reproducibility
+    await updateTravelPartnerGovernance(
+      founderWs,
+      {
+        flightConvenienceFeeInr: 399,
+        trainConvenienceFeeInr: 40,
+        hotelConvenienceFeeInr: 250,
+      },
+      "Ensure canonical founder benchmark default"
+    );
   });
 
   // =========================================================================
