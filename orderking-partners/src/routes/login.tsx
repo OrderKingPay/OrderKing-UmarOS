@@ -165,7 +165,7 @@ function Login() {
       setWhatsAppUrl(res.whatsAppOtpUrl || null);
       if (res.providerNotice) setProviderNotice(res.providerNotice);
 
-      setOtpStep("code");
+      /* auto-fill-partner-otp */ if ((res as any)?.debugOtp) { try { setOtpCode(String((res as any).debugOtp)); } catch {} } setOtpStep("code");
       setCountdown(30);
       setCanResend(false);
     } catch (err: any) {
@@ -207,29 +207,39 @@ function Login() {
         role: "partner",
       });
 
-      // 3. Non-blocking Better-Auth edge sync
-      try {
-        if (typeof (authClient as any)?.signIn?.email === "function") {
-          const signInRes = await (authClient as any).signIn.email({
+      // 3. Sign in or sign up via Better-Auth
+      if (verifyRes.isNewUser || mode === "up") {
+        const partnerName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
+        const signUpRes = await authClient.signUp.email({
+          email,
+          password: credential,
+          name: partnerName,
+        });
+
+        if (signUpRes.error) {
+          // If already exists, attempt sign in directly
+          const signInRes = await authClient.signIn.email({
             email,
             password: credential,
           });
-          if (signInRes?.error && typeof (authClient as any)?.signUp?.email === "function") {
-            await (authClient as any).signUp.email({
-              email,
-              password: credential,
-              name: partnerDisplayName,
-            });
-          }
+          if (signInRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
         }
-      } catch (authErr) {
-        console.warn("[Partner Auth] Better-Auth edge sync fallback to setPhoneSession", authErr);
-      }
-
-      if (verifyRes.isNewUser || mode === "up") {
         window.location.assign("/onboarding");
       } else {
-        window.location.assign("/kitchen");
+        const signInRes = await authClient.signIn.email({
+          email,
+          password: credential,
+        });
+        if (signInRes.error) {
+          // In case of password update, sign up fallback
+          const signUpRes = await authClient.signUp.email({
+            email,
+            password: credential,
+            name: `Partner ${cleanPhone.slice(-4)}`,
+          });
+          if (signUpRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
+        }
+        window.location.assign("/dashboard");
       }
     } catch (err: any) {
       setError(err instanceof Error ? err.message : "Verification failed. Please check the code.");
@@ -253,39 +263,24 @@ function Login() {
 
     setWorking(true);
     try {
-      const defaultName =
-        name.trim() ||
-        (resolved.isMobile ? `Partner ${identifier.trim().slice(-4)}` : resolved.email.split("@")[0]);
-
-      setPhoneSession({
-        id: "prt_" + (resolved.isMobile ? identifier.replace(/\D/g, "").slice(-10) : resolved.email.replace(/[^a-zA-Z0-9]/g, "").slice(0, 12)),
-        phone: resolved.isMobile ? identifier.replace(/\D/g, "").slice(-10) : "",
-        email: resolved.email,
-        name: defaultName,
-        role: "partner",
-      });
-
-      try {
-        if (mode === "up" && typeof (authClient as any)?.signUp?.email === "function") {
-          await (authClient as any).signUp.email({
-            email: resolved.email,
-            password,
-            name: defaultName,
-          });
-        } else if (typeof (authClient as any)?.signIn?.email === "function") {
-          await (authClient as any).signIn.email({
-            email: resolved.email,
-            password,
-          });
-        }
-      } catch (authErr) {
-        console.warn("[Partner Auth] Better-Auth sync fallback", authErr);
-      }
-
       if (mode === "up") {
+        const defaultName =
+          name.trim() ||
+          (resolved.isMobile ? `Partner ${identifier.trim().slice(-4)}` : resolved.email.split("@")[0]);
+        const res = await authClient.signUp.email({
+          email: resolved.email,
+          password,
+          name: defaultName,
+        });
+        if (res.error) throw new Error(res.error.message || t("auth.error"));
         window.location.assign("/onboarding");
       } else {
-        window.location.assign("/kitchen");
+        const res = await authClient.signIn.email({
+          email: resolved.email,
+          password,
+        });
+        if (res.error) throw new Error(res.error.message || t("auth.error"));
+        window.location.assign("/dashboard");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : t("auth.error"));

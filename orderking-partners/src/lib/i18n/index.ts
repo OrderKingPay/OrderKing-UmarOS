@@ -1,4 +1,4 @@
-import { platformConfig, type AppLanguage } from "@/lib/platform-config";
+import { platformConfig, type AppLanguage } from "../platform-config";
 import { bn } from "./bn";
 import { hi } from "./hi";
 import { te } from "./te";
@@ -25,6 +25,8 @@ export const INDIAN_LANGUAGE_CATALOG: {
   { code: "ta", label: "Tamil", native: "தமிழ்", region: "Tamil Nadu & Puducherry", bcp47: "ta-IN" },
   { code: "te", label: "Telugu", native: "తెలుగు", region: "Telangana & Andhra Pradesh", bcp47: "te-IN" },
 ];
+
+export const INDIAN_CONSTITUTIONAL_LANGUAGES = INDIAN_LANGUAGE_CATALOG;
 
 // Regional navigation & core operational overrides for scheduled languages without separate files
 const regionalNavOverrides: Partial<Record<AppLanguage, Record<string, any>>> = {

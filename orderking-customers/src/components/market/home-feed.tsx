@@ -25,6 +25,9 @@ import {
   Crown,
   Building2,
   Briefcase,
+  Smartphone,
+  Wifi,
+  Car,
   Eye,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
@@ -633,22 +636,10 @@ export function HomeFeed({
               </div>
             ))}
           </div>
-        ) : list.isError && !list.data ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
-            <p className="text-sm font-semibold text-red-700">Unable to load restaurants right now</p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-3 bg-white text-gray-900 border-red-200 hover:bg-red-100"
-              onClick={() => void list.refetch()}
-            >
-              Try Again
-            </Button>
-          </div>
-        ) : filteredRestaurants.length === 0 ? (
+        ) : (list.isError && !list.data) || filteredRestaurants.length === 0 ? (
+
           <div className="space-y-4">
-            {list.data && list.data.restaurants.length > 0 ? (
+            {!list.isError && list.data && list.data.restaurants.length > 0 ? (
               <div className="rounded-2xl border border-stone-200 bg-white p-8 text-center space-y-3 shadow-xs">
                 <div className="flex size-14 items-center justify-center rounded-2xl bg-stone-100 text-stone-600 mx-auto">
                   <Utensils className="size-6 text-stone-600" />
@@ -692,7 +683,7 @@ export function HomeFeed({
                           : "Your Location"}
                       </span>
                       <span className="text-[11px] text-gray-600 block truncate font-medium">
-                        Doorstep food delivery expanding to this area soon · All KingPay services active 24/7
+                        Food delivery is currently not available in your location.
                       </span>
                     </div>
                   </div>
@@ -702,7 +693,7 @@ export function HomeFeed({
                     className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer border-0"
                   >
                     <MapPin className="size-3" />
-                    <span>Change Location</span>
+                    <span>Update / Change Location</span>
                   </Button>
                 </div>
 
@@ -713,7 +704,7 @@ export function HomeFeed({
                       Active KingPay Services in Your Area
                     </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
-                      You can access KingPay financial, travel, career, and learning services below anytime.
+                      
                     </p>
                   </div>
 
@@ -856,6 +847,61 @@ export function HomeFeed({
                         <span className="text-[10px] text-gray-500 block mt-0.5">
                           Hyperlocal Gigs &amp; Apply
                         </span>
+                      </div>
+                    </Link>
+                  </div>
+
+                  {/* Bill & Utilities Row */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                    <Link
+                      to="/kingpay-bbps"
+                      className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-xs transition active:scale-[0.98] no-underline"
+                    >
+                      <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200">
+                        <Smartphone className="size-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <span className="text-xs font-bold text-gray-950 block truncate">Mobile Recharge</span>
+                        <span className="text-[10px] text-gray-500 block truncate">Jio, Airtel, Vi, BSNL</span>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/kingpay-bbps"
+                      className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-xs transition active:scale-[0.98] no-underline"
+                    >
+                      <span className="flex size-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 border border-amber-200">
+                        <Zap className="size-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <span className="text-xs font-bold text-gray-950 block truncate">Electricity</span>
+                        <span className="text-[10px] text-gray-500 block truncate">State Power Boards</span>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/kingpay-bbps"
+                      className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-xs transition active:scale-[0.98] no-underline"
+                    >
+                      <span className="flex size-8 items-center justify-center rounded-lg bg-sky-50 text-sky-600 border border-sky-200">
+                        <Wifi className="size-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <span className="text-xs font-bold text-gray-950 block truncate">Broadband</span>
+                        <span className="text-[10px] text-gray-500 block truncate">Fiber &amp; Landline</span>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/kingpay-bbps"
+                      className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-stone-200/90 hover:border-amber-400 hover:shadow-xs transition active:scale-[0.98] no-underline"
+                    >
+                      <span className="flex size-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-200">
+                        <Car className="size-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <span className="text-xs font-bold text-gray-950 block truncate">FASTag</span>
+                        <span className="text-[10px] text-gray-500 block truncate">Highway Toll Recharge</span>
                       </div>
                     </Link>
                   </div>
