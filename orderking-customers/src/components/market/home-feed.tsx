@@ -635,7 +635,7 @@ export function HomeFeed({
           </div>
         ) : list.isError && !list.data ? (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
-            <p className="text-sm font-semibold text-red-700">Food delivery is not available at this location yet — you can use our live KingPay services below:</p>
+            <p className="text-sm font-semibold text-red-700">Unable to load restaurants right now</p>
             <Button
               type="button"
               variant="outline"
@@ -713,7 +713,7 @@ export function HomeFeed({
                       Active KingPay Services in Your Area
                     </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
-                      
+                      You can access KingPay financial, travel, career, and learning services below anytime.
                     </p>
                   </div>
 

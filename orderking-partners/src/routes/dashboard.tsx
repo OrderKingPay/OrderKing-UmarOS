@@ -167,7 +167,7 @@ function DashboardPage() {
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
                 <div className="text-[10px] uppercase font-mono text-slate-400">Tax &amp; Accounting</div>
-                <div className="text-sm font-semibold text-slate-100 mt-0.5">PAN &amp; Optional GST</div>
+                <div className="text-sm font-semibold text-slate-100 mt-0.5">CGST §9(5) &amp; TDS §194-O</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
                 <div className="text-[10px] uppercase font-mono text-slate-400">Payout Ledger</div>

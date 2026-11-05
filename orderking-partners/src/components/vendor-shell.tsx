@@ -223,7 +223,16 @@ export function VendorShell({
                 </select>
                 <Languages className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
               </div>
-              
+              <button
+                type="button"
+                className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-yellow-500/15 px-3 text-xs font-extrabold text-amber-300 hover:text-amber-200 hover:border-amber-400/60 hover:bg-amber-500/25 transition shadow-sm shadow-amber-500/10 cursor-pointer active:scale-95 shrink-0"
+                onClick={() => setSparkOpen(true)}
+                title="King AI — Restaurant Culinary & Growth Co-Pilot"
+                aria-label="Open King AI Assistant"
+              >
+                <Sparkles className="size-4 text-amber-400 animate-pulse" />
+                <span className="tracking-tight">King AI</span>
+              </button>
               {/* Merchant Outlet Emergency Pause / Operational Status Pill */}
               <OutletStatusPill
                 restaurantId={vendor.restaurantId}
@@ -258,7 +267,17 @@ export function VendorShell({
         </div>
       </div>
 
-      
+      {/* KING AI FLOATING ACTION BUTTON (FAB) FOR INSTANT 1-TAP CO-PILOT ACCESS */}
+      <button
+        type="button"
+        onClick={() => setSparkOpen(true)}
+        aria-label="Open King AI Assistant"
+        title="King AI — Restaurant Culinary & Growth Co-Pilot"
+        className="fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 px-3.5 py-2.5 text-slate-950 font-black shadow-lg shadow-amber-500/30 transition hover:scale-105 active:scale-95 md:hidden"
+      >
+        <Sparkles className="size-4.5 text-slate-950 animate-pulse" />
+        <span className="text-xs font-black tracking-tight">King AI</span>
+      </button>
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
       <PartnerFloatingBottomNav

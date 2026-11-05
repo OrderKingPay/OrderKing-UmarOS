@@ -23,6 +23,7 @@ import {
   STANDARD_DAILY_MILESTONES,
   calculateDailyMilestoneProgress,
 } from "@/lib/rider/gig-engine";
+import { VipAmbassadorPass } from "@/components/rider/vip-ambassador-pass";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
 export const Route = createFileRoute("/earnings")({ component: Page });
@@ -335,6 +336,14 @@ function Page() {
           </Card>
         ) : null}
 
+        {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
+        <VipAmbassadorPass
+          riderName={rider?.fullName}
+          riderId={rider?.id}
+          phone={rider?.phone}
+          onCommissionCredited={() => void loadEarnings()}
+        />
+
         {/* Period Presets & Custom Date Range Filter */}
         <Card className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -433,11 +442,11 @@ function Page() {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <CardTitle className="text-base">Payout Schedule</CardTitle>
-                <Badge tone="online">Weekly Wednesday</Badge>
+                <CardTitle className="text-base">Settlement &amp; Payout Schedule</CardTitle>
+                <Badge tone="online">Wednesday NEFT/IMPS</Badge>
               </div>
               <CardMeta>
-                Weekly earnings are transferred every Wednesday afternoon to your registered bank account or UPI ID.
+                Weekly Wednesday Settlement: Orders from Monday 00:00:00 to Sunday 23:59:59 are settled automatically every Wednesday afternoon at 14:00 IST via automated NEFT/IMPS to your verified bank account or UPI ID registered during KYC onboarding.
               </CardMeta>
             </div>
             <Button
@@ -447,7 +456,7 @@ function Page() {
               className="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-1.5 shadow-sm"
             >
               <Zap className="size-3.5" />
-              {instantPayoutBusy ? "Dispatched..." : "Instant Cashout"}
+              {instantPayoutBusy ? "Dispatched..." : "1-Tap Instant UPI Cashout"}
             </Button>
           </div>
 
@@ -456,6 +465,15 @@ function Page() {
               {instantPayoutNotice}
             </div>
           ) : null}
+
+          <div className="border-t border-border pt-2.5 text-xs text-muted-foreground space-y-1">
+            <p>
+              <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Ambassador Royalties &amp; Bonuses + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
+            </p>
+            <p className="text-[11px]">
+              Compliant with the Code on Social Security, 2020 · Independent Delivery Partner Ledger
+            </p>
+          </div>
         </Card>
 
         {/* Itemized Statement with Category Filter & Self-Service Dispute Logger */}

@@ -15,16 +15,13 @@ export function getDatabaseUrl(): string {
     }
   }
   if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
-    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=no-verify&connection_limit=10";
-  }
-  if (url && url.includes(':6543')) {
-    url = url.replace(':6543', ':5432');
+    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
   }
   if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
     url = url.replace('sslmode=require', 'sslmode=no-verify');
   }
   if (url && url.includes('pooler.supabase.com') && !url.includes('sslmode=')) {
-    url += (url.includes('?') ? '&' : '?') + 'sslmode=no-verify';
+    url += (url.includes('?') ? '&' : '?') + 'sslmode=no-verify&pgbouncer=true';
   }
   return url;
 }

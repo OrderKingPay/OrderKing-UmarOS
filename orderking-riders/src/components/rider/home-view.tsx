@@ -361,7 +361,7 @@ function SelfServicePayoutCalculator() {
           <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">
-                Base Fare (first {baseDistanceKm} km)
+                Statutory Base Fare (first {baseDistanceKm} km)
               </dt>
               <dd className="font-mono">{formatPaise(baseFarePaise)}</dd>
             </div>
@@ -1148,7 +1148,7 @@ export function HomeView() {
                 value={formatPaise(totalEarningsPaise)}
                 subtext={tier1Bonus.bonusPaise > 0 ? `+₹${tier1Bonus.bonusRupees} Milestone` : undefined}
               />
-              <Stat label={t("completed")} value={String(home.completedToday ?? 0)} />
+              <Stat label={t("completed")} value={String(home.completedToday)} />
               <Stat
                 label={t("onlineFor")}
                 value={status === "OFFLINE" ? "—" : formatDuration(onlineMs)}
@@ -1157,46 +1157,92 @@ export function HomeView() {
           );
         })()}
 
-        {/* Safety & Shift Readiness Check */}
-        <div className="rounded-xl border border-border bg-card p-3 space-y-2.5">
+        {/* Pre-Shift Driver Readiness & Automated Dispatch Synchronization */}
+        <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-              <ShieldCheck className={`size-4 ${allReady ? "text-emerald-500" : "text-muted-foreground"}`} />
-              Safety &amp; Helmet Check
+            <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+              {allReady ? (
+                <ShieldCheck className="size-4 text-emerald-500" />
+              ) : (
+                <Camera className="size-4 text-primary" />
+              )}
+              Pre-Shift Readiness &amp; Dispatch Sync
             </span>
-            <button
-              type="button"
-              onClick={toggleDriverReadiness}
-              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                driverReadinessConfirmed ? "bg-emerald-600" : "bg-muted"
-              }`}
-              role="switch"
-              aria-checked={driverReadinessConfirmed}
-              title="Toggle Readiness"
-            >
-              <span
-                aria-hidden="true"
-                className={`pointer-events-none inline-block size-4 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
-                  driverReadinessConfirmed ? "translate-x-4" : "translate-x-0"
+            <span className="text-[11px] font-semibold">
+              {allReady ? (
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-3.5" /> Readiness Verified
+                </span>
+              ) : (
+                <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  Readiness Check Required
+                </span>
+              )}
+            </span>
+          </div>
+
+          {/* Automated Driver Readiness Toggle & Dispatch Telemetry */}
+          <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-bold text-foreground block">
+                  Automated Driver Readiness
+                </span>
+                <span className="text-[11px] text-muted-foreground block">
+                  Confirms safety gear, thermal bag, GPS telemetry &amp; battery for dispatches
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={toggleDriverReadiness}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
+                  driverReadinessConfirmed ? "bg-emerald-600" : "bg-muted"
                 }`}
-              />
-            </button>
+                role="switch"
+                aria-checked={driverReadinessConfirmed}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                    driverReadinessConfirmed ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Proximity & Dynamic KPT Dispatch Synchronization Indicators */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
+              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
+                <Radio className={`size-3.5 shrink-0 ${allReady ? "text-emerald-500 animate-pulse" : "text-muted-foreground"}`} />
+                <div>
+                  <span className="font-semibold text-foreground block">Proximity Dispatch Radar</span>
+                  <span className="text-[10px] text-muted-foreground">Operating zone radius &amp; corridor batching active</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
+                <Clock3 className={`size-3.5 shrink-0 ${allReady ? "text-amber-500" : "text-muted-foreground"}`} />
+                <div>
+                  <span className="font-semibold text-foreground block">Dynamic KPT Sync</span>
+                  <span className="text-[10px] text-muted-foreground">Arrival matched to food ready time (0-min dwell)</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {helmetSelfie ? (
-            <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2">
-              <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+              <div className="flex items-center gap-3">
                 <img
                   src={helmetSelfie}
                   alt="Verified Helmet Selfie"
-                  className="size-10 rounded-lg object-cover border border-emerald-500/50 shadow-xs"
+                  className="size-12 rounded-lg object-cover border border-emerald-500/50 shadow-xs"
                 />
                 <div className="space-y-0.5 text-xs">
-                  <p className="font-semibold text-emerald-900 dark:text-emerald-200">
-                    Helmet &amp; Bag Verified
+                  <p className="font-bold text-emerald-900 dark:text-emerald-200">
+                    BIS Helmet &amp; Uniform Bag Verified
                   </p>
-                  <p className="text-[10px] text-muted-foreground font-mono">
-                    Verified {helmetVerifiedAt}
+                  <p className="text-[11px] text-muted-foreground font-mono">
+                    Verified at {helmetVerifiedAt} · Shift Unlocked
                   </p>
                 </div>
               </div>
@@ -1204,28 +1250,28 @@ export function HomeView() {
                 variant="ghost"
                 size="sm"
                 onClick={handleClearHelmetSelfie}
-                className="text-xs text-muted-foreground hover:text-foreground gap-1 h-8"
+                className="text-xs text-muted-foreground hover:text-foreground gap-1"
               >
                 <RotateCcw className="size-3" />
                 <span>Retake</span>
               </Button>
             </div>
           ) : (
-            <div className="flex items-center justify-between gap-2 pt-0.5">
-              <p className="text-xs text-muted-foreground">
+            <div className="flex items-center justify-between gap-3 pt-0.5">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {driverReadinessConfirmed
-                  ? "Readiness confirmed. Ready for dispatches."
-                  : "Wear helmet and thermal delivery bag."}
+                  ? "Readiness verified via automated checklist. You can also upload a live selfie anytime."
+                  : "Toggle automated readiness above or take a front-camera selfie wearing your strapped helmet and delivery bag."}
               </p>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setSelfieModalOpen(true)}
-                className="text-xs font-medium gap-1.5 shrink-0 h-8"
+                className="text-xs font-semibold gap-1.5 shrink-0"
               >
                 <Camera className="size-3.5" />
-                <span>Selfie</span>
+                <span>Take Selfie</span>
               </Button>
             </div>
           )}

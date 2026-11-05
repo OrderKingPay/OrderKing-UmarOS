@@ -278,17 +278,17 @@ export function CabBookingEngine({
                       onClick={() => toast.success(`Opening Uber dispatch for ${pickup} ➔ ${drop}...`)}
                       className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md inline-flex items-center gap-1.5 no-underline transition"
                     >
-                      <span>Book Uber</span>
+                      <span>Uber</span>
                       <ArrowRight className="size-3.5" />
                     </a>
                     <a
-                      href={`https://book.olacabs.com/?pickup_name=${encodeURIComponent(String(pickup ?? ""))}&drop_name=${encodeURIComponent(String(drop ?? ""))}`}
+                      href="https://www.olacabs.com/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={() => toast.success(`Opening Ola Cabs dispatch for ${pickup} ➔ ${drop}...`)}
+                      onClick={() => toast.success(`Opening Ola Cabs dispatch...`)}
                       className="h-10 px-3.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
                     >
-                      <span>Book Ola</span>
+                      <span>Ola</span>
                       <ArrowRight className="size-3.5" />
                     </a>
                   </div>
