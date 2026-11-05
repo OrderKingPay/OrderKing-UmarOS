@@ -763,7 +763,7 @@ function Page() {
               onClick={() => void askQuestion("রেস্তোরাঁয় ৬ মিনিটের বেশি অপেক্ষা করেছি — ওয়েট পে ক্রেডিট করুন", "auto_credit_wait")}
               className="border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
             >
-              🏬 বাংলা: ওয়েট পে ক্রেডিট (>৬ মিনিট)
+              🏬 বাংলা: ওয়েট পে ক্রেডিট (&gt;৬ মিনিট)
             </Button>
             <Button
               type="button"
@@ -795,7 +795,7 @@ function Page() {
               onClick={() => void askQuestion("உணவகத்தில் 6 நிமிடங்களுக்கு மேல் காத்திருப்பு — வெயிட் பே கிரெடிட் செய்யவும்", "auto_credit_wait")}
               className="border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
             >
-              🏬 தமிழ்: வெயிட் பே கிரெடிட் (>6 நிமிடம்)
+              🏬 தமிழ்: வெயிட் பே கிரெடிட் (&gt;6 நிமிடம்)
             </Button>
             <Button
               type="button"
@@ -827,7 +827,7 @@ function Page() {
               onClick={() => void askQuestion("रेस्तरां में 6 मिनट से ज्यादा इंतज़ार — ₹1/मिनट वेट पे क्रेडिट करो", "auto_credit_wait")}
               className="border-emerald-500/50 bg-black/40 text-xs text-emerald-300 hover:bg-emerald-500/20"
             >
-              🏬 हिन्दी: वेट पे क्रेडिट (>6 मिनट)
+              🏬 हिन्दी: वेट पे क्रेडिट (&gt;6 मिनट)
             </Button>
             <Button
               type="button"

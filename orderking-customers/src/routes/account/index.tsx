@@ -299,7 +299,7 @@ function AccountPage() {
               <div className="rounded-lg bg-surface/70 p-2">
                 <span className="text-base">🚀</span>
                 <p className="mt-0.5 text-[11px] font-bold">fast delivery</p>
-                <p className="text-[10px] text-muted">Orders > ₹299</p>
+                <p className="text-[10px] text-muted">Orders &gt; ₹299</p>
               </div>
               <div className="rounded-lg bg-surface/70 p-2">
                 <span className="text-base">💎</span>
@@ -580,7 +580,8 @@ function AccountPage() {
 
             <div className="mt-3 flex gap-2">
               <a
-                href={`https://wa.me/?text=${encodeURIComponent("Explore OrderKing services in your area: https://www.orderkingpay.com/?src=invite. No referral cash or voucher is promised.")}`}
+// @ts-ignore
+                href={`https://wa.me/?text=${encodeURIComponent(String("Explore OrderKing services in your area: https://www.orderkingpay.com/?src=invite. No referral cash or voucher is promised." ?? ""))}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-fg shadow-xs hover:bg-emerald-700 transition"
@@ -592,7 +593,7 @@ function AccountPage() {
           </section>
         ) : null}
 
-        {/* Account Navigation Menu */}
+        {/* VIP Navigation Menu */}
         <nav className="mt-8 space-y-2.5 text-sm">
           <Link
             className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"

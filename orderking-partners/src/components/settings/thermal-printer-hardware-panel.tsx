@@ -274,7 +274,7 @@ export function ThermalPrinterHardwarePanel({
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed">
-              When enabled, clicking "Accept Order" on the Live Board or KDS instantly dispatches print jobs to your thermal printers with zero manual taps.
+              When enabled, clicking &quot;Accept Order&quot; on the Live Board or KDS instantly dispatches print jobs to your thermal printers with zero manual taps.
             </p>
 
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3 space-y-1.5 text-xs">

@@ -1,5 +1,5 @@
-// File: orderking-riders/src/lib/dispatch/rider-zomato-engine.ts
-// Exact Zomato Delivery Partner Parity:
+// File: orderking-riders/src/lib/dispatch/rider-dispatch-engine.ts
+// OrderKing Fleet Delivery Partner Engine:
 // - Floating Trip Offer Radar (45s countdown, distance, item count, guaranteed payout)
 // - Smart Dual-Order Corridor Batching (Max 2 active orders along same route corridor)
 // - Mandatory 4-Digit Customer Delivery OTP Gate (ON_THE_WAY -> DELIVERED)

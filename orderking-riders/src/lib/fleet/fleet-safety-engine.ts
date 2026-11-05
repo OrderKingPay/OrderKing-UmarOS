@@ -523,12 +523,12 @@ export function evaluateShiftGeofence(
   const distanceKm = haversineKm(point, anchor);
   const isOutsideGeofence = distanceKm > shiftRule.maxRadiusKm;
   const rationale = isOutsideGeofence
-    ? `Rider location is ${distanceKm.toFixed(2)}km from shift anchor, exceeding ${shiftRule.name} boundary (${shiftRule.maxRadiusKm}km). Incoming order pings suspended.`
-    : `Rider location is within ${shiftRule.name} boundary (${distanceKm.toFixed(2)}km <= ${shiftRule.maxRadiusKm}km). Incoming order pings permitted.`;
+    ? `Rider location is ${distanceKm.toFixed(2)}km from shift anchor, exceeding ${shiftRule.label} boundary (${shiftRule.maxRadiusKm}km). Incoming order pings suspended.`
+    : `Rider location is within ${shiftRule.label} boundary (${distanceKm.toFixed(2)}km <= ${shiftRule.maxRadiusKm}km). Incoming order pings permitted.`;
 
   return {
     shift: shiftRule.shift,
-    shiftName: shiftRule.name,
+    shiftName: shiftRule.label,
     maxRadiusKm: shiftRule.maxRadiusKm,
     distanceKm: Math.round(distanceKm * 100) / 100,
     isOutsideGeofence,

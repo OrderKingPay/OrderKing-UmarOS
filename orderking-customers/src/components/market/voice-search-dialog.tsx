@@ -171,8 +171,8 @@ export function VoiceSearchDialog({
             {isListening ? "Listening to your craving..." : "Tap to Speak"}
           </h3>
           <p className="text-xs text-gray-500 font-medium">
-            Try saying <span className="font-bold text-amber-700">"Chicken Biryani"</span> or{" "}
-            <span className="font-bold text-amber-700">"Cold Coffee"</span>
+            Try saying <span className="font-bold text-amber-700">&quot;Chicken Biryani&quot;</span> or{" "}
+            <span className="font-bold text-amber-700">&quot;Cold Coffee&quot;</span>
           </p>
         </div>
 

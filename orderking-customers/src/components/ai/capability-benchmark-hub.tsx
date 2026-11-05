@@ -189,7 +189,7 @@ export function CapabilityBenchmarkHub() {
             <Sparkles className="mx-auto h-8 w-8 text-slate-500" />
             <h3 className="mt-2 text-sm font-semibold text-fg">No Benchmark Run Executed Yet</h3>
             <p className="mt-1 text-xs text-slate-400">
-              Click "Run Benchmark Suite" above to execute the live 11-discipline performance tests.
+              Click &quot;Run Benchmark Suite&quot; above to execute the live 11-discipline performance tests.
             </p>
           </div>
         )}

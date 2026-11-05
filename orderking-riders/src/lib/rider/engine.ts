@@ -973,7 +973,7 @@ export class RiderEngine {
           await this.recordTransition(
             d,
             "ON_THE_WAY",
-            "OTP_FAILED",
+            "ON_THE_WAY",
             "SYSTEM",
             userId,
             "OTP mismatch: order state frozen in ON_THE_WAY, payout release locked",

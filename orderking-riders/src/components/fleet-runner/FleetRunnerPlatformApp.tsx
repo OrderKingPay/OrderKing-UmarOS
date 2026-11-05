@@ -8,7 +8,7 @@ import {
   buildRiderCodDepositUpiUri,
   type RiderShiftType,
   type RiderOrderState,
-} from '../../lib/dispatch/rider-zomato-engine';
+} from '../../lib/dispatch/rider-dispatch-engine';
 
 interface ActiveRiderOrder {
   orderId: string;
@@ -29,7 +29,7 @@ interface ActiveRiderOrder {
   state: RiderOrderState;
 }
 
-export function ZomatoRiderPlatformApp() {
+export function FleetRunnerPlatformApp() {
   const [activeTab, setActiveTab] = useState<'duty' | 'earnings' | 'cod' | 'profile'>('duty');
   const [isOnline, setIsOnline] = useState<boolean>(true);
   const [shift, setShift] = useState<RiderShiftType>('DAY');
@@ -511,4 +511,4 @@ export function ZomatoRiderPlatformApp() {
   );
 }
 
-export default ZomatoRiderPlatformApp;
+export default FleetRunnerPlatformApp;
