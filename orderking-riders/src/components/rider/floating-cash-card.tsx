@@ -185,7 +185,7 @@ export function FloatingCashCard({
               </div>
 
               <p className="text-xs text-muted-foreground mt-0.5">
-                Dynamic Trust Limit: ₹{limitInr.toLocaleString("en-IN")} · Reconciled every Wednesday or via UPI
+                Deposit Limit: ₹{limitInr.toLocaleString("en-IN")}
               </p>
             </div>
           </div>
@@ -223,19 +223,6 @@ export function FloatingCashCard({
             </span>
           </div>
         </div>
-
-        {/* Next Tier Progression Teaser */}
-        {tierProgression.nextTier && (
-          <div className="mt-2.5 flex items-center justify-between rounded-lg bg-muted/40 px-2.5 py-1.5 text-[11px] text-muted-foreground border border-border/50">
-            <span className="flex items-center gap-1.5 font-medium text-foreground">
-              <Sparkles className="size-3.5 text-amber-500" />
-              <span>Next: {tierProgression.nextTier.title}</span>
-            </span>
-            <span>
-              Complete <strong className="text-primary font-bold">{tierProgression.deliveriesNeededForNextTier}</strong> more trips to unlock ₹{tierProgression.nextTier.floatingCashLimitInr.toLocaleString("en-IN")} limit
-            </span>
-          </div>
-        )}
 
         {/* Polite Human-Style Empathic Alert Notice */}
         {isBlocked ? (
