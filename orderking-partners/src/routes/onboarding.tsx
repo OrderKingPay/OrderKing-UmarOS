@@ -360,12 +360,12 @@ function OnboardingPage() {
       setTimeout(() => {
         window.location.assign("/dashboard");
       }, 600);
+      if (targetRestaurantId && typeof window !== "undefined") {
+        window.localStorage.setItem("orderking_restaurant_id", targetRestaurantId);
+      }
     } catch (err: any) {
-      // Save locally and proceed to dashboard so partner is never stuck
-      setSuccessMsg("Restaurant profile saved & verified! Launching Partner Dashboard...");
-      setTimeout(() => {
-        window.location.assign("/dashboard");
-      }, 600);
+      console.error("[handleCompleteOnboarding] Error:", err);
+      setError(formatFriendlyError(err, "Failed to complete restaurant onboarding. Please check your details and retry."));
     } finally {
       setBusy(false);
     }
