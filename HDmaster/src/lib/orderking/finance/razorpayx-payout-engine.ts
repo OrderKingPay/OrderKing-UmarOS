@@ -65,7 +65,164 @@ export interface UpiBeneficiary {
   name: string;
 }
 
+export interface StatutoryPayoutMetadata {
+  batchId?: string;
+  restaurantId?: string;
+  cycleId?: string;
+  grossSalesPaise?: number;
+  netFoodSalesPaise?: number;
+  commissionPaise?: number;
+  gstOnCommissionPaise?: number;
+  tds194oPaise?: number; // Section 194-O (0.1% TDS)
+  tcs52Paise?: number;   // Section 52 (1.0% TCS)
+  sec9_5FoodGstPaise?: number; // Section 9(5) Food GST
+  disputeHoldPaise?: number;
+  heldInEscrowPaise?: number;
+}
+
+export interface CompositePayoutFormattingInput {
+  beneficiary: BankAccountBeneficiary | UpiBeneficiary;
+  amountPaise: number;
+  referenceId: string;
+  sourceAccountNumber?: string;
+  narration?: string;
+  purpose?: PayoutPurpose;
+  mode?: PayoutMode;
+  notes?: Record<string, string>;
+  statutoryMetadata?: StatutoryPayoutMetadata;
+}
+
+export interface RazorpayXCompositePayoutPayload {
+  account_number: string;
+  fund_account: {
+    account_type: 'bank_account' | 'vpa';
+    bank_account?: {
+      name: string;
+      ifsc: string;
+      account_number: string;
+    };
+    vpa?: {
+      address: string;
+    };
+    contact: {
+      name: string;
+      type: 'vendor';
+    };
+  };
+  amount: number;
+  currency: 'INR';
+  mode: PayoutMode;
+  purpose: PayoutPurpose;
+  queue_if_low_balance: boolean;
+  reference_id: string;
+  narration: string;
+  notes: Record<string, string>;
+}
+
+/**
+ * Formats and validates the exact RazorpayX composite payout payload.
+ * Generates contact, fund_account (bank_account or vpa), routing rails (IMPS/NEFT/UPI),
+ * and injects all statutory withholding metadata (Section 194-O, Section 52, Section 9(5), disputes).
+ */
+export function formatRazorpayXCompositePayoutPayload(
+  input: CompositePayoutFormattingInput,
+): RazorpayXCompositePayoutPayload {
+  if (!Number.isSafeInteger(input.amountPaise) || input.amountPaise <= 0) {
+    throw new Error(`Invalid payout amount: ${input.amountPaise} paise. Amount must be a positive integer.`);
+  }
+
+  const isUpi = 'vpa' in input.beneficiary && Boolean(input.beneficiary.vpa);
+  
+  let mode: PayoutMode;
+  if (isUpi) {
+    mode = 'UPI';
+  } else if (input.mode === 'IMPS' && input.amountPaise > 50000000) {
+    console.warn(`[RazorpayX Payout Engine] Amount ₹${(input.amountPaise / 100).toFixed(2)} exceeds ₹5 Lakhs IMPS ceiling. Auto-escalating to NEFT rail.`);
+    mode = 'NEFT';
+  } else if (input.mode) {
+    mode = input.mode;
+  } else {
+    mode = input.amountPaise <= 50000000 ? 'IMPS' : 'NEFT';
+  }
+
+  if (!isUpi) {
+    const bankBeneficiary = input.beneficiary as BankAccountBeneficiary;
+    const ifscValidation = validateIndianBankIFSC(bankBeneficiary.ifsc);
+    if (!ifscValidation.isValid) {
+      throw new Error(`INVALID_IFSC: ${ifscValidation.error || 'Malformed 11-char Bank IFSC'}`);
+    }
+  }
+
+  const fundAccount: RazorpayXCompositePayoutPayload['fund_account'] = isUpi
+    ? {
+        account_type: 'vpa',
+        vpa: {
+          address: (input.beneficiary as UpiBeneficiary).vpa.trim(),
+        },
+        contact: {
+          name: input.beneficiary.name.trim() || 'Beneficiary',
+          type: 'vendor',
+        },
+      }
+    : {
+        account_type: 'bank_account',
+        bank_account: {
+          name: input.beneficiary.name.trim() || 'Beneficiary',
+          ifsc: (input.beneficiary as BankAccountBeneficiary).ifsc.toUpperCase().trim(),
+          account_number: (input.beneficiary as BankAccountBeneficiary).accountNumber.trim(),
+        },
+        contact: {
+          name: input.beneficiary.name.trim() || 'Beneficiary',
+          type: 'vendor',
+        },
+      };
+
+  const creds = getRazorpayXCredentials();
+  const accountNumber = input.sourceAccountNumber || creds.accountNumber;
+
+  const cleanNarration = (input.narration || 'OrderKing T+1 Payout')
+    .replace(/[^a-zA-Z0-9 ]/g, '')
+    .slice(0, 30)
+    .trim() || 'OrderKing Payout';
+
+  const statutoryNotes: Record<string, string> = {};
+  if (input.statutoryMetadata) {
+    const sm = input.statutoryMetadata;
+    if (sm.batchId) statutoryNotes.batch_id = String(sm.batchId);
+    if (sm.restaurantId) statutoryNotes.restaurant_id = String(sm.restaurantId);
+    if (sm.cycleId) statutoryNotes.cycle_id = String(sm.cycleId);
+    if (sm.grossSalesPaise !== undefined) statutoryNotes.gross_sales_paise = String(sm.grossSalesPaise);
+    if (sm.netFoodSalesPaise !== undefined) statutoryNotes.net_food_sales_paise = String(sm.netFoodSalesPaise);
+    if (sm.commissionPaise !== undefined) statutoryNotes.commission_paise = String(sm.commissionPaise);
+    if (sm.gstOnCommissionPaise !== undefined) statutoryNotes.gst_on_commission_paise = String(sm.gstOnCommissionPaise);
+    if (sm.tds194oPaise !== undefined) statutoryNotes.tds_194o_paise = String(sm.tds194oPaise);
+    if (sm.tcs52Paise !== undefined) statutoryNotes.tcs_52_paise = String(sm.tcs52Paise);
+    if (sm.sec9_5FoodGstPaise !== undefined) statutoryNotes.sec9_5_food_gst_paise = String(sm.sec9_5FoodGstPaise);
+    if (sm.disputeHoldPaise !== undefined) statutoryNotes.dispute_hold_paise = String(sm.disputeHoldPaise);
+    if (sm.heldInEscrowPaise !== undefined) statutoryNotes.held_in_escrow_paise = String(sm.heldInEscrowPaise);
+  }
+
+  return {
+    account_number: accountNumber,
+    fund_account: fundAccount,
+    amount: input.amountPaise,
+    currency: 'INR',
+    mode,
+    purpose: input.purpose || 'settlement',
+    queue_if_low_balance: true,
+    reference_id: input.referenceId,
+    narration: cleanNarration,
+    notes: {
+      platform: 'OrderKing',
+      engine: 'KingPay Sovereign Settlement',
+      ...(input.notes || {}),
+      ...statutoryNotes,
+    },
+  };
+}
+
 export interface PayoutDisbursementInput {
+  statutoryMetadata?: StatutoryPayoutMetadata;
   beneficiary: BankAccountBeneficiary | UpiBeneficiary;
   amountPaise: number;
   referenceId: string;
@@ -373,13 +530,26 @@ export async function handleRazorpayXPayoutWebhook(
   const sql = await getSql();
 
   // Find matching settlement batch by external_reference or id or batch_id
-  const matchingBatches = await sql.query<Record<string, unknown>>(
-    `SELECT id, batch_id, party_type, entity_type, party_id, entity_id, net_paise, net_payout_paise, status, state
-     FROM settlement_batches
-     WHERE external_reference = $1 OR id = $1 OR batch_id = $1 OR idempotency_key = $1
-     LIMIT 1`,
-    [referenceId],
-  );
+  let matchingBatches: Record<string, unknown>[] = [];
+  try {
+    matchingBatches = await sql.query<Record<string, unknown>>(
+      `SELECT * FROM settlement_batches
+       WHERE id = $1
+       LIMIT 1`,
+      [referenceId],
+    );
+  } catch {
+    try {
+      matchingBatches = await sql.query<Record<string, unknown>>(
+        `SELECT * FROM settlement_batches
+         WHERE batch_id = $1 OR idempotency_key = $1
+         LIMIT 1`,
+        [referenceId],
+      );
+    } catch {
+      matchingBatches = [];
+    }
+  }
 
   const batch = matchingBatches[0];
   if (!batch) {

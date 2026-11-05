@@ -134,7 +134,7 @@ export function LiveChatSupportModal({
                 <Badge tone="success" className="text-[10px] py-0 px-1.5">LIVE</Badge>
               </div>
               <p className="text-[11px] text-muted flex items-center gap-1">
-                <Clock className="size-3 text-muted" /> Avg Response &lt; 45s · Executive Connected
+                <Clock className="size-3 text-muted" /> Avg Response < 45s · Executive Connected
               </p>
             </div>
           </div>

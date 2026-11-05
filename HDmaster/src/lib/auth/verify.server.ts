@@ -56,8 +56,9 @@ export type VerifiedUser = { id: string; email: string | null };
  */
 export async function getSessionUser(
   bearerToken?: string,
+  requestOverride?: Request,
 ): Promise<VerifiedUser | null> {
-  let request: Request | null = null;
+  let request: Request | null = requestOverride || null;
   try {
     request = getRequest();
   } catch {
@@ -119,8 +120,11 @@ export async function getSessionUser(
 /**
  * Resolve the current user id for a server function, or throw when unauthorized.
  */
-export async function requireUserId(bearerToken?: string): Promise<string> {
-  const user = await getSessionUser(bearerToken);
+export async function requireUserId(
+  bearerToken?: string,
+  requestOverride?: Request,
+): Promise<string> {
+  const user = await getSessionUser(bearerToken, requestOverride);
   if (user) return user.id;
 
   if (!authConfigured && !gateIdentityEnabled()) {

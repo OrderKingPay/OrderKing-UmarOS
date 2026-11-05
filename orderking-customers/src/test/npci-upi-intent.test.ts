@@ -406,8 +406,7 @@ describe("NPCI UPI Intent & Dynamic BharatQR Engine", () => {
       });
 
       expect(url.startsWith(`https://wa.me/${DEFAULT_DISPATCH_PHONE}?text=`)).toBe(true);
-// @ts-ignore
-      expect(url).toContain(encodeURIComponent(String("https://www.google.com/maps?q=28.6315,77.2167" ?? "")));
+      expect(url).toContain(encodeURIComponent("https://www.google.com/maps?q=28.6315,77.2167"));
     });
 
     it("formats pharmacy emergency dispatch payload with GPS coordinates", async () => {

@@ -38,6 +38,7 @@ import {
   isJustifiedOperationalReason,
 } from "./discipline.ts";
 import { DEFAULT_DISCIPLINE_CONFIG } from "./config.ts";
+import { evaluateShiftGeofence } from "../fleet/fleet-safety-engine.ts";
 import { executeRiderRazorpayXPayout } from "./banking.ts";
 import type { RiderStore } from "./store.ts";
 import {
@@ -966,6 +967,17 @@ export class RiderEngine {
         rec.attempts += 1;
         if (!ok) {
           await this.store.saveOtp(rec, userId);
+          // Freeze order state in ON_THE_WAY on OTP mismatch and disallow payout release
+          d.state = "ON_THE_WAY";
+          await this.store.updateDelivery(d);
+          await this.recordTransition(
+            d,
+            "ON_THE_WAY",
+            "OTP_FAILED",
+            "SYSTEM",
+            userId,
+            "OTP mismatch: order state frozen in ON_THE_WAY, payout release locked",
+          );
           if (rec.attempts >= cfg.otpSuspiciousThreshold) {
             await this.store.insertSignal(
               {
@@ -1354,7 +1366,67 @@ export class RiderEngine {
     await this.store.insertLocation(ping, userId);
     const keepAfter = new Date(Date.now() - cfg.locationRetentionHours * 3600_000).toISOString();
     await this.store.pruneLocations(userId, keepAfter, cfg.gpsHistoryMaxPings);
-    return { ok: true as const, at: ping.at };
+    // Enforce Shift Geofences: Day (12.0 km), Evening (7.5 km), and Late-Night (3.5 km)
+    // If rider steps outside the radius, automatically suspend incoming order pings.
+    const shiftAnchor = active?.pickupLocation ?? rider.shiftAnchor ?? previous?.point ?? point;
+    if (!rider.shiftAnchor && rider.status === "ONLINE") {
+      rider.shiftAnchor = point;
+      await this.store.upsertRider(rider);
+    }
+    const shiftEval = evaluateShiftGeofence(point, shiftAnchor, new Date(at));
+    let pingsSuspended = rider.pingsSuspended ?? false;
+
+    if (shiftEval.isOutsideGeofence) {
+      pingsSuspended = true;
+      rider.pingsSuspended = true;
+      rider.geofenceSuspendedReason = shiftEval.rationale;
+      await this.store.upsertRider(rider);
+      await this.expireOffers(rider);
+      await this.store.insertSignal(
+        {
+          id: nid(),
+          riderId: rider.id,
+          deliveryId,
+          kind: "SHIFT_GEOFENCE_BREACH",
+          detail: shiftEval.rationale,
+          stage: "SIGNAL",
+          createdAt: at,
+        },
+        userId,
+      );
+      await this.store.insertNotification({
+        id: nid(),
+        userId: rider.userId,
+        title: "⚠️ Shift Boundary Exceeded: Order Pings Suspended",
+        body: `You are ${shiftEval.distanceKm.toFixed(1)}km from shift anchor. Maximum perimeter during ${shiftEval.shiftName} is ${shiftEval.maxRadiusKm}km. Incoming order pings are automatically suspended.`,
+        kind: "OPS",
+        read: false,
+        createdAt: at,
+      });
+    } else if (rider.pingsSuspended && rider.geofenceSuspendedReason?.includes("shift anchor")) {
+      pingsSuspended = false;
+      rider.pingsSuspended = false;
+      rider.geofenceSuspendedReason = null;
+      await this.store.upsertRider(rider);
+      await this.store.insertNotification({
+        id: nid(),
+        userId: rider.userId,
+        title: "✅ Shift Boundary Restored: Order Pings Active",
+        body: `You have returned within the ${shiftEval.shiftName} operating radius (${shiftEval.distanceKm.toFixed(1)}km <= ${shiftEval.maxRadiusKm}km). Incoming order pings resumed.`,
+        kind: "OPS",
+        read: false,
+        createdAt: at,
+      });
+    }
+
+    return {
+      ok: true as const,
+      at: ping.at,
+      pingsSuspended,
+      shift: shiftEval.shift,
+      distanceKm: shiftEval.distanceKm,
+      maxRadiusKm: shiftEval.maxRadiusKm,
+    };
   }
 
   async pingLocation(
@@ -1369,8 +1441,8 @@ export class RiderEngine {
   async home(userId: string) {
     const rider = await this.requireRider(userId);
     await this.expireOffers(rider);
-    if (rider.status === "ONLINE") await this.maybeDispatch(rider.id, userId);
-    const offerRaw = await this.store.getOpenOfferForRider(rider.id);
+    if (rider.status === "ONLINE" && !rider.pingsSuspended) await this.maybeDispatch(rider.id, userId);
+    const offerRaw = rider.pingsSuspended ? null : await this.store.getOpenOfferForRider(rider.id);
     const offer =
       offerRaw && new Date(offerRaw.expiresAt).getTime() > Date.now()
         ? this.presentOffer(offerRaw)

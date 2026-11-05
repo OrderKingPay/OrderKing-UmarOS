@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from '@tanstack/react-router';
 import {
   resolveDualVerticalFloatingDock,
   type ActiveVertical,
@@ -14,9 +13,9 @@ export function DualVerticalFloatingDock({ activeVertical = 'orderking' }: { act
       className="fixed bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-slate-800 bg-slate-950/95 p-1.5 shadow-2xl backdrop-blur"
     >
       {tabs.map((tab) => (
-        <Link
+        <a
           key={tab.id}
-          to={tab.href}
+          href={tab.href}
           className={`rounded-full px-5 py-2 text-xs font-extrabold transition ${
             tab.isActive
               ? 'bg-emerald-500 text-slate-950 shadow'
@@ -24,7 +23,7 @@ export function DualVerticalFloatingDock({ activeVertical = 'orderking' }: { act
           }`}
         >
           {tab.label}
-        </Link>
+        </a>
       ))}
     </nav>
   );

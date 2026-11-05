@@ -41,6 +41,7 @@ export default defineConfig({
       "src/lib/orderking/server/founder-command-dials.test.ts",
       "src/lib/orderking/auth/security-audit.test.ts",
       "src/lib/orderking/server/commercial-bypass-dials.test.ts",
+      "src/lib/orderking/finance/production-npci-bharatqr-settlement.test.ts",
     ],
     environment: "node",
   },

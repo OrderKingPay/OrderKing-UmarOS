@@ -11,3 +11,5 @@ export * from "./dpdp";
 export * from "./ecosystem-shifts";
 export * from "./telecom-care-bot";
 export * from "./virtual-kitchen";
+export * from "./npci-bharatqr";
+export * from "./quad-party-sync";

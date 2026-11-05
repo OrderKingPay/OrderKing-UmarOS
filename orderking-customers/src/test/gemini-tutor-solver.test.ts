@@ -431,8 +431,7 @@ describe("Universal AI Tutor — Gemini 2.5 Flash & Curriculum Engine", () => {
         limiter.isAllowed(`rotating-client-ip-${i}`);
       }
 
-      // @ts-ignore
-      const cacheSize = limiter.cache.size;
+      const cacheSize = limiter.size;
       expect(cacheSize).toBeLessThanOrEqual(maxEntries);
     });
   });

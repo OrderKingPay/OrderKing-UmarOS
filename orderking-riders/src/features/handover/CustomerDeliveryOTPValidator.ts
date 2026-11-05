@@ -1,4 +1,4 @@
-﻿/**
+/**
  * OrderKing Rider Handover Engine
  * Invariants: 4-digit Delivery Handover OTP Gate, COD Cash Limit Reconciliation (₹1,500 Hard Cutoff)
  */
@@ -7,6 +7,8 @@ export interface HandoverValidationResult {
   code: "OTP_VERIFIED" | "INVALID_OTP" | "COD_LIMIT_EXCEEDED" | "ORDER_STATUS_MISMATCH";
   message: string;
   nextStatus?: "DELIVERED";
+  frozenState?: "ON_THE_WAY";
+  payoutAllowed?: boolean;
 }
 export class CustomerDeliveryOTPValidator {
   /**
@@ -37,7 +39,9 @@ export class CustomerDeliveryOTPValidator {
       return {
         success: false,
         code: "INVALID_OTP",
-        message: "Incorrect delivery OTP. Please verify with customer.",
+        message: "Incorrect delivery OTP. Order state frozen in ON_THE_WAY. Payout release locked.",
+        frozenState: "ON_THE_WAY",
+        payoutAllowed: false,
       };
     }
     return {
@@ -45,6 +49,7 @@ export class CustomerDeliveryOTPValidator {
       code: "OTP_VERIFIED",
       message: "Delivery OTP verified successfully.",
       nextStatus: "DELIVERED",
+      payoutAllowed: true,
     };
   }
   /**

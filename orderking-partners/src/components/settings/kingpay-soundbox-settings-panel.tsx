@@ -378,7 +378,7 @@ export function KingpaySoundboxSettingsPanel({
               </span>
             </div>
             <div className="text-slate-200">
-              Broadcasted: &quot;<span className="text-white font-semibold">{liveAudioConfirm.text}</span>&quot;
+              Broadcasted: "<span className="text-white font-semibold">{liveAudioConfirm.text}</span>"
             </div>
             <div className="text-[11px] text-emerald-400/80 font-mono">
               Language: {liveAudioConfirm.langName} · Volume: Level {liveAudioConfirm.level}/5

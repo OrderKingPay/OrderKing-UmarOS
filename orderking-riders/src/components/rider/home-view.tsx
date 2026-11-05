@@ -1,4 +1,4 @@
-import { getCurrentEcosystemShift, getShiftRemainingMinutes, checkThreatZoneIntersections } from "@orderking/ui";
+import { getCurrentEcosystemShift, getShiftRemainingMinutes, checkThreatZoneIntersections, quadPartySyncClient } from "@orderking/ui";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardMeta, CardTitle } from "@/components/ui/card";
@@ -765,9 +765,28 @@ export function HomeView() {
   useEffect(() => {
     void load();
     void getPerformanceFn().then(setPerformance).catch(() => undefined);
+
+    // Instant Quad-Party WebSocket listener: receive sub-second dispatch radar pings
+    const unsubscribeQuad = quadPartySyncClient.subscribe(
+      { role: "rider_fleet" },
+      (event) => {
+        if (
+          event.event === "ORDER_ACCEPTED" ||
+          event.event === "ORDER_READY" ||
+          event.event === "RIDER_DISPATCH_PING" ||
+          (event.riderId && home?.rider?.id && event.riderId === home.rider.id)
+        ) {
+          void load();
+        }
+      }
+    );
+
     const id = window.setInterval(() => void load(), 5000);
-    return () => window.clearInterval(id);
-  }, [load]);
+    return () => {
+      unsubscribeQuad();
+      window.clearInterval(id);
+    };
+  }, [load, home?.rider?.id]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 250);

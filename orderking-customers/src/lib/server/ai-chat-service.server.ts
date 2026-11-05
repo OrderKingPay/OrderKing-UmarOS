@@ -26,8 +26,6 @@ import {
   type AgentExecutionStep,
 } from "../ai/supreme-founder-ai-core.ts";
 import { getSql } from "../db";
-// @ts-ignore
-import { FOUNDER_TOOLS, executeFounderTool } from "../ai/founder-tools.server";
 
 async function getProviderApiKeyAsync(providerKey: string): Promise<string | undefined> {
   // Check process.env first (for local dev convenience)

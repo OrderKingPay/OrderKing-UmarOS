@@ -341,7 +341,7 @@ export function VipAmbassadorPass({
 
             <p className="text-[11px] leading-relaxed text-slate-300">
               💡 <strong>Ambassador Protocol:</strong> Hand this pass to customers when handing
-              over orders at their doorstep. Tell them: <em>&quot;Scan this VIP Pass for ₹100 off your next direct order!&quot;</em>
+              over orders at their doorstep. Tell them: <em>"Scan this VIP Pass for ₹100 off your next direct order!"</em>
             </p>
           </div>
         </div>

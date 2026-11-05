@@ -14,6 +14,7 @@ import { enqueueMutation } from "@/lib/offline/durable-queue";
 import { StructuredRejectionModal } from "@/components/orders/structured-rejection-modal";
 import { CourierRadarMap } from "@/components/orders/courier-radar-map";
 import { toast } from "sonner";
+import { quadPartySyncClient } from "@orderking/ui";
 import { Clock } from "lucide-react";
 
 export type OrderView = {
@@ -313,6 +314,34 @@ export function OrderCard({
           prepMinutes: action === "accept" ? effectivePrep : undefined,
           idempotencyKey,
         },
+      });
+
+      // Broadcast sub-second quad-party state transition to Customer, Rider Fleet & Umar OS
+      const eventName =
+        action === "accept"
+          ? "ORDER_ACCEPTED"
+          : action === "preparing"
+          ? "ORDER_PREPARING"
+          : action === "ready"
+          ? "ORDER_READY"
+          : "ORDER_REJECTED";
+      const statusMap: Record<string, any> = {
+        accept: "ACCEPTED",
+        preparing: "PREPARING",
+        ready: "READY",
+        reject: "REJECTED",
+      };
+
+      void quadPartySyncClient.broadcastTransition({
+        orderId: order.id,
+        event: eventName,
+        status: statusMap[action] || "ACCEPTED",
+        previousStatus: (order.state?.toUpperCase() as any) || "PLACED",
+        restaurantId: restaurantId || "",
+        prepMinutes: action === "accept" ? effectivePrep : order.prepMinutes,
+        totalPaise: order.prices?.customerTotalPaise,
+        idempotencyKey,
+        actorRole: "partner_kds",
       });
 
       // Optimistic cache update across orders and kitchen

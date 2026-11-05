@@ -5,6 +5,10 @@ type RateLimitEntry = {
 
 export class MemorySafeRateLimiter {
   private cache = new Map<string, RateLimitEntry>();
+
+  get size(): number {
+    return this.cache.size;
+  }
   private readonly maxEntries: number;
   private readonly windowMs: number;
   private readonly maxRequests: number;

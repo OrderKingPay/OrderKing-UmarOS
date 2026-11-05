@@ -15,6 +15,10 @@
 import { getSql } from '../../db.ts';
 import { calculateRestaurantWeeklySettlement } from '../finance/weekly-settlement.ts';
 import { AutoSettlementEngine } from '../finance/auto-settlement-engine.ts';
+import { TPlus1NodalPayoutProcessor } from '../finance/tplus1-nodal-payout-processor.ts';
+import { DisputeDeductionQueue } from '../finance/dispute-deduction-queue.ts';
+
+export { TPlus1NodalPayoutProcessor, DisputeDeductionQueue };
 
 export interface PayoutBatchItem {
   beneficiaryId: string;
@@ -160,5 +164,5 @@ export async function generatePayoutBatch(date: string): Promise<PayoutBatchItem
  * Triggers the automated T+1 global settlement cycle via RazorpayX.
  */
 export async function runAutonomousTPlus1Payouts(referenceDate: Date = new Date(), autoDisburse: boolean = true) {
-  return AutoSettlementEngine.runGlobalDailyTPlus1Settlement(referenceDate, autoDisburse);
+  return TPlus1NodalPayoutProcessor.runTPlus1NodalPayoutProcessor({ referenceDate, autoDisburse });
 }

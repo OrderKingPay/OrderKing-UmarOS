@@ -3568,7 +3568,7 @@ export function TravelPage() {
                         />
                         <div>
                           <span className="font-black text-sky-950 block">Trip Delay &amp; Baggage Shield</span>
-                          <span className="text-[10px] text-sky-700 font-medium block">Instant ₹5,000 compensation for delays &gt; 2 hrs</span>
+                          <span className="text-[10px] text-sky-700 font-medium block">Instant ₹5,000 compensation for delays > 2 hrs</span>
                         </div>
                       </div>
                       <span className="font-mono font-black text-sky-950">+₹149.00</span>

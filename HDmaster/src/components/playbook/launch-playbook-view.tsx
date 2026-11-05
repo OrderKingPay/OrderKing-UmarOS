@@ -902,7 +902,7 @@ export function LaunchPlaybookView() {
               </div>
               <div className="text-3xl font-black text-slate-900">₹500 / day</div>
               <p className="text-xs text-slate-600">
-                Minimum gross guaranteed payout for an 8-hour shift or 4 completed deliveries with &gt;=90% acceptance.
+                Minimum gross guaranteed payout for an 8-hour shift or 4 completed deliveries with >=90% acceptance.
               </p>
             </div>
 
@@ -913,7 +913,7 @@ export function LaunchPlaybookView() {
               </div>
               <div className="text-2xl font-black text-slate-900">₹25 + ₹8.50/km</div>
               <p className="text-xs text-slate-600">
-                ₹25 base + ₹8.50/km (&gt;2km) + ₹15 weather surge + ₹8.50/km on long pickups (&gt;1km).
+                ₹25 base + ₹8.50/km (>2km) + ₹15 weather surge + ₹8.50/km on long pickups (>1km).
               </p>
             </div>
 

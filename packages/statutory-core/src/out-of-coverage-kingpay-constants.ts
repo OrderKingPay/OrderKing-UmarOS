@@ -72,6 +72,10 @@ export interface EdTechCourseOffer {
   placementGuaranteeLabel: string;
   courseFeePaise: number;
   affiliateCommissionPaise: number; // ₹2,500 to ₹7,500 (250000 to 750000 paise)
+  affiliateTrackingId: string;
+  minPlacementCtcPaise?: number;
+  durationWeeks?: number;
+  curriculumTrack?: 'FULL_STACK' | 'FINOPS_DATA_ANALYTICS' | 'CLOUD_DEVOPS_AI';
 }
 
 export const PLACEMENT_EDTECH_OFFERS: EdTechCourseOffer[] = [
@@ -82,6 +86,10 @@ export const PLACEMENT_EDTECH_OFFERS: EdTechCourseOffer[] = [
     placementGuaranteeLabel: '100% Job Placement Guarantee (Min ₹6.5 LPA CTC)',
     courseFeePaise: 3499900,
     affiliateCommissionPaise: 550000, // ₹5,500.00
+    affiliateTrackingId: 'OK-AFF-FS101-PLCMT',
+    minPlacementCtcPaise: 65000000, // ₹6.5 LPA CTC
+    durationWeeks: 24,
+    curriculumTrack: 'FULL_STACK',
   },
   {
     courseId: 'ED-DA-202',
@@ -90,5 +98,57 @@ export const PLACEMENT_EDTECH_OFFERS: EdTechCourseOffer[] = [
     placementGuaranteeLabel: 'Guaranteed Placement or 100% Tuition Refund',
     courseFeePaise: 1999900,
     affiliateCommissionPaise: 325000, // ₹3,250.00
+    affiliateTrackingId: 'OK-AFF-DA202-FINOPS',
+    minPlacementCtcPaise: 48000000, // ₹4.8 LPA CTC
+    durationWeeks: 16,
+    curriculumTrack: 'FINOPS_DATA_ANALYTICS',
+  },
+  {
+    courseId: 'ED-AI-303',
+    title: 'Cloud Native AI & Systems Architecture Accelerator',
+    partnerInstitute: 'National Tech Career Alliance',
+    placementGuaranteeLabel: 'Guaranteed Placement (Min ₹10 LPA CTC)',
+    courseFeePaise: 4999900,
+    affiliateCommissionPaise: 750000, // ₹7,500.00 (Upper Bound)
+    affiliateTrackingId: 'OK-AFF-AI303-EXEC',
+    minPlacementCtcPaise: 100000000, // ₹10 LPA CTC
+    durationWeeks: 20,
+    curriculumTrack: 'CLOUD_DEVOPS_AI',
+  },
+  {
+    courseId: 'ED-FOP-104',
+    title: 'FinTech Core Banking Operations & T+1 Settlement Associate',
+    partnerInstitute: 'Barak Valley BFSI Skill Council',
+    placementGuaranteeLabel: 'Direct Placement in Regional FinTech & Banking Hubs',
+    courseFeePaise: 1499900,
+    affiliateCommissionPaise: 250000, // ₹2,500.00 (Lower Bound)
+    affiliateTrackingId: 'OK-AFF-FOP104-BANKING',
+    minPlacementCtcPaise: 36000000, // ₹3.6 LPA CTC
+    durationWeeks: 12,
+    curriculumTrack: 'FINOPS_DATA_ANALYTICS',
   },
 ];
+
+/**
+ * Generates an authentic affiliate tracking link for student enrollment attribution
+ */
+export function generateAffiliateTrackingUrl(params: {
+  courseId: string;
+  studentId?: string;
+  partnerRef?: string;
+  channel?: string;
+}): string {
+  const offer = PLACEMENT_EDTECH_OFFERS.find((o) => o.courseId === params.courseId);
+  const trackingId = offer?.affiliateTrackingId || `OK-AFF-${params.courseId}`;
+  const student = params.studentId || 'anon';
+  const channel = params.channel || 'portal';
+  return `https://orderking.in/careers/edtech/enroll?course=${params.courseId}&affid=${trackingId}&sid=${student}&ch=${channel}`;
+}
+
+/**
+ * Validates that an affiliate tracking ID follows the official OrderKing affiliate convention
+ */
+export function validateAffiliateTrackingId(trackingId: string): boolean {
+  if (!trackingId || typeof trackingId !== 'string') return false;
+  return /^OK-AFF-[A-Z0-9]+-[A-Z0-9]+$/i.test(trackingId.trim());
+}
