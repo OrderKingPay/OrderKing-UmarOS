@@ -32,7 +32,6 @@ import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/profile")({ component: Page });
 
-type LegalDocId = "agreement" | "privacy" | "settlement";
 
 type LegalSection = {
   id: LegalDocId;
@@ -41,69 +40,6 @@ type LegalSection = {
   statuteBadge: string;
   clauses: ReadonlyArray<{ heading: string; body: string }>;
 };
-
-const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
-  {
-    id: "agreement",
-    title: "Independent Delivery Partner Agreement",
-    subtitle: "Scope of principal-to-principal gig engagement, rate card & partner rights",
-    statuteBadge: "Code on Social Security, 2020",
-    clauses: [
-      {
-        heading: "1. Independent Gig Engagement",
-        body: "You engage with Orderkingpay on a non-exclusive, principal-to-principal basis as an Independent Delivery Partner. You retain full freedom to choose your online hours, book optional operational gig slots, and accept or decline dispatch offers.",
-      },
-      {
-        heading: "2. Transparent Per-Order Rate Card",
-        body: "Every delivery offer displays the guaranteed expected payout before acceptance. Payouts enforce a statutory base floor of ₹35.00 (3,500 paise) for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time compensation after 10 minutes past arrival.",
-      },
-      {
-        heading: "3. 100% Customer Tip Retention & Zero Arbitrary Penalties",
-        body: "100% of customer tips are credited directly to your partner ledger without platform commission. No unilateral or arbitrary monetary penalties are levied; any cash or order discrepancy is subject to documented audit and partner grievance review.",
-      },
-    ],
-  },
-  {
-    id: "privacy",
-    title: "Rider Privacy Policy & Location Data Usage",
-    subtitle: "Strict on-duty GPS telemetry, data minimization & retention limits",
-    statuteBadge: "IT Act, 2000 & DPDP Act, 2023",
-    clauses: [
-      {
-        heading: "1. Strictly On-Duty Location Collection",
-        body: "GPS coordinates are collected only when your duty status is set to ONLINE or BUSY on an active delivery. When you switch to OFFLINE, background and foreground location tracking halts immediately.",
-      },
-      {
-        heading: "2. Purpose of Telemetry & Customer Privacy Masking",
-        body: "Location pings are used solely for proximity dispatch matching, live order ETA calculation, route navigation, and emergency SOS response. Customer phone numbers and exact doorstep details are masked outside active delivery states.",
-      },
-      {
-        heading: "3. Rolling Retention & KYC Document Security",
-        body: "Operational GPS breadcrumbs are automatically pruned after 24 hours (capped at the latest 40 pings). KYC records (Driving Licence, RC, Government ID, and UPI/Bank details) are encrypted and used exclusively for identity verification and statutory payouts.",
-      },
-    ],
-  },
-  {
-    id: "settlement",
-    title: "COD Floating Cash & Weekly Settlement Policy",
-    subtitle: "Integer-paise ledger accounting, TDS u/s 194-O & dispute resolution",
-    statuteBadge: "Income Tax Act Sec 194-O",
-    clauses: [
-      {
-        heading: "1. Integer-Paise Ledger & Wednesday Settlement",
-        body: "All earnings, incentives, tips, and COD collections are recorded in exact integer paise to prevent rounding discrepancies. Net payable balances are settled every Wednesday via NEFT/IMPS to your verified bank account or UPI ID.",
-      },
-      {
-        heading: "2. COD Floating Cash Limit (₹2,000 Ceiling)",
-        body: "Cash collected from Cash-on-Delivery (COD) orders is held in trust and offset against your weekly payout ledger or reconciled via instant UPI QR / gateway deposits. If unreconciled COD cash reaches ₹2,000.00, new COD dispatches pause automatically while prepaid orders remain active.",
-      },
-      {
-        heading: "3. Statutory TDS & Grievance Redressal Officer",
-        body: "Where applicable under Section 194-O of the Income Tax Act, 1961, statutory TDS at 1% is accounted for on gross credits. For payout or ledger disputes, raise a ticket under Support → Cash / Payment Issue or contact the Partner Grievance Officer at grievance.rider@orderking.in.",
-      },
-    ],
-  },
-];
 
 const RIDER_TYPES: ReadonlyArray<{ id: RiderType; label: string }> = [
   { id: "DELIVERY_PARTNER", label: "Standard Gig Partner" },
@@ -115,8 +51,7 @@ function Page() {
   const user = useCurrentUser();
   const { t, locale, setLocale } = useI18n();
   const [rider, setRider] = useState<RiderProfile | null>(null);
-  const [openLegalId, setOpenLegalId] = useState<LegalDocId | null>("agreement");
-
+  
   // Self-service operational & payout form state (non-KYC-locking fields)
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");

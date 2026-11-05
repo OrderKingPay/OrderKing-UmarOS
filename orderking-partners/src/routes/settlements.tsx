@@ -277,7 +277,7 @@ function SettlementsPage() {
               <div>
                 <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold flex items-center gap-1.5">
                   <Scale className="size-3.5" />
-                  Dual Settlement Reconciliation Engine
+                  Payouts & Transfers
                 </span>
                 <h2 className="text-xl font-display font-bold text-white mt-1">
                   Settlement Ledger &amp; Payouts
