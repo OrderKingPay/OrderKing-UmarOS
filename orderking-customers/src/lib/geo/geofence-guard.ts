@@ -36,7 +36,7 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLat: 24.8333,
     centerLng: 92.7789,
     radiusKm: 15.0,
-    status: "EXPANDING_SOON",
+    status: "ACTIVE",
     description: "Silchar urban dining and delivery zone expanding soon.",
   },
   {
@@ -46,7 +46,7 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLat: 26.1445,
     centerLng: 91.7362,
     radiusKm: 25.0,
-    status: "EXPANDING_SOON",
+    status: "ACTIVE",
     description: "Guwahati metropolitan delivery zone expanding soon.",
   },
   {

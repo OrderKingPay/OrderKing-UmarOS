@@ -322,7 +322,7 @@ export class CanonicalLedger {
     let auditHash = "";
     let duplicateTxId: string | null = null;
 
-    const maxRetries = 5;
+    const maxRetries = 10;
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         await sql.transaction(async (tx: Sql) => {
@@ -390,7 +390,7 @@ export class CanonicalLedger {
           err?.message?.includes("could not serialize access") ||
           err?.message?.includes("deadlock detected");
         if (isSerializationError && attempt < maxRetries - 1) {
-          await new Promise((r) => setTimeout(r, 60 * Math.pow(2, attempt) + Math.random() * 50));
+          await new Promise((r) => setTimeout(r, 80 * Math.pow(1.5, attempt) + Math.random() * 80));
           continue;
         }
         throw err;
