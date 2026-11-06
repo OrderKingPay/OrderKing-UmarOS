@@ -456,7 +456,7 @@ function AssistantPage() {
     };
   }, [dash.data, analytics.data, menu.data, promotions.data, menuAudit.outOfStock.length]);
 
-  // Meituan Waimai + DoorDash 5-Daypart & Neighborhood Geo-Demand Engine (computed from real 7-day order hours)
+  // Kitchen Shift & Demand Engine (computed from real 7-day order hours)
   const daypartPlaybook = useMemo(() => {
     const hours = analytics.data?.hours ?? [];
     const sumOrdersInWindow = (startHour: number, endHour: number) => {
