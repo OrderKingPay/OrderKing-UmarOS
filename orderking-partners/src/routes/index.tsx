@@ -131,50 +131,135 @@ function Home() {
           {/* Eyebrow Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-4 py-1.5 text-xs font-medium text-emerald-300 backdrop-blur-sm shadow-inner">
             <Sparkles className="size-3.5 text-emerald-400" />
-            <span>Grow your food business with Order King</span>
+            <span>Grow your food business with OrderKing</span>
           </div>
 
-          {/* Calm, Prestigious Benchmark Headline */}
+          {/* Zomato Benchmark Headline */}
           <h1 className="mt-6 font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.1]">
-            Partner with Order King
+            Partner with OrderKing and grow your business
           </h1>
 
           {/* Subtitle */}
           <p className="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Grow your restaurant business with India&apos;s trusted food ordering network.
+            Connect with thousands of customers across your city and take your restaurant to new heights.
           </p>
 
-          {/* Registration & Login Action Card */}
-          <div className="mt-10 max-w-xl mx-auto rounded-2xl border border-slate-800/90 bg-slate-900/70 p-6 sm:p-8 backdrop-blur-md shadow-2xl">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
-              <Button
-                asChild
-                size="lg"
-                className="w-full sm:w-auto h-12 px-7 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-emerald-950 transition-all hover:scale-[1.01] active:scale-[0.99]"
-              >
-                <Link to="/onboarding" className="flex items-center justify-center gap-2">
-                  Register your restaurant <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto h-12 px-6 rounded-xl border border-slate-700 bg-slate-800/80 text-sm font-semibold text-slate-200 hover:border-slate-600 hover:bg-slate-700 hover:text-white transition-all shadow-sm"
-              >
-                <Link to="/login">Login to view existing restaurant</Link>
-              </Button>
-            </div>
+          {/* Primary Action Button */}
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button
+              asChild
+              size="lg"
+              className="h-14 px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold text-base rounded-xl shadow-xl shadow-blue-950 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Link to="/onboarding" className="flex items-center justify-center gap-2">
+                Register your restaurant <ArrowRight className="size-5" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-14 px-6 rounded-xl border border-slate-700 bg-slate-800/80 text-sm font-semibold text-slate-200 hover:border-slate-600 hover:bg-slate-700 hover:text-white transition-all shadow-sm"
+            >
+              <Link to="/login">Login to existing restaurant</Link>
+            </Button>
+          </div>
 
-            <p className="mt-4 text-xs text-slate-400">
-              Simple digital setup • Go live in 24 hours • Need help? Contact partner support
-            </p>
+          {/* Zomato 10-Minute Requirement Floating Card */}
+          <div className="mt-12 max-w-4xl mx-auto rounded-3xl bg-white text-slate-900 p-6 sm:p-8 md:p-10 shadow-2xl text-left border border-slate-100">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-7 space-y-4">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+                    Get started: It only takes 10 minutes
+                  </h2>
+                  <p className="mt-1.5 text-xs sm:text-sm text-slate-500">
+                    Please keep these documents and details ready for a smooth sign-up:
+                  </p>
+                </div>
+
+                <ul className="space-y-3 pt-2 text-xs sm:text-sm font-medium text-slate-800">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="size-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>PAN card</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="size-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>GST number, if applicable</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="size-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span>FSSAI license</span>
+                      <div className="text-[11px] text-slate-500 font-normal mt-0.5">
+                        Don&apos;t have a FSSAI license?{" "}
+                        <a
+                          href="https://foscos.fssai.gov.in"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-600 hover:underline font-medium"
+                        >
+                          Apply here.
+                        </a>
+                      </div>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="size-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span>Menu and profile food image</span>
+                      <div className="text-[11px] text-slate-500 font-normal mt-0.5">
+                        What is profile food image?{" "}
+                        <a
+                          href="#menu-guidelines"
+                          className="text-blue-600 hover:underline font-medium"
+                        >
+                          Refer here.
+                        </a>
+                      </div>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="size-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>Bank account details</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Explainer Visual Card */}
+              <div className="lg:col-span-5">
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 p-6 text-white shadow-lg border border-slate-800">
+                  <div className="space-y-3">
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/20 px-2.5 py-1 text-[10px] font-semibold text-blue-300">
+                      <span>Quick Guide</span>
+                    </div>
+                    <h3 className="text-base font-bold text-white">
+                      How to onboard your restaurant
+                    </h3>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Follow our 3-step self-serve guide to register your restaurant, configure your kitchen schedule, and begin receiving live orders.
+                    </p>
+                    <div className="pt-2">
+                      <Button
+                        asChild
+                        size="sm"
+                        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs rounded-lg"
+                      >
+                        <a href="#onboarding-form">
+                          Start 10-Minute Registration
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Active Partner Onboarding & Self-Serve Outlet Registration */}
-      <section className="py-12 border-t border-slate-800/80 bg-slate-950">
+      <section id="onboarding-form" className="py-12 border-t border-slate-800/80 bg-slate-950">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <SelfServeLandingModule />
         </div>

@@ -240,7 +240,7 @@ export const PARTNER_ACADEMY_MODULES: SopModule[] = [
         stepNumber: 1,
         title: "Food Spill Disputes: Logistics Liability Protection",
         instruction:
-          "When a customer uploads a spill photo, OrderKing Spark AI inspects packaging compliance and tamper seal telemetry. If the bag was sealed with tamper tape, liability is assigned 100% to Logistics, protecting your payout.",
+          "When a customer uploads a spill photo, OrderKing King AI inspects packaging compliance and tamper seal telemetry. If the bag was sealed with tamper tape, liability is assigned 100% to Logistics, protecting your payout.",
         criticalInvariant:
           "Always seal bags. Unsealed bags with reported spills result in shared 50/50 liability.",
       },
@@ -270,7 +270,7 @@ export const PARTNER_ACADEMY_MODULES: SopModule[] = [
       "Panicking over subjective 3-star reviews instead of posting a courteous chef response.",
     ],
     arbitrationProtection:
-      "OrderKing Spark AI automatically defends merchant earnings on all verified packaging and transit claims.",
+      "OrderKing King AI automatically defends merchant earnings on all verified packaging and transit claims.",
   },
   {
     id: "sop-settlements-tax",

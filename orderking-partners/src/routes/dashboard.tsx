@@ -193,13 +193,19 @@ function DashboardPage() {
   const aovPaise = d?.today.aovPaise ?? 0;
   const recommendedPromoMinPaise = aovPaise > 0 ? Math.round((aovPaise * 1.15) / 1000) * 1000 : 25000;
   const liveOrders = liveOrdersQ.data?.orders ?? [];
+  const headerTitle =
+    d?.restaurantName && d.restaurantName.length >= 3 && d.restaurantName !== "II"
+      ? d.restaurantName
+      : vendor.selected?.restaurantName && vendor.selected.restaurantName.length >= 3
+        ? vendor.selected.restaurantName
+        : "Restaurant Operations Center";
 
   return (
     <VendorShell
-      title={d?.restaurantName ?? t("nav.home")}
+      title={headerTitle}
       dataLabel={d?.dataLabel ?? vendor.dataLabel}
       stale={stale}
-      restaurantName={d?.restaurantName}
+      restaurantName={headerTitle}
     >
       <div className="space-y-5">
         {/* FSSAI Statutory Food Safety Regulatory Compliance Banner */}

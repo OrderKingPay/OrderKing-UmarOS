@@ -174,14 +174,16 @@ export function VendorShell({
 
         <div className="flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
           <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-slate-800/60 bg-slate-950 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 px-4 py-3 md:px-6">
-            <div className="min-w-0">
+            <div className="flex items-center gap-3 min-w-[200px] max-w-[420px] shrink-0">
               <div className="flex items-center gap-2 md:hidden">
                 <OrderKingMark className="size-7 shrink-0 text-chili" />
-                <span className="truncate font-display text-lg">{restaurantName ?? (branding.appName || t("app.name"))}</span>
+                <span className="truncate font-display text-base font-bold text-white">{restaurantName || "Restaurant Partner"}</span>
               </div>
-              <h1 className="hidden font-display text-xl lg:text-2xl font-bold whitespace-nowrap truncate md:block">{title}</h1>
+              <div className="hidden md:flex flex-col min-w-0">
+                <h1 className="font-display text-lg lg:text-xl font-bold whitespace-nowrap truncate text-white">{title || restaurantName || "Restaurant Partner Console"}</h1>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink min-w-0 overflow-x-auto scrollbar-none">
               {/* Restaurant Outlet Location Switcher */}
               {vendor.memberships.length > 0 && (
                 <div className="relative">
@@ -200,7 +202,7 @@ export function VendorShell({
                   >
                     {vendor.memberships.map((m: any) => (
                       <option key={m.restaurantId} value={m.restaurantId} className="bg-slate-900 text-slate-100">
-                        {m.restaurantName} ({m.role})
+                        {m.restaurantName || "Outlet"} ({m.role})
                       </option>
                     ))}
                   </select>

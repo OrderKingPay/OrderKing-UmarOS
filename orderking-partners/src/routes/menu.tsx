@@ -1526,7 +1526,7 @@ function MenuPage() {
         </div>
       )}
 
-      {/* Spark AI Dish Pricing & High-Margin Combo Engine */}
+      {/* King AI Dish Pricing & High-Margin Combo Engine */}
       {canEdit && (sparkPricingRecommendations.length > 0 || sparkComboRecommendations.length > 0) && (
         <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/25 via-slate-900/90 to-amber-950/25 p-4 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
@@ -1536,7 +1536,7 @@ function MenuPage() {
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-white">Spark AI Dish Pricing &amp; High-Margin Combo Engine</h3>
+                  <h3 className="text-sm font-bold text-white">King AI Dish Pricing &amp; High-Margin Combo Engine</h3>
                   <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400 uppercase">
                     GMV &amp; Margin Optimization
                   </span>
@@ -2518,7 +2518,7 @@ function MenuPage() {
                         <div className="flex items-center gap-1.5 min-w-0">
                           <Sparkles className="size-3 text-amber-400 shrink-0" />
                           <span className="truncate font-semibold">
-                            Spark AI: ₹{(sparkDrawerPricing.recommendedPricePaise / 100).toFixed(0)}
+                            King AI: ₹{(sparkDrawerPricing.recommendedPricePaise / 100).toFixed(0)}
                             <span className="text-slate-400 font-normal ml-1">
                               ({sparkDrawerPricing.priceDeltaPaise >= 0 ? "+" : ""}{formatINR(sparkDrawerPricing.priceDeltaPaise)})
                             </span>

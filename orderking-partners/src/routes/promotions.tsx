@@ -249,7 +249,7 @@ function PromotionsPage() {
           />
         ) : (
           <>
-            {/* Spark AI Restaurant Growth & Strategic Playbook Panel */}
+            {/* Recommended Promotions & Offers */}
             <Card className="space-y-5 border-amber-500/30 bg-slate-900/90 p-5">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
             <div className="flex items-start gap-3">
@@ -259,19 +259,19 @@ function PromotionsPage() {
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="font-display text-base font-bold text-white">
-                    Spark AI Restaurant Growth &amp; Strategic Playbook
+                    Recommended Promotions &amp; Discounts
                   </h2>
                   <span className="rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono uppercase text-amber-300">
-                    Unit-Economics Grounded
+                    Insights
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-slate-300 leading-relaxed">
-                  Practical daypart merchandising, retention discount math, and menu conversion actions grounded in{" "}
+                  Recommended offers to increase order volume and repeat diners for{" "}
                   <span className="font-semibold text-white">
                     {vendor.selected?.restaurantName ?? "your kitchen"}
                   </span>
-                  &apos;s live catalog ({totalMenuCount} active dishes) and{" "}
-                  {activeRestCount} active merchant offer(s).
+                  &apos;s active catalog ({totalMenuCount} dishes) and{" "}
+                  {activeRestCount} active offer(s).
                 </p>
               </div>
             </div>
@@ -884,7 +884,7 @@ function PromotionsPage() {
             </h2>
             {rest.length === 0 ? (
               <Card className="text-xs text-slate-400 border-slate-800 bg-slate-900/60 p-4">
-                No restaurant-funded offers configured yet. Use the Spark AI Playbook presets or the form above to launch a promotion.
+                No restaurant-funded offers configured yet. Use the King AI Growth presets or the form above to launch a promotion.
               </Card>
             ) : (
               rest.map((p) => (

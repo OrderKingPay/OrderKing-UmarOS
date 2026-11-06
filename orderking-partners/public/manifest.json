@@ -1,5 +1,5 @@
 {
-  "name": "Order King Partner Portal & Spark AI",
+  "name": "OrderKing Restaurant Partner Portal & King AI",
   "short_name": "OK Partner",
   "description": "0% Commission Restaurant Partner Portal with Kitchen Prep SLA, Menu Management & Instant Settlements",
   "start_url": "/",
@@ -45,10 +45,22 @@
       ]
     },
     {
-      "name": "Spark AI Assistant",
-      "short_name": "Spark",
-      "description": "Order King Spark AI",
-      "url": "/?spark=true",
+      "name": "King AI Assistant",
+      "short_name": "King AI",
+      "description": "OrderKing King AI Assistant",
+      "url": "/assistant",
+      "icons": [
+        {
+          "src": "/brand/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Settlements",
+      "short_name": "Payouts",
+      "description": "T+1 Daily Payouts",
+      "url": "/settlements",
       "icons": [
         {
           "src": "/brand/icon-192.png",
@@ -56,9 +68,5 @@
         }
       ]
     }
-  ],
-  "categories": [
-    "business",
-    "food"
   ]
 }

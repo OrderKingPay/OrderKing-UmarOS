@@ -85,7 +85,7 @@ export interface ReservationBooking {
   occasion?: string;
   status: ReservationStatus;
   assignedTable?: string;
-  createdAgo: string;
+  createdAgo?: string;
   depositAmount: number; // Cover charge deposit in INR
   platformFeePercent: number; // Platform fee percentage (5%)
   platformFeeAmount: number; // 5% fee in INR
@@ -126,97 +126,90 @@ export function calculateReservationFinancesPaise(
 export const INITIAL_TABLES: DiningTable[] = [
   // AC Indoor Main Hall
   { id: "tbl-1", tableNumber: "T-01", zone: "AC Indoor Main Hall", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
-  { id: "tbl-2", tableNumber: "T-02", zone: "AC Indoor Main Hall", capacityTag: "4-Seater", maxGuests: 4, status: "RESERVED", currentBookingRef: "TB-83419", guestName: "Rohan & Dev" },
+  { id: "tbl-2", tableNumber: "T-02", zone: "AC Indoor Main Hall", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
   { id: "tbl-3", tableNumber: "T-03", zone: "AC Indoor Main Hall", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
-  { id: "tbl-4", tableNumber: "T-04", zone: "AC Indoor Main Hall", capacityTag: "6-Seater Family", maxGuests: 6, status: "OCCUPIED", currentBookingRef: "TB-78901", guestName: "Mehta Family", seatedSince: "7:10 PM" },
+  { id: "tbl-4", tableNumber: "T-04", zone: "AC Indoor Main Hall", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
   { id: "tbl-5", tableNumber: "T-05", zone: "AC Indoor Main Hall", capacityTag: "10-Seater Banquet", maxGuests: 10, status: "AVAILABLE" },
 
   // Rooftop Open Air
   { id: "tbl-6", tableNumber: "R-01", zone: "Rooftop Open Air", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
   { id: "tbl-7", tableNumber: "R-02", zone: "Rooftop Open Air", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
-  { id: "tbl-8", tableNumber: "R-03", zone: "Rooftop Open Air", capacityTag: "4-Seater", maxGuests: 4, status: "RESERVED", currentBookingRef: "TB-98241", guestName: "Ananya Roy" },
+  { id: "tbl-8", tableNumber: "R-03", zone: "Rooftop Open Air", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
   { id: "tbl-9", tableNumber: "R-04", zone: "Rooftop Open Air", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
 
   // Outdoor Patio
   { id: "tbl-10", tableNumber: "P-01", zone: "Outdoor Patio", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
   { id: "tbl-11", tableNumber: "P-02", zone: "Outdoor Patio", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
-  { id: "tbl-12", tableNumber: "P-03", zone: "Outdoor Patio", capacityTag: "6-Seater Family", maxGuests: 6, status: "BLOCKED" },
+  { id: "tbl-12", tableNumber: "P-03", zone: "Outdoor Patio", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
 
   // Private Cabana / VIP Lounge
-  { id: "tbl-13", tableNumber: "V-01", zone: "Private Cabana / VIP Lounge", capacityTag: "6-Seater Family", maxGuests: 6, status: "OCCUPIED", currentBookingRef: "TB-71104", guestName: "Sengupta Family", seatedSince: "7:35 PM" },
+  { id: "tbl-13", tableNumber: "V-01", zone: "Private Cabana / VIP Lounge", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
   { id: "tbl-14", tableNumber: "V-02", zone: "Private Cabana / VIP Lounge", capacityTag: "10-Seater Banquet", maxGuests: 10, status: "AVAILABLE" },
 ];
 
 export const INITIAL_RESERVATIONS: ReservationBooking[] = [
   {
-    id: "res-1",
-    bookingRef: "TB-98241",
-    guestName: "Ananya Roy",
-    phone: "+91 98301 22345",
+    id: "res-sample-1",
+    createdAgo: "Just now",
+    bookingRef: "TB-1001",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00000",
     guestsCount: 4,
     timeSlot: "8:00 PM",
     date: "Today",
-    areaPreference: "Rooftop Open Air",
-    occasion: "Birthday Celebration",
+    areaPreference: "AC Indoor Main Hall",
     status: "PENDING",
-    createdAgo: "4 mins ago",
     depositAmount: 500,
     platformFeePercent: 5,
     platformFeeAmount: 25,
     netRestaurantPayable: 475,
   },
   {
-    id: "res-2",
-    bookingRef: "TB-83419",
-    guestName: "Rohan & Dev",
-    phone: "+91 91234 56789",
+    id: "res-sample-2",
+    createdAgo: "Just now",
+    bookingRef: "TB-1002",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00001",
     guestsCount: 2,
     timeSlot: "8:30 PM",
     date: "Today",
     areaPreference: "AC Indoor Main Hall",
-    occasion: "Candlelight Dinner",
     status: "CONFIRMED",
     assignedTable: "T-02",
-    createdAgo: "18 mins ago",
     depositAmount: 500,
     platformFeePercent: 5,
     platformFeeAmount: 25,
     netRestaurantPayable: 475,
   },
   {
-    id: "res-3",
-    bookingRef: "TB-71104",
-    guestName: "Sengupta Family",
-    phone: "+91 98451 99120",
+    id: "res-sample-3",
+    createdAgo: "Just now",
+    bookingRef: "TB-1003",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00002",
     guestsCount: 6,
     timeSlot: "7:30 PM",
     date: "Today",
     areaPreference: "Private Cabana / VIP Lounge",
-    occasion: "Family Reunion",
     status: "SEATED",
     assignedTable: "V-01",
-    createdAgo: "45 mins ago",
-    seatedAt: "7:35 PM",
     depositAmount: 1000,
     platformFeePercent: 5,
     platformFeeAmount: 50,
     netRestaurantPayable: 950,
   },
   {
-    id: "res-4",
-    bookingRef: "TB-65280",
-    guestName: "Vikram Malhotra & Team",
-    phone: "+91 99001 12233",
+    id: "res-sample-4",
+    createdAgo: "Just now",
+    bookingRef: "TB-1004",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00003",
     guestsCount: 8,
     timeSlot: "6:00 PM",
     date: "Today",
     areaPreference: "Private Cabana / VIP Lounge",
-    occasion: "Corporate Deal Dinner",
     status: "COMPLETED",
     assignedTable: "V-02",
-    createdAgo: "2 hours ago",
-    seatedAt: "6:05 PM",
-    completedAt: "7:45 PM",
     depositAmount: 1000,
     platformFeePercent: 5,
     platformFeeAmount: 50,
@@ -224,22 +217,20 @@ export const INITIAL_RESERVATIONS: ReservationBooking[] = [
     billAmount: 8450,
   },
   {
-    id: "res-5",
-    bookingRef: "TB-59012",
-    guestName: "Priya Das",
-    phone: "+91 97112 33445",
+    id: "res-sample-5",
+    createdAgo: "Just now",
+    bookingRef: "TB-1005",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00004",
     guestsCount: 2,
     timeSlot: "6:30 PM",
     date: "Today",
     areaPreference: "Outdoor Patio",
-    occasion: "Casual Catchup",
     status: "CANCELLED",
-    createdAgo: "3 hours ago",
     depositAmount: 500,
     platformFeePercent: 5,
     platformFeeAmount: 25,
     netRestaurantPayable: 475,
-    notes: "Guest notified late arrival / cancelled table",
   },
 ];
 
@@ -291,13 +282,15 @@ export function useTableReservations(restaurantId?: string): TableReservationHoo
       const res = await getDiningReservationsFn({ data: { restaurantId } });
       return {
         tables: (res.tables as DiningTable[]) || INITIAL_TABLES,
-        reservations: (res.reservations as ReservationBooking[]) || INITIAL_RESERVATIONS,
+        reservations: (res.reservations as ReservationBooking[]) || [],
       };
     },
     enabled: Boolean(restaurantId && qc),
   });
 
-  const [reservations, setReservations] = useState<ReservationBooking[]>(INITIAL_RESERVATIONS);
+  const [reservations, setReservations] = useState<ReservationBooking[]>(
+    restaurantId ? [] : INITIAL_RESERVATIONS
+  );
   const [tables, setTables] = useState<DiningTable[]>(INITIAL_TABLES);
   const [activeTab, setActiveTab] = useState<ReservationStatus>("PENDING");
   const [selectedZoneFilter, setSelectedZoneFilter] = useState<DiningAreaZone | "ALL">("ALL");
@@ -306,7 +299,7 @@ export function useTableReservations(restaurantId?: string): TableReservationHoo
   // Synchronize server data into state whenever query updates
   useEffect(() => {
     if (query.data) {
-      if (query.data.reservations && query.data.reservations.length > 0) {
+      if (query.data.reservations) {
         setReservations(query.data.reservations);
       }
       if (query.data.tables && query.data.tables.length > 0) {

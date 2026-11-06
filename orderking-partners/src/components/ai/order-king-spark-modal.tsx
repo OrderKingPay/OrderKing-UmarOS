@@ -338,14 +338,16 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
       ].join("\n");
     }
 
+    if (totalItems === 0) {
+      return `Welcome! Your restaurant currently has no active menu items listed. You can add dishes, categories, and prices directly in the Menu section to start receiving customer orders.`;
+    }
+
     return [
-      `[${activeLang.nativeName} · ${activeLang.name}] King AI Kitchen & Menu Overview (${totalCategories} Categories · ${totalItems} Dishes · Menu Score: ${storefrontConversionScore}%):`,
-      `• Storefront Status: ${dashQuery.data?.isOpen ? "OPEN" : "PAUSED"} · KYC: ${dashQuery.data?.verificationStatus ?? "PENDING"} · Pending Orders: ${dashQuery.data?.today.pending ?? 0}`,
-      `• In-Stock Dishes: ${inStock.length} of ${totalItems} · Sold-Out: ${outOfStock.length} (Est. Daily Leakage: ${formatINR(estimatedDailyLeakagePaise)})`,
-      `• AOV Growth Playbook: Current AOV ${formatINR(liveAovPaise)} → Recommended ₹${recommendedThresholdRupees} Min-Order Offer (+25% AOV lift)`,
-      `• 5-Daypart 7d Orders: ${dayparts.map((d) => `${d.label}: ${d.orders}`).join(" | ")}`,
-      `• Kitchen Prep Time: Average ${avgPrepMinutes} mins (${missingPrepTime.length} dish(es) without explicit prep time)`,
-      `• Menu Completeness: ${missingPhoto.length} missing photo · ${missingDesc.length} missing description · Diet: ${vegCount}V / ${nonVegCount}NV / ${eggCount}E`,
+      `King AI Kitchen Summary (${totalItems} active dishes across ${totalCategories} categories):`,
+      `• Storefront: ${dashQuery.data?.isOpen ? "Accepting Orders (Online)" : "Paused (Offline)"}`,
+      `• Stock Status: ${inStock.length} in stock, ${outOfStock.length} out of stock`,
+      `• Kitchen Prep: ${avgPrepMinutes} mins standard prep pacing`,
+      `• Orders Today: ${dashQuery.data?.today.orders ?? 0} orders received`,
     ].join("\n");
   }
 
@@ -369,6 +371,31 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     ]);
     setInputQuery("");
     setSending(true);
+
+    const qLower = question.toLowerCase();
+    if (/^(hi|hello|hey|good\s*morning|good\s*evening|নমস্কার|হ্যালো|नमस्ते|কেমন\s*আছেন|হাই|হায়)$/i.test(qLower)) {
+      const greetingReply =
+        activeLang.code === "bn"
+          ? "নমস্কার! আমি আপনার অর্ডারকিং রেস্তোরাঁ সহকারী। আজ আপনার রান্নাঘর, অর্ডার, মেনু বা পেমেন্ট সংক্রান্ত বিষয়ে আমি আপনাকে কীভাবে সাহায্য করতে পারি?"
+          : activeLang.code === "hi"
+            ? "नमस्ते! मैं आपका ऑर्डरकिंग रेस्टोरेंट असिस्टेंट हूँ। आज आपके किचन, ऑर्डर, मेनू या पेआउट के बारे में मैं आपकी क्या सहायता कर सकता हूँ?"
+            : activeLang.code === "as"
+              ? "নমস্কাৰ! মই আপোনাৰ অৰ্ডাৰকিং ৰেষ্টুৰেণ্ট সহযোগী। আজি আপোনাৰ পাকঘৰ, অৰ্ডাৰ, মেন্যু বা পে'আউট সম্পৰ্কে কেনেদৰে সহায় কৰিব পাৰোঁ?"
+              : "Hello! I am King AI, your OrderKing restaurant partner assistant. How can I help you today with your kitchen orders, menu items, prep timing, or daily bank settlements?";
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `spark-${Date.now()}`,
+          sender: "spark",
+          text: greetingReply,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          provenanceNote: "King AI Restaurant Assistant",
+        },
+      ]);
+      setSending(false);
+      return;
+    }
 
     try {
       if (restaurantId) {
@@ -406,7 +433,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
       const result = await askAssistant({ data: { restaurantId, question: promptWithLanguage } });
       const responseText = result.ok
         ? result.text
-        : `${result.text}\n\n${buildVerifiedCatalogSummary(question)}`;
+        : result.text || "Hello! How can I help you today with your restaurant orders, menu, or daily settlements?";
       setMessages((prev) => [
         ...prev,
         {
@@ -414,8 +441,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           sender: "spark",
           text: responseText,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          provenanceNote:
-            "Source: Authorized restaurant database snapshot (current menu catalog, prep times, analytics, and order state).",
+          provenanceNote: "King AI Restaurant Assistant",
         },
       ]);
     } catch (_error) {
@@ -424,10 +450,14 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
         {
           id: `spark-${Date.now()}`,
           sender: "spark",
-          text: buildVerifiedCatalogSummary(question),
+          text:
+            activeLang.code === "bn"
+              ? "নমস্কার! আপনার রেস্তোরাঁর লাইভ অর্ডার, মেনু বা পেমেন্ট সংক্রান্ত যে কোনো প্রশ্ন আমাকে জিজ্ঞাসা করতে পারেন।"
+              : activeLang.code === "hi"
+                ? "नमस्ते! अपने रेस्टोरेंट के लाइव ऑर्डर, मेनू या पेआउट के बारे में मुझसे कोई भी प्रश्न पूछें।"
+                : "Hello! I am your OrderKing partner assistant. Feel free to ask about your live orders, menu catalog, kitchen prep pace, or daily payout ledgers.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          provenanceNote:
-            "Derived directly from your restaurant's live menu catalog, kitchen configuration, and order telemetry.",
+          provenanceNote: "King AI Restaurant Assistant",
         },
       ]);
     } finally {

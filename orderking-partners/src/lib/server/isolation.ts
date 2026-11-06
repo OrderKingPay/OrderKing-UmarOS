@@ -29,7 +29,7 @@ export async function loadMemberships(
     commission_bps: number;
   }>`
     select s.restaurant_id, s.outlet_id, s.role,
-           r.display_name as restaurant_name,
+           coalesce(nullif(r.display_name, ''), nullif(r.name, ''), 'Restaurant Operations Center') as restaurant_name,
            r.data_label, r.verification_status, r.commission_bps
     from restaurant_staff s
     join restaurants r on r.id = s.restaurant_id
@@ -43,7 +43,7 @@ export async function loadMemberships(
       restaurantId: row.restaurant_id,
       outletId: row.outlet_id,
       role: row.role as RestaurantRole,
-      restaurantName: row.restaurant_name,
+      restaurantName: row.restaurant_name || "Restaurant Operations Center",
       dataLabel: (row.data_label as StaffContext["dataLabel"]) ?? "REAL",
       verificationStatus: row.verification_status,
       commissionBps: Number(row.commission_bps),

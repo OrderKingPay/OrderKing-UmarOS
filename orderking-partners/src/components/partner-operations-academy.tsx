@@ -113,7 +113,7 @@ export function PartnerOperationsAcademy({
                 size="sm"
                 className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs shadow-md"
               >
-                <Sparkles className="mr-1.5 size-3.5 text-emerald-200" /> Ask King Spark AI
+                <Sparkles className="mr-1.5 size-3.5 text-emerald-200" /> Ask King AI
               </Button>
             </Link>
           </div>
@@ -361,7 +361,7 @@ export function PartnerOperationsAcademy({
                     }}
                     className="border-slate-700 hover:border-emerald-500 text-xs"
                   >
-                    <Sparkles className="mr-1.5 size-3.5 text-emerald-400" /> Ask King Spark
+                    <Sparkles className="mr-1.5 size-3.5 text-emerald-400" /> Ask King AI
                   </Button>
                 </div>
               </div>

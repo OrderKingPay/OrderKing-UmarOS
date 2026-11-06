@@ -91,7 +91,7 @@ describe("OrderKing Partner Operations & SOP Academy", () => {
     });
   });
 
-  describe("King Spark AI Natural Language Knowledge Retrieval & Action Cards", () => {
+  describe("King AI Natural Language Knowledge Retrieval & Action Cards", () => {
     const spark = new OrderKingSpark();
 
     it("processes packaging SOP questions and returns sop_guide action card", () => {

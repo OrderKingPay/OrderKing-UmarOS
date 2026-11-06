@@ -246,7 +246,7 @@ function DiningPage() {
             <div className="flex items-center gap-2.5">
               <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
               <span>
-                <strong className="text-emerald-300">Order King Hospitality Promise:</strong> {dineInCommissionDisplay} merchant commission on all dine-in reservations. You retain 100% of guest food &amp; beverage bills.
+                <strong className="text-emerald-300">Table Reservations:</strong> {dineInCommissionDisplay} commission on all dine-in reservations. You retain 100% of guest food &amp; beverage bills.
               </span>
             </div>
             <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400 shrink-0">

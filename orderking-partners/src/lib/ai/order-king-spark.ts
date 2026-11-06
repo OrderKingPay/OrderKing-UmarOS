@@ -172,7 +172,7 @@ export class OrderKingSpark {
   constructor() {
     this.seedDefaultMenu();
     this.detectAnomalies();
-    this.seedDefaultDisputes();
+    this.activeDisputes = [];
   }
 
   private seedDefaultMenu() {
@@ -244,7 +244,7 @@ export class OrderKingSpark {
         anomalyId: "anom-sav-02",
         type: "SALES_DECLINE",
         severity: "LOW",
-        headline: "custom commission Retained Savings: ₹14,280 Saved Today",
+        headline: "Direct Ordering Savings: ₹14,280 Retained Today",
         rootCauseHypothesis: "Customer direct ordering retained 24% that dominant legacy aggregators would have deducted.",
         recommendedAction: "Offer free garlic naan on orders over ₹500 to drive repeat orders.",
         authorizedActionLabel: "Launch Repeat Customer Offer",
@@ -254,58 +254,7 @@ export class OrderKingSpark {
   }
 
   private seedDefaultDisputes() {
-    this.activeDisputes = [
-      {
-        disputeId: "dsp-spill-101",
-        orderId: "ord-8831",
-        customerName: "Rahul Sharma",
-        complaintType: "FOOD_SPILL",
-        complaintText: "Dal Makhani container was turned sideways and spilled completely inside the delivery bag.",
-        claimAmountPaise: 24000,
-        prepTimeMinutes: 12,
-        transitTimeMinutes: 44,
-        spillPhotoSubmitted: true,
-        sealIntactReported: true,
-      },
-      {
-        disputeId: "dsp-missing-102",
-        orderId: "ord-8845",
-        customerName: "Ananya Iyer",
-        complaintType: "MISSING_ITEM",
-        complaintText: "Ordered 2 Garlic Butter Naans, but only 1 was packed inside the bag.",
-        claimAmountPaise: 6000,
-        prepTimeMinutes: 15,
-        transitTimeMinutes: 20,
-        spillPhotoSubmitted: false,
-        sealIntactReported: true,
-        missingItemNames: ["Garlic Butter Naan"],
-        itemValuePaise: 6000,
-      },
-      {
-        disputeId: "dsp-cold-103",
-        orderId: "ord-8859",
-        customerName: "Vikas Verma",
-        complaintType: "COLD_FOOD_TRANSIT_DELAY",
-        complaintText: "Food arrived cold and soggy after 55 minutes rider transit.",
-        claimAmountPaise: 38000,
-        prepTimeMinutes: 14,
-        transitTimeMinutes: 55,
-        spillPhotoSubmitted: false,
-        sealIntactReported: true,
-      },
-      {
-        disputeId: "dsp-taste-104",
-        orderId: "ord-8870",
-        customerName: "Priya Malhotra",
-        complaintType: "SUBJECTIVE_TASTE",
-        complaintText: "Mutton Biryani had slightly less salt and cardamom flavor compared to my previous visit.",
-        claimAmountPaise: 38000,
-        prepTimeMinutes: 16,
-        transitTimeMinutes: 22,
-        spillPhotoSubmitted: false,
-        sealIntactReported: true,
-      },
-    ];
+    this.activeDisputes = [];
   }
 
   public getMenuItems(): SparkMenuItem[] {
@@ -981,7 +930,7 @@ I am your restaurant growth, operations & financial partner. I can:
   }
 
   /**
-   * Spark AI Dynamic Dish Pricing & Elasticity Optimizer:
+   * King AI Dynamic Dish Pricing & Elasticity Optimizer:
    * Benchmarks dish price against high-converting neighborhood market corridors,
    * calculates projected Merchant GMV lift, and projects Founder Commission (28% platform tier).
    */
@@ -1074,7 +1023,7 @@ I am your restaurant growth, operations & financial partner. I can:
   }
 
   /**
-   * Spark AI High-Margin Combo & Meal Bundle Recommender:
+   * King AI High-Margin Combo & Meal Bundle Recommender:
    * Generates high-converting meal bundles that expand Average Order Value (AOV)
    * by +20% to +45%, protects merchant food margin at 68-74%, and maximizes Founder Commission.
    */

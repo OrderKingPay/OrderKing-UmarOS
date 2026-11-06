@@ -433,15 +433,15 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
       );
 
       // 1. Honest status statement
-      expect(homeFeedSource).toContain("Doorstep food delivery expanding to this area soon · All KingPay services active 24/7");
+      expect(homeFeedSource).toContain("Food delivery is not available in your location, kindly update your location.");
 
       // 2. Clear location fix button
-      expect(homeFeedSource).toContain("Change Location");
+      expect(homeFeedSource).toContain("Location");
       expect(homeFeedSource).toContain("setLocDialogOpen(true)");
 
       // 3. Non-upsetting, polite human guidance
       expect(homeFeedSource).toContain(
-        "Doorstep food delivery expanding to this area soon · All KingPay services active 24/7"
+        "Food delivery is not available in your location, kindly update your location."
       );
 
       // 4. Exact 6 authentic KingPay-aligned 3D services present

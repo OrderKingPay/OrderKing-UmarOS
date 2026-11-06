@@ -94,85 +94,39 @@ type SqlAdvisorSnapshot = {
 };
 
 function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot): string {
-  const q = question.toLowerCase();
+  const q = question.toLowerCase().trim();
+
+  // Natural greeting handler
+  if (/^(hi|hello|hey|good\s*morning|good\s*evening|নমস্কার|হ্যালো|नमस्ते|কেমন\s*আছেন|হাই|হায়)$/i.test(q)) {
+    return `Hello! I am King AI, your OrderKing restaurant partner assistant. How can I help you today with your kitchen orders, menu items, prep timing, or daily bank settlements?`;
+  }
+
   const topSummary =
     snap.topItemsToday.length > 0
       ? snap.topItemsToday.map((i) => `${i.name} (${i.qty}×)`).join(", ")
-      : "No delivered items recorded yet today";
+      : "No delivered orders recorded yet today.";
   const unavailSummary =
     snap.unavailableItems.length > 0
-      ? snap.unavailableItems.map((i) => `${i.name} [${i.status}]`).join(", ")
-      : "0 items out of stock (all active dishes are available)";
-  const peakHoursSummary =
-    snap.busyHoursLast7Days.length > 0
-      ? snap.busyHoursLast7Days.map((h) => `${String(h.hour).padStart(2, "0")}:00 (${h.c} orders)`).join(", ")
-      : "Building 7-day order hour baseline";
+      ? snap.unavailableItems.map((i) => i.name).join(", ")
+      : "All dishes are currently in stock.";
 
-  const lines: string[] = [
-    `Hello ${snap.restaurantName} Team — Here is your live, SQL-verified consultation from your kitchen ledger:`,
-    ``,
-  ];
-
-  if (q.includes("dispute") || q.includes("refund") || q.includes("spill") || q.includes("missing") || q.includes("arbitrat") || q.includes("liability") || q.includes("complaint")) {
-    lines.push(
-      `1. Automated Customer Dispute & Refund Arbitrator (${snap.restaurantName}):`,
-      `   • Liability Policy: Order King protects merchant payouts against 3rd-party logistics failures.`,
-      `   • Food Spill / Transit Damage: When food spills or containers leak in bike transit (or transit > 30 mins), liability is assigned 100% to LOGISTICS. Your restaurant payout is fully protected with ₹0 deduction.`,
-      `   • Missing / Mispacked Items: If kitchen dispatch omits an item (e.g., missing bread/drink), liability is MERCHANT for that item's value only. Remaining items and packaging remain credited, and CGST Sec 9(5) is reversed.`,
-      `   • Subjective Taste / Non-Defect Claims: Subjective complaints without food defects are rejected; platform funds token loyalty coins without affecting restaurant settlements.`,
-      `   • Operational Guard: Ensure all outbound delivery bags use tamper-evident security tape to establish clear transit custody.`
-    );
-  } else if (q.includes("description") || q.includes("pricing") || q.includes("margin") || q.includes("portion") || q.includes("dietary") || q.includes("intelligence")) {
-    lines.push(
-      `1. Menu Description & Pricing Intelligence for ${snap.restaurantName}:`,
-      `   • High-Converting Copywriting: Replace plain dish names with sensory culinary descriptions (e.g., mention clay-oven charcoal roasting, slow-simmered handi, or fragrant whole spices).`,
-      `   • Dietary & Allergen Labeling: Clearly display FSSAI allergens (Dairy, Gluten, Nuts, Mustard, Soy) and dietary badges (🌱 Pure Veg, 🍗 Non-Veg, 🥑 Vegan, 🕉️ Jain).`,
-      `   • Portion Portfolio Strategy: Introduce Solo portions (250g–350g) at 68%+ gross margin for solo lunch orders, while positioning Family Packs (600g–800g) at premium price points for dinner peaks.`,
-      `   • Conversion Lift: Catalog dishes with sensory descriptions and clear portion tags convert 18% higher with lower customer complaints.`
-    );
-  } else if (q.includes("shift") || q.includes("recon") || q.includes("closing") || q.includes("payout") || q.includes("settlement") || q.includes("tax") || q.includes("gst") || q.includes("tds") || q.includes("tcs") || q.includes("wednesday")) {
-    const deliveredSales = formatINR(snap.today.sales_paise);
-    const payable = formatINR(snap.today.payable_paise);
-    const commAvoided = formatINR(Math.round(snap.today.sales_paise * 0.24));
-    const gst95 = formatINR(Math.round(snap.today.sales_paise * 0.05));
-    lines.push(
-      `1. Daily Shift & Financial Recon Report (${snap.restaurantName}):`,
-      `   • Delivered Orders Completed: ${snap.today.delivered} delivered (${snap.today.orders} total placed today).`,
-      `   • Delivered Gross Sales: ${deliveredSales} · Accrued Net Payable: ${payable}`,
-      `   • Order King Commission: ${formatINR(snap.today.commission_paise)} deducted (0% on Dine-In / standard 28% delivery take-rate or negotiated rate).`,
-      `   • Food GST Remitted (Sec 9(5)): ${gst95} (5% food GST remitted directly to the government by Order King on your behalf).`,
-      `   • Withholding Taxes: TCS Sec 52 (0.5%) and TDS Sec 194-O (0.1%) are accounted in exact integer paise.`,
-      `   • Settlement Batch: Scheduled for automatic NEFT/IMPS transfer to your verified bank account.`
-    );
-  } else if (q.includes("printer") || q.includes("kot") || q.includes("pos") || q.includes("petpooja") || q.includes("urbanpiper") || q.includes("hardware")) {
-    lines.push(
-      `1. 80mm ESC/POS Thermal KOT & POS Sync Guide for ${snap.restaurantName}:`,
-      `   • Every order card in your KDS (/orders) has a 1-tap "🖨️ Print KOT / Bill" button that renders an 80mm thermal receipt with itemized dishes, variants, add-ons, bold chef instructions, and CGST Sec 9(5) tax math.`,
-      `   • For LAN/Wi-Fi or Bluetooth thermal printers and Petpooja/UrbanPiper webhook sync, open the Devices & POS tab (/devices) to pair directly without waiting for human support.`
-    );
-  } else if (q.includes("stock") || q.includes("unavailable") || q.includes("menu") || q.includes("photo") || q.includes("top") || q.includes("dish")) {
-    lines.push(
-      `1. Live Menu & Catalog Health for ${snap.restaurantName}:`,
-      `   • Active Catalog Size: ${snap.catalogStats.totalItems} active dish(es).`,
-      `   • Currently Out-of-Stock (${snap.unavailableItems.length}): ${unavailSummary}.`,
-      `   • Catalog Conversion Audit: ${snap.catalogStats.missingPhotos} dish(es) missing photos · ${snap.catalogStats.missingDescriptions} dish(es) missing descriptions.`,
-      `   • Top Selling Dishes Today: ${topSummary}.`,
-      `   • Consultant Tip: Uploading real 4:3 studio photos in Dish Studio (/menu) and restoring out-of-stock dishes immediately improves storefront conversion.`
-    );
-  } else {
-    lines.push(
-      `1. Live Storefront & Order Snapshot (${snap.restaurantName}):`,
-      `   • Storefront Status: ${snap.emergencyClosed ? "PAUSED (Emergency Closed)" : "OPEN"} · KYC: ${snap.verificationStatus} · FSSAI: ${snap.fssaiNumber ?? "Not configured"}`,
-      `   • Prep SLA Buffers: Standard ${snap.prepMinutes} mins · Peak Rush ${snap.peakPrepMinutes} mins`,
-      `   • Today's Orders: ${snap.today.orders} placed · ${snap.today.delivered} delivered · ${snap.today.pending} pending acceptance · ${snap.today.cancelled} cancelled · ${snap.today.rejected} rejected`,
-      `   • Today's Financials: Gross Sales ${formatINR(snap.today.sales_paise)} · Net Payable ${formatINR(snap.today.payable_paise)}`,
-      `   • Top Dishes Today: ${topSummary}`,
-      `   • Out-of-Stock Items (${snap.unavailableItems.length}): ${unavailSummary}`,
-      `   • 7-Day Peak Order Hours (IST): ${peakHoursSummary}`
-    );
+  if (q.includes("sales") || q.includes("revenue") || q.includes("order") || q.includes("আজকের বিক্রি") || q.includes("আজকে কত")) {
+    return `Today's Summary for ${snap.restaurantName}:\n• Orders: ${snap.today.orders} placed (${snap.today.delivered} delivered, ${snap.today.pending} pending acceptance)\n• Gross Sales: ${formatINR(snap.today.sales_paise)}\n• Net Payout Accrued: ${formatINR(snap.today.payable_paise)}\n• Top Sellers: ${topSummary}`;
   }
 
-  return lines.join("\n");
+  if (q.includes("payout") || q.includes("settlement") || q.includes("bank") || q.includes("payment") || q.includes("টাকা") || q.includes("পেমেন্ট")) {
+    return `Daily Settlement for ${snap.restaurantName}:\n• Payout Schedule: Automatic T+1 daily settlement deposited directly into your verified bank account.\n• Accrued Net Payable: ${formatINR(snap.today.payable_paise)} for ${snap.today.delivered} delivered order(s).\n• Statutory Deductions: Accounted under Section 9(5) CGST and Section 194-O TDS. Full itemized ledgers are available in the Settlement tab.`;
+  }
+
+  if (q.includes("menu") || q.includes("stock") || q.includes("item") || q.includes("dish") || q.includes("খাবার") || q.includes("মেনু")) {
+    return `Menu Overview for ${snap.restaurantName}:\n• Active Dishes: ${snap.catalogStats.totalItems}\n• Out of Stock: ${snap.unavailableItems.length > 0 ? unavailSummary : "None (all active dishes are available)"}\n• Photos & Details: ${snap.catalogStats.missingPhotos} dish(es) without photos. You can update photos, prices, and stock toggles anytime in the Menu tab.`;
+  }
+
+  if (q.includes("dispute") || q.includes("refund") || q.includes("spill") || q.includes("missing")) {
+    return `Order Dispute Policy for ${snap.restaurantName}:\n• Delivery Spills / Transit Damage: Assigned 100% to logistics; your restaurant earnings are fully protected with ₹0 deduction.\n• Missing Items: If an item is inadvertently omitted, deduction is limited strictly to that item's value.\n• To view active dispute logs or claims, check the Guest Reviews & Disputes section.`;
+  }
+
+  return `Hello! Here is your quick kitchen summary for ${snap.restaurantName}:\n• Storefront: ${snap.emergencyClosed ? "PAUSED" : "OPEN & ACCEPTING ORDERS"}\n• Today's Orders: ${snap.today.orders} placed, ${formatINR(snap.today.sales_paise)} gross sales\n• Kitchen Prep Buffer: ${snap.prepMinutes} mins\n• Menu: ${snap.catalogStats.totalItems} active dishes\n\nFeel free to ask any question about your daily orders, prep pace, menu catalog, or settlement ledger.`;
 }
 
 export const askAssistant = createServerFn({ method: "POST" })
@@ -623,111 +577,25 @@ async function ensureDiningTablesSchema(sql: any) {
 const DEFAULT_SEED_TABLES = [
   // AC Indoor Main Hall
   { tableNumber: "T-01", zone: "AC Indoor Main Hall", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
-  { tableNumber: "T-02", zone: "AC Indoor Main Hall", capacityTag: "4-Seater", maxGuests: 4, status: "RESERVED", currentBookingRef: "TB-83419", guestName: "Rohan & Dev" },
+  { tableNumber: "T-02", zone: "AC Indoor Main Hall", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
   { tableNumber: "T-03", zone: "AC Indoor Main Hall", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
-  { tableNumber: "T-04", zone: "AC Indoor Main Hall", capacityTag: "6-Seater Family", maxGuests: 6, status: "OCCUPIED", currentBookingRef: "TB-78901", guestName: "Mehta Family", seatedSince: "7:10 PM" },
+  { tableNumber: "T-04", zone: "AC Indoor Main Hall", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
   { tableNumber: "T-05", zone: "AC Indoor Main Hall", capacityTag: "10-Seater Banquet", maxGuests: 10, status: "AVAILABLE" },
 
   // Rooftop Open Air
   { tableNumber: "R-01", zone: "Rooftop Open Air", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
   { tableNumber: "R-02", zone: "Rooftop Open Air", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
-  { tableNumber: "R-03", zone: "Rooftop Open Air", capacityTag: "4-Seater", maxGuests: 4, status: "RESERVED", currentBookingRef: "TB-98241", guestName: "Ananya Roy" },
+  { tableNumber: "R-03", zone: "Rooftop Open Air", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
   { tableNumber: "R-04", zone: "Rooftop Open Air", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
 
   // Outdoor Patio
   { tableNumber: "P-01", zone: "Outdoor Patio", capacityTag: "2-Seater", maxGuests: 2, status: "AVAILABLE" },
   { tableNumber: "P-02", zone: "Outdoor Patio", capacityTag: "4-Seater", maxGuests: 4, status: "AVAILABLE" },
-  { tableNumber: "P-03", zone: "Outdoor Patio", capacityTag: "6-Seater Family", maxGuests: 6, status: "BLOCKED" },
+  { tableNumber: "P-03", zone: "Outdoor Patio", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
 
   // Private Cabana / VIP Lounge
-  { tableNumber: "V-01", zone: "Private Cabana / VIP Lounge", capacityTag: "6-Seater Family", maxGuests: 6, status: "OCCUPIED", currentBookingRef: "TB-71104", guestName: "Sengupta Family", seatedSince: "7:35 PM" },
+  { tableNumber: "V-01", zone: "Private Cabana / VIP Lounge", capacityTag: "6-Seater Family", maxGuests: 6, status: "AVAILABLE" },
   { tableNumber: "V-02", zone: "Private Cabana / VIP Lounge", capacityTag: "10-Seater Banquet", maxGuests: 10, status: "AVAILABLE" },
-];
-
-const DEFAULT_SEED_RESERVATIONS = [
-  {
-    bookingRef: "TB-98241",
-    guestName: "Ananya Roy",
-    phone: "+91 98301 22345",
-    guestsCount: 4,
-    timeSlot: "8:00 PM",
-    date: "Today",
-    areaPreference: "Rooftop Open Air",
-    occasion: "Birthday Celebration",
-    status: "PENDING",
-    depositAmount: 500,
-    platformFeePercent: 5,
-    platformFeeAmount: 25,
-    netRestaurantPayable: 475,
-  },
-  {
-    bookingRef: "TB-83419",
-    guestName: "Rohan & Dev",
-    phone: "+91 91234 56789",
-    guestsCount: 2,
-    timeSlot: "8:30 PM",
-    date: "Today",
-    areaPreference: "AC Indoor Main Hall",
-    occasion: "Candlelight Dinner",
-    status: "CONFIRMED",
-    assignedTable: "T-02",
-    depositAmount: 500,
-    platformFeePercent: 5,
-    platformFeeAmount: 25,
-    netRestaurantPayable: 475,
-  },
-  {
-    bookingRef: "TB-71104",
-    guestName: "Sengupta Family",
-    phone: "+91 98451 99120",
-    guestsCount: 6,
-    timeSlot: "7:30 PM",
-    date: "Today",
-    areaPreference: "Private Cabana / VIP Lounge",
-    occasion: "Family Reunion",
-    status: "SEATED",
-    assignedTable: "V-01",
-    seatedAt: "7:35 PM",
-    depositAmount: 1000,
-    platformFeePercent: 5,
-    platformFeeAmount: 50,
-    netRestaurantPayable: 950,
-  },
-  {
-    bookingRef: "TB-65280",
-    guestName: "Vikram Malhotra & Team",
-    phone: "+91 99001 12233",
-    guestsCount: 8,
-    timeSlot: "6:00 PM",
-    date: "Today",
-    areaPreference: "Private Cabana / VIP Lounge",
-    occasion: "Corporate Deal Dinner",
-    status: "COMPLETED",
-    assignedTable: "V-02",
-    seatedAt: "6:05 PM",
-    completedAt: "7:45 PM",
-    depositAmount: 1000,
-    platformFeePercent: 5,
-    platformFeeAmount: 50,
-    netRestaurantPayable: 950,
-    billAmount: 8450,
-  },
-  {
-    bookingRef: "TB-59012",
-    guestName: "Priya Das",
-    phone: "+91 97112 33445",
-    guestsCount: 2,
-    timeSlot: "6:30 PM",
-    date: "Today",
-    areaPreference: "Outdoor Patio",
-    occasion: "Casual Catchup",
-    status: "CANCELLED",
-    depositAmount: 500,
-    platformFeePercent: 5,
-    platformFeeAmount: 25,
-    netRestaurantPayable: 475,
-    notes: "Guest notified late arrival / cancelled table",
-  },
 ];
 
 export const getDiningReservationsFn = createServerFn({ method: "GET" })
@@ -752,34 +620,8 @@ export const getDiningReservationsFn = createServerFn({ method: "GET" })
             ) values (
               ${newId("dtbl")}, ${ctx.restaurantId}, ${tbl.tableNumber}, ${tbl.zone},
               ${tbl.capacityTag}, ${tbl.maxGuests}, ${tbl.status},
-              ${tbl.currentBookingRef ?? null}, ${tbl.guestName ?? null}, ${tbl.seatedSince ?? null}
+              ${null}, ${null}, ${null}
             ) on conflict (restaurant_id, table_number) do nothing
-          `;
-        }
-      }
-
-      // Check if sample reservations are seeded
-      const existingResCount = await sql<{ count: number }>`
-        select count(*)::int as count from dining_reservations where restaurant_id = ${ctx.restaurantId}
-      `;
-
-      if ((existingResCount[0]?.count ?? 0) === 0) {
-        for (const res of DEFAULT_SEED_RESERVATIONS) {
-          await sql`
-            insert into dining_reservations (
-              id, restaurant_id, booking_ref, guest_name, phone, guests_count, time_slot,
-              date, area_preference, occasion, status, assigned_table, deposit_amount,
-              platform_fee_percent, platform_fee_amount, net_restaurant_payable,
-              merchant_commission_percent, seated_at, completed_at, bill_amount, notes, is_walk_in
-            ) values (
-              ${newId("dres")}, ${ctx.restaurantId}, ${res.bookingRef}, ${res.guestName},
-              ${res.phone}, ${res.guestsCount}, ${res.timeSlot}, ${res.date},
-              ${res.areaPreference}, ${res.occasion ?? null}, ${res.status},
-              ${(res as any).assignedTable ?? null}, ${res.depositAmount},
-              ${res.platformFeePercent}, ${res.platformFeeAmount}, ${res.netRestaurantPayable},
-              0.00, ${(res as any).seatedAt ?? null}, ${(res as any).completedAt ?? null},
-              ${(res as any).billAmount ?? null}, ${(res as any).notes ?? null}, false
-            )
           `;
         }
       }

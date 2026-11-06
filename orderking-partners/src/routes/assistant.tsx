@@ -19,6 +19,7 @@ import { platformConfig, type AppLanguage } from "@/lib/platform-config";
 import { orderKingSpark } from "@/lib/ai/order-king-spark";
 import { tryExecutePartnerAiCommand } from "@/lib/ai/partner-ai-actions";
 import { PARTNER_ACADEMY_MODULES, type SopModule } from "@/lib/academy/partner-sop-data";
+import { ShieldCheck, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/assistant")({ component: AssistantPage });
 
@@ -250,7 +251,7 @@ function AssistantPage() {
   const [applyingPrepSlaFix, setApplyingPrepSlaFix] = useState(false);
   const [actionBanner, setActionBanner] = useState<string | null>(null);
 
-  // King AI (Spark AI Parity) Interactive Assistant State
+  // King AI Conversational Engine Interactive Assistant State
   const defaultDisputes = useMemo(() => orderKingSpark.getActiveDisputes(), []);
   const [selectedDisputeId, setSelectedDisputeId] = useState<string>(defaultDisputes[0]?.disputeId ?? "dsp-spill-101");
   const selectedDispute = useMemo(
@@ -1320,14 +1321,14 @@ function AssistantPage() {
           </div>
         </div>
 
-        {/* Meituan Waimai + DoorDash 5-Daypart & Neighborhood Geo-Demand Growth Engine */}
+        {/* 7-Day Order Demand by Time of Day */}
         <div className="rounded-xl border border-line bg-surface-2/40 p-3.5 space-y-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-              🌏 MEITUAN WAIMAI &amp; DOORDASH 5-DAYPART &amp; NEIGHBORHOOD GEO-DEMAND ENGINE (7-DAY LIVE ORDERS)
+              Order Demand by Time of Day (Past 7 Days)
             </h3>
             <span className="font-mono text-[10px] text-muted">
-              Real 7-Day Hourly Order Distribution · 0km–7km Delivery Radius Optimization
+              Hourly order distribution across breakfast, lunch, evening snacks, dinner, and late night
             </span>
           </div>
           <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5 text-xs">
@@ -1896,32 +1897,42 @@ function AssistantPage() {
             </p>
 
             {/* Dispute Case Selector */}
-            <div className="space-y-1.5">
-              <span className="text-[10px] font-mono uppercase text-muted">Select Active Customer Complaint:</span>
-              <div className="grid grid-cols-2 gap-1.5">
-                {defaultDisputes.map((d) => (
-                  <button
-                    key={d.disputeId}
-                    type="button"
-                    onClick={() => {
-                      setSelectedDisputeId(d.disputeId);
-                      setDisputeDecision(orderKingSpark.arbitrateDispute(d));
-                    }}
-                    className={`rounded-lg border p-2 text-left text-xs transition ${
-                      selectedDisputeId === d.disputeId
-                        ? "border-emerald-500 bg-emerald-500/10 font-bold text-emerald-300"
-                        : "border-line bg-surface text-muted hover:text-ink"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] uppercase">{d.complaintType.replace(/_/g, " ")}</span>
-                      <span className="font-mono text-[10px] text-ink font-bold">₹{(d.claimAmountPaise / 100).toFixed(0)}</span>
-                    </div>
-                    <div className="truncate text-[11px] mt-0.5 font-sans">{d.customerName} (#{d.orderId})</div>
-                  </button>
-                ))}
+            {defaultDisputes.length === 0 ? (
+              <div className="rounded-lg border border-line bg-surface p-4 text-center space-y-1">
+                <ShieldCheck className="mx-auto size-7 text-emerald-400 mb-1" />
+                <div className="text-xs font-semibold text-ink">No Active Customer Disputes</div>
+                <p className="text-[11px] text-muted">
+                  All recent customer orders were fulfilled without complaints. Your restaurant settlement is 100% protected.
+                </p>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-mono uppercase text-muted">Select Active Customer Complaint:</span>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {defaultDisputes.map((d) => (
+                    <button
+                      key={d.disputeId}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDisputeId(d.disputeId);
+                        setDisputeDecision(orderKingSpark.arbitrateDispute(d));
+                      }}
+                      className={`rounded-lg border p-2 text-left text-xs transition ${
+                        selectedDisputeId === d.disputeId
+                          ? "border-emerald-500 bg-emerald-500/10 font-bold text-emerald-300"
+                          : "border-line bg-surface text-muted hover:text-ink"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[10px] uppercase">{d.complaintType.replace(/_/g, " ")}</span>
+                        <span className="font-mono text-[10px] text-ink font-bold">₹{(d.claimAmountPaise / 100).toFixed(0)}</span>
+                      </div>
+                      <div className="truncate text-[11px] mt-0.5 font-sans">{d.customerName} (#{d.orderId})</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Selected Dispute Evidence Card */}
             {selectedDispute && (
@@ -2197,7 +2208,7 @@ function AssistantPage() {
                     }}
                     className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1"
                   >
-                    <span>Ask King Spark AI about this SOP</span>
+                    <span>Ask King AI about this SOP</span>
                     <span className="font-mono">→</span>
                   </button>
 
