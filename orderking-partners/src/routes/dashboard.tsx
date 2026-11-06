@@ -28,8 +28,10 @@ import {
   ChefHat,
   ClipboardList,
   Clock,
-  Cpu,
+  Clock3,
   Flame,
+  Sparkles,
+  Tag,
   PauseCircle,
   PlayCircle,
   Settings,
@@ -191,14 +193,12 @@ function DashboardPage() {
   const pendingCount = d?.today.pending ?? 0;
   const unavailableCount = d?.today.unavailableItems ?? 0;
   const aovPaise = d?.today.aovPaise ?? 0;
-  const recommendedPromoMinPaise = aovPaise > 0 ? Math.round((aovPaise * 1.15) / 1000) * 1000 : 25000;
   const liveOrders = liveOrdersQ.data?.orders ?? [];
+  const rawTitle = d?.restaurantName || vendor.selected?.restaurantName;
   const headerTitle =
-    d?.restaurantName && d.restaurantName.length >= 3 && d.restaurantName !== "II"
-      ? d.restaurantName
-      : vendor.selected?.restaurantName && vendor.selected.restaurantName.length >= 3
-        ? vendor.selected.restaurantName
-        : "Restaurant Operations Center";
+    rawTitle && rawTitle.trim().length >= 3 && rawTitle.trim() !== "II"
+      ? rawTitle.trim()
+      : "Restaurant Operations Center";
 
   return (
     <VendorShell
@@ -549,87 +549,6 @@ function DashboardPage() {
           </Card>
         </div>
 
-        {/* Operational Growth & Kitchen Efficiency Advisor */}
-        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2.5">
-              <Cpu className="size-5 text-emerald-400" />
-              <div>
-                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-white">
-                  Operational Growth &amp; Kitchen Efficiency Advisor
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Deterministic recommendations calculated from your live kitchen queue, menu availability, and basket AOV.
-                </p>
-              </div>
-            </div>
-            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded self-start sm:self-center">
-              OPERATIONAL INTELLIGENCE
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
-              <div>
-                <div className="text-[10px] font-mono uppercase text-emerald-400">1. Prep Time &amp; Rider Handover</div>
-                <div className="font-semibold text-white mt-1">
-                  {liveOrders.length >= 4
-                    ? `High Active Queue (${liveOrders.length} orders) — Enable 35m Rush Mode`
-                    : "Queue Load Normal — Maintain 20m Standard Prep"}
-                </div>
-                <p className="text-slate-400 mt-1">
-                  {liveOrders.length >= 4
-                    ? "Increasing prep SLA to 35m prevents rider wait-time penalties and improves customer ETA accuracy."
-                    : "20m standard prep SLA maximizes search conversion and ranking in customer feed."}
-                </p>
-              </div>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => void handleThrottle(liveOrders.length >= 4 ? "RUSH" : "NORMAL")}
-                className="w-full text-xs mt-1"
-              >
-                {liveOrders.length >= 4 ? "Apply 35m Peak Rush Mode" : "Confirm 20m Standard SLA"}
-              </Button>
-            </div>
-
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
-              <div>
-                <div className="text-[10px] font-mono uppercase text-emerald-400">2. Menu Availability &amp; Stock</div>
-                <div className="font-semibold text-white mt-1">
-                  {unavailableCount > 0
-                    ? `${unavailableCount} Dishes Currently Marked Out-of-Stock`
-                    : "100% Active Menu Availability"}
-                </div>
-                <p className="text-slate-400 mt-1">
-                  {unavailableCount > 0
-                    ? "Restoring stock on popular dishes before dinner peak directly recovers lost order conversion."
-                    : "All active dishes are available for ordering. Keep stock accurate to maintain 0% rejection rate."}
-                </p>
-              </div>
-              <Button asChild size="sm" variant="secondary" className="w-full text-xs mt-1">
-                <Link to="/menu">Review Menu Stock Toggles →</Link>
-              </Button>
-            </div>
-
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
-              <div>
-                <div className="text-[10px] font-mono uppercase text-emerald-400">3. Basket AOV Expansion</div>
-                <div className="font-semibold text-white mt-1">
-                  Target Minimum Order: {formatINR(recommendedPromoMinPaise)}
-                </div>
-                <p className="text-slate-400 mt-1">
-                  Based on your current AOV ({formatINR(aovPaise)}), setting a promotion threshold at{" "}
-                  {formatINR(recommendedPromoMinPaise)} lifts basket size by ~15% while protecting net take-home margin.
-                </p>
-              </div>
-              <Button asChild size="sm" variant="secondary" className="w-full text-xs mt-1">
-                <Link to="/promotions">Calculate in Margin Calculator →</Link>
-              </Button>
-            </div>
-          </div>
-        </Card>
-
         {/* Secondary Operational Metrics: Stock, Ratings, Repeat Rate, Attention Alerts */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
           <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
@@ -714,59 +633,150 @@ function DashboardPage() {
           </Card>
         </div>
 
-        {/* Quick Operations Navigation */}
-        <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-3">
-          <div className="flex items-center justify-between">
+        {/* 9 Core Management Navigation Modules (Exact Zomato Partner Modules) */}
+        <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <h3 className="font-display text-sm font-bold uppercase tracking-wider text-slate-300">
-              Self-Service Partner Control Center
+              Restaurant Management
             </h3>
             <span className="text-[11px] font-mono text-slate-400">
               Role: {d?.role ?? vendor.role ?? "PARTNER"}
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <Link
               to="/orders"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-emerald-500/50 hover:bg-slate-900/80 transition flex items-start justify-between gap-2 group"
             >
               <div>
-                <div className="text-xs font-semibold text-white">Live Kitchen Orders</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">Accept, prepare, print KOT, and mark orders ready</div>
+                <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  Live Orders
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Live queue, KOT printing &amp; order history
+                </div>
               </div>
               <ClipboardList className="size-4 text-emerald-400 shrink-0" />
             </Link>
 
             <Link
-              to="/menu"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
+              to="/kitchen"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-emerald-500/50 hover:bg-slate-900/80 transition flex items-start justify-between gap-2 group"
             >
               <div>
-                <div className="text-xs font-semibold text-white">Menu &amp; Stock Manager</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">Edit prices, GST slabs, variants, addons &amp; stock</div>
+                <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  Kitchen KDS
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Full-screen prep display with audio siren
+                </div>
+              </div>
+              <ChefHat className="size-4 text-emerald-400 shrink-0" />
+            </Link>
+
+            <Link
+              to="/menu"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-emerald-500/50 hover:bg-slate-900/80 transition flex items-start justify-between gap-2 group"
+            >
+              <div>
+                <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  Menu &amp; Stock
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  1-tap item stockout toggles &amp; pricing
+                </div>
               </div>
               <UtensilsCrossed className="size-4 text-emerald-400 shrink-0" />
             </Link>
 
             <Link
               to="/settlements"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-emerald-500/50 hover:bg-slate-900/80 transition flex items-start justify-between gap-2 group"
             >
               <div>
-                <div className="text-xs font-semibold text-white">Settlement &amp; Tax Ledger</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">Download CSV/JSON statements, TDS/GST summary &amp; bank KYC</div>
+                <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  Settlements &amp; Payouts
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Daily T+1 bank transfer ledger &amp; tax invoices
+                </div>
               </div>
               <Banknote className="size-4 text-emerald-400 shrink-0" />
             </Link>
 
             <Link
-              to="/settings"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
+              to="/onboarding"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-emerald-500/50 hover:bg-slate-900/80 transition flex items-start justify-between gap-2 group"
             >
               <div>
-                <div className="text-xs font-semibold text-white">Outlet Config &amp; Legal Center</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">13 Indian languages, self-healing SLA, POS printer &amp; policies</div>
+                <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  Restaurant Profile &amp; KYC
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  14-digit FSSAI, GSTIN, bank account proof
+                </div>
               </div>
-              <Settings className="size-4 text-emerald-400 shrink-0" />
+              <Store className="size-4 text-emerald-400 shrink-0" />
+            </Link>
+
+            <Link
+              to="/assistant"
+              className="rounded-xl border border-amber-500/30 bg-amber-950/15 p-3.5 hover:border-amber-400/60 hover:bg-amber-950/30 transition flex items-start justify-between gap-2 group"
+            >
+              <div>
+                <div className="text-xs font-bold text-amber-300 group-hover:text-amber-200 transition-colors">
+                  King AI Co-Pilot
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Menu photo digitizer &amp; culinary photo studio
+                </div>
+              </div>
+              <Sparkles className="size-4 text-amber-400 shrink-0 animate-pulse" />
+            </Link>
+
+            <Link
+              to="/promotions"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-emerald-500/50 hover:bg-slate-900/80 transition flex items-start justify-between gap-2 group"
+            >
+              <div>
+                <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  Discounts &amp; Offers
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Configure flat ₹ or % customer discounts
+                </div>
+              </div>
+              <Tag className="size-4 text-emerald-400 shrink-0" />
+            </Link>
+
+            <Link
+              to="/reviews"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-emerald-500/50 hover:bg-slate-900/80 transition flex items-start justify-between gap-2 group"
+            >
+              <div>
+                <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  Customer Reviews
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Verified customer ratings &amp; instant replies
+                </div>
+              </div>
+              <Star className="size-4 text-emerald-400 shrink-0" />
+            </Link>
+
+            <Link
+              to="/hours"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-emerald-500/50 hover:bg-slate-900/80 transition flex items-start justify-between gap-2 group"
+            >
+              <div>
+                <div className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  Operating Hours
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Kitchen open/close shifts &amp; weekly holidays
+                </div>
+              </div>
+              <Clock3 className="size-4 text-emerald-400 shrink-0" />
             </Link>
           </div>
         </Card>

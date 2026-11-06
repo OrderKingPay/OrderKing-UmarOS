@@ -549,7 +549,7 @@ export async function dispatchOtpSms(
     } else {
       waNotice = `WhatsApp Cloud API credentials pending. Verification code generated and logged for +91-${cleanPhone}.`;
       console.log(
-        `[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to sovereign direct channel.`,
+        `[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to direct verification channel.`,
       );
     }
 
@@ -568,7 +568,7 @@ export async function dispatchOtpSms(
 
   // No active API key found in Cloudflare / environment
   if (availableProviders.length === 0) {
-    const notice = "SMS gateway key not yet provided in Cloudflare environment (Pending API Key configuration). Sovereign zero-lockout direct OTP verification active.";
+    const notice = "SMS gateway key not yet provided in Cloudflare environment (Pending API Key configuration). Zero-lockout direct OTP verification active.";
     console.warn(
       `[SMS Gateway] ⚠️ ${notice} (Recipient: +91-${cleanPhone}, OTP: [${otp}])`,
     );

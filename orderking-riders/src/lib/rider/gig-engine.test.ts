@@ -10,7 +10,7 @@ import {
   RIDER_TIERS,
 } from "./gig-engine.ts";
 
-describe("OrderKing Gamified Gig Engine", () => {
+describe("OrderKing Delivery Partner Incentive Engine", () => {
   describe("Rider Tiers", () => {
     it("returns BRONZE for new couriers", () => {
       const tier = getRiderTier(0);

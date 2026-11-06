@@ -1,4 +1,4 @@
-// Rider Radar AI: Sovereign Dispatch, Weather Surge, & Earnings Engine
+// Rider Radar AI: Real-Time Dispatch, Weather Surge, & Earnings Engine
 
 export interface RiderDispatchInstruction {
   stepNumber: number;

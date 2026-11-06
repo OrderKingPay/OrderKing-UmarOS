@@ -1,5 +1,5 @@
 /**
- * Sovereign Fleet Safety & Offline Handover Engine
+ * OrderKing Fleet Safety & Offline Handover Engine
  * Council Domain 6: Rider Fleet Safety, Low Battery Optimization & Doorstep Verification.
  */
 

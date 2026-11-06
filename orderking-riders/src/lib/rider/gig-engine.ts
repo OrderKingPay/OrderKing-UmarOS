@@ -1,5 +1,5 @@
 /**
- * OrderKing Gamified Gig Engine & Partner Algorithmic Matrix
+ * OrderKing Delivery Partner Incentive & Earnings Engine
  * 
  * Provides structured tier progression, daily milestone incentive targets,
  * multi-day touchpoint targets (3-day weekend sprints & weekly marathons),
