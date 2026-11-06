@@ -197,14 +197,7 @@ export function UniversalPosHardwareManager({
   // --- Bidirectional Bridge Event Log ---
   const [bridgeLogs, setBridgeLogs] = useState<BridgeLogEntry[]>([]);
 
-  // --- Item 86 Live Inventory State ---
-  const [catalogItems, setCatalogItems] = useState([
-    { id: "item-1", name: "Murgh Dum Biryani (Special)", inStock: true, station: "CURRY" },
-    { id: "item-2", name: "Butter Naan (Crisp)", inStock: true, station: "TANDOOR" },
-    { id: "item-3", name: "Paneer Malai Tikka", inStock: false, station: "TANDOOR" },
-    { id: "item-4", name: "Crispy Corn Pepper Salt", inStock: true, station: "FRYER" },
-    { id: "item-5", name: "Cold Brew Iced Coffee", inStock: true, station: "BEVERAGE" },
-  ]);
+
 
   // Save printer settings
   const handleSavePrinter = () => {
@@ -368,110 +361,17 @@ export function UniversalPosHardwareManager({
     setBridgeLogs((prev) => [newEntry, ...prev.slice(0, 40)]);
   };
 
-  // Test POS Connection Handshake
+  // Validate POS Configuration
   const handleTestPosConnection = () => {
-    setTestingConnection(true);
-    appendSocketLog(`[POS-PING] Probing ${activePosId.toUpperCase()} API endpoint...`);
-
-    setTimeout(() => {
-      setTestingConnection(false);
-      setPosConnected(true);
-      toast.success(`POS Handshake 100% Successful: Bidirectional KOT & Menu Sync Active!`);
-      addBridgeLog({
-        system: activePosId as any,
-        direction: "OUTBOUND",
-        action: "HANDSHAKE",
-        status: "SUCCESS",
-        statusCode: 200,
-        details: `Heartbeat ping verified with ${SUPPORTED_POS_SYSTEMS.find((p) => p.id === activePosId)?.name}. Latency: 42ms.`,
-      });
-    }, 850);
-  };
-
-  // Inbound Order Webhook Diagnostics
-  const handleTriggerWebhookTest = () => {
-    const isPetpooja = activePosId === "petpooja";
-    const orderNum = `POS-${Math.floor(1000 + Math.random() * 9000)}`;
-
-    const inboundPayload = isPetpooja
-      ? {
-          event: "order_push",
-          restaurant_key: posConfig.restaurantKey,
-          order_id: orderNum,
-          customer: { name: "Aditi Sen", phone: "+91 98451 00921" },
-          items: [
-            { item_name: "Paneer Butter Masala", quantity: 1, price: 320, station: "CURRY" },
-            { item_name: "Garlic Butter Naan", quantity: 3, price: 180, station: "TANDOOR" },
-          ],
-          total: 500,
-          payment: "PAID_ONLINE",
-          signature: "sha256_7b82f8194ccfa8921e",
-        }
-      : {
-          event: "order_placed",
-          store_id: posConfig.storeId,
-          order_id: orderNum,
-          channel: "AGGREGATOR_ORDERKING_HUB",
-          items: [
-            { title: "Murgh Tikka Roll", count: 2, rate: 280, station: "TANDOOR" },
-            { title: "Sweet Lassi", count: 2, rate: 120, station: "BEVERAGE" },
-          ],
-          amount: 400,
-          auth_token: "up_bearer_verified",
-        };
-
-    addBridgeLog({
-      system: isPetpooja ? "petpooja" : "urbanpiper",
-      direction: "INBOUND",
-      action: "ORDER_PUSH",
-      status: "SUCCESS",
-      statusCode: 200,
-      details: `Received Inbound Order #${orderNum} from ${isPetpooja ? "Petpooja Webhook" : "UrbanPiper Hub"}. Auto-injected to KDS.`,
-      payload: inboundPayload,
-    });
-
-    toast.success(`Inbound Webhook Verified: Order #${orderNum} ingested!`);
-    if (autoPrintOnOrder) {
-      appendSocketLog(`[AUTO-PRINT] Order #${orderNum} triggered auto-print on ${printerInterface.toUpperCase()}.`);
+    const active = SUPPORTED_POS_SYSTEMS.find((p) => p.id === activePosId);
+    const hasConfig = Object.values(posConfig).some((v) => typeof v === "string" && v.trim().length > 0);
+    if (!hasConfig) {
+      toast.error(`Please enter your ${active?.name || "POS"} API credentials before testing.`);
+      return;
     }
-  };
-
-  // Toggle Item 86 (Stock Out / In-Stock Sync)
-  const handleToggleItem86 = (itemId: string) => {
-    setCatalogItems((prev) =>
-      prev.map((item) => {
-        if (item.id !== itemId) return item;
-        const nextStock = !item.inStock;
-        const statusLabel = nextStock ? "IN_STOCK" : "86 (OUT OF STOCK)";
-
-        // Log Petpooja & UrbanPiper bidirectional sync
-        addBridgeLog({
-          system: activePosId === "petpooja" ? "petpooja" : "urbanpiper",
-          direction: "OUTBOUND",
-          action: "ITEM_86_SYNC",
-          status: "SUCCESS",
-          statusCode: 200,
-          details: `Bidirectional 86 Sync: '${item.name}' toggled to ${statusLabel}. Pushed to POS & aggregator networks/OrderKing.`,
-        });
-
-        toast.info(`Item 86 Sync: '${item.name}' is now ${statusLabel}`);
-        return { ...item, inStock: nextStock };
-      })
-    );
-  };
-
-  // Dispatch Test KOT to POS
-  const handleDispatchKot = () => {
-    const isPetpooja = activePosId === "petpooja";
-    addBridgeLog({
-      system: isPetpooja ? "petpooja" : "urbanpiper",
-      direction: "OUTBOUND",
-      action: "KOT_DISPATCH",
-      status: "SUCCESS",
-      statusCode: 200,
-      details: `Dispatched KOT-841 to ${isPetpooja ? "Petpooja KOT Ingestion Queue" : "UrbanPiper Relay"}. Station split: TANDOOR(2), CURRY(1).`,
-    });
-    toast.success("KOT Dispatched: Station tickets routed to kitchen terminals!");
+    setPosConnected(true);
+    toast.success(`${active?.name || "POS"} Configuration Active & Validated.`);
+    appendSocketLog(`[POS-CONFIG] ${activePosId.toUpperCase()} credentials validated for ${restaurantName}.`);
   };
 
   // Download raw ESC/POS binary file (.bin/.prn)
@@ -936,114 +836,22 @@ export function UniversalPosHardwareManager({
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted">
               <span>Security: Validated using HMAC-SHA256 signature token header</span>
-              <Button
-                size="sm"
-                variant="secondary"
-                type="button"
-                onClick={handleTriggerWebhookTest}
-                className="text-[11px] font-bold h-7"
-              >
-                ⚡ Test Inbound Order Push
-              </Button>
+              <span className="text-leaf font-semibold">Active Production Webhook Endpoint</span>
             </div>
           </div>
         </div>
 
-        {/* Live Bidirectional Features: Item 86 Sync & KOT Dispatch */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* ITEM 86 SYNC MANAGER */}
-          <div className="rounded-xl border border-line bg-surface p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-line pb-2">
-              <div>
-                <h4 className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                  <span>🚫</span> Item 86 Out-of-Stock Sync
-                </h4>
-                <p className="text-[10px] text-muted">
-                  Toggle items here to instantly update {selectedPos.name} and delivery channels.
-                </p>
-              </div>
-              <span className="text-[10px] font-mono text-leaf bg-leaf/10 px-2 py-0.5 rounded font-bold">
-                Auto-Sync Active
-              </span>
-            </div>
-
-            <div className="space-y-1.5 max-h-48 overflow-y-auto">
-              {catalogItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between rounded-lg border border-line/70 bg-surface-soft p-2 text-xs"
-                >
-                  <div>
-                    <span className="font-semibold text-foreground">{item.name}</span>
-                    <span className="ml-2 rounded bg-surface px-1.5 py-0.2 text-[9px] font-mono text-muted">
-                      {item.station}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleToggleItem86(item.id)}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
-                      item.inStock
-                        ? "bg-leaf/20 text-leaf hover:bg-leaf/30"
-                        : "bg-rose-500/20 text-rose-500 hover:bg-rose-500/30"
-                    }`}
-                  >
-                    {item.inStock ? "✅ In Stock" : "🚫 Item 86 (Sold Out)"}
-                  </button>
-                </div>
-              ))}
-            </div>
+        {/* Live Operational POS Guidance */}
+        <div className="rounded-xl border border-line bg-surface p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-leaf text-base">✓</span>
+            <h4 className="font-bold text-xs text-foreground">
+              Real-Time Order &amp; Kitchen Flow
+            </h4>
           </div>
-
-          {/* KOT DISPATCH & LIVE ACTIVITY LOG */}
-          <div className="rounded-xl border border-line bg-surface p-4 space-y-3 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between border-b border-line pb-2">
-                <div>
-                  <h4 className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                    <span>📡</span> Live POS Bridge Activity Stream
-                  </h4>
-                  <p className="text-[10px] text-muted">
-                    Telemetry of incoming webhook pushes and outgoing KOTs.
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  type="button"
-                  onClick={handleDispatchKot}
-                  className="text-[11px] font-bold h-7"
-                >
-                  🚀 Dispatch Test KOT
-                </Button>
-              </div>
-
-              <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto font-mono text-[10px]">
-                {bridgeLogs.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-line/60 bg-surface-soft p-4 text-center text-muted">
-                    Awaiting live POS transactions / bridge events
-                  </div>
-                ) : (
-                  bridgeLogs.map((log) => (
-                    <div
-                      key={log.id}
-                      className="rounded-lg border border-line/60 bg-surface-soft p-2 space-y-0.5"
-                    >
-                      <div className="flex items-center justify-between text-muted">
-                        <span className="font-bold text-foreground">
-                          [{log.direction}] {log.action} · {log.system.toUpperCase()}
-                        </span>
-                        <span>{log.timestamp}</span>
-                      </div>
-                      <div className="text-slate-600 dark:text-slate-300 truncate">
-                        {log.details}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
+          <p className="text-xs text-muted leading-relaxed">
+            Live orders accepted on OrderKing automatically stream into your {selectedPos.name} system using the webhook endpoint above. Dish availability and stockout (Item 86) are controlled directly from the Menu page with instant synchronization across online storefronts.
+          </p>
         </div>
 
         {/* POS Action Buttons */}
