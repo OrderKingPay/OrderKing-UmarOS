@@ -1,3 +1,4 @@
+import { KingPaySuperApp2026Bar } from "@/components/fintech/KingPaySuperApp2026Bar";
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CustomerShell } from "@/components/market/shell";

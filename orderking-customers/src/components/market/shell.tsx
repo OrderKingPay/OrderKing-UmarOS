@@ -49,7 +49,7 @@ import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 const SEARCH_PLACEHOLDERS = [
   "Biryani near you...",
-  "Pizza cravings?",
+  "Search restaurants, cuisines or dishes",
   "What are you hungry for?",
   "Hot dosas & thalis...",
   "Burgers & rolls...",

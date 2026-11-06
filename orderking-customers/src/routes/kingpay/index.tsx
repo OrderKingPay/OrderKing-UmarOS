@@ -1,3 +1,4 @@
+import { KingPaySuperApp2026Bar } from "@/components/fintech/KingPaySuperApp2026Bar";
 import { Buffer } from "buffer";
 if (typeof globalThis !== "undefined" && !(globalThis as any).Buffer) {
   (globalThis as any).Buffer = Buffer;
@@ -25,7 +26,8 @@ function KingPayHub() {
   return (
     <CustomerShell>
       <div className="min-h-dvh bg-gradient-to-b from-[#080a10] via-[#0d1017] to-[#080a10] pb-24 text-slate-100">
-        <SupremeKingPayExperience />
+        &lt;KingPaySuperApp2026Bar /&gt;
+        &lt;SupremeKingPayExperience /&gt;
       </div>
     </CustomerShell>
   );

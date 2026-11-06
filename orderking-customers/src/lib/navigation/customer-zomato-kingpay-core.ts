@@ -177,7 +177,7 @@ export interface CleanRestaurantCardModel {
 
 /**
  * Enforces Commandment 1 (ZERO MOCK, ZERO FAKE, ZERO BRAINLESS CHARITY):
- * Strips all hardcoded static discount badges ("₹50 FLAT OFF").
+ * Strips all hardcoded static discount badges ("").
  * Attaches a promotion chip ONLY if the restaurant created an active, funded campaign in PostgreSQL
  * with sufficient remaining marketing budget.
  */
