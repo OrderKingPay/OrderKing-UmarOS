@@ -140,7 +140,7 @@ export function VendorShell({
   if (!user) return <RedirectToSignIn />;
 
   return (
-    <div className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 text-slate-50 break-words text-wrap">
+    <div className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 text-slate-50">
       <div className="mx-auto flex min-h-dvh max-w-6xl">
         <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r border-slate-800/60 p-4 md:flex">
           <div className="mb-6 flex items-center gap-2">
@@ -179,7 +179,7 @@ export function VendorShell({
                 <OrderKingMark className="size-7 shrink-0 text-chili" />
                 <span className="truncate font-display text-lg">{restaurantName ?? (branding.appName || t("app.name"))}</span>
               </div>
-              <h1 className="hidden font-display text-2xl md:block">{title}</h1>
+              <h1 className="hidden font-display text-xl lg:text-2xl font-bold whitespace-nowrap truncate md:block">{title}</h1>
             </div>
             <div className="flex items-center gap-2">
               {/* Restaurant Outlet Location Switcher */}

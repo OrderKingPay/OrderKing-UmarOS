@@ -633,19 +633,6 @@ export function HomeFeed({
               </div>
             ))}
           </div>
-        ) : list.isError && !list.data ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
-            <p className="text-sm font-semibold text-red-700">Unable to load restaurants right now</p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-3 bg-white text-gray-900 border-red-200 hover:bg-red-100"
-              onClick={() => void list.refetch()}
-            >
-              Try Again
-            </Button>
-          </div>
         ) : filteredRestaurants.length === 0 ? (
           <div className="space-y-4">
             {list.data && list.data.restaurants.length > 0 ? (

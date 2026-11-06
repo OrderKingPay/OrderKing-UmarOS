@@ -350,7 +350,7 @@ test('6. Multi-Carrier SMS-Only Failover, Out-of-Coverage Invariant & DPDP AES-2
   // Verify exact single-line out-of-coverage fallback string
   assert.equal(
     MANDATORY_OUT_OF_COVERAGE_NOTICE,
-    'Food delivery is currently expanding to your area. In the meantime, explore instant KingPay Travel, Utilities & Soundbox Services.'
+    'Food delivery is not available in your location, kindly update your location.'
   );
 
   assert.ok(TOP_CACHED_FLIGHT_CORRIDORS.every((c) => c.kvCacheLatencyMs < 50));

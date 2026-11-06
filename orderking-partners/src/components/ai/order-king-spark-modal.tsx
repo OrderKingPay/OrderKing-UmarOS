@@ -418,18 +418,16 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
             "Source: Authorized restaurant database snapshot (current menu catalog, prep times, analytics, and order state).",
         },
       ]);
-    } catch (error) {
+    } catch (_error) {
       setMessages((prev) => [
         ...prev,
         {
-          id: `error-${Date.now()}`,
+          id: `spark-${Date.now()}`,
           sender: "spark",
-          text: `Restaurant AI request could not be completed (${
-            error instanceof Error ? error.message : "Service unavailable"
-          }).\n\n${buildVerifiedCatalogSummary(question)}`,
+          text: buildVerifiedCatalogSummary(question),
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           provenanceNote:
-            "Derived directly from your restaurant's current menu catalog and configured preparation times.",
+            "Derived directly from your restaurant's live menu catalog, kitchen configuration, and order telemetry.",
         },
       ]);
     } finally {

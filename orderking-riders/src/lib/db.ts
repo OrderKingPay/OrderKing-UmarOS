@@ -131,6 +131,7 @@ function createNeonSql(): Promise<Sql> {
       idleTimeoutMillis: 15000,
       max: 10,
     });
+    pool.on('error', (err: any) => console.warn('[Postgres Pool Warning]:', err?.message));
     const run = async <T>(text: string, params: unknown[]) => {
       let lastErr;
       for (let attempt = 0; attempt < 3; attempt++) {

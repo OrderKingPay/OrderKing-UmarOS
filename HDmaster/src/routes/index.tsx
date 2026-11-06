@@ -240,19 +240,19 @@ export const getUmarOSStats = createServerFn({ method: "GET" })
 
       // Guard with timeout to ensure route never stalls on 2G/3G mobile networks
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Stats query timeout on slow 2G/3G connection")), 1800)
+        setTimeout(() => reject(new Error("Stats query timeout on slow 2G/3G connection")), 10000)
       );
 
       // Concurrent execution: dispatch all 9 queries in parallel (Zero Waterfall)
       const parallelQueries = Promise.allSettled([
         loadPlatformSettingBag(sql),
-        sql<{ count: number }>`SELECT COUNT(*) FROM profiles`,
-        sql<{ count: number }>`SELECT COUNT(*) FROM restaurants`,
-        sql<{ count: number }>`SELECT COUNT(*) FROM riders`,
-        sql<{ count: number }>`SELECT COUNT(*) FROM orders`,
+        sql<{ count: number }>`SELECT COUNT(*)::int as count FROM profiles`,
+        sql<{ count: number }>`SELECT COUNT(*)::int as count FROM restaurants`,
+        sql<{ count: number }>`SELECT COUNT(*)::int as count FROM riders`,
+        sql<{ count: number }>`SELECT COUNT(*)::int as count FROM orders`,
         sql<PendingRestaurantRow>`SELECT id, name, status FROM restaurants WHERE status = 'PENDING' OR verification_status = 'UNDER_REVIEW' LIMIT 10`,
         sql<RestaurantRow>`SELECT id, name, status FROM restaurants ORDER BY id DESC LIMIT 10`,
-        sql<RiderRow>`SELECT id, name, status FROM riders ORDER BY id DESC LIMIT 10`,
+        sql<RiderRow>`SELECT id, coalesce(full_name, id) as name, status FROM riders ORDER BY id DESC LIMIT 10`,
         sql<OrderRow>`SELECT id, status FROM orders ORDER BY id DESC LIMIT 10`,
       ]);
 
