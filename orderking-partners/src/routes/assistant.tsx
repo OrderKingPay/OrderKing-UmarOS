@@ -341,7 +341,7 @@ function AssistantPage() {
           )
         : 20;
 
-    // DoorDash-grade Storefront Conversion Readiness Score (0-100) computed strictly from real catalog ratios
+    // Storefront Conversion Readiness Score (0-100) computed strictly from real catalog ratios
     const total = items.length;
     const photoPct = total > 0 ? Math.round(((total - missingPhoto.length) / total) * 100) : 0;
     const descPct = total > 0 ? Math.round(((total - missingDesc.length) / total) * 100) : 0;
