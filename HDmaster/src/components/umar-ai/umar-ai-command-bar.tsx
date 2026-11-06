@@ -418,14 +418,14 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xs sm:text-sm font-black tracking-tight text-white uppercase flex items-center gap-1.5">
-                <span>UmarOS Natural Language Command Bar</span>
+                <span>Umar AI Command</span>
               </h2>
               <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                Live Supabase Config
+                Live
               </span>
             </div>
             <p className="text-[11px] text-slate-400">
-              Type directives to reconfigure platform fees, commissions, and rates across all apps in real-time.
+              Configure platform fees, commissions, and operational rates.
             </p>
           </div>
         </div>
@@ -447,7 +447,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
                 realtimeConnected ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
               )}
             />
-            <span>{realtimeConnected ? "Supabase Realtime Live" : "Supabase Synced"}</span>
+            <span>{realtimeConnected ? "Connected" : "Active"}</span>
           </div>
 
           <button
@@ -456,7 +456,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
             className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-[11px] font-bold transition-colors"
           >
             <History className="h-3 w-3 text-slate-400" />
-            <span>Audit ({history.length})</span>
+            <span>History ({history.length})</span>
           </button>
         </div>
       </div>
@@ -480,7 +480,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
             placeholder={
               isListening
                 ? "Listening... speak command now..."
-                : "Type directive (e.g. 'set food platform fee to 12' or 'set remit fee to 1.5')..."
+                : "Command (e.g. set food platform fee to 12 or set commission to 18)..."
             }
             className="w-full h-11 pl-10 pr-24 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-white placeholder:text-slate-500 font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
           />
@@ -525,7 +525,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           ) : (
             <>
               <Send className="h-3.5 w-3.5 fill-slate-950" />
-              <span>Execute Directive</span>
+              <span>Apply</span>
             </>
           )}
         </button>
@@ -534,7 +534,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
       {/* Preset Directives Chips for 1-Tap Execution */}
       <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1">
-          <Zap className="h-3 w-3 text-amber-400" /> Quick Dials:
+          <Zap className="h-3 w-3 text-amber-400" /> Presets:
         </span>
         {PRESET_DIRECTIVES.map((chip, idx) => (
           <button

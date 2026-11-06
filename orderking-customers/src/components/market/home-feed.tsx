@@ -692,7 +692,7 @@ export function HomeFeed({
                           : "Your Location"}
                       </span>
                       <span className="text-[11px] text-gray-600 block truncate font-medium">
-                        Doorstep food delivery expanding to this area soon · All KingPay services active 24/7
+                        Food delivery is not available in your location, kindly update your location.
                       </span>
                     </div>
                   </div>
@@ -702,7 +702,7 @@ export function HomeFeed({
                     className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer border-0"
                   >
                     <MapPin className="size-3" />
-                    <span>Change Location</span>
+                    <span>Update Location</span>
                   </Button>
                 </div>
 

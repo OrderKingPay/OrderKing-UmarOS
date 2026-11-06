@@ -473,7 +473,7 @@ function TrackingRoute() {
                   <h3 className="font-display text-sm font-black uppercase tracking-wider text-red-400">
                     Emergency Safety Helpline
                   </h3>
-                  <p className="text-[11px] text-slate-400">24x7 Sovereign Police & Medical Response</p>
+                  <p className="text-[11px] text-slate-400">24x7 Police & Medical Response</p>
                 </div>
               </div>
               <button

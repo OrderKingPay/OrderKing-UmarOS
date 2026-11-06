@@ -1672,7 +1672,7 @@ export function HomeView() {
         onVerified={handleHelmetVerified}
       />
 
-      {/* Supreme Tier-1 Fleet Emergency Safety Sheet */}
+      {/* Fleet Emergency Safety Sheet */}
       <RiderEmergencySafetySheet
         isOpen={sosOpen}
         onClose={() => setSosOpen(false)}

@@ -168,7 +168,7 @@ function MyTripsPage() {
                     </h3>
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full">
-                    Sovereign Settlement Desk
+                    Settlement Desk
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-300 pt-1">

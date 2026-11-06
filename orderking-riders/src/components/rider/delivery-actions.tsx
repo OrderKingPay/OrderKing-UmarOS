@@ -1026,7 +1026,7 @@ export function DeliveryActions({
         </div>
       ) : null}
 
-      {/* Supreme Tier-1 Fleet Emergency Safety Sheet */}
+      {/* Fleet Emergency Safety Sheet */}
       <RiderEmergencySafetySheet
         isOpen={sosOpen}
         onClose={() => setSosOpen(false)}

@@ -2450,14 +2450,14 @@ function UmarOSDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-black text-sm tracking-tight text-white">
-                  UMAR OS · 10-World Founder System
+                  Umar OS
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  World {currentWorld.number} of 10
+                  {currentWorld.navLabel}
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">
-                PostgreSQL Live: {loaderData?.restaurants ?? 0} Restaurants ·{" "}
+                {loaderData?.restaurants ?? 0} Restaurants ·{" "}
                 {loaderData?.riders ?? 0} Riders · {loaderData?.users ?? 0} Users ·{" "}
                 {loaderData?.todayOrders ?? 0} Orders
               </p>
@@ -2482,7 +2482,7 @@ function UmarOSDashboard() {
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
               <Settings className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Customize {currentWorld.navLabel}</span>
+              <span>Settings</span>
             </button>
           </div>
         </div>
@@ -2539,14 +2539,14 @@ function UmarOSDashboard() {
                     : "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200"
                 }`}
               >
-                📊 World Dashboard
+                Dashboard
               </button>
               <button
                 type="button"
                 onClick={() => selectSubTab("settings")}
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center gap-1.5 shadow-xs transition-colors"
               >
-                <span>⚙️ Customize This World</span>
+                <span>Settings</span>
               </button>
             </div>
           </div>
@@ -2604,14 +2604,14 @@ function UmarOSDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
-                    Box 1 · Live Result (What Is Happening Now)
+                    Overview
                   </span>
                   <h2 className="text-base font-black text-slate-900 mt-1.5">
-                    Real-Time Numbers for {currentWorld.navLabel}
+                    {currentWorld.navLabel} Overview
                   </h2>
                 </div>
                 <span className="text-xs text-slate-500 font-medium">
-                  100% Real PostgreSQL Data
+                  Live Data
                 </span>
               </div>
 
@@ -2620,7 +2620,7 @@ function UmarOSDashboard() {
                   <ResultMetricCard
                     label="Customers Registered"
                     value={String(loaderData.users)}
-                    sub="PostgreSQL `profiles` table"
+                    sub="Registered accounts"
                   />
                   <ResultMetricCard
                     label="Active Restaurants"
@@ -2630,12 +2630,12 @@ function UmarOSDashboard() {
                   <ResultMetricCard
                     label="Verified Delivery Riders"
                     value={String(loaderData.riders)}
-                    sub="PostgreSQL `riders` table"
+                    sub="Active fleet"
                   />
                   <ResultMetricCard
                     label="Total Orders"
                     value={String(loaderData.todayOrders)}
-                    sub="PostgreSQL `orders` table"
+                    sub="Today's orders"
                   />
                 </div>
               )}
@@ -2894,7 +2894,7 @@ function UmarOSDashboard() {
                   <ResultMetricCard
                     label="Database Storage"
                     value="PostgreSQL"
-                    sub="`platform_settings` table"
+                    sub="Platform configuration"
                   />
                 </div>
               )}
@@ -2905,10 +2905,10 @@ function UmarOSDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
-                    Box 2 · Action Needed (What To Do Next)
+                    Actions Needed
                   </span>
                   <h2 className="text-base font-black text-slate-900 mt-1.5">
-                    Recommended Next Steps in {currentWorld.navLabel}
+                    Action Items for {currentWorld.navLabel}
                   </h2>
                 </div>
               </div>
@@ -3198,7 +3198,7 @@ function UmarOSDashboard() {
               onChange={(key, val) => updateField(currentWorld.id, key, val)}
               onSave={() => handleSaveWorldSettings(currentWorld.id)}
               isSaving={savingWorldId === currentWorld.id}
-              boxTitle={`Box 3 · Quick Settings & Customizations for ${currentWorld.navLabel}`}
+              boxTitle={`Settings — ${currentWorld.navLabel}`}
             />
           </div>
         )}
@@ -3213,7 +3213,7 @@ function UmarOSDashboard() {
             onChange={(key, val) => updateField(currentWorld.id, key, val)}
             onSave={() => handleSaveWorldSettings(currentWorld.id)}
             isSaving={savingWorldId === currentWorld.id}
-            boxTitle={`⚙️ Full World Settings & Customizations — ${currentWorld.title}`}
+            boxTitle={`Settings — ${currentWorld.title}`}
           />
         )}
 
@@ -3225,7 +3225,7 @@ function UmarOSDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h2 className="text-base font-black text-slate-900">
-                  🚀 All 10 Separated Business Worlds
+                  All Platform Sections
                 </h2>
                 <p className="text-xs text-slate-600">
                   Click any World below (or on the bottom navigation bar) to open
@@ -5114,7 +5114,7 @@ function UmarOSDashboard() {
           Clicking any item renders ONLY that World on screen!
       ===================================================================== */}
       <nav
-        aria-label="10-World Founder Bottom Navigation"
+        aria-label="Navigation"
         className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 shadow-2xl"
       >
         <div className="max-w-7xl mx-auto px-1.5 py-1.5 grid grid-cols-5 sm:grid-cols-10 gap-1">

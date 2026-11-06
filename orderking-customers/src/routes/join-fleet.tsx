@@ -125,7 +125,7 @@ export function JoinFleetPage() {
                 Official OrderKing Rider Partner Portal
               </div>
               <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-                Join the Sovereign EV &amp; 2-Wheeler Delivery Fleet
+                Join Our Delivery Fleet
               </h1>
               <p className="max-w-2xl text-xs sm:text-sm text-zinc-300 leading-relaxed">
                 Drive your EV scooter, motorcycle, or cycle with OrderKing. Enjoy daily/weekly instant UPI settlements, zero platform onboarding fee, and accidental insurance cover under the Code on Social Security 2020.
