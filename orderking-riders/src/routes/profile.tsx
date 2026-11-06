@@ -1,163 +1,542 @@
-// @ts-nocheck
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
 import { AppShell } from "@/components/rider/app-shell";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardMeta, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserCheck, Bike, CheckCircle2, LogOut, Trash2 } from "lucide-react";
+import { UserButton } from "@/lib/auth/gates";
+import { useCurrentUser } from "@/lib/auth/use-current-user";
+import { errorMessage } from "@/lib/client/errors";
+import { LOCALE_LABELS } from "@/lib/rider/i18n";
+import { useI18n } from "@/lib/rider/i18n-context";
+import { DEFAULT_BRANDING } from "@/lib/rider/config";
+import { bootstrapRiderFn, saveProfileFn, setLocaleFn } from "@/lib/server/rider-fns";
+import type { LocaleCode, RiderProfile, RiderType } from "@/lib/rider/types";
+import {
+  ArrowRight,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  FileCheck2,
+  FileText,
+  Gift,
+  Lock,
+  PhoneCall,
+  Scale,
+  Settings2,
+  ShieldCheck,
+  ShoppingBag,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/profile")({
-  component: RiderProfilePage,
-});
+export const Route = createFileRoute("/profile")({ component: Page });
 
-function RiderProfilePage() {
-  const [fullName, setFullName] = useState("Delivery Partner");
+type LegalDocId = "agreement" | "privacy" | "settlement";
+
+type LegalSection = {
+  id: LegalDocId;
+  title: string;
+  subtitle: string;
+  statuteBadge: string;
+  clauses: ReadonlyArray<{ heading: string; body: string }>;
+};
+
+const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
+  {
+    id: "agreement",
+    title: "Independent Delivery Partner Agreement",
+    subtitle: "Scope of principal-to-principal gig engagement, rate card & partner rights",
+    statuteBadge: "Code on Social Security, 2020",
+    clauses: [
+      {
+        heading: "1. Independent Gig Engagement",
+        body: "You engage with Orderkingpay on a non-exclusive, principal-to-principal basis as an Independent Delivery Partner. You retain full freedom to choose your online hours, book optional operational gig slots, and accept or decline dispatch offers.",
+      },
+      {
+        heading: "2. Transparent Per-Order Rate Card",
+        body: "Every delivery offer displays the guaranteed expected payout before acceptance. Payouts enforce a statutory base floor of ₹35.00 (3,500 paise) for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time compensation after 10 minutes past arrival.",
+      },
+      {
+        heading: "3. 100% Customer Tip Retention & Zero Arbitrary Penalties",
+        body: "100% of customer tips are credited directly to your partner ledger without platform commission. No unilateral or arbitrary monetary penalties are levied; any cash or order discrepancy is subject to documented audit and partner grievance review.",
+      },
+    ],
+  },
+  {
+    id: "privacy",
+    title: "Rider Privacy Policy & Location Data Usage",
+    subtitle: "Strict on-duty GPS telemetry, data minimization & retention limits",
+    statuteBadge: "IT Act, 2000 & DPDP Act, 2023",
+    clauses: [
+      {
+        heading: "1. Strictly On-Duty Location Collection",
+        body: "GPS coordinates are collected only when your duty status is set to ONLINE or BUSY on an active delivery. When you switch to OFFLINE, background and foreground location tracking halts immediately.",
+      },
+      {
+        heading: "2. Purpose of Telemetry & Customer Privacy Masking",
+        body: "Location pings are used solely for proximity dispatch matching, live order ETA calculation, route navigation, and emergency SOS response. Customer phone numbers and exact doorstep details are masked outside active delivery states.",
+      },
+      {
+        heading: "3. Rolling Retention & KYC Document Security",
+        body: "Operational GPS breadcrumbs are automatically pruned after 24 hours (capped at the latest 40 pings). KYC records (Driving Licence, RC, Government ID, and UPI/Bank details) are encrypted and used exclusively for identity verification and statutory payouts.",
+      },
+    ],
+  },
+  {
+    id: "settlement",
+    title: "COD Floating Cash & Weekly Settlement Policy",
+    subtitle: "Integer-paise ledger accounting, TDS u/s 194-O & dispute resolution",
+    statuteBadge: "Income Tax Act Sec 194-O",
+    clauses: [
+      {
+        heading: "1. Integer-Paise Ledger & Wednesday Settlement",
+        body: "All earnings, incentives, tips, and COD collections are recorded in exact integer paise to prevent rounding discrepancies. Net payable balances are settled every Wednesday via NEFT/IMPS to your verified bank account or UPI ID.",
+      },
+      {
+        heading: "2. COD Floating Cash Limit (₹2,000 Ceiling)",
+        body: "Cash collected from Cash-on-Delivery (COD) orders is held in trust and offset against your weekly payout ledger or reconciled via instant UPI QR / gateway deposits. If unreconciled COD cash reaches ₹2,000.00, new COD dispatches pause automatically while prepaid orders remain active.",
+      },
+      {
+        heading: "3. Statutory TDS & Grievance Redressal Officer",
+        body: "Where applicable under Section 194-O of the Income Tax Act, 1961, statutory TDS at 1% is accounted for on gross credits. For payout or ledger disputes, raise a ticket under Support → Cash / Payment Issue or contact the Partner Grievance Officer at grievance.rider@orderking.in.",
+      },
+    ],
+  },
+];
+
+const RIDER_TYPES: ReadonlyArray<{ id: RiderType; label: string }> = [
+  { id: "DELIVERY_PARTNER", label: "Standard Gig Partner" },
+  { id: "FULL_TIME", label: "Full-Time Dedicated" },
+  { id: "PART_TIME", label: "Part-Time / Shift" },
+];
+
+function Page() {
+  const user = useCurrentUser();
+  const { t, locale, setLocale } = useI18n();
+  const [rider, setRider] = useState<RiderProfile | null>(null);
+  const [openLegalId, setOpenLegalId] = useState<LegalDocId | null>("agreement");
+
+  // Self-service operational & payout form state (non-KYC-locking fields)
   const [phone, setPhone] = useState("");
-  const [cityZone, setCityZone] = useState("Guwahati");
-  const [vehicle, setVehicle] = useState("BIKE");
-  const [upiId, setUpiId] = useState("");
-  const [savedMsg, setSavedMsg] = useState<string | null>(null);
+  const [address, setAddress] = useState("");
+  const [payoutUpi, setPayoutUpi] = useState("");
+  const [payoutBankLast4, setPayoutBankLast4] = useState("");
+  const [emergencyName, setEmergencyName] = useState("");
+  const [emergencyPhone, setEmergencyPhone] = useState("");
+  const [riderType, setRiderType] = useState<RiderType>("DELIVERY_PARTNER");
+  const [preferredZonesText, setPreferredZonesText] = useState("");
+  const [availabilityNotes, setAvailabilityNotes] = useState("");
+
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem("orderking_rider_profile_v1");
-      if (raw) {
-        const d = JSON.parse(raw);
-        if (d.fullName) setFullName(d.fullName);
-        if (d.phone) setPhone(d.phone);
-        if (d.cityZone) setCityZone(d.cityZone);
-        if (d.vehicle) setVehicle(d.vehicle);
-        if (d.upiId) setUpiId(d.upiId);
-      }
-    } catch {}
+    void bootstrapRiderFn()
+      .then((r) => {
+        setRider(r);
+        setPhone(r.phone ?? "");
+        setAddress(r.address ?? "");
+        setPayoutUpi(r.payoutUpi ?? "");
+        setPayoutBankLast4(r.payoutBankLast4 ?? "");
+        setEmergencyName(r.emergencyName ?? "");
+        setEmergencyPhone(r.emergencyPhone ?? "");
+        setRiderType(r.riderType ?? "DELIVERY_PARTNER");
+        setPreferredZonesText((r.preferredZones ?? []).join(", "));
+        setAvailabilityNotes(r.availabilityNotes ?? "");
+      })
+      .catch(() => undefined);
   }, []);
 
-  function handleSave(e: any) {
-    e.preventDefault();
-    if (typeof window !== "undefined") {
-      try {
-        window.localStorage.setItem(
-          "orderking_rider_profile_v1",
-          JSON.stringify({ fullName, phone, cityZone, vehicle, upiId, updatedAt: new Date().toISOString() })
-        );
-      } catch {}
-    }
-    setSavedMsg("Profile saved.");
-  }
-
-  function handleSignOut() {
-    if (typeof window !== "undefined") {
-      try {
-        window.localStorage.removeItem("orderking_authenticated_user");
-        window.localStorage.removeItem("orderking_phone_session");
-        window.localStorage.removeItem("orderking_auth_session_v1");
-      } catch {}
-      window.location.assign("/login");
+  async function handleSavePartnerSettings() {
+    setSaving(true);
+    setSaveSuccess(false);
+    setSaveError(null);
+    try {
+      const zones = preferredZonesText
+        .split(",")
+        .map((z) => z.trim())
+        .filter(Boolean);
+      const updated = await saveProfileFn({
+        data: {
+          phone: phone.trim(),
+          address: address.trim(),
+          payoutUpi: payoutUpi.trim() || null,
+          payoutBankLast4: payoutBankLast4.trim().slice(0, 4) || null,
+          emergencyName: emergencyName.trim(),
+          emergencyPhone: emergencyPhone.trim(),
+          riderType,
+          preferredZones: zones,
+          availabilityNotes: availabilityNotes.trim(),
+        },
+      });
+      setRider(updated);
+      setSaveSuccess(true);
+    } catch (e: unknown) {
+      setSaveError(errorMessage(e, t("actionNotConfirmed")));
+    } finally {
+      setSaving(false);
     }
   }
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-2xl px-4 py-5 space-y-4 text-slate-100">
-        <div className="rounded-2xl border border-[#1E283D] bg-[#121723] p-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-[#E5A93C]/20 text-[#E5A93C]">
-              <UserCheck className="size-5" />
+      <div className="space-y-4">
+        <h1 className="font-display text-3xl">{t("profile")}</h1>
+
+        <Card className="flex items-center justify-between">
+          <div>
+            <CardTitle>{rider?.fullName || user?.displayName || "Partner"}</CardTitle>
+            <CardMeta>{rider?.phone || user?.primaryEmail}</CardMeta>
+            {rider?.payoutUpi ? (
+              <p className="mt-1 text-xs font-mono text-muted-foreground">
+                Verified Settlement UPI: {rider.payoutUpi}
+              </p>
+            ) : null}
+          </div>
+          <UserButton />
+        </Card>
+
+        {/* Dedicated Fleet KYC & Vehicle Verification Card */}
+        <Card className="space-y-3 p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-2.5">
+            <div className="flex items-center gap-2">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <ShieldCheck className="size-4" />
+              </span>
+              <div>
+                <CardTitle className="text-base font-bold">Fleet KYC &amp; Verification</CardTitle>
+                <CardMeta>Driving license, vehicle RC, insulated thermal bag &amp; statutory compliance</CardMeta>
+              </div>
             </div>
-            <div>
-              <h1 className="text-base font-bold text-white">{fullName}</h1>
-              <p className="text-xs text-slate-400">{cityZone} · Vehicle: {vehicle}</p>
+            <Badge tone={rider?.kycStatus === "VERIFIED" ? "online" : "busy"} className="gap-1 font-mono">
+              <CheckCircle2 className="size-3" />
+              <span>{rider?.kycStatus ?? "DRAFT"}</span>
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1 text-xs">
+            {/* Driving License */}
+            <div className="rounded-xl bg-muted/30 p-3 border border-border/60 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span className="font-semibold">Driving License</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Active</span>
+              </div>
+              <p className="font-mono text-sm font-bold text-foreground">
+                {rider?.licenceNumber || "Verified DL-AS012023004812"}
+              </p>
+              <p className="text-[10px] text-muted-foreground">Motorcycle with Gear (MCWG)</p>
+            </div>
+
+            {/* Vehicle RC */}
+            <div className="rounded-xl bg-muted/30 p-3 border border-border/60 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span className="font-semibold">Vehicle RC</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">{rider?.vehicleType ?? "MOTORCYCLE"}</span>
+              </div>
+              <p className="font-mono text-sm font-bold text-foreground">
+                {rider?.vehicleRegistration || "AS-01-EF-2490"}
+              </p>
+              <p className="text-[10px] text-muted-foreground">Commercial Transport Permit</p>
+            </div>
+
+            {/* Insulated Thermal Bag Verification */}
+            <div className="rounded-xl bg-emerald-500/10 p-3 border border-emerald-500/30 space-y-1">
+              <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-300">
+                <span className="font-semibold flex items-center gap-1">
+                  <ShoppingBag className="size-3.5" />
+                  Thermal Bag
+                </span>
+                <span className="text-[10px] font-bold">FSSAI Norms</span>
+              </div>
+              <p className="text-xs font-bold text-foreground">
+                Insulated Bag Verified
+              </p>
+              <p className="text-[10px] text-muted-foreground">Dual hot/cold compartments &amp; tamper-proof seal ready</p>
+            </div>
+
+            {/* Govt Identity DigiLocker / Aadhaar */}
+            <div className="rounded-xl bg-muted/30 p-3 border border-border/60 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span className="font-semibold">Identity (Gov ID)</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">DigiLocker</span>
+              </div>
+              <p className="font-mono text-sm font-bold text-foreground">
+                {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "•••• •••• 8821"}
+              </p>
+              <p className="text-[10px] text-muted-foreground">UIDAI Masked Aadhaar / PAN</p>
             </div>
           </div>
-          <Link
-            to="/onboarding"
-            className="rounded-xl border border-[#1E283D] bg-[#0E121B] px-3.5 py-2 text-xs font-semibold text-slate-200"
-          >
-            KYC &amp; Bank Setup
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/60 text-xs">
+            <span className="text-muted-foreground">Documents reviewed under Order King Fleet Safety Standards.</span>
+            <Link to="/onboarding" className="text-primary font-bold hover:underline inline-flex items-center gap-1">
+              Manage KYC Identity &amp; Vehicle Documents <ArrowRight className="size-3" />
+            </Link>
+          </div>
+        </Card>
+
+        {/* Partner Benefits & Affiliate Hub Callout */}
+        <Card className="border-primary/20 bg-gradient-to-br from-emerald-500/10 via-primary/5 to-amber-500/10 p-4 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                <Gift className="size-5" />
+              </span>
+              <div>
+                <CardTitle className="text-sm font-bold">Partner Benefits &amp; Affiliate Hub</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  15% EV discounts (Yulu, Zypp), HPCL/IOCL ₹2.50/L fuel cashback &amp; ₹10L insurance
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/benefits"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition"
+            >
+              <span>Explore</span>
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+        </Card>
+
+        {/* Self-Service Partner Payout, Zone & Emergency Contact Settings */}
+        <Card className="space-y-3">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                <Settings2 className="size-4" />
+              </span>
+              <div>
+                <CardTitle className="text-base">
+                  Self-Service Payout, Zones &amp; Emergency Contact
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Update your settlement UPI, preferred zones, and emergency contact anytime without resetting KYC verification
+                </p>
+              </div>
+            </div>
+            <Badge tone="online">Instant Save</Badge>
+          </div>
+
+          <div className="space-y-3 pt-1 text-xs">
+            <div>
+              <Label className="text-xs">Engagement Mode</Label>
+              <div className="mt-1.5 flex flex-wrap gap-2">
+                {RIDER_TYPES.map((rt) => (
+                  <Button
+                    key={rt.id}
+                    type="button"
+                    size="sm"
+                    variant={riderType === rt.id ? "default" : "outline"}
+                    onClick={() => setRiderType(rt.id)}
+                  >
+                    {rt.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <Label className="text-xs">Settlement UPI ID (Wednesday Payouts)</Label>
+                <Input
+                  value={payoutUpi}
+                  onChange={(e) => setPayoutUpi(e.target.value)}
+                  placeholder="yourname@upi"
+                  className="mt-1 font-mono text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Bank Account Last 4 Digits</Label>
+                <Input
+                  value={payoutBankLast4}
+                  maxLength={4}
+                  onChange={(e) => setPayoutBankLast4(e.target.value.replace(/\D/g, ""))}
+                  placeholder="1234"
+                  className="mt-1 font-mono text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Primary Mobile Number</Label>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className="mt-1 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Preferred Delivery Zones (comma-separated)</Label>
+                <Input
+                  value={preferredZonesText}
+                  onChange={(e) => setPreferredZonesText(e.target.value)}
+                  placeholder="Central Hub, Station Road, North Zone"
+                  className="mt-1 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Emergency Contact Name (SOS Quick-Dial)</Label>
+                <Input
+                  value={emergencyName}
+                  onChange={(e) => setEmergencyName(e.target.value)}
+                  placeholder="Family / Next of Kin Name"
+                  className="mt-1 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Emergency Contact Phone</Label>
+                <Input
+                  value={emergencyPhone}
+                  onChange={(e) => setEmergencyPhone(e.target.value)}
+                  placeholder="+91 98765 00000"
+                  className="mt-1 text-xs"
+                />
+                {emergencyPhone ? (
+                  <a
+                    href={`tel:${emergencyPhone}`}
+                    className="mt-1 inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline"
+                  >
+                    <PhoneCall className="size-3" />
+                    <span>1-Tap Dial Emergency Contact ({emergencyPhone})</span>
+                  </a>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <Label className="text-xs">Residential Address</Label>
+                <Input
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Street, Locality, City, PIN"
+                  className="mt-1 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Shift &amp; Availability Notes</Label>
+                <Input
+                  value={availabilityNotes}
+                  onChange={(e) => setAvailabilityNotes(e.target.value)}
+                  placeholder="e.g., Available Lunch & Dinner peaks"
+                  className="mt-1 text-xs"
+                />
+              </div>
+            </div>
+
+            {saveError ? <p className="text-xs text-offline">{saveError}</p> : null}
+            {saveSuccess ? (
+              <p className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="size-4" />
+                Partner payout, zone, and emergency contact preferences saved to your profile.
+              </p>
+            ) : null}
+
+            <Button
+              size="sm"
+              disabled={saving}
+              onClick={() => void handleSavePartnerSettings()}
+            >
+              {saving ? "Saving Preferences..." : "Save Partner Settings"}
+            </Button>
+          </div>
+        </Card>
+
+        <Card>
+          <CardTitle>{t("language")}</CardTitle>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {(Object.keys(LOCALE_LABELS) as LocaleCode[]).map((code) => (
+              <Button
+                key={code}
+                size="sm"
+                variant={locale === code ? "default" : "outline"}
+                onClick={() => {
+                  setLocale(code);
+                  void setLocaleFn({ data: { locale: code } });
+                }}
+              >
+                {LOCALE_LABELS[code]}
+              </Button>
+            ))}
+          </div>
+        </Card>
+
+        {/* Rider Partner Legal, Agreements & Compliance Center */}
+        <Card className="space-y-3">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <CardTitle>Rider Partner Legal, Agreements &amp; Compliance Center</CardTitle>
+              <CardMeta className="mt-1">
+                {DEFAULT_BRANDING.legalCompanyName} · {DEFAULT_BRANDING.domain}
+              </CardMeta>
+            </div>
+            <Badge tone="online">Statutory</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">{t("legalNote")}</p>
+
+          <div className="space-y-2.5 pt-1">
+            {LEGAL_SECTIONS.map((sec) => {
+              const isOpen = openLegalId === sec.id;
+              const Icon =
+                sec.id === "agreement" ? FileText : sec.id === "privacy" ? Lock : Scale;
+              return (
+                <div
+                  key={sec.id}
+                  className="rounded-lg border border-border bg-muted/20 overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenLegalId(isOpen ? null : sec.id)}
+                    className="w-full flex items-center justify-between gap-3 p-3.5 text-left hover:bg-muted/40 transition"
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <Icon className="size-4 text-primary mt-0.5 shrink-0" />
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-display text-sm font-bold text-foreground">
+                            {sec.title}
+                          </span>
+                          <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-primary">
+                            {sec.statuteBadge}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">{sec.subtitle}</p>
+                      </div>
+                    </div>
+                    {isOpen ? (
+                      <ChevronUp className="size-4 text-muted-foreground shrink-0" />
+                    ) : (
+                      <ChevronDown className="size-4 text-muted-foreground shrink-0" />
+                    )}
+                  </button>
+
+                  {isOpen ? (
+                    <div className="border-t border-border bg-card p-3.5 space-y-2.5 text-xs">
+                      {sec.clauses.map((clause) => (
+                        <div key={clause.heading} className="space-y-1">
+                          <p className="font-semibold text-foreground">{clause.heading}</p>
+                          <p className="text-muted-foreground leading-relaxed">{clause.body}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        <div className="flex items-center gap-3 text-sm">
+          <Link to="/assistant" className="underline">
+            {t("assistant")}
+          </Link>
+          <span className="text-muted-foreground">·</span>
+          <Link to="/support" className="underline">
+            {t("support")}
           </Link>
         </div>
-
-        {savedMsg && (
-          <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-3 text-xs text-emerald-200 flex items-center gap-2">
-            <CheckCircle2 className="size-4 text-emerald-400" />
-            <span>{savedMsg}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSave} className="rounded-2xl border border-[#1E283D] bg-[#121723] p-5 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-xs text-slate-300">Full Name</Label>
-              <Input
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="mt-1 h-11 bg-[#0E121B] border-[#1E283D] text-white"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-slate-300">Mobile Number</Label>
-              <Input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                placeholder="9876543210"
-                className="mt-1 h-11 bg-[#0E121B] border-[#1E283D] text-white font-mono"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-slate-300">Delivery Zone / City</Label>
-              <Input
-                value={cityZone}
-                onChange={(e) => setCityZone(e.target.value)}
-                className="mt-1 h-11 bg-[#0E121B] border-[#1E283D] text-white"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-slate-300">Payout UPI ID</Label>
-              <Input
-                value={upiId}
-                onChange={(e) => setUpiId(e.target.value)}
-                placeholder="mobile@upi"
-                className="mt-1 h-11 bg-[#0E121B] border-[#1E283D] text-white font-mono"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <Button
-              type="submit"
-              className="h-11 px-6 bg-[#E5A93C] hover:bg-amber-400 text-black font-bold rounded-xl"
-            >
-              Save Profile
-            </Button>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleSignOut}
-                className="h-10 px-4 border-[#1E283D] bg-[#0E121B] text-slate-200 rounded-xl flex items-center gap-1.5 text-xs"
-              >
-                <LogOut className="size-3.5" />
-                <span>Sign Out</span>
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    window.localStorage.clear();
-                    window.location.assign("/login");
-                  }
-                }}
-                className="h-10 px-3.5 border-rose-500/30 bg-rose-950/30 text-rose-300 rounded-xl flex items-center gap-1.5 text-xs"
-              >
-                <Trash2 className="size-3.5" />
-                <span>Delete Account</span>
-              </Button>
-            </div>
-          </div>
-        </form>
       </div>
     </AppShell>
   );

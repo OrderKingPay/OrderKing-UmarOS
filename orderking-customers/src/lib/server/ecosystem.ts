@@ -24,7 +24,7 @@ export interface AddressSnapshot {
 }
 
 /**
- * Step 1: Customer creates food/parcel order in Total orders with status 'CREATED'.
+ * Step 1: Customer creates food/parcel order in PostgreSQL `orders` table with status 'CREATED'.
  */
 export async function customerCreateOrder(params: {
   userId?: string;

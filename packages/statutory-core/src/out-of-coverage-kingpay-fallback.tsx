@@ -49,12 +49,21 @@ export const OutOfCoverageKingPayFallback: React.FC<OutOfCoverageProps> = ({
       {/* Strict Single-Line Out-of-Coverage Notice */}
       <div
         data-testid="out-of-coverage-banner"
-        className="w-full px-4 py-3 mb-6 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm font-medium flex items-center justify-between"
+        className="w-full px-4 py-2.5 mb-6 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs font-medium flex items-center justify-between flex-wrap gap-2"
       >
         <span>{MANDATORY_OUT_OF_COVERAGE_NOTICE}</span>
-        <span className="text-xs text-amber-300/80 ml-4 whitespace-nowrap">
-          PIN: {detectedPincode} ({detectedCity})
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-amber-300/80 whitespace-nowrap">
+            {detectedCity} ({detectedPincode})
+          </span>
+          <button
+            type="button"
+            onClick={() => onSelectService?.('LOCATION_UPDATE', {})}
+            className="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[11px] font-semibold border border-amber-500/40 transition-colors"
+          >
+            Update Location
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

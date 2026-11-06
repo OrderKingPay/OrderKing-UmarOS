@@ -6,6 +6,9 @@
 export const MANDATORY_OUT_OF_COVERAGE_NOTICE =
   'Food delivery is currently expanding to your area. In the meantime, explore instant KingPay Travel, Utilities & Soundbox Services.';
 
+export const LOCATION_UNAVAILABLE_NOTICE =
+  'Food delivery is currently not available in your location. Kindly update your delivery location.';
+
 export interface DomesticFlightCorridor {
   corridorCode: string;
   originIata: string;

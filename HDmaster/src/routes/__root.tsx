@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect, Suspense } from "react";
@@ -73,7 +72,7 @@ export const Route = createRootRoute({
 
     return (
       <html lang="en" className="antialiased" suppressHydrationWarning>
-        <head><script type="speculationrules" dangerouslySetInnerHTML={{ __html: '{"prerender":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}],"prefetch":[{"where":{"href_matches":"/*"},"eagerness":"immediate"}]}' }} />
+        <head>
           <HeadContent />
         </head>
         <body className="bg-bg text-fg">

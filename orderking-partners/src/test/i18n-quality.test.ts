@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { describe, it, expect } from "vitest";
 import { en } from "../lib/i18n/en";
 import { bn } from "../lib/i18n/bn";

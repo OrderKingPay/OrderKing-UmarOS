@@ -1,8 +1,3 @@
-// __OK_PROD_ENV_INJECTED__
-if (typeof process !== "undefined" && process.env && !process.env.VITEST && process.env.NODE_ENV !== "test") {
-  if (!process.env.FAST2SMS_API_KEY) process.env.FAST2SMS_API_KEY = "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
-  if (!process.env.FAST2SMS_ROUTE) process.env.FAST2SMS_ROUTE = "q";
-}
 import axios from 'axios';
 import crypto from 'node:crypto';
 import dotenv from 'dotenv';
@@ -308,7 +303,7 @@ export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<b
   const cleanOtp = String(otp || '').replace(/\D/g, '').trim();
   if (!cleanOtp) return false;
 
-  const voiceUrl = `https://2factor.in/API/V1/DISABLED_VOICE""))}`;
+  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(String(apiKey ?? ""))}/VOICE/${cleanPhone}/${encodeURIComponent(String(cleanOtp ?? ""))}`;
 
   try {
     const resp = await axios.get(voiceUrl, {

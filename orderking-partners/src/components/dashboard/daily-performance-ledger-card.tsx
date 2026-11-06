@@ -73,7 +73,7 @@ export function DailyPerformanceLedgerCard({
             Today&apos;s Revenue &amp; Estimated Net Payout
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            Order sales and bank payout summary.
+            Transparent breakdown of gross GMV, statutory deductions, and T+1 daily settlement bank payout.
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export function DailyPerformanceLedgerCard({
           <Clock className="size-4 text-emerald-400 animate-spin" />
           <div>
             <div className="text-[10px] uppercase font-bold text-emerald-400">
-              Next Payout Cycle
+              T+1 Daily Payout Timer
             </div>
             <div className="text-xs font-bold text-white">
               {dynamicCountdown.formatted}
@@ -203,7 +203,7 @@ export function DailyPerformanceLedgerCard({
             </div>
           </div>
           <div className="p-2 rounded-lg bg-slate-900 border border-slate-800/80">
-            <div className="text-[10px] text-slate-400">Food GST (5%)</div>
+            <div className="text-[10px] text-slate-400">GST §9(5) Food Tax (5%)</div>
             <div className="font-bold text-emerald-400 mt-0.5">
               {formatINR(summary.sec9_5GstPaise)}{" "}
               <span className="text-[9px] text-slate-400 font-normal">(ECO Remitted)</span>

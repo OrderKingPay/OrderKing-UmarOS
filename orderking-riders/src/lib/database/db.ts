@@ -1,3 +1,6 @@
+import dns from "node:dns";
+try { dns.setDefaultResultOrder?.("ipv4first"); } catch {}
+
 import postgres from "postgres";
 
 const rawUrl = process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/orderking";

@@ -1,3 +1,6 @@
+import dns from "node:dns";
+try { dns.setDefaultResultOrder?.("ipv4first"); } catch {}
+
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 /** Which database backend is active. */

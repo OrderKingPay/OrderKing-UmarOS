@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Link, useRouterState } from "@tanstack/react-router";
 import { RedirectToSignIn, UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
