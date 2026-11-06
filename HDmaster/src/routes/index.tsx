@@ -3956,8 +3956,7 @@ function UmarOSDashboard() {
                     <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
                       <a
                         href={`https://www.google.com/search?q=${encodeURIComponent(String(
-                          trip.pnr + " live status"
-                         ?? ""))}`}
+                          trip.pnr + " live status"))}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"

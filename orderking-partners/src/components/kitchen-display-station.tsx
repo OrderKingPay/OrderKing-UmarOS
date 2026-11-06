@@ -163,7 +163,7 @@ export function KitchenDisplayStation({
           <div className="flex items-center gap-2">
             <AlertTriangle className="size-4 shrink-0" />
             <span>
-              {outOfRadiusOrders.length} order(s) exceed current {currentShift.name} boundary (> {currentShift.maxRadiusKm} km) and are quarantined from active kitchen dispatch.
+              {outOfRadiusOrders.length} order(s) exceed current {currentShift.name} boundary {">"} {currentShift.maxRadiusKm} km and are quarantined from active kitchen dispatch.
             </span>
           </div>
           <span className="font-mono text-[10px] uppercase font-bold tracking-wider">Shift Curfew Guard</span>

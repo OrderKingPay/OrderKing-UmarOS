@@ -55,7 +55,7 @@ export class HyperEdgeCache {
     const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
     
     if (connection) {
-      if (['slow-2g', '2g', '3g'].includes(connection.effectiveType)) {
+      if (connection.effectiveType && ['slow-2g', '2g', '3g'].includes(connection.effectiveType)) {
         return true;
       }
       if (connection.downlink && connection.downlink < 1.0) { // Less than 1Mbps

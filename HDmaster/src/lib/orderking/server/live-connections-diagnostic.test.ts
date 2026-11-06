@@ -10,7 +10,7 @@ interface DbDiagnosticRow {
 describe("Live Infrastructure & Gateway Diagnostics", () => {
   it("verifies live Supabase PostgreSQL Singapore 17.6 database connection", async () => {
     const sql = await getSql();
-    const result = await sql<DbDiagnosticRow[]>`SELECT NOW() as db_time, current_database() as db_name, version() as db_version;`;
+    const result = (await sql`SELECT NOW() as db_time, current_database() as db_name, version() as db_version;`) as unknown as DbDiagnosticRow[];
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThan(0);
     const row = result[0];

@@ -461,7 +461,7 @@ function PredictiveSearchPage() {
                   )}
                 >
                   <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-orange-500")} />
-                  <span>Fast Delivery ⚡ (<25 mins)</span>
+                  <span>Fast Delivery ⚡ (&lt;25 mins)</span>
                 </button>
 
                 {/* Great Offers Chip */}

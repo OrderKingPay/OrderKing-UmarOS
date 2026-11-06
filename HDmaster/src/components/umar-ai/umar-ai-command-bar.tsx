@@ -167,8 +167,8 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           setLiveConfig((prev) => {
             const next = { ...prev };
             for (const row of data as UmarOsConfigRow[]) {
-              const k = row.config_key || row.key;
-              const v = row.config_value || row.value;
+              const k = row.config_key || (row as any).key;
+              const v = row.config_value || (row as any).value;
               if (k && v) {
                 next[k] = { ...(next[k] || {}), ...v };
               }
@@ -186,8 +186,8 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         { event: "*", schema: "public", table: "umar_os_config" },
         (payload: any) => {
           const row = payload?.new as UmarOsConfigRow;
-          const k = row?.config_key || row?.key;
-          const v = row?.config_value || row?.value;
+          const k = row?.config_key || (row as any)?.key;
+          const v = row?.config_value || (row as any)?.value;
           if (k && v) {
             setLiveConfig((prev) => ({
               ...prev,

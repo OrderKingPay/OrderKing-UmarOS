@@ -17,7 +17,7 @@
  */
 
 import { getSql, type Sql } from "../../db.ts";
-import { getDailyTPlus1Cycle, type SettlementCycle } from "./weekly-settlement.ts";
+import { getDailyTPlus1Cycle, type DailyTPlus1CyclePeriod as SettlementCycle } from "./weekly-settlement.ts";
 import {
   formatRazorpayXCompositePayoutPayload,
   executeRazorpayXPayout,

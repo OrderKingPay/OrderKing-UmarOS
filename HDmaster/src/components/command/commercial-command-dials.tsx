@@ -1112,7 +1112,7 @@ function PenaltyDisputeDeskSection() {
             Merchant Penalty Dispute Desk
           </h2>
           <p className="text-xs text-muted">
-            Inspect, approve, or waive merchant late prep (>20m) and post-acceptance cancellation penalties.
+            Inspect, approve, or waive merchant late prep {">"} 20m and post-acceptance cancellation penalties.
           </p>
         </div>
 
