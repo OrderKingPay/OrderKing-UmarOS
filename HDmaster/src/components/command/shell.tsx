@@ -170,7 +170,7 @@ const INITIAL_FOUNDER_ALERTS: FounderRemediationAlert[] = [
     rootCause:
       "Partner dishes missing 4:3 studio photos or descriptions experience lower customer tap-to-cart conversion.",
     resolutionSteps:
-      "Zero-Harassment Resolution: Dispatch automated Spark AI Dish Studio advisory to partner kitchens without locking their menu.",
+      "Zero-Harassment Resolution: Dispatch automated King AI Dish Studio advisory to partner kitchens without locking their menu.",
     autoFixActionLabel: "Dispatch Spark Advisory Notice",
     targetPath: "/app/restaurants",
     resolved: false,

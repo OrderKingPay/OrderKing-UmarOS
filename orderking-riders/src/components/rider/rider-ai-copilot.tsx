@@ -154,7 +154,7 @@ export function RiderAiCopilot({
             (e.totals.cashCollected ?? 0) - (e.totals.cashReconciled ?? 0),
           );
           const welcomeLines = [
-            `Hello ${firstName} ji! I am your OrderKing Rider Partner Companion (Spark AI).`,
+            `Hello ${firstName} ji! I am your OrderKing Rider Partner Companion (King AI).`,
             `• Today's Verified Earnings: ${formatINR(e.totals.net)} across ${h.completedToday} completed ${h.completedToday === 1 ? "trip" : "trips"} (Base ₹${STATUTORY_BASE_FARE_PAISE / 100} first ${STATUTORY_BASE_DISTANCE_KM} km + ₹${STATUTORY_DISTANCE_RATE_PER_KM_PAISE / 100}/km · Tips: ${formatINR(e.totals.tip)}).`,
             h.active
               ? `• Active Trip: Order #${h.active.orderCode} (${h.active.restaurant.name} → ${h.active.customer.area}) [${h.active.state.replaceAll("_", " ")}].`
@@ -183,7 +183,7 @@ export function RiderAiCopilot({
             {
               id: "welcome-fallback",
               role: "assistant",
-              text: `Hello ${firstName} ji! I am your OrderKing Rider Partner Companion (Spark AI). Tap any 1-tap field support chip below or ask a question about an active order, kitchen wait time, COD deposit, or Wednesday bank payout.`,
+              text: `Hello ${firstName} ji! I am your OrderKing Rider Partner Companion (King AI). Tap any 1-tap field support chip below or ask a question about an active order, kitchen wait time, COD deposit, or Wednesday bank payout.`,
               at: new Date().toLocaleTimeString("en-IN", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -323,7 +323,7 @@ export function RiderAiCopilot({
               <Bot className="size-4" />
             </span>
             <CardTitle className="text-base font-bold">
-              OrderKing Rider Partner Companion (Spark AI)
+              OrderKing Rider Partner Companion (King AI)
             </CardTitle>
             <Badge tone={isBusy ? "busy" : "online"}>
               {isBusy ? "ON TRIP SUPPORT" : "FIELD COMPANION"}
@@ -412,7 +412,7 @@ export function RiderAiCopilot({
               <span className="font-bold text-muted-foreground">
                 {msg.role === "user"
                   ? `${firstName} · ${msg.at}`
-                  : `Spark AI Companion · ${msg.at}`}
+                  : `King AI Companion · ${msg.at}`}
               </span>
               {msg.role === "assistant" ? (
                 <button

@@ -822,7 +822,7 @@ export const MANDATE_1_SPECIALIST_DEPARTMENTS: Mandate1SpecialistDepartment[] = 
   {
     id: "dept_09_restaurant_spark_ai",
     departmentNumber: 9,
-    name: "Restaurant Operations & Spark AI",
+    name: "Restaurant Operations & King AI",
     leadSpecialistId: "restaurant_ops",
     mandateScope: "Merchant KDS queue velocity, prep SLA monitoring, menu engineering, and POS/KOT hardware sync.",
     responsibilities: [

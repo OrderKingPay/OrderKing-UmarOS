@@ -169,7 +169,7 @@ function DailyMilestoneCard({
       {/* Background Ambient Glow */}
       <div className="absolute -top-12 -right-12 size-36 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
 
-      {/* Tier-1 Gamified Headline Banner */}
+      {/* Daily Milestone Target Banner */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-[#E5A93C] border border-[#E5A93C]/30 shadow-inner">
