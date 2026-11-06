@@ -71,13 +71,13 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
 ];
 
 export const POPULAR_INDIAN_DISH_CHIPS = [
-  { name: "Biryani", query: "Biryani", emoji: "🍚", hindi: "बिरयानी", bengali: "বিরিয়ানি" },
-  { name: "Momos", query: "Momos", emoji: "🥟", hindi: "मोमोज", bengali: "মোমো" },
-  { name: "Butter Chicken", query: "Butter Chicken", emoji: "🍗", hindi: "बटर चिकन", bengali: "বাটার চিকেন" },
-  { name: "Dosa", query: "Dosa", emoji: "🥞", hindi: "दोसा", bengali: "দোসা" },
-  { name: "Paneer", query: "Paneer", emoji: "🧀", hindi: "पनीर", bengali: "পনির" },
-  { name: "Thali", query: "Thali", emoji: "🍽️", hindi: "थाली", bengali: "থালি" },
-  { name: "Rolls", query: "Rolls", emoji: "🌯", hindi: "काठी रोल", bengali: "কাঠি রোল" },
+  { name: "Biryani", query: "Biryani", emoji: "🍚", hindi: "", bengali: "" },
+  { name: "Momos", query: "Momos", emoji: "🥟", hindi: "", bengali: "" },
+  { name: "Butter Chicken", query: "Butter Chicken", emoji: "🍗", hindi: "", bengali: "" },
+  { name: "Dosa", query: "Dosa", emoji: "🥞", hindi: "", bengali: "" },
+  { name: "Paneer", query: "Paneer", emoji: "🧀", hindi: "", bengali: "" },
+  { name: "Thali", query: "Thali", emoji: "🍽️", hindi: "", bengali: "" },
+  { name: "Rolls", query: "Rolls", emoji: "🌯", hindi: "", bengali: "" },
 ];
 
 export function CustomerShell({

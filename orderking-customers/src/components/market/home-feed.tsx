@@ -1,19 +1,19 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 export const ACTIVE_FLAGSHIP_HUBS = [
   {
-    id: 'sribhumi-core',
-    name: 'Sribhumi / Karimganj & Guwahati Core',
+    id: 'guwahati-assam',
+    name: 'Guwahati & Sribhumi / Karimganj Core',
     flagshipLabel: 'Assam Flagship (788710)',
     description: 'Verified Assamese, Sylheti, North Indian & Mughlai Kitchens',
     cityId: 'karimganj',
-    cityName: 'Karimganj / Guwahati',
+    cityName: 'Guwahati / Karimganj',
     zoneId: 'karimganj_core',
-    zoneName: 'Sribhumi Core',
-    label: 'Station Road, Karimganj / Guwahati, Assam 788710',
-    line1: 'Station Road, Karimganj, Assam 788710',
-    lat: 24.8688,
-    lng: 92.3511,
+    zoneName: 'Guwahati / Karimganj (788710)',
+    label: 'GS Road & Station Road, Guwahati / Karimganj, Assam 788710',
+    line1: 'Station Road, Karimganj / Guwahati, Assam 788710',
+    lat: 26.1445,
+    lng: 91.7362,
     highlight: 'Assam Core 15km Zone',
     gradient: 'from-emerald-500 to-teal-600',
   },
@@ -70,7 +70,7 @@ export const ACTIVE_FLAGSHIP_HUBS = [
 export interface ZomatoMenuDish {
   id: string;
   name: string;
-  category: 'Biryani' | 'Thali' | 'Pizza' | 'Rolls' | 'Healthy Bowls' | 'South Indian';
+  category: 'Biryani' | 'Thali' | 'Pizza' | 'Rolls' | 'Healthy Bowls' | 'South Indian' | 'Burgers' | 'Desserts';
   basePricePaise: number;
   packagingPaise: number;
   isVeg: boolean;
@@ -142,8 +142,29 @@ export const VERIFIED_AVAILABLE_KITCHENS: VerifiedKitchenRecord[] = [
         ],
       },
       {
+        id: 'dish-paneer-butter-masala',
+        name: 'Paneer Butter Masala with 3 Tandoori Rotis',
+        category: 'Thali',
+        basePricePaise: 21000,
+        packagingPaise: 1500,
+        isVeg: true,
+        isBestseller: true,
+        healthyGrade: 'High',
+        healthyScore: 84,
+        proteinGrams: 26,
+        fibreGrams: 9,
+        kcal: 580,
+        variants: [
+          { id: 'v-roti', label: '3 Whole Wheat Tandoori Rotis', addPaise: 0 },
+          { id: 'v-naan', label: '2 Garlic Butter Naans', addPaise: 3000 },
+        ],
+        addons: [
+          { id: 'a-boondi', label: 'Spiced Boondi Raita', addPaise: 2500 },
+        ],
+      },
+      {
         id: 'dish-masala-dosa',
-        name: 'Ghee Roast Mysore Masala Dosa',
+        name: 'Crispy Masala Dosa',
         category: 'South Indian',
         basePricePaise: 14500,
         packagingPaise: 1000,
@@ -182,7 +203,7 @@ export const VERIFIED_AVAILABLE_KITCHENS: VerifiedKitchenRecord[] = [
     dishes: [
       {
         id: 'dish-dum-biryani',
-        name: 'Shahi Chicken Dum Biryani',
+        name: 'Hyderabadi Chicken Biryani',
         category: 'Biryani',
         basePricePaise: 24000,
         packagingPaise: 2000,
@@ -229,7 +250,7 @@ export const VERIFIED_AVAILABLE_KITCHENS: VerifiedKitchenRecord[] = [
     id: 'rest-green-bowl',
     slug: 'green-bowl-healthy-kitchen',
     name: 'Green Bowl Superfood & Artisan Pizza Kitchen',
-    cuisines: ['Healthy Bowls', 'Pizza'],
+    cuisines: ['Healthy Bowls', 'Pizza', 'Burgers', 'Desserts'],
     rating: 4.5,
     ratingCount: 980,
     prepMinutes: 12,
@@ -319,6 +340,14 @@ export function HomeFeed() {
   const [orderStageIdx, setOrderStageIdx] = useState<number | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const qParam = params.get('q');
+      if (qParam) setSearchQuery(qParam);
+    }
+  }, []);
+
   const activeHub = useMemo(
     () => ACTIVE_FLAGSHIP_HUBS.find((h) => h.id === selectedHubId) ?? ACTIVE_FLAGSHIP_HUBS[0],
     [selectedHubId]
@@ -326,7 +355,7 @@ export function HomeFeed() {
 
   const filteredKitchens = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return VERIFIED_AVAILABLE_KITCHENS.filter((k) => {
+    const list = VERIFIED_AVAILABLE_KITCHENS.filter((k) => {
       if (pureVegOnly && !k.isPureVeg) return false;
       if (rating45Only && k.rating < 4.5) return false;
       if (under250Only && k.priceForOneRupees > 250) return false;
@@ -342,6 +371,7 @@ export function HomeFeed() {
       }
       return true;
     });
+    return list.length > 0 ? list : VERIFIED_AVAILABLE_KITCHENS;
   }, [searchQuery, selectedCategory, pureVegOnly, healthyModeOnly, under250Only, rating45Only]);
 
   const activeKitchen = useMemo(
@@ -391,7 +421,6 @@ export function HomeFeed() {
 
   return (
     <div style={{ maxWidth: 1140, margin: '0 auto', padding: '12px 16px 88px 16px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      {/* Top Location & Search Bar */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, background: '#fff', padding: 12, borderRadius: 12, border: '1px solid #e4e4e7' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontWeight: 800, fontSize: 14, color: '#e23744' }}>Zone:</span>
@@ -456,7 +485,6 @@ export function HomeFeed() {
         </div>
       </div>
 
-      {/* Category Pills (Human-Readable Names Only — Never cat-0) */}
       <div style={{ display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 12, paddingBottom: 4 }}>
         {CATEGORIES.map((cat) => (
           <button
@@ -480,7 +508,6 @@ export function HomeFeed() {
         ))}
       </div>
 
-      {/* Live Food Rescue Alert */}
       {!rescueClaimed && (
         <div style={{ marginBottom: 12, padding: '10px 14px', borderRadius: 10, background: '#fffbeb', border: '1px solid #f59e0b', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#92400e' }}>
@@ -499,9 +526,7 @@ export function HomeFeed() {
         </div>
       )}
 
-      {/* Main Two-Column Zomato Discovery + Instant Customizer & Checkout */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
-        {/* Left: Verified Kitchens & Dishes in Active Zone */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#18181b' }}>
             {selectedCategory === 'All' ? `Verified Kitchens in ${activeHub.zoneName}` : `Best in ${selectedCategory} — ${activeHub.zoneName}`}
@@ -552,7 +577,6 @@ export function HomeFeed() {
           ))}
         </div>
 
-        {/* Right: Dish Variant/Add-on Customizer + Statutory GST Bill + Live 6-Stage Order Tracker */}
         <div style={{ background: '#ffffff', borderRadius: 12, border: '1px solid #e4e4e7', padding: 16, alignSelf: 'start', position: 'sticky', top: 16 }}>
           <h3 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 800, color: '#18181b' }}>
             Order Customizer & Statutory Tax Checkout
