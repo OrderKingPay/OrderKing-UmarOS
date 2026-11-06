@@ -367,7 +367,7 @@ export class CanonicalLedger {
     let auditHash = "";
     let duplicateTxId: string | null = null;
 
-    const maxRetries = 8;
+    const maxRetries = 15;
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         await sql.transaction(async (tx: Sql) => {
