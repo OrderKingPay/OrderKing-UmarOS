@@ -6,45 +6,59 @@ import { Label } from "@/components/ui/label";
 import { ZONES } from "@/lib/rider/catalog";
 import { bootstrapRiderFn, saveProfileFn, submitKycFn } from "@/lib/server/rider-fns";
 import type { RiderProfile } from "@/lib/rider/types";
-import { useEffect, useState } from "react";
+import { validateVerhoeffChecksum, validatePan } from "@/lib/rider/kyc";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   AlertCircle,
   ArrowRight,
   Bike,
   Building2,
+  Camera,
   CheckCircle2,
   FileCheck,
-  MapPin,
+  Phone,
   ShieldCheck,
+  Upload,
 } from "lucide-react";
 
 export const Route = createFileRoute("/onboarding")({
   component: RiderOnboardingPage,
 });
 
-function RiderOnboardingPage() {
+export function RiderOnboardingPage() {
   const [rider, setRider] = useState<RiderProfile | null>(null);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Step 1: Mobile & Basic Profile
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [cityZone, setCityZone] = useState<string>(ZONES?.[0] || "Guwahati");
   const [pincode, setPincode] = useState("781001");
   const [serviceAddress, setServiceAddress] = useState("");
-  const [emergencyPhone, setEmergencyPhone] = useState("");
-  const [vehicleCategory, setVehicleCategory] = useState<"BIKE" | "SCOOTER" | "EV" | "CYCLE">("BIKE");
 
+  // Step 2: Personal Documents
+  const [aadhaarNumber, setAadhaarNumber] = useState("");
   const [panNumber, setPanNumber] = useState("");
   const [dlNumber, setDlNumber] = useState("");
+
+  // Step 3: Vehicle Selection & RC
+  const [vehicleCategory, setVehicleCategory] = useState<"BIKE" | "SCOOTER" | "EV" | "CYCLE">("BIKE");
   const [rcNumber, setRcNumber] = useState("");
 
+  // Step 4: Bank & Payout Setup
   const [bankAccountHolder, setBankAccountHolder] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
+  const [reenterAccountNumber, setReenterAccountNumber] = useState("");
   const [ifsc, setIfsc] = useState("");
   const [upiId, setUpiId] = useState("");
+
+  // Step 5: Profile Selfie & Bag Verification
+  const [selfiePhoto, setSelfiePhoto] = useState<string | null>(null);
+  const [bagVerified, setBagVerified] = useState(true);
+  const selfieInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     bootstrapRiderFn()
@@ -66,33 +80,43 @@ function RiderOnboardingPage() {
 
   function validateStep1(): boolean {
     if (!fullName.trim()) {
-      setError("Please enter your full name.");
+      setError("Enter full name");
       return false;
     }
     const cleanPhone = phone.replace(/\D/g, "").slice(-10);
-    if (cleanPhone.length !== 10) {
-      setError("Please enter your 10-digit mobile number.");
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      setError("Enter valid 10-digit mobile");
       return false;
     }
     if (!serviceAddress.trim() || pincode.replace(/\D/g, "").length !== 6) {
-      setError("Please enter your residential address and 6-digit pincode.");
+      setError("Enter residential address and 6-digit pincode");
       return false;
     }
     return true;
   }
 
   function validateStep2(): boolean {
-    if (panNumber.trim().length !== 10) {
-      setError("Please enter your 10-character PAN Card number.");
-      return false;
-    }
-    if (!isExemptVehicle) {
-      if (dlNumber.trim().length < 8) {
-        setError("Please enter your Driving License number (or select Bicycle/EV if exempt).");
+    const cleanAadhaar = aadhaarNumber.replace(/\D/g, "");
+    if (cleanAadhaar.length === 12) {
+      if (!validateVerhoeffChecksum(cleanAadhaar)) {
+        setError("Invalid 12-digit Aadhaar number");
         return false;
       }
-      if (rcNumber.trim().length < 6) {
-        setError("Please enter your Vehicle Registration Plate (RC) number.");
+    } else if (cleanAadhaar.length !== 4 && cleanAadhaar.length !== 12) {
+      setError("Enter 12-digit Aadhaar number");
+      return false;
+    }
+
+    const panRes = validatePan(panNumber);
+    if (!panRes.valid) {
+      setError(panRes.reason || "Enter valid 10-digit PAN (ABCDE1234F)");
+      return false;
+    }
+
+    if (!isExemptVehicle) {
+      const cleanDl = dlNumber.trim().toUpperCase();
+      if (cleanDl.length < 8 || !/^[A-Z]{2}[-0-9A-Z]{6,16}$/.test(cleanDl)) {
+        setError("Enter valid Driving License number");
         return false;
       }
     }
@@ -100,24 +124,53 @@ function RiderOnboardingPage() {
   }
 
   function validateStep3(): boolean {
-    const hasUpi = upiId.trim().includes("@");
-    const hasBank = bankAccountNumber.replace(/\D/g, "").length >= 8 && ifsc.trim().length === 11;
-    if (!hasUpi && !hasBank) {
-      setError("Please enter either your Bank Account Number + 11-character IFSC Code, or a valid UPI ID.");
+    if (!isExemptVehicle) {
+      const cleanRc = rcNumber.trim().toUpperCase().replace(/\s+/g, "");
+      if (cleanRc.length < 6 || !/^[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}$/.test(cleanRc)) {
+        setError("Enter valid Vehicle RC plate");
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function validateStep4(): boolean {
+    const cleanAcc = bankAccountNumber.replace(/\D/g, "");
+    const cleanRe = reenterAccountNumber.replace(/\D/g, "");
+
+    if (cleanAcc.length < 8) {
+      setError("Enter bank account number");
+      return false;
+    }
+    if (cleanAcc !== cleanRe) {
+      setError("Account numbers do not match");
+      return false;
+    }
+    const cleanIfsc = ifsc.trim().toUpperCase();
+    if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(cleanIfsc)) {
+      setError("Enter valid 11-digit IFSC code");
+      return false;
+    }
+    return true;
+  }
+
+  function validateStep5(): boolean {
+    if (!selfiePhoto) {
+      setError("Take live profile selfie");
       return false;
     }
     return true;
   }
 
   async function handleCompleteRiderOnboarding() {
-    if (!validateStep1() || !validateStep2() || !validateStep3()) return;
+    if (!validateStep1() || !validateStep2() || !validateStep3() || !validateStep4() || !validateStep5()) return;
     setPending(true);
     setError(null);
 
     const cleanPhone = phone.replace(/\D/g, "").slice(-10);
     const cleanAcc = bankAccountNumber.replace(/\D/g, "");
     const cleanIfsc = ifsc.trim().toUpperCase();
-    const bankLast4 = cleanAcc ? cleanAcc.slice(-4) : "0000";
+    const bankLast4 = cleanAcc.slice(-4);
     const formattedAddress = `${serviceAddress.trim()}, ${cityZone.trim()} - ${pincode.trim()}`;
 
     try {
@@ -135,8 +188,8 @@ function RiderOnboardingPage() {
           dlNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : dlNumber.trim().toUpperCase(),
           rcNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : rcNumber.trim().toUpperCase(),
           vehicleNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : rcNumber.trim().toUpperCase(),
-          aadhaarLast4: "4829",
-          governmentIdLast4: "4829",
+          aadhaarLast4: aadhaarNumber.replace(/\D/g, "").slice(-4) || "4829",
+          governmentIdLast4: aadhaarNumber.replace(/\D/g, "").slice(-4) || "4829",
           governmentIdType: `PAN:${panNumber.trim().toUpperCase()}`,
           pan: panNumber.trim().toUpperCase(),
           bankAccountHolder: (bankAccountHolder || fullName).trim(),
@@ -147,176 +200,188 @@ function RiderOnboardingPage() {
           bankIfsc: cleanIfsc,
           upiId: upiId.trim(),
           emergencyContactName: fullName.trim(),
-          emergencyContactPhone: emergencyPhone.replace(/\D/g, "").slice(-10) || cleanPhone,
+          emergencyContactPhone: cleanPhone,
           safetyRulesAccepted: true,
         } as any,
       });
 
       await submitKycFn().catch(() => {});
-      toast.success("Delivery Partner account activated! Redirecting to live order dashboard...");
+      toast.success("Account verified! Redirecting to orders...");
       window.location.assign("/");
     } catch {
-      toast.success("Profile saved & activated! Redirecting to live order dashboard...");
+      toast.success("Profile saved! Redirecting to orders...");
       window.location.assign("/");
     } finally {
       setPending(false);
     }
   }
 
+  const handleSelfieCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setSelfiePhoto(reader.result);
+        setError(null);
+        toast.success("Profile photo captured");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <AppShell>
-      <div className="mx-auto max-w-2xl px-4 py-6 space-y-6 text-slate-100">
-        {/* 3-Step Header */}
-        <div className="grid grid-cols-3 gap-2.5">
+      <div className="mx-auto max-w-xl px-4 py-6 space-y-5 text-slate-100">
+        {/* 5-Step Indicator */}
+        <div className="flex items-center justify-between border-b border-[#1E283D] pb-3">
           {[
-            { num: 1, title: "1. City & Vehicle", sub: "Zone & Bike/Cycle" },
-            { num: 2, title: "2. PAN & License", sub: "Identity & DL/RC" },
-            { num: 3, title: "3. Payout Setup", sub: "Bank or UPI" },
-          ].map((item) => {
-            const active = step === item.num;
-            const done = step > item.num;
-            return (
-              <button
-                key={item.num}
-                type="button"
-                onClick={() => {
-                  if (item.num < step) setStep(item.num as 1 | 2 | 3);
-                }}
-                className={`rounded-xl border p-3 text-left transition-all ${
-                  active
-                    ? "border-[#E5A93C] bg-[#161D2B] text-white"
-                    : done
-                    ? "border-emerald-500/40 bg-[#121723] text-emerald-300"
-                    : "border-[#1E283D] bg-[#0E121B] text-slate-400"
+            { n: 1, label: "Mobile" },
+            { n: 2, label: "Identity" },
+            { n: 3, label: "Vehicle" },
+            { n: 4, label: "Bank" },
+            { n: 5, label: "Selfie" },
+          ].map((s) => (
+            <button
+              key={s.n}
+              type="button"
+              disabled={s.n > step}
+              onClick={() => {
+                if (s.n < step) setStep(s.n as any);
+              }}
+              className={`flex flex-col items-center gap-1 transition-all ${
+                step === s.n
+                  ? "text-[#E5A93C]"
+                  : step > s.n
+                  ? "text-emerald-400"
+                  : "text-slate-500"
+              }`}
+            >
+              <div
+                className={`flex size-7 items-center justify-center rounded-full text-xs font-bold ${
+                  step === s.n
+                    ? "bg-[#E5A93C] text-black"
+                    : step > s.n
+                    ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
+                    : "bg-[#0E121B] border border-slate-800 text-slate-500"
                 }`}
               >
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span>{item.title}</span>
-                  {done && <CheckCircle2 className="size-3.5 text-emerald-400" />}
-                </div>
-                <div className="text-[10px] text-slate-400 mt-0.5">{item.sub}</div>
-              </button>
-            );
-          })}
+                {step > s.n ? "✓" : s.n}
+              </div>
+              <span className="text-[10px] font-semibold">{s.label}</span>
+            </button>
+          ))}
         </div>
 
-        <div className="rounded-2xl border border-[#1E283D] bg-[#121723] p-6 space-y-5">
-          {error && (
-            <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-3 text-xs text-rose-200 flex items-center gap-2">
-              <AlertCircle className="size-4 text-rose-400 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
+        {error && (
+          <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-3 text-xs text-rose-200 flex items-center gap-2">
+            <AlertCircle className="size-4 text-rose-400 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
 
+        <div className="rounded-2xl border border-[#1E283D] bg-[#121723] p-5 space-y-4">
+          {/* STEP 1: MOBILE & BASIC PROFILE */}
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <MapPin className="size-5 text-[#E5A93C]" />
-                <span>Step 1: Personal, Delivery Zone &amp; Vehicle</span>
-              </h2>
+              <div>
+                <h2 className="text-base font-bold text-white">Basic Profile</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Enter your contact and service details.</p>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-3">
                 <div>
-                  <Label className="text-xs text-slate-300">Full Name *</Label>
+                  <Label className="text-xs text-slate-300">Full Name</Label>
                   <Input
                     value={fullName}
                     onChange={(e) => { setFullName(e.target.value); setError(null); }}
-                    placeholder="Enter your full name"
+                    placeholder="Enter your name"
                     className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">10-Digit Mobile Number *</Label>
-                  <Input
-                    type="tel"
-                    maxLength={10}
-                    value={phone}
-                    onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "").slice(0, 10)); setError(null); }}
-                    placeholder="9876543210"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
-                  />
+                  <Label className="text-xs text-slate-300">Mobile Number</Label>
+                  <div className="relative mt-1">
+                    <span className="absolute left-3 top-3 text-xs text-slate-400 font-mono">+91</span>
+                    <Input
+                      type="tel"
+                      maxLength={10}
+                      value={phone}
+                      onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "").slice(0, 10)); setError(null); }}
+                      placeholder="9876543210"
+                      className="bg-[#0E121B] border-[#1E283D] text-white h-11 pl-12 font-mono"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs text-slate-300">City Zone</Label>
+                    <Input
+                      value={cityZone}
+                      onChange={(e) => setCityZone(e.target.value)}
+                      placeholder="Guwahati / Silchar"
+                      className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-slate-300">Pincode</Label>
+                    <Input
+                      maxLength={6}
+                      value={pincode}
+                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      placeholder="781001"
+                      className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                    />
+                  </div>
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">Delivery City / Zone *</Label>
-                  <Input
-                    value={cityZone}
-                    onChange={(e) => setCityZone(e.target.value)}
-                    placeholder="Guwahati / Silchar / Karimganj"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-slate-300">6-Digit Pincode *</Label>
-                  <Input
-                    maxLength={6}
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="781001"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label className="text-xs text-slate-300">Current Residential Address *</Label>
+                  <Label className="text-xs text-slate-300">Residential Address</Label>
                   <Input
                     value={serviceAddress}
                     onChange={(e) => { setServiceAddress(e.target.value); setError(null); }}
-                    placeholder="House No., Street, Locality"
+                    placeholder="House, Street, Locality"
                     className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
                   />
                 </div>
               </div>
 
-              <div>
-                <Label className="text-xs text-slate-300 mb-2 block">Select Delivery Vehicle *</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                  {[
-                    { id: "BIKE", label: "Motorcycle / Bike" },
-                    { id: "SCOOTER", label: "Scooter" },
-                    { id: "EV", label: "Electric Scooter" },
-                    { id: "CYCLE", label: "Bicycle" },
-                  ].map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => setVehicleCategory(v.id as any)}
-                      className={`rounded-xl border p-3 text-xs font-semibold transition-all ${
-                        vehicleCategory === v.id
-                          ? "border-[#E5A93C] bg-[#E5A93C]/20 text-[#E5A93C]"
-                          : "border-[#1E283D] bg-[#0E121B] text-slate-300"
-                      }`}
-                    >
-                      <Bike className="size-4 mx-auto mb-1" />
-                      <div>{v.label}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-3 flex justify-end">
+              <div className="pt-2 flex justify-end">
                 <Button
                   type="button"
                   onClick={() => {
                     if (validateStep1()) setStep(2);
                   }}
-                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl flex items-center gap-2"
+                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
-                  <span>Continue to Step 2</span>
-                  <ArrowRight className="size-4" />
+                  Continue
                 </Button>
               </div>
             </div>
           )}
 
+          {/* STEP 2: PERSONAL & IDENTITY DOCUMENTS */}
           {step === 2 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <FileCheck className="size-5 text-[#E5A93C]" />
-                <span>Step 2: PAN Card &amp; Driving License</span>
-              </h2>
+              <div>
+                <h2 className="text-base font-bold text-white">Identity Documents</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Government ID details for statutory verification.</p>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="sm:col-span-2">
-                  <Label className="text-xs text-slate-300">10-Character PAN Card Number *</Label>
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs text-slate-300">12-Digit Aadhaar Number</Label>
+                  <Input
+                    maxLength={12}
+                    value={aadhaarNumber}
+                    onChange={(e) => { setAadhaarNumber(e.target.value.replace(/\D/g, "").slice(0, 12)); setError(null); }}
+                    placeholder="12-digit UIDAI number"
+                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">Verified with UIDAI checksum.</p>
+                </div>
+
+                <div>
+                  <Label className="text-xs text-slate-300">PAN Card Number</Label>
                   <Input
                     maxLength={10}
                     value={panNumber}
@@ -326,40 +391,25 @@ function RiderOnboardingPage() {
                   />
                 </div>
 
-                {!isExemptVehicle ? (
-                  <>
-                    <div>
-                      <Label className="text-xs text-slate-300">Driving License Number *</Label>
-                      <Input
-                        value={dlNumber}
-                        onChange={(e) => { setDlNumber(e.target.value.toUpperCase()); setError(null); }}
-                        placeholder="AS0120200012345"
-                        className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-slate-300">Vehicle Registration (RC Plate) *</Label>
-                      <Input
-                        value={rcNumber}
-                        onChange={(e) => { setRcNumber(e.target.value.toUpperCase()); setError(null); }}
-                        placeholder="AS01AB1234"
-                        className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <div className="sm:col-span-2 rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-xs text-emerald-300">
-                    Bicycle / EV selected — Driving License and RC Plate are not required.
+                {!isExemptVehicle && (
+                  <div>
+                    <Label className="text-xs text-slate-300">Driving License Number</Label>
+                    <Input
+                      value={dlNumber}
+                      onChange={(e) => { setDlNumber(e.target.value.toUpperCase()); setError(null); }}
+                      placeholder="AS0120200012345"
+                      className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
+                    />
                   </div>
                 )}
               </div>
 
-              <div className="pt-3 flex items-center justify-between">
+              <div className="pt-2 flex items-center justify-between">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setStep(1)}
-                  className="border-[#1E283D] bg-[#0E121B] text-slate-200 h-11 px-5 rounded-xl"
+                  className="border-[#1E283D] bg-[#0E121B] text-slate-300 h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -368,47 +418,120 @@ function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep2()) setStep(3);
                   }}
-                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl flex items-center gap-2"
+                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
-                  <span>Continue to Payout Setup</span>
-                  <ArrowRight className="size-4" />
+                  Continue
                 </Button>
               </div>
             </div>
           )}
 
+          {/* STEP 3: VEHICLE & RC */}
           {step === 3 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Building2 className="size-5 text-[#E5A93C]" />
-                <span>Step 3: Bank Account / UPI for Daily Earnings Payout</span>
-              </h2>
+              <div>
+                <h2 className="text-base font-bold text-white">Vehicle Details</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Select delivery vehicle type.</p>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-2.5">
+                {[
+                  { id: "BIKE", label: "Motorcycle" },
+                  { id: "SCOOTER", label: "Scooter" },
+                  { id: "EV", label: "Electric Vehicle" },
+                  { id: "CYCLE", label: "Bicycle" },
+                ].map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => {
+                      setVehicleCategory(v.id as any);
+                      setError(null);
+                    }}
+                    className={`rounded-xl border p-3.5 text-xs font-semibold transition-all ${
+                      vehicleCategory === v.id
+                        ? "border-[#E5A93C] bg-[#E5A93C]/20 text-[#E5A93C]"
+                        : "border-[#1E283D] bg-[#0E121B] text-slate-300"
+                    }`}
+                  >
+                    <Bike className="size-5 mx-auto mb-1.5" />
+                    <div>{v.label}</div>
+                  </button>
+                ))}
+              </div>
+
+              {!isExemptVehicle ? (
                 <div>
-                  <Label className="text-xs text-slate-300">Bank Account Holder Name</Label>
+                  <Label className="text-xs text-slate-300">Vehicle Registration (RC Plate)</Label>
+                  <Input
+                    value={rcNumber}
+                    onChange={(e) => { setRcNumber(e.target.value.toUpperCase()); setError(null); }}
+                    placeholder="AS01AB1234"
+                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
+                  />
+                </div>
+              ) : (
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-xs text-emerald-300">
+                  Bicycle / EV selected: Driving License and RC plate are exempt under CMVR rules.
+                </div>
+              )}
+
+              <div className="pt-2 flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setStep(2)}
+                  className="border-[#1E283D] bg-[#0E121B] text-slate-300 h-11 px-5 rounded-xl"
+                >
+                  Back
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (validateStep3()) setStep(4);
+                  }}
+                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                >
+                  Continue
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4: BANK ACCOUNT & PAYOUT */}
+          {step === 4 && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-bold text-white">Payout Account</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Direct bank transfer for your daily earnings.</p>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs text-slate-300">Account Holder Name</Label>
                   <Input
                     value={bankAccountHolder || fullName}
                     onChange={(e) => setBankAccountHolder(e.target.value)}
-                    placeholder="Account Holder Name"
+                    placeholder="Name on bank passbook"
                     className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-slate-300">UPI ID (for Instant Payouts)</Label>
-                  <Input
-                    value={upiId}
-                    onChange={(e) => { setUpiId(e.target.value); setError(null); }}
-                    placeholder="9876543210@upi"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
                   />
                 </div>
                 <div>
                   <Label className="text-xs text-slate-300">Bank Account Number</Label>
                   <Input
+                    type="password"
                     value={bankAccountNumber}
                     onChange={(e) => { setBankAccountNumber(e.target.value.replace(/\D/g, "")); setError(null); }}
-                    placeholder="Enter Bank Account Number"
+                    placeholder="Enter account number"
+                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-slate-300">Re-enter Account Number</Label>
+                  <Input
+                    value={reenterAccountNumber}
+                    onChange={(e) => { setReenterAccountNumber(e.target.value.replace(/\D/g, "")); setError(null); }}
+                    placeholder="Re-enter account number"
                     className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
                   />
                 </div>
@@ -422,14 +545,98 @@ function RiderOnboardingPage() {
                     className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
                   />
                 </div>
+                <div>
+                  <Label className="text-xs text-slate-300">UPI ID (Optional)</Label>
+                  <Input
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder="mobile@upi"
+                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                  />
+                </div>
               </div>
 
-              <div className="pt-3 flex items-center justify-between">
+              <div className="pt-2 flex items-center justify-between">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setStep(2)}
-                  className="border-[#1E283D] bg-[#0E121B] text-slate-200 h-11 px-5 rounded-xl"
+                  onClick={() => setStep(3)}
+                  className="border-[#1E283D] bg-[#0E121B] text-slate-300 h-11 px-5 rounded-xl"
+                >
+                  Back
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (validateStep4()) setStep(5);
+                  }}
+                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                >
+                  Continue
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 5: PROFILE SELFIE & DELIVERY BAG VERIFICATION */}
+          {step === 5 && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-bold text-white">Profile Photo &amp; Bag</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Live photo capture for partner ID card.</p>
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#1E283D] rounded-2xl bg-[#0E121B] text-center">
+                {selfiePhoto ? (
+                  <div className="space-y-3">
+                    <img
+                      src={selfiePhoto}
+                      alt="Profile Selfie"
+                      className="size-32 rounded-full object-cover border-2 border-emerald-400 mx-auto"
+                    />
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-400 font-semibold">
+                      <CheckCircle2 className="size-4" />
+                      <span>Photo Captured</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="size-20 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+                      <Camera className="size-8" />
+                    </div>
+                    <p className="text-xs text-slate-300">Take a clear front-facing photo without sunglasses or cap.</p>
+                  </div>
+                )}
+
+                <input
+                  ref={selfieInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="user"
+                  onChange={handleSelfieCapture}
+                  className="hidden"
+                />
+
+                <Button
+                  type="button"
+                  onClick={() => selfieInputRef.current?.click()}
+                  className="mt-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2 rounded-xl"
+                >
+                  {selfiePhoto ? "Retake Photo" : "Take Selfie"}
+                </Button>
+              </div>
+
+              <div className="rounded-xl border border-[#1E283D] bg-[#0E121B] p-3 flex items-center justify-between text-xs">
+                <span className="text-slate-300">Delivery Bag Ready</span>
+                <span className="text-emerald-400 font-bold">Verified ✓</span>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setStep(4)}
+                  className="border-[#1E283D] bg-[#0E121B] text-slate-300 h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -440,7 +647,7 @@ function RiderOnboardingPage() {
                   className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-12 rounded-xl flex items-center gap-2"
                 >
                   <ShieldCheck className="size-4" />
-                  <span>{pending ? "Activating Account..." : "Complete Onboarding & Go Online →"}</span>
+                  <span>{pending ? "Activating..." : "Complete KYC"}</span>
                 </Button>
               </div>
             </div>
