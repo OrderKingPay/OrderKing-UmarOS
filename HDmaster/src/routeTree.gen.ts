@@ -23,6 +23,7 @@ import { Route as AppModuleRouteImport } from './routes/app/$module'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
 import { Route as ApiAiTestConnectionRouteImport } from './routes/api/ai/test-connection'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiPayoutsTPlus1CronRouteImport } from './routes/api/payouts/t-plus-1-cron'
 import { Route as ApiSyncCustomizationsRouteImport } from './routes/api/sync/customizations'
 import { Route as AppModuleIdRouteImport } from './routes/app/$module.$id'
 import { Route as V1AdminSplatRouteImport } from './routes/v1/admin/$'
@@ -115,6 +116,11 @@ const ApiAiTestConnectionRoute = ApiAiTestConnectionRouteImport.update({
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPayoutsTPlus1CronRoute = ApiPayoutsTPlus1CronRouteImport.update({
+  id: '/api/payouts/t-plus-1-cron',
+  path: '/api/payouts/t-plus-1-cron',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSyncCustomizationsRoute = ApiSyncCustomizationsRouteImport.update({
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/payouts/t-plus-1-cron': typeof ApiPayoutsTPlus1CronRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/payouts/t-plus-1-cron': typeof ApiPayoutsTPlus1CronRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
@@ -332,6 +340,7 @@ export interface FileRoutesById {
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/payouts/t-plus-1-cron': typeof ApiPayoutsTPlus1CronRoute
   '/api/sync/customizations': typeof ApiSyncCustomizationsRouteWithChildren
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
@@ -373,6 +382,7 @@ export interface FileRouteTypes {
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/payouts/t-plus-1-cron'
     | '/api/sync/customizations'
     | '/app/$module/$id'
     | '/v1/admin/$'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/payouts/t-plus-1-cron'
     | '/api/sync/customizations'
     | '/app/$module/$id'
     | '/v1/admin/$'
@@ -450,6 +461,7 @@ export interface FileRouteTypes {
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/payouts/t-plus-1-cron'
     | '/api/sync/customizations'
     | '/app/$module/$id'
     | '/v1/admin/$'
@@ -488,6 +500,7 @@ export interface RootRouteChildren {
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAiTestConnectionRoute: typeof ApiAiTestConnectionRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiPayoutsTPlus1CronRoute: typeof ApiPayoutsTPlus1CronRoute
   ApiSyncCustomizationsRoute: typeof ApiSyncCustomizationsRouteWithChildren
   V1AdminSplatRoute: typeof V1AdminSplatRoute
   V1AdminCustomerOrderRoute: typeof V1AdminCustomerOrderRoute
@@ -607,6 +620,13 @@ declare module '@tanstack/react-router' {
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/payouts/t-plus-1-cron': {
+      id: '/api/payouts/t-plus-1-cron'
+      path: '/api/payouts/t-plus-1-cron'
+      fullPath: '/api/payouts/t-plus-1-cron'
+      preLoaderRoute: typeof ApiPayoutsTPlus1CronRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/sync/customizations': {
@@ -852,6 +872,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAiTestConnectionRoute: ApiAiTestConnectionRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiPayoutsTPlus1CronRoute: ApiPayoutsTPlus1CronRoute,
   ApiSyncCustomizationsRoute: ApiSyncCustomizationsRouteWithChildren,
   V1AdminSplatRoute: V1AdminSplatRoute,
   V1AdminCustomerOrderRoute: V1AdminCustomerOrderRoute,

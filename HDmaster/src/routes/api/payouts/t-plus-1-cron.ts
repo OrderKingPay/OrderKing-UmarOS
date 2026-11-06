@@ -26,7 +26,7 @@ async function isAuthorizedCronOrAdmin(request: Request): Promise<boolean> {
   return ADMIN_ROLES.has(role);
 }
 
-export const Route = createFileRoute("/api/payouts/t-plus-1-cron" as never)({
+export const Route = createFileRoute("/api/payouts/t-plus-1-cron")({
   server: {
     handlers: {
       POST: async ({ request }: any) => {
