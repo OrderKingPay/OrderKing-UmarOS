@@ -10,11 +10,15 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AcademyRouteImport } from './routes/academy'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as BenefitsRouteImport } from './routes/benefits'
 import { Route as CashRouteImport } from './routes/cash'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DutyRouteImport } from './routes/duty'
 import { Route as EarningsRouteImport } from './routes/earnings'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as KycRouteImport } from './routes/kyc'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PayoutsRouteImport } from './routes/payouts'
@@ -25,12 +29,18 @@ import { Route as SupportRouteImport } from './routes/support'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as DeliveryIdRouteImport } from './routes/delivery.$id'
+import { Route as OrderIdRouteImport } from './routes/order.$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiSyncCustomizationsLatestRouteImport } from './routes/api/sync/customizations/latest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcademyRoute = AcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssistantRoute = AssistantRouteImport.update({
@@ -48,6 +58,16 @@ const CashRoute = CashRouteImport.update({
   path: '/cash',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DutyRoute = DutyRouteImport.update({
+  id: '/duty',
+  path: '/duty',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EarningsRoute = EarningsRouteImport.update({
   id: '/earnings',
   path: '/earnings',
@@ -56,6 +76,11 @@ const EarningsRoute = EarningsRouteImport.update({
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KycRoute = KycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -108,6 +133,11 @@ const DeliveryIdRoute = DeliveryIdRouteImport.update({
   path: '/delivery/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrderIdRoute = OrderIdRouteImport.update({
+  id: '/order/$id',
+  path: '/order/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -122,11 +152,15 @@ const ApiSyncCustomizationsLatestRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/academy': typeof AcademyRoute
   '/assistant': typeof AssistantRoute
   '/benefits': typeof BenefitsRoute
   '/cash': typeof CashRoute
+  '/dashboard': typeof DashboardRoute
+  '/duty': typeof DutyRoute
   '/earnings': typeof EarningsRoute
   '/history': typeof HistoryRoute
+  '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/payouts': typeof PayoutsRoute
@@ -137,16 +171,21 @@ export interface FileRoutesByFullPath {
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
+  '/order/$id': typeof OrderIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/academy': typeof AcademyRoute
   '/assistant': typeof AssistantRoute
   '/benefits': typeof BenefitsRoute
   '/cash': typeof CashRoute
+  '/dashboard': typeof DashboardRoute
+  '/duty': typeof DutyRoute
   '/earnings': typeof EarningsRoute
   '/history': typeof HistoryRoute
+  '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/payouts': typeof PayoutsRoute
@@ -157,17 +196,22 @@ export interface FileRoutesByTo {
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
+  '/order/$id': typeof OrderIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/academy': typeof AcademyRoute
   '/assistant': typeof AssistantRoute
   '/benefits': typeof BenefitsRoute
   '/cash': typeof CashRoute
+  '/dashboard': typeof DashboardRoute
+  '/duty': typeof DutyRoute
   '/earnings': typeof EarningsRoute
   '/history': typeof HistoryRoute
+  '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/payouts': typeof PayoutsRoute
@@ -178,6 +222,7 @@ export interface FileRoutesById {
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
+  '/order/$id': typeof OrderIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/sync/customizations/latest': typeof ApiSyncCustomizationsLatestRoute
 }
@@ -185,11 +230,15 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/academy'
     | '/assistant'
     | '/benefits'
     | '/cash'
+    | '/dashboard'
+    | '/duty'
     | '/earnings'
     | '/history'
+    | '/kyc'
     | '/login'
     | '/onboarding'
     | '/payouts'
@@ -200,16 +249,21 @@ export interface FileRouteTypes {
     | '/trips'
     | '/wallet'
     | '/delivery/$id'
+    | '/order/$id'
     | '/api/auth/$'
     | '/api/sync/customizations/latest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/academy'
     | '/assistant'
     | '/benefits'
     | '/cash'
+    | '/dashboard'
+    | '/duty'
     | '/earnings'
     | '/history'
+    | '/kyc'
     | '/login'
     | '/onboarding'
     | '/payouts'
@@ -220,16 +274,21 @@ export interface FileRouteTypes {
     | '/trips'
     | '/wallet'
     | '/delivery/$id'
+    | '/order/$id'
     | '/api/auth/$'
     | '/api/sync/customizations/latest'
   id:
     | '__root__'
     | '/'
+    | '/academy'
     | '/assistant'
     | '/benefits'
     | '/cash'
+    | '/dashboard'
+    | '/duty'
     | '/earnings'
     | '/history'
+    | '/kyc'
     | '/login'
     | '/onboarding'
     | '/payouts'
@@ -240,17 +299,22 @@ export interface FileRouteTypes {
     | '/trips'
     | '/wallet'
     | '/delivery/$id'
+    | '/order/$id'
     | '/api/auth/$'
     | '/api/sync/customizations/latest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcademyRoute: typeof AcademyRoute
   AssistantRoute: typeof AssistantRoute
   BenefitsRoute: typeof BenefitsRoute
   CashRoute: typeof CashRoute
+  DashboardRoute: typeof DashboardRoute
+  DutyRoute: typeof DutyRoute
   EarningsRoute: typeof EarningsRoute
   HistoryRoute: typeof HistoryRoute
+  KycRoute: typeof KycRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   PayoutsRoute: typeof PayoutsRoute
@@ -261,6 +325,7 @@ export interface RootRouteChildren {
   TripsRoute: typeof TripsRoute
   WalletRoute: typeof WalletRoute
   DeliveryIdRoute: typeof DeliveryIdRoute
+  OrderIdRoute: typeof OrderIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiSyncCustomizationsLatestRoute: typeof ApiSyncCustomizationsLatestRoute
 }
@@ -272,6 +337,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academy': {
+      id: '/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AcademyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assistant': {
@@ -295,6 +367,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CashRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/duty': {
+      id: '/duty'
+      path: '/duty'
+      fullPath: '/duty'
+      preLoaderRoute: typeof DutyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/earnings': {
       id: '/earnings'
       path: '/earnings'
@@ -307,6 +393,13 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kyc': {
+      id: '/kyc'
+      path: '/kyc'
+      fullPath: '/kyc'
+      preLoaderRoute: typeof KycRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -379,6 +472,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeliveryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/order/$id': {
+      id: '/order/$id'
+      path: '/order/$id'
+      fullPath: '/order/$id'
+      preLoaderRoute: typeof OrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -398,11 +498,15 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcademyRoute: AcademyRoute,
   AssistantRoute: AssistantRoute,
   BenefitsRoute: BenefitsRoute,
   CashRoute: CashRoute,
+  DashboardRoute: DashboardRoute,
+  DutyRoute: DutyRoute,
   EarningsRoute: EarningsRoute,
   HistoryRoute: HistoryRoute,
+  KycRoute: KycRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   PayoutsRoute: PayoutsRoute,
@@ -413,6 +517,7 @@ const rootRouteChildren: RootRouteChildren = {
   TripsRoute: TripsRoute,
   WalletRoute: WalletRoute,
   DeliveryIdRoute: DeliveryIdRoute,
+  OrderIdRoute: OrderIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiSyncCustomizationsLatestRoute: ApiSyncCustomizationsLatestRoute,
 }
@@ -428,3 +533,4 @@ declare module '@tanstack/react-start' {
     router: Awaited<ReturnType<typeof getRouter>>
   }
 }
+
