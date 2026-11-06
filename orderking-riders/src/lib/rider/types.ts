@@ -273,9 +273,6 @@ export type RiderProfile = {
   ratingAvg?: number | null;
   lifetimeDeliveries?: number | null;
   joinedAt?: string | null;
-  shiftAnchor?: GeoPoint | null;
-  pingsSuspended?: boolean;
-  geofenceSuspendedReason?: string | null;
 };
 
 export type RestaurantSlice = {

@@ -806,8 +806,11 @@ export function generateFounderClientInvoice(params: {
   const vpa = params.founderUpiVpa || "9395065587@ybl";
   const invNum = `INV-${Date.now().toString().slice(-6)}`;
   const advance = Math.round(params.amountInr * 0.5);
-  const upiLink = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKing&am=${advance}&tn=${encodeURIComponent(`Advance-${invNum}`)}&cu=INR`;
-  const qrPayload = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
+  const upiLink = `upi://pay?pa=${encodeURIComponent(String(vpa ?? ""))}&pn=OrderKingSovereign&am=${advance}&tn=${encodeURIComponent(String(
+// @ts-ignore
+    `Advance-${invNum}`
+   ?? ""))}&cu=INR`;
+  const qrPayload = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(String(upiLink ?? ""))}`;
 
   const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN", {
     day: "numeric",
@@ -1071,8 +1074,11 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       .trim() || "Futuristic OrderKing luxury food delivery hub with golden drones and neon lights, 8k octane render";
 
     const seed = Math.floor(Math.random() * 999999);
-    const imagePrompt = `${rawPrompt}, 8k resolution, cinematic lighting, photorealistic, commercial grade, award winning`;
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
+// @ts-ignore
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(String(
+// @ts-ignore
+      rawPrompt + ", 8k resolution, cinematic lighting, photorealistic, commercial grade, award winning"
+     ?? ""))}?width=1024&height=1024&nologo=true&seed=${seed}`;
 
     // Auto-save to Media Storage Vault
     mediaStorageVault.addItem({

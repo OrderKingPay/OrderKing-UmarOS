@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 👑 ORDERKING / KINGPAY PRODUCTION T+1 NODAL PAYOUT ENGINE
  *

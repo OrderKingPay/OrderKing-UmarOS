@@ -414,14 +414,6 @@ export class FleetSafetyEngine {
     return getDynamicShiftRadius(dateOrHour);
   }
 
-  public evaluateShiftGeofence(
-    point: GeoPoint,
-    anchor: GeoPoint,
-    dateOrHour: Date | number = new Date(),
-  ): ShiftGeofenceEvaluation {
-    return evaluateShiftGeofence(point, anchor, dateOrHour);
-  }
-
   public evaluateThreatZone(
     destination: GeoPoint,
     threatZones?: ThreatZone[],
@@ -496,47 +488,6 @@ export function getDynamicShiftRadius(dateOrHour: Date | number = new Date()): S
 }
 
 // ─────────────────────────────────────────────────────────────
-export interface ShiftGeofenceEvaluation {
-  shift: "DAY" | "EVENING" | "LATE_NIGHT";
-  shiftName: string;
-  maxRadiusKm: number;
-  distanceKm: number;
-  isOutsideGeofence: boolean;
-  shouldSuspendPings: boolean;
-  rationale: string;
-}
-
-/**
- * Enforces dynamic time-of-day shift boundaries:
- * - Day (06:00 - 19:00): 12.0 km
- * - Evening (19:00 - 23:00): 7.5 km
- * - Late-Night (23:00 - 06:00): 3.5 km
- *
- * If distance from shift anchor exceeds max perimeter, automatically suspends incoming order pings.
- */
-export function evaluateShiftGeofence(
-  point: GeoPoint,
-  anchor: GeoPoint,
-  dateOrHour: Date | number = new Date(),
-): ShiftGeofenceEvaluation {
-  const shiftRule = getDynamicShiftRadius(dateOrHour);
-  const distanceKm = haversineKm(point, anchor);
-  const isOutsideGeofence = distanceKm > shiftRule.maxRadiusKm;
-  const rationale = isOutsideGeofence
-    ? `Rider location is ${distanceKm.toFixed(2)}km from shift anchor, exceeding ${shiftRule.label} boundary (${shiftRule.maxRadiusKm}km). Incoming order pings suspended.`
-    : `Rider location is within ${shiftRule.label} boundary (${distanceKm.toFixed(2)}km <= ${shiftRule.maxRadiusKm}km). Incoming order pings permitted.`;
-
-  return {
-    shift: shiftRule.shift,
-    shiftName: shiftRule.label,
-    maxRadiusKm: shiftRule.maxRadiusKm,
-    distanceKm: Math.round(distanceKm * 100) / 100,
-    isOutsideGeofence,
-    shouldSuspendPings: isOutsideGeofence,
-    rationale,
-  };
-}
-
 // 6. THREAT-ZONE EXCLUSION & HAZARD LOCKDOWN
 // ─────────────────────────────────────────────────────────────
 export type ThreatZonePolicy = "BLOCK_ORDER" | "LOCK_COD_ONLINE_ONLY";

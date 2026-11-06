@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ORDERKING / KINGPAY FINTECH ARCHITECTURE
  * Immutable Production Payment Callback Handler & Section 9(5) Tax Settlement

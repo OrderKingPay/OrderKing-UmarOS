@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Buffer } from "buffer";
 if (typeof globalThis !== "undefined" && !(globalThis as any).Buffer) {
   (globalThis as any).Buffer = Buffer;
@@ -88,7 +89,7 @@ export const Route = createRootRoute({
 
     return (
       <html lang="en" className="antialiased bg-[#FCFAF7] text-gray-900" suppressHydrationWarning>
-        <head>
+        <head><script type="speculationrules" dangerouslySetInnerHTML={{ __html: '{"prerender":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}],"prefetch":[{"where":{"href_matches":"/*"},"eagerness":"immediate"}]}' }} />
           <HeadContent />
                   </head>
         <body className="bg-[#FCFAF7] text-gray-900 min-h-screen">

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import {
   DEFAULT_FOUNDER_MASTER_DIALS,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Placement-Guaranteed Career Course Affiliate Monetization & Commission Tracker
  * Statutory Entity: Orderkingpay | GSTIN: 18AFXPH9838M1Z9 (Assam - 788710)

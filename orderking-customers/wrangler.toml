@@ -6,4 +6,4 @@ compatibility_flags = ["nodejs_compat"]
 # Cloudflare Edge KV Caching: Domestic Corridor Tariffs (TTL 900s / SWR 86400s)
 [[kv_namespaces]]
 binding = "CORRIDOR_TARIFFS_KV"
-id = "corridor_tariffs_kv"
+id = "214589fc6e304255b95fc3e172c86c2c"

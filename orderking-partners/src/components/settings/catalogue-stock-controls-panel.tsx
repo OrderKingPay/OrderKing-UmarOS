@@ -124,7 +124,7 @@ export function CatalogueStockControlsPanel({
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed">
-              When kitchen staff marks a dish as "86 / Out of Stock" during busy dinner shifts, King AI automatically re-enables it at <strong className="text-slate-200">06:00 AM IST</strong> next morning. Eliminates forgotten stockouts and recovers breakfast &amp; early morning tea orders.
+              When kitchen staff marks a dish as &quot;86 / Out of Stock&quot; during busy dinner shifts, King AI automatically re-enables it at <strong className="text-slate-200">06:00 AM IST</strong> next morning. Eliminates forgotten stockouts and recovers breakfast &amp; early morning tea orders.
             </p>
 
             {/* Next Scheduled Reset Badge */}

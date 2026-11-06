@@ -68,11 +68,7 @@ const BEARER_KEY = "grok-auth.bearer-token";
 export function getBearerToken(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    const grokTok = window.sessionStorage.getItem(BEARER_KEY);
-    if (grokTok) return grokTok;
-    const phoneSess = getPhoneSession();
-    if (phoneSess?.session?.token) return phoneSess.session.token;
-    return null;
+    return window.sessionStorage.getItem(BEARER_KEY);
   } catch {
     return null;
   }
@@ -138,7 +134,7 @@ export async function signIn(
     livePreview: inLivePreview(),
     hasBearer: Boolean(getBearerToken()),
     requestSignOut: () => authClient.signOut(),
-    clearToken: () => { setPhoneSession(null); setBearerToken(null); },
+    clearToken: () => { setBearerToken(null); try { window.localStorage.removeItem("orderking.phone.session"); } catch {} },
   });
 
   if (inLivePreview()) {
@@ -248,7 +244,7 @@ export async function signOut(redirectTo = "/"): Promise<void> {
       const { error } = await authClient.signOut();
       if (error) throw new Error(error.message ?? "Sign-out failed");
     },
-    clearToken: () => { setPhoneSession(null); setBearerToken(null); },
+    clearToken: () => { setBearerToken(null); try { window.localStorage.removeItem("orderking.phone.session"); window.localStorage.removeItem("orderking_user"); window.dispatchEvent(new Event("orderking-auth-updated")); } catch {} },
     redirect: () => {
       window.location.href = redirectTo;
     },
@@ -284,8 +280,6 @@ export function setPhoneSession(
     if (!profile) {
       window.localStorage.removeItem(PHONE_SESSION_KEY);
       window.localStorage.removeItem("orderking_user");
-      try { window.sessionStorage.removeItem(BEARER_KEY); } catch {}
-      try { document.cookie = "orderking_customer_session=; path=/; max-age=0; SameSite=Lax"; } catch {}
     } else {
       const now = new Date().toISOString();
       const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
@@ -313,8 +307,6 @@ export function setPhoneSession(
       };
       window.localStorage.setItem(PHONE_SESSION_KEY, JSON.stringify(sessionPayload));
       window.localStorage.setItem("orderking_user", JSON.stringify(sessionPayload.user));
-      try { window.sessionStorage.setItem(BEARER_KEY, sessionPayload.session.token); } catch {}
-      try { document.cookie = "orderking_customer_session=" + encodeURIComponent(JSON.stringify(sessionPayload.user)) + "; path=/; max-age=2592000; SameSite=Lax"; } catch {}
     }
     window.dispatchEvent(new Event("orderking-auth-updated"));
   } catch {}

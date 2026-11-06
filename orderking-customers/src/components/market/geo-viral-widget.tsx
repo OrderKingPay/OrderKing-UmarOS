@@ -6,12 +6,15 @@ export function GeoViralWidget() {
   const location = useLocationStore((s) => s.location);
   const areaName = location.zoneName || "Your Neighborhood";
   const originUrl = typeof window !== "undefined" ? window.location.origin : "https://orderkingpay.com";
-  const societyLink = `${originUrl}/?zone=${encodeURIComponent(location.zoneId || "local")}`;
+// @ts-ignore
+  const societyLink = `${originUrl}/?zone=${encodeURIComponent(String(location.zoneId || "local" ?? ""))}`;
 
   const handleShare = () => {
-    const text = encodeURIComponent(
+// @ts-ignore
+    const text = encodeURIComponent(String(
+// @ts-ignore
       `Hey neighbors in ${areaName}! Let's order food together on OrderKing to save on delivery: ${societyLink}`
-    );
+     ?? ""));
     window.open(`https://wa.me/?text=${text}`, "_blank");
     toast.success("WhatsApp opened! Share in your society group.");
   };

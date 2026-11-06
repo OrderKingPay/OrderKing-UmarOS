@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { logGeospatialTelemetry, type TelemetryPayload } from "@/lib/orderking/server/telemetry.server";
 import { getSessionUser } from "@/lib/auth/verify.server";
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/telemetry")({
   server: {
     handlers: {

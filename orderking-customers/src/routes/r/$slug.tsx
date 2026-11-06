@@ -1,5 +1,3 @@
-import { HomeFeed } from "@/components/market/home-feed";
-import { ZomatoCustomer2026Bar } from "@/components/zomato-customer/ZomatoCustomer2026Bar";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/db-cloud";
@@ -552,7 +550,7 @@ function RestaurantPage() {
                   <span>•</span>
                   <span className="text-emerald-600 font-bold">⭐ 4.8/5 Clean Kitchen Audit</span>
                 </div>
-                <span className="text-[11px] text-zinc-500 font-medium">FSSAI Hygiene Verified</span>
+                <span className="text-[11px] text-zinc-500 font-medium">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
               </div>
 
               {/* Luxury Quick Action Ribbon: Group Order, Dining Reservation, Chef Notes, Nutrition */}

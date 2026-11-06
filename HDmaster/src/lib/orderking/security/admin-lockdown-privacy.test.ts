@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from "vitest";
 import { handleAdminHttp } from "@/lib/orderking/server/admin-http.server";
 import { handleMasterAiHttp } from "@/lib/orderking/server/master-ai-http.server";

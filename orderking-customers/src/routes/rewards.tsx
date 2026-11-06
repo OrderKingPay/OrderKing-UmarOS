@@ -9,6 +9,8 @@ import { useLocationStore } from "@/lib/stores/location";
 import { getLoyalty } from "@/lib/server/account";
 import { toast } from "sonner";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
+import { CompetitorBounty } from "@/components/CompetitorBounty";
+import { RetentionRoulette } from "@/components/RetentionRoulette";
 
 export const Route = createFileRoute("/rewards")({ component: RewardsPage });
 
@@ -194,66 +196,6 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     affiliateUrl: "https://orderking.in/courses/ai-masterclass?ref=affiliate",
     supportedCities: ["ALL"],
   },
-  {
-    id: "ed_fs_101",
-    category: "edtech",
-    brand: "KingPay Career Academy",
-    title: "Full-Stack Cloud & FinTech Engineering Bootcamp",
-    description: "24-week intensive bootcamp with 100% job placement guarantee (Min ₹6.5 LPA CTC) and authentic KingPay FinTech stack access.",
-    code: "KINGFS101",
-    coinsRequired: 1500,
-    valueLabel: "₹5,500 Bounty / Min ₹6.5 LPA",
-    badge: "💼 Placement Guaranteed",
-    icon: "💻",
-    terms: "Direct placement guarantee or tuition refund. Official affiliate tracking: OK-AFF-FS101-PLCMT.",
-    affiliateUrl: "https://orderking.in/careers/edtech/enroll?course=ED-FS-101&affid=OK-AFF-FS101-PLCMT&sid=rewards&ch=portal",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "ed_da_202",
-    category: "edtech",
-    brand: "Assam Digital Skills Mission Partner",
-    title: "Applied Data Analytics & GST FinOps Certification",
-    description: "16-week analytics and GST FinOps certification with direct hiring pipeline (Min ₹4.8 LPA CTC).",
-    code: "KINGFINOPS",
-    coinsRequired: 1200,
-    valueLabel: "₹3,250 Bounty / Min ₹4.8 LPA",
-    badge: "📊 FinOps Certified",
-    icon: "📈",
-    terms: "Placement guarantee backed by Assam Digital Skills Mission. Affiliate tracking: OK-AFF-DA202-FINOPS.",
-    affiliateUrl: "https://orderking.in/careers/edtech/enroll?course=ED-DA-202&affid=OK-AFF-DA202-FINOPS&sid=rewards&ch=portal",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "ed_ai_303",
-    category: "edtech",
-    brand: "National Tech Career Alliance",
-    title: "Cloud Native AI & Systems Architecture Accelerator",
-    description: "20-week elite accelerator for production systems and Gemini AI integration (Min ₹10 LPA CTC).",
-    code: "KINGAI303",
-    coinsRequired: 2000,
-    valueLabel: "₹7,500 Bounty / Min ₹10 LPA",
-    badge: "🚀 Elite Placement",
-    icon: "🧠",
-    terms: "Executive cohort with dedicated placement cell. Affiliate tracking: OK-AFF-AI303-EXEC.",
-    affiliateUrl: "https://orderking.in/careers/edtech/enroll?course=ED-AI-303&affid=OK-AFF-AI303-EXEC&sid=rewards&ch=portal",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "ed_fop_104",
-    category: "edtech",
-    brand: "Barak Valley BFSI Skill Council",
-    title: "FinTech Core Banking Operations & T+1 Settlement Associate",
-    description: "12-week banking operations training for regional FinTech hubs and T+1 settlement reconciliation (Min ₹3.6 LPA CTC).",
-    code: "KINGBFSI",
-    coinsRequired: 1000,
-    valueLabel: "₹2,500 Bounty / Min ₹3.6 LPA",
-    badge: "🏦 BFSI Direct Hire",
-    icon: "🏛️",
-    terms: "Direct placement in regional banking partner networks. Affiliate tracking: OK-AFF-FOP104-BANKING.",
-    affiliateUrl: "https://orderking.in/careers/edtech/enroll?course=ED-FOP-104&affid=OK-AFF-FOP104-BANKING&sid=rewards&ch=portal",
-    supportedCities: ["ALL"],
-  },
 ];
 
 function RewardsPage() {
@@ -359,10 +301,10 @@ function RewardsPage() {
         <WhatsAppViralBountiesWidget source="rewards_vault" />
 
         {/* Delete Legacy Aggregator Bounty: ₹500 KingPay Wallet Switch Bounty */}
-        
+        <CompetitorBounty className="mt-4" />
 
         {/* Post-Order Dopamine Wheel & Retention Engine */}
-        
+        <RetentionRoulette orderId="rewards_vault_spin" className="mt-4" />
 
         {/* Category Filters */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">

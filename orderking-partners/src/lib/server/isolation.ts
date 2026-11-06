@@ -19,7 +19,6 @@ export async function loadMemberships(
   sql: Sql,
   userId: string,
 ): Promise<StaffContext[]> {
-  const cleanPhone = String(userId || "").replace(/\D/g, "").slice(-10);
   const rows = await sql<{
     restaurant_id: string;
     outlet_id: string | null;
@@ -34,17 +33,8 @@ export async function loadMemberships(
            r.data_label, r.verification_status, r.commission_bps
     from restaurant_staff s
     join restaurants r on r.id = s.restaurant_id
-    where (s.user_id = ${userId} or (${cleanPhone} != '' and (s.user_id = ${cleanPhone} or s.user_id = ${'prt_' + cleanPhone})))
-      and (s.is_active is null or s.is_active = true)
-    union
-    select r.id as restaurant_id, null as outlet_id, 'OWNER' as role,
-           r.display_name as restaurant_name,
-           r.data_label, r.verification_status, r.commission_bps
-    from restaurants r
-    where (r.owner_user_id = ${userId}
-       or (${cleanPhone} != '' and (r.owner_user_id = ${cleanPhone} or r.owner_user_id = ${'prt_' + cleanPhone} or r.phone = ${cleanPhone}))
-       or r.email = ${userId})
-    order by restaurant_name asc
+    where s.user_id = ${userId} and s.is_active = true
+    order by s.created_at asc
   `;
   return rows
     .filter((row) => isRestaurantRole(row.role))

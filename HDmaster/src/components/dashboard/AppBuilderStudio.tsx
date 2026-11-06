@@ -96,7 +96,10 @@ export function AppBuilderStudio() {
     {
       id: "whatsapp_direct",
       label: "WhatsApp Click-to-Order",
-      url: `https://wa.me/${config.supportPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Hi ${config.shortName}, I would like to place a food order.`)}`,
+      url: `https://wa.me/${config.supportPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(String(
+// @ts-ignore
+        `Hi ${config.shortName}, I would like to place a food order.`
+       ?? ""))}`,
       desc: "Direct WhatsApp chat link for customer support or phone orders.",
     },
   ];

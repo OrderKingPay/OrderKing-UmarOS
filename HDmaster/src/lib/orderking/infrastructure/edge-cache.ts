@@ -47,15 +47,11 @@ export class HyperEdgeCache {
   private isSlowConnection(): boolean {
     if (typeof navigator === 'undefined') return false;
     
-    const nav = navigator as unknown as {
-      connection?: { effectiveType?: string; downlink?: number };
-      mozConnection?: { effectiveType?: string; downlink?: number };
-      webkitConnection?: { effectiveType?: string; downlink?: number };
-    };
-    const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
+    // @ts-ignore - Experimental Network Information API
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     
     if (connection) {
-      if (connection.effectiveType && ['slow-2g', '2g', '3g'].includes(connection.effectiveType)) {
+      if (['slow-2g', '2g', '3g'].includes(connection.effectiveType)) {
         return true;
       }
       if (connection.downlink && connection.downlink < 1.0) { // Less than 1Mbps

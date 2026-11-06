@@ -4,6 +4,7 @@ import {
   handleSseRequest,
 } from "@/lib/orderking/customization/sync-bus";
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/sync/customizations")({
   server: {
     handlers: {

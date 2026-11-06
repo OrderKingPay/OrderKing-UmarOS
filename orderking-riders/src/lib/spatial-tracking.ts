@@ -33,7 +33,6 @@ export interface CandidateRiderSpatial {
   kycStatus: "VERIFIED" | "PENDING" | "REJECTED" | string;
   batteryLevel?: number;
   vehicleType?: "BICYCLE" | "MOTORCYCLE" | "CAR" | string;
-  pingsSuspended?: boolean;
 }
 
 export interface MatchedNearestRider {
@@ -198,7 +197,6 @@ export function matchNearestRidersFallback(
   const eligible = candidates.filter((rider) => {
     if (rider.status !== "ONLINE") return false;
     if (rider.kycStatus !== "VERIFIED") return false;
-    if (rider.pingsSuspended) return false;
     if (!Number.isFinite(rider.lat) || !Number.isFinite(rider.lng)) return false;
     return true;
   });

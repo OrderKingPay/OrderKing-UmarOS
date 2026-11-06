@@ -1,4 +1,4 @@
-import { getCurrentEcosystemShift, getShiftRemainingMinutes, CANONICAL_THREAT_ZONES, quadPartySyncClient } from "@orderking/ui";
+import { getCurrentEcosystemShift, getShiftRemainingMinutes, CANONICAL_THREAT_ZONES } from "@orderking/ui";
 import { useState, useEffect, useMemo } from "react";
 import {
   MapPin,
@@ -427,22 +427,6 @@ export function GlobalGodEyeMap() {
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [newZoneName, setNewZoneName] = useState("");
-
-  // Connect God-Eye Quad-Party WebSocket stream for real-time order telematics
-  useEffect(() => {
-    const unsubscribeQuad = quadPartySyncClient.subscribe(
-      { role: "umar_os" },
-      (event) => {
-        // God-Eye captures every live order state transition across all metro clusters
-        if (event.event === "ORDER_CREATED" || event.event === "ORDER_ACCEPTED" || event.event === "ORDER_DELIVERED") {
-          // Dynamic live count refresh hook
-        }
-      }
-    );
-    return () => {
-      unsubscribeQuad();
-    };
-  }, []);
 
   // Load saved city zones from localStorage or backend on mount
   useEffect(() => {

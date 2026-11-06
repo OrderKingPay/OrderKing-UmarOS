@@ -9,8 +9,7 @@ async function verifyFounderOrAdminAccess(request?: Request): Promise<boolean> {
   if (configuredSecret && configuredSecret.length >= 16 && auth === `Bearer ${configuredSecret}`) {
     return true;
   }
-  const bearerToken = auth?.startsWith("Bearer ") ? auth.slice(7).trim() : undefined;
-  const session = await getSessionUser(bearerToken, request);
+  const session = await getSessionUser();
   if (!session?.id) return false;
   const sql = await getSql();
   const rows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;

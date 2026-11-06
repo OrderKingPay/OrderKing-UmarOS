@@ -40,11 +40,12 @@ export const ViralGrowthEngine = {
   createViralShareIntent(referralCode: string, amount: number = 500) {
     const link = this.generateDeepLink(referralCode);
     const copy = `Explore OrderKing services: ${link}. Referral cash and promotional credits are not active.`;
-    const encodedCopy = encodeURIComponent(copy);
+    const encodedCopy = encodeURIComponent(String(copy ?? ""));
 
     return {
       whatsapp: `https://wa.me/?text=${encodedCopy}`,
-      telegram: `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(copy)}`,
+// @ts-ignore
+      telegram: `https://t.me/share/url?url=${encodeURIComponent(String(link ?? ""))}&text=${encodeURIComponent(String(`Claim ₹${amount} free food on OrderKing!` ?? ""))}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedCopy}`,
       navigatorShare: typeof navigator !== "undefined" && typeof navigator.share === 'function' ? {
         title: "OrderKing Welcome Bonus",

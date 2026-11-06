@@ -10,7 +10,11 @@
         "lint": "turbo run lint",
         "test": "turbo run test",
         "typecheck": "turbo run typecheck",
-        "deploy:customers": "pnpm --filter orderking-customers run deploy"
+        "deploy": "powershell -ExecutionPolicy Bypass -File .\\deploy.ps1 -Action deploy",
+        "deploy:customers": "pnpm --filter orderking-customers run deploy",
+        "deploy:partners": "pnpm --filter orderking-partners run deploy",
+        "deploy:riders": "pnpm --filter orderking-riders run deploy",
+        "deploy:admin": "pnpm --filter HDmaster run deploy"
     },
     "devDependencies": {
         "turbo": "latest",

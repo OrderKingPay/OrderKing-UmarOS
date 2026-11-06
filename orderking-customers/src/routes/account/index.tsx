@@ -299,7 +299,7 @@ function AccountPage() {
               <div className="rounded-lg bg-surface/70 p-2">
                 <span className="text-base">🚀</span>
                 <p className="mt-0.5 text-[11px] font-bold">fast delivery</p>
-                <p className="text-[10px] text-muted">Orders {">"} ₹299</p>
+                <p className="text-[10px] text-muted">Orders &gt; ₹299</p>
               </div>
               <div className="rounded-lg bg-surface/70 p-2">
                 <span className="text-base">💎</span>

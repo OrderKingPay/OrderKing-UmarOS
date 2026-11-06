@@ -482,7 +482,7 @@ export function RemittanceDesk() {
                 Net Recipient Payout
               </span>
               <span className="text-[10px] font-bold text-slate-400">
-                Speed: {"< 60 Seconds"}
+                Speed: &lt;60 Seconds
               </span>
             </div>
 

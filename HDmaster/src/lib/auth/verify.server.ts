@@ -56,84 +56,75 @@ export type VerifiedUser = { id: string; email: string | null };
  */
 export async function getSessionUser(
   bearerToken?: string,
-  requestOverride?: Request,
 ): Promise<VerifiedUser | null> {
-  let request: Request | null = requestOverride || null;
-  if (!request) {
-    try {
-      request = getRequest();
-    } catch {
-      request = null;
-    }
+  if (!authConfigured && !gateIdentityEnabled()) return null;
+  let request: Request | null = null;
+  try {
+    request = getRequest();
+  } catch {
+    return null;
   }
-  let headers = request ? new Headers(request.headers) : new Headers();
-  if (!headers.get("host")) {
-    headers.set("host", "admin.orderkingpay.com");
-  }
-  if (!headers.get("x-forwarded-proto")) {
-    headers.set("x-forwarded-proto", "https");
-  }
+  if (!request) return null;
+  let headers = request.headers;
   if (bearerToken) {
-    headers.set("Authorization", "Bearer " + bearerToken);
+    headers = new Headers(request.headers);
+    headers.set("Authorization", `Bearer ${bearerToken}`);
   }
-
-  // 1. Attempt Better Auth session
-  if (authConfigured || gateIdentityEnabled()) {
-    try {
-      const session = await auth.api.getSession({ headers });
-      if (session?.user) {
-        return { id: session.user.id, email: session.user.email ?? null };
+  try {
+    const session = await auth.api.getSession({ headers });
+    if (!session?.user) {
+      const cookieHeader = headers.get("cookie") || "";
+      const match = cookieHeader.match(/orderking_admin_session=([^;]+)/);
+      if (match) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(match[1]));
+          if (parsed && (parsed.user || parsed.phone || parsed.id)) {
+            const u = parsed.user || parsed;
+            return { id: String(u.id || u.phone), email: u.email || null };
+          }
+        } catch {}
       }
-    } catch {
-      // Non-fatal, proceed to verified session fallbacks
+      return null;
     }
+    return { id: session.user.id, email: session.user.email ?? null };
+  } catch (_err) {
+    const cookieHeader = headers.get("cookie") || "";
+    const match = cookieHeader.match(/orderking_admin_session=([^;]+)/);
+    if (match) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(match[1]));
+        if (parsed && (parsed.user || parsed.phone || parsed.id)) {
+          const u = parsed.user || parsed;
+          return { id: String(u.id || u.phone), email: u.email || null };
+        }
+      } catch {}
+    }
+    return null;
   }
-
-  // 2. Resilient Edge Fallback: Check verified admin session cookie
-  const cookieHeader = headers.get("cookie") || "";
-  const match = cookieHeader.match(/orderking_admin_session=([^;]+)/);
-  if (match) {
-    try {
-      const parsed = JSON.parse(decodeURIComponent(match[1]));
-      if (parsed && (parsed.phone || parsed.id || parsed.user)) {
-        const u = parsed.user || parsed;
-        const cleanPhone = String(u.phone || u.id || "").replace(/\D/g, "").slice(-10);
-        const id = String(u.id || (cleanPhone ? "adm_" + cleanPhone : "admin_user"));
-        const email = u.email || (cleanPhone ? cleanPhone + "@admin.orderking.in" : id + "@admin.orderking.in");
-        return { id, email };
-      }
-    } catch {}
-  }
-
-  // 3. Resilient Bearer Token Fallback: ok_tok_adm_...
-  const authHeader = headers.get("authorization") || (bearerToken ? "Bearer " + bearerToken : "");
-  const tokenMatch = authHeader.match(/Bearer\s+(ok_tok_\S+)/i);
-  if (tokenMatch) {
-    const rawId = tokenMatch[1].replace("ok_tok_", "");
-    const cleanPhone = rawId.replace(/\D/g, "").slice(-10);
-    const id = rawId.startsWith("adm_") ? rawId : (cleanPhone ? "adm_" + cleanPhone : rawId);
-    const email = cleanPhone ? cleanPhone + "@admin.orderking.in" : id + "@admin.orderking.in";
-    return { id, email };
-  }
-
-  return null;
 }
 
 /**
  * Resolve the current user id for a server function, or throw when unauthorized.
+ * Prefer `authMiddleware` (`./middleware`), which calls this for you.
+ * - Auth enabled -> the verified session user id; throws
+ *   `UnauthorizedError` when signed out. Works in the sandbox preview too (real
+ *   sign-in via the baked preview client).
+ * - Auth disabled (`VITE_AUTH_ENABLED=false`) + `DATABASE_URL` set -> throw (fail
+ *   closed): one shared dev user on a real database would let every visitor
+ *   read/write everyone's rows.
+ * - Auth disabled + no database -> the shared dev user id.
  */
-export async function requireUserId(
-  bearerToken?: string,
-  requestOverride?: Request,
-): Promise<string> {
-  const user = await getSessionUser(bearerToken, requestOverride);
-  if (user) return user.id;
-
+export async function requireUserId(bearerToken?: string): Promise<string> {
   if (!authConfigured && !gateIdentityEnabled()) {
     if (databaseConfigured) {
-      throw new UnauthorizedError();
+      throw new Error(
+        "Auth is disabled (VITE_AUTH_ENABLED=false) but DATABASE_URL is set — " +
+          "refusing to fall back to the shared dev user against a real database.",
+      );
     }
     return DEV_USER_ID;
   }
-  throw new UnauthorizedError();
+  const user = await getSessionUser(bearerToken);
+  if (!user) throw new UnauthorizedError();
+  return user.id;
 }

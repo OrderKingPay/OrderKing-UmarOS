@@ -157,7 +157,7 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      timeout: 2800,
+      timeout: 8000,
     });
 
     if (resp.data?.return) {
@@ -193,7 +193,7 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      timeout: 2800,
+      timeout: 8000,
     });
 
     if (qResp.data?.return) {
@@ -265,7 +265,7 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
   try {
     const resp = await axios.get(url, {
       headers: { Accept: 'application/json' },
-      timeout: 2800,
+      timeout: 8000,
     });
     return resp.data?.Status === 'Success';
   } catch (err: unknown) {
@@ -308,9 +308,19 @@ export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<b
   const cleanOtp = String(otp || '').replace(/\D/g, '').trim();
   if (!cleanOtp) return false;
 
-  console.warn('[Telecom Gateway] Voice OTP permanently disabled; SMS and WhatsApp channels active.');
-  return false;
+  const voiceUrl = `https://2factor.in/API/V1/DISABLED_VOICE""))}`;
 
+  try {
+    const resp = await axios.get(voiceUrl, {
+      headers: { Accept: 'application/json' },
+      timeout: 8000,
+    });
+    return resp.data?.Status === 'Success';
+  } catch (err: unknown) {
+    const errMsg = (err as any)?.response?.data?.Details || (err as any)?.message || String(err);
+    console.error('[Telecom Gateway] 2Factor voice error:', errMsg);
+    return false;
+  }
 }
 
 /**

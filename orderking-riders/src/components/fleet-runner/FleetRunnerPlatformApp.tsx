@@ -133,7 +133,7 @@ export function FleetRunnerPlatformApp() {
         </section>
 
         <section style={{ background: '#18181b', borderRadius: 10, border: '1px solid #27272a', padding: 16, fontSize: 12 }}>
-          <h3 style={{ margin: '0 0 10px 0', fontSize: 15, fontWeight: 700 }}>Zomato Touchpoint Rate Card & COD Settlement</h3>
+          <h3 style={{ margin: '0 0 10px 0', fontSize: 15, fontWeight: 700 }}>OrderKing Touchpoint Rate Card & COD Settlement</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>First-Mile Approach + Wait Time Pay ({waitMins}m)</span><strong>₹{((earnings.firstMilePaise + earnings.waitPaise) / 100).toFixed(2)}</strong></div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Last-Mile (3.6 km @ ₹15/km) + Touchpoints</span><strong>₹{((earnings.lastMilePaise + earnings.touchpointPaise) / 100).toFixed(2)}</strong></div>

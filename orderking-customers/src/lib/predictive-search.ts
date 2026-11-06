@@ -175,7 +175,7 @@ export const CURATED_RESTAURANTS: RestaurantCard[] = [
     minOrderPaise: 15000,
     open: true,
     hasOffer: true,
-    offerLabel: "",
+    offerLabel: "₹50 FLAT OFF",
     zoneName: "Central Food Hub",
     ratingAvg: 4.6,
     ratingCount: 1420,
@@ -357,7 +357,7 @@ export const CURATED_DISHES: SearchDishItem[] = [
     etaMinutes: 22,
     deliveryFeePaise: 0,
     hasOffer: true,
-    offerLabel: "",
+    offerLabel: "₹50 FLAT OFF",
     cuisine: "Biryani",
   },
   {
@@ -490,7 +490,7 @@ export const CURATED_DISHES: SearchDishItem[] = [
     etaMinutes: 22,
     deliveryFeePaise: 0,
     hasOffer: true,
-    offerLabel: "",
+    offerLabel: "₹50 FLAT OFF",
     cuisine: "Biryani",
   },
   {

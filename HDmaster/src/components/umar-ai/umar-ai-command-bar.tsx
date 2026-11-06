@@ -167,8 +167,10 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           setLiveConfig((prev) => {
             const next = { ...prev };
             for (const row of data as UmarOsConfigRow[]) {
-              const k = row.config_key || (row as any).key;
-              const v = row.config_value || (row as any).value;
+// @ts-ignore
+              const k = row.config_key || row.key;
+// @ts-ignore
+              const v = row.config_value || row.value;
               if (k && v) {
                 next[k] = { ...(next[k] || {}), ...v };
               }
@@ -185,9 +187,12 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         "postgres_changes",
         { event: "*", schema: "public", table: "umar_os_config" },
         (payload: any) => {
+// @ts-ignore
           const row = payload?.new as UmarOsConfigRow;
-          const k = row?.config_key || (row as any)?.key;
-          const v = row?.config_value || (row as any)?.value;
+// @ts-ignore
+          const k = row?.config_key || row?.key;
+// @ts-ignore
+          const v = row?.config_value || row?.value;
           if (k && v) {
             setLiveConfig((prev) => ({
               ...prev,
@@ -557,7 +562,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           <div className="text-sm font-black text-emerald-400 mt-0.5">
             ₹{foodPlatformFee}
           </div>
-          <div className="text-[9px] text-slate-400">umar_os_config.founder_fees</div>
+          <div className="text-[9px] text-slate-400">Live</div>
         </div>
 
         <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80">
@@ -568,7 +573,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           <div className="text-sm font-black text-sky-400 mt-0.5">
             {remitFee}%
           </div>
-          <div className="text-[9px] text-slate-400">umar_os_config.founder_fees</div>
+          <div className="text-[9px] text-slate-400">Live</div>
         </div>
 
         <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80">
@@ -601,7 +606,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           <div className="text-sm font-black text-rose-400 mt-0.5">
             {commissionRate}%
           </div>
-          <div className="text-[9px] text-slate-400">umar_os_config.economics</div>
+          <div className="text-[9px] text-slate-400">Live</div>
         </div>
 
         <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80">

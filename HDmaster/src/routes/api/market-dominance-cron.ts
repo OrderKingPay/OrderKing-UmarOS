@@ -27,6 +27,7 @@ async function isAuthorizedCronOrAdmin(request: Request): Promise<boolean> {
   return ADMIN_ROLES.has(role);
 }
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/market-dominance-cron")({
   
   server: {

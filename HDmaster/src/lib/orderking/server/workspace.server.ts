@@ -142,24 +142,10 @@ export async function ensureWorkspace(
   const email = (session?.email ?? authUser[0]?.email)?.toLowerCase() ?? null;
   const displayName = authUser[0]?.name || email?.split("@")[0] || "Operator";
 
-  const isServiceAdmin = Boolean(
-    (process.env.ORDERKING_SERVICE_USER_ID && userId === process.env.ORDERKING_SERVICE_USER_ID.trim()) ||
-    userId === "master-system-admin"
-  );
-
   const byUser = await sql<EmployeeRow>`
     select * from employees where user_id = ${userId} limit 1
   `;
   let row = byUser[0];
-
-  if (row && isServiceAdmin && (row.role_key !== "SUPER_ADMIN" || row.status !== "ACTIVE")) {
-    await sql`
-      update employees set role_key = 'SUPER_ADMIN', status = 'ACTIVE', last_active_at = now()
-      where id = ${row.id}
-    `;
-    const updated = await sql<EmployeeRow>`select * from employees where id = ${row.id}`;
-    row = updated[0];
-  }
 
   if (!row && email) {
     const invited = await sql<EmployeeRow>`
@@ -186,7 +172,7 @@ export async function ensureWorkspace(
   }
 
   if (!row) {
-    const isFounder = (email && FOUNDER_EMAILS.includes(email)) || userId === 'dev-user' || isServiceAdmin;
+    const isFounder = email && (FOUNDER_EMAILS.includes(email) || userId === 'dev-user');
     const id = nid("emp");
     await sql.query(
       `insert into employees (

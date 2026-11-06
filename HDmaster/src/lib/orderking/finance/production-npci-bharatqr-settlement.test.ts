@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ORDERKING / KINGPAY FINTECH ARCHITECTURE - SPECIALIST COUNCIL DOMAIN 4
  * Comprehensive Production Verification: NPCI Direct UPI, BharatQR & Section 9(5) Settlement

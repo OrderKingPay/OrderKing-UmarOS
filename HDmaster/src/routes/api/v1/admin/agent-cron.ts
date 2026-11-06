@@ -16,8 +16,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/admin/agent-cron')({
 
       let isVerifiedFounder = false;
       if (!hasValidCronSecret) {
-        const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : undefined;
-        const session = await getSessionUser(bearerToken, request);
+        const session = await getSessionUser();
         if (session?.id) {
           const sql = await getSql();
           const rows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;

@@ -1,4 +1,3 @@
-import { ZomatoPartnerPlatformApp } from "../components/zomato-partner/ZomatoPartnerPlatformApp";
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -25,7 +24,7 @@ import {
 } from "lucide-react";
 import { SelfServeLandingModule } from "@/components/onboarding/self-serve-landing-module";
 
-export const Route = createFileRoute("/")({ component: ZomatoPartnerPlatformApp });
+export const Route = createFileRoute("/")({ component: Home });
 
 interface FaqItem {
   question: string;

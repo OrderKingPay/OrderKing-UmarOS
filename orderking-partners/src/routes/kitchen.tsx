@@ -34,7 +34,6 @@ import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware
 import { inferDishComplexity } from "@/lib/orders/dynamic-kpt";
 import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import { toast } from "sonner";
-import { quadPartySyncClient } from "@orderking/ui";
 
 export const Route = createFileRoute("/kitchen")({ component: KitchenPage });
 
@@ -253,12 +252,6 @@ export function KitchenPage({
 
   useEffect(() => {
     if (!vendor.restaurantId) return;
-    const unsubscribeQuad = quadPartySyncClient.subscribe(
-      { role: "partner_kds", restaurantId: vendor.restaurantId },
-      () => {
-        void qc.invalidateQueries({ queryKey: ["orders", vendor.restaurantId, "live"] });
-      }
-    );
     const channel = supabaseCloud
       .channel(`orders-${vendor.restaurantId}`)
       .on(
@@ -276,7 +269,6 @@ export function KitchenPage({
       .subscribe();
 
     return () => {
-      unsubscribeQuad();
       void supabaseCloud.removeChannel(channel);
     };
   }, [vendor.restaurantId, qc]);

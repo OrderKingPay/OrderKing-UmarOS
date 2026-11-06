@@ -1,734 +1,980 @@
-import React, { useEffect, useMemo, useState } from 'react';
+// @ts-nocheck
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import {
+  Clock,
+  Star,
+  Zap,
+  Percent,
+  Coins,
+  ArrowRight,
+  RotateCcw,
+  MapPin,
+  Utensils,
+  ChevronRight,
+  CloudRain,
+  Sparkles,
+  Plane,
+  Train,
+  CreditCard,
+  Package,
+  GraduationCap,
+  Crown,
+  Building2,
+  Briefcase,
+  Eye,
+} from "lucide-react";
+import { KitchenCard } from "@/components/market/restaurant-card";
+import { LocationDialog } from "@/components/market/location-dialog";
+import { CuratedCollections } from "@/components/market/curated-collections";
+import { useCustomization } from "@orderking/ui";
+import { useBrand, useT } from "@/components/providers";
+import { listCategories } from "@/lib/server/catalog";
+import { listMyOrders, reorderItems } from "@/lib/server/orders";
+import { formatPaise } from "@/lib/money";
+import { useLocationStore } from "@/lib/stores/location";
+import { useCartStore } from "@/lib/stores/cart";
+import { useDietStore } from "@/lib/stores/diet";
+import type { RestaurantCard } from "@/lib/market-types";
+import { cn } from "@/lib/utils";
+import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
+
+// Curated high-resolution categories with distinct gradient colors (Biryani, Pizza, Rolls, Thali, Burgers, Desserts)
+const CURATED_FOOD_CATEGORIES = [
+  {
+    name: "Biryani",
+    slug: "biryani",
+    emoji: "🍚",
+    gradient: "from-orange-400 to-amber-500",
+    imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Pizza",
+    slug: "pizza",
+    emoji: "🍕",
+    gradient: "from-red-400 to-rose-500",
+    imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Rolls",
+    slug: "rolls",
+    emoji: "🌯",
+    gradient: "from-teal-400 to-cyan-500",
+    imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Thali",
+    slug: "thali",
+    emoji: "🍽️",
+    gradient: "from-amber-400 to-yellow-500",
+    imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Burgers",
+    slug: "burger",
+    emoji: "🍔",
+    gradient: "from-yellow-400 to-orange-500",
+    imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Desserts",
+    slug: "desserts",
+    emoji: "🍰",
+    gradient: "from-pink-400 to-rose-500",
+    imageUrl: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Curry",
+    slug: "north-indian",
+    emoji: "🍛",
+    gradient: "from-emerald-400 to-green-500",
+    imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Chinese",
+    slug: "chinese",
+    emoji: "🥡",
+    gradient: "from-sky-400 to-blue-500",
+    imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "South Indian",
+    slug: "south-indian",
+    emoji: "🫓",
+    gradient: "from-purple-400 to-violet-500",
+    imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Cakes",
+    slug: "cake",
+    emoji: "🎂",
+    gradient: "from-fuchsia-400 to-pink-500",
+    imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=240&auto=format&fit=crop&q=80",
+  },
+];
+
+export const VERIFIED_AVAILABLE_KITCHENS: RestaurantCard[] = [];
 
 export const ACTIVE_FLAGSHIP_HUBS = [
   {
-    id: 'guwahati-assam',
-    name: 'Guwahati & Sribhumi / Karimganj Core',
-    flagshipLabel: 'Assam Flagship (788710)',
-    description: 'Verified Assamese, Sylheti, North Indian & Mughlai Kitchens',
-    cityId: 'karimganj',
-    cityName: 'Guwahati / Karimganj',
-    zoneId: 'karimganj_core',
-    zoneName: 'Guwahati / Karimganj (788710)',
-    label: 'GS Road & Station Road, Guwahati / Karimganj, Assam 788710',
-    line1: 'Station Road, Karimganj / Guwahati, Assam 788710',
-    lat: 26.1445,
-    lng: 91.7362,
-    highlight: 'Assam Core 15km Zone',
-    gradient: 'from-emerald-500 to-teal-600',
-  },
-  {
-    id: 'delhi-cp',
-    name: 'Connaught Place Central',
-    flagshipLabel: 'Delhi NCR Flagship',
-    description: 'Verified North Indian, Mughlai & Heritage Kitchens',
-    cityId: 'del',
-    cityName: 'New Delhi',
-    zoneId: 'del-cp',
-    zoneName: 'Connaught Place',
-    label: 'Connaught Place Central, New Delhi',
-    line1: 'Inner Circle, Connaught Place, New Delhi',
+    id: "delhi-cp",
+    name: "Connaught Place Central",
+    flagshipLabel: "Delhi NCR Flagship",
+    description: "Iconic North Indian, Mughlai and Street Heritage",
+    cityId: "del",
+    cityName: "New Delhi",
+    zoneId: "del-cp",
+    zoneName: "Connaught Place",
+    label: "Connaught Place Central, New Delhi",
+    line1: "Inner Circle, Connaught Place, New Delhi",
     lat: 28.6315,
     lng: 77.2167,
-    highlight: 'Connaught Place Verified Kitchens',
-    gradient: 'from-amber-500 to-orange-500',
+    highlight: "Saravanaa Bhavan, Karim's, Wenger's and more",
+    gradient: "from-amber-500 to-orange-500",
   },
   {
-    id: 'mumbai-metro',
-    name: 'Mumbai Metropolitan',
-    flagshipLabel: 'Bandra / BKC Flagship',
-    description: 'Coastal, Tandoor & Late-Night Delivery Kitchens',
-    cityId: 'mum',
-    cityName: 'Mumbai',
-    zoneId: 'mum-bandra',
-    zoneName: 'Bandra / BKC',
-    label: 'Bandra West / BKC, Mumbai',
-    line1: 'Linking Road, Bandra West, Mumbai',
-    lat: 19.06,
+    id: "sribhumi-core",
+    name: "Sribhumi Core",
+    flagshipLabel: "Karimganj / Assam Flagship",
+    description: "Launch Flagship: Authentic Sylheti and Assamese Kitchens",
+    cityId: "karimganj",
+    cityName: "Sribhumi / Karimganj",
+    zoneId: "karimganj_core",
+    zoneName: "Sribhumi Core",
+    label: "Station Road, Sribhumi Core",
+    line1: "Station Road, Karimganj, Assam",
+    lat: 24.8688,
+    lng: 92.3511,
+    highlight: "Assam Core 15km Zone",
+    gradient: "from-emerald-500 to-teal-600",
+  },
+  {
+    id: "mumbai-metro",
+    name: "Mumbai Metropolitan",
+    flagshipLabel: "Bandra / BKC Flagship",
+    description: "Coastal Seafood, Artisanal Cafes and Late Night Dining",
+    cityId: "mum",
+    cityName: "Mumbai",
+    zoneId: "mum-bandra",
+    zoneName: "Bandra / BKC",
+    label: "Bandra West / BKC, Mumbai",
+    line1: "Linking Road, Bandra West, Mumbai",
+    lat: 19.0600,
     lng: 72.8336,
-    highlight: 'Bandra & BKC Kitchens',
-    gradient: 'from-blue-500 to-indigo-600',
+    highlight: "Bandra and BKC Gourmet Kitchens",
+    gradient: "from-blue-500 to-indigo-600",
   },
   {
-    id: 'bengaluru-hub',
-    name: 'Bengaluru Tech Hub',
-    flagshipLabel: 'Indiranagar Flagship',
-    description: 'South Indian Filter Coffee, Bowl & Biryani Kitchens',
-    cityId: 'blr',
-    cityName: 'Bengaluru',
-    zoneId: 'blr-ind',
-    zoneName: 'Indiranagar',
-    label: 'Indiranagar Tech Hub, Bengaluru',
-    line1: '100ft Road, Indiranagar, Bengaluru',
+    id: "bengaluru-hub",
+    name: "Bengaluru Tech Hub",
+    flagshipLabel: "Indiranagar Flagship",
+    description: "Craft Burgers, Artisanal Bakeries and Pan-Asian Delights",
+    cityId: "blr",
+    cityName: "Bengaluru",
+    zoneId: "blr-ind",
+    zoneName: "Indiranagar",
+    label: "Indiranagar Tech Hub, Bengaluru",
+    line1: "100ft Road, Indiranagar, Bengaluru",
     lat: 12.9784,
     lng: 77.6408,
-    highlight: 'Indiranagar & Koramangala Kitchens',
-    gradient: 'from-purple-500 to-violet-600',
+    highlight: "Indiranagar and Koramangala Kitchens",
+    gradient: "from-purple-500 to-violet-600",
   },
 ];
 
-export interface ZomatoMenuDish {
-  id: string;
-  name: string;
-  category: 'Biryani' | 'Thali' | 'Pizza' | 'Rolls' | 'Healthy Bowls' | 'South Indian' | 'Burgers' | 'Desserts';
-  basePricePaise: number;
-  packagingPaise: number;
-  isVeg: boolean;
-  isBestseller: boolean;
-  healthyGrade: 'Super' | 'High';
-  healthyScore: number;
-  proteinGrams: number;
-  fibreGrams: number;
-  kcal: number;
-  variants: { id: string; label: string; addPaise: number }[];
-  addons: { id: string; label: string; addPaise: number }[];
-}
 
-export interface VerifiedKitchenRecord {
-  id: string;
-  slug: string;
-  name: string;
-  cuisines: string[];
-  rating: number;
-  ratingCount: number;
-  prepMinutes: number;
-  distanceKm: number;
-  priceForOneRupees: number;
-  isPureVeg: boolean;
-  fssaiLicense: string;
-  merchantPromoCode: string | null;
-  merchantPromoDiscountPercent: number;
-  merchantPromoMaxPaise: number;
-  dishes: ZomatoMenuDish[];
-}
+export function HomeFeed({
+  q,
+  veg,
+  openNow,
+  category,
+}: {
+  q?: string;
+  veg?: boolean;
+  openNow?: boolean;
+  category?: string;
+}) {
+  const { t, lang } = useT();
+  const locale = lang === "bn" ? "bn-IN" : "en-IN";
+  const { marketplace } = useBrand();
+  const location = useLocationStore((s) => s.location);
+  const setLocation = useLocationStore((s) => s.setLocation);
+  const cart = useCartStore();
+  const navigate = useNavigate();
 
-export const VERIFIED_AVAILABLE_KITCHENS: VerifiedKitchenRecord[] = [
-  {
-    id: 'rest-gopinath',
-    slug: 'gopinath-pure-veg-bhojanalaya',
-    name: 'Gopinath Pure Veg Bhojanalaya',
-    cuisines: ['Thali', 'North Indian', 'Assamese', 'South Indian'],
-    rating: 4.6,
-    ratingCount: 1840,
-    prepMinutes: 14,
-    distanceKm: 1.6,
-    priceForOneRupees: 185,
-    isPureVeg: true,
-    fssaiLicense: '10324001000492',
-    merchantPromoCode: 'MERCHANT20',
-    merchantPromoDiscountPercent: 20,
-    merchantPromoMaxPaise: 8000,
-    dishes: [
-      {
-        id: 'dish-joha-thali',
-        name: 'Special Joha Rice Assamese Pure Veg Thali',
-        category: 'Thali',
-        basePricePaise: 18500,
-        packagingPaise: 1500,
-        isVeg: true,
-        isBestseller: true,
-        healthyGrade: 'Super',
-        healthyScore: 92,
-        proteinGrams: 22,
-        fibreGrams: 11,
-        kcal: 540,
-        variants: [
-          { id: 'v-joha-reg', label: 'Aromatic Joha Rice (Regular)', addPaise: 0 },
-          { id: 'v-red-rice', label: 'High-Fibre Red Bao Rice', addPaise: 2000 },
-        ],
-        addons: [
-          { id: 'a-dahi', label: 'Fresh Matka Dahi (100g)', addPaise: 3000 },
-          { id: 'a-papad', label: 'Roasted Masala Papad (2 pcs)', addPaise: 1500 },
-        ],
-      },
-      {
-        id: 'dish-paneer-butter-masala',
-        name: 'Paneer Butter Masala with 3 Tandoori Rotis',
-        category: 'Thali',
-        basePricePaise: 21000,
-        packagingPaise: 1500,
-        isVeg: true,
-        isBestseller: true,
-        healthyGrade: 'High',
-        healthyScore: 84,
-        proteinGrams: 26,
-        fibreGrams: 9,
-        kcal: 580,
-        variants: [
-          { id: 'v-roti', label: '3 Whole Wheat Tandoori Rotis', addPaise: 0 },
-          { id: 'v-naan', label: '2 Garlic Butter Naans', addPaise: 3000 },
-        ],
-        addons: [
-          { id: 'a-boondi', label: 'Spiced Boondi Raita', addPaise: 2500 },
-        ],
-      },
-      {
-        id: 'dish-masala-dosa',
-        name: 'Crispy Masala Dosa',
-        category: 'South Indian',
-        basePricePaise: 14500,
-        packagingPaise: 1000,
-        isVeg: true,
-        isBestseller: true,
-        healthyGrade: 'High',
-        healthyScore: 81,
-        proteinGrams: 14,
-        fibreGrams: 8,
-        kcal: 410,
-        variants: [
-          { id: 'v-classic', label: 'Classic Sambar & Trio Chutney', addPaise: 0 },
-          { id: 'v-podi', label: 'Gunpowder Ghee Podi Upgrade', addPaise: 2500 },
-        ],
-        addons: [
-          { id: 'a-vada', label: 'Crispy Medu Vada (1 pc)', addPaise: 3500 },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'rest-karims',
-    slug: 'karims-connaught-place',
-    name: "Karim's Royal Dum & Kebab Kitchen",
-    cuisines: ['Biryani', 'Rolls', 'Mughlai'],
-    rating: 4.7,
-    ratingCount: 3420,
-    prepMinutes: 18,
-    distanceKm: 2.2,
-    priceForOneRupees: 240,
-    isPureVeg: false,
-    fssaiLicense: '10324001000871',
-    merchantPromoCode: 'BAWARCHI50',
-    merchantPromoDiscountPercent: 15,
-    merchantPromoMaxPaise: 7500,
-    dishes: [
-      {
-        id: 'dish-dum-biryani',
-        name: 'Hyderabadi Chicken Biryani',
-        category: 'Biryani',
-        basePricePaise: 24000,
-        packagingPaise: 2000,
-        isVeg: false,
-        isBestseller: true,
-        healthyGrade: 'High',
-        healthyScore: 79,
-        proteinGrams: 38,
-        fibreGrams: 5,
-        kcal: 680,
-        variants: [
-          { id: 'v-half', label: 'Single (1 Pc + 1 Egg)', addPaise: 0 },
-          { id: 'v-full', label: 'Full (2 Pcs + 2 Eggs)', addPaise: 12000 },
-        ],
-        addons: [
-          { id: 'a-raita', label: 'Burhani Garlic Raita', addPaise: 2500 },
-          { id: 'a-salan', label: 'Mirchi Ka Salan', addPaise: 2500 },
-        ],
-      },
-      {
-        id: 'dish-kathi-roll',
-        name: 'Charcoal Paneer Tikka Kathi Roll',
-        category: 'Rolls',
-        basePricePaise: 16500,
-        packagingPaise: 1000,
-        isVeg: true,
-        isBestseller: false,
-        healthyGrade: 'High',
-        healthyScore: 80,
-        proteinGrams: 21,
-        fibreGrams: 6,
-        kcal: 460,
-        variants: [
-          { id: 'v-wheat', label: 'Whole Wheat Lachha Roll', addPaise: 0 },
-          { id: 'v-double', label: 'Double Paneer Stuffing', addPaise: 5000 },
-        ],
-        addons: [
-          { id: 'a-mint', label: 'Extra Mint Curd Dip', addPaise: 1500 },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'rest-green-bowl',
-    slug: 'green-bowl-healthy-kitchen',
-    name: 'Green Bowl Superfood & Artisan Pizza Kitchen',
-    cuisines: ['Healthy Bowls', 'Pizza', 'Burgers', 'Desserts'],
-    rating: 4.5,
-    ratingCount: 980,
-    prepMinutes: 12,
-    distanceKm: 1.4,
-    priceForOneRupees: 215,
-    isPureVeg: true,
-    fssaiLicense: '10324001000915',
-    merchantPromoCode: 'HEALTHY20',
-    merchantPromoDiscountPercent: 20,
-    merchantPromoMaxPaise: 6000,
-    dishes: [
-      {
-        id: 'dish-quinoa-bowl',
-        name: 'High-Protein Tandoori Paneer Quinoa Bowl',
-        category: 'Healthy Bowls',
-        basePricePaise: 21500,
-        packagingPaise: 1500,
-        isVeg: true,
-        isBestseller: true,
-        healthyGrade: 'Super',
-        healthyScore: 95,
-        proteinGrams: 34,
-        fibreGrams: 14,
-        kcal: 480,
-        variants: [
-          { id: 'v-350', label: 'Regular (350g)', addPaise: 0 },
-          { id: 'v-500', label: 'Pro Athlete (500g Double Protein)', addPaise: 7500 },
-        ],
-        addons: [
-          { id: 'a-hummus', label: 'Roasted Garlic Hummus', addPaise: 3500 },
-        ],
-      },
-      {
-        id: 'dish-margherita',
-        name: 'Wood-Fired Sourdough Margherita Pizza',
-        category: 'Pizza',
-        basePricePaise: 23500,
-        packagingPaise: 2000,
-        isVeg: true,
-        isBestseller: true,
-        healthyGrade: 'High',
-        healthyScore: 78,
-        proteinGrams: 24,
-        fibreGrams: 7,
-        kcal: 590,
-        variants: [
-          { id: 'v-8in', label: '8-Inch Regular Hand-Stretched', addPaise: 0 },
-          { id: 'v-10in', label: '10-Inch Medium Bocconcini', addPaise: 9000 },
-        ],
-        addons: [
-          { id: 'a-olives', label: 'Kalamata Olives & Basil', addPaise: 3000 },
-        ],
-      },
-    ],
-  },
-];
+  // Global reactive diet preference: "all" | "veg"
+  const { dietFilter, setDietFilter } = useDietStore();
+  const customization = useCustomization();
+  const isRainSurge = Boolean(
+    (customization?.payoutPolicy as any)?.monsoonSurgePaise > 0 ||
+    (customization?.payoutPolicy as any)?.rainSurgeBonusPaise > 0 ||
+    (customization?.logistics as any)?.rainSurgeActive ||
+    (customization?.state as any)?.features?.rainSurgeActive ||
+    customization?.isFeatureEnabled?.("rain_surge") ||
+    customization?.isFeatureEnabled?.("monsoon_mode")
+  );
 
-const CATEGORIES = ['All', 'Biryani', 'Thali', 'Pizza', 'Rolls', 'Healthy Bowls', 'South Indian'] as const;
+  // Secondary quick filter tags
+  const [filterFast, setFilterFast] = useState(false);
+  const [filterRating, setFilterRating] = useState(false);
+  const [filterOffers, setFilterOffers] = useState(false);
+  const [filterBudget, setFilterBudget] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
+  const [locDialogOpen, setLocDialogOpen] = useState(false);
 
-const LIVE_STAGES = [
-  'PLACED & PAID',
-  'KITCHEN ACCEPTED',
-  'FOOD PREPARED & READY',
-  'RIDER ASSIGNED',
-  'OUT FOR DELIVERY',
-  'DELIVERED (OTP 4829 VERIFIED)',
-] as const;
+  // Past orders for reorder
+  const pastOrders = useQuery({
+    queryKey: ["pastOrders"],
+    queryFn: () => listMyOrders(),
+    retry: false,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 60 * 24,
+    placeholderData: (prev) => prev,
+  });
 
-export function HomeFeed() {
-  const [selectedHubId, setSelectedHubId] = useState<string>(ACTIVE_FLAGSHIP_HUBS[0].id);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [pureVegOnly, setPureVegOnly] = useState<boolean>(false);
-  const [healthyModeOnly, setHealthyModeOnly] = useState<boolean>(false);
-  const [under250Only, setUnder250Only] = useState<boolean>(false);
-  const [rating45Only, setRating45Only] = useState<boolean>(false);
-  const [goldActive, setGoldActive] = useState<boolean>(true);
-  const [rescueClaimed, setRescueClaimed] = useState<boolean>(false);
+  // Database categories
+  const cats = useQuery({
+    queryKey: ["categories", lang],
+    queryFn: () => listCategories({ data: { lang } }),
+    staleTime: 1000 * 60 * 15,
+    gcTime: 1000 * 60 * 60 * 24,
+    placeholderData: (prev) => prev,
+  });
 
-  const [activeKitchenId, setActiveKitchenId] = useState<string>(VERIFIED_AVAILABLE_KITCHENS[0].id);
-  const [activeDish, setActiveDish] = useState<ZomatoMenuDish>(VERIFIED_AVAILABLE_KITCHENS[0].dishes[0]);
-  const [selectedVariantId, setSelectedVariantId] = useState<string>(VERIFIED_AVAILABLE_KITCHENS[0].dishes[0].variants[0].id);
-  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
-  const [qty, setQty] = useState<number>(1);
-  const [applyPromo, setApplyPromo] = useState<boolean>(true);
-  const [riderTipPaise, setRiderTipPaise] = useState<number>(2000);
-  const [orderStageIdx, setOrderStageIdx] = useState<number | null>(null);
-  const [orderId, setOrderId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const qParam = params.get('q');
-      if (qParam) setSearchQuery(qParam);
+  // Display categories: DB categories merged with curated fallback items with distinct gradient and emoji
+  const displayCategories = useMemo(() => {
+    const dbCats = cats.data?.categories ?? [];
+    if (dbCats.length > 0) {
+      return dbCats.map((c, i) => {
+        const cSlug = (c.slug || "").toLowerCase();
+        const curated =
+          CURATED_FOOD_CATEGORIES.find((cc) => {
+            const ccSlug = (cc.slug || "").toLowerCase();
+            return cSlug ? (ccSlug.includes(cSlug) || cSlug.includes(ccSlug)) : false;
+          }) || CURATED_FOOD_CATEGORIES[i % CURATED_FOOD_CATEGORIES.length];
+        return {
+          id: c.id || `db-cat-${i}`,
+          slug: c.slug || `cat-${i}`,
+          name: c.name || "Category",
+          emoji: curated.emoji,
+          gradient: curated.gradient,
+          imageUrl: c.imageUrl || curated.imageUrl,
+        };
+      });
     }
-  }, []);
+    return CURATED_FOOD_CATEGORIES.map((c, i) => ({
+      id: `cat-${i}`,
+      slug: c.slug,
+      name: c.name,
+      emoji: c.emoji,
+      gradient: c.gradient,
+      imageUrl: c.imageUrl,
+    }));
+  }, [cats.data?.categories]);
 
-  const activeHub = useMemo(
-    () => ACTIVE_FLAGSHIP_HUBS.find((h) => h.id === selectedHubId) ?? ACTIVE_FLAGSHIP_HUBS[0],
-    [selectedHubId]
-  );
+  // Main restaurant catalog query with persistent caching across route navigations
+  const list = useQuery({
+    queryKey: [
+      "restaurants",
+      location?.zoneId ?? "",
+      location?.lat ?? 0,
+      location?.lng ?? 0,
+      q ?? "",
+      dietFilter,
+      openNow ?? false,
+      selectedCategory ?? "",
+      lang ?? "en",
+    ],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (q) params.set("q", q);
+      if (dietFilter === "veg") params.set("veg", "true");
+      if (openNow) params.set("openNow", "true");
+      if (selectedCategory) params.set("category", selectedCategory);
+      params.set("lat", (location?.lat ?? 0).toString());
+      params.set("lng", (location?.lng ?? 0).toString());
+      params.set("zoneId", location?.zoneId || "");
+      if (lang) params.set("lang", lang);
 
-  const filteredKitchens = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    const list = VERIFIED_AVAILABLE_KITCHENS.filter((k) => {
-      if (pureVegOnly && !k.isPureVeg) return false;
-      if (rating45Only && k.rating < 4.5) return false;
-      if (under250Only && k.priceForOneRupees > 250) return false;
-      if (healthyModeOnly && !k.dishes.some((d) => d.healthyGrade === 'Super')) return false;
-      if (selectedCategory !== 'All' && !k.cuisines.includes(selectedCategory) && !k.dishes.some((d) => d.category === selectedCategory)) {
-        return false;
+      const response = await fetch(`/api/search?${params.toString()}`);
+      if (!response.ok) {
+        if (response.status === 429) {
+          console.warn("Search rate limited (429), preserving existing catalog");
+        }
+        throw new Error(`Failed to fetch restaurants: HTTP ${response.status}`);
       }
-      if (q.length > 0) {
-        const nameMatch = k.name.toLowerCase().includes(q);
-        const cuisineMatch = k.cuisines.some((c) => c.toLowerCase().includes(q));
-        const dishMatch = k.dishes.some((d) => d.name.toLowerCase().includes(q));
-        if (!nameMatch && !cuisineMatch && !dishMatch) return false;
-      }
+      const data = await response.json();
+      return {
+        restaurants: Array.isArray(data?.restaurants) ? (data.restaurants as RestaurantCard[]) : [],
+        deliveryAvailable: Boolean(data?.deliveryAvailable),
+        reason: (data?.reason as string) || undefined,
+      };
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60 * 24,
+    placeholderData: (prev) => prev,
+    refetchOnWindowFocus: false,
+    retry: (failureCount, error) => {
+      if (failureCount >= 2) return false;
       return true;
-    });
-    return list.length > 0 ? list : VERIFIED_AVAILABLE_KITCHENS;
-  }, [searchQuery, selectedCategory, pureVegOnly, healthyModeOnly, under250Only, rating45Only]);
+    },
+  });
 
-  const activeKitchen = useMemo(
-    () => filteredKitchens.find((k) => k.id === activeKitchenId) ?? filteredKitchens[0] ?? VERIFIED_AVAILABLE_KITCHENS[0],
-    [filteredKitchens, activeKitchenId]
-  );
-
-  const bill = useMemo(() => {
-    const v = activeDish.variants.find((item) => item.id === selectedVariantId) ?? activeDish.variants[0];
-    const addonsPaise = activeDish.addons
-      .filter((a) => selectedAddonIds.includes(a.id))
-      .reduce((acc, a) => acc + a.addPaise, 0);
-    const unitFoodPaise = activeDish.basePricePaise + (v?.addPaise ?? 0) + addonsPaise;
-    const grossFoodPaise = unitFoodPaise * qty;
-    const packagingPaise = activeDish.packagingPaise * qty;
-    const promoPaise =
-      applyPromo && activeKitchen.merchantPromoCode && grossFoodPaise >= 15000
-        ? Math.min(activeKitchen.merchantPromoMaxPaise, Math.round((grossFoodPaise * activeKitchen.merchantPromoDiscountPercent) / 100))
-        : 0;
-    const netTaxableFoodPaise = Math.max(0, grossFoodPaise - promoPaise);
-    const cgstPaise = Math.round(netTaxableFoodPaise * 0.025);
-    const sgstPaise = Math.round(netTaxableFoodPaise * 0.025);
-    const rawDeliveryPaise = 2900;
-    const deliveryPaise = goldActive && netTaxableFoodPaise >= 9900 ? 0 : rawDeliveryPaise;
-    const platformFeePaise = 1000;
-    const grandTotalPaise = netTaxableFoodPaise + packagingPaise + cgstPaise + sgstPaise + deliveryPaise + platformFeePaise + riderTipPaise;
-    return {
-      grossFoodPaise,
-      packagingPaise,
-      promoPaise,
-      netTaxableFoodPaise,
-      cgstPaise,
-      sgstPaise,
-      deliveryPaise,
-      platformFeePaise,
-      grandTotalPaise,
-      etaMins: activeKitchen.prepMinutes + Math.ceil(activeKitchen.distanceKm * 3.5) + 4,
-    };
-  }, [activeDish, selectedVariantId, selectedAddonIds, qty, applyPromo, activeKitchen, goldActive, riderTipPaise]);
-
-  const selectDish = (k: VerifiedKitchenRecord, d: ZomatoMenuDish) => {
-    setActiveKitchenId(k.id);
-    setActiveDish(d);
-    setSelectedVariantId(d.variants[0]?.id ?? '');
-    setSelectedAddonIds([]);
+  // Handle reorder click
+  const handleReorder = async (orderId: string) => {
+    try {
+      const res = await reorderItems({ data: { orderId } });
+      cart.replaceCart(res.restaurantId, res.restaurantName, res.lines);
+      toast.success("Past order items added to cart!");
+      void navigate({ to: "/cart" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not reorder");
+    }
   };
 
+  const activeOrder = pastOrders.data?.orders?.find((o) =>
+    o && o.status && ["PENDING", "PLACED", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "ARRIVED"].includes(
+      o.status
+    )
+  );
+
+  const isDeliveryActive = location
+    ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId)
+    : true;
+
+  const isZeroDeliveryInRadius =
+    !isDeliveryActive ||
+    (list.data && list.data.restaurants.length === 0) ||
+    (list.data && list.data.deliveryAvailable === false);
+
+  // Filtered and sorted restaurants based on active controls
+  const filteredRestaurants = useMemo(() => {
+    const raw: RestaurantCard[] = list.data?.restaurants ?? [];
+
+    const matched = raw
+      .filter((r) => {
+        if (!r) return false;
+        if (dietFilter === "veg" && !r.vegOnly) return false;
+        if (selectedCategory) {
+          const s = selectedCategory.toLowerCase();
+          const matchCat =
+            (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(s)) ||
+            r.name.toLowerCase().includes(s) ||
+            r.slug.toLowerCase().includes(s);
+          if (!matchCat) return false;
+        }
+        if (q) {
+          const matchQ =
+            r.name.toLowerCase().includes(q.toLowerCase()) ||
+            (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(q.toLowerCase()));
+          if (!matchQ) return false;
+        }
+        const rating = typeof r.ratingAvg === "number" ? r.ratingAvg : Number(r.ratingAvg || 0);
+        if (filterRating && rating < 4.0) return false;
+        if (filterOffers && !r.hasOffer) return false;
+        const minOrder = typeof r.minOrderPaise === "number" ? r.minOrderPaise : Number(r.minOrderPaise || 0);
+        if (filterBudget && minOrder > 20000) return false;
+        const eta = typeof r.etaMinutes === "number" ? r.etaMinutes : Number(r.etaMinutes || 35);
+        if (filterFast && eta > 30) return false;
+        return true;
+      });
+
+    // Only actual API results may populate the restaurant grid.
+    const finalKitchens = matched;
+
+    return finalKitchens.sort((a, b) => {
+        const etaA = typeof a.etaMinutes === "number" ? a.etaMinutes : Number(a.etaMinutes || 30);
+        const etaB = typeof b.etaMinutes === "number" ? b.etaMinutes : Number(b.etaMinutes || 30);
+        if (filterFast) return etaA - etaB;
+
+        const minA = typeof a.minOrderPaise === "number" ? a.minOrderPaise : Number(a.minOrderPaise || 20000);
+        const minB = typeof b.minOrderPaise === "number" ? b.minOrderPaise : Number(b.minOrderPaise || 20000);
+        if (filterBudget) return minA - minB;
+
+        const ratingA = typeof a.ratingAvg === "number" ? a.ratingAvg : Number(a.ratingAvg || 4.0);
+        const ratingB = typeof b.ratingAvg === "number" ? b.ratingAvg : Number(b.ratingAvg || 4.0);
+        const countA = typeof a.ratingCount === "number" ? a.ratingCount : Number(a.ratingCount || 10);
+        const countB = typeof b.ratingCount === "number" ? b.ratingCount : Number(b.ratingCount || 10);
+
+        const scoreA = ratingA * Math.log10(Math.max(10, countA));
+        const scoreB = ratingB * Math.log10(Math.max(10, countB));
+        return scoreB - scoreA;
+      });
+  }, [list.data?.restaurants, dietFilter, filterRating, filterOffers, filterBudget, filterFast, selectedCategory, q]);
+
   return (
-    <div style={{ maxWidth: 1140, margin: '0 auto', padding: '12px 16px 88px 16px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, background: '#fff', padding: 12, borderRadius: 12, border: '1px solid #e4e4e7' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontWeight: 800, fontSize: 14, color: '#e23744' }}>Zone:</span>
-          <select
-            aria-label="Select Delivery Zone"
-            value={selectedHubId}
-            onChange={(e) => setSelectedHubId(e.target.value)}
-            style={{ padding: '7px 10px', borderRadius: 8, border: '1px solid #d4d4d8', fontWeight: 700, fontSize: 13, background: '#fff' }}
-          >
-            {ACTIVE_FLAGSHIP_HUBS.map((h) => (
-              <option key={h.id} value={h.id}>
-                {h.name} ({h.cityName})
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 bg-[#FCFAF7] text-gray-900 font-sans">
 
-        <input
-          type="search"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search restaurant, cuisine or dish..."
-          style={{ flex: '1 1 260px', padding: '8px 12px', borderRadius: 8, border: '1px solid #d4d4d8', fontSize: 13 }}
-        />
 
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => setPureVegOnly((v) => !v)}
-            style={{ padding: '6px 10px', borderRadius: 8, border: pureVegOnly ? '1.5px solid #15803d' : '1px solid #d4d4d8', background: pureVegOnly ? '#dcfce7' : '#fff', color: '#166534', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
-          >
-            Pure Veg
-          </button>
-          <button
-            type="button"
-            onClick={() => setHealthyModeOnly((v) => !v)}
-            style={{ padding: '6px 10px', borderRadius: 8, border: healthyModeOnly ? '1.5px solid #0f766e' : '1px solid #d4d4d8', background: healthyModeOnly ? '#ccfbf1' : '#fff', color: '#115e59', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
-          >
-            Healthy Mode
-          </button>
-          <button
-            type="button"
-            onClick={() => setUnder250Only((v) => !v)}
-            style={{ padding: '6px 10px', borderRadius: 8, border: under250Only ? '1.5px solid #b45309' : '1px solid #d4d4d8', background: under250Only ? '#fef3c7' : '#fff', color: '#92400e', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
-          >
-            Under ₹250
-          </button>
-          <button
-            type="button"
-            onClick={() => setRating45Only((v) => !v)}
-            style={{ padding: '6px 10px', borderRadius: 8, border: rating45Only ? '1.5px solid #1d4ed8' : '1px solid #d4d4d8', background: rating45Only ? '#dbeafe' : '#fff', color: '#1e40af', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
-          >
-            Rating 4.5+
-          </button>
-          <button
-            type="button"
-            onClick={() => setGoldActive((v) => !v)}
-            style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #b45309', background: goldActive ? '#fef3c7' : '#fff', color: '#92400e', fontWeight: 800, fontSize: 12, cursor: 'pointer' }}
-          >
-            Gold Free Delivery ≥ ₹99: {goldActive ? 'ON' : 'OFF'}
-          </button>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, overflowX: 'auto', marginBottom: 12, paddingBottom: 4 }}>
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => setSelectedCategory(cat)}
-            style={{
-              padding: '7px 14px',
-              borderRadius: 999,
-              border: selectedCategory === cat ? '1.5px solid #e23744' : '1px solid #e4e4e7',
-              background: selectedCategory === cat ? '#e23744' : '#ffffff',
-              color: selectedCategory === cat ? '#ffffff' : '#18181b',
-              fontWeight: 700,
-              fontSize: 12,
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-            }}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {!rescueClaimed && (
-        <div style={{ marginBottom: 12, padding: '10px 14px', borderRadius: 10, background: '#fffbeb', border: '1px solid #f59e0b', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#92400e' }}>
-            Food Rescue (1.1 km away • Untampered Kitchen Seal): 1x Special Joha Rice Pure Veg Thali — Rescue Price ₹110.00 (Orig. ₹200.00)
+      {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
+      {!q && !isZeroDeliveryInRadius && (
+        <section aria-label="Food Categories" className="pt-0.5">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
+              Eat what makes you happy
+            </h2>
+            <Link
+              to="/search"
+              className="text-xs font-bold text-[#E23744] hover:underline flex items-center gap-0.5"
+            >
+              See all <ChevronRight className="size-3.5" />
+            </Link>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setRescueClaimed(true);
-              selectDish(VERIFIED_AVAILABLE_KITCHENS[0], VERIFIED_AVAILABLE_KITCHENS[0].dishes[0]);
-            }}
-            style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#e23744', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
-          >
-            Claim Rescue Order
-          </button>
-        </div>
+
+          <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1">
+            {displayCategories.map((c, i) => {
+              const isSelected = selectedCategory === c.id || selectedCategory === c.slug;
+              return (
+                <button
+                  type="button"
+                  key={c.id || c.slug || `cat-${i}`}
+                  onClick={() => setSelectedCategory(isSelected ? null : c.id || c.slug)}
+                  className="group flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none focus:outline-none transition-transform active:scale-95"
+                >
+                  {/* Distinct gradient colored ring around image */}
+                  <div
+                    className={cn(
+                      "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr transition-all duration-300 shadow-sm relative",
+                      c.gradient,
+                      isSelected
+                        ? "scale-105 ring-3 ring-amber-400 shadow-[0_4px_16px_rgba(245,158,11,0.35)]"
+                        : "group-hover:scale-105 group-hover:shadow-md"
+                    )}
+                  >
+                    <div className="size-full rounded-full p-0.5 bg-white overflow-hidden shadow-inner">
+                      <img
+                        src={c.imageUrl}
+                        alt={c.name}
+                        className="size-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Category Name */}
+                  <span
+                    className={cn(
+                      "mt-1.5 text-xs font-black truncate w-full transition-colors leading-tight",
+                      isSelected ? "text-[#E23744]" : "text-gray-900 group-hover:text-black"
+                    )}
+                  >
+                    {c.name}
+                  </span>
+
+                  {/* Emoji Label below name */}
+                  <span className="text-[11px] leading-none mt-0.5 transition-transform group-hover:scale-125" aria-hidden>
+                    {c.emoji}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#18181b' }}>
-            {selectedCategory === 'All' ? `Verified Kitchens in ${activeHub.zoneName}` : `Best in ${selectedCategory} — ${activeHub.zoneName}`}
-          </h2>
-
-          {filteredKitchens.map((k) => (
-            <div key={k.id} style={{ background: '#ffffff', borderRadius: 12, border: k.id === activeKitchen.id ? '2px solid #e23744' : '1px solid #e4e4e7', padding: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                <div>
-                  <div style={{ fontWeight: 800, fontSize: 15, color: '#18181b' }}>{k.name}</div>
-                  <div style={{ fontSize: 12, color: '#52525b' }}>
-                    {k.cuisines.join(', ')} • ₹{k.priceForOneRupees} for one • {k.prepMinutes}–{k.prepMinutes + 8} mins ({k.distanceKm} km)
-                  </div>
-                  <div style={{ fontSize: 11, color: '#71717a' }}>FSSAI License: {k.fssaiLicense}</div>
-                </div>
-                <span style={{ background: '#15803d', color: '#fff', fontWeight: 800, fontSize: 12, padding: '3px 8px', borderRadius: 6 }}>
-                  {k.rating} ★ ({k.ratingCount})
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-                {k.dishes.map((d) => (
-                  <div
-                    key={d.id}
-                    style={{ padding: 10, borderRadius: 8, border: '1px solid #f4f4f5', background: activeDish.id === d.id ? '#fff1f2' : '#fafafa', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ width: 10, height: 10, borderRadius: 2, background: d.isVeg ? '#15803d' : '#b91c1c', display: 'inline-block' }} />
-                        <strong style={{ fontSize: 13, color: '#18181b' }}>{d.name}</strong>
-                      </div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#18181b', marginTop: 2 }}>₹{(d.basePricePaise / 100).toFixed(2)}</div>
-                      <div style={{ fontSize: 11, color: '#0f766e', fontWeight: 600 }}>
-                        Healthy {d.healthyGrade} ({d.healthyScore}/100) • {d.proteinGrams}g Protein • {d.fibreGrams}g Fibre • {d.kcal} kcal
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => selectDish(k, d)}
-                      style={{ padding: '7px 14px', borderRadius: 8, border: '1px solid #e23744', background: '#fff', color: '#e23744', fontWeight: 800, fontSize: 12, cursor: 'pointer' }}
-                    >
-                      ADD +
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ background: '#ffffff', borderRadius: 12, border: '1px solid #e4e4e7', padding: 16, alignSelf: 'start', position: 'sticky', top: 16 }}>
-          <h3 style={{ margin: '0 0 8px 0', fontSize: 15, fontWeight: 800, color: '#18181b' }}>
-            Order Customizer & Statutory Tax Checkout
-          </h3>
-          <div style={{ fontSize: 12, color: '#52525b', marginBottom: 8 }}>
-            {activeKitchen.name} (FSSAI {activeKitchen.fssaiLicense})
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <strong style={{ fontSize: 14, color: '#18181b' }}>{activeDish.name}</strong>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} style={{ padding: '2px 8px', cursor: 'pointer' }}>-</button>
-              <strong style={{ fontSize: 13 }}>{qty}</strong>
-              <button type="button" onClick={() => setQty((q) => q + 1)} style={{ padding: '2px 8px', cursor: 'pointer' }}>+</button>
-            </div>
-          </div>
-
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#52525b', marginBottom: 4 }}>Select Portion / Variant (Required)</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {activeDish.variants.map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => setSelectedVariantId(v.id)}
-                  style={{
-                    padding: '5px 10px',
-                    fontSize: 11,
-                    borderRadius: 6,
-                    border: selectedVariantId === v.id ? '1.5px solid #e23744' : '1px solid #d4d4d8',
-                    background: selectedVariantId === v.id ? '#fff1f2' : '#fff',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {v.label} {v.addPaise > 0 ? `(+₹${v.addPaise / 100})` : ''}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#52525b', marginBottom: 4 }}>Optional Add-ons</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {activeDish.addons.map((a) => (
-                <button
-                  key={a.id}
-                  type="button"
-                  onClick={() =>
-                    setSelectedAddonIds((prev) => (prev.includes(a.id) ? prev.filter((x) => x !== a.id) : [...prev, a.id]))
-                  }
-                  style={{
-                    padding: '5px 10px',
-                    fontSize: 11,
-                    borderRadius: 6,
-                    border: selectedAddonIds.includes(a.id) ? '1.5px solid #15803d' : '1px solid #d4d4d8',
-                    background: selectedAddonIds.includes(a.id) ? '#dcfce7' : '#fff',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  + {a.label} (₹{a.addPaise / 100})
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ borderTop: '1px dashed #d4d4d8', paddingTop: 10, fontSize: 12, color: '#3f3f46', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Item + Variant/Add-on Total</span>
-              <span>₹{(bill.grossFoodPaise / 100).toFixed(2)}</span>
-            </div>
-            {activeKitchen.merchantPromoCode && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#15803d', fontWeight: 700 }}>
-                <label style={{ cursor: 'pointer' }}>
-                  <input type="checkbox" checked={applyPromo} onChange={(e) => setApplyPromo(e.target.checked)} /> Merchant Promo ({activeKitchen.merchantPromoCode})
-                </label>
-                <span>-₹{(bill.promoPaise / 100).toFixed(2)}</span>
-              </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Kitchen Packaging + Platform Fee</span>
-              <span>₹{((bill.packagingPaise + bill.platformFeePaise) / 100).toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Sec 9(5) Food GST (2.5% CGST + 2.5% SGST)</span>
-              <span>₹{((bill.cgstPaise + bill.sgstPaise) / 100).toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Delivery Partner Fee ({activeKitchen.distanceKm} km)</span>
-              <span>{bill.deliveryPaise === 0 ? 'FREE (Gold)' : `₹${(bill.deliveryPaise / 100).toFixed(2)}`}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Delivery Partner Tip (100% to Rider)</span>
-              <div style={{ display: 'flex', gap: 4 }}>
-                {[0, 2000, 3000, 5000].map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setRiderTipPaise(t)}
-                    style={{ padding: '2px 6px', fontSize: 11, borderRadius: 4, border: riderTipPaise === t ? '1px solid #e23744' : '1px solid #d4d4d8', background: riderTipPaise === t ? '#fff1f2' : '#fff', cursor: 'pointer' }}
-                  >
-                    ₹{t / 100}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: 15, color: '#18181b', marginTop: 6, paddingTop: 6, borderTop: '1px solid #e4e4e7' }}>
-              <span>To Pay • ETA {bill.etaMins} mins</span>
-              <span>₹{(bill.grandTotalPaise / 100).toFixed(2)}</span>
-            </div>
-          </div>
-
+      {/* 2. SECONDARY QUICK FILTER PILLS (Distinct Color Background when active) & RESULT COUNT */}
+      {(list.data?.restaurants?.length ?? 0) > 0 && <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Pure Veg Filter: Zomato standard green dot & badge */}
           <button
             type="button"
-            onClick={() => {
-              if (!orderId) setOrderId('OK-' + Math.floor(100000 + Math.random() * 900000));
-              setOrderStageIdx((idx) => (idx === null ? 0 : (idx + 1) % LIVE_STAGES.length));
-            }}
-            style={{
-              marginTop: 12,
-              width: '100%',
-              padding: '10px 14px',
-              borderRadius: 8,
-              border: 'none',
-              background: '#e23744',
-              color: '#fff',
-              fontWeight: 800,
-              fontSize: 13,
-              cursor: 'pointer',
-            }}
+            onClick={() => setDietFilter(dietFilter === "veg" ? "all" : "veg")}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              dietFilter === "veg"
+                ? "bg-gradient-to-r from-emerald-600 to-green-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
+                : "bg-white hover:bg-emerald-50/60 text-gray-700 border-gray-200 hover:border-emerald-300"
+            )}
           >
-            {orderStageIdx === null
-              ? `Pay ₹${(bill.grandTotalPaise / 100).toFixed(2)} via UPI (orderking@ybl) & Place Order`
-              : 'Advance Live Tracking Stage →'}
+            <span className="size-2.5 rounded-[2px] border border-emerald-500 flex items-center justify-center bg-white shrink-0">
+              <span className="size-1.5 rounded-full bg-emerald-600" />
+            </span>
+            <span>Pure Veg</span>
+          </button>
+          {/* Fast Delivery: Amber / Orange */}
+          <button
+            type="button"
+            onClick={() => setFilterFast(!filterFast)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              filterFast
+                ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border-amber-500 shadow-[0_2px_10px_rgba(245,158,11,0.3)] ring-1 ring-amber-400"
+                : "bg-white hover:bg-amber-50/60 text-gray-700 border-gray-200 hover:border-amber-300"
+            )}
+          >
+            <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-amber-500")} />
+            <span>Fast Delivery</span>
           </button>
 
-          {orderStageIdx !== null && (
-            <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: '#f0fdf4', border: '1px solid #86efac', fontSize: 12, color: '#166534' }}>
-              <strong>Order {orderId} Confirmed • Doorstep OTP: 4829</strong>
-              <div style={{ marginTop: 4, fontWeight: 700 }}>
-                Current Stage ({orderStageIdx + 1}/6): {LIVE_STAGES[orderStageIdx]}
-              </div>
-              <div style={{ fontSize: 11, marginTop: 2 }}>
-                Entity: Orderkingpay • ECO GSTIN: 18AFXPH9838M1Z9
+          {/* Rating 4.0+: Emerald / Teal */}
+          <button
+            type="button"
+            onClick={() => setFilterRating(!filterRating)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              filterRating
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
+                : "bg-white hover:bg-emerald-50/60 text-gray-700 border-gray-200 hover:border-emerald-300"
+            )}
+          >
+            <Star className={cn("size-3.5", filterRating ? "fill-white text-white" : "text-emerald-600 fill-emerald-600/30")} />
+            <span>Rating 4.0+</span>
+          </button>
+
+          {/* Great Offers: Rose / Crimson */}
+          <button
+            type="button"
+            onClick={() => setFilterOffers(!filterOffers)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              filterOffers
+                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-600 shadow-[0_2px_10px_rgba(225,29,72,0.3)] ring-1 ring-rose-500"
+                : "bg-white hover:bg-rose-50/60 text-gray-700 border-gray-200 hover:border-rose-300"
+            )}
+          >
+            <Percent className={cn("size-3.5", filterOffers ? "text-white" : "text-rose-600")} />
+            <span>Great Offers</span>
+          </button>
+
+          {/* Under ₹200: Indigo / Purple */}
+          <button
+            type="button"
+            onClick={() => setFilterBudget(!filterBudget)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              filterBudget
+                ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 text-white border-indigo-600 shadow-[0_2px_10px_rgba(79,70,229,0.3)] ring-1 ring-indigo-400"
+                : "bg-white hover:bg-purple-50/60 text-gray-700 border-gray-200 hover:border-purple-300"
+            )}
+          >
+            <Coins className={cn("size-3.5", filterBudget ? "text-white" : "text-indigo-600")} />
+            <span>Under ₹200</span>
+          </button>
+        </div>
+
+        {/* Place Count */}
+        <span className="text-[11px] font-bold text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0">
+          {`${filteredRestaurants.length} restaurants found`}
+        </span>
+      </div>}
+
+      {/* 3. ACTIVE ORDER BANNER (Real Data Only) */}
+      {activeOrder && !q && (
+        <section aria-label="Active Order">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-600"></span>
+              </span>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Live Order in Progress</p>
+                <h3 className="font-extrabold text-sm text-gray-900">{activeOrder.restaurantName || "Order"}</h3>
+                <p className="text-xs text-emerald-900/80 font-medium capitalize">
+                  Status: {(activeOrder.status || "").replace(/_/g, " ").toLowerCase()}
+                </p>
               </div>
             </div>
-          )}
-        </div>
-      </div>
+            <Link
+              to="/orders/$id"
+              params={{ id: activeOrder.id }}
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-emerald-700 hover:bg-emerald-800 px-4 py-2 text-xs font-bold text-white transition shadow-sm no-underline"
+            >
+              Track Order
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* RESTAURANTS GRID */}
+      <section aria-label="Restaurants Grid" className="pt-1">
+        {!isZeroDeliveryInRadius && (
+          <div className="flex items-center justify-between mb-2.5">
+            <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
+              {selectedCategory
+                ? `Best in ${selectedCategory}`
+                : dietFilter === "veg"
+                ? "Pure vegetarian restaurants"
+                : location?.zoneName && location.zoneName !== "Current GPS Position"
+                ? `Restaurants in ${location.zoneName}`
+                : location?.cityName && location.cityName !== "Locating..."
+                ? `Restaurants in ${location.cityName}`
+                : "Restaurants near you"}
+            </h2>
+          </div>
+        )}
+
+        {list.isPending && !list.data ? (
+          /* Warm Ivory/Amber Gradient Shimmer Skeletons */
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2" aria-busy="true" aria-label="Loading restaurants">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-900/10 bg-white shadow-sm flex flex-col relative"
+              >
+                <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-gradient-to-r from-amber-100/70 via-amber-50 to-amber-100/70 animate-pulse">
+                  <div className="absolute top-3 left-3 h-5 w-24 rounded-full bg-amber-200/60" />
+                  <div className="absolute bottom-3 right-3 h-6 w-16 rounded-xl bg-amber-200/70" />
+                </div>
+                <div className="p-4 space-y-3 bg-gradient-to-b from-white to-amber-50/30">
+                  <div className="flex items-center justify-between">
+                    <div className="h-5 w-3/5 rounded-lg bg-gradient-to-r from-amber-200/80 to-amber-100 animate-pulse" />
+                    <div className="h-5 w-12 rounded-md bg-amber-200/60 animate-pulse" />
+                  </div>
+                  <div className="h-3.5 w-2/5 rounded-md bg-amber-100/80 animate-pulse" />
+                  <div className="pt-2 flex items-center justify-between border-t border-amber-900/5">
+                    <div className="h-3 w-28 rounded-md bg-amber-100/70 animate-pulse" />
+                    <div className="h-4 w-16 rounded-full bg-amber-200/50 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : list.isError && !list.data ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
+            <p className="text-sm font-semibold text-red-700">Food delivery is currently expanding to your area. In the meantime, explore instant KingPay Travel, Utilities & Soundbox Services.</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-3 bg-white text-gray-900 border-red-200 hover:bg-red-100"
+              onClick={() => void list.refetch()}
+            >
+              Try Again
+            </Button>
+          </div>
+        ) : filteredRestaurants.length === 0 ? (
+          <div className="space-y-4">
+            {list.data && list.data.restaurants.length > 0 ? (
+              <div className="rounded-2xl border border-stone-200 bg-white p-8 text-center space-y-3 shadow-xs">
+                <div className="flex size-14 items-center justify-center rounded-2xl bg-stone-100 text-stone-600 mx-auto">
+                  <Utensils className="size-6 text-stone-600" />
+                </div>
+                <h3 className="font-bold text-gray-900 text-base">No restaurants match your filters</h3>
+                <p className="text-xs text-gray-500 max-w-sm mx-auto">Try resetting your filters or selecting a different dish category.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    setFilterFast(false);
+                    setFilterRating(false);
+                    setFilterOffers(false);
+                    setFilterBudget(false);
+                  }}
+                  className="bg-[#E23744] hover:bg-[#cf2f3c] text-white border-transparent font-bold rounded-xl px-5 py-2 cursor-pointer"
+                >
+                  Reset Filters
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* 1. Sleek Native Delivery Status Bar (Top Competitor Standard) */}
+                <div
+                  role="status"
+                  data-testid="food-availability-note"
+                  className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-950"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500 text-white shrink-0 shadow-xs">
+                      <MapPin className="size-4" />
+                    </div>
+                    <div className="text-left min-w-0">
+                      <span className="text-xs font-black block truncate text-gray-950">
+                        {location?.zoneName && !["Current GPS Position", "Current Location"].includes(location.zoneName)
+                          ? location.zoneName
+                          : location?.cityName && !["Locating...", "Current GPS Position"].includes(location.cityName)
+                          ? location.cityName
+                          : "Your Location"}
+                      </span>
+                      <span className="text-[11px] text-gray-600 block truncate font-medium">
+                        Doorstep food delivery expanding to this area soon · All KingPay services active 24/7
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => setLocDialogOpen(true)}
+                    className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer border-0"
+                  >
+                    <MapPin className="size-3" />
+                    <span>Change Location</span>
+                  </Button>
+                </div>
+
+                {/* Active KingPay Connected Services (3D Luxury Alignment) */}
+                <div className="space-y-3 pt-2">
+                  <div className="text-center">
+                    <h4 className="text-sm sm:text-base font-black text-gray-950 tracking-tight">
+                      Active KingPay Services in Your Area
+                    </h4>
+                    <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
+                      
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                    {/* 1. KingPay Wallet */}
+                    <Link
+                      to="/kingpay"
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
+                          <Crown className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                          UPI
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
+                          KingPay Wallet
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Direct UPI &amp; Bills
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 2. Flights */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "flights" }}
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(14,165,233,0.18)] hover:border-sky-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 text-white shadow-[0_2px_8px_rgba(14,165,233,0.3)] group-hover:scale-105 transition-transform">
+                          <Plane className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-sky-800 bg-sky-50 border border-sky-200/80 px-2 py-0.5 rounded-full">
+                          Travel
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-sky-600 block leading-snug transition-colors">
+                          Flights
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Domestic &amp; International
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 3. Hotels */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "hotels" }}
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
+                          <Building2 className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                          Hotels
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
+                          Hotels &amp; Stays
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Worldwide Stays
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 4. Trains & PNR */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "trains" }}
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.18)] hover:border-indigo-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-[0_2px_8px_rgba(99,102,241,0.3)] group-hover:scale-105 transition-transform">
+                          <Train className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-full">
+                          IRCTC
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-indigo-600 block leading-snug transition-colors">
+                          Trains &amp; PNR
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          IRCTC Booking &amp; Status
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 5. King AI Tutor */}
+                    <Link
+                      to="/tutor"
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(20,184,166,0.18)] hover:border-teal-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-[0_2px_8px_rgba(20,184,166,0.3)] group-hover:scale-105 transition-transform">
+                          <GraduationCap className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200/80 px-2 py-0.5 rounded-full">
+                          Tutor
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-teal-600 block leading-snug transition-colors">
+                          King AI Tutor
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Academic Tutor · CBSE &amp; State
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 6. King Jobs */}
+                    <Link
+                      to="/tutor-jobs"
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(168,85,247,0.18)] hover:border-purple-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 text-white shadow-[0_2px_8px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform">
+                          <Briefcase className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-200/80 px-2 py-0.5 rounded-full">
+                          Jobs
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-purple-600 block leading-snug transition-colors">
+                          King Jobs
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Hyperlocal Gigs &amp; Apply
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Honest "Explore Flagship Menus (Viewing Only)" */}
+                <div
+                  data-testid="flagship-viewing-mode-card"
+                  className="rounded-2xl border border-stone-200/90 bg-white p-4 sm:p-5 shadow-xs text-center space-y-3"
+                >
+                  <div className="flex items-center justify-center gap-2 text-stone-600">
+                    <Eye className="size-4 text-amber-600" />
+                    <span className="text-xs font-black uppercase tracking-wider text-amber-800">
+                      Viewing Mode
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="text-sm sm:text-base font-black text-gray-950">
+                      Explore Flagship Menus (Viewing Only)
+                    </h4>
+                    <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5 font-medium">
+                      Preview live food menus and cuisine selections in viewing mode without doorstep delivery to your current pin.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                    {ACTIVE_FLAGSHIP_HUBS.map((hub) => (
+                      <button
+                        key={hub.id}
+                        type="button"
+                        onClick={() => {
+                          setLocation({
+                            label: hub.label,
+                            line1: hub.line1,
+                            lat: hub.lat,
+                            lng: hub.lng,
+                            cityId: hub.cityId,
+                            cityName: hub.cityName,
+                            zoneId: hub.zoneId,
+                            zoneName: hub.zoneName,
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-200 hover:border-amber-400 bg-stone-50 hover:bg-amber-50/60 text-xs font-bold text-gray-800 hover:text-amber-950 transition active:scale-95 cursor-pointer shadow-2xs"
+                      >
+                        <MapPin className="size-3 text-amber-600" />
+                        <span>Browse Flagship Hub ({hub.cityName}) — Viewing Mode</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+            {filteredRestaurants.map((restaurant) => (
+              <KitchenCard key={restaurant.id} restaurant={restaurant} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 4. REORDER CAROUSEL (Real Past Orders Only) */}
+      {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && !q && (
+        <section aria-label="Order Again">
+          <div className="flex items-center justify-between mb-2.5">
+            <div>
+              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight">Order Again</h2>
+              <p className="text-xs text-gray-500 font-medium">Order again from restaurants you've tried</p>
+            </div>
+            <Link to="/orders" className="text-xs font-bold text-[#E23744] hover:underline">
+              View all orders
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+            {pastOrders.data.orders.slice(0, 4).map((o) => (
+              <div
+                key={o.id}
+                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-gray-200 bg-white p-3.5 shadow-sm transition hover:shadow-md"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="line-clamp-1 text-sm font-bold text-gray-900">{o.restaurantName}</h3>
+                    <span className="text-xs font-bold text-gray-700">
+                      {formatPaise(o.totalPaise, { locale })}
+                    </span>
+                  </div>
+                  <p className="mt-1 line-clamp-1 text-xs text-gray-500">{o.itemPreview || "Previous order"}</p>
+                </div>
+                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5">
+                  <span className="text-[10px] text-gray-400 font-medium">
+                    {(() => {
+                      try {
+                        const d = o.placedAt ? new Date(o.placedAt) : null;
+                        return d && !isNaN(d.getTime())
+                          ? d.toLocaleDateString(locale, { month: "short", day: "numeric" })
+                          : "Recent";
+                      } catch {
+                        return "Recent";
+                      }
+                    })()}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void handleReorder(o.id)}
+                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 hover:bg-[#E23744] hover:text-white px-3 py-1 text-xs font-bold text-gray-800 transition"
+                  >
+                    <RotateCcw className="size-3" />
+                    <span>Reorder</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Location Selector Dialog */}
+      <LocationDialog open={locDialogOpen} onOpenChange={setLocDialogOpen} />
     </div>
   );
 }
-
-export default HomeFeed;

@@ -1,4 +1,3 @@
-import { ZomatoCustomer2026Bar } from "@/components/zomato-customer/ZomatoCustomer2026Bar";
 import { createFileRoute } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { CustomerAppSkeleton } from "@/components/skeletons/customer-app-skeleton";
@@ -19,8 +18,7 @@ function Home() {
   return (
     <CustomerShell>
       <div className="min-h-full bg-[#FCFAF7]">
-        &lt;ZomatoCustomer2026Bar /&gt;
-          &lt;HomeFeed /&gt;
+        <HomeFeed />
       </div>
     </CustomerShell>
   );

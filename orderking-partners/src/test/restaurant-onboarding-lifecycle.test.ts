@@ -59,21 +59,14 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
 
   afterAll(async () => {
     if (!sql) return;
-    try {
-      await Promise.race([
-        (async () => {
-          try { await sql`delete from menu_items where restaurant_id = ${testRestaurantId}`; } catch {}
-          try { await sql`delete from items where restaurant_id = ${testRestaurantId}`; } catch {}
-          try { await sql`delete from menu_categories where restaurant_id = ${testRestaurantId}`; } catch {}
-          try { await sql`delete from categories where restaurant_id = ${testRestaurantId}`; } catch {}
-          try { await sql`delete from restaurant_outlets where restaurant_id = ${testRestaurantId}`; } catch {}
-          try { await sql`delete from outlets where restaurant_id = ${testRestaurantId}`; } catch {}
-          try { await sql`delete from restaurants where id = ${testRestaurantId}`; } catch {}
-        })(),
-        new Promise((resolve) => setTimeout(resolve, 8000)),
-      ]);
-    } catch {}
-  }, 15000);
+    try { await sql`delete from menu_items where restaurant_id = ${testRestaurantId}`; } catch {}
+    try { await sql`delete from items where restaurant_id = ${testRestaurantId}`; } catch {}
+    try { await sql`delete from menu_categories where restaurant_id = ${testRestaurantId}`; } catch {}
+    try { await sql`delete from categories where restaurant_id = ${testRestaurantId}`; } catch {}
+    try { await sql`delete from restaurant_outlets where restaurant_id = ${testRestaurantId}`; } catch {}
+    try { await sql`delete from outlets where restaurant_id = ${testRestaurantId}`; } catch {}
+    try { await sql`delete from restaurants where id = ${testRestaurantId}`; } catch {}
+  }, 60000);
 
   // Test 1: Register partner draft -> restaurant created with verification_status = 'DRAFT'
   it("Test 1: registers partner draft with verification_status = 'DRAFT', data_label = 'REAL', active = false", async () => {

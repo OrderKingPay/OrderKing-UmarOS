@@ -968,7 +968,7 @@ export function MetaOmnichannelHub({
                     App Secret
                     <span className="text-red-500">*</span>
                   </label>
-                  <span className="text-[10px] text-slate-500 font-mono">{"App Settings > Basic"}</span>
+                  <span className="text-[10px] text-slate-500 font-mono">App Settings &gt; Basic</span>
                 </div>
                 <div className="relative flex items-center">
                   <input
@@ -1062,7 +1062,7 @@ export function MetaOmnichannelHub({
                     WhatsApp Business Account ID (WABA ID)
                     <span className="text-red-500">*</span>
                   </label>
-                  <span className="text-[10px] text-slate-500 font-mono">{"WhatsApp Accounts > WABA"}</span>
+                  <span className="text-[10px] text-slate-500 font-mono">WhatsApp Accounts &gt; WABA</span>
                 </div>
                 <div className="relative">
                   <input
