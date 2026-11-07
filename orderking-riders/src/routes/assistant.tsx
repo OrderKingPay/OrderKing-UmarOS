@@ -14,10 +14,16 @@ import {
   getSettlementsFn,
   listTicketsFn,
 } from "@/lib/server/rider-fns";
-import { askAssistantFn } from "@/lib/server/assistant";
-import { useEffect, useState, type FormEvent } from "react";
+import { askAssistantFn, type ResolutionAction } from "@/lib/server/assistant";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { toast } from "sonner";
 import {
   AlertOctagon,
+  Camera,
+  FileText,
+  Image as ImageIcon,
+  Paperclip,
+  X,
   Bot,
   CheckCircle2,
   Clock3,
@@ -68,7 +74,7 @@ type TicketsState = Awaited<ReturnType<typeof listTicketsFn>>;
 function computeMilestone(completedToday: number) {
   if (completedToday < 8) {
     return {
-      tier: "Lunch/Dinner Starter Milestone (8 Trips)",
+      tier: "Daily Target - Slab 1 (8 Orders)",
       target: 8,
       remaining: 8 - completedToday,
       bonusPaise: 10_000, // ₹100
@@ -77,7 +83,7 @@ function computeMilestone(completedToday: number) {
   }
   if (completedToday < 14) {
     return {
-      tier: "Super-Shift Accelerator Milestone (14 Trips)",
+      tier: "Daily Target - Slab 2 (14 Orders)",
       target: 14,
       remaining: 14 - completedToday,
       bonusPaise: 22_000, // ₹220
@@ -86,7 +92,7 @@ function computeMilestone(completedToday: number) {
   }
   if (completedToday < 20) {
     return {
-      tier: "Full-Day Champion Milestone (20 Trips)",
+      tier: "Daily Target - Slab 3 (20 Orders)",
       target: 20,
       remaining: 20 - completedToday,
       bonusPaise: 40_000, // ₹400
@@ -94,7 +100,7 @@ function computeMilestone(completedToday: number) {
     };
   }
   return {
-    tier: "Full-Day Champion Milestone Unlocked (20+ Trips)",
+    tier: "Daily Target - Slab 3 Completed (20+ Orders)",
     target: 20,
     remaining: 0,
     bonusPaise: 40_000,
@@ -106,6 +112,13 @@ interface ChatMessage {
   role: "user" | "assistant";
   text: string;
   at: string;
+  attachment?: {
+    name: string;
+    type: string;
+    dataUrl: string;
+    previewUrl?: string;
+  } | null;
+  resolutionAction?: ResolutionAction | null;
   waitResult?: {
     credited: boolean;
     waitedMins: number;
@@ -128,6 +141,37 @@ function Page() {
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState(false);
   const [speakingIdx, setSpeakingIdx] = useState<number | "advisor" | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachment, setAttachment] = useState<{
+    name: string;
+    type: string;
+    size: number;
+    dataUrl: string;
+    previewUrl?: string;
+  } | null>(null);
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size exceeds 10MB limit.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setAttachment({
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        dataUrl,
+        previewUrl: file.type.startsWith("image/") ? dataUrl : undefined,
+      });
+      toast.success(`Attached "${file.name}"`);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
 
   const [home, setHome] = useState<HomeState | null>(null);
   const [earnings, setEarnings] = useState<EarningsState | null>(null);
@@ -244,13 +288,25 @@ function Page() {
       | "verify_navigation"
       | "payout_breakdown"
       | "customer_unreachable"
+      | "restaurant_issue"
+      | "cash_dispute"
       | "query",
   ) {
-    if (!questionText.trim()) return;
-    const question = questionText.trim();
+    if (!questionText.trim() && !attachment) return;
+    const question = questionText.trim() || (attachment ? `Attached proof: ${attachment.name}` : "");
     const nowLabel = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const currentAttachment = attachment;
     setQ("");
-    setLines((l) => [...l, { role: "user", text: question, at: nowLabel }]);
+    setAttachment(null);
+    setLines((l) => [
+      ...l,
+      {
+        role: "user",
+        text: question,
+        at: nowLabel,
+        attachment: currentAttachment,
+      },
+    ]);
     setPending(true);
 
     let coords: { lat: number; lng: number } | undefined = undefined;
@@ -274,12 +330,20 @@ function Page() {
           locale,
           action,
           coords,
+          attachment: currentAttachment
+            ? {
+                name: currentAttachment.name,
+                type: currentAttachment.type,
+                size: currentAttachment.size,
+                dataUrl: currentAttachment.dataUrl,
+              }
+            : undefined,
         },
       });
 
       if (res.waitCreditResult?.credited) {
         setAutoCreditNotice(
-          `⚡ King AI Auto-Credit Executed: Credited ₹${(res.waitCreditResult.amountPaise / 100).toFixed(2)} Kitchen Wait Pay (${res.waitCreditResult.billableMins} mins beyond 6m grace) directly to your ledger!`,
+          `⚡ Kitchen Wait Pay Credited: ₹${(res.waitCreditResult.amountPaise / 100).toFixed(2)} added directly to your shift ledger!`,
         );
       }
       if (res.emergencyBroadcast?.dispatched) {
@@ -294,6 +358,7 @@ function Page() {
           at: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           waitResult: res.waitCreditResult,
           emergencyBroadcast: res.emergencyBroadcast,
+          resolutionAction: res.resolutionAction,
         },
       ]);
       void refreshLiveState(false);
@@ -311,7 +376,7 @@ function Page() {
     }
   }
 
-  async function send(e: FormEvent) {
+    async function send(e: FormEvent) {
     e.preventDefault();
     await askQuestion(q, "query");
   }
@@ -750,7 +815,7 @@ function Page() {
             <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
               Quick Prompts (বাংলা · हिन्दी · தமிழ் · English)
             </p>
-            <span className="text-[11px] font-semibold text-primary">0 Founder Headache</span>
+            <span className="text-[11px] font-semibold text-primary">Official Partner Co-Pilot</span>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -891,18 +956,18 @@ function Page() {
               key={i}
               className={
                 l.role === "user"
-                  ? "ml-6 border border-blue-200/30 bg-[#0F172A] p-3.5 text-gray-900 shadow"
-                  : "border border-primary/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-4 text-gray-900 shadow-lg"
+                  ? "ml-6 border border-primary/20 bg-muted/30 p-3.5 text-foreground shadow-xs"
+                  : "border border-border/70 bg-card p-4 text-foreground shadow-sm"
               }
             >
-              <div className="mb-2 flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
-                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-600">
+              <div className="mb-2 flex items-center justify-between gap-2 border-b border-border/50 pb-1.5">
+                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   {l.role === "user" ? (
                     <>👤 {firstName} ({l.at})</>
                   ) : (
                     <>
                       <Crown className="size-3.5 text-primary" />
-                      <span className="text-primary">King AI Fleet Support</span> ({l.at})
+                      <span className="text-primary font-bold">King AI Support</span> ({l.at})
                     </>
                   )}
                 </span>
@@ -911,7 +976,7 @@ function Page() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="h-7 border-primary/40 bg-gray-50 border border-gray-200 px-2.5 text-xs text-primary hover:bg-[#E23744]/20"
+                    className="h-7 border-border px-2.5 text-xs hover:bg-muted"
                     onClick={() => speakText(l.text, i)}
                   >
                     {speakingIdx === i ? <VolumeX className="mr-1 size-3" /> : <Volume2 className="mr-1 size-3" />}
@@ -920,49 +985,145 @@ function Page() {
                 ) : null}
               </div>
 
+              {/* User Attachment Display */}
+              {l.attachment ? (
+                <div className="mb-2.5">
+                  {l.attachment.previewUrl ? (
+                    <img
+                      src={l.attachment.previewUrl}
+                      alt={l.attachment.name}
+                      className="max-h-48 rounded-lg border border-border object-cover shadow-xs"
+                    />
+                  ) : (
+                    <div className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/60 px-2.5 py-1 text-xs text-muted-foreground">
+                      <FileText className="size-3.5 text-primary" />
+                      <span className="font-mono text-[11px] truncate max-w-[200px]">{l.attachment.name}</span>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              {/* Autonomous Resolution Action Card */}
+              {l.resolutionAction ? (
+                <div className="mb-3 rounded-xl border border-primary/30 bg-primary/5 p-3 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                      <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                      <span>{l.resolutionAction.title}</span>
+                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {l.resolutionAction.ticketId ? (
+                        <span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold text-primary">
+                          #{l.resolutionAction.ticketId.slice(0, 8)}
+                        </span>
+                      ) : null}
+                      {l.resolutionAction.amountPaise ? (
+                        <span className="font-mono text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
+                          +₹{(l.resolutionAction.amountPaise / 100).toFixed(2)}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {l.resolutionAction.details}
+                  </p>
+                </div>
+              ) : null}
+
               {/* Extra visual indicators for credited wait pay or emergency broadcast */}
               {l.waitResult?.credited ? (
-                <div className="mb-2.5 inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
-                  <CheckCircle2 className="size-3.5 text-emerald-400" />
-                  Autonomous Auto-Credit Executed: ₹{(l.waitResult.amountPaise / 100).toFixed(2)} added to shift ledger.
+                <div className="mb-2.5 inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
+                  <CheckCircle2 className="size-3.5 text-emerald-500" />
+                  Auto-Credit Verified: ₹{(l.waitResult.amountPaise / 100).toFixed(2)} added to shift ledger.
                 </div>
               ) : null}
 
               {l.emergencyBroadcast?.dispatched ? (
-                <div className="mb-2.5 inline-flex items-center gap-1.5 rounded-lg border border-rose-500/50 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-300">
-                  <AlertOctagon className="size-3.5 text-rose-400" />
-                  Emergency Distress Broadcast Dispatched (GPS: {l.emergencyBroadcast.coords.lat.toFixed(4)}, {l.emergencyBroadcast.coords.lng.toFixed(4)})
+                <div className="mb-2.5 inline-flex items-center gap-1.5 rounded-lg border border-rose-500/50 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-600 dark:text-rose-300">
+                  <AlertOctagon className="size-3.5 text-rose-500" />
+                  Emergency SOS Protocol Dispatched (GPS: {l.emergencyBroadcast.coords.lat.toFixed(4)}, {l.emergencyBroadcast.coords.lng.toFixed(4)})
                 </div>
               ) : null}
 
-              <p className="whitespace-pre-line text-sm leading-relaxed text-slate-200">{l.text}</p>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">{l.text}</p>
             </Card>
           ))}
         </div>
 
-        {/* Question Input Form */}
-        <form onSubmit={send} className="flex gap-2">
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={`${t("askAssistant")} (English, हिन्दी, தமிழ், বাংলা…)`}
-            disabled={pending}
-            className="border-primary/40 bg-card text-gray-900 placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-[#E23744]"
-          />
-          <Button
-            type="submit"
-            disabled={pending || !q.trim()}
-            className="bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] font-semibold text-gray-900 shadow-lg shadow-[#2563EB]/25 hover:from-[#1D4ED8] hover:to-[#1E40AF]"
-          >
-            {pending ? (
-              "Thinking…"
-            ) : (
-              <>
-                <Send className="mr-1.5 size-3.5" /> {t("send")}
-              </>
-            )}
-          </Button>
-        </form>
+        {/* Question Input Form with Camera & Attachment */}
+        <div className="space-y-2">
+          {attachment ? (
+            <div className="flex items-center gap-2 rounded-xl border border-primary/40 bg-muted/40 p-2.5 shadow-xs">
+              {attachment.previewUrl ? (
+                <img
+                  src={attachment.previewUrl}
+                  alt={attachment.name}
+                  className="size-11 rounded-lg object-cover border border-border shrink-0"
+                />
+              ) : (
+                <div className="flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+                  <FileText className="size-5" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold truncate text-foreground">{attachment.name}</p>
+                <p className="text-[10px] text-muted-foreground font-mono">
+                  {(attachment.size / 1024).toFixed(1)} KB · Photo Proof Ready
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setAttachment(null)}
+                className="size-7 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          ) : null}
+
+          <form onSubmit={send} className="flex gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/*,video/*,.pdf"
+              className="hidden"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              disabled={pending}
+              onClick={() => fileInputRef.current?.click()}
+              title="Attach Photo Proof (Restaurant Counter / Doorstep / Payment)"
+              className="size-10 shrink-0 border-border hover:bg-muted"
+            >
+              <Camera className="size-4 text-muted-foreground" />
+            </Button>
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={attachment ? "Add details about this photo..." : `${t("askAssistant")} (English, हिन्दी, தமிழ், বাংলা…)`}
+              disabled={pending}
+              className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+            <Button
+              type="submit"
+              disabled={pending || (!q.trim() && !attachment)}
+              className="bg-primary text-primary-foreground font-semibold shadow-xs hover:bg-primary/90"
+            >
+              {pending ? (
+                "Thinking…"
+              ) : (
+                <>
+                  <Send className="mr-1.5 size-3.5" /> {t("send")}
+                </>
+              )}
+            </Button>
+          </form>
+        </div>
       </div>
     </AppShell>
   );

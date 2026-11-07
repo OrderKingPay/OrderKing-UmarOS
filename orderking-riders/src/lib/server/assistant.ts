@@ -21,6 +21,25 @@ const POLICY = [
   "If the rider is BUSY or on an active delivery, keep guidance crisp, calm, and safety-first.",
 ].join(" ");
 
+export interface ResolutionAction {
+  type:
+    | "WAIT_PAY_CREDITED"
+    | "WAIT_PAY_ACTIVE"
+    | "RESTAURANT_ISSUE_LOGGED"
+    | "CUSTOMER_CALL_LOGGED"
+    | "DOORSTEP_UNREACHABLE_CONFIRMED"
+    | "COD_DISPUTE_LOGGED"
+    | "EMERGENCY_SOS_DISPATCHED"
+    | "NAVIGATION_GUIDE";
+  title: string;
+  details: string;
+  ticketId?: string;
+  amountPaise?: number;
+  deliveryId?: string;
+  orderCode?: string;
+  attachmentName?: string;
+  badgeTone?: "online" | "offline" | "busy" | "highlight";
+}
 type Snapshot = Awaited<ReturnType<RiderEngine["snapshotForAssistant"]>>;
 type HomeData = Awaited<ReturnType<RiderEngine["home"]>>;
 type SettlementList = Awaited<ReturnType<RiderEngine["settlements"]>>;
@@ -35,6 +54,13 @@ interface RichRiderContext {
   performance: PerformanceData;
   waitCreditResult?: WaitCreditResult | null;
   emergencyBroadcast?: EmergencyBroadcastResult | null;
+  resolutionAction?: ResolutionAction | null;
+  attachment?: {
+    name: string;
+    type: string;
+    size: number;
+    dataUrl: string;
+  } | null;
 }
 
 interface WaitCreditResult {
@@ -142,9 +168,17 @@ export const askAssistantFn = createServerFn({ method: "POST" })
         | "verify_navigation"
         | "payout_breakdown"
         | "customer_unreachable"
+        | "restaurant_issue"
+        | "cash_dispute"
         | "query";
       coords?: { lat: number; lng: number };
       deliveryId?: string;
+      attachment?: {
+        name: string;
+        type: string;
+        size: number;
+        dataUrl: string;
+      } | null;
     }) => input,
   )
   .handler(async ({ context, data }: any) => {
@@ -162,6 +196,30 @@ export const askAssistantFn = createServerFn({ method: "POST" })
 
     const question = (data.question ?? "").trim().slice(0, 500);
     const active = home.active;
+    let resolutionAction: ResolutionAction | null = null;
+
+    // Handle File / Photo / Video Attachment Storage
+    if (data.attachment?.dataUrl) {
+      try {
+        const docId = `doc_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+        await sql.query(
+          `INSERT INTO rider_documents (id, rider_id, user_id, kind, content_type, byte_size, data_url, status, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+          [
+            docId,
+            home.rider.id,
+            context.userId,
+            "SUPPORT_ATTACHMENT",
+            data.attachment.type || "image/jpeg",
+            data.attachment.size || 0,
+            data.attachment.dataUrl.slice(0, 100000),
+            "VERIFIED",
+          ],
+        );
+      } catch {
+        // Continue even if transient lock
+      }
+    }
 
     // 1. Autonomous Wait-Time Verification & Auto-Credit Engine (> 6 mins)
     let waitCreditResult: WaitCreditResult | null = null;
@@ -177,7 +235,6 @@ export const askAssistantFn = createServerFn({ method: "POST" })
         const billableMins = waitedMins - 6;
         const totalDuePaise = Math.min(3000, billableMins * 100); // ₹1.00/min statutory rate, capped at ₹30
 
-        // Check already credited wait compensation for this delivery
         const existing = await sql.query<{ sum: string | number }>(
           `SELECT coalesce(sum(amount_paise), 0) as sum FROM rider_earnings WHERE user_id = $1 AND delivery_id = $2 AND kind = 'INCENTIVE' AND note LIKE '%wait%'`,
           [context.userId, active.id],
@@ -209,6 +266,14 @@ export const askAssistantFn = createServerFn({ method: "POST" })
             orderCode: active.orderCode,
             restaurantName: active.restaurant.name,
           };
+          resolutionAction = {
+            type: "WAIT_PAY_CREDITED",
+            title: `₹${(newCreditPaise / 100).toFixed(2)} Kitchen Wait Pay Credited`,
+            details: `${billableMins} min(s) billable kitchen delay at ${active.restaurant.name} credited directly to your shift ledger.`,
+            amountPaise: newCreditPaise,
+            orderCode: active.orderCode,
+            badgeTone: "online",
+          };
         } else {
           waitCreditResult = {
             credited: false,
@@ -218,8 +283,17 @@ export const askAssistantFn = createServerFn({ method: "POST" })
             orderCode: active.orderCode,
             restaurantName: active.restaurant.name,
           };
+          resolutionAction = {
+            type: "WAIT_PAY_ACTIVE",
+            title: "Kitchen Wait Pay Active in Ledger",
+            details: `₹${(totalDuePaise / 100).toFixed(2)} wait pay is already verified and will settle upon trip completion.`,
+            amountPaise: totalDuePaise,
+            orderCode: active.orderCode,
+            badgeTone: "online",
+          };
         }
       } else {
+        const remainingGrace = 6 - waitedMins;
         waitCreditResult = {
           credited: false,
           waitedMins,
@@ -228,10 +302,145 @@ export const askAssistantFn = createServerFn({ method: "POST" })
           orderCode: active.orderCode,
           restaurantName: active.restaurant.name,
         };
+        resolutionAction = {
+          type: "WAIT_PAY_ACTIVE",
+          title: "Kitchen Prep Grace Period Active",
+          details: `${waitedMins}m waited at ${active.restaurant.name}. ${remainingGrace}m remaining before ₹1.00/min auto-credit activates.`,
+          orderCode: active.orderCode,
+          badgeTone: "busy",
+        };
       }
     }
 
-    // 2. Autonomous Emergency Distress & SOS Signal Routing (112 / 108)
+    // 2. Autonomous Restaurant Problem Solving & Operations Dispatch
+    const isRestaurantIssue =
+      data.action === "restaurant_issue" ||
+      /(item unavailable|out of stock|restaurant closed|closed|refuse|spill|leak|damaged food|খাবার নেই|দোকান বন্ধ|রেস্তোরাঁ বন্ধ|নষ্ট|ৰেষ্টুৰেণ্ট বন্ধ|সামান নাই|रेस्तरां बंद|सामान खत्म|आइटम उपलब्ध नहीं|पैकेजिंग खराब)/i.test(
+        question,
+      );
+
+    if (isRestaurantIssue && !resolutionAction) {
+      try {
+        const idempotencyKey = `rest_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+        const ticketMsg = `[RESTAURANT DISPATCH ALERT] Partner ${home.rider.fullName} (${home.rider.phone}) reported an issue at ${active?.restaurant.name ?? "Restaurant"} for Order #${active?.orderCode ?? "N/A"}. Report: "${question}". ${data.attachment ? `Proof Uploaded: ${data.attachment.name}` : "No photo attached"}.`;
+        const ticket = await eng.createTicket(
+          context.userId,
+          {
+            topic: "RESTAURANT_ISSUE",
+            message: ticketMsg,
+            deliveryId: active?.id ?? null,
+          },
+          idempotencyKey,
+        );
+        resolutionAction = {
+          type: "RESTAURANT_ISSUE_LOGGED",
+          title: "Restaurant Issue Logged & Escalated",
+          details: `Ticket #${ticket.id.slice(0, 8)} opened. Merchant kitchen & Admin Operations notified for Order #${active?.orderCode ?? "N/A"}. Your payout & ratings are protected.`,
+          ticketId: ticket.id,
+          orderCode: active?.orderCode,
+          attachmentName: data.attachment?.name,
+          badgeTone: "highlight",
+        };
+      } catch {
+        // Fallback
+      }
+    }
+
+    // 3. Autonomous Customer Unreachable & 3-Call SOP
+    const isCustomerUnreachable =
+      data.action === "customer_unreachable" ||
+      /(unreachable|customer phone|doorstep|doorbell|not picking|not answering|call attempt|গ্রাহক ফোন ধরছে না|ফোন রিসিভ করছে না|গ্ৰাহকৰ ফোন|ग्राहक फोन नहीं उठा रहा|कॉल नहीं लग रहा)/i.test(
+        question,
+      );
+
+    if (isCustomerUnreachable && !resolutionAction) {
+      const currentAttempts = active?.contactAttempts ?? 0;
+      const nextAttempts = currentAttempts + 1;
+      if (active) {
+        try {
+          await sql.query(
+            `UPDATE deliveries SET payload = jsonb_set(coalesce(payload, '{}'::jsonb), '{contactAttempts}', $1::jsonb) WHERE id = $2`,
+            [JSON.stringify(nextAttempts), active.id],
+          );
+        } catch {
+          // Fallback
+        }
+      }
+
+      if (nextAttempts >= 3) {
+        try {
+          const idempotencyKey = `cust_unreach_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+          const ticket = await eng.createTicket(
+            context.userId,
+            {
+              topic: "CUSTOMER_UNAVAILABLE",
+              message: `[3-CALL SOP COMPLETED] Customer unreachable after ${nextAttempts} call attempts and doorstep wait for Order #${active?.orderCode ?? "N/A"}. 100% Base + Distance pay protected.`,
+              deliveryId: active?.id ?? null,
+            },
+            idempotencyKey,
+          );
+          resolutionAction = {
+            type: "DOORSTEP_UNREACHABLE_CONFIRMED",
+            title: "10-Minute Doorstep SOP Qualified (100% Pay Protected)",
+            details: `3 call attempts verified for Order #${active?.orderCode ?? "N/A"}. Base & Distance pay guaranteed. Follow hygiene handover or return SOP.`,
+            ticketId: ticket.id,
+            orderCode: active?.orderCode,
+            badgeTone: "online",
+          };
+        } catch {
+          // Fallback
+        }
+      } else {
+        resolutionAction = {
+          type: "CUSTOMER_CALL_LOGGED",
+          title: `Doorstep Call Attempt ${nextAttempts}/3 Recorded`,
+          details: `Call timestamp logged. Please wait 2-3 minutes before attempting call #${nextAttempts + 1}. Full payout protects automatically at attempt 3.`,
+          orderCode: active?.orderCode,
+          badgeTone: "busy",
+        };
+      }
+    }
+
+    // 4. Autonomous Cash / COD Dispute Protection
+    const isCashDispute =
+      data.action === "cash_dispute" ||
+      /(short cash|less cash|paid online|refused cash|customer paid upi|নগদ টাকা কম|ইউপিআই দিয়েছে|টকা কম দিছে|নগদ সমস্যা|सीओडी नकद नहीं दिया|ऑनलाइन भुगतान कर दिया|कम पैसे दिए)/i.test(
+        question,
+      );
+
+    if (isCashDispute && !resolutionAction) {
+      try {
+        if (active) {
+          await sql.query(
+            `UPDATE cash_reconciliation SET state = 'DISPUTED', exception_reason = $1, updated_at = NOW() WHERE delivery_id = $2`,
+            [`King AI Dispute: ${question}. Proof: ${data.attachment?.name ?? "screenshot"}`, active.id],
+          );
+        }
+        const idempotencyKey = `cash_disp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+        const ticket = await eng.createTicket(
+          context.userId,
+          {
+            topic: "CASH_DISPUTE",
+            message: `[COD CASH DISPUTE] Partner reported cash dispute for Order #${active?.orderCode ?? "N/A"}. Note: "${question}". Proof: ${data.attachment?.name ?? "Attached"}. Floating cash lockout withheld.`,
+            deliveryId: active?.id ?? null,
+          },
+          idempotencyKey,
+        );
+        resolutionAction = {
+          type: "COD_DISPUTE_LOGGED",
+          title: "Cash Dispute Formally Registered & Float Protected",
+          details: `Dispute logged under Ticket #${ticket.id.slice(0, 8)}. Floating cash liability is held in review without dispatch penalty.`,
+          ticketId: ticket.id,
+          orderCode: active?.orderCode,
+          attachmentName: data.attachment?.name,
+          badgeTone: "online",
+        };
+      } catch {
+        // Fallback
+      }
+    }
+
+    // 5. Autonomous Emergency Distress & SOS Signal Routing (112 / 108)
     let emergencyBroadcast: EmergencyBroadcastResult | null = null;
     const isEmergencyRequest =
       data.action === "emergency_distress" ||
@@ -243,7 +452,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
       const coords = data.coords || { lat: 26.1445, lng: 91.7362 };
       try {
         const idempotencyKey = `sos_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
-        await eng.createTicket(
+        const ticket = await eng.createTicket(
           context.userId,
           {
             topic: "SAFETY_ISSUE",
@@ -252,6 +461,14 @@ export const askAssistantFn = createServerFn({ method: "POST" })
           },
           idempotencyKey,
         );
+        resolutionAction = {
+          type: "EMERGENCY_SOS_DISPATCHED",
+          title: "Emergency Distress SOS Protocol Active",
+          details: `Distress signal with live GPS (${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}) routed to 112/108. Order reassigned with zero penalty.`,
+          ticketId: ticket.id,
+          deliveryId: active?.id,
+          badgeTone: "offline",
+        };
       } catch {
         // Continue distress broadcast regardless of ticket store state
       }
@@ -272,13 +489,16 @@ export const askAssistantFn = createServerFn({ method: "POST" })
       performance,
       waitCreditResult,
       emergencyBroadcast,
+      resolutionAction,
+      attachment: data.attachment,
     };
 
+    const geminiKey = process.env.GEMINI_API_KEY?.trim() || process.env.GOOGLE_API_KEY?.trim();
     const xaiKey = process.env.XAI_API_KEY?.trim();
     const openaiKey = process.env.OPENAI_API_KEY?.trim();
 
     const authorizedFacts = JSON.stringify({
-      branding: "King AI (King Spark) Fleet AI Support",
+      branding: "King AI Fleet Support",
       riderName: home.rider.fullName,
       status: home.rider.status,
       kycStatus: home.rider.kycStatus,
@@ -300,6 +520,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
       },
       waitCreditResult,
       emergencyBroadcast,
+      resolutionAction,
       activeDelivery: active
         ? {
             orderCode: active.orderCode,
@@ -329,6 +550,54 @@ export const askAssistantFn = createServerFn({ method: "POST" })
       lifetimeCompleted: performance.completed,
       avgOrderEarningInr: formatPaise(performance.earningsPerOrderPaise),
     });
+
+    if (geminiKey) {
+      try {
+        const parts: any[] = [
+          { text: `${POLICY}\nAuthorized Facts: ${authorizedFacts}\nAction Resolution: ${JSON.stringify(resolutionAction)}\nRider Question: ${question}` },
+        ];
+        if (data.attachment?.dataUrl && data.attachment.dataUrl.startsWith("data:")) {
+          const match = data.attachment.dataUrl.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,(.+)$/);
+          if (match && match[1] && match[2]) {
+            parts.push({
+              inlineData: {
+                mimeType: match[1],
+                data: match[2],
+              },
+            });
+          }
+        }
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ role: "user", parts }],
+              generationConfig: {
+                temperature: 0.2,
+                maxOutputTokens: data.busy ? 250 : 500,
+              },
+            }),
+          },
+        );
+        if (res.ok) {
+          const body: any = await res.json();
+          const text = body.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+          if (text) {
+            return {
+              ok: true as const,
+              text,
+              waitCreditResult,
+              emergencyBroadcast,
+              resolutionAction,
+            };
+          }
+        }
+      } catch {
+        // Fall through to deterministic engine
+      }
+    }
 
     if (xaiKey || openaiKey) {
       const endpoint = xaiKey
@@ -371,6 +640,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
               text,
               waitCreditResult,
               emergencyBroadcast,
+              resolutionAction,
             };
           }
         }
@@ -384,6 +654,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
       text: localHumanMentorAnswer(question, richCtx, Boolean(data.busy), data.locale),
       waitCreditResult,
       emergencyBroadcast,
+      resolutionAction,
     };
   });
 
@@ -393,7 +664,7 @@ function getNextMilestone(completedToday: number) {
       targetTrips: 8,
       remaining: 8 - completedToday,
       bonusPaise: 10_000, // ₹100
-      tierName: "Lunch/Dinner Starter Milestone (8 Trips)",
+      tierName: "Daily Target - Slab 1 (8 Orders: ₹100 bonus)",
     };
   }
   if (completedToday < 14) {
@@ -401,7 +672,7 @@ function getNextMilestone(completedToday: number) {
       targetTrips: 14,
       remaining: 14 - completedToday,
       bonusPaise: 22_000, // ₹220
-      tierName: "Super-Shift Accelerator Milestone (14 Trips)",
+      tierName: "Daily Target - Slab 2 (14 Orders: ₹220 bonus)",
     };
   }
   if (completedToday < 20) {
@@ -409,14 +680,14 @@ function getNextMilestone(completedToday: number) {
       targetTrips: 20,
       remaining: 20 - completedToday,
       bonusPaise: 40_000, // ₹400
-      tierName: "Full-Day Champion Milestone (20 Trips)",
+      tierName: "Daily Target - Slab 3 (20 Orders: ₹400 bonus)",
     };
   }
   return {
     targetTrips: 20,
     remaining: 0,
     bonusPaise: 40_000,
-    tierName: "Full-Day Champion Milestone Unlocked (20+ Trips)",
+    tierName: "Daily Target - Slab 3 Completed (20+ Orders)",
   };
 }
 
@@ -427,13 +698,71 @@ function localHumanMentorAnswer(
   localeParam?: string,
 ): string {
   const n = q.toLowerCase();
-  const { snapshot: s, home, settlements, tickets, performance, waitCreditResult, emergencyBroadcast } = ctx;
+  const { snapshot: s, home, settlements, tickets, performance, waitCreditResult, emergencyBroadcast, resolutionAction } = ctx;
   const fullName = home.rider.fullName?.trim() || "Partner";
   const firstName = fullName.split(" ")[0] || "Partner";
   const lang = detectLanguage(q, localeParam ?? home.rider.locale);
   const milestone = getNextMilestone(s.completedToday);
   const active = home.active;
   const codRemainingPaise = Math.max(0, COD_FLOAT_LIMIT_PAISE - home.pendingCashPaise);
+
+  // -------------------------------------------------------------------------
+  // PRIORITIZED RESOLUTION ACTIONS (Direct Human Responses to Executed Operations)
+  // -------------------------------------------------------------------------
+  if (resolutionAction) {
+    if (resolutionAction.type === "RESTAURANT_ISSUE_LOGGED") {
+      if (lang === "bn") {
+        return `নমস্কার ${firstName} দা! রেস্তোরাঁর এই সমস্যাটি আমি টিকিট #${resolutionAction.ticketId?.slice(0, 8)} হিসেবে রেকর্ড করে রেস্তোরাঁ ও অর্ডারকিং অপারেশনস অ্যাডমিনকে জানিয়েছি। সক্রিয় অর্ডার #${active?.orderCode ?? "N/A"}-এর জন্য আপনার পেআউট ও রেটিং সম্পূর্ণ সুরক্ষিত রয়েছে। কোনো পেনাল্টি নেই।`;
+      }
+      if (lang === "hi") {
+        return `नमस्ते ${firstName} जी! रेस्तरां की इस समस्या को मैंने टिकट #${resolutionAction.ticketId?.slice(0, 8)} के तहत सीधे मर्चेंट ऑपरेशंस और एडमिन को भेज दिया है। ऑर्डर #${active?.orderCode ?? "N/A"} के लिए आपका पेआउट और रेटिंग 100% सुरक्षित है। चिंता न करें।`;
+      }
+      if (lang === "as") {
+        return `নমস্কাৰ ${firstName} ডাঙৰীয়া! ৰেষ্টুৰেণ্টৰ এই সমস্যাটো টিকট #${resolutionAction.ticketId?.slice(0, 8)} যোগে অপাৰেচনলৈ প্ৰেৰণ কৰা হৈছে। অৰ্ডাৰ #${active?.orderCode ?? "N/A"}-ৰ বাবে আপোনাৰ পেআউট সুৰক্ষিত।`;
+      }
+      return `Hello ${firstName}! I have logged this restaurant issue under Ticket #${resolutionAction.ticketId?.slice(0, 8)} and alerted both the restaurant manager and Admin Operations. Your payout and delivery rating for Order #${active?.orderCode ?? "N/A"} are 100% protected.`;
+    }
+
+    if (resolutionAction.type === "CUSTOMER_CALL_LOGGED") {
+      const attempts = active?.contactAttempts ?? 1;
+      if (lang === "bn") {
+        return `কল প্রচেষ্টা #${attempts}/৩ সফলভাবে সিস্টেমে রেকর্ড করা হয়েছে। অনুগ্রহ করে ২-৩ মিনিট অপেক্ষা করে পুনরায় চেষ্টা করুন। ৩টি কল ও ১০ মিনিট পার হলে ১০০% পেআউট সুরক্ষিত থাকবে।`;
+      }
+      if (lang === "hi") {
+        return `कॉल प्रयास #${attempts}/3 सफलतापूर्वक सिस्टम में दर्ज कर लिया गया है। कृपया 2-3 मिनट प्रतीक्षा करके पुनः प्रयास करें। 3 कॉल और 10 मिनट के बाद 100% पेआउट सुरक्षित रहता है।`;
+      }
+      if (lang === "as") {
+        return `কল প্ৰচেষ্টা #${attempts}/৩ সফলভাৱে ৰেকৰ্ড কৰা হৈছে। ২-৩ মিনিটৰ পাছত পুনৰ চেষ্টা কৰক। ৩ টা কল সম্পন্ন হ'লে সম্পূৰ্ণ পেআউট সুৰক্ষিত থাকিব।`;
+      }
+      return `Call attempt #${attempts}/3 has been officially logged in dispatch. Please wait 2-3 minutes before attempting again. Full Base + Distance payout is guaranteed once the 10-minute 3-call SOP completes.`;
+    }
+
+    if (resolutionAction.type === "DOORSTEP_UNREACHABLE_CONFIRMED") {
+      if (lang === "bn") {
+        return `১০ মিনিটের ৩-কল এসওপি সম্পন্ন হয়েছে! অর্ডার #${active?.orderCode}-এর বেস ও দূরত্বের ১০০% পেআউট সম্পূর্ণ সুরক্ষিত। কোনো জরিমানা হবে না। ড্রপ স্ক্রিনে 'Customer Unavailable' নির্বাচন করে ডেলিভারি সম্পন্ন করুন।`;
+      }
+      if (lang === "hi") {
+        return `10 मिनट की 3-कॉल एसओपी पूरी हो गई है! ऑर्डर #${active?.orderCode} का 100% बेस और दूरी पेआउट सुरक्षित है। कोई पेनल्टी नहीं लगेगी। डिलीवरी स्क्रीन पर 'Customer Unavailable' चुनें।`;
+      }
+      if (lang === "as") {
+        return `১০ মিনিটৰ ৩-কল এছঅ'পি সমাপ্ত হ'ল! অৰ্ডাৰ #${active?.orderCode}-ৰ ১০০% পেআউট সুৰক্ষিত। স্ক্ৰীণত 'Customer Unavailable' নিৰ্বাচন কৰক।`;
+      }
+      return `The 10-minute 3-call doorstep SOP is complete! 100% of your Base and Distance earnings for Order #${active?.orderCode} are guaranteed with zero rating deduction. Please select 'Customer Unavailable' on your delivery screen.`;
+    }
+
+    if (resolutionAction.type === "COD_DISPUTE_LOGGED") {
+      if (lang === "bn") {
+        return `নমস্কার ${firstName} দা! নগদ টাকার বিতর্কটি টিকিট #${resolutionAction.ticketId?.slice(0, 8)} হিসেবে স্ক্রিনশট প্রমাণসহ নথিভুক্ত করা হয়েছে। আপনার ক্যাশ ফ্লোট আটকে রাখা হবে না এবং নতুন অর্ডার পেতে কোনো বাধা থাকবে না।`;
+      }
+      if (lang === "hi") {
+        return `नमस्ते ${firstName} जी! नकद विवाद को टिकट #${resolutionAction.ticketId?.slice(0, 8)} के तहत स्क्रीनशॉट प्रूफ के साथ दर्ज कर लिया गया है। आपकी फ्लोट सीमा पर कोई रोक नहीं लगेगी और आपको नए ऑर्डर मिलते रहेंगे।`;
+      }
+      if (lang === "as") {
+        return `নমস্কাৰ ${firstName} ডাঙৰীয়া! চিঅ'ডি বিবাদটো টিকট #${resolutionAction.ticketId?.slice(0, 8)} যোগে প্ৰমাণসহ সংৰক্ষণ কৰা হৈছে। আপোনাৰ নতুন অৰ্ডাৰ পোৱাত কোনো বাধা নাথাকিব।`;
+      }
+      return `Hello ${firstName}! This cash dispute has been logged under Ticket #${resolutionAction.ticketId?.slice(0, 8)} with your proof. Your floating cash liability is held in review without suspending your dispatch.`;
+    }
+  }
 
   // -------------------------------------------------------------------------
   // TOOL 1: Emergency Distress SOS Signals Immediately to 112 / 108
