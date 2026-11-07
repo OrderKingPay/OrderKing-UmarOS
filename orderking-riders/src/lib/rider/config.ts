@@ -1,8 +1,8 @@
 import type { Branding, DynamicPricingConfig, FeatureFlags, PlatformConfig, ProgressiveDistanceSlabs, RiderDisciplineConfig } from "./types.ts";
 
 export const DEFAULT_BRANDING: Branding = {
-  appName: "OrderKing Partner",
-  riderFacingBrand: "OrderKing Partner",
+  appName: "OrderKing Delivery Partner",
+  riderFacingBrand: "OrderKing Delivery Partner",
   tagline: "Delivery Partner Fleet",
   logoUrl: "/brand/logo.svg",
   faviconUrl: "/favicon.svg",
@@ -14,7 +14,7 @@ export const DEFAULT_BRANDING: Branding = {
   domain: "rider.orderkingpay.com",
   notificationSender: "Orderkingpay",
   legalCompanyName: "Orderkingpay",
-  appStoreName: "OrderKing Partner",
+  appStoreName: "OrderKing Delivery Partner",
   invoiceBrand: "Orderkingpay",
   gstin: "18AFXPH9838M1Z9",
 };
