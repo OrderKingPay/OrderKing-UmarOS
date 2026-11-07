@@ -80,7 +80,7 @@ export function StructuredRejectionModal({
             restaurantId,
             itemIds: selectedItemIds,
             status: "temporarily_unavailable",
-            nextAvailableAt: expiry.nextAvailableAtIso,
+            nextAvailableAt: expiry.nextAvailableAt,
           },
         });
         toast.info(
@@ -90,8 +90,12 @@ export function StructuredRejectionModal({
       }
 
       await onConfirmReject(selectedReason);
-      await processStructuredRejection(order.id, selectedReason, {
-        stockoutItemIds: isStockoutReason ? selectedItemIds : undefined,
+      processStructuredRejection({
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        reason: selectedReason,
+        selectedLineItemIds: isStockoutReason ? selectedItemIds : undefined,
+        stockoutDuration: stockoutOption,
       });
 
       onClose();

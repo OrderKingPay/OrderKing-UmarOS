@@ -761,7 +761,7 @@ ${recon.conversationalSummary}`,
         text: `### 💰 Settlement & Commission Savings Report
 - **Trailing 7 Days Gross Sales**: **₹${(summary.grossSalesPaise / 100).toLocaleString("en-IN")}**
 - **OrderKing Platform Commission**: **₹0 (custom commission)**
-- **Net Sales Retained**: **₹${((summary.grossSalesPaise - summary.commissionPaise) / 100).toLocaleString("en-IN")}** directly in your merchant account.
+- **Net Sales Retained**: **₹${((summary.grossSalesPaise - summary.commissionPaidPaise) / 100).toLocaleString("en-IN")}** directly in your merchant account.
 - **Settlement Account**: **${summary.settlementAccount}** (Status: 🟢 **${summary.status}**)`,
         timestamp,
         actionCard: {
