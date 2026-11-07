@@ -16,7 +16,7 @@ function Login() {
   const [phoneName, setPhoneName] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [channel, setChannel] = useState<"sms" | "voice" | "whatsapp">("sms");
+  const [channel, setChannel] = useState<"sms" | "whatsapp">("sms");
   const [providerNotice, setProviderNotice] = useState<string | null>(null);
   const [instantOtp, setInstantOtp] = useState<string | null>(null);
   const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
@@ -60,7 +60,7 @@ function Login() {
   }, [otp, otpSent]);
   const cleanIndianNumber = (raw: string) =>
     raw.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "").slice(0, 10);
-  const handleSendOtp = async (selectedChannel: "sms" | "voice" | "whatsapp" = channel) => {
+  const handleSendOtp = async (selectedChannel: "sms" | "whatsapp" = channel) => {
     const cleanNumber = cleanIndianNumber(phone);
     if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
       setError("Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).");
@@ -94,9 +94,7 @@ function Login() {
         }
       }
       const modeLabel =
-        selectedChannel === "voice"
-          ? "Automated voice call initiated to"
-          : selectedChannel === "whatsapp"
+        selectedChannel === "whatsapp"
           ? "WhatsApp verification ready for"
           : "6-digit OTP dispatched to";
       setSuccessMsg(`${modeLabel} +91 ${cleanNumber}`);
@@ -329,15 +327,6 @@ function Login() {
                     <button
                       type="button"
                       disabled={busy}
-                      onClick={() => void handleSendOtp("voice")}
-                      className="flex items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50 py-2.5 px-3 text-xs font-bold text-stone-800 hover:bg-amber-50 hover:border-amber-300 cursor-pointer"
-                    >
-                      <PhoneCall className="size-3.5 text-amber-600" />
-                      <span>OTP on Call</span>
-                    </button>
-                    <button
-                      type="button"
-                      disabled={busy}
                       onClick={() => void handleSendOtp("whatsapp")}
                       className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/60 py-2.5 px-3 text-xs font-bold text-emerald-900 hover:bg-emerald-100 cursor-pointer"
                     >
@@ -404,14 +393,6 @@ function Login() {
                     className="rounded-xl border border-stone-200 bg-stone-50 py-2 px-2 text-[11px] font-bold text-stone-700 hover:bg-stone-100 disabled:opacity-50 cursor-pointer"
                   >
                     {resendTimer > 0 ? `SMS (${resendTimer}s)` : "Resend SMS"}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void handleSendOtp("voice")}
-                    className="rounded-xl border border-amber-200 bg-amber-50/70 py-2 px-2 text-[11px] font-bold text-amber-900 hover:bg-amber-100 cursor-pointer"
-                  >
-                    📞 Call Me Now
                   </button>
                   <button
                     type="button"

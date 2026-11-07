@@ -144,6 +144,9 @@ function Login() {
       if (!res.ok) {
         throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
       }
+      if (channel === "whatsapp" && res.whatsAppOtpUrl && typeof window !== "undefined") {
+        window.open(res.whatsAppOtpUrl, "_blank");
+      }
       setStep("otp");
       setCountdown(30);
       setCanResend(false);
@@ -406,12 +409,22 @@ function Login() {
                   {pending ? (
                     <span className="flex items-center gap-2">
                       <span className="size-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                      Sending OTP...
+                      Sending OTP via SMS...
                     </span>
                   ) : (
-                    "Send OTP →"
+                    "Send OTP via SMS →"
                   )}
                 </Button>
+
+                <button
+                  type="button"
+                  disabled={pending || !isPhoneValid}
+                  onClick={() => void handleSendOtp("whatsapp")}
+                  className="w-full rounded-2xl border border-emerald-500/30 bg-emerald-50 hover:bg-emerald-100 py-3 text-sm font-bold text-emerald-700 transition flex items-center justify-center gap-2 h-12 disabled:opacity-45 disabled:pointer-events-none"
+                >
+                  <MessageCircle className="size-4 text-emerald-600" />
+                  <span>Get OTP on WhatsApp</span>
+                </button>
               </form>
 
               <p className="text-center text-[11px] leading-relaxed text-gray-500">

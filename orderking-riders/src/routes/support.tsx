@@ -92,7 +92,7 @@ const GUIDED_WORKFLOWS: GuidedWorkflowSpec[] = [
     title: "Payout Audit",
     icon: "📊",
     topic: "PAYMENT_ISSUE",
-    shortDesc: "Audit statutory ₹35 base + ₹8/km distance pay, tips, milestone bonus, or Wednesday NEFT settlement",
+    shortDesc: "Audit statutory ₹35 base + ₹12/km distance pay, tips, milestone bonus, or Wednesday NEFT settlement",
     presets: [
       "Actual route distance exceeded estimated km due to road diversion; request distance pay audit.",
       "Wednesday weekly settlement pending; please verify NEFT/IMPS transfer to my registered UPI/Bank.",

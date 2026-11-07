@@ -1,13 +1,12 @@
 /**
- * OrderKing Rider & Fleet Delivery Service Worker
- * Zero-Lag 2G Offline Architecture for high-speed couriers, basement parking,
- * and patchy cellular connectivity.
- * Zero external dependencies: uses native IndexedDB directly.
+ * OrderKing Delivery Partner Service Worker
+ * Clean, Zero-Lag Network-First Architecture for couriers.
+ * Prevents stale bundle traps and ensures live production truth.
  */
 
-const CACHE_NAME = "orderking-rider-v7-live";
+const SW_VERSION = "ok-rider-v9-live-truth";
+const CACHE_NAME = `ok-rider-${SW_VERSION}`;
 const STATIC_ASSETS = [
-  "/",
   "/offline.html",
   "/favicon.ico",
   "/icon-192.png",
@@ -100,11 +99,23 @@ self.addEventListener("message", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // HTML Entry Points & Navigation requests: NETWORK-FIRST to guarantee live truth and zero stale bundle traps
+  // Bypass payments, live telemetry, and event-streams
+  if (
+    url.hostname.includes("razorpay.com") ||
+    url.pathname.startsWith("/api/webhooks/") ||
+    url.pathname.startsWith("/api/auth/") ||
+    url.pathname.startsWith("/_serverFn/") ||
+    url.pathname.includes("/telemetry/stream")
+  ) {
+    return;
+  }
+
+  // HTML Entry Points & Navigation requests: NETWORK-FIRST to guarantee live truth
   const isHtmlRequest =
     event.request.mode === "navigate" ||
     url.pathname === "/" ||
     url.pathname === "/login" ||
+    url.pathname === "/duty" ||
     url.pathname === "/index.html" ||
     url.pathname.endsWith(".html") ||
     (event.request.method === "GET" && (event.request.headers?.get("Accept") || "").includes("text/html"));
@@ -124,13 +135,55 @@ self.addEventListener("fetch", (event) => {
           if (offlinePage) return offlinePage;
           const cached = await caches.match(event.request);
           if (cached) return cached;
-          return caches.match("/");
+          return caches.match("/offline.html");
         })
     );
     return;
   }
 
-  // Rider Catalog, Zones & Configuration: Stale-While-Revalidate with IndexedDB
+  // Static JavaScript & CSS Bundles: NETWORK-FIRST to prevent stale bundle traps
+  if (
+    event.request.method === "GET" &&
+    (url.pathname.startsWith("/assets/") || /\.(?:css|js)$/i.test(url.pathname))
+  ) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Static images and fonts: cache-first with network fallback
+  if (
+    event.request.method === "GET" &&
+    (url.pathname.startsWith("/brand/") ||
+      /\.(?:png|jpg|jpeg|webp|avif|svg|ico|woff2)$/i.test(url.pathname))
+  ) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        return (
+          cached ||
+          fetch(event.request).then((response) => {
+            if (response.ok) {
+              const clone = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
+            }
+            return response;
+          })
+        );
+      })
+    );
+    return;
+  }
+
+  // Rider Catalog & Zones APIs: Stale-While-Revalidate with IndexedDB
   if (url.pathname.startsWith("/api/")) {
     if (event.request.method === "GET" && isRiderCatalogPath(url.pathname)) {
       event.respondWith(
@@ -152,9 +205,7 @@ self.addEventListener("fetch", (event) => {
             })
             .catch(() => null);
 
-          // Return cached data immediately for 0-latency rider UI
           if (cached?.body != null) {
-            event.waitUntil(fetchPromise);
             return new Response(cached.body, {
               status: 200,
               headers: cached.headers || { "Content-Type": "application/json" },
@@ -207,25 +258,6 @@ self.addEventListener("fetch", (event) => {
       return;
     }
   }
-
-  // Static assets (CSS, JS, WebAssembly, fonts, icons): cache-first with background revalidation.
-  if (event.request.method === "GET") {
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        const refresh = fetch(event.request)
-          .then((response) => {
-            if (response.ok) {
-              const clone = response.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
-            }
-            return response;
-          })
-          .catch(() => cached);
-
-        return cached || refresh;
-      })
-    );
-  }
 });
 
 // Background Sync handler for Rider actions
@@ -233,7 +265,6 @@ self.addEventListener("sync", (event) => {
   if (event.tag === "sync-rider-actions" || event.tag === "sync-orders") {
     event.waitUntil(
       (async () => {
-        console.log("[Rider SW] Background sync event triggered:", event.tag);
         const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
         for (const client of clients) {
           client.postMessage({ type: "ORDERKING_RIDER_SYNC_TRIGGER", tag: event.tag });
@@ -248,22 +279,22 @@ self.addEventListener("push", (event) => {
   if (!event.data) return;
   try {
     const payload = event.data.json();
-    const title = payload.title || "OrderKing Dispatch Offer";
-    const options = {
-      body: payload.body || "New high-payout delivery offer available nearby!",
-      icon: payload.icon || "/icon-192.png",
-      badge: payload.badge || "/icon-192.png",
-      vibrate: [300, 100, 300, 100, 600],
-      data: payload.data || { url: "/" },
-      tag: payload.tag || "rider-dispatch-alert",
-      renotify: true,
-      requireInteraction: true,
-    };
-    event.waitUntil(self.registration.showNotification(title, options));
+    event.waitUntil(
+      self.registration.showNotification(payload.title || "OrderKing Delivery", {
+        body: payload.body || "New dispatch offer available near your location.",
+        icon: payload.icon || "/icon-192.png",
+        badge: payload.badge || "/icon-192.png",
+        vibrate: [200, 100, 200, 100, 400],
+        data: payload.data || { url: "/" },
+        tag: payload.tag || "rider-dispatch-alert",
+        renotify: true,
+        requireInteraction: true,
+      })
+    );
   } catch {
     const text = event.data.text();
     event.waitUntil(
-      self.registration.showNotification("OrderKing Rider", {
+      self.registration.showNotification("OrderKing Delivery", {
         body: text,
         icon: "/icon-192.png",
         data: { url: "/" },
@@ -278,10 +309,7 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && "focus" in client) {
-          if ("navigate" in client) {
-            client.navigate(targetUrl);
-          }
+        if (client.url && "focus" in client) {
           return client.focus();
         }
       }
