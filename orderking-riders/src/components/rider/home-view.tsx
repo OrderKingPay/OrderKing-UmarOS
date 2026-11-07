@@ -133,7 +133,7 @@ const OPERATIONAL_SHIFT_SLOTS: ReadonlyArray<ShiftSlot> = [
 
 const READINESS_STORAGE_KEY = "ok_rider_readiness_v1";
 const BOOKED_GIGS_STORAGE_KEY = "ok_rider_booked_gigs_v1";
-const DEFAULT_COD_BLOCK_THRESHOLD_PAISE = 200000; // ₹2,000.00 statutory COD float limit
+const DEFAULT_COD_BLOCK_THRESHOLD_PAISE = 250000; // ₹2,500.00 statutory COD float limit
 
 type ReadinessState = {
   helmetWorn: boolean;
