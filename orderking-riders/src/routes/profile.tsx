@@ -399,7 +399,7 @@ function Page() {
                     className="mt-1 inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline"
                   >
                     <PhoneCall className="size-3" />
-                    <span>1-Tap Dial Emergency Contact ({emergencyPhone})</span>
+                    <span>Call Emergency Contact ({emergencyPhone})</span>
                   </a>
                 ) : null}
               </div>

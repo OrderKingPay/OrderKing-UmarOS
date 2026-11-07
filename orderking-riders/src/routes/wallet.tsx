@@ -235,7 +235,7 @@ export function WalletPage() {
               </div>
               <div>
                 <CardTitle className="text-base flex items-center gap-2">
-                  1-Tap Instant UPI Float Clearing
+                  UPI Float Deposit
                   <Badge tone="online" className="text-[10px]">Instant Real-Time</Badge>
                 </CardTitle>
                 <CardMeta>
@@ -304,7 +304,7 @@ export function WalletPage() {
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 text-xs shadow-xs transition"
               >
                 <Zap className="size-4" />
-                <span>1-Tap Open UPI App (₹{quickAmountRupees})</span>
+                <span>Open UPI App (₹{quickAmountRupees})</span>
               </a>
               <Button
                 variant="outline"

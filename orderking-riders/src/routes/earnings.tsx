@@ -456,7 +456,7 @@ function Page() {
               className="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-1.5 shadow-sm"
             >
               <Zap className="size-3.5" />
-              {instantPayoutBusy ? "Dispatched..." : "1-Tap Instant UPI Cashout"}
+              {instantPayoutBusy ? "Dispatched..." : "Instant Cashout"}
             </Button>
           </div>
 

@@ -283,7 +283,7 @@ export function FloatingCashCard({
                 title="Launch installed UPI App directly on mobile"
               >
                 <ExternalLink className="mr-1 size-3.5" />
-                1-Tap UPI
+                Pay via UPI
               </Button>
             )}
             <Button

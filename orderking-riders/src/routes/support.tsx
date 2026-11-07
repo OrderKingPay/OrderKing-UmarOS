@@ -360,7 +360,7 @@ function Page() {
         setError(
           errorMessage(
             innerErr,
-            "AI support is temporarily unavailable. Use the 1-Tap Guided Self-Resolution Workflows above.",
+            "AI support is temporarily unavailable. Please select your issue from the options above.",
           ),
         );
       }
@@ -415,10 +415,10 @@ function Page() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
-                Zero-Wait Autonomous Resolution Engine
+                Help &amp; Support
               </p>
               <h2 className="text-base font-bold">
-                ⚡ 1-Tap Guided Self-Resolution Workflows
+                Issue Resolution
               </h2>
             </div>
             <Badge tone="online">AUTO-DIAGNOSIS</Badge>
@@ -481,7 +481,7 @@ function Page() {
 
             {/* 1-Tap Preset Issue Notes */}
             <div className="space-y-1.5">
-              <Label className="text-xs">Select 1-Tap Issue Statement or Customize:</Label>
+              <Label className="text-xs">Select Issue Statement:</Label>
               <div className="flex flex-wrap gap-1.5">
                 {activeWorkflow.presets.map((preset, idx) => (
                   <button

@@ -748,7 +748,7 @@ function Page() {
         <div className="space-y-2 rounded-2xl border border-white/10 bg-[#0B0F19]/80 p-3.5 backdrop-blur-sm">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2">
             <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              ⚡ 1-Tap Multilingual Prompts (বাংলা · हिन्दी · தமிழ் · English)
+              Quick Prompts (বাংলা · हिन्दी · தமிழ் · English)
             </p>
             <span className="text-[11px] font-semibold text-[#E5A93C]">0 Founder Headache</span>
           </div>

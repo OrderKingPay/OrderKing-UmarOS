@@ -1092,7 +1092,7 @@ export function HomeView() {
                 className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs gap-1.5 shadow-sm active:scale-95 transition"
               >
                 <Zap className="size-3.5 fill-current" />
-                1-Tap Go Online
+                Go Online
               </Button>
             ) : status === "ONLINE" ? (
               <div className="flex items-center gap-1.5">

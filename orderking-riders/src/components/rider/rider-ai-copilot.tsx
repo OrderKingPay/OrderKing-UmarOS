@@ -379,7 +379,7 @@ export function RiderAiCopilot({
       {/* 1-Tap Practical Field Support Chips */}
       <div className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          1-Tap Field Support Prompts
+          Quick Prompts
         </p>
         <div className="flex flex-wrap gap-2">
           {FIELD_SUPPORT_CHIPS.map((chip) => (
