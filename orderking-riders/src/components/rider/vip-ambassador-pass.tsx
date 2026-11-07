@@ -6,7 +6,6 @@ import {
   Check,
   ChevronRight,
   Copy,
-  Crown,
   Gift,
   HelpCircle,
   IndianRupee,
@@ -108,21 +107,21 @@ export function VipAmbassadorPass({
         className={`relative overflow-hidden rounded-2xl border border-primary/40 bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-5 shadow-2xl text-white ${className}`}
       >
         {/* Luxury Background Glow Highlights */}
-        <div className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-[#E5A93C]/15 blur-3xl" />
-        <div className="pointer-events-none absolute -left-16 -bottom-16 size-48 rounded-full bg-[#2563EB]/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-[#E23744]/15 blur-3xl" />
+        <div className="pointer-events-none absolute -left-16 -bottom-16 size-48 rounded-full bg-blue-50 blur-3xl" />
 
         {/* Top Header & Elite Tier Badge */}
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-primary/20 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E5A93C] to-[#B37D20] text-black shadow-md shadow-[#E5A93C]/30">
-              <Crown className="size-5" />
+            <div className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-[#E23744] border border-red-200 shadow-xs">
+              <Gift className="size-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-display text-base font-bold tracking-wide text-primary">
                   OrderKing VIP Ambassador Pass
                 </h3>
-                <span className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                <span className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-[#E23744]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
                   <Sparkles className="size-3" /> Elite Tier
                 </span>
               </div>
@@ -141,7 +140,7 @@ export function VipAmbassadorPass({
                 setActiveTab("pass");
                 setModalOpen(true);
               }}
-              className="h-8 border-primary/50 bg-black/40 text-xs text-primary hover:bg-[#E5A93C]/20 hover:text-white"
+              className="h-8 border-primary/50 bg-gray-100 text-gray-800 border border-gray-200 text-xs text-primary hover:bg-[#E23744]/20 hover:text-white"
             >
               <QrCode className="mr-1.5 size-3.5" />
               Digital Pass
@@ -163,7 +162,7 @@ export function VipAmbassadorPass({
         </div>
 
         {/* Live Wallet Ledger Referral Tracker */}
-        <div className="relative z-10 mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-xl border border-border/40 bg-black/40 p-3 backdrop-blur-sm">
+        <div className="relative z-10 mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-xl border border-border/40 bg-gray-100 text-gray-800 border border-gray-200 p-3 backdrop-blur-sm">
           <div className="space-y-0.5">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
               Ledger Royalties
@@ -229,7 +228,7 @@ export function VipAmbassadorPass({
           </div>
 
           {/* Tile 3: Lifetime Micro-Royalty */}
-          <div className="rounded-xl border border-primary/40 bg-gradient-to-br from-[#E5A93C]/15 to-transparent p-3 backdrop-blur-sm">
+          <div className="rounded-xl border border-primary/40 bg-gradient-to-br from-[#E23744]/15 to-transparent p-3 backdrop-blur-sm">
             <div className="flex items-center justify-between text-xs text-primary">
               <span className="font-semibold uppercase tracking-wider">Lifetime Royalty</span>
               <TrendingUp className="size-4 text-primary" />
@@ -285,7 +284,7 @@ export function VipAmbassadorPass({
                   size="sm"
                   variant="outline"
                   onClick={() => void copyCode()}
-                  className="h-8 border-primary/40 bg-[#E5A93C]/10 text-xs text-primary hover:bg-[#E5A93C]/20"
+                  className="h-8 border-primary/40 bg-[#E23744]/10 text-xs text-primary hover:bg-[#E23744]/20"
                 >
                   {copied ? (
                     <>
@@ -336,8 +335,8 @@ export function VipAmbassadorPass({
 
             {/* Modal Header */}
             <div className="text-center">
-              <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#E5A93C] to-[#B37D20] text-black shadow-lg shadow-[#E5A93C]/40">
-                <Crown className="size-7" />
+              <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-red-50 text-[#E23744] border border-red-200 shadow-xs">
+                <Gift className="size-7" />
               </div>
               <h4 className="mt-3 font-display text-xl font-bold tracking-wide text-primary">
                 ORDERKING VIP AMBASSADOR PASS
@@ -348,13 +347,13 @@ export function VipAmbassadorPass({
             </div>
 
             {/* Modal Navigation Tabs */}
-            <div className="mt-4 flex rounded-lg bg-black/40 p-1 border border-border/40">
+            <div className="mt-4 flex rounded-lg bg-gray-100 text-gray-800 border border-gray-200 p-1 border border-border/40">
               <button
                 type="button"
                 onClick={() => setActiveTab("pass")}
                 className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${
                   activeTab === "pass"
-                    ? "bg-[#E5A93C] text-black shadow"
+                    ? "bg-[#E23744] text-black shadow"
                     : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -365,7 +364,7 @@ export function VipAmbassadorPass({
                 onClick={() => setActiveTab("calculator")}
                 className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${
                   activeTab === "calculator"
-                    ? "bg-[#E5A93C] text-black shadow"
+                    ? "bg-[#E23744] text-black shadow"
                     : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -376,7 +375,7 @@ export function VipAmbassadorPass({
                 onClick={() => setActiveTab("ledger")}
                 className={`flex-1 rounded-md py-1.5 text-xs font-semibold transition ${
                   activeTab === "ledger"
-                    ? "bg-[#E5A93C] text-black shadow"
+                    ? "bg-[#E23744] text-black shadow"
                     : "text-slate-300 hover:text-white"
                 }`}
               >
@@ -419,7 +418,7 @@ export function VipAmbassadorPass({
             {/* Tab 2: Royalty Calculator */}
             {activeTab === "calculator" ? (
               <div className="mt-4 space-y-4">
-                <div className="rounded-xl border border-white/15 bg-black/40 p-4 space-y-3">
+                <div className="rounded-xl border border-white/15 bg-gray-100 text-gray-800 border border-gray-200 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-slate-300">
                       Daily Pass Handovers:
@@ -437,7 +436,7 @@ export function VipAmbassadorPass({
                         onClick={() => setDailyHandovers(num)}
                         className={`flex-1 rounded py-1 text-xs font-semibold transition ${
                           dailyHandovers === num
-                            ? "bg-[#E5A93C] text-black"
+                            ? "bg-[#E23744] text-black"
                             : "bg-white/10 text-slate-300 hover:bg-white/20"
                         }`}
                       >
@@ -487,13 +486,13 @@ export function VipAmbassadorPass({
             {activeTab === "ledger" ? (
               <div className="mt-4 space-y-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-lg bg-black/40 border border-primary/30 p-2.5">
+                  <div className="rounded-lg bg-gray-100 text-gray-800 border border-gray-200 border border-primary/30 p-2.5">
                     <span className="text-slate-400">Total Ambassador Earnings:</span>
                     <p className="mt-1 font-mono text-base font-bold text-primary">
                       {formatPaise(stats?.totalEarnedPaise ?? 0)}
                     </p>
                   </div>
-                  <div className="rounded-lg bg-black/40 border border-sky-400/30 p-2.5">
+                  <div className="rounded-lg bg-gray-100 text-gray-800 border border-gray-200 border border-sky-400/30 p-2.5">
                     <span className="text-slate-400">Direct Customers:</span>
                     <p className="mt-1 font-mono text-base font-bold text-sky-300">
                       {stats?.totalCustomersReferred ?? 0}
@@ -549,7 +548,7 @@ export function VipAmbassadorPass({
               <Button
                 type="button"
                 variant="outline"
-                className="border-primary/50 text-primary hover:bg-[#E5A93C]/20"
+                className="border-primary/50 text-primary hover:bg-[#E23744]/20"
                 onClick={() => setModalOpen(false)}
               >
                 Done

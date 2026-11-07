@@ -193,10 +193,10 @@ function DailyMilestoneCard({
       <div className="space-y-1.5 bg-muted/40 p-3 rounded-xl border border-border">
         <div className="flex items-center justify-between text-xs font-semibold">
           <span className="text-foreground flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-[#E5A93C] animate-pulse" />
+            <span className="size-2 rounded-full bg-[#E23744] animate-pulse" />
             <span>{completed}/{milestone.targetOrders} orders completed</span>
           </span>
-          <span className="font-mono font-extrabold text-[#E5A93C]">{milestone.progressPct}%</span>
+          <span className="font-mono font-extrabold text-[#E23744]">{milestone.progressPct}%</span>
         </div>
         <div className="h-3 w-full bg-muted/40 rounded-full overflow-hidden p-0.5 border border-white/5">
           <div
@@ -233,7 +233,7 @@ function DailyMilestoneCard({
             <div className="text-[11px] font-bold">
               {slab.orders} Orders
             </div>
-            <div className="text-sm font-extrabold font-mono text-[#E5A93C] mt-0.5">
+            <div className="text-sm font-extrabold font-mono text-[#E23744] mt-0.5">
               {slab.label}
             </div>
             <div className="text-[9.5px] mt-0.5 uppercase tracking-wider font-semibold">
@@ -1685,7 +1685,7 @@ function OfferCard({
               ? "bg-rose-500 animate-pulse"
               : isUrgent
                 ? "bg-amber-500"
-                : "bg-gradient-to-r from-amber-500 via-[#E5A93C] to-emerald-400"
+                : "bg-gradient-to-r from-amber-500 via-[#E23744] to-emerald-400"
           }`}
           style={{ width: `${timerPct}%` }}
         />
@@ -1695,13 +1695,13 @@ function OfferCard({
       <div className="flex items-start justify-between gap-2 pt-1">
         <div className="flex items-center gap-2">
           <span className="relative flex size-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E5A93C] opacity-75" />
-            <span className="relative inline-flex size-3 rounded-full bg-[#E5A93C]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E23744] opacity-75" />
+            <span className="relative inline-flex size-3 rounded-full bg-[#E23744]" />
           </span>
           <Badge tone="online" className="font-mono text-xs font-bold tracking-wider uppercase">
             Order #{offer.orderCode}
           </Badge>
-          <span className="text-[11px] font-bold text-[#E5A93C] uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-[#E23744] uppercase tracking-wider">
             Incoming Dispatch
           </span>
           {surge.isMonsoonActive && (
@@ -1729,7 +1729,7 @@ function OfferCard({
             className={`flex size-8 items-center justify-center rounded-lg border transition ${
               muted
                 ? "border-border bg-muted/40 text-muted-foreground"
-                : "border-[#E5A93C]/40 bg-[#E5A93C]/10 text-[#E5A93C] animate-pulse"
+                : "border-red-200 bg-[#E23744]/10 text-[#E23744] animate-pulse"
             }`}
             title={muted ? "Unmute Dispatch Siren" : "Mute Siren"}
             aria-label={muted ? "Unmute Dispatch Siren" : "Mute Siren"}
@@ -1744,7 +1744,7 @@ function OfferCard({
                 ? "border-rose-500 bg-rose-500/20 text-rose-400 animate-bounce"
                 : isUrgent
                   ? "border-amber-500 bg-amber-500/20 text-amber-400 animate-pulse"
-                  : "border-[#E5A93C]/40 bg-[#E5A93C]/15 text-[#E5A93C]"
+                  : "border-red-200 bg-[#E23744]/15 text-[#E23744]"
             }`}
           >
             <Clock3 className="size-4" />
@@ -1753,11 +1753,11 @@ function OfferCard({
         </div>
       </div>
 
-      {/* Standard Earnings Floor Banner in Obsidian Gold */}
+      {/* Guaranteed Order Earnings Floor Banner */}
       <div className="rounded-2xl border border-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 p-4 rounded-2xl shadow-xs">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E5A93C]">
+            <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E23744]">
               ★ {payout.labels.guaranteedEarningsTitle}
             </p>
             <p className="mt-0.5 font-display text-3xl font-black tracking-tight text-emerald-800 dark:text-emerald-300">
@@ -1772,7 +1772,7 @@ function OfferCard({
         </div>
 
         {/* Payout Components Breakdown */}
-        <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#E5A93C]/20 pt-2 text-xs">
+        <div className="mt-3 grid grid-cols-2 gap-2 border-t border-emerald-200 pt-2 text-xs">
           <div className="text-muted-foreground">
             {payout.labels.baseFareText} ({payout.baseDistanceKm} km): <span className="font-mono text-foreground font-semibold">{formatPaise(payout.baseFarePaise)}</span>
           </div>
@@ -1781,7 +1781,7 @@ function OfferCard({
           </div>
         </div>
         {surge.isWeatherAllowanceActive && (
-          <div className="mt-1 flex items-center justify-between text-xs text-sky-400 border-t border-[#E5A93C]/10 pt-1">
+          <div className="mt-1 flex items-center justify-between text-xs text-sky-400 border-t border-emerald-200 pt-1">
             <span>🌧️ {surge.badges.weatherAllowanceText}</span>
             <span className="font-mono font-semibold">+{formatPaise(surge.weatherAllowancePaise)}</span>
           </div>
@@ -1818,7 +1818,7 @@ function OfferCard({
       <div className="rounded-xl border border-border bg-muted/20 p-3.5 space-y-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-[#E5A93C]">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-[#E23744]">
               <Store className="size-4" />
             </div>
             <div>
@@ -1836,7 +1836,7 @@ function OfferCard({
         </p>
 
         {offer.restaurant.specialPickupInstructions && (
-          <p className="text-xs text-amber-300/90 bg-amber-500/10 border-l-2 border-[#E5A93C] p-2 rounded-r-md">
+          <p className="text-xs text-amber-300/90 bg-amber-500/10 border-l-2 border-amber-500 p-2 rounded-r-md">
             <strong>Pickup Note:</strong> {offer.restaurant.specialPickupInstructions}
           </p>
         )}

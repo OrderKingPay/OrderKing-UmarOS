@@ -222,7 +222,7 @@ export function useRiderCustomization(): RiderCustomizationTokens {
   const surgeColor =
     designTokens.elementOverrides?.surge_badge?.default ??
     designTokens.palette.warn ??
-    "#E5A93C";
+    "#E23744";
 
   // 3. COD Cash-in-Hand Floating Limit Resolution (₹2,000 Hard Lock, ₹1,600 Soft Warning)
   const hardLockPaise =

@@ -100,12 +100,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
   if (!user) return <RedirectToSignIn />;
 
-  const nav = [
-    { to: "/", icon: House, label: t("duty") || "Duty & Orders" },
-    { to: "/trips", icon: Navigation, label: t("trips") || "Trips" },
-    { to: "/earnings", icon: Banknote, label: t("earnings") || "Earnings & COD" },
-    { to: "/settlements", icon: Building2, label: t("payouts") || "Weekly Payouts" },
-    { to: "/profile", icon: UserCheck, label: t("profile") || "Profile & Fleet KYC" },
+      const nav = [
+    { to: "/", icon: House, label: "Duty & Orders" },
+    { to: "/trips", icon: Navigation, label: "Gigs & Trips" },
+    { to: "/cash", icon: Banknote, label: "Pocket & Cash" },
+    { to: "/earnings", icon: Building2, label: "Earnings & Rate Card" },
+    { to: "/profile", icon: UserCheck, label: "Profile & Payouts" },
   ] as const;
 
   const kycStatus = riderProfile?.kycStatus;

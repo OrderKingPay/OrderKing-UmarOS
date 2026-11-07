@@ -140,14 +140,14 @@ export function WalletPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
                     <ShieldCheck className="size-3.5" />
-                    Tier-1 Discipline Architecture
+                    Instant UPI Deposit
                   </span>
                   <span className="text-[11px] font-semibold text-muted-foreground">
-                    COD Pocket Balance &amp; Treasury
+                    Cash in Hand
                   </span>
                 </div>
                 <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-foreground">
-                  Partner Wallet &amp; Floating Cash
+                  Pocket Balance &amp; Cash Deposit
                 </h1>
               </div>
             </div>
@@ -168,7 +168,7 @@ export function WalletPage() {
 
           <p className="text-xs text-muted-foreground leading-relaxed">
             Manage your in-hand physical cash collected from Cash-on-Delivery (COD) orders.
-            OrderKing fleet architecture enforces a strict <strong>₹{(limitPaise / 100).toLocaleString("en-IN")} hard lock</strong> (Soft warning at ₹{(cod.softWarningPaise / 100).toLocaleString("en-IN")}).
+            Deposit your collected cash to stay below your <strong>₹{(limitPaise / 100).toLocaleString("en-IN")} hard lock</strong> (Soft warning at ₹{(cod.softWarningPaise / 100).toLocaleString("en-IN")}).
             If your balance reaches ₹{(limitPaise / 100).toLocaleString("en-IN")}, new COD dispatch offers are paused until settled via
             1-tap instant UPI QR or weekly automated Wednesday settlement offset.
           </p>

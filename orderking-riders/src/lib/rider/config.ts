@@ -7,9 +7,9 @@ export const DEFAULT_BRANDING: Branding = {
   logoUrl: "/brand/logo.svg",
   faviconUrl: "/favicon.svg",
   colors: {
-    primary: "#E5A93C",
-    background: "#08090C",
-    foreground: "#F8FAFC",
+    primary: "#E23744",
+    background: "#F8FAFC",
+    foreground: "#0F172A",
   },
   domain: "rider.orderkingpay.com",
   notificationSender: "Orderkingpay",

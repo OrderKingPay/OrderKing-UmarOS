@@ -136,7 +136,7 @@ function RiderAcademyPage() {
               Short 1-minute training modules for high service quality and safety.
             </p>
           </div>
-          <Badge className="bg-[#E5A93C]/20 text-primary border-primary/40 text-xs px-3 py-1">
+          <Badge className="bg-[#E23744]/20 text-primary border-primary/40 text-xs px-3 py-1">
             {completedCount}/{ACADEMY_MODULES.length} Completed
           </Badge>
         </div>
@@ -173,7 +173,7 @@ function RiderAcademyPage() {
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className={`p-2 rounded-lg ${isSelected ? "bg-[#E5A93C]/20 text-primary" : "bg-slate-800 text-slate-400"}`}>
+                  <div className={`p-2 rounded-lg ${isSelected ? "bg-[#E23744]/20 text-primary" : "bg-slate-800 text-slate-400"}`}>
                     <Icon className="size-4" />
                   </div>
                   {isDone ? (
@@ -208,7 +208,7 @@ function RiderAcademyPage() {
               className={`rounded-xl text-xs font-bold ${
                 completed[selected.id]
                   ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
-                  : "bg-[#E5A93C] hover:bg-amber-400 text-black"
+                  : "bg-[#E23744] hover:bg-amber-400 text-black"
               }`}
             >
               {completed[selected.id] ? "Completed ✓" : "Mark as Read"}

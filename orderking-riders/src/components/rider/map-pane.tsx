@@ -148,7 +148,7 @@ export function MapPane({
       {/* Top Header / Map Phase Banner */}
       <div className="flex items-center justify-between border-b border-border bg-muted/40 px-3.5 py-2 text-xs">
         {deliveryState ? (
-          <span className="flex items-center gap-1.5 font-bold text-[#e5a93c]">
+          <span className="flex items-center gap-1.5 font-bold text-[#E23744]">
             <Compass className="size-3.5 animate-spin" style={{ animationDuration: "8s" }} />
             <span>Active Route: {stageLabel}</span>
           </span>
@@ -166,11 +166,11 @@ export function MapPane({
             onClick={() => setHeatmapEnabled((v) => !v)}
             className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
               heatmapEnabled
-                ? "bg-amber-500/20 text-[#e5a93c] border border-amber-500/40"
+                ? "bg-amber-500/20 text-[#E23744] border border-amber-500/40"
                 : "bg-muted/40 text-muted-foreground border border-border/50 hover:bg-muted"
             }`}
           >
-            <Flame className={`size-3.5 ${heatmapEnabled ? "text-[#e5a93c]" : "text-muted-foreground"}`} />
+            <Flame className={`size-3.5 ${heatmapEnabled ? "text-[#E23744]" : "text-muted-foreground"}`} />
             <span>{heatmapEnabled ? "Heatmap ON" : "Heatmap OFF"}</span>
           </button>
 
@@ -216,11 +216,11 @@ export function MapPane({
             </radialGradient>
           </defs>
 
-          {/* Dark Obsidian Grid Background */}
-          <rect width="100" height="72" fill="#090B10" />
+          {/* Light Map Grid Background */}
+          <rect width="100" height="72" fill="#F1F5F9" />
 
           {/* Subtle Map Roads & Grid System */}
-          <g stroke="#1A2234" strokeWidth="0.35">
+          <g stroke="#E2E8F0" strokeWidth="0.35">
             {Array.from({ length: 7 }, (_, i) => (
               <line key={`h${i}`} x1="0" y1={i * 12} x2="100" y2={i * 12} />
             ))}
@@ -231,13 +231,13 @@ export function MapPane({
             <path
               d="M 0 36 Q 30 20 50 36 T 100 36"
               fill="none"
-              stroke="#243048"
+              stroke="#CBD5E1"
               strokeWidth="0.8"
             />
             <path
               d="M 45 0 Q 55 35 45 72"
               fill="none"
-              stroke="#243048"
+              stroke="#CBD5E1"
               strokeWidth="0.8"
             />
           </g>
@@ -260,7 +260,7 @@ export function MapPane({
                     cy={h.y}
                     r="1.8"
                     fill={h.demandLevel === "VERY_HIGH" ? "#ef4444" : "#f59e0b"}
-                    stroke="#090B10"
+                    stroke="#FFFFFF"
                     strokeWidth="0.5"
                   />
                   {/* Surge Multiplier Tag */}
@@ -310,7 +310,7 @@ export function MapPane({
           {isDeliveryMode && pickupProj ? (
             <g>
               <circle cx={pickupProj.x} cy={pickupProj.y} r="3.4" fill="rgba(245, 158, 11, 0.25)" />
-              <circle cx={pickupProj.x} cy={pickupProj.y} r="2.2" fill="#F59E0B" stroke="#08090C" strokeWidth="0.6" />
+              <circle cx={pickupProj.x} cy={pickupProj.y} r="2.2" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="0.6" />
             </g>
           ) : null}
 
@@ -318,7 +318,7 @@ export function MapPane({
           {isDeliveryMode && dropProj ? (
             <g>
               <circle cx={dropProj.x} cy={dropProj.y} r="3.4" fill="rgba(37, 99, 235, 0.25)" />
-              <circle cx={dropProj.x} cy={dropProj.y} r="2.2" fill="#2563EB" stroke="#08090C" strokeWidth="0.6" />
+              <circle cx={dropProj.x} cy={dropProj.y} r="2.2" fill="#2563EB" stroke="#FFFFFF" strokeWidth="0.6" />
             </g>
           ) : null}
 
@@ -335,7 +335,7 @@ export function MapPane({
         </svg>
 
         {/* Map Overlay Key Indicator */}
-        <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded-lg bg-black/85 px-2.5 py-1 text-[10px] text-muted-foreground backdrop-blur-md border border-border">
+        <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded-lg bg-white/95 px-2.5 py-1 text-[10px] text-gray-700 shadow-xs border border-gray-200">
           {isDeliveryMode ? (
             <>
               <span className="flex items-center gap-1 text-amber-400 font-semibold">
@@ -370,7 +370,7 @@ export function MapPane({
         <div className="flex items-center justify-between gap-2 p-3 border-t border-border bg-card">
           <div className="space-y-0.5 min-w-0 flex-1">
             <p className="flex items-center gap-1.5 text-xs text-foreground font-semibold truncate">
-              <MapPin className="size-3.5 text-[#e5a93c] shrink-0" />
+              <MapPin className="size-3.5 text-[#E23744] shrink-0" />
               <span className="truncate">{pickupLabel || "Restaurant"}</span>
               <span className="text-muted-foreground">→</span>
               <span className="truncate">{dropLabel || "Customer"}</span>
@@ -401,7 +401,7 @@ export function MapPane({
         <div className="p-3 border-t border-border bg-card space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 font-bold text-foreground">
-              <TrendingUp className="size-3.5 text-[#e5a93c]" />
+              <TrendingUp className="size-3.5 text-[#E23744]" />
               <span>Nearby High-Demand Surge Hotspots</span>
             </span>
             <span className="text-[11px] font-semibold text-emerald-400">
@@ -425,7 +425,7 @@ export function MapPane({
                 </div>
                 <div className="flex items-center justify-between text-[10px] text-slate-300">
                   <span>{spot.activeRestaurants} Outlets</span>
-                  <span className="text-[#e5a93c] font-semibold">
+                  <span className="text-[#E23744] font-semibold">
                     {spot.demandLevel === "VERY_HIGH" ? "🔥 Surge" : "⚡ High"}
                   </span>
                 </div>

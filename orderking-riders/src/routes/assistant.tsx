@@ -355,25 +355,25 @@ function Page() {
   return (
     <AppShell>
       <div className="space-y-4">
-        {/* Luxury Obsidian Gold & Royal Sapphire Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/40 bg-gradient-to-r from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-4 text-white shadow-xl">
+        {/* Partner Support Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/40 bg-white border border-gray-200 p-4 text-gray-900 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#E5A93C] to-[#B37D20] text-black shadow-lg shadow-[#E5A93C]/30">
+            <div className="flex size-11 items-center justify-center rounded-2xl bg-red-50 border border-red-200 text-[#E23744] shadow-xs">
               <Crown className="size-6" />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="font-display text-2xl font-bold tracking-wide text-white">
+                <h1 className="font-display text-2xl font-bold tracking-wide text-gray-900">
                   King AI <span className="text-primary">Fleet Support</span>
                 </h1>
-                <span className="rounded-full border border-[#2563EB] bg-[#2563EB]/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-300">
+                <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700">
                   King AI · 24x7 Support
                 </span>
-                <span className="rounded-full border border-primary/50 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                <span className="rounded-full border border-primary/50 bg-[#E23744]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
                   Multilingual AI (10 Regional Languages · हिन्दी · தமிழ் · বাংলা · EN)
                 </span>
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-gray-600">
                 Autonomous Fleet Co-Pilot · Payout Breakdown · Wait-Pay Auto-Credit · SOS Emergency Routing
               </p>
             </div>
@@ -385,7 +385,7 @@ function Page() {
               variant="outline"
               size="sm"
               onClick={() => speakText(advisorSpeechSummary, "advisor")}
-              className="h-8 border-primary/50 bg-black/40 text-xs text-primary hover:bg-[#E5A93C]/20"
+              className="h-8 border-primary/50 bg-gray-50 border border-gray-200 text-xs text-primary hover:bg-[#E23744]/20"
             >
               <Volume2 className="mr-1.5 size-3.5" />
               {speakingIdx === "advisor" ? "Stop Audio" : `Listen (${LOCALE_LABEL_MAP[locale].split(" ")[0]})`}
@@ -396,7 +396,7 @@ function Page() {
               size="sm"
               disabled={loadingContext}
               onClick={() => void refreshLiveState(false)}
-              className="h-8 text-xs text-slate-300 hover:text-white"
+              className="h-8 text-xs text-gray-600 hover:text-gray-900"
             >
               <RefreshCw className={`mr-1 size-3.5 ${loadingContext ? "animate-spin" : ""}`} />
               {loadingContext ? "Syncing…" : "Sync State"}
@@ -423,7 +423,7 @@ function Page() {
 
         {/* Active Emergency Distress (112 / 108) Live Bar */}
         {sosActiveCoords ? (
-          <div className="rounded-xl border-2 border-rose-500 bg-rose-950/60 p-4 text-white shadow-2xl backdrop-blur-md space-y-3">
+          <div className="rounded-xl border-2 border-rose-500 bg-rose-950/60 p-4 text-gray-900 shadow-2xl backdrop-blur-md space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="size-5 text-rose-400 animate-pulse" />
@@ -441,19 +441,19 @@ function Page() {
             <div className="flex flex-wrap gap-2 pt-1">
               <a
                 href="tel:112"
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-rose-600 px-4 text-xs font-bold text-white shadow hover:bg-rose-500"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-rose-600 px-4 text-xs font-bold text-gray-900 shadow hover:bg-rose-500"
               >
                 <PhoneCall className="size-3.5" /> Call 112 (National Police/Fire)
               </a>
               <a
                 href="tel:108"
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-emerald-600 px-4 text-xs font-bold text-white shadow hover:bg-emerald-500"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-emerald-600 px-4 text-xs font-bold text-gray-900 shadow hover:bg-emerald-500"
               >
                 <PhoneCall className="size-3.5" /> Call 108 (Free Medical Ambulance)
               </a>
               <a
                 href="tel:18002585956"
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/20 bg-black/40 px-3 text-xs text-slate-200 hover:bg-white/10"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/20 bg-gray-50 border border-gray-200 px-3 text-xs text-slate-200 hover:bg-white/10"
               >
                 1800-258-5956 (Cashless ₹5L Insurance)
               </a>
@@ -462,7 +462,7 @@ function Page() {
         ) : null}
 
         {busy ? (
-          <Card className="border-primary/40 bg-[#E5A93C]/10 p-3">
+          <Card className="border-primary/40 bg-[#E23744]/10 p-3">
             <p className="text-xs font-semibold text-primary dark:text-primary">
               🛵 {t("aiDriving")} — Tap <strong>🔊 Listen</strong> on any response to hear voice guidance hands-free while riding safely.
             </p>
@@ -483,11 +483,11 @@ function Page() {
             }
             className="flex flex-col items-start justify-between rounded-xl border border-primary/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-3 text-left transition hover:border-primary hover:shadow-lg group"
           >
-            <div className="flex size-7 items-center justify-center rounded-lg bg-[#E5A93C]/20 text-primary group-hover:scale-110 transition-transform">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-[#E23744]/20 text-primary group-hover:scale-110 transition-transform">
               <Zap className="size-4" />
             </div>
             <div className="mt-2">
-              <p className="text-xs font-bold text-white">Auto-Credit Wait Pay</p>
+              <p className="text-xs font-bold text-gray-900">Auto-Credit Wait Pay</p>
               <p className="text-[10px] text-slate-400">₹1/min after 6m kitchen grace</p>
             </div>
           </button>
@@ -502,13 +502,13 @@ function Page() {
                 "payout_breakdown",
               )
             }
-            className="flex flex-col items-start justify-between rounded-xl border border-[#2563EB]/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-3 text-left transition hover:border-[#2563EB] hover:shadow-lg group"
+            className="flex flex-col items-start justify-between rounded-xl border border-blue-200/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-3 text-left transition hover:border-blue-200 hover:shadow-lg group"
           >
-            <div className="flex size-7 items-center justify-center rounded-lg bg-[#2563EB]/20 text-sky-400 group-hover:scale-110 transition-transform">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-sky-400 group-hover:scale-110 transition-transform">
               <IndianRupee className="size-4" />
             </div>
             <div className="mt-2">
-              <p className="text-xs font-bold text-white">Payout Breakdown</p>
+              <p className="text-xs font-bold text-gray-900">Payout Breakdown</p>
               <p className="text-[10px] text-slate-400">₹35 Base + ₹12-₹15/km + 100% Tips</p>
             </div>
           </button>
@@ -529,7 +529,7 @@ function Page() {
               <Compass className="size-4" />
             </div>
             <div className="mt-2">
-              <p className="text-xs font-bold text-white">Landmark & GPS Guide</p>
+              <p className="text-xs font-bold text-gray-900">Landmark & GPS Guide</p>
               <p className="text-[10px] text-slate-400">Gate access & geofence bypass</p>
             </div>
           </button>
@@ -550,7 +550,7 @@ function Page() {
               <PhoneCall className="size-4" />
             </div>
             <div className="mt-2">
-              <p className="text-xs font-bold text-white">Doorstep Unreachable</p>
+              <p className="text-xs font-bold text-gray-900">Doorstep Unreachable</p>
               <p className="text-[10px] text-slate-400">3-Call SOP & 100% Protected Pay</p>
             </div>
           </button>
@@ -578,13 +578,13 @@ function Page() {
         </div>
 
         {/* Autonomous Rider Self-Diagnosis & Earnings Growth Advisor */}
-        <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-4 text-white shadow-xl space-y-4">
+        <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-4 text-gray-900 shadow-xl space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
                 King AI Autonomous Operations & Earnings Co-Pilot
               </p>
-              <h2 className="text-base font-bold text-white">
+              <h2 className="text-base font-bold text-gray-900">
                 Hello {firstName} ji — Live Shift & Take-Home Coach
               </h2>
             </div>
@@ -595,7 +595,7 @@ function Page() {
 
           <div className="grid gap-3 md:grid-cols-2">
             {/* 1. Live Earnings & Milestone Coach */}
-            <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5">
+            <div className="rounded-xl border border-white/10 bg-gray-50 border border-gray-200 p-3.5 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
                   📈 Live Earnings & Milestone Coach
@@ -605,15 +605,15 @@ function Page() {
                 </span>
               </div>
 
-              <p className="text-xs leading-relaxed text-slate-300">
-                You have completed <strong className="text-white">{completedToday} {completedToday === 1 ? "trip" : "trips"}</strong> today
-                (Tips: <strong className="text-white">{formatPaise(todayTipsPaise)}</strong> · Wait & Surge:{" "}
-                <strong className="text-white">{formatPaise(todayIncentivePaise)}</strong>).{" "}
+              <p className="text-xs leading-relaxed text-gray-600">
+                You have completed <strong className="text-gray-900">{completedToday} {completedToday === 1 ? "trip" : "trips"}</strong> today
+                (Tips: <strong className="text-gray-900">{formatPaise(todayTipsPaise)}</strong> · Wait & Surge:{" "}
+                <strong className="text-gray-900">{formatPaise(todayIncentivePaise)}</strong>).{" "}
                 {milestone.remaining > 0 ? (
                   <>
-                    Complete <strong className="text-white">{milestone.remaining} more trips</strong>{" "}
+                    Complete <strong className="text-gray-900">{milestone.remaining} more trips</strong>{" "}
                     to unlock <strong className="text-primary">+{formatPaise(milestone.bonusPaise)}</strong> under{" "}
-                    <span className="text-sky-300 underline decoration-dotted">{milestone.tier}</span>!
+                    <span className="text-blue-700 underline decoration-dotted">{milestone.tier}</span>!
                   </>
                 ) : (
                   <>
@@ -632,21 +632,21 @@ function Page() {
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-[#E5A93C] transition-all"
+                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-[#E23744] transition-all"
                     style={{ width: `${milestone.progressPct}%` }}
                   />
                 </div>
               </div>
 
-              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-2 text-[11px] text-slate-300">
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-2 text-[11px] text-gray-600">
                 <strong className="text-primary">Peak Slot Maximizer:</strong> Stay logged into{" "}
-                <span className="font-semibold text-white">{home?.rider.preferredZones || "your primary zone"}</span>{" "}
+                <span className="font-semibold text-gray-900">{home?.rider.preferredZones || "your primary zone"}</span>{" "}
                 during <strong>Lunch (12:00–3:00 PM)</strong> and <strong>Dinner (7:00–11:00 PM)</strong> to hit your daily milestone 40% faster.
               </div>
             </div>
 
             {/* 2. Live On-Trip & Wait-Time Guard */}
-            <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5">
+            <div className="rounded-xl border border-white/10 bg-gray-50 border border-gray-200 p-3.5 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-primary">
                   🧭 Live On-Trip & Wait-Time Guard
@@ -657,20 +657,20 @@ function Page() {
               </div>
 
               {activeOrder ? (
-                <div className="rounded-lg border border-[#2563EB]/40 bg-[#2563EB]/10 p-2.5 space-y-2">
+                <div className="rounded-lg border border-blue-200/40 bg-[#2563EB]/10 p-2.5 space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span>Active Order #{activeOrder.orderCode}</span>
                     <span className="font-mono text-primary">{formatPaise(activeOrder.expectedPayoutPaise)}</span>
                   </div>
-                  <p className="text-xs text-slate-300">
-                    <strong className="text-white">{activeOrder.restaurant.name}</strong> → <strong className="text-white">{activeOrder.customer.area}</strong> · Stage:{" "}
-                    <span className="font-semibold text-sky-300">{activeOrder.state.replaceAll("_", " ")}</span>
+                  <p className="text-xs text-gray-600">
+                    <strong className="text-gray-900">{activeOrder.restaurant.name}</strong> → <strong className="text-gray-900">{activeOrder.customer.area}</strong> · Stage:{" "}
+                    <span className="font-semibold text-blue-700">{activeOrder.state.replaceAll("_", " ")}</span>
                   </p>
 
                   {/* Kitchen wait time indicator */}
                   {kitchenWaitMins > 0 ? (
-                    <div className="flex items-center justify-between rounded bg-black/40 p-2 text-xs">
-                      <span className="text-slate-300">
+                    <div className="flex items-center justify-between rounded bg-gray-50 border border-gray-200 p-2 text-xs">
+                      <span className="text-gray-600">
                         Kitchen Wait: <strong>{kitchenWaitMins}m</strong> ({kitchenWaitMins > 6 ? `₹${accruedKitchenBonusInr} bonus accrued` : `${6 - kitchenWaitMins}m grace left`})
                       </span>
                       {kitchenWaitMins > 6 ? (
@@ -683,7 +683,7 @@ function Page() {
                               "auto_credit_wait",
                             )
                           }
-                          className="h-6 bg-[#E5A93C] text-[10px] font-bold text-black hover:bg-[#B37D20]"
+                          className="h-6 bg-[#E23744] text-[10px] font-bold text-black hover:bg-[#B37D20]"
                         >
                           ⚡ Auto-Credit ₹{accruedKitchenBonusInr}
                         </Button>
@@ -713,7 +713,7 @@ function Page() {
                 </div>
               ) : (
                 <p className="text-xs leading-relaxed text-slate-400">
-                  <strong className="text-white">No active delivery in progress.</strong>{" "}
+                  <strong className="text-gray-900">No active delivery in progress.</strong>{" "}
                   {home?.rider.status === "OFFLINE"
                     ? "Toggle ONLINE on Home to start receiving dispatch offers."
                     : "You are ONLINE and eligible for immediate dispatch in your zone."}
@@ -747,7 +747,7 @@ function Page() {
         {/* 1-Tap Multilingual Prompts (Bengali, Tamil, Hindi, English) */}
         <div className="space-y-2 rounded-2xl border border-white/10 bg-card/80 p-3.5 backdrop-blur-sm">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
               Quick Prompts (বাংলা · हिन्दी · தமிழ் · English)
             </p>
             <span className="text-[11px] font-semibold text-primary">0 Founder Headache</span>
@@ -761,7 +761,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("রেস্তোরাঁয় ৬ মিনিটের বেশি অপেক্ষা করেছি — ওয়েট পে ক্রেডিট করুন", "auto_credit_wait")}
-              className="border-primary/50 bg-black/40 text-xs text-primary hover:bg-[#E5A93C]/20"
+              className="border-primary/50 bg-gray-50 border border-gray-200 text-xs text-primary hover:bg-[#E23744]/20"
             >
               🏬 বাংলা: ওয়েট পে ক্রেডিট (&gt;৬ মিনিট)
             </Button>
@@ -771,7 +771,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("আমার পেআউট হিসাব বুঝিয়ে দিন: ₹৩৫ বেস, দূরত্ব স্ল্যাব ও টিপস", "payout_breakdown")}
-              className="border-[#2563EB]/50 bg-black/40 text-xs text-sky-300 hover:bg-[#2563EB]/20"
+              className="border-blue-200/50 bg-gray-50 border border-gray-200 text-xs text-blue-700 hover:bg-blue-50"
             >
               💰 বাংলা: পেআউট ও দূরত্বের হিসাব
             </Button>
@@ -781,7 +781,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("কাস্টমার ফোন ধরছে না — ৩-কল এসওপি নিয়ম কি?", "customer_unreachable")}
-              className="border-amber-500/40 bg-black/40 text-xs text-amber-300 hover:bg-amber-500/20"
+              className="border-amber-500/40 bg-gray-50 border border-gray-200 text-xs text-amber-300 hover:bg-amber-500/20"
             >
               ⏱️ বাংলা: ৩-কল কাস্টমার এসওপি
             </Button>
@@ -793,7 +793,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("உணவகத்தில் 6 நிமிடங்களுக்கு மேல் காத்திருப்பு — வெயிட் பே கிரெடிட் செய்யவும்", "auto_credit_wait")}
-              className="border-primary/50 bg-black/40 text-xs text-primary hover:bg-[#E5A93C]/20"
+              className="border-primary/50 bg-gray-50 border border-gray-200 text-xs text-primary hover:bg-[#E23744]/20"
             >
               🏬 தமிழ்: வெயிட் பே கிரெடிட் (&gt;6 நிமிடம்)
             </Button>
@@ -803,7 +803,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("எனது பேஅவுட் விவரங்களை விளக்குங்கள்: ₹35 அடிப்படை, தூர அடுக்குகள் மற்றும் 100% டிப்ஸ்", "payout_breakdown")}
-              className="border-[#2563EB]/50 bg-black/40 text-xs text-sky-300 hover:bg-[#2563EB]/20"
+              className="border-blue-200/50 bg-gray-50 border border-gray-200 text-xs text-blue-700 hover:bg-blue-50"
             >
               💰 தமிழ்: பேஅவுட் விவரங்கள்
             </Button>
@@ -813,7 +813,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("வாடிக்கையாளர் போன் எடுக்கவில்லை — 3-அழைப்பு பாதுகாப்பு விதி என்ன?", "customer_unreachable")}
-              className="border-amber-500/40 bg-black/40 text-xs text-amber-300 hover:bg-amber-500/20"
+              className="border-amber-500/40 bg-gray-50 border border-gray-200 text-xs text-amber-300 hover:bg-amber-500/20"
             >
               ⏱️ தமிழ்: 3-அழைப்பு வாடிக்கையாளர் விதி
             </Button>
@@ -825,7 +825,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("रेस्तरां में 6 मिनट से ज्यादा इंतज़ार — ₹1/मिनट वेट पे क्रेडिट करो", "auto_credit_wait")}
-              className="border-emerald-500/50 bg-black/40 text-xs text-emerald-300 hover:bg-emerald-500/20"
+              className="border-emerald-500/50 bg-gray-50 border border-gray-200 text-xs text-emerald-300 hover:bg-emerald-500/20"
             >
               🏬 हिन्दी: वेट पे क्रेडिट (&gt;6 मिनट)
             </Button>
@@ -835,7 +835,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("मेरी पूरी कमाई और पेआउट स्लैब समझाओ: ₹35 बेस, दूरी दर और 100% टिप्स", "payout_breakdown")}
-              className="border-[#2563EB]/50 bg-black/40 text-xs text-sky-300 hover:bg-[#2563EB]/20"
+              className="border-blue-200/50 bg-gray-50 border border-gray-200 text-xs text-blue-700 hover:bg-blue-50"
             >
               💰 हिन्दी: पेआउट ब्रेकडाउन
             </Button>
@@ -845,7 +845,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("ग्राहक फोन नहीं उठा रहा — 3-कॉल शून्य जुर्माना नियम", "customer_unreachable")}
-              className="border-amber-500/40 bg-black/40 text-xs text-amber-300 hover:bg-amber-500/20"
+              className="border-amber-500/40 bg-gray-50 border border-gray-200 text-xs text-amber-300 hover:bg-amber-500/20"
             >
               ⏱️ हिन्दी: 3-कॉल ग्राहक नियम
             </Button>
@@ -857,7 +857,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("Explain my exact payout breakdown: base ₹35 floor, distance slabs, wait pay, and 100% tips", "payout_breakdown")}
-              className="border-[#2563EB]/40 bg-black/40 text-xs text-white hover:bg-[#2563EB]/20"
+              className="border-blue-200/40 bg-gray-50 border border-gray-200 text-xs text-gray-900 hover:bg-blue-50"
             >
               💰 English: Payout Breakdown & Slabs
             </Button>
@@ -867,7 +867,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("Guide navigation, gated entry instructions, and landmark resolution", "verify_navigation")}
-              className="border-emerald-500/40 bg-black/40 text-xs text-white hover:bg-emerald-500/20"
+              className="border-emerald-500/40 bg-gray-50 border border-gray-200 text-xs text-gray-900 hover:bg-emerald-500/20"
             >
               🧭 English: Landmark & Gated Entry
             </Button>
@@ -877,7 +877,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("When is my Wednesday payout transferred and what is my COD cash balance?", "payout_breakdown")}
-              className="border-slate-700 bg-black/40 text-xs text-slate-300 hover:bg-white/10"
+              className="border-slate-700 bg-gray-50 border border-gray-200 text-xs text-gray-600 hover:bg-white/10"
             >
               🗓️ English: Wednesday Payout & COD
             </Button>
@@ -891,12 +891,12 @@ function Page() {
               key={i}
               className={
                 l.role === "user"
-                  ? "ml-6 border border-[#2563EB]/30 bg-[#0F172A] p-3.5 text-white shadow"
-                  : "border border-primary/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-4 text-white shadow-lg"
+                  ? "ml-6 border border-blue-200/30 bg-[#0F172A] p-3.5 text-gray-900 shadow"
+                  : "border border-primary/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-4 text-gray-900 shadow-lg"
               }
             >
               <div className="mb-2 flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
-                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300">
+                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-600">
                   {l.role === "user" ? (
                     <>👤 {firstName} ({l.at})</>
                   ) : (
@@ -911,7 +911,7 @@ function Page() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="h-7 border-primary/40 bg-black/40 px-2.5 text-xs text-primary hover:bg-[#E5A93C]/20"
+                    className="h-7 border-primary/40 bg-gray-50 border border-gray-200 px-2.5 text-xs text-primary hover:bg-[#E23744]/20"
                     onClick={() => speakText(l.text, i)}
                   >
                     {speakingIdx === i ? <VolumeX className="mr-1 size-3" /> : <Volume2 className="mr-1 size-3" />}
@@ -947,12 +947,12 @@ function Page() {
             onChange={(e) => setQ(e.target.value)}
             placeholder={`${t("askAssistant")} (English, हिन्दी, தமிழ், বাংলা…)`}
             disabled={pending}
-            className="border-primary/40 bg-card text-white placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-[#E5A93C]"
+            className="border-primary/40 bg-card text-gray-900 placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-[#E23744]"
           />
           <Button
             type="submit"
             disabled={pending || !q.trim()}
-            className="bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] font-semibold text-white shadow-lg shadow-[#2563EB]/25 hover:from-[#1D4ED8] hover:to-[#1E40AF]"
+            className="bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] font-semibold text-gray-900 shadow-lg shadow-[#2563EB]/25 hover:from-[#1D4ED8] hover:to-[#1E40AF]"
           >
             {pending ? (
               "Thinking…"
