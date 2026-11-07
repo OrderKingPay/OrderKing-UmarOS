@@ -235,7 +235,7 @@ function Login() {
             </div>
             <div>
               <p className="text-sm font-black tracking-tight leading-none text-gray-900">
-                ORDERKING <span className="text-[#E23744]">PARTNER</span>
+                ORDERKING <span className="text-[#E23744]">DELIVERY</span>
               </p>
               <p className="text-[11px] text-gray-500 font-medium">
                 Delivery Partner
