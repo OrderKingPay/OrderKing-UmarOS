@@ -439,7 +439,7 @@ function LivePage() {
   );
 }
 
-function OrdersPage() {
+export function OrdersPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Orders</h1>
@@ -448,7 +448,7 @@ function OrdersPage() {
   );
 }
 
-function OrderTable() {
+export function OrderTable() {
   const search = useSearch({ strict: false }) as {
     delayed?: string;
     city?: string;
@@ -644,7 +644,7 @@ function OrderDetail({ id }: { id: string }) {
   );
 }
 
-function RestaurantsPage() {
+export function RestaurantsPage() {
   const [q, setQ] = useState("");
   const nav = useNavigate();
   const query = useQuery({ queryKey: ["restaurants", q], queryFn: () => loadRestaurants({ data: { q } }) });
@@ -728,7 +728,7 @@ function RestaurantDetail({ id }: { id: string }) {
   );
 }
 
-function RidersPage() {
+export function RidersPage() {
   const nav = useNavigate();
   const q = useQuery({ queryKey: ["riders"], queryFn: () => loadRiders({ data: {} }) });
   const rows = q.data && q.data.ok ? q.data.data : [];
@@ -858,7 +858,7 @@ function CustomerDetail({ id }: { id: string }) {
   );
 }
 
-function DispatchPage() {
+export function DispatchPage() {
   const q = useQuery({ queryKey: ["dispatch"], queryFn: () => loadDispatch(), refetchInterval: 10_000 });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const d = q.data && q.data.ok ? q.data.data : null;
@@ -1069,7 +1069,7 @@ function TicketDetail({ id }: { id: string }) {
   );
 }
 
-function FinancePage() {
+export function FinancePage() {
   const q = useQuery({ queryKey: ["finance"], queryFn: () => loadFinance() });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const d = q.data && q.data.ok ? q.data.data : null;
@@ -1143,7 +1143,7 @@ function FinancePage() {
   );
 }
 
-function SettlementsPage() {
+export function SettlementsPage() {
   const [party, setParty] = useState<"RESTAURANT" | "RIDER">("RESTAURANT");
   const q = useQuery({ queryKey: ["settlements", party], queryFn: () => loadSettlements({ data: { party } }) });
   const inv = useInvalidate();
@@ -1193,7 +1193,7 @@ function SettlementsPage() {
   );
 }
 
-function EconomicsPage() {
+export function EconomicsPage() {
   const base = useMemo(() => defaultEconomicsScenario(), []);
   const [bps, setBps] = useState(1000);
   const q = useQuery({

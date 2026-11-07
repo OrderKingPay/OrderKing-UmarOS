@@ -115,7 +115,7 @@ export function CommercialCommandDials() {
 
   return (
     <div className="w-full space-y-6 rounded-2xl border-2 border-amber-500/30 bg-[#060908] p-4 sm:p-6 text-slate-100 shadow-[0_0_50px_rgba(245,158,11,0.08)]">
-      {/* 1. Header Banner: UmarOS Sovereign Commercial Command Dials */}
+      {/* 1. Header Banner: UmarOS Commercial Operations Dials */}
       <div className="flex flex-col gap-4 border-b border-border/80 pb-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1.5">
           <div className="flex items-center gap-3">
@@ -252,7 +252,7 @@ export function CommercialCommandDials() {
           {
             id: "bypass_dials" as DialTabKey,
             label: "10. Commercial Bypass Dials",
-            subtitle: "9 Sovereign Dials: VPA, Tax, OTA, Telemetry",
+            subtitle: "Commercial Dials: VPA, Tax, OTA, Telemetry",
             icon: SlidersHorizontal,
             color: "amber",
           },
@@ -2007,7 +2007,7 @@ function TravelPartnerGovernanceSection() {
       <div className="rounded-xl border border-border/80 bg-surface/50 p-5 space-y-4">
         <h3 className="text-sm font-bold text-white flex items-center gap-2">
           <DollarSign className="size-4 text-emerald-400" />
-          Customer Cashback & Sovereign Platform Fee Dial
+          Customer Cashback & Platform Fee Dial
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2027,7 +2027,7 @@ function TravelPartnerGovernanceSection() {
               className="w-full accent-amber-500"
             />
             <p className="text-[11px] text-muted">
-              Funded entirely from partner affiliate commissions. Deposited into customer Sovereign Digital Gold wallet upon journey completion.
+              Funded entirely from partner affiliate commissions. Deposited into customer wallet upon journey completion.
             </p>
           </div>
 
@@ -2146,7 +2146,7 @@ function TravelPartnerGovernanceSection() {
         <div className="flex items-center justify-between border-b border-border/60 pb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-purple-400" />
-            <h3 className="text-sm font-bold text-white">1-Click Sovereign Promo Campaign Master Toggles</h3>
+            <h3 className="text-sm font-bold text-white">1-Click Promo Campaign Master Toggles</h3>
           </div>
           <Badge className="border-purple-500/40 bg-purple-950/60 text-purple-300 font-mono text-[10px]">
             INSTANT CAMPAIGN ENGINE
@@ -2424,7 +2424,7 @@ function CustomerSupportDisputeQueueSection() {
             <Scale className="size-5 text-rose-400" />
             <h2 className="text-lg font-black text-white">CENTRAL CUSTOMER SUPPORT DISPUTE QUEUE</h2>
             <Badge className="border-rose-500/40 bg-rose-500/20 text-rose-300 font-mono text-[10px]">
-              1-TAP REFUND SOVEREIGN GATE
+              1-TAP REFUND GATE
             </Badge>
           </div>
           <p className="text-xs text-slate-300">

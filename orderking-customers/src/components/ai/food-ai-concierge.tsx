@@ -849,7 +849,7 @@ export function FoodAiConcierge({
       };
     }
 
-    // 7. Discounts / Offers / Coupons / direct menu pricing vs Dominant Legacy Aggregators
+    // 7. Discounts / Offers / Coupons / direct menu pricing
     if (
       q.includes("discount") ||
       q.includes("offer") ||

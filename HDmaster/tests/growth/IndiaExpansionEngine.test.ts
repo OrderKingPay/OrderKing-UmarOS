@@ -69,7 +69,7 @@ describe('IndiaExpansionEngine', () => {
     assert.ok(loop.url.includes('https://wa.me/?text='));
   });
 
-  it('constructs a ruthless B2B Micro-Franchise offer to hijack competitor supply', () => {
+  it('constructs a transparent B2B Micro-Franchise commercial offer', () => {
     const metrics: PinCodeMetrics = {
       pincode: '110001', // Delhi
       tier: 'TIER_1',

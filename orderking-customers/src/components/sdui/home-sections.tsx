@@ -690,10 +690,6 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
                 ? `Top Kitchens for ${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}`
                 : "Restaurants Delivering to You"}
             </h2>
-            <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-300/80 px-2.5 py-0.5 text-[10.5px] font-black text-emerald-800 shadow-2xs">
-              <Sparkles className="size-3 text-emerald-600 fill-emerald-500" />
-              0% Hidden Markups
-            </span>
           </div>
           <p className="text-xs text-gray-500 font-medium mt-0.5">
             Check available menus and delivery options

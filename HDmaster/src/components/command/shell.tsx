@@ -246,7 +246,6 @@ function resolveWorldFromPath(pathname: string): BottomNavWorld {
   if (
     pathname.startsWith("/app/ceo") ||
     pathname.startsWith("/app/founder-command") ||
-    pathname.startsWith("/app/baas-hijack-hub") ||
     pathname.startsWith("/app/pos-terminals") ||
     pathname.startsWith("/app/reports")
   ) {
@@ -367,7 +366,7 @@ export function CommandShell() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-bg text-muted">
         <OrderKingMark className="size-10" />
         <p className="font-display text-xl text-fg">Umar OS</p>
-        <p className="text-xs text-amber-400 font-mono tracking-wider">SOVEREIGN FOUNDER COMMAND</p>
+        <p className="text-xs text-emerald-400 font-mono tracking-wider">OPERATIONS COMMAND CENTER</p>
         <div className="h-24 w-72 animate-pulse rounded-[24px] bg-surface" />
       </div>
     );

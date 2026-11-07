@@ -57,7 +57,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
           timestamp: new Date().toISOString(),
           keyFindings: [
             "Identified growing demand for custom commission local food delivery SaaS in Tier 2/3 Indian cities.",
-            "Average commission loss per restaurant across dominant legacy aggregators is 24-28% of GMV.",
+            "Standard food delivery marketplace commission ranges typically between 15-25% of GMV.",
             "High appetite for direct WhatsApp and UPI order management tools among regional cloud kitchens.",
           ],
         },

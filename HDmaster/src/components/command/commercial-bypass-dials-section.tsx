@@ -234,7 +234,7 @@ export function CommercialBypassDialsSection() {
               Consolidated Commercial Bypass Master Dials
             </h2>
             <p className="text-xs text-muted max-w-2xl">
-              Zero-aggregator sovereign dials: Direct NPCI UPI VPA routing, Section 9(5) CGST statutory dialects,
+              Operational bypass dials: Direct NPCI UPI VPA routing, Section 9(5) CGST statutory dialects,
               multi-brand kitchen virtualization, dynamic OTA convenience fee ceilings (₹499/₹1,299), rail Tatkal arbitrage,
               telecom carrier failovers, proximity dispatch perimeters, fleet garage RSA markers, and viral bounty credits.
             </p>

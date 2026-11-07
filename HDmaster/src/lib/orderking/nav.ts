@@ -1724,7 +1724,7 @@ export const UMAR_OS_10_WORLDS: BottomNavWorld[] = [
             subCategory: "White-Label Hub",
             label: "B2B White-Label Partner Hub",
             description: "Manage enterprise white-label deployments and partner billing.",
-            to: "/app/baas-hijack-hub",
+            to: "/app/fintech-connectors",
             badge: "White-Label",
           },
           {

@@ -636,23 +636,23 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
         )}
       </div>
 
-      {/* 5. WHY ORDERKING PAYS 1% FOREVER (THE FOUNDER'S MATHEMATICAL VIRUS) */}
+      {/* 5. REFERRAL PROGRAM ECONOMICS */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm space-y-4">
         <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
           <Building2 className="size-4 text-slate-700" />
-          <span>The Economics: Why OrderKing Pays 1% Forever (Unlike Dominant Legacy Aggregators)</span>
+          <span>Referral Program: Transparent Community Rewards</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed text-slate-600">
-          <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-4 space-y-2">
-            <span className="font-bold text-rose-800 uppercase tracking-wider block">Dominant Legacy Aggregators</span>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2">
+            <span className="font-bold text-slate-800 uppercase tracking-wider block">Traditional Advertising</span>
             <p>
-              Legacy apps spend ₹500 - ₹800 per customer acquisition on Meta, Google, and billboard ads. When that user orders, zero revenue goes back to the consumer network. All profits evaporate into advertising monopolies.
+              Standard marketing spends large budgets on third-party ad networks and billboards, offering no ongoing value back to active platform members.
             </p>
           </div>
           <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4 space-y-2">
-            <span className="font-bold text-emerald-800 uppercase tracking-wider block">The OrderKing Sovereign Protocol</span>
+            <span className="font-bold text-emerald-800 uppercase tracking-wider block">OrderKing Community Cashback</span>
             <p>
-              OrderKing redirects 100% of the customer acquisition ad budget directly to YOU. By paying a permanent 1% cash royalty on every meal your recruits eat, our consumers become platform stakeholders. The virus compounds organically with zero paid ad waste.
+              OrderKing shares platform value directly with users who introduce friends and family. Every successful referral generates cash credits deposited straight into your KingPay wallet.
             </p>
           </div>
         </div>
@@ -663,8 +663,8 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 p-4 backdrop-blur-xs">
           <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-5 text-center">
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-slate-900">Your In-Person Recruitment QR</h3>
-              <p className="text-xs text-slate-500">Scan at lunch, colleges, or family dinners</p>
+              <h3 className="text-lg font-bold text-slate-900">Your Referral Invite QR</h3>
+              <p className="text-xs text-slate-500">Scan to share referral link with friends or family</p>
             </div>
 
             {/* Generated QR visual */}
