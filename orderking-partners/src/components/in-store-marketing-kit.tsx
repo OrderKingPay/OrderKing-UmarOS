@@ -64,7 +64,7 @@ export function InStoreMarketingKit({
                   {dineInCommissionDisplay} COMMISSION DINE-IN
                 </span>
               </div>
-              <p className="text-xs text-slate-300 mt-0.5">
+              <p className="text-xs text-gray-700 mt-0.5">
                 Turn your dine-in guests into high-frequency repeat customers. Print branded Table Tent QR cards and counter standees encouraging diners to order and earn instant cashbacks on Order King.
               </p>
             </div>
@@ -91,30 +91,30 @@ export function InStoreMarketingKit({
 
         {/* Growth ROI Stat Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-emerald-500/20 text-xs">
-          <div className="rounded-lg bg-slate-950/60 p-2.5 border border-slate-800">
-            <span className="text-[10px] font-mono text-slate-400 uppercase">Aggregator Cut Avoided</span>
+          <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
+            <span className="text-[10px] font-mono text-gray-500 uppercase">Aggregator Cut Avoided</span>
             <div className="font-bold text-emerald-400 mt-0.5 text-sm">Save ~24% per Order</div>
-            <p className="text-[10px] text-slate-400">custom commission on orders placed via table QR</p>
+            <p className="text-[10px] text-gray-500">custom commission on orders placed via table QR</p>
           </div>
-          <div className="rounded-lg bg-slate-950/60 p-2.5 border border-slate-800">
-            <span className="text-[10px] font-mono text-slate-400 uppercase">Diner Retention &amp; Cashback</span>
+          <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
+            <span className="text-[10px] font-mono text-gray-500 uppercase">Diner Retention &amp; Cashback</span>
             <div className="font-bold text-amber-300 mt-0.5 text-sm">KingPay Wallet Cashbacks</div>
-            <p className="text-[10px] text-slate-400">Diners return to redeem cashback balance</p>
+            <p className="text-[10px] text-gray-500">Diners return to redeem cashback balance</p>
           </div>
-          <div className="rounded-lg bg-slate-950/60 p-2.5 border border-slate-800">
-            <span className="text-[10px] font-mono text-slate-400 uppercase">Table Service Velocity</span>
+          <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
+            <span className="text-[10px] font-mono text-gray-500 uppercase">Table Service Velocity</span>
             <div className="font-bold text-emerald-400 mt-0.5 text-sm">Instant KDS &amp; KOT Print</div>
-            <p className="text-[10px] text-slate-400">Orders route straight to kitchen stations</p>
+            <p className="text-[10px] text-gray-500">Orders route straight to kitchen stations</p>
           </div>
         </div>
       </Card>
 
       {/* Format Selector & Customizer */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
+        <Card className="border-gray-200 bg-white p-5 space-y-4">
           <div>
             <h4 className="font-semibold text-sm text-white">1. Select Marketing Format</h4>
-            <p className="text-xs text-slate-400 mt-0.5">Choose the print material format for your outlet:</p>
+            <p className="text-xs text-gray-500 mt-0.5">Choose the print material format for your outlet:</p>
           </div>
 
           <div className="space-y-2">
@@ -130,19 +130,19 @@ export function InStoreMarketingKit({
                 className={`w-full rounded-xl border p-3 text-left transition ${
                   selectedFormat === fmt.id
                     ? "border-emerald-500 bg-emerald-950/30 text-white"
-                    : "border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700"
+                    : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
                 }`}
               >
                 <div className="font-bold text-xs">{fmt.label}</div>
-                <div className="text-[10px] text-slate-400 mt-0.5">{fmt.desc}</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">{fmt.desc}</div>
               </button>
             ))}
           </div>
 
-          <div className="space-y-3 pt-2 border-t border-slate-800">
+          <div className="space-y-3 pt-2 border-t border-gray-200">
             {/* Single vs Multi-Table Generator */}
             <div>
-              <Label className="text-xs text-slate-300">Table Number Generator</Label>
+              <Label className="text-xs text-gray-700">Table Number Generator</Label>
               <div className="flex gap-2 mt-1">
                 <button
                   type="button"
@@ -150,7 +150,7 @@ export function InStoreMarketingKit({
                   className={`flex-1 rounded-lg py-1.5 text-xs font-semibold border ${
                     !isBatchMode
                       ? "border-emerald-500 bg-emerald-600 text-white"
-                      : "border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700"
+                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
                   }`}
                 >
                   Single Table
@@ -161,7 +161,7 @@ export function InStoreMarketingKit({
                   className={`flex-1 rounded-lg py-1.5 text-xs font-semibold border ${
                     isBatchMode
                       ? "border-emerald-500 bg-emerald-600 text-white"
-                      : "border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700"
+                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
                   }`}
                 >
                   Batch Multi-Table
@@ -171,34 +171,34 @@ export function InStoreMarketingKit({
 
             {isBatchMode ? (
               <div>
-                <Label className="text-xs text-slate-300">Number of Tables to Generate (1 to 30)</Label>
+                <Label className="text-xs text-gray-700">Number of Tables to Generate (1 to 30)</Label>
                 <Input
                   type="number"
                   min="1"
                   max="30"
                   value={batchCount}
                   onChange={(e) => setBatchCount(Number(e.target.value) || 10)}
-                  className="mt-1 h-9 text-xs bg-slate-950 border-slate-800 font-mono"
+                  className="mt-1 h-9 text-xs bg-gray-50 border-gray-200 font-mono"
                 />
-                <span className="text-[10px] text-slate-400 mt-0.5 block">
+                <span className="text-[10px] text-gray-500 mt-0.5 block">
                   Will generate printable cards for Table 01 through Table {String(batchCount).padStart(2, "0")}
                 </span>
               </div>
             ) : (
               <div>
-                <Label className="text-xs text-slate-300">Table Number / Station Label</Label>
+                <Label className="text-xs text-gray-700">Table Number / Station Label</Label>
                 <Input
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value.toUpperCase())}
                   placeholder="e.g. Table 04, Rooftop 02"
-                  className="mt-1 h-9 text-xs bg-slate-950 border-slate-800 font-mono"
+                  className="mt-1 h-9 text-xs bg-gray-50 border-gray-200 font-mono"
                 />
               </div>
             )}
 
             {/* Customer Cashback Incentive */}
             <div>
-              <Label className="text-xs text-slate-300 flex items-center gap-1.5">
+              <Label className="text-xs text-gray-700 flex items-center gap-1.5">
                 <Gift className="size-3 text-amber-400" /> Dine-In Customer Cashback Reward
               </Label>
               <div className="grid grid-cols-1 gap-1.5 mt-1">
@@ -217,7 +217,7 @@ export function InStoreMarketingKit({
                     className={`rounded-lg p-2 text-left text-xs font-medium border transition ${
                       cashbackOffer === c
                         ? "border-amber-500/70 bg-amber-500/15 text-amber-200 font-bold"
-                        : "border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700 hover:text-white"
+                        : "border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:text-white"
                     }`}
                   >
                     💰 {c}
@@ -228,7 +228,7 @@ export function InStoreMarketingKit({
 
             {/* Discount Selector */}
             <div>
-              <Label className="text-xs text-slate-300">Diner Promotion Discount (%)</Label>
+              <Label className="text-xs text-gray-700">Diner Promotion Discount (%)</Label>
               <div className="flex gap-2 mt-1">
                 {["10", "15", "20", "25"].map((d) => (
                   <button
@@ -241,7 +241,7 @@ export function InStoreMarketingKit({
                     className={`flex-1 rounded-lg py-1.5 text-xs font-semibold border ${
                       discountPercent === d
                         ? "border-emerald-500 bg-emerald-600 text-white"
-                        : "border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700"
+                        : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
                     }`}
                   >
                     {d}% OFF
@@ -251,12 +251,12 @@ export function InStoreMarketingKit({
             </div>
 
             <div>
-              <Label className="text-xs text-slate-300">Custom Headline Call-to-Action</Label>
+              <Label className="text-xs text-gray-700">Custom Headline Call-to-Action</Label>
               <Input
                 value={customHeadline}
                 onChange={(e) => setCustomHeadline(e.target.value)}
                 placeholder="Callout text on standee"
-                className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                className="mt-1 h-9 text-xs bg-gray-50 border-gray-200"
               />
             </div>
           </div>
@@ -264,11 +264,11 @@ export function InStoreMarketingKit({
 
         {/* Live Print Preview Card (Wired for window.print) */}
         <div className="lg:col-span-2">
-          <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <Card className="border-gray-200 bg-gray-50 p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div>
                 <h4 className="font-semibold text-sm text-white">2. Live Print Preview</h4>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-500">
                   {isBatchMode
                     ? `Showing ${tableList.length} Table Cards for Batch Print`
                     : "Actual look of your branded in-store customer collateral"}
@@ -291,16 +291,16 @@ export function InStoreMarketingKit({
             {/* Standee Render Box with Print Layout */}
             <div
               ref={printAreaRef}
-              className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-6 max-h-[680px] overflow-y-auto"
+              className="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-6 max-h-[680px] overflow-y-auto"
             >
               {tableList.map((tableName, index) => (
                 <div
                   key={index}
-                  className="mx-auto w-full max-w-md rounded-2xl border-4 border-slate-900 bg-white p-6 text-slate-900 shadow-2xl text-center space-y-4 print:w-full print:border-none print:shadow-none print:page-break-after-always"
+                  className="mx-auto w-full max-w-md rounded-2xl border-4 border-gray-900 bg-white p-6 text-gray-900 shadow-2xl text-center space-y-4 print:w-full print:border-none print:shadow-none print:page-break-after-always"
                 >
                   {/* Table Tent Fold Guideline if Table Tent format */}
                   {selectedFormat === "table_tent" && (
-                    <div className="border-b-2 border-dashed border-slate-300 pb-2 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+                    <div className="border-b-2 border-dashed border-slate-300 pb-2 text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest">
                       ✂️ --- FOLD ALONG DASHED LINE FOR TABLE TENT --- ✂️
                     </div>
                   )}
@@ -310,7 +310,7 @@ export function InStoreMarketingKit({
                     <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-emerald-800">
                       Official Dine-In QR Order
                     </span>
-                    <h2 className="font-display text-xl font-black text-slate-950 tracking-tight">
+                    <h2 className="font-display text-xl font-black text-white tracking-tight">
                       {restaurantName}
                     </h2>
                     <div className="inline-block rounded-lg bg-slate-100 border border-slate-200 px-3 py-0.5 text-xs font-bold font-mono text-slate-800">
@@ -319,9 +319,9 @@ export function InStoreMarketingKit({
                   </div>
 
                   {/* High-Res QR Code Representation */}
-                  <div className="mx-auto w-44 h-44 rounded-2xl border-2 border-slate-900 p-2.5 bg-white flex flex-col items-center justify-center shadow-inner relative group">
+                  <div className="mx-auto w-44 h-44 rounded-2xl border-2 border-gray-900 p-2.5 bg-white flex flex-col items-center justify-center shadow-inner relative group">
                     <div className="w-full h-full border border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-2 bg-slate-50">
-                      <QrCode className="size-28 text-slate-900" />
+                      <QrCode className="size-28 text-gray-900" />
                       <span className="text-[9px] font-mono font-bold text-slate-600 mt-1">
                         SCAN WITH CAMERA / UPI
                       </span>
@@ -359,7 +359,7 @@ export function InStoreMarketingKit({
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-gray-500">
               <span>💡 Tip: Print on 250+ GSM cardstock or place inside transparent acrylic T-stands for durable table presentation.</span>
               <Button
                 size="sm"

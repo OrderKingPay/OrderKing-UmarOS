@@ -414,7 +414,7 @@ function DashboardPage() {
                           size="sm"
                           disabled={orderActionBusy !== null}
                           onClick={() => void handleQuickOrderAction(ord.id, "PREPARING")}
-                          className="h-9 text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg"
+                          className="h-9 text-xs bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg"
                         >
                           <Flame className="mr-1 size-3.5" />
                           Mark Preparing

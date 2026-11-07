@@ -790,7 +790,7 @@ export function TableReservationManager({
   return (
     <div className="space-y-6">
       {/* Top Main Navigation / View Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-4">
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
@@ -798,13 +798,13 @@ export function TableReservationManager({
             className={cn(
               "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs",
               activeSection === "BOOKINGS"
-                ? "bg-amber-500 text-slate-950 font-extrabold shadow-amber-500/20"
-                : "bg-slate-900/80 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800"
+                ? "bg-amber-500 text-white font-extrabold shadow-amber-500/20"
+                : "bg-white text-gray-700 hover:bg-gray-100 hover:text-white border border-gray-200"
             )}
           >
             <CalendarDays className="size-4" />
             <span>Table Reservations</span>
-            <span className="rounded-full bg-slate-950/20 px-1.5 py-0.5 text-[11px] font-black">
+            <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-black">
               {reservations.filter((r) => r.status === "PENDING" || r.status === "CONFIRMED").length}
             </span>
           </button>
@@ -815,13 +815,13 @@ export function TableReservationManager({
             className={cn(
               "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs",
               activeSection === "FLOOR_PLAN"
-                ? "bg-emerald-500 text-slate-950 font-extrabold shadow-emerald-500/20"
-                : "bg-slate-900/80 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800"
+                ? "bg-emerald-500 text-white font-extrabold shadow-emerald-500/20"
+                : "bg-white text-gray-700 hover:bg-gray-100 hover:text-white border border-gray-200"
             )}
           >
             <Armchair className="size-4" />
             <span>Floor Plan &amp; Seating (AC, Rooftop, Patio, Cabana)</span>
-            <span className="rounded-full bg-slate-950/20 px-1.5 py-0.5 text-[11px] font-black">
+            <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-black">
               {tables.length}
             </span>
           </button>
@@ -832,13 +832,13 @@ export function TableReservationManager({
             className={cn(
               "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs",
               activeSection === "FINANCIAL_LEDGER"
-                ? "bg-indigo-500 text-slate-950 font-extrabold shadow-indigo-500/20"
-                : "bg-slate-900/80 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800"
+                ? "bg-indigo-500 text-white font-extrabold shadow-indigo-500/20"
+                : "bg-white text-gray-700 hover:bg-gray-100 hover:text-white border border-gray-200"
             )}
           >
             <Receipt className="size-4" />
             <span>Dining Settlement Ledger (custom commission)</span>
-            <span className="rounded-full bg-slate-950/20 px-1.5 py-0.5 text-[11px] font-black">
+            <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-black">
               ₹{totalDeposits.toLocaleString("en-IN")}
             </span>
           </button>
@@ -860,7 +860,7 @@ export function TableReservationManager({
             size="sm"
             variant="outline"
             onClick={() => (onOpenFloorSettings ? onOpenFloorSettings() : setFloorSettingsOpen(true))}
-            className="text-xs border-slate-700 bg-slate-900/80 text-slate-300 hover:bg-slate-800"
+            className="text-xs border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
           >
             <SlidersHorizontal className="size-3.5 mr-1" />
             Floor Settings
@@ -872,7 +872,7 @@ export function TableReservationManager({
       {activeSection === "BOOKINGS" && (
         <div className="space-y-4">
           {/* Status Filter Tabs */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-slate-800/70 pb-3">
+          <div className="flex flex-wrap items-center gap-2 border-b border-gray-200/70 pb-3">
             {(
               [
                 { id: "PENDING", label: "Pending Reservations", emoji: "⏳", color: "text-amber-400" },
@@ -893,7 +893,7 @@ export function TableReservationManager({
                     "flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition",
                     isActive
                       ? "bg-chili text-white shadow-md shadow-chili/30"
-                      : "bg-slate-900/80 text-slate-400 hover:bg-slate-800 hover:text-slate-100 border border-slate-800"
+                      : "bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200"
                   )}
                 >
                   <span>{tab.emoji}</span>
@@ -901,7 +901,7 @@ export function TableReservationManager({
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-[10px] font-black",
-                      isActive ? "bg-white/20 text-white" : "bg-slate-800 text-slate-300"
+                      isActive ? "bg-white/20 text-white" : "bg-gray-100 text-gray-700"
                     )}
                   >
                     {count}
@@ -914,7 +914,7 @@ export function TableReservationManager({
           {/* Reservations Cards List */}
           <div className="grid gap-3.5">
             {filteredReservations.length === 0 ? (
-              <Card className="border-slate-800 bg-slate-900/40 p-12 text-center text-xs text-slate-400">
+              <Card className="border-gray-200 bg-white/40 p-12 text-center text-xs text-gray-500">
                 <Armchair className="size-8 mx-auto mb-2 text-slate-600 opacity-60" />
                 No reservations found under &apos;{activeTab}&apos;.
               </Card>
@@ -922,27 +922,27 @@ export function TableReservationManager({
               filteredReservations.map((res) => (
                 <Card
                   key={res.id}
-                  className="border-slate-800 bg-slate-900/70 p-4 space-y-3.5 hover:border-slate-700 transition"
+                  className="border-gray-200 bg-white p-4 space-y-3.5 hover:border-gray-300 transition"
                 >
                   {/* Top Bar: Guest Info & Zone Details */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
                     <div className="flex items-center gap-3">
                       <div className="flex size-10 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 font-black text-sm">
                         {res.guestsCount}P
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-sm text-slate-100">{res.guestName}</h3>
+                          <h3 className="font-bold text-sm text-gray-900">{res.guestName}</h3>
                           {res.isWalkIn && (
                             <span className="rounded-md bg-emerald-500/20 border border-emerald-500/40 px-1.5 py-0.2 text-[9.5px] font-bold text-emerald-300">
                               WALK-IN
                             </span>
                           )}
-                          <span className="text-[11px] font-mono text-slate-400">
+                          <span className="text-[11px] font-mono text-gray-500">
                             {res.bookingRef}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
+                        <p className="text-xs text-gray-500 flex items-center gap-2 mt-0.5">
                           <Phone className="size-3 text-emerald-400" />
                           <span>{res.phone}</span>
                           <span className="text-slate-600">•</span>
@@ -952,7 +952,7 @@ export function TableReservationManager({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 text-xs">
-                      <span className="rounded-xl bg-slate-950/80 border border-slate-800 px-2.5 py-1 font-semibold text-slate-200 flex items-center gap-1.5">
+                      <span className="rounded-xl bg-gray-50 border border-gray-200 px-2.5 py-1 font-semibold text-gray-800 flex items-center gap-1.5">
                         <Clock className="size-3.5 text-amber-400" />
                         <span>{res.timeSlot} ({res.date})</span>
                       </span>
@@ -979,7 +979,7 @@ export function TableReservationManager({
                         </span>
                       )}
                       {res.notes && (
-                        <span className="rounded-lg bg-slate-800/80 px-2.5 py-1 text-xs text-slate-300 italic">
+                        <span className="rounded-lg bg-gray-100 px-2.5 py-1 text-xs text-gray-700 italic">
                           &ldquo;{res.notes}&rdquo;
                         </span>
                       )}
@@ -996,8 +996,8 @@ export function TableReservationManager({
                     </div>
 
                     {/* Pre-Booking Cover Charge Pill */}
-                    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-1 text-xs">
-                      <span className="text-slate-400">Cover Deposit:</span>
+                    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-1 text-xs">
+                      <span className="text-gray-500">Cover Deposit:</span>
                       <span className="font-bold text-emerald-400">₹{res.depositAmount}</span>
                       <span className="text-slate-500 text-[10px]">
                         (5% Guest Platform Fee: ₹{res.platformFeeAmount} · Net Restaurant Credit: ₹{res.netRestaurantPayable} · 0% Dine-In Commission)
@@ -1006,8 +1006,8 @@ export function TableReservationManager({
                   </div>
 
                   {/* Action Buttons Row */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-slate-800/60">
-                    <div className="text-xs text-slate-400">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-gray-200">
+                    <div className="text-xs text-gray-500">
                       {res.status === "PENDING" && "Assign an available table and confirm reservation"}
                       {res.status === "CONFIRMED" && "Table reserved & ready. Seat party upon arrival"}
                       {res.status === "SEATED" && "Guests currently dining. Complete & apply bill credit when finished"}
@@ -1032,7 +1032,7 @@ export function TableReservationManager({
                             onChange={(e) =>
                               setTableInput((prev) => ({ ...prev, [res.id]: e.target.value }))
                             }
-                            className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-amber-400"
+                            className="rounded-xl border border-gray-300 bg-gray-50 px-3 py-1.5 text-xs text-gray-800 outline-none focus:border-amber-400"
                           >
                             <option value="">Auto-Pick Available Table</option>
                             {tables
@@ -1069,7 +1069,7 @@ export function TableReservationManager({
                           <Button
                             size="sm"
                             onClick={() => handleSeat(res.id)}
-                            className="gap-1.5 text-xs bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-amber-500/20"
+                            className="gap-1.5 text-xs bg-amber-500 hover:bg-amber-400 text-white font-black shadow-amber-500/20"
                           >
                             <Utensils className="size-3.5" /> Seat Guests
                           </Button>
@@ -1108,13 +1108,13 @@ export function TableReservationManager({
       {activeSection === "FLOOR_PLAN" && (
         <div className="space-y-4">
           {/* Floor Plan Header & Zone Filters */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <Armchair className="size-4 text-emerald-400" />
                 Live Restaurant Floor Plan & Seating Grid
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-gray-500 mt-0.5">
                 Total {tables.length} Tables · {availableTablesCount} Available · {occupiedTablesCount} Occupied · {tables.filter((t) => t.status === "RESERVED").length} Reserved
               </p>
             </div>
@@ -1127,8 +1127,8 @@ export function TableReservationManager({
                 className={cn(
                   "rounded-lg px-2.5 py-1 text-xs font-semibold transition",
                   selectedZoneFilter === "ALL"
-                    ? "bg-slate-100 text-slate-950 font-bold"
-                    : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                    ? "bg-slate-100 text-white font-bold"
+                    : "bg-gray-100 text-gray-700 hover:bg-slate-700"
                 )}
               >
                 All Zones ({tables.length})
@@ -1151,8 +1151,8 @@ export function TableReservationManager({
                     className={cn(
                       "rounded-lg px-2.5 py-1 text-xs font-semibold transition flex items-center gap-1",
                       selectedZoneFilter === zone
-                        ? "bg-emerald-500 text-slate-950 font-bold"
-                        : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
+                        ? "bg-emerald-500 text-white font-bold"
+                        : "bg-gray-100 text-gray-700 hover:bg-slate-700"
                     )}
                   >
                     <span>{zoneBadge}</span>
@@ -1179,20 +1179,20 @@ export function TableReservationManager({
                     isAvail && "border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-500/70",
                     isRes && "border-amber-500/40 bg-amber-950/20 hover:border-amber-500/70",
                     isOcc && "border-indigo-500/40 bg-indigo-950/20 hover:border-indigo-500/70",
-                    isBlk && "border-slate-700/60 bg-slate-900/40 opacity-70"
+                    isBlk && "border-gray-200 bg-white/40 opacity-70"
                   )}
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-display text-lg font-black text-slate-100">
+                        <span className="font-display text-lg font-black text-gray-900">
                           {tbl.tableNumber}
                         </span>
-                        <span className="rounded-md border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300">
+                        <span className="rounded-md border border-gray-300 bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-gray-700">
                           {tbl.capacityTag}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{tbl.zone}</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">{tbl.zone}</p>
                     </div>
 
                     {/* Status Pill */}
@@ -1202,7 +1202,7 @@ export function TableReservationManager({
                         isAvail && "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40",
                         isRes && "bg-amber-500/20 text-amber-300 border border-amber-500/40",
                         isOcc && "bg-indigo-500/20 text-indigo-300 border border-indigo-500/40",
-                        isBlk && "bg-slate-800 text-slate-400 border border-slate-700"
+                        isBlk && "bg-gray-100 text-gray-500 border border-gray-300"
                       )}
                     >
                       {tbl.status}
@@ -1210,12 +1210,12 @@ export function TableReservationManager({
                   </div>
 
                   {/* Occupant / Booking Info */}
-                  <div className="rounded-xl border border-slate-800/80 bg-slate-950/60 p-2.5 text-xs space-y-1">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5 text-xs space-y-1">
                     {tbl.guestName ? (
                       <>
-                        <div className="font-bold text-slate-200 truncate flex items-center justify-between">
+                        <div className="font-bold text-gray-800 truncate flex items-center justify-between">
                           <span>{tbl.guestName}</span>
-                          <span className="font-mono text-[10px] text-slate-400">
+                          <span className="font-mono text-[10px] text-gray-500">
                             {tbl.currentBookingRef}
                           </span>
                         </div>
@@ -1234,14 +1234,14 @@ export function TableReservationManager({
 
                   {/* Table Control Quick Actions */}
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-[10px] font-semibold text-slate-400">
+                    <span className="text-[10px] font-semibold text-gray-500">
                       Capacity: {tbl.maxGuests} Guests
                     </span>
 
                     <button
                       type="button"
                       onClick={() => handleToggleTableStatus(tbl.id)}
-                      className="text-[11px] font-bold text-slate-400 hover:text-slate-200 underline decoration-dotted"
+                      className="text-[11px] font-bold text-gray-500 hover:text-gray-800 underline decoration-dotted"
                     >
                       {tbl.status === "BLOCKED" ? "Release Table" : tbl.status === "AVAILABLE" ? "Hold Table" : "In Service"}
                     </button>
@@ -1261,19 +1261,19 @@ export function TableReservationManager({
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <ShieldCheck className="size-5 text-emerald-400 shrink-0" />
-                <h4 className="font-bold text-sm text-slate-100">
+                <h4 className="font-bold text-sm text-gray-900">
                   Order King 0% Merchant Dine-In Commission Guarantee
                 </h4>
                 <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-300">
                   KEEP 100% OF FOOD SALES
                 </span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-gray-700 leading-relaxed">
                 Order King charges your restaurant <strong className="text-emerald-400">0% merchant commission</strong> on dine-in service. Guests pay a modest 5% platform convenience fee on advance reservations for instant table hold and automated SMS concierge. 100% of your net cover deposit is credited directly to the diner&apos;s food &amp; beverage bill.
               </p>
             </div>
-            <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 shrink-0 border-t sm:border-t-0 sm:border-l border-slate-800 pt-3 sm:pt-0 sm:pl-5">
-              <span className="text-[11px] text-slate-400">Restaurant Commission</span>
+            <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 shrink-0 border-t sm:border-t-0 sm:border-l border-gray-200 pt-3 sm:pt-0 sm:pl-5">
+              <span className="text-[11px] text-gray-500">Restaurant Commission</span>
               <span className="font-display text-2xl font-black text-emerald-400">0% DINE-IN</span>
             </div>
           </div>
@@ -1287,7 +1287,7 @@ export function TableReservationManager({
                 </span>
                 <DollarSign className="size-4 text-emerald-400" />
               </div>
-              <div className="font-display text-2xl font-black text-slate-100">
+              <div className="font-display text-2xl font-black text-gray-900">
                 ₹{totalDeposits.toLocaleString("en-IN")}
               </div>
               <p className="text-[11px] text-emerald-400/80">
@@ -1342,22 +1342,22 @@ export function TableReservationManager({
           </div>
 
           {/* Financial Ledger Table */}
-          <Card className="border-slate-800 bg-slate-900/70 p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <Card className="border-gray-200 bg-white p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div>
-                <h4 className="font-bold text-sm text-slate-100 flex items-center gap-2">
+                <h4 className="font-bold text-sm text-gray-900 flex items-center gap-2">
                   <Receipt className="size-4 text-emerald-400" />
                   Pre-Booking Cover Charges Settlement Statement
                 </h4>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-gray-500 mt-0.5">
                   Itemized ledger of table deposits collected, 5% guest platform fee, 0% restaurant commission, and dine-in bill credits.
                 </p>
               </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="border-b border-slate-800 bg-slate-950/80 text-[11px] font-bold uppercase text-slate-400">
+              <table className="w-full text-left text-xs text-gray-700">
+                <thead className="border-b border-gray-200 bg-gray-50 text-[11px] font-bold uppercase text-gray-500">
                   <tr>
                     <th className="py-2.5 px-3">Booking Ref</th>
                     <th className="py-2.5 px-3">Guest Details</th>
@@ -1369,10 +1369,10 @@ export function TableReservationManager({
                     <th className="py-2.5 px-3 text-center">Settlement Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-mono">
+                <tbody className="divide-y divide-gray-200/60 font-mono">
                   {reservations.map((r) => (
-                    <tr key={r.id} className="hover:bg-slate-800/40">
-                      <td className="py-3 px-3 font-bold text-slate-200">
+                    <tr key={r.id} className="hover:bg-gray-100/40">
+                      <td className="py-3 px-3 font-bold text-gray-800">
                         {r.bookingRef}
                         {r.isWalkIn && (
                           <span className="ml-1.5 text-[9px] bg-emerald-500/20 text-emerald-300 px-1 py-0.2 rounded font-sans">
@@ -1381,16 +1381,16 @@ export function TableReservationManager({
                         )}
                       </td>
                       <td className="py-3 px-3 font-sans">
-                        <div className="font-bold text-slate-200">{r.guestName}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">{r.phone}</div>
+                        <div className="font-bold text-gray-800">{r.guestName}</div>
+                        <div className="text-[11px] text-gray-500 font-mono">{r.phone}</div>
                       </td>
                       <td className="py-3 px-3 font-sans">
-                        <span className="text-slate-200">{r.areaPreference}</span>
+                        <span className="text-gray-800">{r.areaPreference}</span>
                         {r.assignedTable && (
                           <span className="ml-1 text-emerald-400 font-bold">({r.assignedTable})</span>
                         )}
                       </td>
-                      <td className="py-3 px-3 text-right font-bold text-slate-100">
+                      <td className="py-3 px-3 text-right font-bold text-gray-900">
                         ₹{r.depositAmount}
                       </td>
                       <td className="py-3 px-3 text-right text-amber-400 font-bold">
@@ -1441,16 +1441,16 @@ export function TableReservationManager({
       {/* WALK-IN GUEST MODAL */}
       {walkInDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-base text-slate-100 flex items-center gap-2">
+          <div className="w-full max-w-md rounded-2xl border border-gray-300 bg-white p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+              <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
                 <UserPlus className="size-4 text-emerald-400" />
                 Add Walk-In Guest & Immediate Seating
               </h3>
               <button
                 type="button"
                 onClick={() => setWalkInDialogOpen(false)}
-                className="text-slate-400 hover:text-slate-200"
+                className="text-gray-500 hover:text-gray-800"
               >
                 <X className="size-5" />
               </button>
@@ -1458,7 +1458,7 @@ export function TableReservationManager({
 
             <form onSubmit={submitWalkIn} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-gray-700 mb-1">
                   Guest Name *
                 </label>
                 <input
@@ -1467,13 +1467,13 @@ export function TableReservationManager({
                   placeholder="e.g. Rahul Sharma"
                   value={wiName}
                   onChange={(e) => setWiName(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:border-emerald-400 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
                     Phone Number *
                   </label>
                   <input
@@ -1482,12 +1482,12 @@ export function TableReservationManager({
                     placeholder="+91 98765 43210"
                     value={wiPhone}
                     onChange={(e) => setWiPhone(e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
+                    className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:border-emerald-400 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
                     Party Size (Pax)
                   </label>
                   <input
@@ -1496,13 +1496,13 @@ export function TableReservationManager({
                     max={20}
                     value={wiGuests}
                     onChange={(e) => setWiGuests(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
+                    className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:border-emerald-400 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">
+                <label className="block text-xs font-bold text-gray-700 mb-1">
                   Dining Area Zone
                 </label>
                 <select
@@ -1511,7 +1511,7 @@ export function TableReservationManager({
                     setWiZone(e.target.value as DiningAreaZone);
                     setWiTable("");
                   }}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:border-emerald-400 focus:outline-none"
                 >
                   <option value="AC Indoor Main Hall">AC Indoor Main Hall (AC)</option>
                   <option value="Rooftop Open Air">Rooftop Open Air (Rooftop)</option>
@@ -1524,13 +1524,13 @@ export function TableReservationManager({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
                     Select Available Table
                   </label>
                   <select
                     value={wiTable}
                     onChange={(e) => setWiTable(e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
+                    className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:border-emerald-400 focus:outline-none"
                   >
                     <option value="">Auto-Assign Best Table</option>
                     {availableTablesForWalkIn.map((t) => (
@@ -1542,13 +1542,13 @@ export function TableReservationManager({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
                     Cover Deposit (₹)
                   </label>
                   <select
                     value={wiDeposit}
                     onChange={(e) => setWiDeposit(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
+                    className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:border-emerald-400 focus:outline-none"
                   >
                     <option value={500}>₹500 (Standard Table Deposit)</option>
                     <option value={1000}>₹1,000 (VIP / Cabana Deposit)</option>
@@ -1557,12 +1557,12 @@ export function TableReservationManager({
                 </div>
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-800">
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-gray-200">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => setWalkInDialogOpen(false)}
-                  className="text-xs text-slate-400"
+                  className="text-xs text-gray-500"
                 >
                   Cancel
                 </Button>
@@ -1581,26 +1581,26 @@ export function TableReservationManager({
       {/* FLOOR PLAN SETTINGS MODAL */}
       {floorSettingsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-base text-slate-100 flex items-center gap-2">
+          <div className="w-full max-w-md rounded-2xl border border-gray-300 bg-white p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+              <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
                 <SlidersHorizontal className="size-4 text-amber-400" />
                 Floor Plan &amp; Reservation Settings
               </h3>
               <button
                 type="button"
                 onClick={() => setFloorSettingsOpen(false)}
-                className="text-slate-400 hover:text-slate-200"
+                className="text-gray-500 hover:text-gray-800"
               >
                 <X className="size-5" />
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+              <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3">
                 <div>
-                  <div className="font-bold text-slate-100">Auto-Accept Bookings</div>
-                  <div className="text-slate-400 text-[11px]">
+                  <div className="font-bold text-gray-900">Auto-Accept Bookings</div>
+                  <div className="text-gray-500 text-[11px]">
                     Instantly confirm incoming reservations when tables are free
                   </div>
                 </div>
@@ -1613,12 +1613,12 @@ export function TableReservationManager({
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-300">
+                <label className="font-bold text-gray-700">
                   Target Table Turn Duration
                 </label>
                 <select
                   defaultValue="90"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:outline-none"
                 >
                   <option value="60">60 Minutes (Fast Casual)</option>
                   <option value="90">90 Minutes (Standard Fine Dine)</option>
@@ -1627,12 +1627,12 @@ export function TableReservationManager({
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-300">
+                <label className="font-bold text-gray-700">
                   No-Show Grace Period
                 </label>
                 <select
                   defaultValue="15"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:outline-none"
+                  className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:outline-none"
                 >
                   <option value="15">15 Minutes past reservation time</option>
                   <option value="30">30 Minutes past reservation time</option>
@@ -1644,17 +1644,17 @@ export function TableReservationManager({
                   <ShieldCheck className="size-3.5 text-amber-400" />
                   Order King 0% Dine-In Commission Guarantee
                 </div>
-                <p className="text-slate-300 leading-relaxed">
+                <p className="text-gray-700 leading-relaxed">
                   Every advance table reservation collects a modest cover deposit. Order King proudly operates on <strong className="text-emerald-400">0% merchant commission</strong> for dine-in service. Guests pay a 5% platform convenience fee for instant table hold and automated SMS concierge updates, while 100% of your net deposit (95% of total cover) is credited directly to the guest&apos;s food &amp; beverage bill.
                 </p>
               </div>
             </div>
 
-            <div className="pt-2 flex justify-end border-t border-slate-800">
+            <div className="pt-2 flex justify-end border-t border-gray-200">
               <Button
                 size="sm"
                 onClick={() => setFloorSettingsOpen(false)}
-                className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs"
+                className="bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs"
               >
                 Save Settings
               </Button>

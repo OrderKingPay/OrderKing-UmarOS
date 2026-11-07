@@ -104,7 +104,7 @@ function DiningPage() {
     >
       <div className="space-y-6">
         {/* TOP STATION BANNER & LIVE REVENUE LEDGER */}
-        <div className="rounded-[28px] border border-gray-200 bg-white shadow-xs bg-gradient-to-br from-slate-900 via-indigo-950/20 to-slate-950 p-5 sm:p-6 shadow-xl space-y-5">
+        <div className="rounded-[28px] border border-gray-200 bg-white shadow-xs bg-white p-5 sm:p-6 shadow-xl space-y-5">
           {/* Header Title & Quick Action Bar */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
             <div className="space-y-1">
@@ -466,7 +466,7 @@ function DiningPage() {
                 <Button
                   size="sm"
                   onClick={() => setFloorSettingsModalOpen(false)}
-                  className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs"
+                  className="bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs"
                 >
                   Close &amp; Save
                 </Button>

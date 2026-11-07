@@ -103,7 +103,7 @@ function NotificationsPage() {
       dataLabel={vendor.dataLabel}
     >
       {/* Active Notification Channels & Self-Service Quick Links */}
-      <Card className="space-y-3 border-slate-800 bg-slate-900/90">
+      <Card className="space-y-3 border-gray-200 bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Bell className="size-4 text-emerald-400" />
@@ -158,46 +158,46 @@ function NotificationsPage() {
         </div>
 
         {/* Self-Service Action Shortcut Bar */}
-        <div className="grid gap-2 border-t border-slate-800 pt-3 sm:grid-cols-4">
+        <div className="grid gap-2 border-t border-gray-200 pt-3 sm:grid-cols-4">
           <Link
             to="/orders"
-            className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2 text-xs text-slate-200 hover:border-slate-700"
+            className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-800 hover:border-gray-300"
           >
             <span className="inline-flex items-center gap-1.5 font-medium">
               <Utensils className="size-3.5 text-emerald-400" />
               Live Orders & KDS
             </span>
-            <ArrowRight className="size-3.5 text-slate-400" />
+            <ArrowRight className="size-3.5 text-gray-500" />
           </Link>
           <Link
             to="/settlements"
-            className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2 text-xs text-slate-200 hover:border-slate-700"
+            className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-800 hover:border-gray-300"
           >
             <span className="inline-flex items-center gap-1.5 font-medium">
               <IndianRupee className="size-3.5 text-emerald-400" />
               Settlements & UTRs
             </span>
-            <ArrowRight className="size-3.5 text-slate-400" />
+            <ArrowRight className="size-3.5 text-gray-500" />
           </Link>
           <Link
             to="/onboarding"
-            className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2 text-xs text-slate-200 hover:border-slate-700"
+            className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-800 hover:border-gray-300"
           >
             <span className="inline-flex items-center gap-1.5 font-medium">
               <ShieldCheck className="size-3.5 text-emerald-400" />
               FSSAI, GST & KYC
             </span>
-            <ArrowRight className="size-3.5 text-slate-400" />
+            <ArrowRight className="size-3.5 text-gray-500" />
           </Link>
           <Link
             to="/settings"
-            className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2 text-xs text-slate-200 hover:border-slate-700"
+            className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-800 hover:border-gray-300"
           >
             <span className="inline-flex items-center gap-1.5 font-medium">
               <Settings className="size-3.5 text-emerald-400" />
               Store SLA & Sound
             </span>
-            <ArrowRight className="size-3.5 text-slate-400" />
+            <ArrowRight className="size-3.5 text-gray-500" />
           </Link>
         </div>
       </Card>
@@ -219,7 +219,7 @@ function NotificationsPage() {
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
               filter === tab.id
                 ? "bg-emerald-600 text-white"
-                : "border border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-500"
+                : "border border-gray-300 bg-white text-gray-700 hover:border-slate-500"
             }`}
           >
             {tab.label}
@@ -240,12 +240,12 @@ function NotificationsPage() {
             <Card
               key={n.id}
               className={`flex flex-col justify-between gap-3 sm:flex-row sm:items-center ${
-                n.isRead ? "opacity-75" : "border-emerald-500/40 bg-slate-900"
+                n.isRead ? "opacity-75" : "border-emerald-500/40 bg-white"
               }`}
             >
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+                  <span className="rounded bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
                     {n.category}
                   </span>
                   <span className="text-[11px] uppercase text-muted">{n.type}</span>
@@ -256,12 +256,12 @@ function NotificationsPage() {
                   ) : null}
                 </div>
                 <div className="font-semibold text-white">{n.title}</div>
-                <p className="text-sm text-slate-300">{n.body}</p>
+                <p className="text-sm text-gray-700">{n.body}</p>
               </div>
               <div className="shrink-0">
                 <Link
                   to={n.action.to}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/90 px-3 py-1.5 text-xs font-medium text-emerald-300 hover:border-emerald-500/50 hover:bg-slate-800"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-gray-100 px-3 py-1.5 text-xs font-medium text-emerald-300 hover:border-emerald-500/50 hover:bg-gray-100"
                 >
                   <span>{n.action.label}</span>
                   <ArrowRight className="size-3.5" />

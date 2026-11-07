@@ -719,12 +719,12 @@ export function UniversalPosHardwareManager({
         </div>
 
         {/* Live Socket Logs & Telemetry Stream */}
-        <div className="rounded-xl border border-line bg-slate-950 p-3 text-slate-200 font-mono text-[11px] space-y-1">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 text-[10px] text-slate-400">
+        <div className="rounded-xl border border-line bg-gray-50 p-3 text-gray-800 font-mono text-[11px] space-y-1">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-1.5 text-[10px] text-gray-500">
             <span>Hardware Telemetry Stream (Port 9100 / WebUSB / WebBluetooth)</span>
             <span>Buffer: {receiptResult.bytes.length} bytes · {paperWidth}</span>
           </div>
-          <div className="max-h-24 overflow-y-auto space-y-0.5 text-slate-300">
+          <div className="max-h-24 overflow-y-auto space-y-0.5 text-gray-700">
             {socketLogs.map((log, i) => (
               <div key={i} className="truncate">
                 {log}
@@ -1023,8 +1023,8 @@ export function UniversalPosHardwareManager({
 
             {/* Monospace Slip / Hex Dump View */}
             {viewHexDump ? (
-              <div className="rounded-lg border border-line bg-slate-950 p-3 font-mono text-[10px] text-emerald-400 max-h-80 overflow-y-auto break-all">
-                <div className="text-slate-400 border-b border-slate-800 pb-1 mb-2 font-bold">
+              <div className="rounded-lg border border-line bg-gray-50 p-3 font-mono text-[10px] text-emerald-400 max-h-80 overflow-y-auto break-all">
+                <div className="text-gray-500 border-b border-gray-200 pb-1 mb-2 font-bold">
                   RAW ESC/POS HEX DUMP ({receiptResult.bytes.length} bytes):
                 </div>
                 {receiptResult.hex}

@@ -1210,7 +1210,7 @@ function SettingsPage() {
               </div>
               <span className="text-[11px] font-mono text-gray-500">STAFF ACCESS CONTROL</span>
             </div>
-            <ul className="text-xs divide-y divide-slate-800">
+            <ul className="text-xs divide-y divide-gray-200">
               {staffQ.data?.staff.map((s) => (
                 <li key={s.id} className="flex justify-between py-2.5 text-gray-800">
                   <span>{s.email ?? s.user_id}</span>

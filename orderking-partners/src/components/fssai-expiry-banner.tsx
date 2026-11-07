@@ -125,7 +125,7 @@ export function FssaiExpiryBanner({
                 {licenseInfo.category} {licenseInfo.licenseNumber ? `#${licenseInfo.licenseNumber}` : ""}
               </span>
             </div>
-            <p className="text-[11px] text-slate-300">
+            <p className="text-[11px] text-gray-700">
               {isExpired
                 ? "Statutory compliance violation: restaurant operations halted under Section 31 of FSS Act, 2006 until renewed."
                 : `License expires soon (${licenseInfo.expiryDate || "within 30 days"}). Apply for FoSCoS renewal to prevent order suspension.`}
@@ -172,7 +172,7 @@ export function FssaiExpiryBanner({
           </a>
           <button 
             onClick={() => setSnoozed(false)} 
-            className="text-[10px] text-slate-400 hover:text-slate-200"
+            className="text-[10px] text-gray-500 hover:text-gray-800"
           >
             Expand
           </button>
@@ -213,7 +213,7 @@ export function FssaiExpiryBanner({
               }`}>
                 {isExpired ? "STATUTORY HALT RISK" : "MANDATORY STATUTORY NOTICE"}
               </span>
-              <span className="text-xs font-mono text-slate-400">
+              <span className="text-xs font-mono text-gray-500">
                 FSS Act, 2006 • Section 31 Compliance
               </span>
             </div>
@@ -224,7 +224,7 @@ export function FssaiExpiryBanner({
                 : `FSSAI Food License Renewal Due in ${licenseInfo.daysRemaining} Days`}
             </h3>
 
-            <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">
+            <p className="text-xs text-gray-700 leading-relaxed max-w-2xl">
               Under Food Safety and Standards Authority of India (FSSAI) statutory regulations, 
               food business operators must maintain a valid 14-digit registration. 
               License <span className="font-mono font-bold text-white">#{licenseInfo.licenseNumber}</span> ({licenseInfo.category}) 
@@ -232,7 +232,7 @@ export function FssaiExpiryBanner({
               Failure to submit renewal documentation leads to automated order ingestion suspension.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] font-mono text-slate-400">
+            <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] font-mono text-gray-500">
               <span className="flex items-center gap-1">
                 <Building2 className="size-3 text-slate-500" />
                 {licenseInfo.registeredName}
@@ -260,16 +260,16 @@ export function FssaiExpiryBanner({
 
             <Link
               to="/onboarding"
-              className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-slate-200 text-xs font-semibold transition"
+              className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 text-gray-800 text-xs font-semibold transition"
             >
               <span>Upload Certificate</span>
-              <ChevronRight className="size-3.5 text-slate-400" />
+              <ChevronRight className="size-3.5 text-gray-500" />
             </Link>
 
             <button
               type="button"
               onClick={handleSnooze}
-              className="p-1.5 text-slate-400 hover:text-white rounded-md hover:bg-white/10 transition"
+              className="p-1.5 text-gray-500 hover:text-white rounded-md hover:bg-white/10 transition"
               title="Snooze warning for 24 hours"
               aria-label="Dismiss alert for 24 hours"
             >
@@ -277,7 +277,7 @@ export function FssaiExpiryBanner({
             </button>
           </div>
 
-          <span className="text-[10px] font-mono text-slate-400 text-right">
+          <span className="text-[10px] font-mono text-gray-500 text-right">
             Annual audit due every 12 months • FoSCoS portal ID verified
           </span>
         </div>

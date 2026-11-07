@@ -223,7 +223,7 @@ function AnalyticsPage() {
             {items.length === 0 ? (
               <p className="text-xs text-gray-500">No delivered item records in this time range.</p>
             ) : (
-              <ul className="divide-y divide-slate-800/80 text-xs">
+              <ul className="divide-y divide-gray-200 text-xs">
                 {items.slice(0, 6).map((i) => (
                   <li key={i.name} className="flex items-center justify-between py-2">
                     <span className="font-medium text-gray-800">{i.name}</span>
@@ -244,7 +244,7 @@ function AnalyticsPage() {
             {items.length === 0 ? (
               <p className="text-xs text-gray-500">No delivered item records in this time range.</p>
             ) : (
-              <ul className="divide-y divide-slate-800/80 text-xs">
+              <ul className="divide-y divide-gray-200 text-xs">
                 {items
                   .slice()
                   .reverse()

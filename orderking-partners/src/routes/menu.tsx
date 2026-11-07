@@ -1253,7 +1253,7 @@ function MenuPage() {
                 <h3 className="text-sm font-bold text-white mt-0.5">
                   Statutory KYC Verification Pending
                 </h3>
-                <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                <p className="text-xs text-gray-700 mt-1 max-w-2xl leading-relaxed">
                   Under Indian statutory regulations (FSSAI 14-digit registration, PAN, Bank IFSC, and GSTIN rules),
                   this restaurant's digital menu is locked in{" "}
                   <span className="font-mono font-semibold text-amber-300">PENDING_VERIFICATION</span> state.
@@ -1330,7 +1330,7 @@ function MenuPage() {
                 type="button"
                 onClick={exportCatalogCsv}
                 title="Download complete menu catalog & pricing as CSV for POS / accounting"
-                className="px-2.5 py-1.5 rounded-lg border border-border bg-surface-2 text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1.5 font-mono"
+                className="px-2.5 py-1.5 rounded-lg border border-border bg-surface-2 text-xs font-bold text-gray-700 hover:text-white transition flex items-center gap-1.5 font-mono"
               >
                 <Download className="size-3.5" />
                 Export CSV
@@ -1343,7 +1343,7 @@ function MenuPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setOcrModalOpen(true)}
-                className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs"
+                className="border-gray-300 bg-gray-100 hover:bg-slate-700 text-gray-800 font-bold text-xs"
                 title="Digitize physical paper menu or raw dish text into structured catalog"
               >
                 <FileText className="mr-1 size-3.5 text-emerald-400" />
@@ -1441,7 +1441,7 @@ function MenuPage() {
 
       {/* Kitchen Rush / Surge Operational Overload Controls */}
       {kitchenRushMode && (
-        <div className="rounded-xl border border-amber-500/60 bg-gradient-to-r from-amber-950/50 via-slate-900 to-amber-950/40 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-200 font-mono shadow-md">
+        <div className="rounded-xl border border-amber-500/60 bg-amber-50 border-amber-200 text-amber-900 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-200 font-mono shadow-md">
           <div className="flex items-center gap-2.5">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400">
               <Flame className="size-4.5 animate-pulse text-amber-400" />
@@ -1528,8 +1528,8 @@ function MenuPage() {
 
       {/* King AI Dish Pricing & High-Margin Combo Engine */}
       {canEdit && (sparkPricingRecommendations.length > 0 || sparkComboRecommendations.length > 0) && (
-        <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/25 via-slate-900/90 to-amber-950/25 p-4 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+        <div className="rounded-xl border border-amber-500/40 bg-white border-gray-200 p-4 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
               <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400">
                 <Sparkles className="size-4" />
@@ -1541,7 +1541,7 @@ function MenuPage() {
                     GMV &amp; Margin Optimization
                   </span>
                 </div>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-gray-700">
                   Data-driven price benchmarking and meal bundles calibrated to expand Average Order Value (AOV), merchant earnings, and platform commission.
                 </p>
               </div>
@@ -1551,15 +1551,15 @@ function MenuPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* 1. Smart Dish Price Optimization */}
             <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+              <div className="flex items-center justify-between text-xs font-semibold text-gray-800">
                 <span className="flex items-center gap-1.5 font-mono uppercase tracking-wider text-amber-400">
                   <TrendingUp className="size-3.5" /> Price Benchmarking Opportunities ({sparkPricingRecommendations.length})
                 </span>
-                <span className="text-[11px] text-slate-400 font-mono">28% Standard Commission Tier</span>
+                <span className="text-[11px] text-gray-500 font-mono">28% Standard Commission Tier</span>
               </div>
 
               {sparkPricingRecommendations.length === 0 ? (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-slate-400">
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-500">
                   All active dishes are currently priced at optimal corridor benchmarks.
                 </div>
               ) : (
@@ -1572,7 +1572,7 @@ function MenuPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <div className="font-semibold text-xs text-white">{opt.itemName}</div>
-                          <div className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                          <div className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
                             {opt.commercialRationale}
                           </div>
                         </div>
@@ -1586,8 +1586,8 @@ function MenuPage() {
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-[11px] font-mono">
-                        <div className="text-slate-400">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-200 text-[11px] font-mono">
+                        <div className="text-gray-500">
                           Est. Weekly GMV: <strong className="text-white">+₹{(opt.estimatedWeeklyGmvIncreasePaise / 100).toFixed(0)}</strong>
                           {" · "}
                           Platform Comm: <strong className="text-amber-400">+₹{(opt.estimatedWeeklyFounderCommissionIncreasePaise / 100).toFixed(0)}</strong>
@@ -1610,15 +1610,15 @@ function MenuPage() {
 
             {/* 2. High-Converting Meal Combos */}
             <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+              <div className="flex items-center justify-between text-xs font-semibold text-gray-800">
                 <span className="flex items-center gap-1.5 font-mono uppercase tracking-wider text-amber-400">
                   <Layers className="size-3.5" /> High-Converting Meal Bundles ({sparkComboRecommendations.length})
                 </span>
-                <span className="text-[11px] text-slate-400 font-mono">Boosts Cart AOV +24-38%</span>
+                <span className="text-[11px] text-gray-500 font-mono">Boosts Cart AOV +24-38%</span>
               </div>
 
               {sparkComboRecommendations.length === 0 ? (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-slate-400">
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-500">
                   Add more dishes to your menu to generate automated meal bundles.
                 </div>
               ) : (
@@ -1638,16 +1638,16 @@ function MenuPage() {
                             Save {combo.customerSavingsPercent}%
                           </span>
                         </div>
-                        <div className="text-[11px] text-slate-300 mt-1">
+                        <div className="text-[11px] text-gray-700 mt-1">
                           Includes: {combo.includedItemNames.join(" + ")}
                         </div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">
+                        <div className="text-[10px] text-gray-500 mt-0.5">
                           {combo.commercialRationale}
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-[11px] font-mono">
-                        <div className="text-slate-300">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-200 text-[11px] font-mono">
+                        <div className="text-gray-700">
                           Bundle Price: <strong className="text-white text-xs">₹{(combo.bundlePricePaise / 100).toFixed(0)}</strong>
                           <span className="line-through text-slate-500 ml-1">₹{(combo.standaloneSumPaise / 100).toFixed(0)}</span>
                           {" · "}
@@ -1726,7 +1726,7 @@ function MenuPage() {
                   className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition ${
                     exists
                       ? "border-emerald-500/30 bg-emerald-950/30 text-emerald-400 cursor-default"
-                      : "border-border bg-surface-2 text-slate-300 hover:border-amber-500/50 hover:text-white"
+                      : "border-border bg-surface-2 text-gray-700 hover:border-amber-500/50 hover:text-white"
                   }`}
                 >
                   {exists ? `✓ ${tpl}` : `+ ${tpl}`}
@@ -1752,7 +1752,7 @@ function MenuPage() {
                     Catalog Engine
                   </span>
                 </div>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-gray-700">
                   Type any dish name. Automatically infers category, FSSAI diet classification, corridor benchmark pricing, and studio 4:3 culinary visual.
                 </p>
               </div>
@@ -1767,7 +1767,7 @@ function MenuPage() {
           {/* Quick Input Bar */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
-              <Wand2 className="size-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Wand2 className="size-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={quickDishInput}
@@ -1779,13 +1779,13 @@ function MenuPage() {
                   }
                 }}
                 placeholder="Create dish (e.g. Paneer Tikka, Chicken Biryani, Butter Naan, Masala Dosa)..."
-                className="w-full pl-9 pr-8 py-2.5 bg-white border border-slate-800 rounded-lg text-xs sm:text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 font-sans shadow-inner"
+                className="w-full pl-9 pr-8 py-2.5 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-emerald-500 font-sans shadow-inner"
               />
               {quickDishInput && (
                 <button
                   type="button"
                   onClick={() => setQuickDishInput("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-xs"
                 >
                   ✕
                 </button>
@@ -1823,16 +1823,16 @@ function MenuPage() {
                   {quickDishInput.trim()}
                 </span>
                 <span className="text-slate-500">·</span>
-                <span className="text-slate-300">
+                <span className="text-gray-700">
                   Category: <strong className="text-amber-300">{quickTaxonomy.category}</strong>
                 </span>
                 <span className="text-slate-500">·</span>
-                <span className="text-slate-300">
+                <span className="text-gray-700">
                   Suggested Price: <strong className="text-emerald-400">₹{quickTaxonomy.basePriceRupees}</strong>
                 </span>
                 <span className="text-slate-500">·</span>
-                <span className="text-slate-300">
-                  Prep: <strong className="text-slate-200">{quickTaxonomy.prepMinutes} mins</strong>
+                <span className="text-gray-700">
+                  Prep: <strong className="text-gray-800">{quickTaxonomy.prepMinutes} mins</strong>
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -1849,8 +1849,8 @@ function MenuPage() {
           )}
 
           {/* 1-Tap Popular Signature Creations Pills */}
-          <div className="space-y-1.5 pt-1 border-t border-slate-800/80">
-            <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+          <div className="space-y-1.5 pt-1 border-t border-gray-200">
+            <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
               <span>Popular 1-Tap Signature Creations (Tap to add instantly with AI Photo):</span>
             </div>
             <div className="flex flex-wrap items-center gap-1.5">
@@ -1872,7 +1872,7 @@ function MenuPage() {
                   type="button"
                   disabled={isAddingQuickDish}
                   onClick={() => void handleQuickAddDish(preset.name)}
-                  className="rounded-full border border-slate-800 bg-slate-900/90 px-2.5 py-1 text-xs text-slate-300 hover:border-amber-500/60 hover:bg-amber-950/30 hover:text-white transition flex items-center gap-1.5 group font-medium"
+                  className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-xs text-gray-700 hover:border-amber-500/60 hover:bg-amber-950/30 hover:text-white transition flex items-center gap-1.5 group font-medium"
                 >
                   <FssaiDietBadge diet={preset.diet} />
                   <span>{preset.name}</span>
@@ -2000,7 +2000,7 @@ function MenuPage() {
                 {cat.items.map((item) => (
                   <Card
                     key={item.id}
-                    className="flex flex-wrap items-center justify-between gap-3 p-3.5 transition hover:border-slate-700"
+                    className="flex flex-wrap items-center justify-between gap-3 p-3.5 transition hover:border-gray-300"
                   >
                     <label className="flex min-h-11 items-start gap-3 flex-1 min-w-[240px]">
                       {canAvail ? (
@@ -2103,9 +2103,9 @@ function MenuPage() {
                                     e.stopPropagation();
                                   }}
                                   onMouseDown={(e) => e.stopPropagation()}
-                                  className="inline-flex items-center gap-1 rounded-full bg-slate-900 border border-emerald-500/80 px-2 py-0.5 text-xs shadow-md"
+                                  className="inline-flex items-center gap-1 rounded-full bg-white border border-emerald-500/80 px-2 py-0.5 text-xs shadow-md"
                                 >
-                                  <span className="font-semibold text-slate-300">{v.name}: ₹</span>
+                                  <span className="font-semibold text-gray-700">{v.name}: ₹</span>
                                   <input
                                     type="number"
                                     min="1"
@@ -2124,7 +2124,7 @@ function MenuPage() {
                                         setQuickEditingVariant(null);
                                       }
                                     }}
-                                    className="w-16 rounded border border-slate-700 bg-white px-1 py-0.5 text-xs text-right text-emerald-400 font-mono focus:border-emerald-500 focus:outline-none"
+                                    className="w-16 rounded border border-gray-300 bg-white px-1 py-0.5 text-xs text-right text-emerald-400 font-mono focus:border-emerald-500 focus:outline-none"
                                   />
                                   <button
                                     type="submit"
@@ -2142,7 +2142,7 @@ function MenuPage() {
                                       setQuickEditingVariant(null);
                                     }}
                                     title="Cancel (Esc)"
-                                    className="rounded p-0.5 text-slate-400 hover:text-white transition"
+                                    className="rounded p-0.5 text-gray-500 hover:text-white transition"
                                   >
                                     <X className="size-3.5" />
                                   </button>
@@ -2170,7 +2170,7 @@ function MenuPage() {
                                     }}
                                     onMouseDown={(e) => e.stopPropagation()}
                                     title="1-Tap Quick Price Edit"
-                                    className="text-slate-400 opacity-60 group-hover:opacity-100 hover:text-amber-400 transition ml-0.5"
+                                    className="text-gray-500 opacity-60 group-hover:opacity-100 hover:text-amber-400 transition ml-0.5"
                                   >
                                     <Pencil className="size-3" />
                                   </button>
@@ -2347,9 +2347,9 @@ function MenuPage() {
             if (e.target === e.currentTarget) setEditor(null);
           }}
         >
-          <div className="flex h-full w-full max-w-2xl flex-col border-l border-gray-200 bg-white text-slate-100 shadow-2xl">
+          <div className="flex h-full w-full max-w-2xl flex-col border-l border-gray-200 bg-white text-gray-900 shadow-2xl">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/90 px-5 py-4">
+            <div className="flex items-center justify-between border-b border-gray-200 bg-white px-5 py-4">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
@@ -2364,7 +2364,7 @@ function MenuPage() {
               <button
                 type="button"
                 onClick={() => setEditor(null)}
-                className="rounded-lg border border-slate-800 bg-slate-900 p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                className="rounded-lg border border-gray-200 bg-white p-2 text-gray-500 hover:bg-gray-100 hover:text-white transition"
                 aria-label="Close Dish Studio"
               >
                 <X className="size-5" />
@@ -2395,7 +2395,7 @@ function MenuPage() {
                     onChange={(e) => setEditor({ ...editor, name: e.target.value })}
                   />
                   {editor.name.trim() && (
-                    <div className="mt-1 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                    <div className="mt-1 flex items-center justify-between text-[10px] text-gray-500 font-mono">
                       <span>
                         Taxonomy:{" "}
                         <strong className="text-amber-300">
@@ -2464,14 +2464,14 @@ function MenuPage() {
                         className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition ${
                           active
                             ? `${opt.activeClass} font-bold shadow-sm`
-                            : "border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700"
+                            : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
                         }`}
                       >
                         <div className="flex items-center gap-2">
                           <FssaiDietBadge diet={opt.value} />
                           <span className="text-xs font-bold">{opt.label}</span>
                         </div>
-                        <span className="text-[10px] text-slate-400">{opt.sub}</span>
+                        <span className="text-[10px] text-gray-500">{opt.sub}</span>
                       </button>
                     );
                   })}
@@ -2479,7 +2479,7 @@ function MenuPage() {
               </div>
 
               {/* 3. Base Selling Price (₹), Prep Time (15 / 20 / 30 mins) & Serving Size Note */}
-              <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3.5 space-y-3">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-3">
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div>
                     <Label>Base Selling Price (₹) *</Label>
@@ -2497,7 +2497,7 @@ function MenuPage() {
                         setEditor({ ...editor, variants });
                       }}
                     />
-                    <span className="mt-1 block text-[10px] text-slate-400">
+                    <span className="mt-1 block text-[10px] text-gray-500">
                       Primary ({editor.variants[0]?.name || "Regular"}) rate before GST
                     </span>
                     {sparkDrawerPricing && (
@@ -2519,7 +2519,7 @@ function MenuPage() {
                           <Sparkles className="size-3 text-amber-400 shrink-0" />
                           <span className="truncate font-semibold">
                             King AI: ₹{(sparkDrawerPricing.recommendedPricePaise / 100).toFixed(0)}
-                            <span className="text-slate-400 font-normal ml-1">
+                            <span className="text-gray-500 font-normal ml-1">
                               ({sparkDrawerPricing.priceDeltaPaise >= 0 ? "+" : ""}{formatINR(sparkDrawerPricing.priceDeltaPaise)})
                             </span>
                           </span>
@@ -2542,14 +2542,14 @@ function MenuPage() {
                           className={`rounded-lg border py-2 text-xs font-mono font-bold transition ${
                             editor.prepMinutes === mins
                               ? "border-amber-500 bg-amber-500/20 text-amber-300"
-                              : "border-slate-800 bg-slate-900 text-slate-400 hover:text-white"
+                              : "border-gray-200 bg-white text-gray-500 hover:text-white"
                           }`}
                         >
                           {mins} mins
                         </button>
                       ))}
                     </div>
-                    <span className="mt-1 block text-[10px] text-slate-400">
+                    <span className="mt-1 block text-[10px] text-gray-500">
                       Used for rider dispatch &amp; KDS SLA
                     </span>
                   </div>
@@ -2561,15 +2561,15 @@ function MenuPage() {
                       value={editor.servingSize}
                       onChange={(e) => setEditor({ ...editor, servingSize: e.target.value })}
                     />
-                    <span className="mt-1 block text-[10px] text-slate-400">
+                    <span className="mt-1 block text-[10px] text-gray-500">
                       Displayed on customer dish card
                     </span>
                   </div>
                 </div>
 
                 {/* Quick Portion & Allergen Tag Pills */}
-                <div className="flex flex-wrap items-center justify-between gap-1.5 pt-2 border-t border-slate-800/80">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 pt-2 border-t border-gray-200">
+                  <span className="text-[10px] font-mono uppercase text-gray-500">
                     1-Tap Portion &amp; Allergen Tags:
                   </span>
                   <button
@@ -2614,7 +2614,7 @@ function MenuPage() {
                         className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
                           active
                             ? "border-amber-500/60 bg-amber-500/15 text-amber-300"
-                            : "border-slate-800 bg-slate-900 text-slate-400 hover:text-white"
+                            : "border-gray-200 bg-white text-gray-500 hover:text-white"
                         }`}
                       >
                         {active ? `✓ ${tag}` : `+ ${tag}`}
@@ -2629,7 +2629,7 @@ function MenuPage() {
                     <span className="flex items-center gap-1.5 text-emerald-300 font-semibold">
                       <Receipt className="size-3.5" /> Statutory Customer Price Preview (CGST Sec 9(5)):
                     </span>
-                    <div className="flex flex-wrap items-center gap-3 text-slate-300">
+                    <div className="flex flex-wrap items-center gap-3 text-gray-700">
                       <span>Base: ₹{basePriceRupees.toFixed(2)}</span>
                       <span>+ 5% GST (2.5% CGST + 2.5% SGST): ₹{gst5PercentRupees.toFixed(2)}</span>
                       <span className="font-bold text-white">
@@ -2641,7 +2641,7 @@ function MenuPage() {
               </div>
 
               {/* 4. King AI Automated Dish Photo Studio & Studio Lighting */}
-              <div className="rounded-xl border border-amber-500/40 bg-gradient-to-b from-slate-900/90 to-slate-950 p-4 space-y-4 shadow-sm">
+              <div className="rounded-xl border border-amber-500/40 bg-white border-gray-200 p-4 space-y-4 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2">
@@ -2653,7 +2653,7 @@ function MenuPage() {
                         4:3 Studio Grade
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-300 mt-0.5">
+                    <p className="text-[11px] text-gray-700 mt-0.5">
                       1-Tap automated studio culinary photography calibrated for Indian restaurant menus. Eliminates the need for expensive photo shoots.
                     </p>
                   </div>
@@ -2707,7 +2707,7 @@ function MenuPage() {
 
                 {/* 4 Studio Lighting Atmosphere Presets */}
                 <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 flex items-center gap-1">
+                  <span className="text-[10px] font-mono uppercase text-gray-500 flex items-center gap-1">
                     <SlidersHorizontal className="size-3 text-amber-400" />
                     Studio Lighting Atmosphere:
                   </span>
@@ -2734,7 +2734,7 @@ function MenuPage() {
                           className={`rounded-lg border p-2 text-left transition ${
                             isSelected
                               ? "border-amber-500 bg-amber-500/20 text-white font-bold shadow-xs"
-                              : "border-slate-800 bg-slate-900/70 text-slate-400 hover:text-slate-200 hover:border-slate-700"
+                              : "border-gray-200 bg-white text-gray-500 hover:text-gray-800 hover:border-gray-300"
                           }`}
                         >
                           <div className="text-xs font-semibold">{styleOpt.label}</div>
@@ -2747,8 +2747,8 @@ function MenuPage() {
 
                 {/* Alternative Visual Angles / Platings (if available) */}
                 {editor.availableVisualAngles && editor.availableVisualAngles.length > 1 && (
-                  <div className="space-y-1.5 pt-1 border-t border-slate-800/80">
-                    <span className="text-[10px] font-mono uppercase text-slate-400">
+                  <div className="space-y-1.5 pt-1 border-t border-gray-200">
+                    <span className="text-[10px] font-mono uppercase text-gray-500">
                       Alternative Studio Platings (Tap to apply):
                     </span>
                     <div className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -2760,7 +2760,7 @@ function MenuPage() {
                           className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border transition ${
                             editor.originalImageUrl === angleUrl || editor.imageUrl === angleUrl
                               ? "border-amber-400 ring-2 ring-amber-400/30"
-                              : "border-slate-700 hover:border-slate-500 opacity-80 hover:opacity-100"
+                              : "border-gray-300 hover:border-slate-500 opacity-80 hover:opacity-100"
                           }`}
                         >
                           <img
@@ -2778,10 +2778,10 @@ function MenuPage() {
                 )}
 
                 {/* Upload Merchant's Own Camera Photo */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/60">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-200">
                   <div className="flex items-center gap-2">
-                    <Camera className="size-3.5 text-slate-400" />
-                    <span className="text-xs text-slate-300">Or upload real kitchen photo:</span>
+                    <Camera className="size-3.5 text-gray-500" />
+                    <span className="text-xs text-gray-700">Or upload real kitchen photo:</span>
                   </div>
                   <input
                     type="file"
@@ -2790,7 +2790,7 @@ function MenuPage() {
                       const file = e.target.files?.[0];
                       if (file) void handleDishPhotoFileChange(file);
                     }}
-                    className="text-xs file:mr-2 file:rounded-md file:border file:border-slate-700 file:bg-slate-800 file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-slate-200 hover:file:bg-slate-700"
+                    className="text-xs file:mr-2 file:rounded-md file:border file:border-gray-300 file:bg-gray-100 file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-gray-800 hover:file:bg-slate-700"
                   />
                   {uploadingImage ? (
                     <span className="text-xs font-mono text-amber-400 animate-pulse">
@@ -2803,7 +2803,7 @@ function MenuPage() {
                 {editor.imageUrl ? (
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-[11px]">
                     <label className="space-y-1">
-                      <div className="flex justify-between font-mono text-slate-300">
+                      <div className="flex justify-between font-mono text-gray-700">
                         <span>Brightness</span>
                         <span>
                           {studioLighting.brightness > 0 ? `+${studioLighting.brightness}` : studioLighting.brightness}
@@ -2824,7 +2824,7 @@ function MenuPage() {
                       />
                     </label>
                     <label className="space-y-1">
-                      <div className="flex justify-between font-mono text-slate-300">
+                      <div className="flex justify-between font-mono text-gray-700">
                         <span>Contrast</span>
                         <span>{Math.round(studioLighting.contrast * 100)}%</span>
                       </div>
@@ -2843,7 +2843,7 @@ function MenuPage() {
                       />
                     </label>
                     <label className="space-y-1">
-                      <div className="flex justify-between font-mono text-slate-300">
+                      <div className="flex justify-between font-mono text-gray-700">
                         <span>Vibrance</span>
                         <span>{Math.round(studioLighting.saturation * 100)}%</span>
                       </div>
@@ -2862,7 +2862,7 @@ function MenuPage() {
                       />
                     </label>
                     <label className="space-y-1">
-                      <div className="flex justify-between font-mono text-slate-300">
+                      <div className="flex justify-between font-mono text-gray-700">
                         <span>3500K Warmth</span>
                         <span>{Math.round(studioLighting.warmth * 100)}%</span>
                       </div>
@@ -2888,7 +2888,7 @@ function MenuPage() {
                   <div className="space-y-3">
                     {editor.originalImageUrl && editor.enhancedImageUrl ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-400 flex items-center gap-1">
+                        <span className="text-xs font-medium text-gray-500 flex items-center gap-1">
                           <Eye className="size-3.5" /> Preview Mode:
                         </span>
                         <button
@@ -2902,8 +2902,8 @@ function MenuPage() {
                           }
                           className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
                             editor.activePhotoMode === "original"
-                              ? "bg-slate-800 text-white border border-slate-600"
-                              : "bg-slate-900 text-slate-400 hover:text-white"
+                              ? "bg-gray-100 text-white border border-slate-600"
+                              : "bg-white text-gray-500 hover:text-white"
                           }`}
                         >
                           Original Shot
@@ -2920,7 +2920,7 @@ function MenuPage() {
                           className={`rounded-lg px-3 py-1 text-xs font-bold transition flex items-center gap-1 ${
                             editor.activePhotoMode === "enhanced"
                               ? "bg-amber-500/20 text-amber-300 border border-amber-500/50"
-                              : "bg-slate-900 text-slate-400 hover:text-white"
+                              : "bg-white text-gray-500 hover:text-white"
                           }`}
                         >
                           <Sparkles className="size-3" />
@@ -2952,7 +2952,7 @@ function MenuPage() {
                             aiGenerated: false,
                           })
                         }
-                        className="absolute right-2 top-2 rounded-full bg-black/85 border border-slate-700 px-2 py-0.5 text-xs text-white hover:bg-rose-600 transition"
+                        className="absolute right-2 top-2 rounded-full bg-black/85 border border-gray-300 px-2 py-0.5 text-xs text-white hover:bg-rose-600 transition"
                         title="Remove photo"
                       >
                         ✕
@@ -2970,7 +2970,7 @@ function MenuPage() {
                         <span className="font-bold text-emerald-300 block">
                           King AI Studio Certified Presentation
                         </span>
-                        <span className="text-slate-300 block leading-relaxed">
+                        <span className="text-gray-700 block leading-relaxed">
                           This studio visual has been automatically calibrated to authentic portion sizes and standard culinary presentation. Pre-certified and ready for immediate catalog publishing.
                         </span>
                       </div>
@@ -2990,7 +2990,7 @@ function MenuPage() {
                           <span className="block text-xs font-bold text-amber-300">
                             FSSAI Culinary Presentation Attestation *
                           </span>
-                          <span className="block text-xs text-slate-200 leading-relaxed">
+                          <span className="block text-xs text-gray-800 leading-relaxed">
                             "I attest that this photograph is an authentic representation of the actual dish portion and ingredients prepared by our kitchen."
                           </span>
                         </div>
@@ -3027,7 +3027,7 @@ function MenuPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setShowAllergenEditor(!showAllergenEditor)}
-                    className="border-slate-700 bg-slate-900 text-xs font-semibold text-slate-200 hover:text-white"
+                    className="border-gray-300 bg-white text-xs font-semibold text-gray-800 hover:text-white"
                   >
                     <span>🥗</span> {showAllergenEditor ? "Hide Dietary & Allergen Details" : "Configure Dietary Flags & Allergens"}
                   </Button>
@@ -3068,7 +3068,7 @@ function MenuPage() {
               </div>
 
               {/* 6. Portion Variants (Regular / Half / Full / Family Pack) */}
-              <div className="space-y-2.5 rounded-xl border border-slate-800 bg-slate-900/40 p-4">
+              <div className="space-y-2.5 rounded-xl border border-gray-200 bg-white/40 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Label className="mb-0">{t("menu.variants")} (Portion Sizes &amp; ₹ Prices) *</Label>
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -3084,7 +3084,7 @@ function MenuPage() {
                           ],
                         });
                       }}
-                      className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-[10px] font-mono text-slate-300 hover:border-amber-500/40 hover:text-white"
+                      className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-[10px] font-mono text-gray-700 hover:border-amber-500/40 hover:text-white"
                     >
                       Preset: Half + Full
                     </button>
@@ -3101,7 +3101,7 @@ function MenuPage() {
                           ],
                         });
                       }}
-                      className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-[10px] font-mono text-slate-300 hover:border-amber-500/40 hover:text-white"
+                      className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-[10px] font-mono text-gray-700 hover:border-amber-500/40 hover:text-white"
                     >
                       Preset: Regular / Medium / Family
                     </button>
@@ -3150,7 +3150,7 @@ function MenuPage() {
                             const variants = editor.variants.filter((_, idx) => idx !== i);
                             setEditor({ ...editor, variants });
                           }}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-rose-500/10 hover:text-rose-400"
+                          className="rounded-lg p-2 text-gray-500 hover:bg-rose-500/10 hover:text-rose-400"
                           title="Remove variant"
                         >
                           <Trash2 className="size-4" />
@@ -3165,7 +3165,7 @@ function MenuPage() {
 
               {/* 7. Linked Add-ons */}
               {(menu.data?.addons.length ?? 0) > 0 ? (
-                <div className="space-y-2 rounded-xl border border-slate-800 bg-slate-900/40 p-4">
+                <div className="space-y-2 rounded-xl border border-gray-200 bg-white/40 p-4">
                   <div className="flex items-center justify-between">
                     <Label className="mb-0">{t("menu.addons")}</Label>
                     <div className="flex items-center gap-2 text-[11px]">
@@ -3185,7 +3185,7 @@ function MenuPage() {
                       <button
                         type="button"
                         onClick={() => setEditor({ ...editor, addonIds: [] })}
-                        className="text-slate-400 hover:text-white"
+                        className="text-gray-500 hover:text-white"
                       >
                         Clear
                       </button>
@@ -3195,7 +3195,7 @@ function MenuPage() {
                     {menu.data?.addons.map((a) => (
                       <label
                         key={a.id}
-                        className="flex min-h-10 items-center justify-between rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-xs cursor-pointer hover:border-slate-700"
+                        className="flex min-h-10 items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs cursor-pointer hover:border-gray-300"
                       >
                         <span className="flex items-center gap-2 font-medium">
                           <input
@@ -3221,16 +3221,16 @@ function MenuPage() {
               ) : null}
 
               {/* 8. Nested Item Modifiers & Customization Groups */}
-              <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+              <div className="space-y-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-2.5">
                   <div>
                     <div className="flex items-center gap-2">
                       <Layers className="size-4 text-amber-400" />
-                      <Label className="mb-0 text-sm font-bold text-slate-100">
+                      <Label className="mb-0 text-sm font-bold text-gray-900">
                         Customization &amp; Modifier Groups
                       </Label>
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
+                    <p className="text-[11px] text-gray-500 mt-0.5">
                       Configure nested modifier groups (Group Title, Min/Max limits, Radio vs Checkbox, and variant price adders like Extra Cheese +₹30 Regular / +₹60 Large).
                     </p>
                   </div>
@@ -3273,8 +3273,8 @@ function MenuPage() {
                 </div>
 
                 {editor.modifierGroups.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-slate-800 p-4 text-center space-y-2">
-                    <p className="text-xs text-slate-400">
+                  <div className="rounded-lg border border-dashed border-gray-200 p-4 text-center space-y-2">
+                    <p className="text-xs text-gray-500">
                       No custom modifier groups added yet. You can add crust choices, sauce levels, or variant-linked toppings.
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
@@ -3302,7 +3302,7 @@ function MenuPage() {
                           };
                           setEditor({ ...editor, modifierGroups: [...editor.modifierGroups, newGroup] });
                         }}
-                        className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] text-slate-200 hover:bg-slate-700 hover:text-white"
+                        className="rounded-md border border-gray-300 bg-gray-100 px-2.5 py-1 text-[11px] text-gray-800 hover:bg-slate-700 hover:text-white"
                       >
                         + Choose Crust (Radio · Min 1, Max 1)
                       </button>
@@ -3330,7 +3330,7 @@ function MenuPage() {
                           };
                           setEditor({ ...editor, modifierGroups: [...editor.modifierGroups, newGroup] });
                         }}
-                        className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] text-slate-200 hover:bg-slate-700 hover:text-white"
+                        className="rounded-md border border-gray-300 bg-gray-100 px-2.5 py-1 text-[11px] text-gray-800 hover:bg-slate-700 hover:text-white"
                       >
                         + Extra Cheese &amp; Toppings (Checkbox · Min 0, Max 4)
                       </button>
@@ -3354,12 +3354,12 @@ function MenuPage() {
                                 setEditor({ ...editor, modifierGroups: updated });
                               }}
                               placeholder="Group Title (e.g. Choose Crust, Toppings)"
-                              className="h-8 text-xs font-semibold bg-slate-900 border-slate-700 text-slate-100"
+                              className="h-8 text-xs font-semibold bg-white border-gray-300 text-gray-900"
                             />
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
                             {/* Radio vs Checkbox Selector */}
-                            <div className="flex rounded-lg border border-slate-800 bg-slate-900 p-0.5 text-xs">
+                            <div className="flex rounded-lg border border-gray-200 bg-white p-0.5 text-xs">
                               <button
                                 type="button"
                                 onClick={() => {
@@ -3369,8 +3369,8 @@ function MenuPage() {
                                 }}
                                 className={`rounded px-2 py-0.5 font-medium transition ${
                                   group.type === "RADIO"
-                                    ? "bg-amber-500 text-slate-950 font-bold"
-                                    : "text-slate-400 hover:text-white"
+                                    ? "bg-amber-500 text-white font-bold"
+                                    : "text-gray-500 hover:text-white"
                                 }`}
                               >
                                 Radio (Single)
@@ -3384,8 +3384,8 @@ function MenuPage() {
                                 }}
                                 className={`rounded px-2 py-0.5 font-medium transition ${
                                   group.type === "CHECKBOX"
-                                    ? "bg-amber-500 text-slate-950 font-bold"
-                                    : "text-slate-400 hover:text-white"
+                                    ? "bg-amber-500 text-white font-bold"
+                                    : "text-gray-500 hover:text-white"
                                 }`}
                               >
                                 Checkbox (Multi)
@@ -3393,7 +3393,7 @@ function MenuPage() {
                             </div>
 
                             {/* Min / Max Selection Limits */}
-                            <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                            <div className="flex items-center gap-1 text-[11px] text-gray-500">
                               <span>Min:</span>
                               <input
                                 type="number"
@@ -3405,7 +3405,7 @@ function MenuPage() {
                                   updated[grpIdx] = { ...group, minSelect: Math.max(0, parseInt(e.target.value, 10) || 0) };
                                   setEditor({ ...editor, modifierGroups: updated });
                                 }}
-                                className="w-10 rounded border border-slate-700 bg-slate-900 px-1 py-0.5 text-center text-xs text-white"
+                                className="w-10 rounded border border-gray-300 bg-white px-1 py-0.5 text-center text-xs text-white"
                               />
                               <span>Max:</span>
                               <input
@@ -3418,7 +3418,7 @@ function MenuPage() {
                                   updated[grpIdx] = { ...group, maxSelect: Math.max(1, parseInt(e.target.value, 10) || 1) };
                                   setEditor({ ...editor, modifierGroups: updated });
                                 }}
-                                className="w-10 rounded border border-slate-700 bg-slate-900 px-1 py-0.5 text-center text-xs text-white"
+                                className="w-10 rounded border border-gray-300 bg-white px-1 py-0.5 text-center text-xs text-white"
                               />
                             </div>
 
@@ -3437,8 +3437,8 @@ function MenuPage() {
                         </div>
 
                         {/* Options List */}
-                        <div className="space-y-2 border-t border-slate-800/80 pt-2">
-                          <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                        <div className="space-y-2 border-t border-gray-200 pt-2">
+                          <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                             <span>Options &amp; Variant Price Adders</span>
                             <button
                               type="button"
@@ -3463,7 +3463,7 @@ function MenuPage() {
                           {group.options.map((opt, optIdx) => (
                             <div
                               key={opt.id}
-                              className="rounded-lg border border-slate-800 bg-slate-900/90 p-2.5 space-y-2"
+                              className="rounded-lg border border-gray-200 bg-white p-2.5 space-y-2"
                             >
                               <div className="flex items-center gap-2">
                                 <Input
@@ -3474,10 +3474,10 @@ function MenuPage() {
                                     setEditor({ ...editor, modifierGroups: updated });
                                   }}
                                   placeholder="Option Name (e.g. Extra Cheese)"
-                                  className="h-7 text-xs bg-white border-slate-800 text-slate-200 flex-1"
+                                  className="h-7 text-xs bg-white border-gray-200 text-gray-800 flex-1"
                                 />
                                 <div className="flex items-center gap-1 text-xs">
-                                  <span className="text-slate-400">Base ₹</span>
+                                  <span className="text-gray-500">Base ₹</span>
                                   <input
                                     type="number"
                                     min="0"
@@ -3510,8 +3510,8 @@ function MenuPage() {
 
                               {/* Variant Price Adders (e.g. Regular +₹30 / Large +₹60) */}
                               {editor.variants.length > 0 && (
-                                <div className="rounded-md border border-slate-800/80 bg-white/60 p-1.5 flex flex-wrap items-center gap-2 text-[11px]">
-                                  <span className="font-semibold text-slate-400">Variant Price Adders:</span>
+                                <div className="rounded-md border border-gray-200 bg-white/60 p-1.5 flex flex-wrap items-center gap-2 text-[11px]">
+                                  <span className="font-semibold text-gray-500">Variant Price Adders:</span>
                                   {editor.variants.map((v) => {
                                     const vName = v.name || "Variant";
                                     const currentAdderPaise = opt.variantPriceAdders?.[vName] ?? (opt.pricePaise ?? 0);
@@ -3519,9 +3519,9 @@ function MenuPage() {
                                     return (
                                       <div
                                         key={v.id || vName}
-                                        className="flex items-center gap-1 rounded bg-slate-900 border border-slate-800 px-1.5 py-0.5"
+                                        className="flex items-center gap-1 rounded bg-white border border-gray-200 px-1.5 py-0.5"
                                       >
-                                        <span className="text-slate-300 font-medium">{vName}:</span>
+                                        <span className="text-gray-700 font-medium">{vName}:</span>
                                         <span className="text-emerald-400 font-mono">+₹</span>
                                         <input
                                           type="number"
@@ -3538,7 +3538,7 @@ function MenuPage() {
                                             };
                                             setEditor({ ...editor, modifierGroups: updated });
                                           }}
-                                          className="w-12 bg-white border border-slate-800 text-right px-1 text-emerald-400 font-mono rounded"
+                                          className="w-12 bg-white border border-gray-200 text-right px-1 text-emerald-400 font-mono rounded"
                                         />
                                       </div>
                                     );
@@ -3556,7 +3556,7 @@ function MenuPage() {
             </div>
 
             {/* Sticky Drawer Footer */}
-            <div className="border-t border-slate-800 bg-slate-900/95 px-5 py-3.5 space-y-2">
+            <div className="border-t border-gray-200 bg-white/95 px-5 py-3.5 space-y-2">
               {editor.photoModified && editor.imageUrl && !editor.photoAttested && !editor.aiGenerated ? (
                 <p className="text-[11px] font-medium text-amber-400">
                   Please check the mandatory FSSAI &amp; Consumer Authenticity Attestation above to enable saving this modified dish image.
@@ -3612,8 +3612,8 @@ function MenuPage() {
       {/* OCR / Bulk Menu Digitizer Modal */}
       {ocrModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
                 <FileText className="size-5 text-emerald-400" />
                 <h3 className="font-display text-base font-bold text-white">
@@ -3626,13 +3626,13 @@ function MenuPage() {
                   setOcrModalOpen(false);
                   setDigitizedCatalog(null);
                 }}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-white"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-gray-700 leading-relaxed">
               Paste raw OCR text from a physical printed menu, chalkboard photo, or billing printout.
               The autonomous parser will extract dish names, descriptions, section categories, FSSAI diet tags, and integer paise prices.
             </p>
@@ -3642,7 +3642,7 @@ function MenuPage() {
               value={rawOcrText}
               onChange={(e) => setRawOcrText(e.target.value)}
               placeholder="Paste raw menu text or OCR output here... Example:&#10;&#10;STARTERS&#10;Paneer Tikka - ₹220&#10;Chicken Malai Kebab - ₹280 [NV]&#10;&#10;MAIN COURSE&#10;Butter Chicken - ₹340&#10;Dal Makhani - ₹210 [VEG]&#10;&#10;BREADS&#10;Butter Naan - ₹50"
-              className="font-mono text-xs bg-white border-slate-800 text-slate-200"
+              className="font-mono text-xs bg-white border-gray-200 text-gray-800"
             />
 
             <div className="flex items-center justify-between gap-3">
@@ -3677,13 +3677,13 @@ function MenuPage() {
                   <span>Extracted: {digitizedCatalog.totalDishesCount} Dishes in {digitizedCatalog.categories.length} Categories</span>
                   <span>🌱 {digitizedCatalog.vegDishesCount} Veg · 🍗 {digitizedCatalog.nonVegDishesCount} Non-Veg · 🥚 {digitizedCatalog.eggDishesCount} Egg</span>
                 </div>
-                <div className="space-y-2 max-h-48 overflow-y-auto divide-y divide-slate-800/60 text-xs">
+                <div className="space-y-2 max-h-48 overflow-y-auto divide-y divide-gray-200/60 text-xs">
                   {digitizedCatalog.categories.map((c) => (
                     <div key={c.id} className="pt-2">
-                      <span className="font-bold text-slate-200 uppercase tracking-wide text-[11px] block">{c.name}</span>
+                      <span className="font-bold text-gray-800 uppercase tracking-wide text-[11px] block">{c.name}</span>
                       <ul className="mt-1 space-y-1">
                         {c.items.map((it) => (
-                          <li key={it.id} className="flex justify-between text-slate-300">
+                          <li key={it.id} className="flex justify-between text-gray-700">
                             <span>{it.diet === "VEG" ? "🌱" : it.diet === "EGG" ? "🥚" : "🍗"} {it.name}</span>
                             <span className="font-mono text-emerald-400">{it.formattedPrice}</span>
                           </li>

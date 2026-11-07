@@ -292,25 +292,13 @@ export function VendorShell({
         </div>
       </div>
 
-      {/* Mobile Floating Action Button (FAB) for King AI */}
-      <button
-        type="button"
-        onClick={() => setSparkOpen(true)}
-        aria-label="Open King AI Assistant"
-        title="King AI — Restaurant Culinary & Growth Co-Pilot"
-        className="fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full border border-amber-400 bg-amber-400 px-4 py-2.5 text-gray-900 font-black shadow-xl transition hover:scale-105 active:scale-95 md:hidden"
-      >
-        <Sparkles className="size-4 text-gray-900 animate-pulse" />
-        <span className="text-xs font-black tracking-tight">King AI</span>
-      </button>
-
       {/* Docked Mobile Bottom Navigation */}
       <PartnerFloatingBottomNav
         onOpenSpark={() => setSparkOpen(true)}
         pendingOrdersCount={pendingOrdersCount}
       />
 
-      {/* King AI Assistant Modal */}
+      {/* Partner Assistant Modal */}
       <OrderKingSparkModal isOpen={sparkOpen} onClose={() => setSparkOpen(false)} />
     </div>
   );

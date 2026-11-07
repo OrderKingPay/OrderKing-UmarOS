@@ -81,7 +81,7 @@ export function OsmInteractiveMap({
     <div
       ref={containerRef}
       style={{ height }}
-      className={`relative w-full overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900 select-none ${className}`}
+      className={`relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-white select-none ${className}`}
     >
       <iframe
         title="OrderKing Live Street Map"
@@ -108,14 +108,14 @@ export function OsmInteractiveMap({
                 setLng(m.lng);
                 onLocationSelect?.(m.lat, m.lng);
               }}
-              className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-950/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-md backdrop-blur-md hover:border-amber-400"
+              className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-white shadow-md backdrop-blur-md hover:border-amber-400"
             >
               <span
                 className="inline-block size-2 rounded-full"
                 style={{ backgroundColor: m.color || "#f59e0b" }}
               />
               <span className="truncate max-w-[140px]">{m.label}</span>
-              {m.sublabel && <span className="text-[10px] text-slate-400">({m.sublabel})</span>}
+              {m.sublabel && <span className="text-[10px] text-gray-500">({m.sublabel})</span>}
             </button>
           ))}
         </div>
@@ -125,7 +125,7 @@ export function OsmInteractiveMap({
         <button
           type="button"
           onClick={locateViaGps}
-          className="flex size-8 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/90 text-amber-400 shadow-md hover:bg-slate-900"
+          className="flex size-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-amber-400 shadow-md hover:bg-white"
           title="Locate my current GPS position"
         >
           <LocateFixed className={`size-4 ${locating ? "animate-spin" : ""}`} />
@@ -133,7 +133,7 @@ export function OsmInteractiveMap({
         <button
           type="button"
           onClick={() => setZoom((z) => Math.min(18, z + 1))}
-          className="flex size-8 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/90 text-white shadow-md hover:bg-slate-900"
+          className="flex size-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-white shadow-md hover:bg-white"
           title="Zoom in"
         >
           <Plus className="size-4" />
@@ -141,14 +141,14 @@ export function OsmInteractiveMap({
         <button
           type="button"
           onClick={() => setZoom((z) => Math.max(5, z - 1))}
-          className="flex size-8 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/90 text-white shadow-md hover:bg-slate-900"
+          className="flex size-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-white shadow-md hover:bg-white"
           title="Zoom out"
         >
           <Minus className="size-4" />
         </button>
       </div>
       {/* Live Coordinates Pill */}
-      <div className="pointer-events-none absolute left-3 top-3 z-20 flex items-center gap-1.5 rounded-full border border-slate-700/80 bg-slate-950/85 px-2.5 py-1 text-[11px] font-medium text-slate-200 backdrop-blur-md">
+      <div className="pointer-events-none absolute left-3 top-3 z-20 flex items-center gap-1.5 rounded-full border border-gray-300/80 bg-gray-50/85 px-2.5 py-1 text-[11px] font-medium text-gray-800 backdrop-blur-md">
         <Navigation className="size-3 text-emerald-400" />
         <span>
           {lat.toFixed(4)}°N, {lng.toFixed(4)}°E

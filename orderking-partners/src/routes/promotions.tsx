@@ -219,7 +219,7 @@ function PromotionsPage() {
               onClick={() => setActiveMarketingSection("digital_promos")}
               className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
                 activeMarketingSection === "digital_promos"
-                  ? "bg-amber-500 text-slate-950 shadow-sm"
+                  ? "bg-amber-500 text-white shadow-sm"
                   : "bg-white border border-gray-200 text-gray-500 hover:text-gray-900"
               }`}
             >

@@ -191,7 +191,7 @@ export function OneTapStockToggle({
             disabled={disabled || loading}
             onClick={() => setModalOpen(true)}
             title="Set timed out-of-stock duration (Tier-1 Partner Parity)"
-            className="p-1.5 rounded-md bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition cursor-pointer"
+            className="p-1.5 rounded-md bg-white hover:bg-gray-100 border border-gray-300 text-gray-500 hover:text-gray-800 text-xs transition cursor-pointer"
           >
             <Clock className="size-3.5" />
           </button>
@@ -212,7 +212,7 @@ export function OneTapStockToggle({
               disabled={disabled || loading}
               onClick={() => setModalOpen(true)}
               title="Change stockout duration"
-              className="p-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition cursor-pointer"
+              className="p-1 rounded bg-white hover:bg-gray-100 border border-gray-300 text-gray-500 hover:text-gray-800 text-xs transition cursor-pointer"
             >
               <Clock className="size-3" />
             </button>

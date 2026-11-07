@@ -39,9 +39,9 @@ export function TimedStockoutPickerModal({
       aria-labelledby="stockout-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150"
     >
-      <div className="relative w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl text-slate-100 font-sans space-y-5 max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-md rounded-2xl border border-gray-300 bg-white p-6 shadow-2xl text-gray-900 font-sans space-y-5 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3 border-b border-slate-800 pb-4">
+        <div className="flex items-start justify-between gap-3 border-b border-gray-200 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="flex size-2 rounded-full bg-rose-500 animate-pulse" />
@@ -52,7 +52,7 @@ export function TimedStockoutPickerModal({
             <h2 id="stockout-modal-title" className="text-lg font-bold text-white mt-1">
               Turn off {itemName}
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-gray-500 mt-0.5">
               Select replenishment duration. The dish will automatically restore back to IN STOCK when timer expires.
             </p>
           </div>
@@ -60,7 +60,7 @@ export function TimedStockoutPickerModal({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-gray-100 transition"
             aria-label="Close dialog"
           >
             <X className="size-5" />
@@ -102,7 +102,7 @@ export function TimedStockoutPickerModal({
                   className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition select-none ${
                     isSelected
                       ? "border-rose-500/80 bg-rose-950/30 ring-1 ring-rose-500/40 text-white"
-                      : "border-slate-800 bg-slate-950/50 hover:border-slate-700 text-slate-300"
+                      : "border-gray-200 bg-gray-50 hover:border-gray-300 text-gray-700"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -110,7 +110,7 @@ export function TimedStockoutPickerModal({
                       className={`p-2 rounded-lg ${
                         isSelected
                           ? "bg-rose-500/20 text-rose-300"
-                          : "bg-slate-800/80 text-slate-400"
+                          : "bg-gray-100 text-gray-500"
                       }`}
                     >
                       {preset.id === "TURN_OFF_NEXT_MEAL" ? (
@@ -127,7 +127,7 @@ export function TimedStockoutPickerModal({
                       <div className="font-semibold text-sm leading-tight text-white">
                         {preset.label}
                       </div>
-                      <div className="text-[11px] text-slate-400 mt-0.5">
+                      <div className="text-[11px] text-gray-500 mt-0.5">
                         {preset.sublabel} · <span className="text-amber-400/90 font-medium">{previewText}</span>
                       </div>
                     </div>
@@ -146,8 +146,8 @@ export function TimedStockoutPickerModal({
 
                 {/* Custom Hours Selector Pill Bar */}
                 {isSelected && preset.id === "CUSTOM" && (
-                  <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/80 flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-xs text-slate-300 font-medium">Turn off duration:</span>
+                  <div className="p-3 rounded-xl border border-gray-200 bg-gray-50 flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs text-gray-700 font-medium">Turn off duration:</span>
                     <div className="flex items-center gap-1.5">
                       {[1, 3, 5, 8, 12].map((hrs) => (
                         <button
@@ -157,7 +157,7 @@ export function TimedStockoutPickerModal({
                           className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition ${
                             customHours === hrs
                               ? "bg-rose-600 text-white"
-                              : "bg-slate-800 text-slate-400 hover:text-white"
+                              : "bg-gray-100 text-gray-500 hover:text-white"
                           }`}
                         >
                           +{hrs}h
@@ -180,13 +180,13 @@ export function TimedStockoutPickerModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
+        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-gray-200">
           <Button
             type="button"
             variant="ghost"
             onClick={onClose}
             disabled={loading}
-            className="text-xs text-slate-300 hover:text-white"
+            className="text-xs text-gray-700 hover:text-white"
           >
             Cancel
           </Button>

@@ -627,8 +627,7 @@ export function OrderCard({
             <div className="text-[11px] font-semibold text-rose-700 dark:text-rose-300 flex items-start gap-1">
               <span>⚠️</span>
               <span>
-                <strong>CANCELLATION PENALTY WARNING:</strong> Unaccepted orders trigger automatic rejection with a <strong>₹100 or 20% cancellation penalty</strong> deducted from merchant payout and platform ranking penalty.
-              </span>
+                Please accept the order promptly to prevent auto-cancellation.</span>
             </div>
           ) : (
             <div className="text-[10px] text-muted">
@@ -665,11 +664,11 @@ export function OrderCard({
 
       <div className="flex flex-wrap gap-2">
           {order.state === "PLACED" ? (
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full bg-gray-50 border border-gray-200 p-3 rounded-xl">
               {/* Prep Time SLA Selector Chips (15m, 25m, 35m) */}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mr-1">
-                  <Clock className="size-3.5 text-amber-400" /> Kitchen Prep:
+                <span className="text-[11px] font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1 mr-1">
+                  <Clock className="size-3.5 text-gray-500" /> Kitchen Prep:
                 </span>
                 {[15, 25, 35].map((mins) => (
                   <button
@@ -679,8 +678,8 @@ export function OrderCard({
                     className={cn(
                       "px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer select-none",
                       selectedPrepMinutes === mins
-                        ? "bg-amber-400 text-slate-950 shadow-md font-black scale-105"
-                        : "bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white"
+                        ? "bg-[#E23744] text-white border-[#E23744] shadow-xs"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
                     )}
                   >
                     {mins}m
@@ -703,7 +702,7 @@ export function OrderCard({
                   variant="secondary"
                   disabled={busy}
                   onClick={() => setRejectOpen(true)}
-                  className="border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 font-bold cursor-pointer"
+                  className="border-gray-300 bg-white text-gray-700 hover:bg-red-50 hover:text-red-700 hover:border-red-300 font-bold cursor-pointer"
                 >
                   ✕ {t("orders.reject")}
                 </Button>
@@ -733,10 +732,10 @@ export function OrderCard({
                   disabled={busy || delaying}
                   type="button"
                   onClick={() => void handleAddPrepDelay(5)}
-                  className="border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold"
+                  className="border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-xs font-semibold"
                   title="Push back rider arrival window and update delivery ETA (+5 mins)"
                 >
-                  <Clock className="mr-1 size-3.5 text-amber-400" />
+                  <Clock className="mr-1 size-3.5 text-gray-500" />
                   +5m Delay
                 </Button>
                 <Button
@@ -745,10 +744,10 @@ export function OrderCard({
                   disabled={busy || delaying}
                   type="button"
                   onClick={() => void handleAddPrepDelay(10)}
-                  className="border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold"
+                  className="border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-xs font-semibold"
                   title="Push back rider arrival window and update delivery ETA (+10 mins)"
                 >
-                  <Clock className="mr-1 size-3.5 text-amber-400" />
+                  <Clock className="mr-1 size-3.5 text-gray-500" />
                   +10m Delay
                 </Button>
               </div>

@@ -87,21 +87,21 @@ export function PartnerOperationsAcademy({
   return (
     <div className="space-y-4">
       {/* Academy Header Banner */}
-      <Card className="relative overflow-hidden border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900/90 to-emerald-950/40 p-5">
+      <Card className="relative overflow-hidden border-gray-200 bg-gradient-to-r from-gray-50 via-white to-emerald-50/30 p-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
                 OrderKing Partner Academy
               </span>
-              <span className="text-xs font-mono text-slate-400">
+              <span className="text-xs font-mono text-gray-500">
                 Standard Kitchen Operating Procedures (SOP)
               </span>
             </div>
             <h1 className="text-xl font-bold font-display text-white tracking-tight">
               Restaurant Partner Operations &amp; Excellence Academy
             </h1>
-            <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-xs text-gray-700 max-w-2xl leading-relaxed">
               Standard operating procedures for commercial Indian kitchens. Eliminate staff training
               friction, protect your restaurant from spurious deductions, and master 120s order SLAs.
             </p>
@@ -120,8 +120,8 @@ export function PartnerOperationsAcademy({
         </div>
 
         {/* Search Bar */}
-        <div className="mt-4 flex items-center gap-2 bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2">
-          <Search className="size-4 text-slate-400 shrink-0" />
+        <div className="mt-4 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2">
+          <Search className="size-4 text-gray-500 shrink-0" />
           <input
             type="text"
             value={searchQuery}
@@ -132,7 +132,7 @@ export function PartnerOperationsAcademy({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="text-xs text-slate-400 hover:text-slate-200 font-mono"
+              className="text-xs text-gray-500 hover:text-gray-800 font-mono"
             >
               Clear
             </button>
@@ -151,7 +151,7 @@ export function PartnerOperationsAcademy({
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                   active
                     ? "bg-emerald-600 text-white shadow-sm"
-                    : "border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 hover:text-white"
+                    : "border border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300 hover:text-white"
                 }`}
               >
                 <Icon className="size-3.5" />
@@ -166,14 +166,14 @@ export function PartnerOperationsAcademy({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Module Sidebar / Selector */}
         <div className="lg:col-span-4 space-y-2">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 px-1 font-semibold flex items-center justify-between">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-gray-500 px-1 font-semibold flex items-center justify-between">
             <span>Operational Modules ({filteredModules.length})</span>
             <span>Select to View</span>
           </div>
 
           <div className="space-y-2">
             {filteredModules.length === 0 ? (
-              <Card className="border-slate-800 bg-slate-900/50 p-6 text-center text-xs text-slate-400">
+              <Card className="border-gray-200 bg-gray-50 p-6 text-center text-xs text-gray-500">
                 No matching SOP found. Try searching for "packaging", "OTP", or "GST".
               </Card>
             ) : (
@@ -185,8 +185,8 @@ export function PartnerOperationsAcademy({
                     onClick={() => setSelectedModuleId(module.id)}
                     className={`cursor-pointer rounded-xl border p-3.5 transition group ${
                       isSelected
-                        ? "border-emerald-500/60 bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 shadow-sm"
-                        : "border-slate-800/90 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-900"
+                        ? "border-emerald-300 bg-emerald-50/40 shadow-xs"
+                        : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-white"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -202,12 +202,12 @@ export function PartnerOperationsAcademy({
                         </div>
                         <h3
                           className={`text-xs font-semibold ${
-                            isSelected ? "text-emerald-300" : "text-slate-200 group-hover:text-white"
+                            isSelected ? "text-emerald-300" : "text-gray-800 group-hover:text-white"
                           }`}
                         >
                           {module.title}
                         </h3>
-                        <p className="text-[11px] text-slate-400 line-clamp-1">
+                        <p className="text-[11px] text-gray-500 line-clamp-1">
                           {module.subtitle}
                         </p>
                       </div>
@@ -215,12 +215,12 @@ export function PartnerOperationsAcademy({
                         className={`size-4 shrink-0 transition ${
                           isSelected
                             ? "text-emerald-400 translate-x-0.5"
-                            : "text-slate-500 group-hover:text-slate-300"
+                            : "text-slate-500 group-hover:text-gray-700"
                         }`}
                       />
                     </div>
 
-                    <div className="mt-2.5 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                    <div className="mt-2.5 pt-2 border-t border-gray-200 flex items-center justify-between text-[10px] text-gray-500 font-mono">
                       <span>SLA: {module.slaTarget}</span>
                       <span className="text-emerald-400">{module.keyMetric}</span>
                     </div>
@@ -234,9 +234,9 @@ export function PartnerOperationsAcademy({
         {/* Module Detail Content */}
         <div className="lg:col-span-8">
           {activeModule ? (
-            <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-5">
+            <Card className="border-gray-200 bg-white p-5 space-y-5">
               {/* Active Header */}
-              <div className="space-y-2 border-b border-slate-800 pb-4">
+              <div className="space-y-2 border-b border-gray-200 pb-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${getCategoryColor(
@@ -246,8 +246,8 @@ export function PartnerOperationsAcademy({
                     {activeModule.badge}
                   </span>
                   <div className="flex items-center gap-3 text-xs font-mono">
-                    <span className="text-slate-400">
-                      Target: <strong className="text-slate-200">{activeModule.slaTarget}</strong>
+                    <span className="text-gray-500">
+                      Target: <strong className="text-gray-800">{activeModule.slaTarget}</strong>
                     </span>
                     <span className="text-slate-600">·</span>
                     <span className="text-emerald-400">
@@ -259,14 +259,14 @@ export function PartnerOperationsAcademy({
                 <h2 className="text-lg font-bold font-display text-white">
                   {activeModule.title}
                 </h2>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-gray-700 leading-relaxed">
                   {activeModule.summary}
                 </p>
               </div>
 
               {/* Step-by-Step SOP Instructions */}
               <div className="space-y-3">
-                <h3 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold flex items-center gap-1.5">
+                <h3 className="text-xs font-mono uppercase tracking-wider text-gray-500 font-bold flex items-center gap-1.5">
                   <CheckCircle2 className="size-4 text-emerald-400" />
                   <span>Mandatory Execution Steps ({activeModule.steps.length})</span>
                 </h3>
@@ -275,17 +275,17 @@ export function PartnerOperationsAcademy({
                   {activeModule.steps.map((step) => (
                     <div
                       key={step.stepNumber}
-                      className="rounded-xl border border-slate-800 bg-slate-950/60 p-3.5 space-y-2"
+                      className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-2"
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold font-mono">
                           {step.stepNumber}
                         </div>
                         <div className="space-y-1">
-                          <h4 className="text-xs font-bold text-slate-100">
+                          <h4 className="text-xs font-bold text-gray-900">
                             {step.title}
                           </h4>
-                          <p className="text-xs text-slate-300 leading-relaxed">
+                          <p className="text-xs text-gray-700 leading-relaxed">
                             {step.instruction}
                           </p>
                         </div>
@@ -321,7 +321,7 @@ export function PartnerOperationsAcademy({
                     Avoid Common Operations Pitfalls
                   </h4>
                 </div>
-                <ul className="space-y-1.5 text-xs text-slate-300 list-disc list-inside">
+                <ul className="space-y-1.5 text-xs text-gray-700 list-disc list-inside">
                   {activeModule.commonMistakes.map((mistake, idx) => (
                     <li key={idx} className="leading-relaxed">
                       {mistake}
@@ -338,15 +338,15 @@ export function PartnerOperationsAcademy({
                     OrderKing Arbitration &amp; Payout Protection
                   </h4>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-gray-700 leading-relaxed">
                   {activeModule.arbitrationProtection}
                 </p>
               </div>
 
               {/* Action Bar */}
-              <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 text-xs">
-                <div className="flex items-center gap-2 text-slate-400">
-                  <Timer className="size-3.5 text-slate-400" />
+              <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 text-xs">
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Timer className="size-3.5 text-gray-500" />
                   <span>Always in effect across OrderKing merchant network</span>
                 </div>
 
@@ -359,7 +359,7 @@ export function PartnerOperationsAcademy({
                         onAskSpark(`Explain the SOP for: ${activeModule.title}`);
                       }
                     }}
-                    className="border-slate-700 hover:border-emerald-500 text-xs"
+                    className="border-gray-300 hover:border-emerald-500 text-xs"
                   >
                     <Sparkles className="mr-1.5 size-3.5 text-emerald-400" /> Ask King AI
                   </Button>
