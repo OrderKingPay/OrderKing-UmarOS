@@ -4,7 +4,7 @@
  * Prevents stale bundle traps and ensures live production truth.
  */
 
-const SW_VERSION = "ok-rider-v9-live-truth";
+const SW_VERSION = "ok-rider-v11-zomato-parity";
 const CACHE_NAME = `ok-rider-${SW_VERSION}`;
 const STATIC_ASSETS = [
   "/offline.html",

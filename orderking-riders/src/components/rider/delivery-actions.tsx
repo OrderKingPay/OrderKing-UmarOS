@@ -241,7 +241,7 @@ export function DeliveryActions({
           <ShieldAlert className="size-4 shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
           <div className="space-y-0.5">
             <p className="font-bold">
-              {threatEvaluation.orderBlocked ? "🚨 Critical Hazard Zone Lockout" : "⚠️ High-Risk Hazard Zone Warning"}
+              {threatEvaluation.orderBlocked ? "⚠️ Restricted Delivery Area" : "ℹ️ Delivery Caution Advisory"}
             </p>
             <p className="text-[11px] leading-relaxed opacity-90">
               {threatEvaluation.rationale}
