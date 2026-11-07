@@ -69,6 +69,16 @@ import { lazyWithRetry } from "@/lib/lazy-retry";
 import { AdminErrorBoundary } from "@/components/error-boundary";
 import { AppErrorComponent } from "@/lib/error-component";
 import { UmarAiCommandBar } from "@/components/umar-ai/umar-ai-command-bar";
+import {
+  OrdersPage,
+  OrderTable,
+  RestaurantsPage,
+  RidersPage,
+  DispatchPage,
+  SettlementsPage,
+  FinancePage,
+  EconomicsPage,
+} from "@/components/command/pages";
 
 const LazyGlobalGodEyeMap = lazyWithRetry(
   () => import("@/components/dashboard/GlobalGodEyeMap"),
@@ -724,6 +734,7 @@ export const verifyUmarOsSessionFn = createServerFn({ method: "GET" })
   });
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => search,
   beforeLoad: async () => {
     try {
       const res = await verifyUmarOsSessionFn();
@@ -928,7 +939,10 @@ const TEN_WORLDS: WorldDefinition[] = [
       "Direct NPCI UPI, Soundbox terminals, RazorpayX payouts, double-entry ledger, and Section 9(5) CGST tax.",
     tabs: [
       { id: "dashboard", label: "Overview" },
+      { id: "settlements", label: "Settlements & Payouts" },
+      { id: "finance", label: "Statutory Tax & Ledger" },
       { id: "profit", label: "P&L & Escrow" },
+      { id: "economics", label: "Unit Economics" },
       { id: "wallet-mdr", label: "Wallet & MDR" },
       { id: "master-switch", label: "Payout Controls" },
       { id: "commissions", label: "Commissions & Pricing" },
@@ -1421,7 +1435,10 @@ export const SUB_CATEGORY_TABS: Record<WorldId, string[]> = {
   ],
   kingpay: [
     "dashboard",
+    "settlements",
+    "finance",
     "profit",
+    "economics",
     "wallet-mdr",
     "master-switch",
     "commissions",
@@ -1669,8 +1686,8 @@ function UmarOSDashboard() {
   const { user, isPending } = useCurrentUserState();
   const loaderData = Route.useLoaderData();
 
-  // Active Bottom Navigation World (Only 1 World renders at a time!)
-  const [activeWorldId, setActiveWorldId] = useState<WorldId>("home");
+  // Active Business World (Default: OrderKing Food Delivery Console)
+  const [activeWorldId, setActiveWorldId] = useState<WorldId>("orderking");
 
   // Active Sub-Category Tab per World (Guaranteed valid default for every World via DEFAULT_WORLD_TAB)
   const [activeTabs, setActiveTabs] = useState<Record<WorldId, string>>(
@@ -3497,238 +3514,81 @@ function UmarOSDashboard() {
             WORLD 2 (`orderking`) SUB-CATEGORY TABS
         =================================================================== */}
         {activeWorldId === "orderking" && currentTabId === "orders" && (
-          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-base font-black text-slate-900">
-                  🍔 Live Orders & 6-Stage Delivery Flow ({loaderData.todayOrders}{" "}
-                  Total Orders)
-                </h2>
-                <p className="text-xs text-slate-600">
-                  Every order moves through 6 clear steps from customer checkout
-                  to instant partner payout.
-                </p>
-              </div>
-              <Link
-                to="/app/$module"
-                params={{ module: "orders" }}
-                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
-              >
-                <span>Open Full Orders Console (/orders)</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-              {[
-                {
-                  step: "1. Checkout",
-                  desc: "Customer pays transparent item price + GST + delivery fee.",
-                },
-                {
-                  step: "2. Kitchen Accepts",
-                  desc: "Restaurant accepts order on KDS and sets prep time.",
-                },
-                {
-                  step: "3. 80% Ready Dispatch",
-                  desc: "Rider is assigned so they arrive right as food is packed.",
-                },
-                {
-                  step: "4. Tamper-Seal Pickup",
-                  desc: "Rider verifies sealed package at restaurant counter.",
-                },
-                {
-                  step: "5. Doorstep Handover",
-                  desc: "Rider delivers order with 10-language voice guidance.",
-                },
-                {
-                  step: "6. Instant Payout",
-                  desc: "Restaurant and rider earnings settle immediately.",
-                },
-              ].map((st) => (
-                <div
-                  key={st.step}
-                  className="p-3.5 rounded-xl bg-slate-900 text-white border border-slate-800"
-                >
-                  <p className="text-xs font-black text-emerald-400">
-                    {st.step}
-                  </p>
-                  <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                    {st.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {loaderData.recentOrders.length === 0 ? (
-              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                <p className="text-sm font-bold text-slate-800">
-                  0 Orders in PostgreSQL `orders` Table Right Now
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  As soon as customers place orders, real order rows will appear
-                  here automatically.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {loaderData.recentOrders.map((ord) => (
-                  <div
-                    key={ord.id}
-                    className="p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
-                  >
-                    <span className="font-bold text-slate-900">
-                      Order #{ord.id}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold">
-                      {ord.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
+          <div className="space-y-4">
+            <OrdersPage />
+          </div>
         )}
 
         {activeWorldId === "orderking" && currentTabId === "restaurants" && (
-          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-base font-black text-slate-900">
-                  🏪 Restaurant Partners ({loaderData.restaurants} Total ·{" "}
-                  {pendingUnapproved.length} Pending Approval)
-                </h2>
-                <p className="text-xs text-slate-600">
-                  Approve pending kitchens in 1 click (`UPDATE restaurants SET
-                  status = 'ACTIVE'`) or open the full restaurants console.
-                </p>
-              </div>
-              <Link
-                to="/app/$module"
-                params={{ module: "restaurants" }}
-                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
-              >
-                <span>Open Full Restaurants Console (/restaurants)</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-
-            {loaderData.pendingRestaurants.length === 0 ? (
-              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                <CheckCircle2 className="h-7 w-7 text-emerald-600 mx-auto mb-2" />
-                <p className="text-sm font-bold text-slate-900">
-                  All Pending Restaurant Applications Are Cleared
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  There are 0 restaurants with `status = 'PENDING'` in
-                  PostgreSQL right now.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2.5">
-                {loaderData.pendingRestaurants.map((rest) => {
-                  const isApproved = approvedIds.includes(rest.id);
-                  return (
-                    <div
-                      key={rest.id}
-                      className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3"
-                    >
-                      <div>
-                        <p className="text-sm font-black text-slate-900">
-                          {rest.name}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          ID: {rest.id} · Status:{" "}
-                          {isApproved ? "ACTIVE" : rest.status}
-                        </p>
+          <div className="space-y-5">
+            {loaderData.pendingRestaurants.length > 0 && (
+              <section className="bg-amber-50 rounded-2xl border border-amber-200 p-4 shadow-xs">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-black text-amber-900">
+                      ⚡ {loaderData.pendingRestaurants.length} Restaurant Application(s) Awaiting Fast-Track Approval
+                    </h3>
+                    <p className="text-xs text-amber-700 mt-0.5">
+                      Review and activate new kitchens directly with 1-click PostgreSQL verification.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 space-y-2">
+                  {loaderData.pendingRestaurants.map((rest) => {
+                    const isApproved = approvedIds.includes(rest.id);
+                    return (
+                      <div
+                        key={rest.id}
+                        className="p-3 rounded-xl border border-amber-200 bg-white flex flex-wrap items-center justify-between gap-2"
+                      >
+                        <div>
+                          <p className="text-xs font-black text-slate-900">{rest.name}</p>
+                          <p className="text-[11px] text-slate-500">ID: {rest.id} · Status: {isApproved ? "ACTIVE" : rest.status}</p>
+                        </div>
+                        {isApproved ? (
+                          <span className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Approved in PostgreSQL
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={approvingId === rest.id}
+                            onClick={() => handleApproveRestaurant(rest)}
+                            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition-colors"
+                          >
+                            {approvingId === rest.id ? "Approving..." : "1-Click Verify"}
+                          </button>
+                        )}
                       </div>
-                      {isApproved ? (
-                        <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1">
-                          <CheckCircle2 className="h-3.5 w-3.5" /> Approved in
-                          PostgreSQL
-                        </span>
-                      ) : (
-                        <button
-                          type="button"
-                          disabled={approvingId === rest.id}
-                          onClick={() => handleApproveRestaurant(rest)}
-                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition-colors"
-                        >
-                          {approvingId === rest.id
-                            ? "Approving..."
-                            : "Approve Restaurant"}
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              </section>
             )}
-          </section>
+            <RestaurantsPage />
+          </div>
         )}
 
         {activeWorldId === "orderking" && currentTabId === "riders" && (
-          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-base font-black text-slate-900">
-                  🛵 Delivery Rider Fleet ({loaderData.riders} Verified Riders)
-                </h2>
-                <p className="text-xs text-slate-600">
-                  Base payout: ₹{currentSettings.riderPerOrderBasePayInr}/order +
-                  ₹{currentSettings.rainBonusInr} rain bonus · Code on Social
-                  Security 2020 welfare enabled.
-                </p>
-              </div>
-              <Link
-                to="/app/$module"
-                params={{ module: "riders" }}
-                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
-              >
-                <span>Open Full Riders Console (/riders)</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
-            </div>
+          <div className="space-y-4">
+            <RidersPage />
+          </div>
+        )}
 
-            {loaderData.recentRiders.length === 0 ? (
-              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                <p className="text-sm font-bold text-slate-800">
-                  0 Riders in PostgreSQL `riders` Table
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Use `/riders` or World 4 Jobs Board to onboard your first
-                  delivery riders.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {loaderData.recentRiders.map((r) => (
-                  <div
-                    key={r.id}
-                    className="p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
-                  >
-                    <span className="font-bold text-slate-900">
-                      {r.name || r.id}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold">
-                      {r.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
+        {activeWorldId === "orderking" && currentTabId === "dispatch" && (
+          <div className="space-y-6">
+            <DispatchPage />
+            <AlgorithmSettings />
+          </div>
         )}
 
         {activeWorldId === "orderking" && currentTabId === "customers" && (
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <h2 className="text-base font-black text-slate-900">
-              👥 Registered Customers ({loaderData.users} Accounts in
-              PostgreSQL)
+              👥 Registered Customers ({loaderData.users} Accounts in PostgreSQL)
             </h2>
             <p className="text-xs text-slate-600">
-              Customer accounts are stored in the PostgreSQL `profiles` table
-              with DPDP Act 2023 phone masking and zero third-party data resale.
+              Customer accounts are stored in the PostgreSQL `profiles` table with DPDP Act 2023 phone masking and zero third-party data resale.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <ResultMetricCard
@@ -3750,13 +3610,27 @@ function UmarOSDashboard() {
           </section>
         )}
 
-        {activeWorldId === "orderking" && currentTabId === "dispatch" && (
-          <AlgorithmSettings />
-        )}
-
         {/* ===================================================================
             WORLD 3 (`kingpay`) SUB-CATEGORY TABS
         =================================================================== */}
+        {activeWorldId === "kingpay" && currentTabId === "settlements" && (
+          <div className="space-y-4">
+            <SettlementsPage />
+          </div>
+        )}
+
+        {activeWorldId === "kingpay" && currentTabId === "finance" && (
+          <div className="space-y-4">
+            <FinancePage />
+          </div>
+        )}
+
+        {activeWorldId === "kingpay" && currentTabId === "economics" && (
+          <div className="space-y-4">
+            <EconomicsPage />
+          </div>
+        )}
+
         {activeWorldId === "kingpay" && currentTabId === "profit" && (
           <Suspense
             fallback={
