@@ -29,7 +29,6 @@ import {
 import { platformConfig } from "@/lib/platform-config";
 import { useCommissionTokens } from "@orderking/ui";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
-import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware";
 import { KitchenKdsOperationsPanel } from "@/components/settings/kitchen-kds-operations-panel";
 import { CatalogueStockControlsPanel } from "@/components/settings/catalogue-stock-controls-panel";
 import { ThermalPrinterHardwarePanel } from "@/components/settings/thermal-printer-hardware-panel";
@@ -157,6 +156,8 @@ function SettingsPage() {
   const [openPolicyId, setOpenPolicyId] = useState<string | null>("commercial-terms");
 
   const [diagMsg, setDiagMsg] = useState<string | null>(null);
+  type SettingsTab = "PROFILE" | "OPERATIONS" | "PRINTER" | "ALERTS" | "STAFF" | "LEGAL";
+  const [activeTab, setActiveTab] = useState<SettingsTab>("PROFILE");
 
   // King AI Communications Engine State
   const [waEnabled, setWaEnabled] = useState<boolean | null>(null);
@@ -365,19 +366,35 @@ function SettingsPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="space-y-4">
-        {/* Thermal POS Printer & Hardware Customization Panel */}
-        <ThermalPrinterHardwarePanel
-          restaurantId={vendor.restaurantId}
-          restaurantName={vendor.selected?.restaurantName}
-        />
-
-        {/* Universal POS & Thermal Printer Hardware Manager */}
-        <UniversalPosHardwareManager
-          restaurantId={vendor.restaurantId}
-          restaurantName={vendor.selected?.restaurantName}
-        />
-
-        {/* Multi-Outlet Locations & Switcher */}
+        {/* Zomato-Benchmark Settings Navigation Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto border-b border-gray-200 pb-3">
+          {[
+            { id: "PROFILE", label: "Outlet Profile & Switcher" },
+            { id: "OPERATIONS", label: "Operations & Prep" },
+            { id: "PRINTER", label: "Printer & Hardware" },
+            { id: "ALERTS", label: "Alerts & Soundbox" },
+            { id: "STAFF", label: "Staff Management" },
+            { id: "LEGAL", label: "Statutory & Policies" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id as SettingsTab)}
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition whitespace-nowrap ${
+                activeTab === tab.id
+                  ? "bg-[#E23744] text-white shadow-sm"
+                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        
+        {/* TAB 1: OUTLET PROFILE */}
+        {activeTab === "PROFILE" && (
+          <div className="space-y-4">
+            {/* Multi-Outlet Locations & Switcher */}
         <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
@@ -563,327 +580,7 @@ function SettingsPage() {
             ) : null}
           </Card>
         ) : null}
-
-        {/* Kitchen & KDS Operations Customization Panel */}
-        {vendor.restaurantId ? (
-          <KitchenKdsOperationsPanel
-            restaurantId={vendor.restaurantId}
-            initialPrepMinutes={r?.prep_minutes}
-            initialPeakPrepMinutes={r?.peak_prep_minutes}
-            initialPackingPaise={r?.packing_paise}
-            initialMinOrderPaise={r?.min_order_paise}
-          />
-        ) : null}
-
-        {/* Catalogue & King AI Autonomous Stock Controls */}
-        {vendor.restaurantId ? (
-          <CatalogueStockControlsPanel
-            restaurantId={vendor.restaurantId}
-          />
-        ) : null}
-
-        {/* KingPay Soundbox Audio Announcement Engine */}
-        {vendor.restaurantId ? (
-          <KingpaySoundboxSettingsPanel
-            restaurantId={vendor.restaurantId}
-          />
-        ) : null}
-
-        {/* King AI Daily Reports & Kitchen Alerts */}
-        {vendor.restaurantId ? (
-          <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
-              <div className="flex items-center gap-2.5">
-                <MessageSquare className="size-5 text-emerald-400" />
-                <div>
-                  <h2 className="font-display text-base font-bold text-gray-900">
-                    King AI Daily Reports &amp; Kitchen Alerts
-                  </h2>
-                  <p className="text-xs text-gray-500">
-                    Configure evening WhatsApp summaries, critical SMS kitchen alerts, and monthly tax statements with ease.
-                  </p>
-                </div>
-              </div>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
-                REAL-TIME DISPATCH
-              </span>
-            </div>
-
-            {/* Test Dispatch Feedback */}
-            {testDispatchMsg ? (
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-3 text-xs text-emerald-300 flex items-start gap-2">
-                <CheckCircle2 className="size-4 shrink-0 text-emerald-400 mt-0.5" />
-                <div>
-                  <div className="font-bold uppercase tracking-wider text-[10px] text-emerald-400">
-                    {testDispatchMsg.channel} Test Dispatch Result
-                  </div>
-                  <div className="mt-0.5">{testDispatchMsg.text}</div>
-                </div>
-              </div>
-            ) : null}
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Channel 1: WhatsApp Shift Report */}
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="size-4 text-emerald-400" />
-                      <span className="font-bold text-sm text-gray-900">WhatsApp Shift Summary</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
-                      NIGHTLY 23:00 IST
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    Nightly closing summary sent directly to WhatsApp: gross food revenue, 5% food GST remitted by Order King, delivered order count, and estimated net payouts.
-                  </p>
-
-                  <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-gray-700">Destination WhatsApp Number</Label>
-                    <Input
-                      type="tel"
-                      value={currentWaPhone}
-                      onChange={(e) => setWaPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
-                      className="h-9 text-xs bg-white border-gray-200 font-mono"
-                    />
-                  </div>
-
-                  {/* Consent Checkbox */}
-                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={currentWaConsent}
-                      onChange={(e) => setWaConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-emerald-500 focus:ring-emerald-500"
-                    />
-                    <span className="text-[11px] text-gray-700 leading-tight">
-                      I consent to receive automated evening shift reports via Order King WhatsApp Business API in accordance with the DPDP Act 2023.
-                    </span>
-                  </label>
-
-                  {/* Shift Report Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                    <div className="text-emerald-400">✓ Net Sales &amp; Revenue</div>
-                    <div className="text-emerald-400">✓ 5% Food GST Remitted</div>
-                    <div className="text-emerald-400">✓ Estimated Net Payout</div>
-                    <div className="text-emerald-400">✓ Delivered Order Count</div>
-                  </div>
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={testingChannel === "whatsapp"}
-                  onClick={() => void handleTestNotification("whatsapp")}
-                  className="w-full text-xs border-gray-300 hover:border-emerald-500/50 hover:bg-emerald-950/40"
-                >
-                  <Send className="mr-1.5 size-3.5 text-emerald-400" />
-                  {testingChannel === "whatsapp" ? "Dispatching WhatsApp..." : "Send Test WhatsApp Report"}
-                </Button>
-              </div>
-
-              {/* Channel 2: SMS Kitchen Alerts */}
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="size-4 text-amber-400" />
-                      <span className="font-bold text-sm text-gray-900">SMS Rush &amp; Kitchen Alerts</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
-                      PRIORITY SMS
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    Immediate transactional SMS alerts for critical kitchen events: rush surge buffers, emergency pauses, and 86 dish stockouts.
-                  </p>
-
-                  <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-gray-700">Destination Mobile Number</Label>
-                    <Input
-                      type="tel"
-                      value={currentSmsPhone}
-                      onChange={(e) => setSmsPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
-                      className="h-9 text-xs bg-white border-gray-200 font-mono"
-                    />
-                  </div>
-
-                  {/* Consent Checkbox */}
-                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={currentSmsConsent}
-                      onChange={(e) => setSmsConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-amber-500 focus:ring-amber-500"
-                    />
-                    <span className="text-[11px] text-gray-700 leading-tight">
-                      I consent to receive priority transactional SMS alerts for kitchen throttles and dish stockouts.
-                    </span>
-                  </label>
-
-                  {/* SMS Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                    <div className="text-amber-400">✓ Kitchen Rush Surge Alert</div>
-                    <div className="text-amber-400">✓ Sold-Out (86) Dish Alert</div>
-                    <div className="text-amber-400">✓ Prep Buffer Adjustments</div>
-                    <div className="text-amber-400">✓ Emergency Pause Alert</div>
-                  </div>
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={testingChannel === "sms"}
-                  onClick={() => void handleTestNotification("sms")}
-                  className="w-full text-xs border-gray-300 hover:border-amber-500/50 hover:bg-amber-950/40"
-                >
-                  <Send className="mr-1.5 size-3.5 text-amber-400" />
-                  {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
-                </Button>
-              </div>
-
-              {/* Channel 3: Email Tax Invoices & Statements */}
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <Mail className="size-4 text-sky-400" />
-                      <span className="font-bold text-sm text-gray-900">Email Tax &amp; Statements</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
-                      MONTHLY STATEMENTS
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    Automated monthly email delivery of GST Sec 9(5) tax invoices, settlement reconciliation ledgers, and quarterly Form 16A TDS certificates.
-                  </p>
-
-                  <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-gray-700">Destination Accounts / Finance Email</Label>
-                    <Input
-                      type="email"
-                      value={currentEmailAddress}
-                      onChange={(e) => setEmailAddress(e.target.value)}
-                      placeholder="accounts@restaurant.in"
-                      className="h-9 text-xs bg-white border-gray-200 font-mono"
-                    />
-                  </div>
-
-                  {/* Consent Checkbox */}
-                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={currentEmailConsent}
-                      onChange={(e) => setEmailConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-sky-500 focus:ring-sky-500"
-                    />
-                    <span className="text-[11px] text-gray-700 leading-tight">
-                      I consent to receive monthly tax invoices, GSTR-8 statements, and Form 16A certificates via email.
-                    </span>
-                  </label>
-
-                  {/* Email Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                    <div className="text-sky-400">✓ Monthly Tax Invoices</div>
-                    <div className="text-sky-400">✓ Form 16A (TDS §194-O)</div>
-                    <div className="text-sky-400">✓ GSTR-8 Credit Ledgers</div>
-                    <div className="text-sky-400">✓ Sec 9(5) GST Statements</div>
-                  </div>
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={testingChannel === "email"}
-                  onClick={() => void handleTestNotification("email")}
-                  className="w-full text-xs border-gray-300 hover:border-sky-500/50 hover:bg-sky-950/40"
-                >
-                  <Send className="mr-1.5 size-3.5 text-sky-400" />
-                  {testingChannel === "email" ? "Dispatching Email..." : "Send Test Tax Statement Email"}
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200">
-              <div className="text-xs text-emerald-400 font-medium">
-                {notifMsg ?? ""}
-              </div>
-              <Button
-                size="sm"
-                disabled={notifSaving}
-                onClick={() => void handleSaveKingAiNotifications()}
-                className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs font-semibold px-4"
-              >
-                {notifSaving ? "Saving Notification Preferences..." : "Save Notification Preferences"}
-              </Button>
-            </div>
-          </Card>
-        ) : null}
-
-        {/* Pan-India 23-Language Switcher & Kitchen Audio Ring Alerts */}
-        <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
-            <div className="flex items-center gap-2">
-              <Globe className="size-4 text-emerald-400" />
-              <div>
-                <h2 className="font-display text-base font-bold text-gray-900">
-                  All 22 Scheduled Languages of India + English ({ALL_INDIAN_LANGUAGES.length} Languages)
-                </h2>
-                <p className="text-xs text-gray-500">
-                  Switch your partner portal, kitchen voice announcements, and King AI assistant into your preferred language:
-                </p>
-              </div>
-            </div>
-            <Button
-              size="sm"
-              variant={soundOn ? "primary" : "secondary"}
-              onClick={() => setSoundOn(!soundOn)}
-              className="text-xs shrink-0"
-            >
-              {soundOn ? (
-                <>
-                  <Volume2 className="mr-1.5 size-4" /> Kitchen Alert Bell Active
-                </>
-              ) : (
-                <>
-                  <VolumeX className="mr-1.5 size-4" /> Kitchen Alert Bell Muted
-                </>
-              )}
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-1">
-            {ALL_INDIAN_LANGUAGES.map((item) => {
-              const active = lang === item.code;
-              return (
-                <button
-                  key={item.code}
-                  type="button"
-                  onClick={() => setLang(item.code)}
-                  className={`rounded-xl border p-2.5 text-left transition ${
-                    active
-                      ? "border-emerald-500 bg-emerald-500/15 text-gray-900"
-                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm">{item.native}</span>
-                    <span className="text-[10px] font-mono uppercase text-emerald-400">{item.code}</span>
-                  </div>
-                  <div className="text-[11px] text-gray-500 mt-0.5">{item.label} · {item.region}</div>
-                </button>
-              );
-            })}
-          </div>
-        </Card>
-
-        {/* Partner Commission & Revenue Rates */}
+            {/* Partner Commission & Revenue Rates */}
         <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
@@ -1199,8 +896,351 @@ function SettingsPage() {
             Applied transparently on net food and packaging order value in integer paise. Every delivery order locks this exact snapshot at order acceptance.
           </p>
         </Card>
+          </div>
+        )}
 
-        {/* Role-Based Staff Access Management */}
+        {/* TAB 2: OPERATIONS & PREP */}
+        {activeTab === "OPERATIONS" && (
+          <div className="space-y-4">
+            {/* Kitchen & KDS Operations Customization Panel */}
+        {vendor.restaurantId ? (
+          <KitchenKdsOperationsPanel
+            restaurantId={vendor.restaurantId}
+            initialPrepMinutes={r?.prep_minutes}
+            initialPeakPrepMinutes={r?.peak_prep_minutes}
+            initialPackingPaise={r?.packing_paise}
+            initialMinOrderPaise={r?.min_order_paise}
+          />
+        ) : null}
+
+        {/* Catalogue & King AI Autonomous Stock Controls */}
+        {vendor.restaurantId ? (
+          <CatalogueStockControlsPanel
+            restaurantId={vendor.restaurantId}
+          />
+        ) : null}
+          </div>
+        )}
+
+        {/* TAB 3: PRINTER & HARDWARE */}
+        {activeTab === "PRINTER" && (
+          <div className="space-y-4">
+            <ThermalPrinterHardwarePanel
+              restaurantId={vendor.restaurantId}
+              restaurantName={vendor.selected?.restaurantName}
+            />
+          </div>
+        )}
+
+        {/* TAB 4: ALERTS & SOUNDBOX */}
+        {activeTab === "ALERTS" && (
+          <div className="space-y-4">
+            {/* KingPay Soundbox Audio Announcement Engine */}
+        {vendor.restaurantId ? (
+          <KingpaySoundboxSettingsPanel
+            restaurantId={vendor.restaurantId}
+          />
+        ) : null}
+
+        {/* King AI Daily Reports & Kitchen Alerts */}
+        {vendor.restaurantId ? (
+          <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
+              <div className="flex items-center gap-2.5">
+                <MessageSquare className="size-5 text-emerald-400" />
+                <div>
+                  <h2 className="font-display text-base font-bold text-gray-900">
+                    King AI Daily Reports &amp; Kitchen Alerts
+                  </h2>
+                  <p className="text-xs text-gray-500">
+                    Configure evening WhatsApp summaries, critical SMS kitchen alerts, and monthly tax statements with ease.
+                  </p>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
+                REAL-TIME DISPATCH
+              </span>
+            </div>
+
+            {/* Test Dispatch Feedback */}
+            {testDispatchMsg ? (
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-3 text-xs text-emerald-300 flex items-start gap-2">
+                <CheckCircle2 className="size-4 shrink-0 text-emerald-400 mt-0.5" />
+                <div>
+                  <div className="font-bold uppercase tracking-wider text-[10px] text-emerald-400">
+                    {testDispatchMsg.channel} Test Dispatch Result
+                  </div>
+                  <div className="mt-0.5">{testDispatchMsg.text}</div>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Channel 1: WhatsApp Shift Report */}
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="size-4 text-emerald-400" />
+                      <span className="font-bold text-sm text-gray-900">WhatsApp Shift Summary</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                      NIGHTLY 23:00 IST
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Nightly closing summary sent directly to WhatsApp: gross food revenue, 5% food GST remitted by Order King, delivered order count, and estimated net payouts.
+                  </p>
+
+                  <div className="space-y-1.5 pt-1">
+                    <Label className="text-xs text-gray-700">Destination WhatsApp Number</Label>
+                    <Input
+                      type="tel"
+                      value={currentWaPhone}
+                      onChange={(e) => setWaPhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="h-9 text-xs bg-white border-gray-200 font-mono"
+                    />
+                  </div>
+
+                  {/* Consent Checkbox */}
+                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentWaConsent}
+                      onChange={(e) => setWaConsent(e.target.checked)}
+                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-emerald-500 focus:ring-emerald-500"
+                    />
+                    <span className="text-[11px] text-gray-700 leading-tight">
+                      I consent to receive automated evening shift reports via Order King WhatsApp Business API in accordance with the DPDP Act 2023.
+                    </span>
+                  </label>
+
+                  {/* Shift Report Inclusions */}
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
+                    <div className="text-emerald-400">✓ Net Sales &amp; Revenue</div>
+                    <div className="text-emerald-400">✓ 5% Food GST Remitted</div>
+                    <div className="text-emerald-400">✓ Estimated Net Payout</div>
+                    <div className="text-emerald-400">✓ Delivered Order Count</div>
+                  </div>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={testingChannel === "whatsapp"}
+                  onClick={() => void handleTestNotification("whatsapp")}
+                  className="w-full text-xs border-gray-300 hover:border-emerald-500/50 hover:bg-emerald-950/40"
+                >
+                  <Send className="mr-1.5 size-3.5 text-emerald-400" />
+                  {testingChannel === "whatsapp" ? "Dispatching WhatsApp..." : "Send Test WhatsApp Report"}
+                </Button>
+              </div>
+
+              {/* Channel 2: SMS Kitchen Alerts */}
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="size-4 text-amber-400" />
+                      <span className="font-bold text-sm text-gray-900">SMS Rush &amp; Kitchen Alerts</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                      PRIORITY SMS
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Immediate transactional SMS alerts for critical kitchen events: rush surge buffers, emergency pauses, and 86 dish stockouts.
+                  </p>
+
+                  <div className="space-y-1.5 pt-1">
+                    <Label className="text-xs text-gray-700">Destination Mobile Number</Label>
+                    <Input
+                      type="tel"
+                      value={currentSmsPhone}
+                      onChange={(e) => setSmsPhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="h-9 text-xs bg-white border-gray-200 font-mono"
+                    />
+                  </div>
+
+                  {/* Consent Checkbox */}
+                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentSmsConsent}
+                      onChange={(e) => setSmsConsent(e.target.checked)}
+                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-amber-500 focus:ring-amber-500"
+                    />
+                    <span className="text-[11px] text-gray-700 leading-tight">
+                      I consent to receive priority transactional SMS alerts for kitchen throttles and dish stockouts.
+                    </span>
+                  </label>
+
+                  {/* SMS Inclusions */}
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
+                    <div className="text-amber-400">✓ Kitchen Rush Surge Alert</div>
+                    <div className="text-amber-400">✓ Sold-Out (86) Dish Alert</div>
+                    <div className="text-amber-400">✓ Prep Buffer Adjustments</div>
+                    <div className="text-amber-400">✓ Emergency Pause Alert</div>
+                  </div>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={testingChannel === "sms"}
+                  onClick={() => void handleTestNotification("sms")}
+                  className="w-full text-xs border-gray-300 hover:border-amber-500/50 hover:bg-amber-950/40"
+                >
+                  <Send className="mr-1.5 size-3.5 text-amber-400" />
+                  {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
+                </Button>
+              </div>
+
+              {/* Channel 3: Email Tax Invoices & Statements */}
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <Mail className="size-4 text-sky-400" />
+                      <span className="font-bold text-sm text-gray-900">Email Tax &amp; Statements</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
+                      MONTHLY STATEMENTS
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Automated monthly email delivery of GST Sec 9(5) tax invoices, settlement reconciliation ledgers, and quarterly Form 16A TDS certificates.
+                  </p>
+
+                  <div className="space-y-1.5 pt-1">
+                    <Label className="text-xs text-gray-700">Destination Accounts / Finance Email</Label>
+                    <Input
+                      type="email"
+                      value={currentEmailAddress}
+                      onChange={(e) => setEmailAddress(e.target.value)}
+                      placeholder="accounts@restaurant.in"
+                      className="h-9 text-xs bg-white border-gray-200 font-mono"
+                    />
+                  </div>
+
+                  {/* Consent Checkbox */}
+                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentEmailConsent}
+                      onChange={(e) => setEmailConsent(e.target.checked)}
+                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-sky-500 focus:ring-sky-500"
+                    />
+                    <span className="text-[11px] text-gray-700 leading-tight">
+                      I consent to receive monthly tax invoices, GSTR-8 statements, and Form 16A certificates via email.
+                    </span>
+                  </label>
+
+                  {/* Email Inclusions */}
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
+                    <div className="text-sky-400">✓ Monthly Tax Invoices</div>
+                    <div className="text-sky-400">✓ Form 16A (TDS §194-O)</div>
+                    <div className="text-sky-400">✓ GSTR-8 Credit Ledgers</div>
+                    <div className="text-sky-400">✓ Sec 9(5) GST Statements</div>
+                  </div>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={testingChannel === "email"}
+                  onClick={() => void handleTestNotification("email")}
+                  className="w-full text-xs border-gray-300 hover:border-sky-500/50 hover:bg-sky-950/40"
+                >
+                  <Send className="mr-1.5 size-3.5 text-sky-400" />
+                  {testingChannel === "email" ? "Dispatching Email..." : "Send Test Tax Statement Email"}
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200">
+              <div className="text-xs text-emerald-400 font-medium">
+                {notifMsg ?? ""}
+              </div>
+              <Button
+                size="sm"
+                disabled={notifSaving}
+                onClick={() => void handleSaveKingAiNotifications()}
+                className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs font-semibold px-4"
+              >
+                {notifSaving ? "Saving Notification Preferences..." : "Save Notification Preferences"}
+              </Button>
+            </div>
+          </Card>
+        ) : null}
+            {/* Pan-India 23-Language Switcher & Kitchen Audio Ring Alerts */}
+        <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+            <div className="flex items-center gap-2">
+              <Globe className="size-4 text-emerald-400" />
+              <div>
+                <h2 className="font-display text-base font-bold text-gray-900">
+                  All 22 Scheduled Languages of India + English ({ALL_INDIAN_LANGUAGES.length} Languages)
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Switch your partner portal, kitchen voice announcements, and King AI assistant into your preferred language:
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              variant={soundOn ? "primary" : "secondary"}
+              onClick={() => setSoundOn(!soundOn)}
+              className="text-xs shrink-0"
+            >
+              {soundOn ? (
+                <>
+                  <Volume2 className="mr-1.5 size-4" /> Kitchen Alert Bell Active
+                </>
+              ) : (
+                <>
+                  <VolumeX className="mr-1.5 size-4" /> Kitchen Alert Bell Muted
+                </>
+              )}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-1">
+            {ALL_INDIAN_LANGUAGES.map((item) => {
+              const active = lang === item.code;
+              return (
+                <button
+                  key={item.code}
+                  type="button"
+                  onClick={() => setLang(item.code)}
+                  className={`rounded-xl border p-2.5 text-left transition ${
+                    active
+                      ? "border-emerald-500 bg-emerald-500/15 text-gray-900"
+                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sm">{item.native}</span>
+                    <span className="text-[10px] font-mono uppercase text-emerald-400">{item.code}</span>
+                  </div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">{item.label} · {item.region}</div>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+          </div>
+        )}
+
+        {/* TAB 5: STAFF MANAGEMENT */}
+        {activeTab === "STAFF" && (
+          <div className="space-y-4">
+            {/* Role-Based Staff Access Management */}
         {vendor.role && can(vendor.role, "settings.staff") ? (
           <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
             <div className="flex items-center justify-between">
@@ -1265,8 +1305,13 @@ function SettingsPage() {
             {msg ? <p className="text-xs text-emerald-400">{msg}</p> : null}
           </Card>
         ) : null}
+          </div>
+        )}
 
-        {/* Restaurant Partner Standards & Charter */}
+        {/* TAB 6: STATUTORY & LEGAL POLICIES */}
+        {activeTab === "LEGAL" && (
+          <div className="space-y-4">
+            {/* Restaurant Partner Standards & Charter */}
         <Card id="partner-charter" className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
@@ -1327,6 +1372,8 @@ function SettingsPage() {
             })}
           </div>
         </Card>
+          </div>
+        )}
       </div>
     </VendorShell>
   );

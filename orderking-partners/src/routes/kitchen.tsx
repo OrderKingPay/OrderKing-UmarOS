@@ -30,7 +30,6 @@ import {
 } from "lucide-react";
 import { KingPaySoundboxEngine } from "@/components/KingPaySoundboxEngine";
 import { KitchenDisplayStation } from "@/components/kitchen-display-station";
-import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware";
 import { inferDishComplexity } from "@/lib/orders/dynamic-kpt";
 import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import { toast } from "sonner";
@@ -180,7 +179,7 @@ function matchesColumn(orderState: string, colState: (typeof COLS)[number]["stat
 export function KitchenPage({
   defaultTab = "BOARD",
 }: {
-  defaultTab?: "BOARD" | "KDS" | "HARDWARE";
+  defaultTab?: "BOARD" | "KDS";
 } = {}) {
   const t = useT();
   const vendor = useVendor();
@@ -329,19 +328,7 @@ export function KitchenPage({
             <Monitor className="size-3.5" />
             <span>Station Cook Tickets (KDS)</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("HARDWARE")}
-            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-              activeTab === "HARDWARE"
-                ? "bg-primary text-primary-foreground shadow-xs"
-                : "bg-surface text-muted hover:text-foreground"
-            }`}
-          >
-            <Printer className="size-3.5" />
-            <span>Universal POS &amp; Hardware</span>
-          </button>
-        </div>
+          </div>
 
         {/* Kitchen Throttling Quick Toggles */}
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -453,9 +440,7 @@ export function KitchenPage({
                 <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
                   {q.data ? `SYNCED ${new Date(q.data.serverTime).toLocaleTimeString()}` : "SYNCING"}
                 </span>
-                <span className="rounded border border-gray-300 bg-gray-100 px-2 py-0.5 text-[10px] font-mono text-gray-700">
-                  VOICE: {getVoiceBcp47(testVoiceLang)}
-                </span>
+                
               </div>
               <p className="text-xs text-gray-500 mt-0.5">
                 Manage order preparation stages and coordinate food handover with delivery partners.
@@ -584,14 +569,6 @@ export function KitchenPage({
         </div>
       )}
 
-      {activeTab === "HARDWARE" && (
-        <div className="pt-2">
-          <UniversalPosHardwareManager
-            restaurantId={vendor.restaurantId}
-            restaurantName={vendor.selected?.restaurantName}
-          />
-        </div>
-      )}
-    </VendorShell>
+      </VendorShell>
   );
 }
