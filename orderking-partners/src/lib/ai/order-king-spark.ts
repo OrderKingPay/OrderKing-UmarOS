@@ -245,7 +245,7 @@ export class OrderKingSpark {
         type: "SALES_DECLINE",
         severity: "LOW",
         headline: "Direct Ordering Savings: ₹14,280 Retained Today",
-        rootCauseHypothesis: "Customer direct ordering retained 24% that dominant legacy aggregators would have deducted.",
+        rootCauseHypothesis: "Direct orders processed at transparent platform commission rates.",
         recommendedAction: "Offer free garlic naan on orders over ₹500 to drive repeat orders.",
         authorizedActionLabel: "Launch Repeat Customer Offer",
         detectedAt: "Today, 9:00 PM",
@@ -532,7 +532,8 @@ export class OrderKingSpark {
     const summary = `Hello Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
 - **Delivered Orders**: **${deliveredOrders} orders** successfully completed (${cancelledOrders} cancelled).
 - **Gross Sales & Packaging**: **₹${(grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (Food: ₹${(grossFoodSalesPaise / 100).toLocaleString("en-IN")} · Packaging: ₹${(packagingChargesPaise / 100).toLocaleString("en-IN")}).
-- **OrderKing Platform Commission**: **₹0.00 (custom commission)**. You saved **₹${(aggregatorCommissionAvoidedPaise / 100).toLocaleString("en-IN")}** vs dominant legacy aggregators (24% standard aggregator deduction).
+- **OrderKing Platform Commission**: **₹0.00 (custom commission)**.
+- **Net Margin Retained**: Retained **₹${((grossCustomerSpendPaise - orderKingPlatformCommissionPaise) / 100).toLocaleString("en-IN")}** directly in your merchant account.
 - **Statutory GST Sec 9(5) Remitted**: **₹${(gst95RemittedByPlatformPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (5% food GST remitted directly to the government by Order King on your behalf).
 - **Withholding Taxes Deducted**: TCS Sec 52 (0.5%): **₹${(tcsSection52Paise / 100).toFixed(2)}** · TDS Sec 194-O (0.1%): **₹${(tdsSection194OPaise / 100).toFixed(2)}**.
 - **Customer Dispute Adjustments**: **-₹${(customerDisputeDeductionsPaise / 100).toFixed(2)}** (Missing Naan #ORD-8845).
@@ -760,7 +761,7 @@ ${recon.conversationalSummary}`,
         text: `### 💰 Settlement & Commission Savings Report
 - **Trailing 7 Days Gross Sales**: **₹${(summary.grossSalesPaise / 100).toLocaleString("en-IN")}**
 - **OrderKing Platform Commission**: **₹0 (custom commission)**
-- **Aggregator Cut Avoided**: You saved **₹${(summary.legacyAggregatorLossAvoidedPaise / 100).toLocaleString("en-IN")}** compared to dominant legacy aggregators (24% standard rate).
+- **Net Sales Retained**: **₹${((summary.grossSalesPaise - summary.commissionPaise) / 100).toLocaleString("en-IN")}** directly in your merchant account.
 - **Settlement Account**: **${summary.settlementAccount}** (Status: 🟢 **${summary.status}**)`,
         timestamp,
         actionCard: {

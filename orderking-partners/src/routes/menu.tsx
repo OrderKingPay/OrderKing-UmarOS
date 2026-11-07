@@ -162,14 +162,14 @@ function FssaiDietBadge({ diet, showLabel = false }: { diet: string; showLabel?:
   return (
     <span className="inline-flex items-center gap-1.5" title={`FSSAI ${labelText} Classification`}>
       <span
-        className={`inline-flex size-4 shrink-0 items-center justify-center rounded-[3px] border-[1.5px] bg-black/30 ${borderColor}`}
+        className={`inline-flex size-4 shrink-0 items-center justify-center rounded-[3px] border-[1.5px] bg-white shadow-2xs ${borderColor}`}
       >
         <span className={`size-2 rounded-full ${dotColor}`} />
       </span>
       {showLabel && (
         <span
           className={`text-xs font-semibold ${
-            isVeg ? "text-emerald-400" : isEgg ? "text-amber-400" : "text-rose-400"
+            isVeg ? "text-emerald-700" : isEgg ? "text-amber-400" : "text-rose-600"
           }`}
         >
           {labelText}
@@ -1343,7 +1343,7 @@ function MenuPage() {
                 className="border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs"
                 title="Digitize physical paper menu or raw dish text into structured catalog"
               >
-                <FileText className="mr-1 size-3.5 text-emerald-400" />
+                <FileText className="mr-1 size-3.5 text-emerald-700" />
                 OCR / Bulk Text Import
               </Button>
             )}
@@ -1400,7 +1400,7 @@ function MenuPage() {
               menuFilter === "OUT_OF_STOCK"
                 ? "bg-rose-600 text-white shadow-xs"
                 : outOfStockCount > 0
-                ? "text-rose-400 bg-rose-500/10 border border-rose-500/30"
+                ? "text-rose-600 bg-rose-500/10 border border-rose-500/30"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
             }`}
           >
@@ -1576,7 +1576,7 @@ function MenuPage() {
                   }}
                   className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition ${
                     exists
-                      ? "border-emerald-500/30 bg-emerald-950/30 text-emerald-400 cursor-default"
+                      ? "border-emerald-500/30 bg-emerald-950/30 text-emerald-700 cursor-default"
                       : "border-border bg-surface-2 text-gray-700 hover:border-amber-500/50 hover:text-white"
                   }`}
                 >
@@ -1827,13 +1827,13 @@ function MenuPage() {
                                         setQuickEditingVariant(null);
                                       }
                                     }}
-                                    className="w-16 rounded border border-gray-300 bg-white px-1 py-0.5 text-xs text-right text-emerald-400 font-mono focus:border-emerald-500 focus:outline-none"
+                                    className="w-16 rounded border border-gray-300 bg-white px-1 py-0.5 text-xs text-right text-emerald-700 font-mono focus:border-emerald-500 focus:outline-none"
                                   />
                                   <button
                                     type="submit"
                                     disabled={savingQuickPrice}
                                     title="Save price (Enter)"
-                                    className="rounded p-0.5 text-emerald-400 hover:bg-emerald-950/60 transition"
+                                    className="rounded p-0.5 text-emerald-700 hover:bg-emerald-950/60 transition"
                                   >
                                     <Check className="size-3.5" />
                                   </button>
@@ -2105,7 +2105,7 @@ function MenuPage() {
                           {matchDishCulinaryTaxonomy(editor.name).category}
                         </strong>{" "}
                         ·{" "}
-                        <strong className="text-emerald-400">
+                        <strong className="text-emerald-700">
                           {matchDishCulinaryTaxonomy(editor.name).diet}
                         </strong>
                       </span>
@@ -2668,7 +2668,7 @@ function MenuPage() {
                 {editor.imageUrl ? (
                   editor.aiGenerated ? (
                     <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-3 flex items-start gap-2.5">
-                      <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="size-4 text-emerald-700 shrink-0 mt-0.5" />
                       <div className="space-y-0.5 text-xs">
                         <span className="font-bold text-emerald-300 block">
                           Dish Photo Presentation
@@ -2853,7 +2853,7 @@ function MenuPage() {
                             const variants = editor.variants.filter((_, idx) => idx !== i);
                             setEditor({ ...editor, variants });
                           }}
-                          className="rounded-lg p-2 text-gray-500 hover:bg-rose-500/10 hover:text-rose-400"
+                          className="rounded-lg p-2 text-gray-500 hover:bg-rose-500/10 hover:text-rose-600"
                           title="Remove variant"
                         >
                           <Trash2 className="size-4" />
@@ -3195,7 +3195,7 @@ function MenuPage() {
                                       };
                                       setEditor({ ...editor, modifierGroups: updated });
                                     }}
-                                    className="w-14 rounded border border-gray-200 bg-white px-1 py-0.5 text-xs text-right text-emerald-400 font-mono"
+                                    className="w-14 rounded border border-gray-200 bg-white px-1 py-0.5 text-xs text-right text-emerald-700 font-mono"
                                   />
                                 </div>
                                 <button
@@ -3225,7 +3225,7 @@ function MenuPage() {
                                         className="flex items-center gap-1 rounded bg-white border border-gray-200 px-1.5 py-0.5"
                                       >
                                         <span className="text-gray-700 font-medium">{vName}:</span>
-                                        <span className="text-emerald-400 font-mono">+₹</span>
+                                        <span className="text-emerald-700 font-mono">+₹</span>
                                         <input
                                           type="number"
                                           min="0"
@@ -3241,7 +3241,7 @@ function MenuPage() {
                                             };
                                             setEditor({ ...editor, modifierGroups: updated });
                                           }}
-                                          className="w-12 bg-white border border-gray-200 text-right px-1 text-emerald-400 font-mono rounded"
+                                          className="w-12 bg-white border border-gray-200 text-right px-1 text-emerald-700 font-mono rounded"
                                         />
                                       </div>
                                     );
@@ -3318,7 +3318,7 @@ function MenuPage() {
           <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <FileText className="size-5 text-emerald-400" />
+                <FileText className="size-5 text-emerald-700" />
                 <h3 className="font-display text-base font-bold text-white">
                   Menu Photo Upload &amp; OCR Digitizer
                 </h3>
@@ -3376,7 +3376,7 @@ function MenuPage() {
 
             {digitizedCatalog && (
               <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono text-emerald-400">
+                <div className="flex items-center justify-between text-xs font-mono text-emerald-700">
                   <span>Extracted: {digitizedCatalog.totalDishesCount} Dishes in {digitizedCatalog.categories.length} Categories</span>
                   <span>🌱 {digitizedCatalog.vegDishesCount} Veg · 🍗 {digitizedCatalog.nonVegDishesCount} Non-Veg · 🥚 {digitizedCatalog.eggDishesCount} Egg</span>
                 </div>
@@ -3388,7 +3388,7 @@ function MenuPage() {
                         {c.items.map((it) => (
                           <li key={it.id} className="flex justify-between text-gray-700">
                             <span>{it.diet === "VEG" ? "🌱" : it.diet === "EGG" ? "🥚" : "🍗"} {it.name}</span>
-                            <span className="font-mono text-emerald-400">{it.formattedPrice}</span>
+                            <span className="font-mono text-emerald-700">{it.formattedPrice}</span>
                           </li>
                         ))}
                       </ul>

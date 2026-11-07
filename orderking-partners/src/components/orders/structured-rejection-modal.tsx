@@ -63,87 +63,75 @@ export function StructuredRejectionModal({
 
   const isStockoutReason = selectedReason === "item_unavailable";
 
-  function toggleItemSelection(id: string) {
+  const toggleItemSelection = (id: string) => {
     setSelectedItemIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
-  }
+  };
 
-  async function handleConfirm() {
+  const handleConfirm = async () => {
     setIsSubmitting(true);
     setErrorMsg(null);
-
     try {
-      // Validate with engine
-      const plan = processStructuredRejection({
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        reason: selectedReason,
-        selectedLineItemIds: isStockoutReason ? selectedItemIds : [],
-        stockoutDuration: stockoutOption,
-      });
-
-      // If out of stock was selected, synchronously update menu item availability
-      if (plan.requiresStockout && restaurantId && plan.stockoutItemIds.length > 0) {
-        try {
-          await setAvailability({
-            data: {
-              restaurantId,
-              itemIds: plan.stockoutItemIds,
-              status: plan.stockoutStatus!,
-              nextAvailableAt: plan.nextAvailableAt,
-            },
-          });
-          void qc.invalidateQueries({ queryKey: ["menu"] });
-          toast.success(
-            `🛒 ${plan.stockoutItemIds.length} dish(es) marked out of stock so future guests cannot order.`
-          );
-        } catch (err) {
-          console.error("Failed to update dish availability on stockout rejection:", err);
-          // Non-blocking: proceed with order decline
-        }
+      if (isStockoutReason && selectedItemIds.length > 0 && restaurantId) {
+        const expiry = calculateStockoutExpiry(stockoutOption);
+        await setAvailability({
+          data: {
+            restaurantId,
+            itemIds: selectedItemIds,
+            status: "temporarily_unavailable",
+            nextAvailableAt: expiry.nextAvailableAtIso,
+          },
+        });
+        toast.info(
+          `Out-of-Stock: ${selectedItemIds.length} dish(es) marked unavailable until ${expiry.label}.`
+        );
+        void qc.invalidateQueries({ queryKey: ["menu"] });
       }
 
-      // Execute order rejection
       await onConfirmReject(selectedReason);
-      toast.warning(plan.customerNotificationMessage);
+      await processStructuredRejection(order.id, selectedReason, {
+        stockoutItemIds: isStockoutReason ? selectedItemIds : undefined,
+      });
+
       onClose();
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to decline order.");
+      console.error("[StructuredRejectionModal] Error declining order:", err);
+      setErrorMsg(err instanceof Error ? err.message : "Failed to record decline decision.");
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="structured-reject-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
     >
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl text-slate-100 font-sans space-y-5">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl border border-gray-200 bg-white p-6 shadow-2xl text-gray-900 font-sans space-y-5">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3 border-b border-slate-800 pb-3">
+        <div className="flex items-start justify-between gap-3 border-b border-gray-100 pb-3">
           <div>
             <div className="flex items-center gap-2">
               <span className="flex size-2 rounded-full bg-rose-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-rose-400 font-mono">
-                Tier-1 Order Rejection Protocol
+              <span className="text-[10px] font-bold uppercase tracking-widest text-rose-600 font-mono">
+                Order Management
               </span>
             </div>
-            <h2 id="structured-reject-title" className="text-lg font-bold text-white mt-1">
+            <h2 id="structured-reject-title" className="text-lg font-bold text-gray-900 mt-1">
               Decline Order #{order.orderNumber}
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Select an authentic operational reason to inform the guest and dispatch team.
+            <p className="text-xs text-gray-500 mt-0.5">
+              Select an operational reason to inform the guest and update store state.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
             aria-label="Close rejection dialog"
           >
             <X className="size-5" />
@@ -151,19 +139,19 @@ export function StructuredRejectionModal({
         </div>
 
         {/* Penalty & Fulfillment Warning Banner */}
-        <div className="rounded-xl border border-rose-500/30 bg-rose-950/30 p-3 flex items-start gap-2.5 text-xs text-rose-200">
-          <AlertTriangle className="size-4 shrink-0 text-rose-400 mt-0.5" />
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-3.5 flex items-start gap-2.5 text-xs text-rose-900">
+          <AlertTriangle className="size-4 shrink-0 text-rose-600 mt-0.5" />
           <div>
-            <span className="font-bold text-white">Cancellation &amp; Fulfillment Advisory:</span>
-            <span className="text-rose-200/90 ml-1">
-              Frequent cancellations reduce your outlet ranking on customer feeds. Please ensure reasons are genuine.
+            <span className="font-bold text-rose-950">Fulfillment Advisory:</span>
+            <span className="text-rose-900 ml-1">
+              Frequent cancellations impact customer trust. Please ensure order declines are minimal.
             </span>
           </div>
         </div>
 
         {/* Reason Selection Radio Group */}
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-300 font-mono">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-700 font-mono">
             1. Select Operational Reason:
           </label>
           <div className="space-y-2">
@@ -173,18 +161,18 @@ export function StructuredRejectionModal({
                 <label
                   key={r.id}
                   onClick={() => setSelectedReason(r.id)}
-                  className={`flex items-start justify-between p-3 rounded-xl border cursor-pointer transition select-none ${
+                  className={`flex items-start justify-between p-3 rounded-2xl border cursor-pointer transition select-none ${
                     isSelected
-                      ? "border-rose-500/80 bg-rose-950/30 ring-1 ring-rose-500/40 text-white"
-                      : "border-slate-800 bg-slate-950/40 hover:border-slate-700 text-slate-300"
+                      ? "border-rose-400 bg-rose-50/70 ring-1 ring-rose-400 text-gray-900"
+                      : "border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <div
                       className={`p-1.5 rounded-lg shrink-0 mt-0.5 ${
                         isSelected
-                          ? "bg-rose-500/20 text-rose-300"
-                          : "bg-slate-800 text-slate-400"
+                          ? "bg-rose-100 text-rose-700"
+                          : "bg-gray-200 text-gray-600"
                       }`}
                     >
                       {r.icon === "Flame" ? (
@@ -198,8 +186,8 @@ export function StructuredRejectionModal({
                       )}
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-white">{r.label}</div>
-                      <div className="text-[11px] text-slate-400 mt-0.5 leading-tight">
+                      <div className="text-xs font-bold text-gray-900">{r.label}</div>
+                      <div className="text-[11px] text-gray-500 mt-0.5 leading-tight">
                         {r.sublabel}
                       </div>
                     </div>
@@ -208,8 +196,8 @@ export function StructuredRejectionModal({
                   <div
                     className={`size-4 rounded-full border flex items-center justify-center shrink-0 ml-2 mt-1 ${
                       isSelected
-                        ? "border-rose-500 bg-rose-500 text-white"
-                        : "border-slate-600 bg-transparent"
+                        ? "border-rose-600 bg-rose-600 text-white"
+                        : "border-gray-300 bg-white"
                     }`}
                   >
                     {isSelected && <Check className="size-3 stroke-[3]" />}
@@ -222,17 +210,17 @@ export function StructuredRejectionModal({
 
         {/* Sub-Panel: If Item(s) in Order Out of Stock is Selected */}
         {isStockoutReason && (
-          <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-4 space-y-4 animate-in fade-in duration-200">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 space-y-4 animate-in fade-in duration-200">
             <div>
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-amber-300 uppercase tracking-wider font-mono">
+                <label className="text-xs font-bold text-amber-900 uppercase tracking-wider font-mono">
                   2. Select Out-of-Stock Dishes in this Order:
                 </label>
-                <span className="text-[10px] text-slate-400 font-mono">
+                <span className="text-[10px] text-gray-500 font-mono">
                   {selectedItemIds.length} of {order.lines.length} selected
                 </span>
               </div>
-              <p className="text-[11px] text-slate-300 mt-0.5">
+              <p className="text-[11px] text-gray-600 mt-0.5">
                 Which dish(es) are unavailable? These will be automatically turned off in your live catalog.
               </p>
             </div>
@@ -246,29 +234,29 @@ export function StructuredRejectionModal({
                   <label
                     key={lineId}
                     onClick={() => toggleItemSelection(lineId)}
-                    className={`flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer select-none transition ${
+                    className={`flex items-center justify-between p-2.5 rounded-xl border text-xs cursor-pointer select-none transition ${
                       isChecked
-                        ? "border-amber-500/60 bg-amber-950/40 text-amber-100 font-semibold"
-                        : "border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700"
+                        ? "border-amber-300 bg-white text-gray-900 font-semibold shadow-xs"
+                        : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       <div
                         className={`size-4 rounded border flex items-center justify-center ${
                           isChecked
-                            ? "border-amber-500 bg-amber-500 text-slate-950"
-                            : "border-slate-600 bg-transparent"
+                            ? "border-amber-600 bg-amber-600 text-white"
+                            : "border-gray-300 bg-white"
                         }`}
                       >
                         {isChecked && <Check className="size-3 stroke-[3]" />}
                       </div>
                       <span>
-                        <strong className="text-white">{line.quantity}×</strong> {line.itemName}
+                        <strong className="text-gray-900">{line.quantity}×</strong> {line.itemName}
                         {line.variantName ? ` (${line.variantName})` : ""}
                       </span>
                     </div>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
-                      86 Dish
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold">
+                      Out of Stock
                     </span>
                   </label>
                 );
@@ -276,8 +264,8 @@ export function StructuredRejectionModal({
             </div>
 
             {/* Timed Stockout Presets */}
-            <div className="space-y-2 pt-2 border-t border-amber-500/30">
-              <label className="text-xs font-bold text-amber-300 uppercase tracking-wider font-mono">
+            <div className="space-y-2 pt-2 border-t border-amber-200">
+              <label className="text-xs font-bold text-amber-900 uppercase tracking-wider font-mono">
                 3. Choose Timed Stockout Duration:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -293,27 +281,27 @@ export function StructuredRejectionModal({
                       onClick={() => setStockoutOption(preset.id)}
                       className={`text-left p-2.5 rounded-xl border text-xs transition cursor-pointer select-none flex items-center justify-between ${
                         isPresetSelected
-                          ? "border-amber-500 bg-amber-500/20 text-white font-bold ring-1 ring-amber-500/50"
-                          : "border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700"
+                          ? "border-amber-400 bg-amber-100/70 text-gray-900 font-bold ring-1 ring-amber-400"
+                          : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       <div className="flex items-center gap-2">
                         {preset.icon === "Sunrise" ? (
-                          <Sunrise className="size-4 text-amber-400 shrink-0" />
+                          <Sunrise className="size-4 text-amber-600 shrink-0" />
                         ) : preset.icon === "Infinity" ? (
-                          <InfinityIcon className="size-4 text-amber-400 shrink-0" />
+                          <InfinityIcon className="size-4 text-amber-600 shrink-0" />
                         ) : (
-                          <Clock className="size-4 text-amber-400 shrink-0" />
+                          <Clock className="size-4 text-amber-600 shrink-0" />
                         )}
                         <div>
                           <div className="leading-tight">{preset.label}</div>
-                          <div className="text-[10px] text-amber-400/80 font-normal">
+                          <div className="text-[10px] text-gray-500 font-normal">
                             {preview}
                           </div>
                         </div>
                       </div>
                       {isPresetSelected && (
-                        <Check className="size-3.5 text-amber-400 shrink-0 stroke-[3]" />
+                        <Check className="size-3.5 text-amber-700 shrink-0 stroke-[3]" />
                       )}
                     </button>
                   );
@@ -325,19 +313,19 @@ export function StructuredRejectionModal({
 
         {/* Error Message */}
         {errorMsg && (
-          <div className="p-3 rounded-xl border border-rose-500 bg-rose-950/50 text-xs text-rose-200 font-semibold">
+          <div className="p-3 rounded-xl border border-rose-200 bg-rose-50 text-xs text-rose-800 font-semibold">
             {errorMsg}
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
           <Button
             type="button"
-            variant="ghost"
+            variant="outline"
             onClick={onClose}
             disabled={isSubmitting}
-            className="text-xs text-slate-300 hover:text-white"
+            className="text-xs text-gray-700 hover:bg-gray-50 border-gray-300 rounded-xl h-10 px-4"
           >
             Cancel
           </Button>
@@ -345,7 +333,7 @@ export function StructuredRejectionModal({
             type="button"
             disabled={isSubmitting || (isStockoutReason && selectedItemIds.length === 0)}
             onClick={handleConfirm}
-            className="bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold px-4 py-2"
+            className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-5 h-10 rounded-xl shadow-xs"
           >
             {isSubmitting ? "Processing..." : "Confirm & Decline Order"}
           </Button>

@@ -1,0 +1,2 @@
+delete process.versions.electron;
+process.defaultApp = true;

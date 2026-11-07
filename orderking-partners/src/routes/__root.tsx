@@ -6,7 +6,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { platformConfig } from "@/lib/platform-config";
 import { flushQueue, registerDefaultTransitionFn } from "@/lib/offline/durable-queue";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
-import { CustomizationProvider, useCustomizationSync } from "@orderking/ui";
+import { CustomizationProvider } from "@orderking/ui";
 import { useVendor } from "@/components/use-vendor";
 import appCss from "../styles.css?url";
 
@@ -159,7 +159,7 @@ function Root() {
         <Scripts />
         <script
           dangerouslySetInnerHTML={{
-            __html: `if('caches' in window){caches.keys().then(keys=>Promise.all(keys.filter(k=>!k.includes('ok-partner-v5')).map(k=>caches.delete(k)))).catch(()=>{});}if('serviceWorker' in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=5',{scope:'/'}).then(r=>{r.update().catch(()=>{});if(r.waiting){r.waiting.postMessage({type:'SKIP_WAITING'});}r.addEventListener('updatefound',()=>{const w=r.installing;if(w){w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller){w.postMessage({type:'SKIP_WAITING'});}});}});}).catch(()=>{}));}`,
+            __html: `if('caches' in window){caches.keys().then(keys=>Promise.all(keys.filter(k=>!k.includes('ok-partner-v6')).map(k=>caches.delete(k)))).catch(()=>{});}if('serviceWorker' in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=6',{scope:'/'}).then(r=>{r.update().catch(()=>{});if(r.waiting){r.waiting.postMessage({type:'SKIP_WAITING'});}r.addEventListener('updatefound',()=>{const w=r.installing;if(w){w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller){w.postMessage({type:'SKIP_WAITING'});}});}});}).catch(()=>{}));}`,
           }}
         />
       </body>

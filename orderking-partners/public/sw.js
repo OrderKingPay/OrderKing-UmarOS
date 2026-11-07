@@ -4,7 +4,7 @@
  * and high-volume billing counters.
  */
 
-const SW_VERSION = "ok-partner-v5-clean";
+const SW_VERSION = "ok-partner-v6-direct";
 const CACHE_NAME = `ok-partner-${SW_VERSION}`;
 const STATIC_ASSETS = [
   "/offline.html",

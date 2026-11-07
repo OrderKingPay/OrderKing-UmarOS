@@ -95,7 +95,7 @@ function AnalyticsPage() {
             variant="secondary"
             onClick={() => downloadPerformanceCsv()}
             disabled={!q.data}
-            className="text-xs border-gray-300 bg-gray-100 hover:bg-slate-700 text-gray-900"
+            className="text-xs border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-900"
           >
             <FileSpreadsheet className="mr-1.5 size-3.5 text-emerald-400" />
             Download Performance &amp; Tax Report (CSV)

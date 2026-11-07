@@ -1,12 +1,12 @@
 {
-  "name": "OrderKing Restaurant Partner Portal & King AI",
-  "short_name": "OK Partner",
-  "description": "0% Commission Restaurant Partner Portal with Kitchen Prep SLA, Menu Management & Instant Settlements",
+  "name": "OrderKing Restaurant Partner Portal",
+  "short_name": "OrderKing Partner",
+  "description": "OrderKing Restaurant Partner Portal for Live Orders, Menu Management and Daily Payouts",
   "start_url": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#09090b",
-  "theme_color": "#f97316",
+  "background_color": "#FFFFFF",
+  "theme_color": "#E23744",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -24,10 +24,10 @@
       "name": "Live Orders",
       "short_name": "Orders",
       "description": "Live Kitchen Orders",
-      "url": "/",
+      "url": "/orders",
       "icons": [
         {
-          "src": "/brand/icon-192.png",
+          "src": "/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -39,19 +39,7 @@
       "url": "/menu",
       "icons": [
         {
-          "src": "/brand/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "King AI Assistant",
-      "short_name": "King AI",
-      "description": "OrderKing King AI Assistant",
-      "url": "/assistant",
-      "icons": [
-        {
-          "src": "/brand/icon-192.png",
+          "src": "/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -59,11 +47,11 @@
     {
       "name": "Settlements",
       "short_name": "Payouts",
-      "description": "T+1 Daily Payouts",
+      "description": "Daily Bank Payouts",
       "url": "/settlements",
       "icons": [
         {
-          "src": "/brand/icon-192.png",
+          "src": "/icon-192.png",
           "sizes": "192x192"
         }
       ]
