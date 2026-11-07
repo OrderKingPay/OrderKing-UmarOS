@@ -27,7 +27,7 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
     <nav
       role="navigation"
       aria-label="Order King Fleet Partner Navigation"
-      className="fixed inset-x-0 bottom-2.5 sm:bottom-4 z-40 pointer-events-none mx-auto max-w-lg px-2.5 sm:px-4 lg:hidden"
+      className="fixed inset-x-0 bottom-2.5 sm:bottom-4 z-40 pointer-events-none mx-auto max-w-md px-2.5 sm:px-4"
     >
       <div className="pointer-events-auto relative rounded-[28px] bg-white/95 backdrop-blur-2xl border border-gray-200 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.12),inset_0_1px_1px_0_rgba(255,255,255,0.8)] px-1.5 pt-1.5 pb-2 transition-all">
         {/* Subtle Ambient Emerald Beam if Online */}

@@ -11,22 +11,13 @@ import { RiderEmergencySafetySheet } from "@/components/rider/rider-emergency-so
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
-  Banknote,
-  Bike,
   Bot,
-  Building2,
   CircleHelp,
   FileCheck2,
-  History,
-  House,
   MapPin,
-  Navigation,
   RefreshCw,
-  Shield,
   ShieldAlert,
   ShieldCheck,
-  UserCheck,
-  WifiOff,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
@@ -90,7 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   if (isPending) {
     return (
-      <div className="mx-auto min-h-dvh max-w-lg p-4">
+      <div className="mx-auto min-h-dvh max-w-md p-4 bg-white dark:bg-card">
         <p className="font-display text-2xl font-bold text-foreground">OrderKing Delivery Partner</p>
         <Skeleton className="mt-4 h-16 w-40" />
         <Skeleton className="mt-6 h-48 w-full rounded-xl" />
@@ -100,226 +91,123 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
   if (!user) return <RedirectToSignIn />;
 
-      const nav = [
-    { to: "/", icon: House, label: "Duty" },
-    { to: "/trips", icon: Navigation, label: "Gigs" },
-    { to: "/cash", icon: Banknote, label: "Pocket" },
-    { to: "/earnings", icon: Building2, label: "Earnings" },
-    { to: "/profile", icon: UserCheck, label: "More" },
-  ] as const;
-
   const kycStatus = riderProfile?.kycStatus;
 
   return (
-    <div className="min-h-dvh bg-bg text-fg">
-
-
-      {!geoOk ? (
-        <div className="bg-busy px-4 py-2 text-xs sm:text-sm text-primary-foreground">
-          <div className="mx-auto flex max-w-5xl items-center justify-between gap-2">
-            <span className="flex items-center gap-2 font-medium">
-              <MapPin className="size-4 shrink-0" />
-              <span>{t("locationUnavailable")}</span>
-            </span>
-            <button
-              type="button"
-              disabled={retryingGeo}
-              onClick={retryGpsPermission}
-              className="inline-flex shrink-0 items-center gap-1 rounded-md bg-white/20 px-2.5 py-1 text-xs font-bold hover:bg-white/30 transition"
-            >
-              <RefreshCw className={cn("size-3", retryingGeo && "animate-spin")} />
-              <span>{retryingGeo ? "Checking GPS..." : "Re-check GPS"}</span>
-            </button>
-          </div>
-        </div>
-      ) : null}
-
-      {kycStatus === "REJECTED" && path !== "/onboarding" ? (
-        <div className="border-b border-rose-200 bg-rose-50 px-4 py-2.5 text-xs text-rose-900">
-          <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2">
-            <span className="flex items-center gap-2 font-semibold">
-              <AlertTriangle className="size-4 shrink-0 text-rose-700" />
-              <span>
-                KYC Requires Correction:{" "}
-                {riderProfile?.kycRejectReason || "Please review and re-upload your KYC details."}
+    <div className="min-h-dvh bg-slate-100/70 dark:bg-zinc-950 text-fg">
+      <div className="mx-auto min-h-dvh max-w-md bg-white dark:bg-card shadow-2xl relative flex flex-col pb-24 border-x border-border/40">
+        {!geoOk ? (
+          <div className="bg-busy px-3 py-2 text-xs text-primary-foreground">
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2 font-medium">
+                <MapPin className="size-4 shrink-0" />
+                <span>{t("locationUnavailable")}</span>
               </span>
-            </span>
-            <Link
-              to="/onboarding"
-              className="rounded-lg bg-rose-800 px-3 py-1 text-xs font-bold text-white hover:bg-rose-900 transition"
-            >
-              Update &amp; Resubmit KYC →
-            </Link>
-          </div>
-        </div>
-      ) : null}
-
-      <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 sm:gap-3 px-4 py-3">
-          <Link to="/" className="flex items-center gap-2.5 min-w-0">
-            <img
-              src={DEFAULT_BRANDING.logoUrl}
-              alt=""
-              className="size-9 shrink-0 rounded-lg border border-border"
-            />
-            <div className="min-w-0">
-              <p className="truncate font-display text-base sm:text-lg font-bold leading-none text-fg">
-                OrderKing Delivery Partner
-              </p>
-              <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
-                {riderProfile?.fullName
-                  ? `${riderProfile.fullName}`
-                  : "Fleet Operations"}
-              </p>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <LanguageSelector compact />
-
-            {kycStatus === "VERIFIED" ? (
-              <Badge tone="online" className="hidden md:inline-flex items-center gap-1 normal-case">
-                <ShieldCheck className="size-3.5" />
-                <span>Verified Partner</span>
-              </Badge>
-            ) : kycStatus === "SUBMITTED" || kycStatus === "UNDER_REVIEW" ? (
-              <Link to="/onboarding" className="hidden md:inline-flex">
-                <Badge tone="busy" className="items-center gap-1 normal-case hover:opacity-90">
-                  <FileCheck2 className="size-3.5" />
-                  <span>KYC In Review</span>
-                </Badge>
-              </Link>
-            ) : kycStatus ? (
-              <Link to="/onboarding" className="hidden md:inline-flex">
-                <Badge tone="offline" className="items-center gap-1 normal-case hover:opacity-90">
-                  <AlertTriangle className="size-3.5" />
-                  <span>Complete KYC</span>
-                </Badge>
-              </Link>
-            ) : (
-              <Badge tone="online" className="hidden md:inline-flex items-center gap-1 normal-case">
-                <ShieldCheck className="size-3.5" />
-                <span>Verified Fleet</span>
-              </Badge>
-            )}
-
-            <button
-              type="button"
-              onClick={() => setSosModalOpen(true)}
-              aria-label="OrderKing Emergency SOS 112 Safety Shield"
-              title="Emergency SOS 112 - Direct Police, Medical & Fleet Safety Command"
-              className="group relative flex items-center gap-1.5 rounded-full border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 px-2.5 sm:px-3 py-1.5 text-white shadow-md shadow-red-600/35 transition-all duration-200 hover:from-red-500 hover:to-rose-600 active:scale-95 shrink-0"
-            >
-              <span className="absolute -inset-0.5 rounded-full bg-red-500/30 opacity-70 blur-xs animate-ping group-hover:opacity-100 pointer-events-none" />
-              <ShieldAlert className="size-4 animate-pulse stroke-[2.5] text-white shrink-0 drop-shadow-xs" />
-              <div className="flex flex-col text-left leading-none">
-                <span className="text-[11px] font-black tracking-wider uppercase text-white drop-shadow-xs">
-                  SOS 112
-                </span>
-                <span className="text-[8px] font-bold text-rose-200 tracking-tight hidden xs:inline">
-                  Safety Shield
-                </span>
-              </div>
-            </button>
-
-            <Link
-              to="/assistant"
-              className="grid size-9 place-items-center rounded-lg border border-border bg-card hover:bg-muted transition"
-              aria-label={t("assistant")}
-              title={t("assistant")}
-            >
-              <Bot className="size-4.5" />
-            </Link>
-
-            <Link
-              to="/support"
-              className="grid size-9 place-items-center rounded-lg border border-border bg-card hover:bg-muted transition"
-              aria-label={t("support")}
-              title={t("support")}
-            >
-              <CircleHelp className="size-4.5" />
-            </Link>
-
-            <div className="hidden sm:block">
-              <UserButton />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto grid max-w-5xl gap-6 px-4 pt-4 pb-28 lg:grid-cols-[1fr_18rem] lg:pb-8">
-        <main className="min-w-0">{children}</main>
-        <aside className="hidden lg:block">
-          <div className="sticky top-20 space-y-1.5 rounded-xl bg-card p-3 shadow-[var(--shadow-border)]">
-            {nav.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-sm font-medium transition",
-                  path === item.to ? "bg-primary text-primary-foreground" : "hover:bg-muted",
-                )}
+              <button
+                type="button"
+                disabled={retryingGeo}
+                onClick={retryGpsPermission}
+                className="inline-flex shrink-0 items-center gap-1 rounded-md bg-white/20 px-2 py-0.5 text-xs font-bold hover:bg-white/30 transition"
               >
-                <item.icon className="size-4" />
-                {item.label}
-              </Link>
-            ))}
+                <RefreshCw className={cn("size-3", retryingGeo && "animate-spin")} />
+                <span>{retryingGeo ? "Checking GPS..." : "Re-check GPS"}</span>
+              </button>
+            </div>
+          </div>
+        ) : null}
 
-            <div className="my-2 border-t border-border pt-2 space-y-1.5">
+        {kycStatus === "REJECTED" && path !== "/onboarding" ? (
+          <div className="border-b border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 font-semibold">
+                <AlertTriangle className="size-4 shrink-0 text-rose-700" />
+                <span>
+                  KYC Requires Correction:{" "}
+                  {riderProfile?.kycRejectReason || "Please review and re-upload your KYC details."}
+                </span>
+              </span>
               <Link
                 to="/onboarding"
-                className={cn(
-                  "flex min-h-10 items-center justify-between gap-2 rounded-lg px-3 text-xs font-semibold transition",
-                  path === "/onboarding" ? "bg-primary text-primary-foreground" : "hover:bg-muted",
-                )}
+                className="rounded-lg bg-rose-800 px-2.5 py-1 text-xs font-bold text-white hover:bg-rose-900 transition"
               >
-                <span className="flex items-center gap-2">
-                  <FileCheck2 className="size-4" />
-                  <span>KYC &amp; Bank Setup</span>
-                </span>
-                {kycStatus && (
-                  <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-fg">
-                    {kycStatus}
-                  </span>
-                )}
+                Update KYC →
               </Link>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Top Header - Mobile Optimized Parity with Benchmark Partner */}
+        <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur px-3 py-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <Link to="/" className="flex items-center gap-2.5 min-w-0">
+              <img
+                src={DEFAULT_BRANDING.logoUrl}
+                alt=""
+                className="size-8.5 shrink-0 rounded-lg border border-border"
+              />
+              <div className="min-w-0">
+                <p className="truncate font-display text-sm font-bold leading-none text-fg">
+                  OrderKing Delivery Partner
+                </p>
+                <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                  {riderProfile?.fullName || "Fleet Operations"}
+                </p>
+              </div>
+            </Link>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <LanguageSelector compact />
+
+              <button
+                type="button"
+                onClick={() => setSosModalOpen(true)}
+                aria-label="OrderKing Emergency SOS 112 Safety Shield"
+                title="Emergency SOS 112 - Direct Police, Medical & Fleet Safety Command"
+                className="group relative flex items-center gap-1 rounded-full border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 px-2 py-1 text-white shadow-xs transition-all duration-200 active:scale-95 shrink-0"
+              >
+                <ShieldAlert className="size-3.5 stroke-[2.5] text-white shrink-0 drop-shadow-xs" />
+                <span className="text-[10px] font-black tracking-wider uppercase text-white drop-shadow-xs">
+                  SOS 112
+                </span>
+              </button>
 
               <Link
                 to="/assistant"
-                className={cn(
-                  "flex min-h-10 items-center gap-2 rounded-lg px-3 text-xs font-semibold transition",
-                  path === "/assistant" ? "bg-primary text-primary-foreground" : "hover:bg-muted",
-                )}
+                className="grid size-8 place-items-center rounded-lg border border-border bg-card hover:bg-muted transition"
+                aria-label={t("assistant")}
+                title={t("assistant")}
               >
                 <Bot className="size-4" />
-                <span>{t("assistant")}</span>
               </Link>
 
               <Link
                 to="/support"
-                className={cn(
-                  "flex min-h-10 items-center gap-2 rounded-lg px-3 text-xs font-semibold transition",
-                  path === "/support" ? "bg-primary text-primary-foreground" : "hover:bg-muted",
-                )}
+                className="grid size-8 place-items-center rounded-lg border border-border bg-card hover:bg-muted transition"
+                aria-label={t("support")}
+                title={t("support")}
               >
                 <CircleHelp className="size-4" />
-                <span>{t("support")}</span>
               </Link>
+
+              <UserButton />
             </div>
           </div>
-        </aside>
+        </header>
+
+        {/* Clean Centered Mobile Content Body */}
+        <main className="min-w-0 flex-1 p-3.5 space-y-4">{children}</main>
+
+        {/* 1-TAP EMERGENCY SOS SAFETY SHEET MODAL */}
+        <RiderEmergencySafetySheet
+          isOpen={sosModalOpen}
+          onClose={() => setSosModalOpen(false)}
+          riderName={riderProfile?.fullName}
+          riderPhone={riderProfile?.phone}
+        />
+
+        {/* ULTRA-LUXURIOUS DOCKED BOTTOM NAVIGATION (All 5 Benchmark Tabs) */}
+        <RiderFloatingBottomNav isDutyOnline={online && geoOk} />
       </div>
-
-      {/* 1-TAP EMERGENCY SOS SAFETY SHEET MODAL */}
-      <RiderEmergencySafetySheet
-        isOpen={sosModalOpen}
-        onClose={() => setSosModalOpen(false)}
-        riderName={riderProfile?.fullName}
-        riderPhone={riderProfile?.phone}
-      />
-
-      {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
-      <RiderFloatingBottomNav isDutyOnline={online && geoOk} />
     </div>
   );
 }

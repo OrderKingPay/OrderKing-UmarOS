@@ -55,7 +55,11 @@ import { ConfirmDialog } from "./confirm-dialog";
 import { MapPane } from "./map-pane";
 import { DeliveryActions } from "./delivery-actions";
 import { CoolingOffBanner } from "./cooling-off-banner";
-import { FloatingCashCard } from "./floating-cash-card";
+import {
+  OPERATIONAL_SHIFT_SLOTS,
+  BOOKED_GIGS_STORAGE_KEY,
+  getIsoDateOffset,
+} from "@/lib/rider/shift-slots";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 import { calculateDailyMilestoneProgress, calculateTier1MilestoneBonus } from "@/lib/rider/gig-engine";
@@ -67,72 +71,8 @@ import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 
-type ShiftSlot = {
-  id: string;
-  label: string;
-  window: string;
-  durationHours: number;
-  tag: string;
-  baseFarePaise: number;
-  distanceRatePaise: number;
-  peakIncentiveNote: string;
-};
-
-const OPERATIONAL_SHIFT_SLOTS: ReadonlyArray<ShiftSlot> = [
-  {
-    id: "morning_07_11",
-    label: "Morning",
-    window: "07:00–11:00",
-    durationHours: 4,
-    tag: "Breakfast Dispatch",
-    baseFarePaise: STATUTORY_BASE_FARE_PAISE,
-    distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-    peakIncentiveNote: "Base ₹35 (first 2 km) + ₹12/km distance pay · ₹1/min wait pay after 10m",
-  },
-  {
-    id: "lunch_peak_12_1530",
-    label: "Lunch Peak",
-    window: "12:00–15:30",
-    durationHours: 3.5,
-    tag: "High-Demand Peak",
-    baseFarePaise: STATUTORY_BASE_FARE_PAISE,
-    distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-    peakIncentiveNote: "Base ₹35 + ₹12/km · High order density toward Daily Milestone slabs",
-  },
-  {
-    id: "evening_16_19",
-    label: "Evening",
-    window: "16:00–19:00",
-    durationHours: 3,
-    tag: "Snack & Tiffin",
-    baseFarePaise: STATUTORY_BASE_FARE_PAISE,
-    distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-    peakIncentiveNote: "Base ₹35 (first 2 km) + ₹12/km distance pay · Short-radius trips",
-  },
-  {
-    id: "dinner_peak_19_23",
-    label: "Dinner Peak",
-    window: "19:00–23:00",
-    durationHours: 4,
-    tag: "Prime Peak Slot",
-    baseFarePaise: STATUTORY_BASE_FARE_PAISE,
-    distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-    peakIncentiveNote: "Base ₹35 + ₹12/km · Peak dispatch priority & kitchen wait-time pay",
-  },
-  {
-    id: "late_night_23_02",
-    label: "Late Night",
-    window: "23:00–02:00",
-    durationHours: 3,
-    tag: "Night Operations",
-    baseFarePaise: STATUTORY_BASE_FARE_PAISE,
-    distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-    peakIncentiveNote: "Base ₹35 + ₹12/km · 24x7 SOS rider safety support active",
-  },
-];
 
 const READINESS_STORAGE_KEY = "ok_rider_readiness_v1";
-const BOOKED_GIGS_STORAGE_KEY = "ok_rider_booked_gigs_v1";
 const DEFAULT_COD_BLOCK_THRESHOLD_PAISE = 250000; // ₹2,500.00 statutory COD float limit
 
 type ReadinessState = {
@@ -142,141 +82,6 @@ type ReadinessState = {
   documentsAndFuelReady: boolean;
 };
 
-function getIsoDateOffset(daysOffset: number): string {
-  const d = new Date(Date.now() + daysOffset * 86_400_000);
-  return d.toISOString().slice(0, 10);
-}
-
-function DailyMilestoneCard({
-  completed,
-  performance,
-}: {
-  completed: number;
-  performance: RiderPerformance | null;
-}) {
-  const milestone = calculateTier1MilestoneBonus(completed);
-  const acceptancePct =
-    performance && performance.offered > 0
-      ? Math.round((performance.accepted / performance.offered) * 100)
-      : 100;
-  const completionPct =
-    performance && performance.accepted > 0
-      ? Math.round((performance.completed / performance.accepted) * 100)
-      : 100;
-
-  return (
-    <section className="rounded-2xl border border-border bg-card p-4 shadow-xs space-y-3.5 relative overflow-hidden text-card-foreground">
-      {/* Background Ambient Glow */}
-      
-
-      {/* Daily Milestone Target Banner */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-[#E23744] border border-red-200">
-            <Target className="size-5" />
-          </span>
-          <div>
-            <h3 className="font-display text-sm font-extrabold text-foreground tracking-tight font-bold">
-              {milestone.headline}
-            </h3>
-            <p className="text-[11px] text-muted-foreground">
-              {milestone.subtext}
-            </p>
-          </div>
-        </div>
-        <Badge tone="online" className="font-mono text-xs font-bold border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-bold shrink-0">
-          {completed}/{milestone.targetOrders} Completed
-        </Badge>
-      </div>
-
-      {/* Visual Progress Bar: e.g. 6/10 orders completed */}
-      <div className="space-y-1.5 bg-muted/40 p-3 rounded-xl border border-border">
-        <div className="flex items-center justify-between text-xs font-semibold">
-          <span className="text-foreground flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-[#E23744] animate-pulse" />
-            <span>{completed}/{milestone.targetOrders} orders completed</span>
-          </span>
-          <span className="font-mono font-extrabold text-[#E23744]">{milestone.progressPct}%</span>
-        </div>
-        <div className="h-3 w-full bg-muted/40 rounded-full overflow-hidden p-0.5 border border-white/5">
-          <div
-            className="h-full rounded-full bg-emerald-500 transition-all duration-700 ease-out"
-            style={{ width: `${milestone.progressPct}%` }}
-          />
-        </div>
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-0.5">
-          <span>{milestone.remainingOrders > 0 ? `${milestone.remainingOrders} more orders to reach target` : "All Targets Unlocked!"}</span>
-          <span className="text-emerald-400 font-bold">
-            Real-Time Bonus: +₹{milestone.bonusRupees}
-          </span>
-        </div>
-      </div>
-
-      {/* Tier-1 Milestone Slabs: 5 orders = +₹50, 10 orders = +₹150, 15 orders = +₹275 */}
-      <div className="grid grid-cols-3 gap-2 text-center">
-        {milestone.slabs.map((slab) => (
-          <div
-            key={slab.orders}
-            className={`rounded-xl p-2.5 border transition-all duration-200 relative ${
-              slab.isUnlocked
-                ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-400 font-bold shadow-xs"
-                : slab.isCurrentTarget
-                  ? "border-[#E23744] bg-red-50 text-[#E23744] font-bold shadow-xs"
-                  : "border-border/60 bg-muted/20 text-muted-foreground opacity-75"
-            }`}
-          >
-            {slab.isUnlocked && (
-              <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-black text-[9px] font-black">
-                ✓
-              </span>
-            )}
-            <div className="text-[11px] font-bold">
-              {slab.orders} Orders
-            </div>
-            <div className="text-sm font-extrabold font-mono text-[#E23744] mt-0.5">
-              {slab.label}
-            </div>
-            <div className="text-[9.5px] mt-0.5 uppercase tracking-wider font-semibold">
-              {slab.isUnlocked ? "Unlocked ✓" : slab.isCurrentTarget ? "Active Target" : "Next Slab"}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Real-Time Bonus Addition to Daily Earnings */}
-      <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/30 px-3 py-2 text-xs">
-        <div className="flex items-center gap-1.5 font-semibold text-emerald-400">
-          <Gift className="size-4 shrink-0 text-emerald-400" />
-          <span>Real-time Milestone Bonus Added:</span>
-        </div>
-        <span className="font-mono font-extrabold text-emerald-300 text-sm">
-          +₹{milestone.bonusRupees}.00
-        </span>
-      </div>
-
-      {performance ? (
-        <div className="grid grid-cols-3 gap-2 pt-1 text-center text-xs">
-          <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Acceptance</p>
-            <p className="font-mono font-bold text-foreground text-sm mt-0.5">{acceptancePct}%</p>
-          </div>
-          <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Completion</p>
-            <p className="font-mono font-bold text-foreground text-sm mt-0.5">{completionPct}%</p>
-          </div>
-          <div className="rounded-lg bg-muted/40 p-2 border border-border/60">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Avg / Order</p>
-            <p className="font-mono font-bold text-foreground text-sm mt-0.5">
-              {performance.earningsPerOrderPaise > 0
-                ? formatPaise(performance.earningsPerOrderPaise)
-                : formatPaise(STATUTORY_BASE_FARE_PAISE)}
-            </p>
-          </div>
-        </div>
-      ) : null}
-    </section>
-  );
-}
 
 
 
@@ -699,6 +504,7 @@ export function HomeView() {
   const allReady = Boolean(helmetSelfie || driverReadinessConfirmed);
 
   const activeDayBookedSlots = bookedSlotsByDay[activeShiftDateIso] ?? [];
+  const nextBookedSlot = OPERATIONAL_SHIFT_SLOTS.find((s) => activeDayBookedSlots.includes(s.id));
   const bookedHoursTotal = OPERATIONAL_SHIFT_SLOTS.filter((s) =>
     activeDayBookedSlots.includes(s.id),
   ).reduce((sum, s) => sum + s.durationHours, 0);
@@ -1109,109 +915,7 @@ export function HomeView() {
         </Card>
       )}
 
-      {/* Fleet Floating Cash (Pocket Balance) & Instant UPI Deposit Card */}
-      {sdui.isSectionVisible("floating_cash_card") && (
-        <FloatingCashCard
-          pocketBalance={
-            home.pocketBalance ?? {
-              pocketBalancePaise: unreconciledPaise,
-              limitPaise: codBlockThresholdPaise,
-              isCodBlocked: unreconciledPaise >= codBlockThresholdPaise,
-              utilizationPct: codUsagePct,
-              cashRowsCount: 0,
-            }
-          }
-          disciplineConfig={home.disciplineConfig}
-          onRefresh={() => void load()}
-          externalModalOpen={externalDepositOpen}
-          onExternalModalClose={() => setExternalDepositOpen(false)}
-          lifetimeDeliveries={home.rider?.lifetimeDeliveries ?? home.completedToday ?? 0}
-          riderName={home.rider?.fullName}
-        />
-      )}
-
       
-
-      {/* Operational Gig / Shift Slot Planner */}
-      {sdui.isSectionVisible("shift_slots") && (
-        <Card className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                <CalendarClock className="size-4" />
-              </span>
-              <div>
-                <CardTitle className="text-base">Today&apos;s Gigs</CardTitle>
-                <p className="text-xs text-muted-foreground">
-                  Available shifts for {activeShiftDateIso} · {activeDayBookedSlots.length} slot
-                  {activeDayBookedSlots.length === 1 ? "" : "s"} ({bookedHoursTotal} hrs) booked
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Button
-                size="sm"
-                variant={selectedShiftDay === "today" ? "default" : "outline"}
-                onClick={() => setSelectedShiftDay("today")}
-              >
-                Today ({todayIso.slice(5)})
-              </Button>
-              <Button
-                size="sm"
-                variant={selectedShiftDay === "tomorrow" ? "default" : "outline"}
-                onClick={() => setSelectedShiftDay("tomorrow")}
-              >
-                Tomorrow ({tomorrowIso.slice(5)})
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            {OPERATIONAL_SHIFT_SLOTS.map((slot) => {
-              const isBooked = activeDayBookedSlots.includes(slot.id);
-              return (
-                <div
-                  key={slot.id}
-                  className={`rounded-lg border p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${
-                    isBooked
-                      ? "border-emerald-500/40 bg-emerald-500/5"
-                      : "border-border bg-muted/20"
-                  }`}
-                >
-                  <div className="space-y-0.5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-display text-sm font-bold text-foreground">
-                        {slot.label} ({slot.window})
-                      </span>
-                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                        {slot.tag}
-                      </span>
-                      <span className="text-[11px] font-mono text-muted-foreground">
-                        {slot.durationHours}h
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{slot.peakIncentiveNote}</p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant={isBooked ? "outline" : "default"}
-                    onClick={() => toggleSlotBooking(slot.id)}
-                    className="shrink-0"
-                  >
-                    {isBooked ? "✓ Booked" : "Book Gig"}
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      )}
-
-      {/* Daily Order Milestone Progress & Real Quality Scorecard */}
-      {sdui.isSectionVisible("daily_milestones") && (
-        <DailyMilestoneCard completed={home.completedToday} performance={performance} />
-      )}
-
       
 
 
