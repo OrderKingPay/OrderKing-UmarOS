@@ -294,7 +294,7 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
   // Weekend 3-Day Sprints
   {
     id: "weekend-sprint-1",
-    title: "Weekend Warrior Tier 1",
+    title: "Weekend Target - Slab 1",
     cadence: "WEEKEND_3_DAY",
     daysWindow: 3,
     requiredOrders: 25,
@@ -305,7 +305,7 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
   },
   {
     id: "weekend-sprint-2",
-    title: "Weekend Warrior Tier 2",
+    title: "Weekend Target - Slab 2",
     cadence: "WEEKEND_3_DAY",
     daysWindow: 3,
     requiredOrders: 40,
@@ -316,7 +316,7 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
   },
   {
     id: "weekend-sprint-3",
-    title: "Weekend Champion Sprint",
+    title: "Weekend Target - Slab 3",
     cadence: "WEEKEND_3_DAY",
     daysWindow: 3,
     requiredOrders: 60,
@@ -328,7 +328,7 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
   // Weekly 7-Day Marathons
   {
     id: "weekly-marathon-1",
-    title: "Weekly Dedicated Courier",
+    title: "Weekly Target - Slab 1",
     cadence: "WEEKLY_7_DAY",
     daysWindow: 7,
     requiredOrders: 50,
@@ -339,7 +339,7 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
   },
   {
     id: "weekly-marathon-2",
-    title: "Weekly Pro Courier",
+    title: "Weekly Target - Slab 2",
     cadence: "WEEKLY_7_DAY",
     daysWindow: 7,
     requiredOrders: 80,
@@ -350,7 +350,7 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
   },
   {
     id: "weekly-marathon-3",
-    title: "Weekly Champion Courier",
+    title: "Weekly Target - Slab 3",
     cadence: "WEEKLY_7_DAY",
     daysWindow: 7,
     requiredOrders: 110,

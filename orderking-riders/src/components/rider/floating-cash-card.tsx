@@ -410,7 +410,7 @@ export function FloatingCashCard({
               </div>
             ) : (
               <div className="rounded-xl border border-border bg-muted/20 p-4 space-y-2 text-xs text-muted-foreground">
-                <p className="font-semibold text-foreground">Razorpay / KingPay Gateway Deposit</p>
+                <p className="font-semibold text-foreground">Online UPI / Netbanking Deposit</p>
                 <p>
                   Deposit through Netbanking, UPI, Debit Card, or Corporate VPA. Receipts are logged instantly in your Settlement Ledger.
                 </p>
