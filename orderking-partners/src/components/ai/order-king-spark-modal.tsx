@@ -47,7 +47,7 @@ const SPARK_INDIAN_LANGUAGES: readonly SparkLanguage[] = [
 const FOCUS_TOPICS = [
   "Increase Daily Order Volume",
   "Smart Combo & AOV Engineering",
-  "Neighborhood Geo-Radius & Daypart Expansion",
+  "Neighborhood Delivery Area & Shift Expansion",
   "Earnings & Tax Breakdown Reconciliation",
   "POS & Printer Automation",
 ] as const;
@@ -177,7 +177,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     {
       id: "init",
       sender: "spark",
-      text: "Order King — King AI Kitchen Partner is ready across 10 official benchmark languages. Inspect your live storefront status, daypart and AOV growth recommendations, restore out-of-stock dishes, adjust kitchen prep times between Standard (20m) and Peak Rush (35m), or review transparent payout calculations. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
+      text: "Order King — King AI Kitchen Partner is ready across 10 official benchmark languages. Inspect your live storefront status, order volume and AOV growth recommendations, restore out-of-stock dishes, adjust kitchen prep times between Standard (20m) and Peak Rush (35m), or review transparent payout calculations. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       provenanceNote:
         "Source: Your restaurant's live menu catalog, configured prep times, dashboard state, and verified settlement ledger.",
@@ -789,7 +789,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                 King AI Kitchen Insights &amp; Growth Playbook ({catalogRecommendations.totalItems} Dishes · Menu Score: {catalogRecommendations.storefrontConversionScore}%)
               </span>
               <span className="rounded-md border border-zinc-700 bg-zinc-800/80 px-2 py-0.5 text-[10px] font-mono text-zinc-300">
-                5-Daypart 7d Orders: {catalogRecommendations.dayparts.map((d) => `${d.label}: ${d.orders}`).join(" · ")}
+                Weekly Orders: {catalogRecommendations.dayparts.map((d) => `${d.label}: ${d.orders}`).join(" · ")}
               </span>
             </div>
 

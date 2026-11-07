@@ -1131,7 +1131,7 @@ function AssistantPage() {
               🚀 REVENUE &amp; MENU GROWTH PLAYBOOK — CHEF &amp; RESTAURATEUR ADVISOR
             </h2>
             <p className="mt-0.5 text-xs text-muted">
-              Smart menu engineering, combo recommendations, stockout protection, and 5-daypart neighborhood demand insights tailored directly to your kitchen.
+              Smart menu engineering, combo recommendations, stockout protection, and shift peak demand insights tailored directly to your kitchen.
             </p>
           </div>
           <Button

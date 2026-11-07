@@ -103,7 +103,7 @@ const LEGAL_SECTIONS = [
     title: "4. Settlement Transparency & Tax Guidelines",
     badge: "Tax & Settlements",
     body: [
-      "Integer-Paise Settlement Formula: Net Restaurant Payable = (Food Value + Packaging Charges − Restaurant Discount) − Platform Commission + Platform-Funded Promo − Refund Adjustments.",
+      "Settlement Formula: Net Restaurant Payable = (Food Value + Packaging Charges − Restaurant Discount) − Platform Commission + Platform-Funded Promo − Refund Adjustments.",
       "GST on Restaurant Services (Section 9(5) CGST Act, 2017): For notified restaurant dining and delivery services, 5% GST is collected from the customer and remitted directly to the Government by Order King under Section 9(5) without debiting your payout.",
       "Tax Collected at Source (Section 52 CGST Act): Where applicable on net taxable supplies, 1% TCS (0.5% CGST + 0.5% SGST or 1% IGST) is deposited with the Government and credited to your GSTR-8 ledger.",
       "Tax Deducted at Source (Section 194-O Income Tax Act, 1961): TDS of 1% under Section 194-O is credited directly against your registered PAN, backed by quarterly Form 16A certificates.",
@@ -1068,7 +1068,7 @@ function SettingsPage() {
             </div>
           )}
 
-          {/* Live Itemized Integer-Paise Calculation Preview */}
+          {/* Live Itemized Payout Calculation Preview */}
           <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
               <div className="flex items-center gap-2">
@@ -1185,7 +1185,7 @@ function SettingsPage() {
                     Net Restaurant Payout (NRP)
                   </div>
                   <div className="text-[10px] font-mono text-slate-400">
-                    Exact integer-paise settlement formula (zero floating-point drift)
+                    Daily bank disbursement amount after statutory deductions
                   </div>
                 </div>
                 <div className="text-2xl font-bold font-display text-emerald-400 font-mono">

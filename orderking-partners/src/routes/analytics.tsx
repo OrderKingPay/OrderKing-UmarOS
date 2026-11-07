@@ -177,7 +177,7 @@ function AnalyticsPage() {
                   {t("analytics.promos")} ({q.data?.promotions.orders ?? 0} Orders)
                 </h2>
               </div>
-              <span className="text-xs font-mono text-slate-400">INTEGER-PAISE</span>
+              <span className="text-xs font-mono text-slate-400">PROMO IMPACT</span>
             </div>
             <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
               <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-2.5">

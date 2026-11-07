@@ -548,7 +548,7 @@ export async function dispatchOtpSms(
     } else {
       waNotice = `WhatsApp Cloud API credentials pending. Verification code generated and logged for +91-${cleanPhone}.`;
       console.log(
-        `[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to sovereign direct channel.`,
+        `[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to direct WhatsApp channel.`,
       );
     }
 
