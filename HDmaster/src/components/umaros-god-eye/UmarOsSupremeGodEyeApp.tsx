@@ -14,10 +14,10 @@ import {
 } from '../../lib/orderking/umaros/umaros-supreme-controller';
 
 const INITIAL_SECTIONS: PlatformUiSectionBlock[] = [
-  { id: 'sec-cust-feed', platformId: 'orderking-customers', label: 'Zomato 2026 Pure Veg, Healthy & Food Rescue Feed', rowOrder: 0, colOrder: 0, enabled: true, primaryColorHex: '#e23744' },
-  { id: 'sec-kingpay-rail', platformId: 'orderking-customers', label: 'KingPay NPCI UPI, BBPS & Instant Travel PNR Desk', rowOrder: 1, colOrder: 0, enabled: true, primaryColorHex: '#2563eb' },
-  { id: 'sec-part-kds', platformId: 'orderking-partners', label: '3-Column Live KDS, 80mm KOT & Verhoeff KYC', rowOrder: 0, colOrder: 1, enabled: true, primaryColorHex: '#15803d' },
-  { id: 'sec-rider-gig', platformId: 'orderking-riders', label: '4h Gig Shift Planner, MG Top-Up & Touchpoint Rate Card', rowOrder: 1, colOrder: 1, enabled: true, primaryColorHex: '#22c55e' },
+  { id: 'sec-cust-feed', platformId: 'orderking-customers', label: 'OrderKing Customer Marketplace & Dining Feed', rowOrder: 0, colOrder: 0, enabled: true, primaryColorHex: '#e23744' },
+  { id: 'sec-kingpay-rail', platformId: 'orderking-customers', label: 'KingPay UPI, Soundbox & Travel Desk', rowOrder: 1, colOrder: 0, enabled: true, primaryColorHex: '#2563eb' },
+  { id: 'sec-part-kds', platformId: 'orderking-partners', label: 'Kitchen KDS, Thermal KOT & FSSAI Verification', rowOrder: 0, colOrder: 1, enabled: true, primaryColorHex: '#15803d' },
+  { id: 'sec-rider-gig', platformId: 'orderking-riders', label: 'Rider Fleet Dispatch, Shifts & OTP Delivery', rowOrder: 1, colOrder: 1, enabled: true, primaryColorHex: '#22c55e' },
 ];
 
 export function UmarOsSupremeGodEyeApp() {
@@ -58,17 +58,17 @@ export function UmarOsSupremeGodEyeApp() {
     <div style={{ fontFamily: 'Inter, system-ui, sans-serif', background: '#09090b', color: '#fafafa', minHeight: '100vh', padding: 16 }}>
       <header style={{ maxWidth: 1160, margin: '0 auto 16px auto', background: '#18181b', padding: '12px 16px', borderRadius: 10, border: '1px solid #27272a', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
         <div>
-          <span style={{ fontWeight: 800, fontSize: 18, color: '#f43f5e' }}>UmarOS Supreme God-Eye Control Center</span>
-          <span style={{ marginLeft: 10, fontSize: 12, color: '#a1a1aa' }}>Entity: Orderkingpay • GSTIN: 18AFXPH9838M1Z9 • Assam 788710</span>
+          <span style={{ fontWeight: 800, fontSize: 18, color: '#f43f5e' }}>Umar OS Operations Center</span>
+          <span style={{ marginLeft: 10, fontSize: 12, color: '#a1a1aa' }}>OrderKing & KingPay • GSTIN: 18AFXPH9838M1Z9 • Assam 788710</span>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 12, color: '#4ade80', fontWeight: 700 }}>Fast2SMS Active + 2Factor ({twoFactorCredits} SMS Credits)</span>
+          <span style={{ fontSize: 12, color: '#4ade80', fontWeight: 700 }}>Fast2SMS Active • 2Factor Fallback ({twoFactorCredits} SMS Credits)</span>
           <button
             type="button"
             onClick={handleInstantRefund}
             style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: '#e23744', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
           >
-            1-Tap Arbitration Refund
+            Dispute Refund
           </button>
         </div>
       </header>

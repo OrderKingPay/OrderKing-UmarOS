@@ -56,9 +56,9 @@ const NAV_ITEM_METADATA: Record<
     highlight: true,
   },
   "/assistant": {
-    title: "OrderKing AI Co-Pilot",
+    title: "Partner Assistant",
     subtitle: "Menu suggestions, sales forecasts & operational assistance",
-    tag: "AI Assistant",
+    tag: "Assistant",
     highlight: true,
   },
   "/notifications": {

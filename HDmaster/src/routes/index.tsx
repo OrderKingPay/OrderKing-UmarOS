@@ -110,13 +110,13 @@ function WorldSuspenseShield({
           Loading {worldTitle}...
         </p>
         <p className="text-xs text-slate-500 mt-1">
-          Connected to PostgreSQL & executive controls · Zero flash
+          Connecting to PostgreSQL database
         </p>
       </div>
       <div className="flex items-center gap-2 pt-1">
-        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+        <span className="h-2 w-2 rounded-full bg-emerald-500" />
         <span className="text-[11px] font-bold text-slate-600">
-          UmarOS Active
+          Umar OS Active
         </span>
       </div>
     </div>
@@ -700,13 +700,13 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
       })
 • Delivery Riders: ${liveCounts.riders} verified (${
         liveCounts.riders === 0
-          ? "action needed: onboard riders in World 2"
+          ? "action needed: onboard delivery riders"
           : "on standby"
       })
 • Customer Profiles: ${liveCounts.users} registered in PostgreSQL
 • Total Orders: ${liveCounts.orders} orders processed so far.
 
-All 10 Worlds (Home, OrderKing, King Pay, Travel & Work, B2B & CRM, UMAR AI, App & Design, Connections, Alerts, Settings) are configured and live. You can tell me to approve restaurants, adjust fees or commissions, calculate profits, or log alerts anytime!`,
+Both OrderKing Food Delivery and KingPay Fintech & Travel ecosystems are configured and active with real PostgreSQL connectivity. You can instruct me to approve restaurants, adjust fees or commissions, calculate profits, or log alerts anytime.`,
       appliedAction: {
         type: "ADVISORY",
         detail: "Live PostgreSQL status verified",
@@ -793,15 +793,15 @@ const TEN_WORLDS: WorldDefinition[] = [
     navLabel: "Home",
     emoji: "🏠",
     icon: Home,
-    title: "1. Home — Overall Business Summary & Today's Actions",
+    title: "Operations Overview",
     explanation:
-      "See your live OrderKing numbers, approve pending partners in 1 click, and jump to any of your 10 business worlds.",
+      "Live operational statistics, partner approvals, and daily administrative actions.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "worlds-map", label: "🚀 All 10 Worlds Directory" },
-      { id: "checklist", label: "✅ Today's Founder Checklist" },
-      { id: "legal", label: "🛡️ Indian Legal & Tax Compliance" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "worlds-map", label: "Ecosystem Directory" },
+      { id: "checklist", label: "Daily Checklist" },
+      { id: "legal", label: "Statutory & Tax Compliance" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       platformLive: true,
@@ -847,17 +847,17 @@ const TEN_WORLDS: WorldDefinition[] = [
     navLabel: "OrderKing",
     emoji: "🍔",
     icon: UtensilsCrossed,
-    title: "2. OrderKing — Delivery, Restaurants, Riders & Customers",
+    title: "OrderKing Food Delivery",
     explanation:
-      "Manage live food orders, approve restaurants, support delivery riders, and adjust delivery fees and dispatch rules.",
+      "Manage restaurant partners, delivery fleet, live order fulfillment, and dispatch zones.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "orders", label: "🍔 Live Orders" },
-      { id: "restaurants", label: "🏪 Restaurants" },
-      { id: "riders", label: "🛵 Riders" },
-      { id: "customers", label: "👥 Customers" },
-      { id: "dispatch", label: "🧭 Dispatch & Surge Rules" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "orders", label: "Live Orders" },
+      { id: "restaurants", label: "Restaurants & KYC" },
+      { id: "riders", label: "Rider Fleet" },
+      { id: "customers", label: "Customers" },
+      { id: "dispatch", label: "Dispatch & Surge" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       baseDeliveryFeeInr: 25,
@@ -920,19 +920,19 @@ const TEN_WORLDS: WorldDefinition[] = [
   {
     id: "kingpay",
     number: 3,
-    navLabel: "King Pay",
+    navLabel: "KingPay",
     emoji: "💳",
     icon: CreditCard,
-    title: "3. King Pay — Wallet, Payouts, Commissions & Pricing",
+    title: "KingPay Fintech & Settlements",
     explanation:
-      "Control instant restaurant & rider payouts, restaurant commission percentages, GST/TDS tax buckets, and wallet rules.",
+      "Direct NPCI UPI, Soundbox terminals, RazorpayX payouts, double-entry ledger, and Section 9(5) CGST tax.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "profit", label: "📈 Live Profit & Escrow" },
-      { id: "wallet-mdr", label: "🏦 Wallet & MDR Fees" },
-      { id: "master-switch", label: "🔒 Payout Safety Switch" },
-      { id: "commissions", label: "🏷️ Commissions & Pricing" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "profit", label: "P&L & Escrow" },
+      { id: "wallet-mdr", label: "Wallet & MDR" },
+      { id: "master-switch", label: "Payout Controls" },
+      { id: "commissions", label: "Commissions & Pricing" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       instantT0Payouts: true,
@@ -987,19 +987,19 @@ const TEN_WORLDS: WorldDefinition[] = [
   {
     id: "travel",
     number: 4,
-    navLabel: "Travel & Work",
+    navLabel: "Travel",
     emoji: "✈️",
     icon: Plane,
-    title: "4. Travel & Work — Travel Affiliate Hub, My Trips, Tutor & Jobs",
+    title: "KingPay Travel & Services",
     explanation:
-      "Manage flights, hotels, trains & bus affiliate bookings, customer trip support, AI language tutor courses, and local job hiring.",
+      "Flight, train, hotel, and bus bookings, PNR verification, and workforce learning modules.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "travel-hub", label: "✈️ Travel Affiliate Hub" },
-      { id: "my-trips", label: "🧳 My Trips & Bookings" },
-      { id: "ai-tutor", label: "🎓 AI Tutor & Learning" },
-      { id: "jobs", label: "💼 Jobs & Gig Hiring" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "travel-hub", label: "Travel Hub" },
+      { id: "my-trips", label: "Bookings & PNR" },
+      { id: "ai-tutor", label: "Training Modules" },
+      { id: "jobs", label: "Hiring Board" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       enableTravelTabInCustomerApp: true,
@@ -1047,15 +1047,15 @@ const TEN_WORLDS: WorldDefinition[] = [
     navLabel: "B2B & CRM",
     emoji: "💼",
     icon: Briefcase,
-    title: "5. B2B & CRM — B2B SaaS Sales, ROI Calculator & 15-Stage CRM",
+    title: "B2B Franchise & CRM",
     explanation:
-      "Create B2B franchise proposals, calculate restaurant savings, onboard city franchise partners, and track leads across 15 CRM stages.",
+      "City franchise onboarding, restaurant software subscriptions, and commercial lead pipeline.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "sales-deck", label: "📊 SaaS Sales Deck & ROI Calculator" },
-      { id: "franchise", label: "🤝 City Franchise Onboarding" },
-      { id: "crm-pipeline", label: "🗂️ 15-Stage B2B CRM Pipeline" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "sales-deck", label: "Sales & ROI Calculator" },
+      { id: "franchise", label: "Franchise Onboarding" },
+      { id: "crm-pipeline", label: "CRM Pipeline" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       monthlySaasFeeInr: 1999,
@@ -1099,18 +1099,18 @@ const TEN_WORLDS: WorldDefinition[] = [
   {
     id: "umarai",
     number: 6,
-    navLabel: "UMAR AI",
+    navLabel: "Umar AI",
     emoji: "🤖",
     icon: Bot,
-    title: "6. UMAR AI — Simple AI Command & 16 Specialist Teams",
+    title: "Umar AI Command Center",
     explanation:
-      "Give plain-English instructions to UMAR AI, inspect all 16 specialist platform teams, and compare AI model speed and cost.",
+      "Executive natural language assistant, automated tool calls, and model benchmarks.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "ask-ai", label: "💬 Ask UMAR AI (Simple Command)" },
-      { id: "teams", label: "👥 16 Specialist AI Teams" },
-      { id: "benchmarks", label: "⚡ AI Model Speed & Cost" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "ask-ai", label: "AI Console" },
+      { id: "teams", label: "Specialist Teams" },
+      { id: "benchmarks", label: "Model Benchmarks" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       aiRequireFounderApprovalAboveInr: 500,
@@ -1160,21 +1160,21 @@ const TEN_WORLDS: WorldDefinition[] = [
   {
     id: "design",
     number: 7,
-    navLabel: "App & Design",
+    navLabel: "App Design",
     emoji: "🎨",
     icon: Palette,
-    title: "7. App & Design — Customer App Look, Banners, Design & Media",
+    title: "App Design & CMS",
     explanation:
-      "Customize the Customer App colors and layout, publish home screen banners, and create dish photos, videos, and social posts.",
+      "Customer app branding, promotional banners, visual assets, and content publishing.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "app-look", label: "📱 Customer App Look & Theme" },
-      { id: "banners", label: "📢 Home Banners & Offers CMS" },
-      { id: "app-builder", label: "🛠️ App Builder Studio" },
-      { id: "design-studio", label: "🎨 Design Studio" },
-      { id: "media-studio", label: "🎬 Video & Media Studio" },
-      { id: "social-studio", label: "📲 Social Publishing" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "app-look", label: "Theme & Styles" },
+      { id: "banners", label: "Banners & Promos" },
+      { id: "app-builder", label: "App Studio" },
+      { id: "design-studio", label: "Design Studio" },
+      { id: "media-studio", label: "Media Studio" },
+      { id: "social-studio", label: "Social Publishing" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       customerAppTheme: "OrderKing Emerald & Gold",
@@ -1225,14 +1225,14 @@ const TEN_WORLDS: WorldDefinition[] = [
     navLabel: "Connections",
     emoji: "🔌",
     icon: Plug,
-    title: "8. Connections — Payment Keys, SMS/WhatsApp, AI Keys & Map Zones",
+    title: "API Connectors & Telematics",
     explanation:
-      "Connect Razorpay/UPI gateways, WhatsApp/SMS OTP providers, AI API keys, and manage live city delivery map zones.",
+      "Payment gateways, SMS OTP providers, AI credentials, and geofence delivery zones.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "plugins", label: "🔑 Payment, SMS & AI Keys" },
-      { id: "map-zones", label: "🗺️ Live Delivery Zones & Map" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "plugins", label: "API Gateways & Keys" },
+      { id: "map-zones", label: "Delivery Zones & Map" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       primaryPaymentGateway: "UPI & Nodal Split Rail",
@@ -1290,15 +1290,15 @@ const TEN_WORLDS: WorldDefinition[] = [
     navLabel: "Alerts",
     emoji: "🔔",
     icon: Bell,
-    title: "9. Alerts — Notifications & 6-Tier Action Center",
+    title: "Operations & Alerts Queue",
     explanation:
-      "See real alerts from your PostgreSQL database, log and resolve issues across 6 priority tiers, and protect partners from unfair blocks.",
+      "Operational alerts from PostgreSQL, partner protection policies, and incident resolution.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "action-center", label: "🚨 Live 6-Tier Action Center" },
-      { id: "create-alert", label: "➕ Log New Operational Alert" },
-      { id: "fair-policy", label: "🛡️ Fair Partner Protection Rules" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "action-center", label: "Action Center" },
+      { id: "create-alert", label: "Log Alert" },
+      { id: "fair-policy", label: "Partner Protection" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       zeroAutoSuspensionPolicy: true,
@@ -1347,15 +1347,15 @@ const TEN_WORLDS: WorldDefinition[] = [
     navLabel: "Settings",
     emoji: "⚙️",
     icon: Settings,
-    title: "10. Settings — Master Settings & Customizations for Every Platform",
+    title: "Platform Settings & Governance",
     explanation:
-      "Customize all 10 Worlds from one master screen, configure 23 Indian languages, and inspect your saved PostgreSQL settings.",
+      "Platform configurations, regional languages, session activity, and audit logs.",
     tabs: [
-      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
-      { id: "all-worlds", label: "🌐 All 10 Worlds Master Controls" },
-      { id: "languages", label: "🗣️ 23 Indian Languages & Voice" },
-      { id: "activity-log", label: "📋 Saved Activity & Audit Log" },
-      { id: "settings", label: "⚙️ World Settings & Customizations" },
+      { id: "dashboard", label: "Overview" },
+      { id: "all-worlds", label: "Global Settings" },
+      { id: "languages", label: "Languages & Voice" },
+      { id: "activity-log", label: "Activity & Audit Log" },
+      { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
       defaultPlatformLanguage: "English + Hindi",
@@ -2439,7 +2439,7 @@ function UmarOSDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-28">
       {/* =====================================================================
-          TOP COMPACT BAR: BRAND + LIVE DB STATUS + QUICK WORLD JUMP
+          TOP COMPACT BAR: BRAND + LIVE DB STATUS + BUSINESS DOMAIN SWITCHER
       ===================================================================== */}
       <header className="sticky top-0 z-40 bg-slate-950 text-white border-b border-slate-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
@@ -2464,6 +2464,58 @@ function UmarOSDashboard() {
             </div>
           </div>
 
+          {/* Explicit Business Separation Bar */}
+          <div className="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold gap-1 overflow-x-auto max-w-full">
+            <button
+              type="button"
+              onClick={() => selectWorld("orderking", "dashboard")}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                ["orderking", "home", "design", "b2b"].includes(activeWorldId)
+                  ? "bg-amber-500 text-slate-950 font-black shadow-xs"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <span>🍔</span>
+              <span>OrderKing Food Delivery</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => selectWorld("kingpay", "dashboard")}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                ["kingpay", "travel"].includes(activeWorldId)
+                  ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <span>💳</span>
+              <span>KingPay Fintech & Travel</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => selectWorld("umarai", "dashboard")}
+              className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${
+                activeWorldId === "umarai"
+                  ? "bg-sky-500 text-slate-950 font-black shadow-xs"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <span>🤖</span>
+              <span>Umar AI</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => selectWorld("settings", "dashboard")}
+              className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${
+                ["connections", "alerts", "settings"].includes(activeWorldId)
+                  ? "bg-slate-700 text-white font-black shadow-xs"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <span>⚙️</span>
+              <span>Settings</span>
+            </button>
+          </div>
+
           <div className="flex items-center gap-2">
             <UserButton />
             {activeUnresolvedAlerts.length > 0 && (
@@ -2482,7 +2534,7 @@ function UmarOSDashboard() {
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
               <Settings className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Settings</span>
+              <span>Config</span>
             </button>
           </div>
         </div>
@@ -5110,41 +5162,48 @@ function UmarOSDashboard() {
     </main>
 
       {/* =====================================================================
-          STICKY 10-ITEM BOTTOM NAVIGATION BAR (Just Like the Customer App!)
-          Clicking any item renders ONLY that World on screen!
+          ENTERPRISE DUAL-VERTICAL BOTTOM NAVIGATION BAR
+          Clearly separated: OrderKing Food Delivery | KingPay Fintech & Travel | System
       ===================================================================== */}
       <nav
         aria-label="Navigation"
         className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 shadow-2xl"
       >
-        <div className="max-w-7xl mx-auto px-1.5 py-1.5 grid grid-cols-5 sm:grid-cols-10 gap-1">
-          {TEN_WORLDS.map((world) => {
-            const isSelected = activeWorldId === world.id;
-            const showAlertBadge =
-              world.id === "alerts" && activeUnresolvedAlerts.length > 0;
-            return (
-              <button
-                key={world.id}
-                type="button"
-                onClick={() => selectWorld(world.id, "dashboard")}
-                className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all ${
-                  isSelected
-                    ? "bg-emerald-600 text-white font-black shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-slate-900 font-semibold"
-                }`}
-              >
-                <span className="text-base leading-none">{world.emoji}</span>
-                <span className="text-[10px] mt-1 tracking-tight truncate max-w-full">
-                  {world.navLabel}
-                </span>
-                {showAlertBadge && (
-                  <span className="absolute top-1 right-2 h-4 min-w-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">
-                    {activeUnresolvedAlerts.length}
+        <div className="max-w-7xl mx-auto px-2 py-1">
+          <div className="hidden sm:flex items-center justify-between text-[10px] font-extrabold px-2 pb-1 border-b border-slate-800/80 mb-1">
+            <span className="text-amber-400">OrderKing Food Delivery (Home, Food, Design, B2B)</span>
+            <span className="text-emerald-400">KingPay Fintech & Travel (Payouts, Ledger, Travel)</span>
+            <span className="text-slate-400">System (Umar AI, Connectors, Alerts, Settings)</span>
+          </div>
+          <div className="grid grid-cols-5 sm:grid-cols-10 gap-1">
+            {TEN_WORLDS.map((world) => {
+              const isSelected = activeWorldId === world.id;
+              const showAlertBadge =
+                world.id === "alerts" && activeUnresolvedAlerts.length > 0;
+              return (
+                <button
+                  key={world.id}
+                  type="button"
+                  onClick={() => selectWorld(world.id, "dashboard")}
+                  className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all ${
+                    isSelected
+                      ? "bg-emerald-600 text-white font-black shadow-sm"
+                      : "text-slate-400 hover:text-white hover:bg-slate-900 font-semibold"
+                  }`}
+                >
+                  <span className="text-base leading-none">{world.emoji}</span>
+                  <span className="text-[10px] mt-1 tracking-tight truncate max-w-full">
+                    {world.navLabel}
                   </span>
-                )}
-              </button>
-            );
-          })}
+                  {showAlertBadge && (
+                    <span className="absolute top-1 right-2 h-4 min-w-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">
+                      {activeUnresolvedAlerts.length}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </nav>
     </div>

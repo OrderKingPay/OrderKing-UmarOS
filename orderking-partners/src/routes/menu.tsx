@@ -837,7 +837,7 @@ function MenuPage() {
   }
 
   /**
-   * 1-Tap King AI Automated Dish Photo Studio Plating:
+   * 1-Tap Dish Photo Studio Plating:
    * Generates high-resolution studio-grade 4:3 culinary visual for the dish name,
    * sets both imageUrl & enhancedImageUrl, applies 3500K warm lighting, and pre-attests.
    */
@@ -1250,7 +1250,7 @@ function MenuPage() {
                     MENU STATUS: LOCKED ({menuStatus})
                   </span>
                 </div>
-                <h3 className="text-sm font-bold text-white mt-0.5">
+                <h3 className="text-sm font-bold text-gray-900 mt-0.5">
                   Statutory KYC Verification Pending
                 </h3>
                 <p className="text-xs text-gray-700 mt-1 max-w-2xl leading-relaxed">
@@ -1270,7 +1270,7 @@ function MenuPage() {
         </div>
       )}
 
-      {/* Tier-1 Partner Menu Filter Bar & 1-Tap Stock Desk */}
+      {/* Menu Filter & Stock Controls */}
       <div className="rounded-xl border border-border bg-surface-1 p-3.5 shadow-sm space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Search input to filter dishes by name/description in real time */}
@@ -1448,7 +1448,7 @@ function MenuPage() {
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-white text-xs sm:text-sm">
+                <span className="font-bold text-gray-900 text-xs sm:text-sm">
                   Kitchen Rush Surge Active (+{kitchenRush.bufferMinutes}m Prep Buffer)
                 </span>
                 <span className="rounded bg-amber-500/30 border border-amber-400/50 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 uppercase">
@@ -1526,152 +1526,6 @@ function MenuPage() {
         </div>
       )}
 
-      {/* King AI Dish Pricing & High-Margin Combo Engine */}
-      {canEdit && (sparkPricingRecommendations.length > 0 || sparkComboRecommendations.length > 0) && (
-        <div className="rounded-xl border border-amber-500/40 bg-white border-gray-200 p-4 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400">
-                <Sparkles className="size-4" />
-              </span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-white">King AI Dish Pricing &amp; High-Margin Combo Engine</h3>
-                  <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400 uppercase">
-                    GMV &amp; Margin Optimization
-                  </span>
-                </div>
-                <p className="text-xs text-gray-700">
-                  Data-driven price benchmarking and meal bundles calibrated to expand Average Order Value (AOV), merchant earnings, and platform commission.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* 1. Smart Dish Price Optimization */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-xs font-semibold text-gray-800">
-                <span className="flex items-center gap-1.5 font-mono uppercase tracking-wider text-amber-400">
-                  <TrendingUp className="size-3.5" /> Price Benchmarking Opportunities ({sparkPricingRecommendations.length})
-                </span>
-                <span className="text-[11px] text-gray-500 font-mono">28% Standard Commission Tier</span>
-              </div>
-
-              {sparkPricingRecommendations.length === 0 ? (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-500">
-                  All active dishes are currently priced at optimal corridor benchmarks.
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {sparkPricingRecommendations.slice(0, 3).map((opt) => (
-                    <div
-                      key={opt.itemId}
-                      className="rounded-xl border border-gray-200 bg-gray-50 p-3 flex flex-col justify-between gap-2"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <div className="font-semibold text-xs text-white">{opt.itemName}</div>
-                          <div className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
-                            {opt.commercialRationale}
-                          </div>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <div className="text-xs font-mono font-bold text-emerald-400">
-                            ₹{(opt.currentPricePaise / 100).toFixed(0)} → ₹{(opt.recommendedPricePaise / 100).toFixed(0)}
-                          </div>
-                          <div className="text-[10px] font-mono text-emerald-300 font-semibold">
-                            +{opt.projectedGmvLiftPercent}% GMV Lift
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-200 text-[11px] font-mono">
-                        <div className="text-gray-500">
-                          Est. Weekly GMV: <strong className="text-white">+₹{(opt.estimatedWeeklyGmvIncreasePaise / 100).toFixed(0)}</strong>
-                          {" · "}
-                          Platform Comm: <strong className="text-amber-400">+₹{(opt.estimatedWeeklyFounderCommissionIncreasePaise / 100).toFixed(0)}</strong>
-                        </div>
-                        <Button
-                          size="sm"
-                          type="button"
-                          disabled={applyingSparkItem === opt.itemId}
-                          onClick={() => void handleApplySparkPrice(opt)}
-                          className="h-7 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold font-sans px-3"
-                        >
-                          {applyingSparkItem === opt.itemId ? "Applying..." : `Apply Price (₹${(opt.recommendedPricePaise / 100).toFixed(0)})`}
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 2. High-Converting Meal Combos */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-xs font-semibold text-gray-800">
-                <span className="flex items-center gap-1.5 font-mono uppercase tracking-wider text-amber-400">
-                  <Layers className="size-3.5" /> High-Converting Meal Bundles ({sparkComboRecommendations.length})
-                </span>
-                <span className="text-[11px] text-gray-500 font-mono">Boosts Cart AOV +24-38%</span>
-              </div>
-
-              {sparkComboRecommendations.length === 0 ? (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-500">
-                  Add more dishes to your menu to generate automated meal bundles.
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {sparkComboRecommendations.map((combo) => (
-                    <div
-                      key={combo.id}
-                      className="rounded-xl border border-gray-200 bg-gray-50 p-3 flex flex-col justify-between gap-2"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1.5">
-                            <FssaiDietBadge diet={combo.diet} />
-                            <span className="font-semibold text-xs text-white">{combo.name}</span>
-                          </div>
-                          <span className="rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 text-[10px] font-mono font-bold">
-                            Save {combo.customerSavingsPercent}%
-                          </span>
-                        </div>
-                        <div className="text-[11px] text-gray-700 mt-1">
-                          Includes: {combo.includedItemNames.join(" + ")}
-                        </div>
-                        <div className="text-[10px] text-gray-500 mt-0.5">
-                          {combo.commercialRationale}
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-200 text-[11px] font-mono">
-                        <div className="text-gray-700">
-                          Bundle Price: <strong className="text-white text-xs">₹{(combo.bundlePricePaise / 100).toFixed(0)}</strong>
-                          <span className="line-through text-slate-500 ml-1">₹{(combo.standaloneSumPaise / 100).toFixed(0)}</span>
-                          {" · "}
-                          Comm: <strong className="text-amber-400">₹{(combo.founderCommissionPaise / 100).toFixed(0)}</strong>
-                        </div>
-                        <Button
-                          size="sm"
-                          type="button"
-                          disabled={applyingSparkItem === combo.id}
-                          onClick={() => void handleApplySparkCombo(combo)}
-                          className="h-7 text-xs bg-amber-600 hover:bg-amber-500 text-white font-semibold font-sans px-3"
-                        >
-                          {applyingSparkItem === combo.id ? "Adding..." : "+ Add Combo to Menu"}
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Self-Service Category Builder & Standard Templates */}
       {canEdit ? (
         <div className="rounded-xl border border-border bg-surface-1 p-3.5 space-y-2.5">
@@ -1736,154 +1590,6 @@ function MenuPage() {
           </div>
         </div>
       ) : null}
-
-      {/* Fast Item Creator & Studio Visuals */}
-      {canEdit && (
-        <div className="rounded-xl border border-border bg-surface-1 p-4 shadow-sm space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-surface-2 border border-border text-foreground">
-                <Sparkles className="size-4" />
-              </span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-white">Fast Item Creator &amp; Studio Visuals</h3>
-                  <span className="rounded-full bg-surface-2 border border-border px-2 py-0.5 text-[10px] font-mono font-bold text-muted uppercase">
-                    Catalog Engine
-                  </span>
-                </div>
-                <p className="text-xs text-gray-700">
-                  Type any dish name. Automatically infers category, FSSAI diet classification, corridor benchmark pricing, and studio 4:3 culinary visual.
-                </p>
-              </div>
-            </div>
-            {quickFeedback && (
-              <span className="text-xs font-mono font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-lg">
-                {quickFeedback}
-              </span>
-            )}
-          </div>
-
-          {/* Quick Input Bar */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="relative flex-1">
-              <Wand2 className="size-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={quickDishInput}
-                onChange={(e) => setQuickDishInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && quickDishInput.trim() && !isAddingQuickDish) {
-                    e.preventDefault();
-                    void handleQuickAddDish();
-                  }
-                }}
-                placeholder="Create dish (e.g. Paneer Tikka, Chicken Biryani, Butter Naan, Masala Dosa)..."
-                className="w-full pl-9 pr-8 py-2.5 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-emerald-500 font-sans shadow-inner"
-              />
-              {quickDishInput && (
-                <button
-                  type="button"
-                  onClick={() => setQuickDishInput("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-xs"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            <Button
-              type="button"
-              disabled={!quickDishInput.trim() || isAddingQuickDish}
-              onClick={() => void handleQuickAddDish()}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 shadow-sm"
-            >
-              <Zap className="mr-1.5 size-3.5" />
-              {isAddingQuickDish ? "Adding to Menu..." : "Add to Menu"}
-            </Button>
-
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={!quickDishInput.trim()}
-              onClick={() => handleOpenStudioForQuickDish()}
-              className="text-xs shrink-0"
-            >
-              <SlidersHorizontal className="mr-1.5 size-3.5 text-amber-400" />
-              Customize in Studio
-            </Button>
-          </div>
-
-          {/* Live AI Intelligence Pill when user is typing */}
-          {quickTaxonomy && (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-white/80 p-2.5 text-xs">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-bold text-white flex items-center gap-1.5">
-                  <FssaiDietBadge diet={quickTaxonomy.diet} showLabel />
-                  {quickDishInput.trim()}
-                </span>
-                <span className="text-slate-500">·</span>
-                <span className="text-gray-700">
-                  Category: <strong className="text-amber-300">{quickTaxonomy.category}</strong>
-                </span>
-                <span className="text-slate-500">·</span>
-                <span className="text-gray-700">
-                  Suggested Price: <strong className="text-emerald-400">₹{quickTaxonomy.basePriceRupees}</strong>
-                </span>
-                <span className="text-slate-500">·</span>
-                <span className="text-gray-700">
-                  Prep: <strong className="text-gray-800">{quickTaxonomy.prepMinutes} mins</strong>
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-7 w-9 shrink-0 overflow-hidden rounded border border-amber-500/40 bg-black">
-                  <img
-                    src={quickTaxonomy.suggestedPhotoUrl}
-                    alt="AI Plate Preview"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <span className="text-[11px] font-mono text-amber-400">Studio 4:3 Visual Ready</span>
-              </div>
-            </div>
-          )}
-
-          {/* 1-Tap Popular Signature Creations Pills */}
-          <div className="space-y-1.5 pt-1 border-t border-gray-200">
-            <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
-              <span>Popular 1-Tap Signature Creations (Tap to add instantly with AI Photo):</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {[
-                { name: "Paneer Tikka", diet: "VEG", price: 289 },
-                { name: "Chicken Dum Biryani", diet: "NONVEG", price: 349 },
-                { name: "Murgh Makhani (Butter Chicken)", diet: "NONVEG", price: 389 },
-                { name: "Dal Makhani", diet: "VEG", price: 269 },
-                { name: "Paneer Butter Masala", diet: "VEG", price: 299 },
-                { name: "Butter Naan", diet: "VEG", price: 59 },
-                { name: "Crispy Masala Dosa", diet: "VEG", price: 169 },
-                { name: "Veg Hakka Noodles", diet: "VEG", price: 219 },
-                { name: "Amritsari Chole Bhature", diet: "VEG", price: 199 },
-                { name: "Hot Shahi Gulab Jamun", diet: "VEG", price: 99 },
-                { name: "Cutting Masala Chai", diet: "VEG", price: 49 },
-              ].map((preset) => (
-                <button
-                  key={preset.name}
-                  type="button"
-                  disabled={isAddingQuickDish}
-                  onClick={() => void handleQuickAddDish(preset.name)}
-                  className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-xs text-gray-700 hover:border-amber-500/60 hover:bg-amber-950/30 hover:text-white transition flex items-center gap-1.5 group font-medium"
-                >
-                  <FssaiDietBadge diet={preset.diet} />
-                  <span>{preset.name}</span>
-                  <span className="text-[10px] font-mono text-emerald-400 font-bold">₹{preset.price}</span>
-                  <span className="text-[10px] text-amber-400 group-hover:inline opacity-70">+ 1-Tap</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {canAvail && selected.length > 0 ? (
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3">
@@ -2032,7 +1738,7 @@ function MenuPage() {
                             void handleGeneratePhotoForItem(item);
                           }}
                           className="h-16 w-20 shrink-0 rounded-lg border border-dashed border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20 p-1 flex flex-col items-center justify-center gap-0.5 text-amber-400 text-[10px] font-bold text-center transition cursor-pointer"
-                          title="Generate Studio Photo with King AI (1-Tap)"
+                          title="Add Dish Photo"
                         >
                           <Sparkles className="size-4 text-amber-400" />
                           <span>+ AI Photo</span>
@@ -2336,7 +2042,7 @@ function MenuPage() {
         ) : null}
       </Card>
 
-      {/* Tier-1 Grade Dish Studio Modal / Slide-Over Drawer */}
+      {/* Dish Details Modal / Slide-Over Drawer */}
       {editor ? (
         <div
           className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm"
@@ -2352,12 +2058,12 @@ function MenuPage() {
             <div className="flex items-center justify-between border-b border-gray-200 bg-white px-5 py-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
-                    Tier-1 Grade Dish Studio
+                  <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-gray-600">
+                    Dish Details
                   </span>
                   <FssaiDietBadge diet={editor.diet} showLabel />
                 </div>
-                <h3 id="dish-studio-title" className="font-display text-lg font-bold text-white mt-1">
+                <h3 id="dish-studio-title" className="font-display text-lg font-bold text-gray-900 mt-1">
                   {editor.id ? `${t("menu.edit")}: ${editor.name || "Dish"}` : "+ New Dish Studio"}
                 </h3>
               </div>
@@ -2640,14 +2346,14 @@ function MenuPage() {
                 )}
               </div>
 
-              {/* 4. King AI Automated Dish Photo Studio & Studio Lighting */}
+              {/* 4. Dish Photo Studio & Studio Lighting */}
               <div className="rounded-xl border border-amber-500/40 bg-white border-gray-200 p-4 space-y-4 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2">
                       <Sparkles className="size-4 text-amber-400 animate-pulse" />
                       <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
-                        King AI Automated Dish Photo Studio
+                        Dish Photo Studio
                       </span>
                       <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-mono text-amber-300">
                         4:3 Studio Grade
@@ -2692,8 +2398,8 @@ function MenuPage() {
                       <>
                         <Sparkles className="mr-1.5 size-3.5" />
                         {editor.imageUrl
-                          ? "✨ Regenerate Dish Photo with King AI (1-Tap)"
-                          : "✨ Generate Dish Photo with King AI (1-Tap)"}
+                          ? "Regenerate Dish Photo"
+                          : "Generate Dish Photo"}
                       </>
                     )}
                   </Button>
@@ -2968,7 +2674,7 @@ function MenuPage() {
                       <CheckCircle2 className="size-4 text-emerald-400 shrink-0 mt-0.5" />
                       <div className="space-y-0.5 text-xs">
                         <span className="font-bold text-emerald-300 block">
-                          King AI Studio Certified Presentation
+                          Dish Photo Presentation
                         </span>
                         <span className="text-gray-700 block leading-relaxed">
                           This studio visual has been automatically calibrated to authentic portion sizes and standard culinary presentation. Pre-certified and ready for immediate catalog publishing.
@@ -2988,7 +2694,7 @@ function MenuPage() {
                         />
                         <div className="space-y-1">
                           <span className="block text-xs font-bold text-amber-300">
-                            FSSAI Culinary Presentation Attestation *
+                            Menu Presentation Confirmation
                           </span>
                           <span className="block text-xs text-gray-800 leading-relaxed">
                             "I attest that this photograph is an authentic representation of the actual dish portion and ingredients prepared by our kitchen."

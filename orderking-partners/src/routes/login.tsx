@@ -639,28 +639,6 @@ function Login() {
           </div>
         </div>
 
-        {/* Key Partner Highlights */}
-        <div className="grid grid-cols-2 gap-3 text-xs text-gray-600">
-          <div className="rounded-2xl border border-gray-200 bg-white p-3.5 shadow-xs">
-            <div className="flex items-center gap-1.5 font-bold text-gray-900">
-              <CheckCircle2 className="size-4 text-emerald-600" />
-              <span>Direct Daily Payouts</span>
-            </div>
-            <p className="mt-1 text-[11px] text-gray-500 leading-snug">
-              Automated daily T+1 payouts directly to your verified bank account.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-3.5 shadow-xs">
-            <div className="flex items-center gap-1.5 font-bold text-gray-900">
-              <Globe className="size-4 text-[#E23744]" />
-              <span>Vernacular Audio</span>
-            </div>
-            <p className="mt-1 text-[11px] text-gray-500 leading-snug">
-              Full Indian language kitchen controls with real-time soundbox order alerts.
-            </p>
-          </div>
-        </div>
-
         {/* Security & Statutory Details */}
         <div className="text-center text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
           <ShieldCheck className="size-3.5 text-gray-400" />
