@@ -1376,8 +1376,8 @@ function MenuPage() {
             onClick={() => setMenuFilter("ALL")}
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition ${
               menuFilter === "ALL"
-                ? "bg-slate-800 text-white border border-slate-600 shadow-xs"
-                : "bg-surface-2 text-muted hover:text-foreground border border-transparent"
+                ? "bg-gray-900 text-white shadow-xs"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
             }`}
           >
             All Items ({allItems.length})
@@ -1388,8 +1388,8 @@ function MenuPage() {
             onClick={() => setMenuFilter("IN_STOCK")}
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
               menuFilter === "IN_STOCK"
-                ? "bg-emerald-950 text-emerald-300 border border-emerald-500/60 shadow-xs"
-                : "bg-surface-2 text-emerald-400 hover:bg-emerald-500/10 border border-transparent"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
             }`}
           >
             <CheckCircle2 className="size-3.5" />
@@ -1401,10 +1401,10 @@ function MenuPage() {
             onClick={() => setMenuFilter("OUT_OF_STOCK")}
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
               menuFilter === "OUT_OF_STOCK"
-                ? "bg-rose-950 text-rose-300 border border-rose-500/60 shadow-xs"
+                ? "bg-rose-600 text-white shadow-xs"
                 : outOfStockCount > 0
                 ? "text-rose-400 bg-rose-500/10 border border-rose-500/30"
-                : "bg-surface-2 text-muted hover:text-foreground border border-transparent"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
             }`}
           >
             <XCircle className="size-3.5" />
@@ -1416,8 +1416,8 @@ function MenuPage() {
             onClick={() => setMenuFilter("VEG_ONLY")}
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
               menuFilter === "VEG_ONLY"
-                ? "bg-emerald-950 text-emerald-300 border border-emerald-500/60 shadow-xs"
-                : "bg-surface-2 text-slate-300 hover:text-white border border-transparent"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
             }`}
           >
             <FssaiDietBadge diet="VEG" />
@@ -1429,8 +1429,8 @@ function MenuPage() {
             onClick={() => setMenuFilter("NONVEG_EGG")}
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
               menuFilter === "NONVEG_EGG"
-                ? "bg-rose-950 text-rose-200 border border-rose-500/60 shadow-xs"
-                : "bg-surface-2 text-slate-300 hover:text-white border border-transparent"
+                ? "bg-rose-600 text-white shadow-xs"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
             }`}
           >
             <FssaiDietBadge diet="NONVEG" />
@@ -1461,7 +1461,7 @@ function MenuPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center rounded-lg border border-amber-500/40 bg-slate-950/80 p-0.5">
+            <div className="flex items-center rounded-lg border border-amber-500/40 bg-white/80 p-0.5">
               <button
                 type="button"
                 onClick={() => kitchenRush.setBuffer(10)}
@@ -1559,7 +1559,7 @@ function MenuPage() {
               </div>
 
               {sparkPricingRecommendations.length === 0 ? (
-                <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-3 text-xs text-slate-400">
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-slate-400">
                   All active dishes are currently priced at optimal corridor benchmarks.
                 </div>
               ) : (
@@ -1567,7 +1567,7 @@ function MenuPage() {
                   {sparkPricingRecommendations.slice(0, 3).map((opt) => (
                     <div
                       key={opt.itemId}
-                      className="rounded-xl border border-slate-800 bg-slate-950/80 p-3 flex flex-col justify-between gap-2"
+                      className="rounded-xl border border-gray-200 bg-gray-50 p-3 flex flex-col justify-between gap-2"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
@@ -1618,7 +1618,7 @@ function MenuPage() {
               </div>
 
               {sparkComboRecommendations.length === 0 ? (
-                <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-3 text-xs text-slate-400">
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-slate-400">
                   Add more dishes to your menu to generate automated meal bundles.
                 </div>
               ) : (
@@ -1626,7 +1626,7 @@ function MenuPage() {
                   {sparkComboRecommendations.map((combo) => (
                     <div
                       key={combo.id}
-                      className="rounded-xl border border-slate-800 bg-slate-950/80 p-3 flex flex-col justify-between gap-2"
+                      className="rounded-xl border border-gray-200 bg-gray-50 p-3 flex flex-col justify-between gap-2"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2">
@@ -1779,7 +1779,7 @@ function MenuPage() {
                   }
                 }}
                 placeholder="Create dish (e.g. Paneer Tikka, Chicken Biryani, Butter Naan, Masala Dosa)..."
-                className="w-full pl-9 pr-8 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-xs sm:text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 font-sans shadow-inner"
+                className="w-full pl-9 pr-8 py-2.5 bg-white border border-slate-800 rounded-lg text-xs sm:text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 font-sans shadow-inner"
               />
               {quickDishInput && (
                 <button
@@ -1816,7 +1816,7 @@ function MenuPage() {
 
           {/* Live AI Intelligence Pill when user is typing */}
           {quickTaxonomy && (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-slate-950/80 p-2.5 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-white/80 p-2.5 text-xs">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-bold text-white flex items-center gap-1.5">
                   <FssaiDietBadge diet={quickTaxonomy.diet} showLabel />
@@ -2124,7 +2124,7 @@ function MenuPage() {
                                         setQuickEditingVariant(null);
                                       }
                                     }}
-                                    className="w-16 rounded border border-slate-700 bg-slate-950 px-1 py-0.5 text-xs text-right text-emerald-400 font-mono focus:border-emerald-500 focus:outline-none"
+                                    className="w-16 rounded border border-slate-700 bg-white px-1 py-0.5 text-xs text-right text-emerald-400 font-mono focus:border-emerald-500 focus:outline-none"
                                   />
                                   <button
                                     type="submit"
@@ -2347,7 +2347,7 @@ function MenuPage() {
             if (e.target === e.currentTarget) setEditor(null);
           }}
         >
-          <div className="flex h-full w-full max-w-2xl flex-col border-l border-slate-800 bg-slate-950 text-slate-100 shadow-2xl">
+          <div className="flex h-full w-full max-w-2xl flex-col border-l border-gray-200 bg-white text-slate-100 shadow-2xl">
             {/* Drawer Header */}
             <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/90 px-5 py-4">
               <div>
@@ -2801,7 +2801,7 @@ function MenuPage() {
 
                 {/* Interactive Studio Lighting Fine-Tuning Sliders */}
                 {editor.imageUrl ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 rounded-lg border border-slate-800 bg-slate-950/60 p-2.5 text-[11px]">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-[11px]">
                     <label className="space-y-1">
                       <div className="flex justify-between font-mono text-slate-300">
                         <span>Brightness</span>
@@ -3341,7 +3341,7 @@ function MenuPage() {
                     {editor.modifierGroups.map((group, grpIdx) => (
                       <div
                         key={group.id}
-                        className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-3"
+                        className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-3"
                       >
                         {/* Group Header Controls */}
                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -3474,7 +3474,7 @@ function MenuPage() {
                                     setEditor({ ...editor, modifierGroups: updated });
                                   }}
                                   placeholder="Option Name (e.g. Extra Cheese)"
-                                  className="h-7 text-xs bg-slate-950 border-slate-800 text-slate-200 flex-1"
+                                  className="h-7 text-xs bg-white border-slate-800 text-slate-200 flex-1"
                                 />
                                 <div className="flex items-center gap-1 text-xs">
                                   <span className="text-slate-400">Base ₹</span>
@@ -3492,7 +3492,7 @@ function MenuPage() {
                                       };
                                       setEditor({ ...editor, modifierGroups: updated });
                                     }}
-                                    className="w-14 rounded border border-slate-800 bg-slate-950 px-1 py-0.5 text-xs text-right text-emerald-400 font-mono"
+                                    className="w-14 rounded border border-gray-200 bg-white px-1 py-0.5 text-xs text-right text-emerald-400 font-mono"
                                   />
                                 </div>
                                 <button
@@ -3510,7 +3510,7 @@ function MenuPage() {
 
                               {/* Variant Price Adders (e.g. Regular +₹30 / Large +₹60) */}
                               {editor.variants.length > 0 && (
-                                <div className="rounded-md border border-slate-800/80 bg-slate-950/60 p-1.5 flex flex-wrap items-center gap-2 text-[11px]">
+                                <div className="rounded-md border border-slate-800/80 bg-white/60 p-1.5 flex flex-wrap items-center gap-2 text-[11px]">
                                   <span className="font-semibold text-slate-400">Variant Price Adders:</span>
                                   {editor.variants.map((v) => {
                                     const vName = v.name || "Variant";
@@ -3538,7 +3538,7 @@ function MenuPage() {
                                             };
                                             setEditor({ ...editor, modifierGroups: updated });
                                           }}
-                                          className="w-12 bg-slate-950 border border-slate-800 text-right px-1 text-emerald-400 font-mono rounded"
+                                          className="w-12 bg-white border border-slate-800 text-right px-1 text-emerald-400 font-mono rounded"
                                         />
                                       </div>
                                     );
@@ -3642,7 +3642,7 @@ function MenuPage() {
               value={rawOcrText}
               onChange={(e) => setRawOcrText(e.target.value)}
               placeholder="Paste raw menu text or OCR output here... Example:&#10;&#10;STARTERS&#10;Paneer Tikka - ₹220&#10;Chicken Malai Kebab - ₹280 [NV]&#10;&#10;MAIN COURSE&#10;Butter Chicken - ₹340&#10;Dal Makhani - ₹210 [VEG]&#10;&#10;BREADS&#10;Butter Naan - ₹50"
-              className="font-mono text-xs bg-slate-950 border-slate-800 text-slate-200"
+              className="font-mono text-xs bg-white border-slate-800 text-slate-200"
             />
 
             <div className="flex items-center justify-between gap-3">
@@ -3672,7 +3672,7 @@ function MenuPage() {
             </div>
 
             {digitizedCatalog && (
-              <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
+              <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs font-mono text-emerald-400">
                   <span>Extracted: {digitizedCatalog.totalDishesCount} Dishes in {digitizedCatalog.categories.length} Categories</span>
                   <span>🌱 {digitizedCatalog.vegDishesCount} Veg · 🍗 {digitizedCatalog.nonVegDishesCount} Non-Veg · 🥚 {digitizedCatalog.eggDishesCount} Egg</span>

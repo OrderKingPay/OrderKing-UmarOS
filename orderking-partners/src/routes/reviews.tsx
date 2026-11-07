@@ -152,27 +152,27 @@ function ReviewsPage() {
     >
       <div className="space-y-4">
         {/* Customer Sentiment, Rating Distribution & King AI Assistant Header */}
-        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-4">
             <div className="flex items-center gap-4">
               <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center">
                 <div className="font-display text-3xl font-bold text-amber-400 tabular flex items-center justify-center gap-1">
                   {avgRating} <Star className="size-5 fill-amber-400 text-amber-400" />
                 </div>
-                <div className="text-[11px] font-mono text-slate-400 mt-0.5">
+                <div className="text-[11px] font-mono text-gray-500 mt-0.5">
                   {totalCount} {totalCount === 1 ? "Verified Review" : "Verified Reviews"}
                 </div>
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="font-display text-base font-bold text-white">
+                  <h2 className="font-display text-base font-bold text-gray-900">
                     Customer Rating Analytics &amp; King AI Reply Assistant
                   </h2>
                   <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400 flex items-center gap-1">
                     <ShieldCheck className="size-3" /> 100% Verified Order Reviews
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   {t("reviews.cannotDelete")} Thoughtful, human-style partner responses build diner trust and repeat orders.
                 </p>
                 <div className="flex flex-wrap items-center gap-3 text-xs font-medium mt-1.5">
@@ -181,7 +181,7 @@ function ReviewsPage() {
                       ? "100% of customer reviews have been answered."
                       : `${unansweredCount} review(s) awaiting your response (${responseRatePct}% response rate).`}
                   </span>
-                  <span className="text-slate-400 font-mono">
+                  <span className="text-gray-500 font-mono">
                     · 4–5★: {positiveCount} · 1–2★: {criticalCount}
                   </span>
                 </div>
@@ -195,8 +195,8 @@ function ReviewsPage() {
                 const pct = totalCount > 0 ? Math.round((count * 100) / totalCount) : 0;
                 return (
                   <div key={star} className="flex items-center gap-2">
-                    <span className="w-8 font-mono text-slate-300 tabular">{star} ★</span>
-                    <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <span className="w-8 font-mono text-gray-700 tabular">{star} ★</span>
+                    <div className="flex-1 h-2 rounded-full bg-gray-200 overflow-hidden">
                       <div
                         className={`h-full rounded-full ${
                           star >= 4 ? "bg-emerald-500" : star === 3 ? "bg-amber-400" : "bg-rose-500"
@@ -204,7 +204,7 @@ function ReviewsPage() {
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className="w-14 text-right font-mono text-slate-400 tabular">
+                    <span className="w-14 text-right font-mono text-gray-500 tabular">
                       {count} ({pct}%)
                     </span>
                   </div>
@@ -215,27 +215,27 @@ function ReviewsPage() {
 
           {/* Real Customer Feedback Themes Summary */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-              <div className="text-[10px] font-mono uppercase text-slate-400">Taste &amp; Seasoning</div>
-              <div className="text-sm font-bold text-white mt-0.5 tabular">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+              <div className="text-[10px] font-mono uppercase text-gray-500">Taste &amp; Seasoning</div>
+              <div className="text-sm font-bold text-gray-900 mt-0.5 tabular">
                 {topicCounts.taste} {topicCounts.taste === 1 ? "mention" : "mentions"}
               </div>
             </div>
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-              <div className="text-[10px] font-mono uppercase text-slate-400">Packaging &amp; Sealing</div>
-              <div className="text-sm font-bold text-white mt-0.5 tabular">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+              <div className="text-[10px] font-mono uppercase text-gray-500">Packaging &amp; Sealing</div>
+              <div className="text-sm font-bold text-gray-900 mt-0.5 tabular">
                 {topicCounts.packaging} {topicCounts.packaging === 1 ? "mention" : "mentions"}
               </div>
             </div>
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-              <div className="text-[10px] font-mono uppercase text-slate-400">Temp &amp; Freshness</div>
-              <div className="text-sm font-bold text-white mt-0.5 tabular">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+              <div className="text-[10px] font-mono uppercase text-gray-500">Temp &amp; Freshness</div>
+              <div className="text-sm font-bold text-gray-900 mt-0.5 tabular">
                 {topicCounts.freshness} {topicCounts.freshness === 1 ? "mention" : "mentions"}
               </div>
             </div>
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-              <div className="text-[10px] font-mono uppercase text-slate-400">Prep &amp; Dispatch Speed</div>
-              <div className="text-sm font-bold text-white mt-0.5 tabular">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+              <div className="text-[10px] font-mono uppercase text-gray-500">Prep &amp; Dispatch Speed</div>
+              <div className="text-sm font-bold text-gray-900 mt-0.5 tabular">
                 {topicCounts.timing} {topicCounts.timing === 1 ? "mention" : "mentions"}
               </div>
             </div>
@@ -263,8 +263,8 @@ function ReviewsPage() {
                 onClick={() => setFilter(pill.id)}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                   filter === pill.id
-                    ? "bg-emerald-600 text-white"
-                    : "border border-slate-800 bg-slate-950/70 text-slate-300 hover:border-slate-700"
+                    ? "bg-[#E23744] text-gray-900"
+                    : "border border-gray-200 bg-gray-50 text-gray-700 hover:border-slate-700"
                 }`}
               >
                 {pill.label}
@@ -274,7 +274,7 @@ function ReviewsPage() {
         </Card>
 
         {filteredReviews.length === 0 ? (
-          <Card className="text-sm text-muted p-5 border-slate-800 bg-slate-900/60">
+          <Card className="text-sm text-muted p-5 border-gray-200 bg-white shadow-xs">
             {t("reviews.empty")}
           </Card>
         ) : (
@@ -326,7 +326,7 @@ function ReviewRow({
   const detectedTopics = detectReviewTopics(review.body);
 
   return (
-    <Card className="border-slate-800 bg-slate-900/70 p-4 space-y-3">
+    <Card className="border-gray-200 bg-white shadow-xs p-4 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2">
           <span
@@ -341,14 +341,14 @@ function ReviewRow({
             {review.rating} ★ / 5
           </span>
           {review.orderId ? (
-            <span className="rounded border border-slate-800 bg-slate-950 px-2 py-0.5 text-[10px] font-mono text-slate-400 flex items-center gap-1">
-              <UtensilsCrossed className="size-3 text-slate-500" /> Order #{review.orderId.slice(-6)}
+            <span className="rounded border border-gray-200 bg-gray-50 text-gray-700 px-2 py-0.5 text-[10px] font-mono text-gray-500 flex items-center gap-1">
+              <UtensilsCrossed className="size-3 text-gray-400" /> Order #{review.orderId.slice(-6)}
             </span>
           ) : null}
           {detectedTopics.map((topic) => (
             <span
               key={topic}
-              className="rounded border border-slate-800 bg-slate-950/90 px-2 py-0.5 text-[10px] font-mono text-slate-300"
+              className="rounded border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-mono text-gray-700"
             >
               {topic}
             </span>
@@ -361,15 +361,15 @@ function ReviewRow({
             <span className="text-[11px] font-mono text-amber-400">Needs Response</span>
           )}
         </div>
-        <span className="text-slate-400 font-mono">
+        <span className="text-gray-500 font-mono">
           {new Date(review.createdAt).toLocaleDateString("en-IN")}
         </span>
       </div>
 
-      <p className="text-sm text-slate-100 leading-relaxed">{review.body}</p>
+      <p className="text-sm text-gray-900 leading-relaxed">{review.body}</p>
 
       {review.response ? (
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-300 space-y-1">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-xs text-gray-700 space-y-1">
           <div className="text-[10px] font-mono uppercase text-emerald-400 flex items-center gap-1.5">
             <MessageSquareHeart className="size-3.5" /> Official Restaurant Partner Response
           </div>
@@ -378,7 +378,7 @@ function ReviewRow({
       ) : null}
 
       {canRespond ? (
-        <div className="space-y-2.5 pt-2 border-t border-slate-800/80">
+        <div className="space-y-2.5 pt-2 border-t border-gray-100">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 text-xs text-amber-300 font-medium">
               <Sparkles className="size-3.5 text-amber-400" />
@@ -409,7 +409,7 @@ function ReviewRow({
                   className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                     selectedTone === toneOption.id && text.trim().length > 0
                       ? "border border-amber-500/40 bg-amber-500/15 text-amber-300"
-                      : "border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700"
+                      : "border border-gray-200 bg-gray-50 text-gray-700 text-gray-700 hover:border-slate-700"
                   }`}
                 >
                   <Sparkles className="inline mr-1 size-3 text-amber-400" />
@@ -423,7 +423,7 @@ function ReviewRow({
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Draft a polite, empathetic response with King AI above or write your personal reply..."
-            className="text-xs bg-slate-950 border-slate-800"
+            className="text-xs bg-white border-gray-200"
           />
 
           <div className="flex items-center justify-between">
@@ -433,7 +433,7 @@ function ReviewRow({
             <Button
               size="sm"
               disabled={saving || !text.trim()}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
+              className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs"
               onClick={() => {
                 setSaving(true);
                 setSavedMsg(false);

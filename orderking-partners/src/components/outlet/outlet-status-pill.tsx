@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Check, Clock, ChevronDown, Power, AlertTriangle, ShieldAlert } from "lucide-react";
+import { Check, Clock, ChevronDown, Power, ShieldAlert } from "lucide-react";
 import {
   OUTLET_STATUS_PRESETS,
   formatOutletPauseRemaining,
@@ -26,7 +26,6 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
   const setStatus = useOutletStatusStore((s) => s.setStatus);
   const checkAutoResume = useOutletStatusStore((s) => s.checkAutoResume);
 
-  // Close popover when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -37,7 +36,6 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Periodic check for pause timer expiry (every 5 seconds)
   useEffect(() => {
     const timer = setInterval(() => {
       const resumed = checkAutoResume();
@@ -100,18 +98,18 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
   }
 
   return (
-    <div className="relative inline-block" ref={containerRef}>
+    <div className="relative inline-block font-sans" ref={containerRef}>
       {/* Prominent Header Status Pill */}
       <button
         type="button"
         disabled={isUpdating}
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className={`h-11 inline-flex items-center gap-2 rounded-[12px] px-3 text-xs font-bold transition-all shadow-sm select-none border cursor-pointer ${
+        className={`h-11 inline-flex items-center gap-2 rounded-xl px-3.5 text-xs font-bold transition-all shadow-xs select-none border cursor-pointer ${
           status === "ONLINE"
-            ? "border-emerald-500/50 bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-300 shadow-emerald-950/50"
+            ? "border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800"
             : status === "PAUSED_30" || status === "PAUSED_60"
-            ? "border-amber-500/60 bg-amber-950/60 hover:bg-amber-900/70 text-amber-200 shadow-amber-950/50 ring-1 ring-amber-500/40"
-            : "border-rose-500/60 bg-rose-950/60 hover:bg-rose-900/70 text-rose-200 shadow-rose-950/50 ring-1 ring-rose-500/40"
+            ? "border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 ring-1 ring-amber-300/50"
+            : "border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-800 ring-1 ring-rose-300/50"
         }`}
         title="Outlet Operational Status (Click to change)"
         aria-label="Outlet Operational Status"
@@ -120,9 +118,9 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
           <>
             <span className="relative flex size-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500" />
+              <span className="relative inline-flex rounded-full size-2.5 bg-emerald-600" />
             </span>
-            <span className="hidden sm:inline">🟢 Online</span>
+            <span className="hidden sm:inline">Online</span>
             <span className="sm:hidden font-mono">Online</span>
           </>
         ) : status === "PAUSED_30" || status === "PAUSED_60" ? (
@@ -132,7 +130,7 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
               <span className="relative inline-flex rounded-full size-2.5 bg-amber-500" />
             </span>
             <span className="hidden sm:inline">
-              🟡 {status === "PAUSED_30" ? "Paused (30m)" : "Paused (60m)"}
+              Paused ({status === "PAUSED_30" ? "30m" : "60m"})
               {remainingText ? ` · ${remainingText}` : ""}
             </span>
             <span className="sm:hidden font-mono text-[11px]">
@@ -142,9 +140,9 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
         ) : (
           <>
             <span className="relative flex size-2.5">
-              <span className="relative inline-flex rounded-full size-2.5 bg-rose-500" />
+              <span className="relative inline-flex rounded-full size-2.5 bg-rose-600" />
             </span>
-            <span className="hidden sm:inline">🔴 Offline</span>
+            <span className="hidden sm:inline">Offline</span>
             <span className="sm:hidden font-mono">Offline</span>
           </>
         )}
@@ -156,26 +154,26 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
         />
       </button>
 
-      {/* Authentic Tier-1 Operational Status Popover */}
+      {/* Operational Status Popover */}
       {dropdownOpen && (
         <div
           role="menu"
           aria-label="Outlet Operational Status Options"
-          className="absolute right-0 top-12 z-50 w-72 sm:w-80 rounded-2xl border border-slate-700 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-xl text-slate-100 font-sans space-y-2 animate-in fade-in zoom-in-95 duration-100"
+          className="absolute right-0 top-12 z-50 w-72 sm:w-80 rounded-2xl border border-gray-200 bg-white p-3 shadow-2xl text-gray-900 font-sans space-y-2 animate-in fade-in zoom-in-95 duration-100"
         >
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2 px-1">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-2 px-1">
             <div className="flex items-center gap-1.5">
-              <Power className="size-4 text-emerald-400" />
-              <span className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+              <Power className="size-4 text-emerald-600" />
+              <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">
                 Outlet Operational Status
               </span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-              Kitchen Shield
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+              Live Control
             </span>
           </div>
 
-          <p className="text-[11px] text-slate-400 px-1">
+          <p className="text-[11px] text-gray-500 px-1">
             Switching status updates customer apps instantly and pauses incoming tickets.
           </p>
 
@@ -190,11 +188,11 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
                   className={`w-full text-left p-2.5 rounded-xl border transition-all flex items-start justify-between gap-2.5 select-none cursor-pointer ${
                     isSelected
                       ? preset.dotColor === "green"
-                        ? "border-emerald-500/80 bg-emerald-950/40 text-emerald-100 ring-1 ring-emerald-500/50"
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-900 ring-1 ring-emerald-500"
                         : preset.dotColor === "yellow"
-                        ? "border-amber-500/80 bg-amber-950/40 text-amber-100 ring-1 ring-amber-500/50"
-                        : "border-rose-500/80 bg-rose-950/40 text-rose-100 ring-1 ring-rose-500/50"
-                      : "border-slate-800/80 bg-slate-950/40 hover:bg-slate-800 hover:border-slate-700 text-slate-300"
+                        ? "border-amber-500 bg-amber-50 text-amber-900 ring-1 ring-amber-500"
+                        : "border-rose-500 bg-rose-50 text-rose-900 ring-1 ring-rose-500"
+                      : "border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
                   }`}
                 >
                   <div className="flex items-start gap-2.5">
@@ -206,22 +204,21 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
                         : "🔴"}
                     </span>
                     <div>
-                      <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <div className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                         <span>{preset.label}</span>
                       </div>
-                      <div className="text-[11px] text-slate-400 mt-0.5 leading-tight">
+                      <div className="text-[11px] text-gray-500 mt-0.5 leading-tight">
                         {preset.sublabel}
                       </div>
-                      {/* Customer Notice Preview */}
-                      <div className="mt-1 text-[10px] font-mono text-slate-400">
+                      <div className="mt-1 text-[10px] font-mono text-gray-500">
                         Guest App:{" "}
                         <span
                           className={
                             preset.dotColor === "green"
-                              ? "text-emerald-400"
+                              ? "text-emerald-700 font-bold"
                               : preset.dotColor === "yellow"
-                              ? "text-amber-300"
-                              : "text-rose-400"
+                              ? "text-amber-700 font-bold"
+                              : "text-rose-700 font-bold"
                           }
                         >
                           &ldquo;{preset.customerHeadline}&rdquo;
@@ -232,11 +229,11 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
 
                   <div className="shrink-0 mt-1">
                     {isSelected ? (
-                      <span className="flex size-5 items-center justify-center rounded-full bg-emerald-500 text-slate-950">
+                      <span className="flex size-5 items-center justify-center rounded-full bg-emerald-600 text-white">
                         <Check className="size-3.5 stroke-[3]" />
                       </span>
                     ) : (
-                      <span className="size-5 rounded-full border border-slate-700" />
+                      <span className="size-5 rounded-full border border-gray-300" />
                     )}
                   </div>
                 </button>
@@ -245,15 +242,15 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
           </div>
 
           {(status === "PAUSED_30" || status === "PAUSED_60") && (
-            <div className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 flex items-center justify-between text-xs text-amber-200">
+            <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 flex items-center justify-between text-xs text-amber-800">
               <div className="flex items-center gap-2">
-                <Clock className="size-4 text-amber-400 animate-spin" />
-                <span>Timer active: <strong>{remainingText}</strong></span>
+                <Clock className="size-4 text-amber-600 animate-spin" />
+                <span>Timer: <strong>{remainingText}</strong></span>
               </div>
               <button
                 type="button"
                 onClick={() => handleSelectStatus("ONLINE")}
-                className="px-2 py-1 rounded bg-amber-500 text-slate-950 font-bold text-[11px] hover:bg-amber-400 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-amber-600 text-white font-bold text-[11px] hover:bg-amber-700 cursor-pointer"
               >
                 Resume Now
               </button>
@@ -261,15 +258,15 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
           )}
 
           {status === "OFFLINE" && (
-            <div className="mt-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-2.5 flex items-center justify-between text-xs text-rose-200">
+            <div className="mt-2 rounded-xl border border-rose-200 bg-rose-50 p-2.5 flex items-center justify-between text-xs text-rose-800">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="size-4 text-rose-400" />
+                <ShieldAlert className="size-4 text-rose-600" />
                 <span>Outlet closed for today</span>
               </div>
               <button
                 type="button"
                 onClick={() => handleSelectStatus("ONLINE")}
-                className="px-2 py-1 rounded bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-500 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-700 cursor-pointer"
               >
                 Go Online
               </button>

@@ -353,7 +353,7 @@ export function KitchenPage({
             onClick={() => handleSetThrottle(0)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
               throttleBuffer === 0 && !kitchenPaused
-                ? "bg-emerald-600 text-white shadow-xs"
+                ? "bg-[#E23744] text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
             }`}
           >
@@ -364,7 +364,7 @@ export function KitchenPage({
             onClick={() => handleSetThrottle(10)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
               throttleBuffer === 10 && !kitchenPaused
-                ? "bg-amber-600 text-white shadow-xs"
+                ? "bg-amber-600 text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
             }`}
           >
@@ -375,7 +375,7 @@ export function KitchenPage({
             onClick={() => handleSetThrottle(15)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
               throttleBuffer === 15 && !kitchenPaused
-                ? "bg-orange-600 text-white shadow-xs"
+                ? "bg-orange-600 text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
             }`}
           >
@@ -386,7 +386,7 @@ export function KitchenPage({
             onClick={() => handleSetThrottle(30)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
               throttleBuffer === 30 && !kitchenPaused
-                ? "bg-rose-600 text-white shadow-xs"
+                ? "bg-rose-600 text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
             }`}
           >
@@ -397,7 +397,7 @@ export function KitchenPage({
             onClick={handleToggleKitchenPause}
             className={`rounded-lg px-2.5 py-1 text-xs font-bold transition flex items-center gap-1 ${
               kitchenPaused
-                ? "bg-rose-700 text-white shadow-xs animate-pulse"
+                ? "bg-rose-700 text-gray-900 shadow-xs animate-pulse"
                 : "bg-surface border border-line text-muted hover:text-rose-500"
             }`}
           >
@@ -441,23 +441,23 @@ export function KitchenPage({
       )}
 
       {/* KDS Operational Summary Bar */}
-      <Card className="border-slate-800 bg-slate-900/90 p-4 space-y-3">
+      <Card className="border-gray-200 bg-white shadow-xs p-4 space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <ChefHat className="size-5 text-emerald-400 shrink-0" />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-display text-sm font-bold uppercase tracking-wider text-white">
+                <h2 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                   Kitchen Display System (KDS) — Live Queue Telemetry
                 </h2>
                 <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
                   {q.data ? `SYNCED ${new Date(q.data.serverTime).toLocaleTimeString()}` : "SYNCING"}
                 </span>
-                <span className="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-300">
+                <span className="rounded border border-gray-300 bg-gray-100 px-2 py-0.5 text-[10px] font-mono text-gray-700">
                   VOICE: {getVoiceBcp47(testVoiceLang)}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-gray-500 mt-0.5">
                 Self-service audio hardware diagnostics, 10-language voice alerts, real-time stage counters, and 120s order SLA enforcement.
               </p>
             </div>
@@ -468,7 +468,7 @@ export function KitchenPage({
             <select
               value={testVoiceLang}
               onChange={(e) => setTestVoiceLang(e.target.value as AppLanguage)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-200"
+              className="rounded-lg border border-gray-300 bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-800"
               aria-label="Voice Alert Language"
             >
               {INDIAN_LANGUAGE_CATALOG.map((item) => (
@@ -482,7 +482,7 @@ export function KitchenPage({
               size="sm"
               variant="secondary"
               onClick={() => stopContinuousAlarm()}
-              className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200"
+              className="text-xs border-gray-300 bg-gray-100 hover:bg-slate-700 text-gray-800"
             >
               <BellOff className="mr-1.5 size-3.5 text-amber-400" />
               Silence Alarm
@@ -495,7 +495,7 @@ export function KitchenPage({
                 speakKitchenOrder("KOT-8421", 45000, testVoiceLang);
                 toast.info(`Voice alert played in ${testVoiceLang.toUpperCase()} (${getVoiceBcp47(testVoiceLang)})`);
               }}
-              className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200"
+              className="text-xs border-gray-300 bg-gray-100 hover:bg-slate-700 text-gray-800"
             >
               <BellRing className="mr-1.5 size-3.5 text-emerald-400" />
               Test Speaker ({testVoiceLang.toUpperCase()})
@@ -521,7 +521,7 @@ export function KitchenPage({
         </div>
 
         {/* Column Stage Counts */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-slate-800">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-gray-200">
           {COLS.map((col) => {
             const count = allOrders.filter((o: any) => matchesColumn(String(o.state), col.state)).length;
             const isUrgent = col.state === "PLACED" && count > 0;
@@ -531,7 +531,7 @@ export function KitchenPage({
                 className={`rounded-lg border px-3 py-2 flex items-center justify-between ${
                   isUrgent
                     ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
-                    : "border-slate-800 bg-slate-950/70 text-slate-300"
+                    : "border-gray-200 bg-gray-50 text-gray-700"
                 }`}
               >
                 <span className="text-xs font-medium">{col.label}</span>
@@ -542,8 +542,8 @@ export function KitchenPage({
         </div>
 
         {/* Dynamic KPT & Station Load Telemetry */}
-        <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2 text-slate-300">
+        <div className="pt-2 border-t border-gray-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2 text-gray-700">
             <Clock className="size-3.5 text-emerald-400" />
             <span>
               Dynamic KPT Dispatch Synchronization:{" "}
@@ -553,7 +553,7 @@ export function KitchenPage({
               {throttleBuffer > 0 ? ` (+${throttleBuffer}m kitchen throttle)` : " (Optimal pacing)"}
             </span>
           </div>
-          <span className="text-[10px] font-mono text-slate-400">
+          <span className="text-[10px] font-mono text-gray-500">
             Nominal Capacity: 6 concurrent tickets · Courier dispatch synchronized to packaging
           </span>
         </div>
@@ -573,7 +573,7 @@ export function KitchenPage({
                       WebSocket Live &amp; Connected
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-gray-500 mt-0.5">
                     Zero physical hardware cost. Announces incoming orders and UPI payments aloud across 10 official benchmark languages.
                   </p>
                 </>
@@ -582,7 +582,7 @@ export function KitchenPage({
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-sm text-foreground">King Pay Voice Soundbox</h3>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-gray-500 mt-0.5">
                     Activate to announce incoming orders and UPI payments aloud across 10 official benchmark languages.
                   </p>
                 </>
@@ -634,10 +634,10 @@ export function KitchenPage({
               >
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold tracking-wide">{t(col.key)}</h2>
-                  <span className="tabular text-sm text-slate-400">{items.length}</span>
+                  <span className="tabular text-sm text-gray-500">{items.length}</span>
                 </div>
                 {items.length === 0 ? (
-                  <Card className="text-sm text-slate-400">{t("kitchen.empty")}</Card>
+                  <Card className="text-sm text-gray-500">{t("kitchen.empty")}</Card>
                 ) : (
                   items.map((o: any) => (
                     <OrderCard

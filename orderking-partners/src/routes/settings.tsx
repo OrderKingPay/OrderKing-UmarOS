@@ -378,15 +378,15 @@ function SettingsPage() {
         />
 
         {/* Multi-Outlet Locations & Switcher */}
-        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
               <Building2 className="size-5 text-emerald-400" />
               <div>
-                <h2 className="font-display text-base font-bold text-white">
+                <h2 className="font-display text-base font-bold text-gray-900">
                   Multi-Outlet Locations &amp; Switcher
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-500">
                   Seamlessly switch between your dining rooms, bistros, and cloud kitchens across India without logging out.
                 </p>
               </div>
@@ -407,13 +407,13 @@ function SettingsPage() {
 
           {/* Quick Select Router Bar */}
           {memberships.length > 1 ? (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-slate-800 bg-slate-950/70">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50">
               <div className="flex items-center gap-2">
                 <Store className="size-4 text-emerald-400" />
-                <span className="text-xs font-semibold text-slate-200">Quick Location Switcher:</span>
+                <span className="text-xs font-semibold text-gray-800">Quick Location Switcher:</span>
               </div>
               <select
-                className="h-9 rounded-lg border border-slate-800 bg-slate-900 px-3 text-xs font-semibold text-emerald-300 outline-none focus:border-emerald-500"
+                className="h-9 rounded-lg border border-gray-200 bg-white shadow-xs px-3 text-xs font-semibold text-emerald-300 outline-none focus:border-emerald-500"
                 value={vendor.restaurantId ?? ""}
                 onChange={(e) => {
                   const m = memberships.find((x: any) => x.restaurantId === e.target.value);
@@ -439,16 +439,16 @@ function SettingsPage() {
                   className={`rounded-xl border p-4 space-y-3 transition ${
                     isActive
                       ? "border-emerald-500/50 bg-emerald-950/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-                      : "border-slate-800 bg-slate-950/60 hover:border-slate-700"
+                      : "border-gray-200 bg-gray-50 hover:border-gray-300"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="font-bold text-sm text-white flex items-center gap-1.5">
-                        <Store className="size-4 text-slate-400" />
+                      <div className="font-bold text-sm text-gray-900 flex items-center gap-1.5">
+                        <Store className="size-4 text-gray-500" />
                         <span>{m.restaurantName}</span>
                       </div>
-                      <div className="text-[11px] font-mono text-slate-400 mt-0.5">
+                      <div className="text-[11px] font-mono text-gray-500 mt-0.5">
                         ID: {m.restaurantId}
                         {m.outletId ? ` · Outlet: ${m.outletId}` : ""}
                       </div>
@@ -458,27 +458,27 @@ function SettingsPage() {
                         <CheckCircle2 className="size-3" /> ACTIVE
                       </span>
                     ) : (
-                      <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-400">
+                      <span className="rounded bg-gray-100 px-2 py-0.5 text-[10px] font-mono text-gray-500">
                         {m.role}
                       </span>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-[11px] border-t border-slate-800/80 pt-2">
+                  <div className="grid grid-cols-2 gap-2 text-[11px] border-t border-gray-200/80 pt-2">
                     <div>
-                      <span className="text-slate-400">Role: </span>
-                      <span className="font-mono text-slate-200">{m.role}</span>
+                      <span className="text-gray-500">Role: </span>
+                      <span className="font-mono text-gray-800">{m.role}</span>
                     </div>
                     <div>
-                      <span className="text-slate-400">Status: </span>
+                      <span className="text-gray-500">Status: </span>
                       <span className="font-mono text-emerald-400">{m.verificationStatus}</span>
                     </div>
                     <div>
-                      <span className="text-slate-400">Delivery Commission: </span>
-                      <span className="font-mono text-slate-200">{m.commissionBps / 100}%</span>
+                      <span className="text-gray-500">Delivery Commission: </span>
+                      <span className="font-mono text-gray-800">{m.commissionBps / 100}%</span>
                     </div>
                     <div>
-                      <span className="text-slate-400">Ledger: </span>
+                      <span className="text-gray-500">Ledger: </span>
                       <span className="font-mono text-emerald-400">{m.dataLabel}</span>
                     </div>
                   </div>
@@ -487,7 +487,7 @@ function SettingsPage() {
                     <Button
                       size="sm"
                       onClick={() => handleSwitchOutlet(m.restaurantId, m.restaurantName)}
-                      className="w-full h-8 text-xs bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-200 transition"
+                      className="w-full h-8 text-xs bg-gray-100 hover:bg-[#E23744] hover:text-gray-900 text-gray-800 transition"
                     >
                       <ArrowRightLeft className="mr-1.5 size-3.5" />
                       Switch to This Location
@@ -505,15 +505,15 @@ function SettingsPage() {
 
         {/* King AI Kitchen Health & Instant Recovery */}
         {vendor.restaurantId ? (
-          <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2.5">
                 <Cpu className="size-5 text-emerald-400" />
                 <div>
-                  <h2 className="font-display text-base font-bold text-white">
+                  <h2 className="font-display text-base font-bold text-gray-900">
                     King AI Kitchen Health &amp; Instant Recovery
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-gray-500">
                     Real-time readiness checks for your food safety license, payout bank account, and kitchen status. Reset order flow and restore kitchen bells with a single tap.
                   </p>
                 </div>
@@ -521,7 +521,7 @@ function SettingsPage() {
               <Button
                 size="sm"
                 onClick={() => void handleSelfHealOutlet()}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs shrink-0"
+                className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs shrink-0"
               >
                 <Wrench className="mr-1.5 size-3.5" />
                 Restore Online &amp; Reset Prep Time
@@ -529,26 +529,26 @@ function SettingsPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
-              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                <div className="text-[10px] font-mono text-slate-400">14-DIGIT FSSAI LICENSE</div>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="text-[10px] font-mono text-gray-500">14-DIGIT FSSAI LICENSE</div>
                 <div className={`font-bold mt-1 ${fssaiReady ? "text-emerald-400" : "text-amber-400"}`}>
                   {fssaiReady ? `Verified (${r?.fssai_number})` : "Action Needed in KYC"}
                 </div>
               </div>
-              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                <div className="text-[10px] font-mono text-slate-400">PAYOUT BANK ACCOUNT</div>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="text-[10px] font-mono text-gray-500">PAYOUT BANK ACCOUNT</div>
                 <div className={`font-bold mt-1 ${bankReady ? "text-emerald-400" : "text-amber-400"}`}>
                   {bankReady ? `Ready (${r?.bank_ifsc})` : "Action Needed in KYC"}
                 </div>
               </div>
-              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                <div className="text-[10px] font-mono text-slate-400">PAN (TDS §194-O)</div>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="text-[10px] font-mono text-gray-500">PAN (TDS §194-O)</div>
                 <div className={`font-bold mt-1 ${panReady ? "text-emerald-400" : "text-amber-400"}`}>
                   {panReady ? `Linked (${r?.pan})` : "Action Needed in KYC"}
                 </div>
               </div>
-              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                <div className="text-[10px] font-mono text-slate-400">KITCHEN STATUS</div>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="text-[10px] font-mono text-gray-500">KITCHEN STATUS</div>
                 <div className={`font-bold mt-1 ${r?.emergency_closed ? "text-rose-400" : "text-emerald-400"}`}>
                   {r?.emergency_closed ? "Paused (Tap to Restore)" : "Active & Accepting Orders"}
                 </div>
@@ -591,15 +591,15 @@ function SettingsPage() {
 
         {/* King AI Daily Reports & Kitchen Alerts */}
         {vendor.restaurantId ? (
-          <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2.5">
                 <MessageSquare className="size-5 text-emerald-400" />
                 <div>
-                  <h2 className="font-display text-base font-bold text-white">
+                  <h2 className="font-display text-base font-bold text-gray-900">
                     King AI Daily Reports &amp; Kitchen Alerts
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-gray-500">
                     Configure evening WhatsApp summaries, critical SMS kitchen alerts, and monthly tax statements with ease.
                   </p>
                 </div>
@@ -624,30 +624,30 @@ function SettingsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Channel 1: WhatsApp Shift Report */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
                     <div className="flex items-center gap-2">
                       <MessageSquare className="size-4 text-emerald-400" />
-                      <span className="font-bold text-sm text-white">WhatsApp Shift Summary</span>
+                      <span className="font-bold text-sm text-gray-900">WhatsApp Shift Summary</span>
                     </div>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
                       NIGHTLY 23:00 IST
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     Nightly closing summary sent directly to WhatsApp: gross food revenue, 5% food GST remitted by Order King, delivered order count, and estimated net payouts.
                   </p>
 
                   <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-slate-300">Destination WhatsApp Number</Label>
+                    <Label className="text-xs text-gray-700">Destination WhatsApp Number</Label>
                     <Input
                       type="tel"
                       value={currentWaPhone}
                       onChange={(e) => setWaPhone(e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="h-9 text-xs bg-slate-900 border-slate-800 font-mono"
+                      className="h-9 text-xs bg-white border-gray-200 font-mono"
                     />
                   </div>
 
@@ -657,15 +657,15 @@ function SettingsPage() {
                       type="checkbox"
                       checked={currentWaConsent}
                       onChange={(e) => setWaConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500"
+                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-emerald-500 focus:ring-emerald-500"
                     />
-                    <span className="text-[11px] text-slate-300 leading-tight">
+                    <span className="text-[11px] text-gray-700 leading-tight">
                       I consent to receive automated evening shift reports via Order King WhatsApp Business API in accordance with the DPDP Act 2023.
                     </span>
                   </label>
 
                   {/* Shift Report Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/60">
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
                     <div className="text-emerald-400">✓ Net Sales &amp; Revenue</div>
                     <div className="text-emerald-400">✓ 5% Food GST Remitted</div>
                     <div className="text-emerald-400">✓ Estimated Net Payout</div>
@@ -678,7 +678,7 @@ function SettingsPage() {
                   variant="secondary"
                   disabled={testingChannel === "whatsapp"}
                   onClick={() => void handleTestNotification("whatsapp")}
-                  className="w-full text-xs border-slate-700 hover:border-emerald-500/50 hover:bg-emerald-950/40"
+                  className="w-full text-xs border-gray-300 hover:border-emerald-500/50 hover:bg-emerald-950/40"
                 >
                   <Send className="mr-1.5 size-3.5 text-emerald-400" />
                   {testingChannel === "whatsapp" ? "Dispatching WhatsApp..." : "Send Test WhatsApp Report"}
@@ -686,30 +686,30 @@ function SettingsPage() {
               </div>
 
               {/* Channel 2: SMS Kitchen Alerts */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="size-4 text-amber-400" />
-                      <span className="font-bold text-sm text-white">SMS Rush &amp; Kitchen Alerts</span>
+                      <span className="font-bold text-sm text-gray-900">SMS Rush &amp; Kitchen Alerts</span>
                     </div>
                     <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
                       PRIORITY SMS
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     Immediate transactional SMS alerts for critical kitchen events: rush surge buffers, emergency pauses, and 86 dish stockouts.
                   </p>
 
                   <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-slate-300">Destination Mobile Number</Label>
+                    <Label className="text-xs text-gray-700">Destination Mobile Number</Label>
                     <Input
                       type="tel"
                       value={currentSmsPhone}
                       onChange={(e) => setSmsPhone(e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="h-9 text-xs bg-slate-900 border-slate-800 font-mono"
+                      className="h-9 text-xs bg-white border-gray-200 font-mono"
                     />
                   </div>
 
@@ -719,15 +719,15 @@ function SettingsPage() {
                       type="checkbox"
                       checked={currentSmsConsent}
                       onChange={(e) => setSmsConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500"
+                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-amber-500 focus:ring-amber-500"
                     />
-                    <span className="text-[11px] text-slate-300 leading-tight">
+                    <span className="text-[11px] text-gray-700 leading-tight">
                       I consent to receive priority transactional SMS alerts for kitchen throttles and dish stockouts.
                     </span>
                   </label>
 
                   {/* SMS Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/60">
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
                     <div className="text-amber-400">✓ Kitchen Rush Surge Alert</div>
                     <div className="text-amber-400">✓ Sold-Out (86) Dish Alert</div>
                     <div className="text-amber-400">✓ Prep Buffer Adjustments</div>
@@ -740,7 +740,7 @@ function SettingsPage() {
                   variant="secondary"
                   disabled={testingChannel === "sms"}
                   onClick={() => void handleTestNotification("sms")}
-                  className="w-full text-xs border-slate-700 hover:border-amber-500/50 hover:bg-amber-950/40"
+                  className="w-full text-xs border-gray-300 hover:border-amber-500/50 hover:bg-amber-950/40"
                 >
                   <Send className="mr-1.5 size-3.5 text-amber-400" />
                   {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
@@ -748,30 +748,30 @@ function SettingsPage() {
               </div>
 
               {/* Channel 3: Email Tax Invoices & Statements */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
                     <div className="flex items-center gap-2">
                       <Mail className="size-4 text-sky-400" />
-                      <span className="font-bold text-sm text-white">Email Tax &amp; Statements</span>
+                      <span className="font-bold text-sm text-gray-900">Email Tax &amp; Statements</span>
                     </div>
                     <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
                       MONTHLY STATEMENTS
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     Automated monthly email delivery of GST Sec 9(5) tax invoices, settlement reconciliation ledgers, and quarterly Form 16A TDS certificates.
                   </p>
 
                   <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-slate-300">Destination Accounts / Finance Email</Label>
+                    <Label className="text-xs text-gray-700">Destination Accounts / Finance Email</Label>
                     <Input
                       type="email"
                       value={currentEmailAddress}
                       onChange={(e) => setEmailAddress(e.target.value)}
                       placeholder="accounts@restaurant.in"
-                      className="h-9 text-xs bg-slate-900 border-slate-800 font-mono"
+                      className="h-9 text-xs bg-white border-gray-200 font-mono"
                     />
                   </div>
 
@@ -781,15 +781,15 @@ function SettingsPage() {
                       type="checkbox"
                       checked={currentEmailConsent}
                       onChange={(e) => setEmailConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-sky-500 focus:ring-sky-500"
+                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-sky-500 focus:ring-sky-500"
                     />
-                    <span className="text-[11px] text-slate-300 leading-tight">
+                    <span className="text-[11px] text-gray-700 leading-tight">
                       I consent to receive monthly tax invoices, GSTR-8 statements, and Form 16A certificates via email.
                     </span>
                   </label>
 
                   {/* Email Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/60">
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
                     <div className="text-sky-400">✓ Monthly Tax Invoices</div>
                     <div className="text-sky-400">✓ Form 16A (TDS §194-O)</div>
                     <div className="text-sky-400">✓ GSTR-8 Credit Ledgers</div>
@@ -802,7 +802,7 @@ function SettingsPage() {
                   variant="secondary"
                   disabled={testingChannel === "email"}
                   onClick={() => void handleTestNotification("email")}
-                  className="w-full text-xs border-slate-700 hover:border-sky-500/50 hover:bg-sky-950/40"
+                  className="w-full text-xs border-gray-300 hover:border-sky-500/50 hover:bg-sky-950/40"
                 >
                   <Send className="mr-1.5 size-3.5 text-sky-400" />
                   {testingChannel === "email" ? "Dispatching Email..." : "Send Test Tax Statement Email"}
@@ -810,7 +810,7 @@ function SettingsPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200">
               <div className="text-xs text-emerald-400 font-medium">
                 {notifMsg ?? ""}
               </div>
@@ -818,7 +818,7 @@ function SettingsPage() {
                 size="sm"
                 disabled={notifSaving}
                 onClick={() => void handleSaveKingAiNotifications()}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4"
+                className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs font-semibold px-4"
               >
                 {notifSaving ? "Saving Notification Preferences..." : "Save Notification Preferences"}
               </Button>
@@ -827,15 +827,15 @@ function SettingsPage() {
         ) : null}
 
         {/* Pan-India 23-Language Switcher & Kitchen Audio Ring Alerts */}
-        <Card className="space-y-3 border-slate-800 bg-slate-900/70 p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2">
               <Globe className="size-4 text-emerald-400" />
               <div>
-                <h2 className="font-display text-base font-bold text-white">
+                <h2 className="font-display text-base font-bold text-gray-900">
                   All 22 Scheduled Languages of India + English ({ALL_INDIAN_LANGUAGES.length} Languages)
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-500">
                   Switch your partner portal, kitchen voice announcements, and King AI assistant into your preferred language:
                 </p>
               </div>
@@ -868,15 +868,15 @@ function SettingsPage() {
                   onClick={() => setLang(item.code)}
                   className={`rounded-xl border p-2.5 text-left transition ${
                     active
-                      ? "border-emerald-500 bg-emerald-500/15 text-white"
-                      : "border-slate-800 bg-slate-950/70 text-slate-300 hover:border-slate-700"
+                      ? "border-emerald-500 bg-emerald-500/15 text-gray-900"
+                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-sm">{item.native}</span>
                     <span className="text-[10px] font-mono uppercase text-emerald-400">{item.code}</span>
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">{item.label} · {item.region}</div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">{item.label} · {item.region}</div>
                 </button>
               );
             })}
@@ -884,15 +884,15 @@ function SettingsPage() {
         </Card>
 
         {/* Partner Commission & Revenue Rates */}
-        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
               <Scale className="size-5 text-emerald-400" />
               <div>
-                <h2 className="font-display text-base font-bold text-white">
+                <h2 className="font-display text-base font-bold text-gray-900">
                   Partner Commission &amp; Revenue Rates
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-500">
                   Transparent, restaurateur-friendly commission structure. Our standard delivery take-rate is {(standardDeliveryBps / 100).toFixed(0)}%, funding dedicated logistics, rider fleet payouts, and live order tracking. Dine-in and takeaway orders always enjoy {dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} commission. Per-outlet negotiation is supported from 0% to 35%.
                 </p>
               </div>
@@ -906,23 +906,23 @@ function SettingsPage() {
 
           {/* Key Rates Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Standard Delivery Rate</div>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Standard Delivery Rate</div>
               <div className="text-2xl font-bold font-display text-emerald-400">
                 {(standardDeliveryBps / 100).toFixed(1)}%
               </div>
-              <div className="text-[11px] text-slate-400">
+              <div className="text-[11px] text-gray-500">
                 Standard full-service delivery tier funding rider logistics
               </div>
             </div>
 
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 space-y-1">
               <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-300">Active Outlet Rate</div>
-              <div className="text-2xl font-bold font-display text-white flex items-baseline gap-1.5">
+              <div className="text-2xl font-bold font-display text-gray-900 flex items-baseline gap-1.5">
                 <span>{(effectiveBps / 100).toFixed(1)}%</span>
                 <span className="text-xs font-mono text-emerald-400 font-normal">({effectiveBps} bps)</span>
               </div>
-              <div className="text-[11px] text-slate-300">
+              <div className="text-[11px] text-gray-700">
                 {effectiveBps === dineInBps
                   ? `${dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} Dine-In Rate`
                   : effectiveBps === standardDeliveryBps
@@ -931,12 +931,12 @@ function SettingsPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Dine-In Commission</div>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Dine-In Commission</div>
               <div className="text-2xl font-bold font-display text-emerald-400">
                 {(dineInBps / 100).toFixed(1)}%
               </div>
-              <div className="text-[11px] text-slate-400">
+              <div className="text-[11px] text-gray-500">
                 Always {dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} commission on in-house dining and guest takeaway
               </div>
             </div>
@@ -945,10 +945,10 @@ function SettingsPage() {
           {/* Interactive Tier Selector */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <Label className="text-xs font-semibold text-slate-200">
+              <Label className="text-xs font-semibold text-gray-800">
                 Select Delivery Tier for This Outlet:
               </Label>
-              <span className="text-[10px] font-mono text-slate-400">{deliveryTiers.length} CURATED TIERS</span>
+              <span className="text-[10px] font-mono text-gray-500">{deliveryTiers.length} CURATED TIERS</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
               {deliveryTiers.map((tier) => {
@@ -962,8 +962,8 @@ function SettingsPage() {
                     onClick={() => setNegotiatedBps(tier.bps)}
                     className={`rounded-xl border p-3 text-left transition flex flex-col justify-between ${
                       isSelected
-                        ? "border-emerald-500 bg-emerald-500/15 text-white shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-                        : "border-slate-800 bg-slate-950/70 text-slate-300 hover:border-slate-700"
+                        ? "border-emerald-500 bg-emerald-500/15 text-gray-900 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                        : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
                     } ${!isAuthorizedToNegotiate ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     <div>
@@ -976,12 +976,12 @@ function SettingsPage() {
                         ) : isDefault ? (
                           <span className="text-[10px] font-mono text-amber-400 font-semibold">DEFAULT</span>
                         ) : (
-                          <span className="text-[10px] font-mono text-slate-500">{tier.bps} bps</span>
+                          <span className="text-[10px] font-mono text-gray-400">{tier.bps} bps</span>
                         )}
                       </div>
-                      <div className="text-xs font-semibold text-slate-100 mt-1">{tier.label}</div>
+                      <div className="text-xs font-semibold text-gray-900 mt-1">{tier.label}</div>
                     </div>
-                    <div className="text-[10px] text-slate-400 mt-2 leading-relaxed">{tier.description}</div>
+                    <div className="text-[10px] text-gray-500 mt-2 leading-relaxed">{tier.description}</div>
                   </button>
                 );
               })}
@@ -990,11 +990,11 @@ function SettingsPage() {
 
           {/* Negotiated Rate Input (Slider & Number) */}
           {isAuthorizedToNegotiate ? (
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/80 pb-2.5">
                 <div className="flex items-center gap-2">
                   <Sliders className="size-4 text-emerald-400" />
-                  <span className="font-bold text-xs text-white">
+                  <span className="font-bold text-xs text-gray-900">
                     Custom Negotiated Rate (0% to 35%):
                   </span>
                 </div>
@@ -1004,7 +1004,7 @@ function SettingsPage() {
                       size="sm"
                       variant="secondary"
                       onClick={() => setNegotiatedBps(null)}
-                      className="h-7 text-[10px] text-slate-300 border-slate-700 hover:text-white"
+                      className="h-7 text-[10px] text-gray-700 border-gray-300 hover:text-gray-900"
                     >
                       Reset to Contracted ({(contractedBps / 100).toFixed(1)}%)
                     </Button>
@@ -1013,7 +1013,7 @@ function SettingsPage() {
                     size="sm"
                     disabled={commissionSaving || !vendor.restaurantId}
                     onClick={() => void handleSaveNegotiatedCommission()}
-                    className="h-8 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3"
+                    className="h-8 bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs font-semibold px-3"
                   >
                     {commissionSaving ? "Saving Rate..." : "Save Negotiated Commission Rate"}
                   </Button>
@@ -1022,7 +1022,7 @@ function SettingsPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-4 items-center pt-1">
                 <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] font-mono text-slate-400">
+                  <div className="flex justify-between text-[11px] font-mono text-gray-500">
                     <span>{dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} (Dine-In)</span>
                     <span>18% (Enterprise)</span>
                     <span className="text-emerald-400 font-bold">{(standardDeliveryBps / 100).toFixed(0)}% (Standard Default)</span>
@@ -1035,7 +1035,7 @@ function SettingsPage() {
                     step={0.5}
                     value={effectiveBps / 100}
                     onChange={(e) => setNegotiatedBps(Math.round(Number(e.target.value) * 100))}
-                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                   />
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -1049,9 +1049,9 @@ function SettingsPage() {
                       const val = Math.min(35, Math.max(0, Number(e.target.value)));
                       setNegotiatedBps(Math.round(val * 100));
                     }}
-                    className="h-9 text-xs bg-slate-900 border-slate-800 font-mono text-center text-emerald-400 font-bold"
+                    className="h-9 text-xs bg-white border-gray-200 font-mono text-center text-emerald-400 font-bold"
                   />
-                  <span className="text-xs font-bold text-slate-400">%</span>
+                  <span className="text-xs font-bold text-gray-500">%</span>
                 </div>
               </div>
 
@@ -1063,22 +1063,22 @@ function SettingsPage() {
               ) : null}
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-3 text-xs text-slate-400">
+            <div className="rounded-xl border border-gray-200 bg-white/40 p-3 text-xs text-gray-500">
               {t("settings.financialLocked")} Contact your restaurant owner or manager to adjust delivery commission tiers.
             </div>
           )}
 
           {/* Live Itemized Payout Calculation Preview */}
-          <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/80 pb-2.5">
               <div className="flex items-center gap-2">
                 <Calculator className="size-4 text-emerald-400" />
-                <span className="font-bold text-xs text-white">
+                <span className="font-bold text-xs text-gray-900">
                   Live Settlement Breakdown Preview ({(effectiveBps / 100).toFixed(1)}% Commission):
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] text-slate-400">Benchmark Basket:</span>
+                <span className="text-[11px] text-gray-500">Benchmark Basket:</span>
                 {[250, 500, 1000, 2000].map((amt) => (
                   <button
                     key={amt}
@@ -1086,8 +1086,8 @@ function SettingsPage() {
                     onClick={() => setPreviewBasketInr(amt)}
                     className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold transition ${
                       previewBasketInr === amt
-                        ? "bg-emerald-500 text-white"
-                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                        ? "bg-emerald-500 text-gray-900"
+                        : "bg-gray-100 text-gray-700 hover:bg-slate-700"
                     }`}
                   >
                     ₹{amt}
@@ -1098,17 +1098,17 @@ function SettingsPage() {
 
             <div className="space-y-1.5 text-xs">
               {/* Gross Food */}
-              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-300">Gross Food Value (Customer Order Total)</span>
-                <span className="font-mono font-semibold text-white">
+              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
+                <span className="text-gray-700">Gross Food Value (Customer Order Total)</span>
+                <span className="font-mono font-semibold text-gray-900">
                   + {formatINR(previewBreakdown.foodValuePaise)}
                 </span>
               </div>
 
               {/* Commission */}
-              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-slate-300">
+                  <span className="text-gray-700">
                     Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
                   </span>
                   <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 rounded">
@@ -1121,10 +1121,10 @@ function SettingsPage() {
               </div>
 
               {/* 18% GST on Commission */}
-              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-slate-300">18% GST on Delivery Commission (SAC 9985)</span>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-gray-700">18% GST on Delivery Commission (SAC 9985)</span>
+                  <span className="text-[10px] font-mono text-gray-500">
                     ({formatINR(previewBreakdown.commissionCgstPaise)} CGST + {formatINR(previewBreakdown.commissionSgstPaise)} SGST)
                   </span>
                 </div>
@@ -1134,7 +1134,7 @@ function SettingsPage() {
               </div>
 
               {/* 5% §9(5) Food GST */}
-              <div className="flex items-center justify-between py-1 border-b border-slate-800/60 bg-emerald-950/20 px-2 rounded">
+              <div className="flex items-center justify-between py-1 border-b border-gray-200/60 bg-emerald-950/20 px-2 rounded">
                 <div className="flex items-center gap-1.5">
                   <span className="text-emerald-300 font-medium">5% §9(5) Food GST (CGST Act 2017)</span>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
@@ -1147,10 +1147,10 @@ function SettingsPage() {
               </div>
 
               {/* 1% TCS */}
-              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-slate-300">1% TCS under Section 52 of CGST Act 2017</span>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-gray-700">1% TCS under Section 52 of CGST Act 2017</span>
+                  <span className="text-[10px] font-mono text-gray-500">
                     ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST credited in GSTR-8)
                   </span>
                 </div>
@@ -1160,10 +1160,10 @@ function SettingsPage() {
               </div>
 
               {/* 1% TDS */}
-              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-slate-300">1% TDS under Section 194-O Income Tax Act 1961</span>
-                  <span className="text-[10px] font-mono text-slate-400">(Deposited against your registered PAN)</span>
+                  <span className="text-gray-700">1% TDS under Section 194-O Income Tax Act 1961</span>
+                  <span className="text-[10px] font-mono text-gray-500">(Deposited against your registered PAN)</span>
                 </div>
                 <span className="font-mono font-semibold text-rose-400">
                   - {formatINR(previewBreakdown.tdsSec194OPaise)}
@@ -1171,7 +1171,7 @@ function SettingsPage() {
               </div>
 
               {/* Total Deductions */}
-              <div className="flex items-center justify-between py-1.5 border-b border-slate-800 font-semibold text-slate-300">
+              <div className="flex items-center justify-between py-1.5 border-b border-gray-200 font-semibold text-gray-700">
                 <span>Total Deductions (Excl. 9(5) Remitted by Order King)</span>
                 <span className="font-mono text-rose-400">
                   - {formatINR(previewBreakdown.totalDeductionsPaise)}
@@ -1184,7 +1184,7 @@ function SettingsPage() {
                   <div className="text-xs uppercase tracking-wider font-bold text-emerald-300">
                     Net Restaurant Payout (NRP)
                   </div>
-                  <div className="text-[10px] font-mono text-slate-400">
+                  <div className="text-[10px] font-mono text-gray-500">
                     Daily bank disbursement amount after statutory deductions
                   </div>
                 </div>
@@ -1195,24 +1195,24 @@ function SettingsPage() {
             </div>
           </div>
 
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-gray-500">
             Applied transparently on net food and packaging order value in integer paise. Every delivery order locks this exact snapshot at order acceptance.
           </p>
         </Card>
 
         {/* Role-Based Staff Access Management */}
         {vendor.role && can(vendor.role, "settings.staff") ? (
-          <Card className="space-y-3 border-slate-800 bg-slate-900/70 p-5">
+          <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Users className="size-4 text-emerald-400" />
-                <h2 className="font-display text-base font-bold text-white">{t("settings.staff")}</h2>
+                <h2 className="font-display text-base font-bold text-gray-900">{t("settings.staff")}</h2>
               </div>
-              <span className="text-[11px] font-mono text-slate-400">STAFF ACCESS CONTROL</span>
+              <span className="text-[11px] font-mono text-gray-500">STAFF ACCESS CONTROL</span>
             </div>
             <ul className="text-xs divide-y divide-slate-800">
               {staffQ.data?.staff.map((s) => (
-                <li key={s.id} className="flex justify-between py-2.5 text-slate-200">
+                <li key={s.id} className="flex justify-between py-2.5 text-gray-800">
                   <span>{s.email ?? s.user_id}</span>
                   <span className="font-mono text-emerald-400">{s.role}</span>
                 </li>
@@ -1220,18 +1220,18 @@ function SettingsPage() {
             </ul>
             <div className="grid gap-2.5 md:grid-cols-[1fr_180px_auto] pt-2">
               <div>
-                <Label className="text-xs text-slate-300">{t("auth.email")}</Label>
+                <Label className="text-xs text-gray-700">{t("auth.email")}</Label>
                 <Input
                   value={email}
                   placeholder="staff@restaurant.in"
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border-slate-800 bg-slate-950 text-xs h-10"
+                  className="border-gray-200 bg-white text-xs h-10"
                 />
               </div>
               <div>
-                <Label className="text-xs text-slate-300">{t("settings.role")}</Label>
+                <Label className="text-xs text-gray-700">{t("settings.role")}</Label>
                 <select
-                  className="h-10 w-full rounded-md border border-slate-800 bg-slate-950 px-2.5 text-xs text-slate-100"
+                  className="h-10 w-full rounded-md border border-gray-200 bg-white px-2.5 text-xs text-gray-900"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                 >
@@ -1242,7 +1242,7 @@ function SettingsPage() {
                 </select>
               </div>
               <Button
-                className="self-end h-10 bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
+                className="self-end h-10 bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs"
                 onClick={() =>
                   void addStaff({
                     data: {
@@ -1267,15 +1267,15 @@ function SettingsPage() {
         ) : null}
 
         {/* Restaurant Partner Standards & Charter */}
-        <Card id="partner-charter" className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <Card id="partner-charter" className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
               <ShieldCheck className="size-5 text-emerald-400" />
               <div>
-                <h2 className="font-display text-base font-bold text-white">
+                <h2 className="font-display text-base font-bold text-gray-900">
                   Restaurant Partner Charter &amp; Standards
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-500">
                   Commercial transparency, guest privacy protection, culinary safety guidelines, and dedicated partner care.
                 </p>
               </div>
@@ -1291,32 +1291,32 @@ function SettingsPage() {
               return (
                 <div
                   key={sec.id}
-                  className="rounded-xl border border-slate-800 bg-slate-950/70 overflow-hidden"
+                  className="rounded-xl border border-gray-200 bg-gray-50 overflow-hidden"
                 >
                   <button
                     type="button"
                     onClick={() => setOpenPolicyId(isOpen ? null : sec.id)}
-                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-slate-900/60 transition"
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-white/60 transition"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <FileText className="size-4 text-emerald-400 shrink-0" />
-                      <span className="text-xs sm:text-sm font-semibold text-slate-100 truncate">
+                      <span className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                         {sec.title}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="hidden sm:inline-block rounded border border-slate-800 bg-slate-900 px-2 py-0.5 text-[10px] font-mono text-slate-400">
+                      <span className="hidden sm:inline-block rounded border border-gray-200 bg-white shadow-xs px-2 py-0.5 text-[10px] font-mono text-gray-500">
                         {sec.badge}
                       </span>
                       {isOpen ? (
-                        <ChevronUp className="size-4 text-slate-400" />
+                        <ChevronUp className="size-4 text-gray-500" />
                       ) : (
-                        <ChevronDown className="size-4 text-slate-400" />
+                        <ChevronDown className="size-4 text-gray-500" />
                       )}
                     </div>
                   </button>
                   {isOpen ? (
-                    <div className="px-4 pb-4 pt-1 border-t border-slate-800/80 space-y-2 text-xs text-slate-300 leading-relaxed">
+                    <div className="px-4 pb-4 pt-1 border-t border-gray-200/80 space-y-2 text-xs text-gray-700 leading-relaxed">
                       {sec.body.map((paragraph, idx) => (
                         <p key={idx}>{paragraph}</p>
                       ))}

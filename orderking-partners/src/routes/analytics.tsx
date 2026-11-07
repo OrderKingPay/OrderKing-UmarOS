@@ -77,7 +77,7 @@ function AnalyticsPage() {
     >
       <div className="space-y-4">
         {/* Time Horizon & Self-Service CSV Export Bar */}
-        <Card className="border-slate-800 bg-slate-900/80 p-4 flex flex-wrap items-center justify-between gap-3">
+        <Card className="border-gray-200 bg-white shadow-xs p-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             {(["day", "week", "month"] as const).map((r) => (
               <Button
@@ -95,7 +95,7 @@ function AnalyticsPage() {
             variant="secondary"
             onClick={() => downloadPerformanceCsv()}
             disabled={!q.data}
-            className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100"
+            className="text-xs border-gray-300 bg-gray-100 hover:bg-slate-700 text-gray-900"
           >
             <FileSpreadsheet className="mr-1.5 size-3.5 text-emerald-400" />
             Download Performance &amp; Tax Report (CSV)
@@ -104,35 +104,35 @@ function AnalyticsPage() {
 
         {/* Primary KPI Grid */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <Card className="border-slate-800 bg-slate-900/70 p-4">
-            <div className="text-xs font-mono uppercase text-slate-400">{t("analytics.orders")}</div>
-            <div className="font-display text-2xl font-bold text-white mt-1 tabular">
+          <Card className="border-gray-200 bg-white shadow-xs p-4">
+            <div className="text-xs font-mono uppercase text-gray-500">{t("analytics.orders")}</div>
+            <div className="font-display text-2xl font-bold text-gray-900 mt-1 tabular">
               {s?.orders ?? "—"}
             </div>
-            <div className="text-[11px] text-slate-400 mt-0.5 tabular">
+            <div className="text-[11px] text-gray-500 mt-0.5 tabular">
               {completedOrders} delivered · {cancelledOrders + rejectedOrders} cancelled/rejected
             </div>
           </Card>
 
-          <Card className="border-slate-800 bg-slate-900/70 p-4">
-            <div className="text-xs font-mono uppercase text-slate-400">{t("dashboard.sales")}</div>
+          <Card className="border-gray-200 bg-white shadow-xs p-4">
+            <div className="text-xs font-mono uppercase text-gray-500">{t("dashboard.sales")}</div>
             <div className="font-display text-2xl font-bold text-emerald-400 mt-1 tabular">
               {s ? <MoneyText paise={s.salesPaise} /> : "—"}
             </div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Delivered gross sales</div>
+            <div className="text-[11px] text-gray-500 mt-0.5">Delivered gross sales</div>
           </Card>
 
-          <Card className="border-slate-800 bg-slate-900/70 p-4">
-            <div className="text-xs font-mono uppercase text-slate-400">{t("dashboard.aov")}</div>
-            <div className="font-display text-2xl font-bold text-white mt-1 tabular">
+          <Card className="border-gray-200 bg-white shadow-xs p-4">
+            <div className="text-xs font-mono uppercase text-gray-500">{t("dashboard.aov")}</div>
+            <div className="font-display text-2xl font-bold text-gray-900 mt-1 tabular">
               {s ? <MoneyText paise={s.aovPaise} /> : "—"}
             </div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Average basket size</div>
+            <div className="text-[11px] text-gray-500 mt-0.5">Average basket size</div>
           </Card>
 
-          <Card className="border-slate-800 bg-slate-900/70 p-4">
-            <div className="text-xs font-mono uppercase text-slate-400">{t("analytics.avgPrep")}</div>
-            <div className="font-display text-2xl font-bold text-white mt-1 tabular">
+          <Card className="border-gray-200 bg-white shadow-xs p-4">
+            <div className="text-xs font-mono uppercase text-gray-500">{t("analytics.avgPrep")}</div>
+            <div className="font-display text-2xl font-bold text-gray-900 mt-1 tabular">
               {q.data?.avgPrepMinutes != null ? `${q.data.avgPrepMinutes}m` : "—"}
             </div>
             <div className="text-[11px] text-emerald-400 mt-0.5">
@@ -143,45 +143,45 @@ function AnalyticsPage() {
 
         {/* Kitchen Efficiency & Promotional Co-Investment Summary */}
         <div className="grid gap-3 md:grid-cols-2">
-          <Card className="border-slate-800 bg-slate-900/70 p-4 space-y-2">
+          <Card className="border-gray-200 bg-white shadow-xs p-4 space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <TrendingUp className="size-4 text-emerald-400" />
-                <h2 className="font-display text-sm font-bold uppercase tracking-wider text-white">
+                <h2 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                   Kitchen Efficiency &amp; SLA Reliability
                 </h2>
               </div>
               <span className="text-xs font-mono text-emerald-400">{fulfillmentPct}% SLA</span>
             </div>
             <div className="grid grid-cols-3 gap-2 pt-1 text-xs">
-              <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-2.5">
-                <span className="text-[10px] font-mono text-slate-400 block">DELIVERED</span>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
+                <span className="text-[10px] font-mono text-gray-500 block">DELIVERED</span>
                 <span className="font-bold text-emerald-400 text-sm tabular">{completedOrders}</span>
               </div>
-              <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-2.5">
-                <span className="text-[10px] font-mono text-slate-400 block">CANCELLED</span>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
+                <span className="text-[10px] font-mono text-gray-500 block">CANCELLED</span>
                 <span className="font-bold text-amber-400 text-sm tabular">{cancelledOrders}</span>
               </div>
-              <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-2.5">
-                <span className="text-[10px] font-mono text-slate-400 block">REJECTED</span>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
+                <span className="text-[10px] font-mono text-gray-500 block">REJECTED</span>
                 <span className="font-bold text-rose-400 text-sm tabular">{rejectedOrders}</span>
               </div>
             </div>
           </Card>
 
-          <Card className="border-slate-800 bg-slate-900/70 p-4 space-y-2">
+          <Card className="border-gray-200 bg-white shadow-xs p-4 space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <LineChart className="size-4 text-emerald-400" />
-                <h2 className="font-display text-sm font-bold uppercase tracking-wider text-white">
+                <h2 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                   {t("analytics.promos")} ({q.data?.promotions.orders ?? 0} Orders)
                 </h2>
               </div>
-              <span className="text-xs font-mono text-slate-400">PROMO IMPACT</span>
+              <span className="text-xs font-mono text-gray-500">PROMO IMPACT</span>
             </div>
             <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
-              <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-2.5">
-                <span className="text-[10px] font-mono text-slate-400 block">
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
+                <span className="text-[10px] font-mono text-gray-500 block">
                   {t("promotions.restaurantFunded")}
                 </span>
                 <span className="font-bold text-rose-400 text-sm tabular">
@@ -201,8 +201,8 @@ function AnalyticsPage() {
         </div>
 
         {/* Hourly Order Volume Chart */}
-        <Card className="h-64 border-slate-800 bg-slate-900/70 p-4">
-          <h2 className="mb-2 font-display text-base font-bold text-white">{t("analytics.peak")}</h2>
+        <Card className="h-64 border-gray-200 bg-white shadow-xs p-4">
+          <h2 className="mb-2 font-display text-base font-bold text-gray-900">{t("analytics.peak")}</h2>
           <ResponsiveContainer width="100%" height="85%">
             <BarChart data={q.data?.hours ?? []}>
               <XAxis dataKey="hour" stroke="var(--color-muted)" />
@@ -215,19 +215,19 @@ function AnalyticsPage() {
 
         {/* Menu Velocity & Dish Revenue Breakdown */}
         <div className="grid gap-3 md:grid-cols-2">
-          <Card className="border-slate-800 bg-slate-900/70 p-4">
+          <Card className="border-gray-200 bg-white shadow-xs p-4">
             <div className="flex items-center gap-2 mb-3">
               <UtensilsCrossed className="size-4 text-emerald-400" />
-              <h2 className="font-display text-base font-bold text-white">{t("analytics.best")}</h2>
+              <h2 className="font-display text-base font-bold text-gray-900">{t("analytics.best")}</h2>
             </div>
             {items.length === 0 ? (
-              <p className="text-xs text-slate-400">No delivered item records in this time range.</p>
+              <p className="text-xs text-gray-500">No delivered item records in this time range.</p>
             ) : (
               <ul className="divide-y divide-slate-800/80 text-xs">
                 {items.slice(0, 6).map((i) => (
                   <li key={i.name} className="flex items-center justify-between py-2">
-                    <span className="font-medium text-slate-200">{i.name}</span>
-                    <span className="tabular font-mono text-slate-300">
+                    <span className="font-medium text-gray-800">{i.name}</span>
+                    <span className="tabular font-mono text-gray-700">
                       {i.qty} sold · <strong className="text-emerald-400">{formatINR(i.revenuePaise)}</strong>
                     </span>
                   </li>
@@ -236,13 +236,13 @@ function AnalyticsPage() {
             )}
           </Card>
 
-          <Card className="border-slate-800 bg-slate-900/70 p-4">
+          <Card className="border-gray-200 bg-white shadow-xs p-4">
             <div className="flex items-center gap-2 mb-3">
               <UtensilsCrossed className="size-4 text-amber-400" />
-              <h2 className="font-display text-base font-bold text-white">{t("analytics.low")}</h2>
+              <h2 className="font-display text-base font-bold text-gray-900">{t("analytics.low")}</h2>
             </div>
             {items.length === 0 ? (
-              <p className="text-xs text-slate-400">No delivered item records in this time range.</p>
+              <p className="text-xs text-gray-500">No delivered item records in this time range.</p>
             ) : (
               <ul className="divide-y divide-slate-800/80 text-xs">
                 {items
@@ -251,8 +251,8 @@ function AnalyticsPage() {
                   .slice(0, 6)
                   .map((i) => (
                     <li key={i.name} className="flex items-center justify-between py-2">
-                      <span className="font-medium text-slate-200">{i.name}</span>
-                      <span className="tabular font-mono text-slate-400">
+                      <span className="font-medium text-gray-800">{i.name}</span>
+                      <span className="tabular font-mono text-gray-500">
                         {i.qty} sold · {formatINR(i.revenuePaise)}
                       </span>
                     </li>

@@ -1,7 +1,6 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
-import { useState, useEffect, useRef, useMemo, type FormEvent } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useEffect, useMemo, type FormEvent } from "react";
 import { authClient, setPhoneSession, getPhoneSession } from "@/lib/auth/client";
-import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { OrderKingMark } from "@/components/mark";
@@ -24,7 +23,6 @@ import {
   LogIn,
   UserPlus,
   Lock,
-  Sparkles,
   CheckCircle2,
   KeyRound,
   MessageCircle,
@@ -33,10 +31,6 @@ import {
 
 export const Route = createFileRoute("/login")({ component: Login });
 
-/**
- * Resolves either a 10-digit Indian mobile number (+91 optional) or a standard email address
- * into a canonical authentication email identifier for Better-Auth.
- */
 function resolveIdentifierToEmail(rawInput: string): { email: string; isMobile: boolean; valid: boolean } {
   const trimmed = rawInput.trim();
   if (trimmed.includes("@")) {
@@ -66,88 +60,73 @@ function Login() {
     return "in";
   });
 
-  // Auth method: 1-Tap OTP (Fast2SMS / Firebase / WhatsApp) vs Password
   const [authMethod, setAuthMethod] = useState<"otp" | "password">("otp");
 
-  // OTP State
   const [otpStep, setOtpStep] = useState<"phone" | "code">("phone");
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpCode, setOtpCode] = useState("");
-  const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
+  const [, setWhatsAppUrl] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
-  const [providerNotice, setProviderNotice] = useState<string | null>(null);
+  const [, setProviderNotice] = useState<string | null>(null);
 
-  // Password State
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
 
-  // Shared State
   const [error, setError] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
 
   const cleanPhone = useMemo(() => sanitizeIndianPhone(mobileNumber), [mobileNumber]);
   const isPhoneValid = isValidIndianPhone(cleanPhone);
 
-  useEffect(() => { if (typeof window !== "undefined") { const s = getPhoneSession(); if (s?.user?.id) { window.location.replace("/dashboard"); } } }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const s = getPhoneSession();
+      if (s?.user?.id) {
+        window.location.replace("/dashboard");
+      }
+    }
+  }, []);
 
-  // WebOTP API for 1-tap SMS autofill on mobile devices
   useEffect(() => {
     if (otpStep !== "code") return;
     if (typeof window === "undefined" || !("OTPCredential" in window)) return;
 
     const ac = new AbortController();
-    (navigator.credentials as any)
+    (navigator as any).credentials
       ?.get({
         otp: { transport: ["sms"] },
         signal: ac.signal,
       })
-      .then((otpCredential: any) => {
-        if (otpCredential?.code) {
-          const autoCode = String(otpCredential.code).replace(/\D/g, "").slice(0, 6);
-          if (autoCode.length === 6) {
-            setOtpCode(autoCode);
-            void handleVerifyOtp(autoCode);
-          }
+      .then((otp: any) => {
+        if (otp?.code) {
+          setOtpCode(otp.code);
+          void handleVerifyOtp(otp.code);
         }
       })
       .catch(() => {});
 
-    return () => {
-      ac.abort();
-    };
+    return () => ac.abort();
   }, [otpStep]);
 
-  // 30-second OTP countdown timer
   useEffect(() => {
     if (otpStep !== "code") return;
     if (countdown <= 0) {
       setCanResend(true);
       return;
     }
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          setCanResend(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
+    const tId = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(tId);
   }, [otpStep, countdown]);
 
-  function handleSwitchMode(targetMode: "in" | "up") {
+  function handleSwitchMode(target: "in" | "up") {
+    setMode(target);
     setError(null);
-    setMode(targetMode);
-    if (typeof window !== "undefined") {
-      const url = targetMode === "up" ? "/login?mode=up" : "/login";
-      window.history.replaceState(null, "", url);
-    }
+    setOtpStep("phone");
+    setOtpCode("");
   }
 
-  // Send OTP via Firebase Phone Auth or Fast2SMS Smart OTP fallback
   async function handleSendOtp(channel: "sms" | "whatsapp" = "sms") {
     if (!isPhoneValid) {
       setError("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
@@ -158,7 +137,6 @@ function Login() {
     setError(null);
 
     try {
-      // Direct server dispatch via Fast2SMS Quick Route "q" or Meta WhatsApp API
       const res = await sendPartnerOtpFn({
         data: { phone: cleanPhone, channel },
       });
@@ -175,7 +153,6 @@ function Login() {
     }
   }
 
-  // Verify OTP and sign in / register partner
   async function handleVerifyOtp(codeToVerify?: string) {
     const code = (codeToVerify || otpCode).replace(/\D/g, "").trim();
     if (code.length !== 6) {
@@ -187,7 +164,6 @@ function Login() {
     setError(null);
 
     try {
-      // Validate OTP with server store and synchronize Better-Auth credentials
       const verifyRes = await verifyPartnerOtpFn({
         data: { phone: cleanPhone, otp: code },
       });
@@ -207,7 +183,6 @@ function Login() {
         role: "partner",
       });
 
-      // 3. Sign in or sign up via Better-Auth
       if (verifyRes.isNewUser || mode === "up") {
         const partnerName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
         const signUpRes = await authClient.signUp.email({
@@ -217,12 +192,10 @@ function Login() {
         });
 
         if (signUpRes.error) {
-          // If already exists, attempt sign in directly
-          const signInRes = await authClient.signIn.email({
+          await authClient.signIn.email({
             email,
             password: credential,
           });
-          if (signInRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
         }
         window.location.assign("/onboarding");
       } else {
@@ -231,13 +204,11 @@ function Login() {
           password: credential,
         });
         if (signInRes.error) {
-          // In case of password update, sign up fallback
-          const signUpRes = await authClient.signUp.email({
+          await authClient.signUp.email({
             email,
             password: credential,
             name: `Partner ${cleanPhone.slice(-4)}`,
           });
-          if (signUpRes.error) console.warn("[Partner Auth] Edge session active via setPhoneSession");
         }
         window.location.assign("/dashboard");
       }
@@ -248,7 +219,6 @@ function Login() {
     }
   }
 
-  // Password submission handler
   async function onSubmitPassword(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -289,46 +259,36 @@ function Login() {
   }
 
   return (
-    <main className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 px-4 py-8 sm:py-12 text-slate-100 flex flex-col justify-center">
+    <main className="min-h-dvh bg-[#F8F9FA] px-4 py-8 sm:py-12 text-gray-900 flex flex-col justify-center font-sans">
       <div className="mx-auto w-full max-w-md space-y-6">
         {/* Brand Header */}
-        <Link to="/" className="flex items-center justify-center gap-3 text-white group">
-          <OrderKingMark className="size-10 text-chili transition-transform duration-200 group-hover:scale-105" />
+        <Link to="/" className="flex items-center justify-center gap-3 text-gray-900 group">
+          <OrderKingMark className="size-10 text-[#E23744] transition-transform duration-200 group-hover:scale-105" />
           <div>
-            <div className="font-display text-2xl font-bold tracking-tight flex items-center gap-2">
+            <div className="font-display text-2xl font-black tracking-tight flex items-center gap-2">
               <span>{branding.appName || platformConfig.brand.appName}</span>
-              <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
-                PORTAL
+              <span className="rounded-md border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E23744]">
+                Partner
               </span>
             </div>
-            <div className="text-xs text-slate-400">
+            <div className="text-xs text-gray-500">
               Kitchen Command &amp; Direct Bank Settlements
             </div>
           </div>
         </Link>
 
-        {/* Commercial Status Strip */}
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-3.5 py-2.5 shadow-sm text-center">
-          <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-300">
-            <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
-            <span>
-              Orderkingpay Merchant Platform · GSTIN 18AFXPH9838M1Z9 · T+1 Direct Payouts
-            </span>
-          </div>
-        </div>
-
         {/* Main Card */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 sm:p-7 shadow-2xl backdrop-blur-md">
+        <div className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xl">
           {/* Segmented Mode Switcher (Sign In vs Register) */}
-          <div className="grid grid-cols-2 rounded-xl bg-slate-950/90 p-1 border border-slate-800 mb-6">
+          <div className="grid grid-cols-2 rounded-xl bg-gray-100 p-1 border border-gray-200 mb-6">
             <button
               type="button"
               onClick={() => handleSwitchMode("in")}
               className={cn(
-                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition-all duration-150",
+                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all duration-150",
                 mode === "in"
-                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/50"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/50",
+                  ? "bg-[#E23744] text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900",
               )}
             >
               <LogIn className="size-3.5" />
@@ -338,10 +298,10 @@ function Login() {
               type="button"
               onClick={() => handleSwitchMode("up")}
               className={cn(
-                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition-all duration-150",
+                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all duration-150",
                 mode === "up"
-                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/50"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/50",
+                  ? "bg-[#E23744] text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900",
               )}
             >
               <UserPlus className="size-3.5" />
@@ -351,18 +311,18 @@ function Login() {
 
           {/* Heading */}
           <div className="pb-4">
-            <h1 className="font-display text-xl sm:text-2xl font-bold text-white">
-              {mode === "in" ? "Welcome Back to Your Kitchen" : `Partner With ${branding.shortAppName || branding.appName || "Order King"}`}
+            <h1 className="font-display text-xl sm:text-2xl font-black text-gray-900">
+              {mode === "in" ? "Welcome Back to Your Kitchen" : "Register Your Restaurant"}
             </h1>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-gray-500">
               {mode === "in"
-                ? "Enter your 10-digit mobile number or business email to access live dining, orders, and settlements."
-                : "Register your restaurant with your 14-digit FSSAI license, PAN card, outlet address, and bank account."}
+                ? "Enter your 10-digit mobile number to access live orders, menu, and payouts."
+                : "Enter your mobile number to begin fast 10-minute partner registration."}
             </p>
           </div>
 
-          {/* Auth Method Selector (1-Tap OTP vs Password) */}
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+          {/* Auth Method Selector */}
+          <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -373,8 +333,8 @@ function Login() {
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5",
                   authMethod === "otp"
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                    : "text-slate-400 hover:text-slate-200",
+                    ? "bg-red-50 text-[#E23744] border border-red-200"
+                    : "text-gray-500 hover:text-gray-800",
                 )}
               >
                 <Phone className="size-3" />
@@ -389,25 +349,25 @@ function Login() {
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5",
                   authMethod === "password"
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                    : "text-slate-400 hover:text-slate-200",
+                    ? "bg-red-50 text-[#E23744] border border-red-200"
+                    : "text-gray-500 hover:text-gray-800",
                 )}
               >
                 <KeyRound className="size-3" />
                 <span>Password</span>
               </button>
             </div>
-            <span className="text-[10px] text-slate-500 font-mono">Active Merchant Access</span>
+            <span className="text-[10px] text-gray-400 font-medium">Merchant Access</span>
           </div>
 
-          {/* Method 1: 1-Tap OTP Flow (Firebase + Fast2SMS Smart OTP + WhatsApp Zero-Lockout) */}
+          {/* Method 1: 1-Tap OTP Flow */}
           {authMethod === "otp" ? (
             <div className="space-y-4">
               {otpStep === "phone" ? (
                 <>
                   {mode === "up" ? (
                     <div>
-                      <Label htmlFor="owner-name" className="text-xs text-slate-300">
+                      <Label htmlFor="owner-name" className="text-xs font-semibold text-gray-700">
                         Restaurateur / Owner Full Name
                       </Label>
                       <div className="relative mt-1">
@@ -415,22 +375,22 @@ function Login() {
                           id="owner-name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Chef Rajeshwari Iyer"
-                          className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11"
+                          placeholder="e.g. Rajeshwari Iyer"
+                          className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
                         />
                       </div>
                     </div>
                   ) : null}
 
                   <div>
-                    <Label htmlFor="mobile-input" className="flex items-center justify-between text-xs text-slate-300">
+                    <Label htmlFor="mobile-input" className="flex items-center justify-between text-xs font-semibold text-gray-700">
                       <span>Indian 10-Digit Mobile Number</span>
-                      <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                      <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
                         <Phone className="size-3" /> Jio / Airtel / Vi / BSNL
                       </span>
                     </Label>
                     <div className="relative mt-1 flex items-center">
-                      <span className="absolute left-3 text-xs font-bold text-slate-400">+91</span>
+                      <span className="absolute left-3 text-xs font-bold text-gray-500">+91</span>
                       <Input
                         id="mobile-input"
                         type="tel"
@@ -439,26 +399,26 @@ function Login() {
                         value={mobileNumber}
                         onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
                         placeholder="9876543210"
-                        className="pl-12 border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11 font-mono tracking-wider text-sm"
+                        className="pl-12 border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono tracking-wider text-sm"
                       />
                     </div>
-                    <p className="mt-1 text-[11px] text-slate-500">
-                      We will send an authentic 6-digit carrier SMS verification code.
+                    <p className="mt-1 text-[11px] text-gray-500">
+                      We will send a 6-digit SMS verification code.
                     </p>
                   </div>
 
                   {error ? (
-                    <div className="rounded-lg border border-rose-500/30 bg-rose-950/40 px-3.5 py-2.5 text-xs text-rose-300">
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
                       {error}
                     </div>
                   ) : null}
 
-                  <div className="space-y-2 pt-1">
+                  <div className="space-y-2.5 pt-1">
                     <Button
                       type="button"
                       disabled={working || !isPhoneValid}
                       onClick={() => void handleSendOtp("sms")}
-                      className="h-12 w-full bg-emerald-600 font-semibold text-white shadow-lg shadow-emerald-950 hover:bg-emerald-500 text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+                      className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all flex items-center justify-center gap-2"
                     >
                       {working ? (
                         <RefreshCw className="size-4 animate-spin" />
@@ -468,15 +428,14 @@ function Login() {
                       <span>Send Verification Code (SMS)</span>
                     </Button>
 
-                    {/* Zero-Lockout 1-Tap WhatsApp Fallback */}
                     <Button
                       type="button"
                       variant="outline"
                       disabled={working || !isPhoneValid}
                       onClick={() => void handleSendOtp("whatsapp")}
-                      className="h-11 w-full border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/40 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
+                      className="h-11 w-full border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
                     >
-                      <MessageCircle className="size-4 text-emerald-400" />
+                      <MessageCircle className="size-4 text-emerald-600" />
                       <span>Instant Sign In via WhatsApp OTP</span>
                     </Button>
                   </div>
@@ -484,10 +443,10 @@ function Login() {
               ) : (
                 /* Step 2: Code Verification */
                 <div className="space-y-4">
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3.5 flex items-center justify-between">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 flex items-center justify-between">
                     <div>
-                      <div className="text-[11px] text-slate-400">Verifying mobile number:</div>
-                      <div className="text-sm font-bold text-slate-100 font-mono tracking-wider">
+                      <div className="text-[11px] text-gray-500">Verifying mobile number:</div>
+                      <div className="text-sm font-bold text-gray-900 font-mono tracking-wider">
                         +91 {cleanPhone}
                       </div>
                     </div>
@@ -499,14 +458,14 @@ function Login() {
                         setOtpCode("");
                         setProviderNotice(null);
                       }}
-                      className="text-xs font-semibold text-emerald-400 hover:underline"
+                      className="text-xs font-bold text-[#E23744] hover:underline"
                     >
                       Change
                     </button>
                   </div>
 
                   <div>
-                    <Label htmlFor="otp-input" className="text-xs text-slate-300">
+                    <Label htmlFor="otp-input" className="text-xs font-semibold text-gray-700">
                       Enter 6-Digit Verification Code
                     </Label>
                     <div className="relative mt-1">
@@ -524,13 +483,13 @@ function Login() {
                           }
                         }}
                         placeholder="••••••"
-                        className="text-center tracking-widest text-lg font-mono border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-12"
+                        className="text-center tracking-widest text-lg font-mono border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-12"
                       />
                     </div>
                   </div>
 
                   {error ? (
-                    <div className="rounded-lg border border-rose-500/30 bg-rose-950/40 px-3.5 py-2.5 text-xs text-rose-300">
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
                       {error}
                     </div>
                   ) : null}
@@ -539,26 +498,25 @@ function Login() {
                     type="button"
                     disabled={working || otpCode.length !== 6}
                     onClick={() => void handleVerifyOtp()}
-                    className="h-12 w-full bg-emerald-600 font-semibold text-white shadow-lg shadow-emerald-950 hover:bg-emerald-500 text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+                    className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all flex items-center justify-center gap-2"
                   >
-                    {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
+                    {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
                     <span>Verify &amp; Launch Kitchen</span>
                   </Button>
 
-                  {/* Resend Actions & WhatsApp Link */}
-                  <div className="pt-2 flex flex-col gap-2 border-t border-slate-800/80">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span>Didn't receive the SMS code?</span>
+                  <div className="pt-2 flex flex-col gap-2 border-t border-gray-100">
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>Didn&apos;t receive the SMS code?</span>
                       {canResend ? (
                         <button
                           type="button"
                           onClick={() => void handleSendOtp("sms")}
-                          className="font-bold text-emerald-400 hover:underline"
+                          className="font-bold text-[#E23744] hover:underline"
                         >
                           Resend SMS
                         </button>
                       ) : (
-                        <span className="font-mono text-slate-500">Resend in {countdown}s</span>
+                        <span className="font-mono text-gray-400">Resend in {countdown}s</span>
                       )}
                     </div>
 
@@ -566,9 +524,9 @@ function Login() {
                       type="button"
                       disabled={working || !canResend}
                       onClick={() => void handleSendOtp("whatsapp")}
-                      className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/50 disabled:opacity-50 text-xs font-semibold transition"
+                      className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 text-xs font-semibold transition"
                     >
-                      <MessageCircle className="size-3.5 text-emerald-400" />
+                      <MessageCircle className="size-3.5 text-emerald-600" />
                       <span>{canResend ? "Deliver OTP to WhatsApp" : `Resend WhatsApp in ${countdown}s`}</span>
                     </button>
                   </div>
@@ -580,7 +538,7 @@ function Login() {
             <form className="space-y-4" onSubmit={onSubmitPassword}>
               {mode === "up" ? (
                 <div>
-                  <Label htmlFor="name" className="text-xs text-slate-300">
+                  <Label htmlFor="name" className="text-xs font-semibold text-gray-700">
                     Restaurateur or Owner Full Name
                   </Label>
                   <div className="relative mt-1">
@@ -590,17 +548,17 @@ function Login() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       autoComplete="name"
-                      placeholder="e.g. Chef Rajeshwari Iyer"
-                      className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11"
+                      placeholder="e.g. Rajeshwari Iyer"
+                      className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
                     />
                   </div>
                 </div>
               ) : null}
 
               <div>
-                <Label htmlFor="identifier" className="flex items-center justify-between text-xs text-slate-300">
+                <Label htmlFor="identifier" className="flex items-center justify-between text-xs font-semibold text-gray-700">
                   <span>10-Digit Mobile or Business Email</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                  <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
                     <Phone className="size-3" /> / <Mail className="size-3" />
                   </span>
                 </Label>
@@ -612,19 +570,19 @@ function Login() {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     autoComplete="username"
-                    placeholder="9876543210 or chef@restaurant.in"
-                    className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11"
+                    placeholder="9876543210 or owner@restaurant.com"
+                    className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
                   />
                 </div>
-                <p className="mt-1 text-[11px] text-slate-500">
+                <p className="mt-1 text-[11px] text-gray-500">
                   Indian 10-digit mobile number (starts with 6–9) or registered restaurant email.
                 </p>
               </div>
 
               <div>
-                <Label htmlFor="password" className="flex items-center justify-between text-xs text-slate-300">
+                <Label htmlFor="password" className="flex items-center justify-between text-xs font-semibold text-gray-700">
                   <span>{t("auth.password")}</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                  <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
                     <Lock className="size-3" /> Minimum 8 characters
                   </span>
                 </Label>
@@ -638,20 +596,20 @@ function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete={mode === "up" ? "new-password" : "current-password"}
                     placeholder="••••••••"
-                    className="border-slate-800 bg-slate-950 text-slate-100 focus:border-emerald-500 h-11"
+                    className="border-gray-300 bg-white text-gray-900 focus:border-[#E23744] h-11"
                   />
                 </div>
               </div>
 
               {error ? (
-                <div className="rounded-lg border border-rose-500/30 bg-rose-950/40 px-3.5 py-2.5 text-xs text-rose-300">
+                <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
                   {error}
                 </div>
               ) : null}
 
               <Button
                 type="submit"
-                className="h-12 w-full bg-emerald-600 font-semibold text-white shadow-lg shadow-emerald-950 hover:bg-emerald-500 text-sm rounded-xl transition-all"
+                className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all"
                 size="lg"
                 disabled={working}
               >
@@ -665,49 +623,48 @@ function Login() {
           )}
 
           {/* Bottom Switch Link */}
-          <div className="mt-5 pt-4 border-t border-slate-800/80 text-center">
+          <div className="mt-5 pt-4 border-t border-gray-100 text-center">
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-[#E23744] transition-colors"
               onClick={() => handleSwitchMode(mode === "in" ? "up" : "in")}
             >
               <span>
                 {mode === "in"
-                  ? `New to ${branding.shortAppName || branding.appName || "Order King"}? Join our restaurant network`
-                  : `Already registered with ${branding.shortAppName || branding.appName || "Order King"}? Sign in to your portal`}
+                  ? "New to OrderKing? Join our restaurant network"
+                  : "Already registered? Sign in to your portal"}
               </span>
-              <ArrowRight className="size-3 text-emerald-400" />
+              <ArrowRight className="size-3 text-[#E23744]" />
             </button>
           </div>
         </div>
 
-
         {/* Key Partner Highlights */}
-        <div className="grid grid-cols-2 gap-3 text-xs text-slate-400">
-          <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-3">
-            <div className="flex items-center gap-1.5 font-medium text-slate-200">
-              <CheckCircle2 className="size-3.5 text-emerald-400" />
-              <span>Direct Daily Settlements</span>
+        <div className="grid grid-cols-2 gap-3 text-xs text-gray-600">
+          <div className="rounded-2xl border border-gray-200 bg-white p-3.5 shadow-xs">
+            <div className="flex items-center gap-1.5 font-bold text-gray-900">
+              <CheckCircle2 className="size-4 text-emerald-600" />
+              <span>Direct Daily Payouts</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-400 leading-snug">
-              Automated daily payouts directly to your bank account with complete transparency.
+            <p className="mt-1 text-[11px] text-gray-500 leading-snug">
+              Automated daily T+1 payouts directly to your verified bank account.
             </p>
           </div>
-          <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-3">
-            <div className="flex items-center gap-1.5 font-medium text-slate-200">
-              <Globe className="size-3.5 text-emerald-400" />
-              <span>23 Indian Languages &amp; Audio</span>
+          <div className="rounded-2xl border border-gray-200 bg-white p-3.5 shadow-xs">
+            <div className="flex items-center gap-1.5 font-bold text-gray-900">
+              <Globe className="size-4 text-[#E23744]" />
+              <span>Vernacular Audio</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-400 leading-snug">
-              Full vernacular kitchen controls with real-time King AI and Soundbox order chimes.
+            <p className="mt-1 text-[11px] text-gray-500 leading-snug">
+              Full Indian language kitchen controls with real-time soundbox order alerts.
             </p>
           </div>
         </div>
 
-        {/* Security & Hospitality Guarantee */}
-        <div className="text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
-          <ShieldCheck className="size-3.5 text-emerald-400" />
-          <span>OrderKing Restaurant Partner Portal • Direct Bank Payouts</span>
+        {/* Security & Statutory Details */}
+        <div className="text-center text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
+          <ShieldCheck className="size-3.5 text-gray-400" />
+          <span>OrderKing Restaurant Partner Portal • GSTIN: 18AFXPH9838M1Z9</span>
         </div>
       </div>
     </main>

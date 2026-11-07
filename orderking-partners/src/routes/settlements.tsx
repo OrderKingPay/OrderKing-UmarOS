@@ -109,7 +109,7 @@ function SettlementsPage() {
   if (vendor.role && !allowed) {
     return (
       <VendorShell title={t("nav.settlements")} dataLabel={vendor.dataLabel}>
-        <Card className="p-6 text-sm text-slate-400 bg-slate-900 border-slate-800">
+        <Card className="p-6 text-sm text-gray-500 bg-white border-gray-200">
           {t("settings.financialLocked")}
         </Card>
       </VendorShell>
@@ -270,29 +270,27 @@ function SettlementsPage() {
       <div className="space-y-5">
         {/* Dual Settlement Cycle Switcher & Accrued Balance Hero Card */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <Card className="lg:col-span-2 border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-5 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+          <Card className="lg:col-span-2 border-gray-200 bg-white p-5 shadow-xs relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-semibold flex items-center gap-1.5">
+                <span className="text-xs uppercase tracking-wider text-[#E23744] font-bold flex items-center gap-1.5">
                   <Scale className="size-3.5" />
-                  Dual Settlement Reconciliation Engine
+                  Settlement & Payouts
                 </span>
-                <h2 className="text-xl font-display font-bold text-white mt-1">
-                  Settlement Ledger &amp; Payouts
+                <h2 className="text-xl font-display font-bold text-gray-900 mt-1">
+                  Settlement Ledger & Payout History
                 </h2>
               </div>
 
               {/* Cycle Toggle */}
-              <div className="inline-flex rounded-xl bg-slate-950 p-1 border border-slate-800">
+              <div className="inline-flex rounded-xl bg-gray-100 p-1 border border-gray-200">
                 <button
                   type="button"
                   onClick={() => setSelectedCycle("STANDARD_WEEKLY")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-1.5 ${
                     selectedCycle === "STANDARD_WEEKLY"
-                      ? "bg-slate-800 text-emerald-400 shadow font-semibold"
-                      : "text-slate-400 hover:text-slate-200"
+                      ? "bg-white text-gray-900 shadow-xs"
+                      : "text-gray-500 hover:text-gray-800"
                   }`}
                 >
                   <Clock className="size-3.5" />
@@ -301,10 +299,10 @@ function SettlementsPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedCycle("EXPRESS_DAILY")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-1.5 ${
                     selectedCycle === "EXPRESS_DAILY"
-                      ? "bg-emerald-600 text-white shadow font-semibold"
-                      : "text-slate-400 hover:text-slate-200"
+                      ? "bg-[#E23744] text-white shadow-xs"
+                      : "text-gray-500 hover:text-gray-800"
                   }`}
                 >
                   <Zap className="size-3.5" />
@@ -315,14 +313,14 @@ function SettlementsPage() {
 
             <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Accrued Delivered Orders Balance
                 </div>
-                <div className="font-display text-3xl font-extrabold text-emerald-400 mt-1 tabular">
+                <div className="font-display text-3xl font-extrabold text-gray-900 mt-1 tabular">
                   {q.data ? <MoneyText paise={currentPayable} /> : "—"}
                 </div>
-                <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
-                  <Info className="size-3.5 text-slate-500" />
+                <p className="text-xs text-gray-500 mt-1 flex items-center gap-1.5">
+                  <Info className="size-3.5 text-gray-400" />
                   {selectedCycle === "STANDARD_WEEKLY"
                     ? "Disbursed weekly on Wednesday for Monday 00:00:00 to Sunday 23:59:59 orders (Standard settlement)."
                     : "Available for instant T+1 payout of yesterday's net earnings for a nominal 0.5% liquidity fee."}
@@ -331,29 +329,30 @@ function SettlementsPage() {
 
               <div className="flex flex-wrap gap-2">
                 <Button
-                  variant="primary"
+                  variant="outline"
                   size="sm"
                   onClick={() => setShowInvoiceModal(true)}
-                  className="h-9 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-md shadow-emerald-950 flex items-center gap-1.5"
+                  className="h-9 text-xs border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold flex items-center gap-1.5 rounded-xl"
                 >
-                  <FileText className="size-4 text-emerald-100" />
-                  Download Official Monthly Tax Invoice
+                  <FileText className="size-4 text-[#E23744]" />
+                  Monthly Tax Invoice (PDF)
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowInvoiceModal(true)}
-                  className="h-9 text-xs border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5"
+                  onClick={() => download("csv")}
+                  className="h-9 text-xs border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold flex items-center gap-1.5 rounded-xl"
                 >
-                  <Printer className="size-3.5 text-emerald-400" />
-                  Print Tax Invoice
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => download("csv")} className="h-9 text-xs">
-                  <FileSpreadsheet className="mr-1.5 size-4 text-emerald-400" />
+                  <FileSpreadsheet className="size-4 text-emerald-600" />
                   {t("settlements.exportCsv")}
                 </Button>
-                <Button variant="secondary" size="sm" onClick={() => download("json")} className="h-9 text-xs">
-                  <Download className="mr-1.5 size-4 text-slate-300" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => download("json")}
+                  className="h-9 text-xs border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-semibold flex items-center gap-1.5 rounded-xl"
+                >
+                  <Download className="size-4 text-gray-500" />
                   {t("settlements.exportJson")}
                 </Button>
               </div>
@@ -361,40 +360,40 @@ function SettlementsPage() {
           </Card>
 
           {/* Express Daily (T+1) Action Card */}
-          <Card className="border-emerald-500/30 bg-gradient-to-br from-emerald-950/30 via-slate-900 to-slate-950 p-5 flex flex-col justify-between shadow-xl">
+          <Card className="border-gray-200 bg-white p-5 flex flex-col justify-between shadow-xs">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono text-emerald-400 font-semibold uppercase flex items-center gap-1.5">
-                  <Zap className="size-3.5 text-amber-400" />
+                <span className="text-xs text-[#E23744] font-bold uppercase flex items-center gap-1.5">
+                  <Zap className="size-3.5 text-amber-500" />
                   Express Daily Payout
                 </span>
-                <span className="rounded bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-mono font-bold">
+                <span className="rounded bg-amber-50 border border-amber-200 text-amber-800 px-2 py-0.5 text-[10px] font-bold">
                   T+1 DISBURSEMENT
                 </span>
               </div>
-              <h3 className="font-semibold text-white text-base mt-2">
-                Withdraw Yesterday&apos;s Earnings
+              <h3 className="font-bold text-gray-900 text-base mt-2">
+                Withdraw Yesterday's Earnings
               </h3>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                 Receive direct bank transfer today with a nominal 0.5% early-liquidity fee.
               </p>
 
-              <div className="mt-3 p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1 text-xs">
-                <div className="flex justify-between text-slate-400">
+              <div className="mt-3 p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-1 text-xs">
+                <div className="flex justify-between text-gray-600">
                   <span>Accrued Amount:</span>
-                  <span className="font-mono text-slate-200">{formatINR(currentPayable)}</span>
+                  <span className="font-semibold text-gray-900">{formatINR(currentPayable)}</span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-gray-600">
                   <span>0.5% Liquidity Fee:</span>
-                  <span className="font-mono text-rose-400">−{formatINR(earlyFeePaise)}</span>
+                  <span className="text-rose-600 font-semibold">−{formatINR(earlyFeePaise)}</span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-gray-600">
                   <span>18% GST on Fee:</span>
-                  <span className="font-mono text-rose-400">−{formatINR(earlyFeeGstPaise)}</span>
+                  <span className="text-rose-600 font-semibold">−{formatINR(earlyFeeGstPaise)}</span>
                 </div>
-                <div className="flex justify-between border-t border-slate-800 pt-1 font-semibold text-emerald-400">
+                <div className="flex justify-between border-t border-gray-200 pt-1 font-bold text-gray-900">
                   <span>Net Disbursed:</span>
-                  <span className="font-mono">{formatINR(expressNetDisbursed)}</span>
+                  <span className="text-emerald-700 font-bold">{formatINR(expressNetDisbursed)}</span>
                 </div>
               </div>
             </div>
@@ -404,7 +403,7 @@ function SettlementsPage() {
                 size="sm"
                 disabled={currentPayable <= 0 || expressSettling}
                 onClick={() => void handleRequestExpressDailyPayout()}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs h-10 shadow-lg shadow-emerald-950"
+                className="w-full bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs h-10 rounded-xl shadow-xs"
               >
                 {expressSettling ? (
                   "Initiating Transfer..."
@@ -417,18 +416,18 @@ function SettlementsPage() {
               </Button>
 
               {expressSuccess && (
-                <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 p-2.5 text-xs text-emerald-300 space-y-0.5">
+                <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-2.5 text-xs text-emerald-800 space-y-0.5">
                   <div className="font-bold flex items-center gap-1">
                     <CheckCircle2 className="size-3.5" /> Express Payout Initiated!
                   </div>
-                  <div className="text-[11px] font-mono text-slate-400">
+                  <div className="text-[11px] text-gray-600">
                     Batch: {expressSuccess.batchId} · Disbursed: {formatINR(expressSuccess.netPayoutPaise)}
                   </div>
                 </div>
               )}
 
               {expressError && (
-                <div className="rounded-lg border border-rose-500/30 bg-rose-950/30 p-2.5 text-xs text-rose-300">
+                <div className="rounded-lg border border-rose-300 bg-rose-50 p-2.5 text-xs text-rose-800">
                   {expressError}
                 </div>
               )}
@@ -436,28 +435,28 @@ function SettlementsPage() {
           </Card>
         </div>
 
-        {/* Self-Service Settlement Bank Account & Statutory Credentials */}
-        <Card className="border-slate-800 bg-slate-900/70 p-4 space-y-3">
+        {/* Self-Service Settlement Bank Account */}
+        <Card className="border-gray-200 bg-white p-4 space-y-3 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Building2 className="size-4 text-emerald-400" />
+              <Building2 className="size-4 text-[#E23744]" />
               <div>
-                <h3 className="font-semibold text-slate-100 text-sm">
-                  Registered NEFT/IMPS Settlement Bank Account
+                <h3 className="font-bold text-gray-900 text-sm">
+                  Registered Settlement Bank Account
                 </h3>
-                <p className="text-xs text-slate-400">
-                  Beneficiary: <span className="text-slate-200 font-medium">{r?.bank_name || r?.name || "—"}</span>
-                  {" · "}Account: <span className="font-mono text-slate-200">{r?.bank_account || "Not set"}</span>
-                  {" · "}IFSC: <span className="font-mono text-emerald-400">{r?.bank_ifsc || "Not set"}</span>
+                <p className="text-xs text-gray-500">
+                  Beneficiary: <span className="text-gray-900 font-medium">{r?.bank_name || r?.name || "—"}</span>
+                  {" · "}Account: <span className="font-mono text-gray-900 font-semibold">{r?.bank_account || "Not set"}</span>
+                  {" · "}IFSC: <span className="font-mono text-emerald-700 font-semibold">{r?.bank_ifsc || "Not set"}</span>
                 </p>
               </div>
             </div>
             {canEditBank ? (
               <Button
                 size="sm"
-                variant="secondary"
+                variant="outline"
                 onClick={() => setEditingBank(!editingBank)}
-                className="text-xs shrink-0"
+                className="text-xs border-gray-300 text-gray-700 rounded-xl"
               >
                 {editingBank ? "Cancel" : "Update Bank Account"}
               </Button>
@@ -465,40 +464,40 @@ function SettlementsPage() {
           </div>
 
           {editingBank && canEditBank ? (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-gray-100">
               <div>
-                <Label className="text-xs text-slate-300">Beneficiary Name</Label>
+                <Label className="text-xs text-gray-700 font-semibold">Beneficiary Name</Label>
                 <Input
                   value={bankHolder || String(r?.bank_name ?? "")}
                   onChange={(e) => setBankHolder(e.target.value)}
                   placeholder="Account holder name"
-                  className="h-9 text-xs bg-slate-950 border-slate-800 text-slate-100"
+                  className="h-10 text-xs bg-white border-gray-300 text-gray-900 rounded-xl"
                 />
               </div>
               <div>
-                <Label className="text-xs text-slate-300">Bank Account Number</Label>
+                <Label className="text-xs text-gray-700 font-semibold">Bank Account Number</Label>
                 <Input
                   value={bankAccount || String(r?.bank_account ?? "")}
                   onChange={(e) => setBankAccount(e.target.value)}
                   placeholder="e.g. 50100234567890"
-                  className="h-9 text-xs bg-slate-950 border-slate-800 text-slate-100 font-mono"
+                  className="h-10 text-xs bg-white border-gray-300 text-gray-900 font-mono rounded-xl"
                 />
               </div>
               <div className="flex items-end gap-2">
                 <div className="flex-1">
-                  <Label className="text-xs text-slate-300">11-Char IFSC Code</Label>
+                  <Label className="text-xs text-gray-700 font-semibold">11-Char IFSC Code</Label>
                   <Input
                     value={bankIfsc || String(r?.bank_ifsc ?? "")}
                     onChange={(e) => setBankIfsc(e.target.value.toUpperCase().slice(0, 11))}
                     placeholder="e.g. HDFC0001234"
-                    className="h-9 text-xs bg-slate-950 border-slate-800 text-slate-100 font-mono"
+                    className="h-10 text-xs bg-white border-gray-300 text-gray-900 font-mono uppercase rounded-xl"
                   />
                 </div>
                 <Button
                   size="sm"
                   disabled={bankSaving}
                   onClick={() => void handleSaveBankDetails()}
-                  className="h-9 bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
+                  className="h-10 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs rounded-xl px-5"
                 >
                   {bankSaving ? "Saving..." : "Save"}
                 </Button>
@@ -507,7 +506,7 @@ function SettlementsPage() {
           ) : null}
 
           {bankMsg ? (
-            <div className="text-xs text-emerald-400 flex items-center gap-1.5">
+            <div className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="size-3.5" />
               <span>{bankMsg}</span>
             </div>
@@ -516,150 +515,131 @@ function SettlementsPage() {
 
         {/* Cumulative Chartered Accountant (CA) Ledger & Statutory Tax Reconciliation */}
         {allLines.length > 0 ? (
-          <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4 shadow-xl">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
+          <Card className="border-gray-200 bg-white p-5 space-y-4 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 pb-3 gap-2">
               <div>
-                <div className="text-xs font-mono uppercase tracking-wider text-emerald-400 font-bold">
-                  Chartered Accountant (CA) Statutory Tax Reconciliation ({allLines.length} Settled Orders)
+                <div className="text-xs uppercase tracking-wider text-[#E23744] font-bold">
+                  Statutory Tax & Settlement Summary ({allLines.length} Settled Orders)
                 </div>
-                <div className="text-xs text-slate-400 mt-0.5">
-                  PAN: <span className="font-mono text-slate-200">{r?.pan || "—"}</span> · GSTIN:{" "}
-                  <span className="font-mono text-slate-200">{r?.gstin || "Unregistered"}</span>
+                <div className="text-xs text-gray-500 mt-0.5">
+                  PAN: <span className="font-mono text-gray-900 font-semibold">{r?.pan || "—"}</span> · GSTIN:{" "}
+                  <span className="font-mono text-gray-900 font-semibold">{r?.gstin || "Unregistered"}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button
                   size="sm"
                   onClick={() => setShowInvoiceModal(true)}
-                  className="h-7 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium gap-1 shadow-sm"
+                  className="h-8 text-xs bg-[#E23744] hover:bg-[#d32f2f] text-white font-semibold gap-1 rounded-xl shadow-xs"
                 >
-                  <FileText className="size-3 text-emerald-100" />
+                  <FileText className="size-3.5 text-white" />
                   GSTR-1 Tax Invoice (PDF)
                 </Button>
-                <span className="text-[10px] font-mono text-slate-400 bg-slate-950 border border-slate-800 px-2 py-1 rounded">
-                  GSTR-8 TCS &amp; Form 16A TDS Reconciled
-                </span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 text-xs">
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-                <div className="text-[10px] font-mono text-slate-400">GROSS SALES</div>
-                <div className="font-bold text-slate-100 mt-0.5 tabular">{formatINR(totals.gross)}</div>
-                <div className="text-[9px] text-slate-500 mt-0.5">Food + Packing</div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+                <div className="text-[10px] text-gray-500 font-semibold">GROSS SALES</div>
+                <div className="font-bold text-gray-900 mt-0.5 tabular">{formatINR(totals.gross)}</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">Food + Packing</div>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-                <div className="text-[10px] font-mono text-slate-400">REST. DISC</div>
-                <div className="font-bold text-rose-400 mt-0.5 tabular">−{formatINR(totals.restDisc)}</div>
-                <div className="text-[9px] text-slate-500 mt-0.5">Kitchen funded</div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+                <div className="text-[10px] text-gray-500 font-semibold">REST. DISC</div>
+                <div className="font-bold text-rose-600 mt-0.5 tabular">−{formatINR(totals.restDisc)}</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">Kitchen funded</div>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-                <div className="text-[10px] font-mono text-slate-400">COMMISSION</div>
-                <div className="font-bold text-rose-400 mt-0.5 tabular">−{formatINR(totals.commission)}</div>
-                <div className="text-[9px] text-slate-500 mt-0.5">{effectiveCommissionPct}% fee</div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+                <div className="text-[10px] text-gray-500 font-semibold">COMMISSION</div>
+                <div className="font-bold text-rose-600 mt-0.5 tabular">−{formatINR(totals.commission)}</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">{effectiveCommissionPct}% fee</div>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-                <div className="text-[10px] font-mono text-slate-400">COMM. GST (18%)</div>
-                <div className="font-bold text-rose-400 mt-0.5 tabular">−{formatINR(totals.commGst)}</div>
-                <div className="text-[9px] text-slate-500 mt-0.5">9% CGST + 9% SGST</div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+                <div className="text-[10px] text-gray-500 font-semibold">COMM. GST (18%)</div>
+                <div className="font-bold text-rose-600 mt-0.5 tabular">−{formatINR(totals.commGst)}</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">9% CGST + 9% SGST</div>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-                <div className="text-[10px] font-mono text-slate-400">PG FEES (1.8%)</div>
-                <div className="font-bold text-rose-400 mt-0.5 tabular">−{formatINR(totals.gwFee + totals.gwGst)}</div>
-                <div className="text-[9px] text-slate-500 mt-0.5">Fee + 18% GST</div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+                <div className="text-[10px] text-gray-500 font-semibold">PG FEES (1.8%)</div>
+                <div className="font-bold text-rose-600 mt-0.5 tabular">−{formatINR(totals.gwFee + totals.gwGst)}</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">Fee + 18% GST</div>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-                <div className="text-[10px] font-mono text-slate-400">TCS (SEC 52)</div>
-                <div className="font-bold text-rose-400 mt-0.5 tabular">−{formatINR(totals.tcs)}</div>
-                <div className="text-[9px] text-slate-500 mt-0.5">1% Net Supply</div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+                <div className="text-[10px] text-gray-500 font-semibold">TCS (SEC 52)</div>
+                <div className="font-bold text-rose-600 mt-0.5 tabular">−{formatINR(totals.tcs)}</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">1% Net Supply</div>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-2.5">
-                <div className="text-[10px] font-mono text-slate-400">TDS (SEC 194-O)</div>
-                <div className="font-bold text-rose-400 mt-0.5 tabular">−{formatINR(totals.tds)}</div>
-                <div className="text-[9px] text-slate-500 mt-0.5">1% Gross Sales</div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+                <div className="text-[10px] text-gray-500 font-semibold">TDS (SEC 194-O)</div>
+                <div className="font-bold text-rose-600 mt-0.5 tabular">−{formatINR(totals.tds)}</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">1% Gross Sales</div>
               </div>
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-2.5">
-                <div className="text-[10px] font-mono text-emerald-400 font-bold">NET PAYABLE</div>
-                <div className="font-bold text-emerald-400 mt-0.5 tabular">{formatINR(totals.payable)}</div>
-                <div className="text-[9px] text-emerald-500/80 mt-0.5">Exact integer paise</div>
+              <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-2.5">
+                <div className="text-[10px] text-emerald-800 font-bold">NET PAYABLE</div>
+                <div className="font-extrabold text-emerald-700 mt-0.5 tabular text-sm">{formatINR(totals.payable)}</div>
+                <div className="text-[9px] text-emerald-600 mt-0.5">Bank transfer</div>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="size-4 text-emerald-400" />
+                <ShieldCheck className="size-4 text-blue-600" />
                 <span>
-                  <strong>Section 9(5) CGST Act Remittance:</strong> Platform collected and remitted{" "}
-                  <span className="font-mono text-emerald-400 font-semibold">{formatINR(totals.sec9_5)}</span> (5% GST)
+                  <strong>Section 9(5) CGST Act Remittance:</strong> Platform collected and deposited{" "}
+                  <span className="font-mono text-blue-950 font-bold">{formatINR(totals.sec9_5)}</span> (5% restaurant GST)
                   directly to the Government under Orderkingpay GSTIN (18AFXPH9838M1Z9). (Not debited from your payout).
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-slate-400 shrink-0">
+              <span className="text-[10px] font-bold text-blue-700 shrink-0">
                 100% Tax Compliant
               </span>
             </div>
           </Card>
         ) : null}
 
-        {/* Commercial & Statutory Settlement Logic Explanation */}
-        <Card className="border-slate-800 bg-slate-900/70 p-5 space-y-3">
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-2.5">
-            <Scale className="size-4 text-emerald-400" />
-            <h3 className="font-semibold text-slate-200 text-sm">
-              Indian Statutory Tax &amp; Multi-Cycle Settlement Ledger Invariants
-            </h3>
-          </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            All order payouts are calculated in integer paise (1 INR = 100 paise) with zero floating-point rounding drift:
-          </p>
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-3 font-mono text-xs text-emerald-300 overflow-x-auto">
-            Net Restaurant Payable = Gross Sales (Food + Packing) − Restaurant Discount − Platform Commission ({effectiveCommissionPct}%) − 18% GST on Commission − Payment Gateway Fees (1.8% + 18% GST) − 1% TCS (CGST §52) − 1% TDS (IT Act §194-O) + Platform Promo Reimbursed − Penalties/Adjustments
-          </div>
-        </Card>
-
         {/* Order-Level Reconciliation Statement Batches */}
         {(q.data?.batches.length ?? 0) === 0 ? (
-          <Card className="p-6 text-sm text-slate-400 bg-slate-900 border-slate-800">
+          <Card className="p-6 text-sm text-gray-500 bg-white border-gray-200 text-center">
             {t("settlements.empty")}
           </Card>
         ) : (
           q.data?.batches.map((b) => (
-            <Card key={b.id} className="space-y-4 border-slate-800 bg-slate-900/80 p-5 shadow-xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <Card key={b.id} className="space-y-4 border-gray-200 bg-white p-5 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono uppercase text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">
+                    <span className="text-xs uppercase text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
                       {b.status}
                     </span>
-                    <span className="text-xs font-mono text-slate-400">
+                    <span className="text-xs text-gray-500 font-mono">
                       ID: {b.id}
                     </span>
                   </div>
-                  <div className="font-medium text-white text-sm mt-1">
+                  <div className="font-semibold text-gray-900 text-sm mt-1">
                     Settlement Period: {b.period_start} → {b.period_end} ({b.lines.length} orders)
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => setShowInvoiceModal(true)}
-                    className="h-8 text-xs border-slate-700 bg-slate-950 hover:bg-slate-800 text-slate-200"
+                    className="h-8 text-xs border-gray-200 bg-white hover:bg-gray-50 text-gray-700 rounded-lg"
                   >
-                    <FileText className="size-3.5 mr-1 text-emerald-400" /> Tax Invoice (PDF)
+                    <FileText className="size-3.5 mr-1 text-[#E23744]" /> Tax Invoice
                   </Button>
                   <Button
                     size="sm"
-                    variant="secondary"
+                    variant="outline"
                     onClick={() => download("csv", b.id)}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs border-gray-200 bg-white hover:bg-gray-50 text-gray-700 rounded-lg"
                   >
                     <Download className="size-3.5 mr-1" /> Batch CSV
                   </Button>
                   <div className="text-right">
-                    <div className="text-[10px] font-mono text-slate-400 uppercase">Net Disbursed</div>
-                    <MoneyText paise={b.totalPayablePaise} className="text-xl font-bold text-emerald-400 tabular" />
+                    <div className="text-[10px] text-gray-500 font-medium uppercase">Net Disbursed</div>
+                    <MoneyText paise={b.totalPayablePaise} className="text-xl font-bold text-gray-900 tabular" />
                   </div>
                 </div>
               </div>
@@ -667,43 +647,43 @@ function SettlementsPage() {
               {/* Order-Level Statement Table */}
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[950px] text-left text-xs border-collapse">
-                  <thead className="text-[11px] font-mono uppercase text-slate-400 border-b border-slate-800">
+                  <thead className="text-[11px] font-semibold uppercase text-gray-500 border-b border-gray-200 bg-gray-50/50">
                     <tr>
-                      <th className="py-2.5 pr-2">Order</th>
-                      <th className="py-2.5 pr-2">Gross Sales</th>
-                      <th className="py-2.5 pr-2">Rest. Disc</th>
-                      <th className="py-2.5 pr-2">Commission ({effectiveCommissionPct}%)</th>
-                      <th className="py-2.5 pr-2">PG Fee (1.8%)</th>
-                      <th className="py-2.5 pr-2">TCS (1%)</th>
-                      <th className="py-2.5 pr-2">TDS (1%)</th>
-                      <th className="py-2.5 pr-2">Sec 9(5) Remitted</th>
-                      <th className="py-2.5 pr-2">Plat. Promo</th>
-                      <th className="py-2.5 text-right">Net Payable</th>
+                      <th className="py-2.5 px-2">Order</th>
+                      <th className="py-2.5 px-2">Gross Sales</th>
+                      <th className="py-2.5 px-2">Rest. Disc</th>
+                      <th className="py-2.5 px-2">Commission ({effectiveCommissionPct}%)</th>
+                      <th className="py-2.5 px-2">PG Fee (1.8%)</th>
+                      <th className="py-2.5 px-2">TCS (1%)</th>
+                      <th className="py-2.5 px-2">TDS (1%)</th>
+                      <th className="py-2.5 px-2">Sec 9(5) Remitted</th>
+                      <th className="py-2.5 px-2">Plat. Promo</th>
+                      <th className="py-2.5 px-2 text-right">Net Payable</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tbody className="divide-y divide-gray-100 text-gray-700">
                     {b.lines.map((l) => (
-                      <tr key={l.id} className="hover:bg-slate-800/30 transition-colors tabular">
-                        <td className="py-2 pr-2 font-mono text-slate-200 font-semibold">{l.order_number}</td>
-                        <td className="py-2 pr-2 font-medium">{formatINR(l.grossSalesPaise)}</td>
-                        <td className="py-2 pr-2 text-rose-400">
+                      <tr key={l.id} className="hover:bg-gray-50/80 transition-colors tabular">
+                        <td className="py-2 px-2 font-mono text-gray-900 font-bold">{l.order_number}</td>
+                        <td className="py-2 px-2 font-semibold text-gray-900">{formatINR(l.grossSalesPaise)}</td>
+                        <td className="py-2 px-2 text-rose-600">
                           {l.restaurantDiscountPaise > 0 ? `−${formatINR(l.restaurantDiscountPaise)}` : "—"}
                         </td>
-                        <td className="py-2 pr-2 text-rose-400">
+                        <td className="py-2 px-2 text-rose-600">
                           −{formatINR(l.commissionPaise + l.commissionGstPaise)}
                         </td>
-                        <td className="py-2 pr-2 text-rose-400">
+                        <td className="py-2 px-2 text-rose-600">
                           −{formatINR(l.gatewayFeePaise + l.gatewayFeeGstPaise)}
                         </td>
-                        <td className="py-2 pr-2 text-amber-400">−{formatINR(l.tcsSec52Paise)}</td>
-                        <td className="py-2 pr-2 text-amber-400">−{formatINR(l.tdsSec194OPaise)}</td>
-                        <td className="py-2 pr-2 text-emerald-400/90 font-mono text-[11px]">
+                        <td className="py-2 px-2 text-amber-700">−{formatINR(l.tcsSec52Paise)}</td>
+                        <td className="py-2 px-2 text-amber-700">−{formatINR(l.tdsSec194OPaise)}</td>
+                        <td className="py-2 px-2 text-blue-700 font-mono text-[11px]">
                           {formatINR(l.sec9_5GstPaise)}
                         </td>
-                        <td className="py-2 pr-2 text-emerald-400">
+                        <td className="py-2 px-2 text-emerald-700">
                           {l.platformFundedDiscountPaise > 0 ? `+${formatINR(l.platformFundedDiscountPaise)}` : "—"}
                         </td>
-                        <td className="py-2 text-right font-bold text-emerald-400">
+                        <td className="py-2 px-2 text-right font-extrabold text-gray-900">
                           {formatINR(l.restaurantPayablePaise)}
                         </td>
                       </tr>

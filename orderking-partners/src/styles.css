@@ -5,29 +5,29 @@
   --font-display: "Fraunces", "Noto Serif Bengali", serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  --color-bg: light-dark(#f4efe6, #120f0d);
-  --color-surface: light-dark(#fffdf8, #1c1714);
-  --color-surface-2: light-dark(#f7f1e8, #251e1b);
-  --color-ink: light-dark(#1c1714, #f4efe6);
-  --color-muted: light-dark(#6f645b, #a39589);
-  --color-faint: light-dark(#9a8d82, #6f645b);
-  --color-line: light-dark(#e4d8c8, #3b322c);
-  --color-line-strong: light-dark(#d3c4b0, #4f443b);
-  --color-chili: light-dark(#b33a1b, #e55c3c);
-  --color-chili-dark: light-dark(#8d2c14, #ff8c73);
-  --color-chili-soft: light-dark(#f3e0d6, #3d1b11);
-  --color-leaf: light-dark(#2f5d50, #40b392);
-  --color-leaf-soft: light-dark(#dce8e3, #162f27);
-  --color-warn: light-dark(#8a5a12, #e5a440);
-  --color-warn-soft: light-dark(#f3e6c8, #332005);
-  --color-danger: light-dark(#9b1d1d, #e85d5d);
-  --color-danger-soft: light-dark(#f4d6d2, #381212);
-  --color-info: light-dark(#3d4f66, #7496c2);
-  --color-info-soft: light-dark(#e4eaf1, #182330);
-  --color-primary: var(--color-primary, var(--primary, light-dark(#b33a1b, #e55c3c)));
-  --color-primary-fg: var(--color-primary-fg, var(--primary-fg, #ffffff));
-  --color-accent: var(--color-accent, var(--accent, light-dark(#b33a1b, #e55c3c)));
-  --color-border: var(--color-border, var(--border, light-dark(#e4d8c8, #3b322c)));
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f5f9;
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-faint: #94a3b8;
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
+  --color-chili: #e23744;
+  --color-chili-dark: #b91c1c;
+  --color-chili-soft: #fee2e2;
+  --color-leaf: #15803d;
+  --color-leaf-soft: #dcfce7;
+  --color-warn: #b45309;
+  --color-warn-soft: #fef3c7;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+  --color-info: #1d4ed8;
+  --color-info-soft: #dbeafe;
+  --color-primary: #e23744;
+  --color-primary-fg: #ffffff;
+  --color-accent: #e23744;
+  --color-border: #e2e8f0;
 
   --radius-xs: 4px;
   --radius-sm: 8px;
@@ -36,20 +36,16 @@
   --radius-xl: 24px;
   --radius-2xl: 32px;
 
-  --shadow-soft: light-dark(
-    0 1px 0 rgba(28, 23, 20, 0.04), 0 12px 32px -16px rgba(28, 23, 20, 0.18),
-    0 1px 0 rgba(0, 0, 0, 0.2), 0 12px 32px -16px rgba(0, 0, 0, 0.5)
-  );
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px -5px rgba(0, 0, 0, 0.05);
 }
 
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: var(--color-bg);
     color: var(--color-ink);
-    color-scheme: light dark;
   }
   body {
     margin: 0;
@@ -61,8 +57,8 @@
   h1, h2, h3 {
     font-family: var(--font-display);
     text-wrap: balance;
-    letter-spacing: -0.03em;
-    font-weight: 560;
+    letter-spacing: -0.02em;
+    font-weight: 700;
   }
   p { text-wrap: pretty; }
   button:not(:disabled),

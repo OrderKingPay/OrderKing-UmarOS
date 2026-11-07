@@ -85,7 +85,6 @@ function OrdersPage() {
     return () => stopContinuousAlarm();
   }, [pending, soundOn, scope]);
 
-  // Supabase Realtime WebSocket for live order changes and silent KOT thermal auto-print
   useEffect(() => {
     if (!vendor.restaurantId) return;
 
@@ -111,8 +110,6 @@ function OrdersPage() {
           const isNewArrival = payload.eventType === "INSERT";
           const autoPrint = isAutoPrintEnabled();
 
-          // Trigger automatic dispatch of ESC/POS binary bytes to paired printer
-          // when an order transitions to ACCEPTED or arrives with auto-print enabled
           if (isAccepted || (isNewArrival && autoPrint)) {
             try {
               await kotHardware.autoPrintEscPos(newOrder, {
@@ -123,7 +120,6 @@ function OrdersPage() {
             }
           }
 
-          // Trigger kitchen siren on live incoming order arrival
           if (isNewArrival && isFeatureEnabled("new_order_sound") && soundOn) {
             kotHardware.startIncomingOrderSiren();
           }
@@ -139,9 +135,9 @@ function OrdersPage() {
   if (!vendor.restaurantId && !vendor.isPending) {
     return (
       <VendorShell title={t("nav.orders")}>
-        <Card className="space-y-3">
-          <p>{t("onboarding.title")}</p>
-          <Button asChild>
+        <Card className="p-6 space-y-4 rounded-3xl border-gray-200 bg-white text-gray-900 shadow-xs">
+          <p className="font-bold text-base">{t("onboarding.title")}</p>
+          <Button asChild className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl h-11 px-6">
             <Link to="/onboarding">{t("common.next")}</Link>
           </Button>
         </Card>
@@ -215,37 +211,37 @@ function OrdersPage() {
       stale={q.isError}
       restaurantName={vendor.selected?.restaurantName}
     >
-      {/* Kitchen Rush / Overload Buffer Mode - Prominent Amber/Red Status Banner */}
+      {/* Kitchen Rush / Overload Buffer Mode */}
       {rushActive ? (
-        <div className="rounded-2xl border-2 border-rose-500 bg-rose-950/40 p-4 shadow-xl text-rose-100 space-y-3 animate-in fade-in">
+        <div className="rounded-2xl border-2 border-rose-500 bg-rose-50 p-4 shadow-xs text-rose-900 space-y-3 animate-in fade-in">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="relative flex size-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-                <span className="relative inline-flex rounded-full size-3 bg-rose-500" />
+                <span className="relative inline-flex rounded-full size-3 bg-rose-600" />
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <Flame className="size-5 text-rose-400 animate-bounce" />
-                  <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-wide text-white font-mono">
+                  <Flame className="size-5 text-rose-600 animate-bounce" />
+                  <h2 className="text-sm sm:text-base font-black uppercase tracking-wide text-rose-900">
                     KITCHEN RUSH OVERLOAD BUFFER ACTIVE (+{rushBuffer} MINS)
                   </h2>
                 </div>
-                <p className="text-xs text-rose-200/90 mt-0.5">
-                  Prep SLA dynamically buffered by +{rushBuffer}m across all active incoming orders · Rider pickup arrival window pushed back to prevent premature courier idle wait.
+                <p className="text-xs text-rose-700 mt-0.5">
+                  Prep SLA dynamically buffered by +{rushBuffer}m across all active incoming orders · Rider pickup arrival window pushed back to prevent premature courier wait.
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex items-center rounded-xl bg-slate-900/90 border border-slate-700 p-1 font-mono text-xs">
+              <div className="flex items-center rounded-xl bg-white border border-rose-200 p-1 font-mono text-xs">
                 <button
                   type="button"
                   onClick={() => rush.activate(10)}
                   className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                     rushBuffer === 10
-                      ? "bg-amber-600 text-white shadow-sm"
-                      : "text-slate-300 hover:text-white"
+                      ? "bg-amber-500 text-white shadow-xs"
+                      : "text-gray-700 hover:text-gray-900"
                   }`}
                 >
                   +10 Mins
@@ -255,8 +251,8 @@ function OrdersPage() {
                   onClick={() => rush.activate(15)}
                   className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                     rushBuffer === 15
-                      ? "bg-rose-600 text-white shadow-sm"
-                      : "text-slate-300 hover:text-white"
+                      ? "bg-rose-600 text-white shadow-xs"
+                      : "text-gray-700 hover:text-gray-900"
                   }`}
                 >
                   +15 Mins
@@ -265,38 +261,23 @@ function OrdersPage() {
 
               <Button
                 size="sm"
-                variant="secondary"
+                variant="outline"
                 onClick={() => rush.deactivate()}
-                className="text-xs font-bold border-rose-500/60 bg-rose-900/50 hover:bg-rose-900 text-white cursor-pointer"
+                className="text-xs font-bold border-rose-300 bg-white hover:bg-rose-100 text-rose-800 cursor-pointer"
               >
                 Turn Off Rush Mode
               </Button>
             </div>
           </div>
-
-          {/* Active Heavy Rush Customer Badge & Rider Delay Window Notice */}
-          <div className="rounded-xl border border-rose-500/30 bg-black/40 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-amber-300 uppercase font-mono tracking-wider text-[11px]">
-                Waiting Customers Badge:
-              </span>
-              <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 text-amber-200 font-semibold">
-                Kitchen is experiencing heavy rush · +{rushBuffer}m prep buffer
-              </span>
-            </div>
-            <span className="text-[11px] font-mono text-rose-300 bg-rose-950/60 border border-rose-800/60 px-2.5 py-0.5 rounded">
-              🛵 Dynamic Rider Arrival Window: +{rushBuffer}m Dispatch Delay Applied
-            </span>
-          </div>
         </div>
       ) : (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="rounded-2xl border border-gray-200 bg-white p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs text-gray-900">
           <div className="flex items-center gap-2.5">
-            <Flame className="size-4 text-amber-400" />
+            <Flame className="size-4 text-amber-500" />
             <div>
-              <span className="font-bold text-slate-200">Kitchen Rush / Overload Buffer Mode:</span>
-              <span className="text-slate-400 ml-1.5">
-                Experiencing high ticket surge? Add a prep buffer and dynamically push back rider arrival windows.
+              <span className="font-bold text-gray-900">Kitchen Rush Buffer Mode:</span>
+              <span className="text-gray-500 ml-1.5">
+                Experiencing ticket surge? Add a prep buffer and dynamically push back rider arrival windows.
               </span>
             </div>
           </div>
@@ -304,14 +285,14 @@ function OrdersPage() {
             <button
               type="button"
               onClick={() => rush.activate(10)}
-              className="px-3 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 border border-amber-500/60 text-amber-300 font-bold text-xs transition cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold text-xs transition cursor-pointer"
             >
               +10m Rush
             </button>
             <button
               type="button"
               onClick={() => rush.activate(15)}
-              className="px-3 py-1 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-500/60 text-rose-300 font-bold text-xs transition cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 font-bold text-xs transition cursor-pointer"
             >
               +15m Rush (Surge)
             </button>
@@ -320,13 +301,14 @@ function OrdersPage() {
       )}
 
       {/* Scope & Export Controls */}
-      <Card className="border-slate-800 bg-slate-900/80 p-4 space-y-3">
+      <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs space-y-4 text-gray-900">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
               variant={scope === "live" ? "primary" : "secondary"}
               onClick={() => setScope("live")}
+              className={scope === "live" ? "bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl" : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-xl font-semibold"}
             >
               {t("orders.live")}
             </Button>
@@ -334,6 +316,7 @@ function OrdersPage() {
               size="sm"
               variant={scope === "history" ? "primary" : "secondary"}
               onClick={() => setScope("history")}
+              className={scope === "history" ? "bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl" : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-xl font-semibold"}
             >
               {t("orders.history")}
             </Button>
@@ -341,6 +324,7 @@ function OrdersPage() {
               size="sm"
               variant={scope === "all" ? "primary" : "secondary"}
               onClick={() => setScope("all")}
+              className={scope === "all" ? "bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl" : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-xl font-semibold"}
             >
               All Orders
             </Button>
@@ -349,28 +333,29 @@ function OrdersPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
-              variant="secondary"
+              variant="outline"
               onClick={() => exportOrdersCsv()}
               disabled={filteredOrders.length === 0}
-              className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100"
+              className="text-xs border-gray-300 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-semibold"
             >
-              <FileSpreadsheet className="mr-1.5 size-3.5 text-emerald-400" />
+              <FileSpreadsheet className="mr-1.5 size-3.5 text-emerald-600" />
               Export Orders CSV ({filteredOrders.length})
             </Button>
             {scope === "live" && (
               <>
                 <Button
                   size="sm"
-                  variant="secondary"
+                  variant="outline"
                   onClick={() => stopContinuousAlarm()}
-                  className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200"
+                  className="text-xs border-gray-300 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-semibold"
                 >
-                  <BellOff className="mr-1 size-3.5 text-amber-400" />
+                  <BellOff className="mr-1 size-3.5 text-amber-500" />
                   Silence
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   size="icon"
+                  className="rounded-xl border-gray-300"
                   aria-label={soundOn ? t("kitchen.soundOn") : t("kitchen.soundOff")}
                   onClick={() => setSoundOn(!soundOn)}
                 >
@@ -382,24 +367,24 @@ function OrdersPage() {
         </div>
 
         {/* Order Search & State Filter Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 pt-2 border-t border-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 pt-3 border-t border-gray-100">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by Order # (e.g. 1042), Customer Locality, or Dish Name..."
-              className="pl-9 h-9 text-xs bg-slate-950 border-slate-800 text-slate-100"
+              className="pl-9 h-10 text-xs bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] rounded-xl"
             />
           </div>
-          <div className="flex items-center gap-3 text-xs text-slate-400 font-mono self-center">
-            <span>Showing: <strong className="text-white">{filteredOrders.length}</strong></span>
-            <span>Net Payable: <strong className="text-emerald-400">{formatINR(totalNetPayablePaise)}</strong></span>
+          <div className="flex items-center gap-3 text-xs text-gray-500 font-mono self-center">
+            <span>Showing: <strong className="text-gray-900">{filteredOrders.length}</strong></span>
+            <span>Net Payable: <strong className="text-emerald-700 font-bold">{formatINR(totalNetPayablePaise)}</strong></span>
           </div>
         </div>
 
         {/* State Filter Pills */}
-        <div className="flex flex-wrap gap-1.5 pt-1">
+        <div className="flex flex-wrap gap-2 pt-1">
           {STATE_PILLS.map((pill) => {
             const count = rawOrders.filter((o: any) =>
               matchesStateFilter(String(o.state), pill.id),
@@ -410,10 +395,10 @@ function OrdersPage() {
                 key={pill.id}
                 type="button"
                 onClick={() => setStateFilter(pill.id)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                className={`rounded-full px-3.5 py-1 text-xs font-bold transition cursor-pointer ${
                   active
-                    ? "bg-emerald-600 text-white"
-                    : "border border-slate-800 bg-slate-950/70 text-slate-300 hover:border-slate-700"
+                    ? "bg-[#E23744] text-white shadow-xs"
+                    : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 {pill.label} ({count})
@@ -425,7 +410,9 @@ function OrdersPage() {
 
       <div className="grid gap-3">
         {filteredOrders.length === 0 ? (
-          <Card className="text-sm text-muted">{t("orders.empty")}</Card>
+          <Card className="p-8 text-center text-sm text-gray-500 rounded-3xl border-gray-200 bg-white shadow-xs">
+            {t("orders.empty")}
+          </Card>
         ) : (
           filteredOrders.map((o: any) => {
             const isLiveActive = ["PLACED", "PENDING", "ACCEPTED", "CONFIRMED", "PREPARING"].includes(
@@ -436,21 +423,21 @@ function OrdersPage() {
             return (
               <div key={o.id} className="space-y-1.5">
                 {rushAdj && (
-                  <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs text-rose-200 font-sans shadow-sm">
+                  <div className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-rose-900 font-sans shadow-xs">
                     <div className="flex items-center gap-2">
-                      <span className="size-2 rounded-full bg-rose-400 animate-ping" />
-                      <span className="font-bold text-white">Kitchen is experiencing heavy rush</span>
-                      <span className="text-[11px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/40">
-                        +{rushBuffer}m prep buffer
+                      <span className="size-2 rounded-full bg-rose-600 animate-ping" />
+                      <span className="font-bold text-rose-900">Kitchen Rush Buffer Active</span>
+                      <span className="text-[11px] font-mono text-amber-800 bg-amber-100 px-2 py-0.5 rounded font-bold">
+                        +{rushBuffer}m buffer
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-[11px] font-mono text-slate-300">
+                    <div className="flex items-center gap-3 text-[11px] font-mono text-gray-700">
                       <span>
-                        Effective Prep: <strong className="text-white">{rushAdj.bufferedPrepMinutes}m</strong>
+                        Effective Prep: <strong className="text-gray-900">{rushAdj.bufferedPrepMinutes}m</strong>
                       </span>
                       <span>
                         Rider Pickup Window:{" "}
-                        <strong className="text-amber-300">
+                        <strong className="text-amber-800 font-bold">
                           {new Date(rushAdj.adjustedRiderArrivalAt).toLocaleTimeString([], {
                             hour: "numeric",
                             minute: "2-digit",

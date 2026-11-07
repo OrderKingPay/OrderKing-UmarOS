@@ -212,7 +212,7 @@ function PromotionsPage() {
     >
       <div className="space-y-5">
         {/* Marketing Engine Navigation Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-3">
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
@@ -220,7 +220,7 @@ function PromotionsPage() {
               className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
                 activeMarketingSection === "digital_promos"
                   ? "bg-amber-500 text-slate-950 shadow-sm"
-                  : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                  : "bg-white border border-gray-200 text-gray-500 hover:text-gray-900"
               }`}
             >
               🏷️ Digital Promotions &amp; AI Playbook
@@ -230,8 +230,8 @@ function PromotionsPage() {
               onClick={() => setActiveMarketingSection("in_store_qr")}
               className={`rounded-xl px-4 py-2 text-xs font-bold transition flex items-center gap-2 ${
                 activeMarketingSection === "in_store_qr"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+                  ? "bg-[#E23744] text-gray-900 shadow-sm"
+                  : "bg-white border border-gray-200 text-gray-500 hover:text-gray-900"
               }`}
             >
               <span>🍽️ Table QR Dine-In Ordering &amp; Viral Marketing Kit</span>
@@ -250,24 +250,24 @@ function PromotionsPage() {
         ) : (
           <>
             {/* Recommended Promotions & Offers */}
-            <Card className="space-y-5 border-amber-500/30 bg-slate-900/90 p-5">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <Card className="space-y-5 border-amber-500/30 bg-white/90 p-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gray-200 pb-4">
             <div className="flex items-start gap-3">
               <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-2.5 text-amber-400 shrink-0">
                 <Sparkles className="size-5" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="font-display text-base font-bold text-white">
+                  <h2 className="font-display text-base font-bold text-gray-900">
                     Recommended Promotions &amp; Discounts
                   </h2>
                   <span className="rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono uppercase text-amber-300">
                     Insights
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-slate-300 leading-relaxed">
+                <p className="mt-1 text-xs text-gray-700 leading-relaxed">
                   Recommended offers to increase order volume and repeat diners for{" "}
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-gray-900">
                     {vendor.selected?.restaurantName ?? "your kitchen"}
                   </span>
                   &apos;s active catalog ({totalMenuCount} dishes) and{" "}
@@ -277,11 +277,11 @@ function PromotionsPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-              <div className="rounded-lg border border-slate-800 bg-slate-950/80 px-3 py-1.5 text-slate-300">
+              <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-gray-700">
                 7-Day AOV: <span className="font-bold text-emerald-400">{formatINR(weekAovPaise)}</span>
               </div>
-              <div className="rounded-lg border border-slate-800 bg-slate-950/80 px-3 py-1.5 text-slate-300">
-                Promo Orders (7d): <span className="font-bold text-white">{promoOrders7d}</span>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-gray-700">
+                Promo Orders (7d): <span className="font-bold text-gray-900">{promoOrders7d}</span>
               </div>
             </div>
           </div>
@@ -295,7 +295,7 @@ function PromotionsPage() {
               <button
                 type="button"
                 onClick={() => setPlaybookAppliedNotice(null)}
-                className="text-[11px] font-mono underline text-emerald-200 hover:text-white"
+                className="text-[11px] font-mono underline text-emerald-200 hover:text-gray-900"
               >
                 Dismiss
               </button>
@@ -307,32 +307,32 @@ function PromotionsPage() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <Clock className="size-4 text-amber-400" />
-                <h3 className="font-display text-sm font-bold text-white">
+                <h3 className="font-display text-sm font-bold text-gray-900">
                   1. Meal-Period Gap Strategy (Daypart Demand Playbook)
                 </h3>
               </div>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-gray-500">
                 Target off-peak kitchen capacity or boost family basket size during peak dinner hours
               </span>
             </div>
 
             <div className="grid gap-3 md:grid-cols-3">
               {/* Lunch Combo Bundles */}
-              <div className="flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3">
+              <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-emerald-400">
                       12:00 – 15:00 IST
                     </span>
-                    <span className="text-[11px] font-mono text-slate-400 tabular">
+                    <span className="text-[11px] font-mono text-gray-500 tabular">
                       7d Volume: {lunchOrders7d} orders
                     </span>
                   </div>
-                  <div className="font-semibold text-sm text-white">Lunch Combo Bundles</div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <div className="font-semibold text-sm text-gray-900">Lunch Combo Bundles</div>
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     Working professionals and solo diners look for single-serve thalis, bowls, or main + beverage bundles with predictable pricing under ₹249.
                   </p>
-                  <div className="rounded-lg border border-slate-800/90 bg-slate-900/70 p-2 text-[11px] text-slate-300">
+                  <div className="rounded-lg border border-gray-200/90 bg-white/70 p-2 text-[11px] text-gray-700">
                     <span className="font-semibold text-emerald-400">Recommended Setup:</span> Flat ₹40 Off on orders above ₹199 (caps discount at ≤20% of food value).
                   </div>
                 </div>
@@ -356,21 +356,21 @@ function PromotionsPage() {
               </div>
 
               {/* Evening Snack / Chai Combos */}
-              <div className="flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3">
+              <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span className="rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-amber-300">
                       16:00 – 18:30 IST
                     </span>
-                    <span className="text-[11px] font-mono text-slate-400 tabular">
+                    <span className="text-[11px] font-mono text-gray-500 tabular">
                       7d Volume: {snackOrders7d} orders
                     </span>
                   </div>
-                  <div className="font-semibold text-sm text-white">Evening Snack / Chai Combos</div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <div className="font-semibold text-sm text-gray-900">Evening Snack / Chai Combos</div>
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     Utilize idle kitchen prep line hours between lunch and dinner by pairing quick-prep starters, chaat, or rolls with hot/cold beverages.
                   </p>
-                  <div className="rounded-lg border border-slate-800/90 bg-slate-900/70 p-2 text-[11px] text-slate-300">
+                  <div className="rounded-lg border border-gray-200/90 bg-white/70 p-2 text-[11px] text-gray-700">
                     <span className="font-semibold text-amber-300">Recommended Setup:</span> 15% Off up to ₹45 on ₹149+ minimum order to drive high-frequency afternoon orders.
                   </div>
                 </div>
@@ -395,21 +395,21 @@ function PromotionsPage() {
               </div>
 
               {/* Dinner Family Packs */}
-              <div className="flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3">
+              <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-indigo-300">
                       19:00 – 22:30 IST
                     </span>
-                    <span className="text-[11px] font-mono text-slate-400 tabular">
+                    <span className="text-[11px] font-mono text-gray-500 tabular">
                       7d Volume: {dinnerOrders7d} orders
                     </span>
                   </div>
-                  <div className="font-semibold text-sm text-white">Dinner Family Packs</div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <div className="font-semibold text-sm text-gray-900">Dinner Family Packs</div>
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     Households ordering dinner add multiple mains, breads, and desserts when incentivized with a clear step-up basket threshold.
                   </p>
-                  <div className="rounded-lg border border-slate-800/90 bg-slate-900/70 p-2 text-[11px] text-slate-300">
+                  <div className="rounded-lg border border-gray-200/90 bg-white/70 p-2 text-[11px] text-gray-700">
                     <span className="font-semibold text-indigo-300">Recommended Setup:</span> Flat ₹90 Off on orders above ₹499 to lift AOV while keeping discount ≤18%.
                   </div>
                 </div>
@@ -435,11 +435,11 @@ function PromotionsPage() {
           </div>
 
           {/* Section 2: Menu Conversion Checklist Grounded in Live Catalog */}
-          <div className="space-y-3 border-t border-slate-800 pt-4">
+          <div className="space-y-3 border-t border-gray-200 pt-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <UtensilsCrossed className="size-4 text-emerald-400" />
-                <h3 className="font-display text-sm font-bold text-white">
+                <h3 className="font-display text-sm font-bold text-gray-900">
                   2. Menu Conversion Checklist (Live Storefront Audit)
                 </h3>
               </div>
@@ -453,17 +453,17 @@ function PromotionsPage() {
 
             <div className="grid gap-3 md:grid-cols-3">
               {/* 4:3 Studio Photos */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-2">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-xs font-semibold text-white">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-900">
                     <Camera className="size-3.5 text-emerald-400" />
                     4:3 Studio Dish Photos
                   </span>
-                  <span className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] font-mono text-emerald-400 tabular">
+                  <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-emerald-400 tabular">
                     {itemsWithPhotoCount}/{totalMenuCount} dishes
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-gray-500 leading-relaxed">
                   {totalMenuCount === 0
                     ? "Add active dishes in Dish Studio and upload 4:3 studio-lit photos so customers can see authentic portion presentation."
                     : itemsWithPhotoCount === totalMenuCount
@@ -473,33 +473,33 @@ function PromotionsPage() {
               </div>
 
               {/* Clear Portion Sizing */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-2">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-xs font-semibold text-white">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-900">
                     <Layers className="size-3.5 text-amber-400" />
                     Clear Portion Sizing
                   </span>
-                  <span className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] font-mono text-amber-300 tabular">
+                  <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-amber-300 tabular">
                     {itemsWithPortionCount}/{totalMenuCount} dishes
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-gray-500 leading-relaxed">
                   Specify gram/ml weight or serving count (e.g. &ldquo;Serves 1 · 250g&rdquo; or &ldquo;Family Pack · Serves 4&rdquo;) to eliminate ordering hesitation and portion complaints.
                 </p>
               </div>
 
               {/* Add-on Beverage / Dessert Pairing */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-2">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-xs font-semibold text-white">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-900">
                     <TrendingUp className="size-3.5 text-indigo-400" />
                     Beverage &amp; Dessert Add-ons
                   </span>
-                  <span className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] font-mono text-indigo-300 tabular">
+                  <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-indigo-300 tabular">
                     {itemsWithAddonsCount}/{totalMenuCount} paired ({activeAddonsCount} add-ons)
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-gray-500 leading-relaxed">
                   Attach high-margin beverages (Masala Chaas, Fresh Lime Soda) and desserts (Gulab Jamun, Brownie) as 1-tap add-ons on main course items to grow AOV organically.
                 </p>
               </div>
@@ -508,15 +508,15 @@ function PromotionsPage() {
         </Card>
 
         {/* Customer Retention & Repeat-Order Strategy: Flat ₹ Off vs Percentage Discount Unit-Economics Calculator */}
-        <Card className="space-y-4 border-slate-800 bg-slate-900/80 p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <Card className="space-y-4 border-gray-200 bg-white shadow-xs p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
               <Calculator className="size-5 text-emerald-400" />
               <div>
-                <h3 className="font-display text-base font-bold text-white">
+                <h3 className="font-display text-base font-bold text-gray-900">
                   3. Customer Retention &amp; Repeat-Order Unit-Economics Calculator
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-500">
                   Compare Flat ₹ Off vs Percentage Discount margin impact in exact integer paise before launching your promotion.
                 </p>
               </div>
@@ -528,23 +528,23 @@ function PromotionsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs text-slate-300">Benchmark Order Value (₹)</Label>
+              <Label className="text-xs text-gray-700">Benchmark Order Value (₹)</Label>
               <Input
                 type="number"
                 min={0}
                 value={simOrderRupees}
                 onChange={(e) => setSimOrderRupees(e.target.value)}
-                className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                className="mt-1 h-9 text-xs bg-white border-gray-200"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">Benchmark Packaging Fee (₹)</Label>
+              <Label className="text-xs text-gray-700">Benchmark Packaging Fee (₹)</Label>
               <Input
                 type="number"
                 min={0}
                 value={simPackingRupees}
                 onChange={(e) => setSimPackingRupees(e.target.value)}
-                className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                className="mt-1 h-9 text-xs bg-white border-gray-200"
               />
             </div>
           </div>
@@ -555,30 +555,30 @@ function PromotionsPage() {
               className={`rounded-xl border p-3.5 space-y-1.5 ${
                 kind === "percent"
                   ? "border-emerald-500/40 bg-emerald-950/15"
-                  : "border-slate-800 bg-slate-950/70"
+                  : "border-gray-200 bg-gray-50"
               }`}
             >
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-gray-900">
                   Structure A: {pctRate}% Off {maxCapPaise ? `(Cap ${formatINR(maxCapPaise)})` : "(Uncapped)"}
                 </span>
-                <span className="font-mono text-[11px] text-slate-400">
+                <span className="font-mono text-[11px] text-gray-500">
                   Min Order {formatINR(minOrderPaise)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs pt-1">
-                <span className="text-slate-400">Merchant Discount Funded:</span>
+                <span className="text-gray-500">Merchant Discount Funded:</span>
                 <span className="font-mono font-semibold text-rose-400 tabular">
                   −{formatINR(comparePctDiscPaise)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">Net Merchant Take-Home:</span>
+                <span className="text-gray-500">Net Merchant Take-Home:</span>
                 <span className="font-mono font-bold text-emerald-400 tabular">
                   {formatINR(comparePctSettlement.restaurantPayablePaise)}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 pt-1">
+              <p className="text-[11px] text-gray-500 pt-1">
                 Best for acquiring first-time diners searching by percentage badge; always pair with a ₹ cap so large family baskets do not erode margin.
               </p>
             </div>
@@ -587,72 +587,72 @@ function PromotionsPage() {
               className={`rounded-xl border p-3.5 space-y-1.5 ${
                 kind === "fixed"
                   ? "border-emerald-500/40 bg-emerald-950/15"
-                  : "border-slate-800 bg-slate-950/70"
+                  : "border-gray-200 bg-gray-50"
               }`}
             >
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-gray-900">
                   Structure B: Flat {formatINR(flatOfferPaise)} Off
                 </span>
-                <span className="font-mono text-[11px] text-slate-400">
+                <span className="font-mono text-[11px] text-gray-500">
                   Min Order {formatINR(minOrderPaise)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs pt-1">
-                <span className="text-slate-400">Merchant Discount Funded:</span>
+                <span className="text-gray-500">Merchant Discount Funded:</span>
                 <span className="font-mono font-semibold text-rose-400 tabular">
                   −{formatINR(compareFlatDiscPaise)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">Net Merchant Take-Home:</span>
+                <span className="text-gray-500">Net Merchant Take-Home:</span>
                 <span className="font-mono font-bold text-emerald-400 tabular">
                   {formatINR(compareFlatSettlement.restaurantPayablePaise)}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 pt-1">
+              <p className="text-[11px] text-gray-500 pt-1">
                 Best for repeat-order retention and AOV step-ups: your subsidy is fixed in exact rupees even when the customer adds extra sides or beverages.
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-xs pt-1">
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-              <div className="text-[10px] font-mono text-slate-400">CUSTOMER PAYS (INC 5% GST)</div>
-              <div className="text-sm font-bold text-white mt-1 tabular">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <div className="text-[10px] font-mono text-gray-500">CUSTOMER PAYS (INC 5% GST)</div>
+              <div className="text-sm font-bold text-gray-900 mt-1 tabular">
                 {formatINR(customerPaysFoodAndTaxPaise)}
               </div>
-              <div className="text-[10px] text-slate-500 mt-0.5">
+              <div className="text-[10px] text-gray-400 mt-0.5">
                 Includes {formatINR(statutoryGst95Paise)} GST §9(5)
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-              <div className="text-[10px] font-mono text-slate-400">MERCHANT DISCOUNT COST</div>
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <div className="text-[10px] font-mono text-gray-500">MERCHANT DISCOUNT COST</div>
               <div className="text-sm font-bold text-rose-400 mt-1 tabular">
                 −{formatINR(simDiscountPaise)}
               </div>
-              <div className="text-[10px] text-slate-500 mt-0.5">
+              <div className="text-[10px] text-gray-400 mt-0.5">
                 {simFoodPaise < minOrderPaise ? "Below min order" : `Active Form: ${kind.toUpperCase()}`}
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-              <div className="text-[10px] font-mono text-slate-400">PLATFORM COMMISSION</div>
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <div className="text-[10px] font-mono text-gray-500">PLATFORM COMMISSION</div>
               <div className="text-sm font-bold text-rose-400 mt-1 tabular">
                 −{formatINR(simSettlement.commissionPaise)}
               </div>
-              <div className="text-[10px] text-slate-500 mt-0.5">
+              <div className="text-[10px] text-gray-400 mt-0.5">
                 {(commissionBps / 100).toFixed(1)}% on net food+packing
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-              <div className="text-[10px] font-mono text-slate-400">STATUTORY TDS §194-O (0.1%)</div>
-              <div className="text-sm font-bold text-slate-300 mt-1 tabular">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <div className="text-[10px] font-mono text-gray-500">STATUTORY TDS §194-O (0.1%)</div>
+              <div className="text-sm font-bold text-gray-700 mt-1 tabular">
                 {formatINR(statutoryTds194OPaise)}
               </div>
-              <div className="text-[10px] text-slate-500 mt-0.5">Credited to your PAN Form 16A</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">Credited to your PAN Form 16A</div>
             </div>
 
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3">
@@ -667,27 +667,27 @@ function PromotionsPage() {
 
         {/* Create New Restaurant-Funded Promotion */}
         {canEdit ? (
-          <Card className="space-y-4 border-slate-800 bg-slate-900/80 p-5">
-            <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+          <Card className="space-y-4 border-gray-200 bg-white shadow-xs p-5">
+            <div className="flex items-center gap-2 border-b border-gray-200 pb-3">
               <Tag className="size-4 text-emerald-400" />
-              <h3 className="font-display text-base font-bold text-white">{t("promotions.create")}</h3>
+              <h3 className="font-display text-base font-bold text-gray-900">{t("promotions.create")}</h3>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label className="text-xs text-slate-300">{t("menu.name")}</Label>
+                <Label className="text-xs text-gray-700">{t("menu.name")}</Label>
                 <Input
                   placeholder="e.g. Lunch Combo Saver (12:00–15:00)"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                  className="mt-1 h-9 text-xs bg-white border-gray-200"
                 />
               </div>
 
               <div>
-                <Label className="text-xs text-slate-300">Offer Structure</Label>
+                <Label className="text-xs text-gray-700">Offer Structure</Label>
                 <select
-                  className="mt-1 h-9 w-full rounded-md border border-slate-800 bg-slate-950 px-3 text-xs text-slate-100"
+                  className="mt-1 h-9 w-full rounded-md border border-gray-200 bg-white px-3 text-xs text-gray-900"
                   value={kind}
                   onChange={(e) => setKind(e.target.value as PromotionKind)}
                 >
@@ -700,46 +700,46 @@ function PromotionsPage() {
 
               {kind === "percent" ? (
                 <div>
-                  <Label className="text-xs text-slate-300">{t("promotions.percent")}</Label>
+                  <Label className="text-xs text-gray-700">{t("promotions.percent")}</Label>
                   <Input
                     type="number"
                     value={percent}
                     onChange={(e) => setPercent(e.target.value)}
-                    className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                    className="mt-1 h-9 text-xs bg-white border-gray-200"
                   />
                 </div>
               ) : null}
 
               {kind === "fixed" ? (
                 <div>
-                  <Label className="text-xs text-slate-300">Discount Amount (₹)</Label>
+                  <Label className="text-xs text-gray-700">Discount Amount (₹)</Label>
                   <Input
                     type="number"
                     value={amountRupees}
                     onChange={(e) => setAmountRupees(e.target.value)}
-                    className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                    className="mt-1 h-9 text-xs bg-white border-gray-200"
                   />
                 </div>
               ) : null}
 
               <div>
-                <Label className="text-xs text-slate-300">Minimum Order Value (₹)</Label>
+                <Label className="text-xs text-gray-700">Minimum Order Value (₹)</Label>
                 <Input
                   type="number"
                   value={minOrderRupees}
                   onChange={(e) => setMinOrderRupees(e.target.value)}
-                  className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                  className="mt-1 h-9 text-xs bg-white border-gray-200"
                 />
               </div>
 
               {kind === "percent" ? (
                 <div>
-                  <Label className="text-xs text-slate-300">Maximum Discount Cap (₹)</Label>
+                  <Label className="text-xs text-gray-700">Maximum Discount Cap (₹)</Label>
                   <Input
                     type="number"
                     value={maxDiscountRupees}
                     onChange={(e) => setMaxDiscountRupees(e.target.value)}
-                    className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                    className="mt-1 h-9 text-xs bg-white border-gray-200"
                   />
                 </div>
               ) : null}
@@ -747,7 +747,7 @@ function PromotionsPage() {
 
             <Button
               size="sm"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
+              className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs"
               onClick={() =>
                 void savePromotion({
                   data: {
@@ -777,20 +777,20 @@ function PromotionsPage() {
         ) : null}
 
         {/* Sponsored Placement Daily Cap Controls (Factual Ledger Metrics Only) */}
-        <Card className="space-y-4 border-slate-800 bg-slate-900/80 p-5">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <Card className="space-y-4 border-gray-200 bg-white shadow-xs p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
               <Megaphone className="size-5 text-emerald-400" />
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="font-display text-base font-bold text-white">
+                  <h2 className="font-display text-base font-bold text-gray-900">
                     Sponsored Placement Daily Budget Cap
                   </h2>
-                  <span className="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-300">
+                  <span className="rounded border border-gray-300 bg-gray-100 px-2 py-0.5 text-[10px] font-mono text-gray-700">
                     SELF-SERVE AD CAP
                   </span>
                 </div>
-                <p className="mt-0.5 text-xs text-slate-400">
+                <p className="mt-0.5 text-xs text-gray-500">
                   Configure a strict daily budget ceiling for promoted placement. Unspent daily cap is never charged.
                 </p>
               </div>
@@ -800,39 +800,39 @@ function PromotionsPage() {
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" /> Campaign Active
               </span>
             ) : (
-              <span className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-medium text-slate-400">
+              <span className="rounded-full border border-gray-300 bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500">
                 Campaign Paused
               </span>
             )}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-              <span className="text-[11px] font-mono uppercase text-slate-400">Configured Daily Cap</span>
-              <p className="text-lg font-bold text-white mt-0.5 tabular">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <span className="text-[11px] font-mono uppercase text-gray-500">Configured Daily Cap</span>
+              <p className="text-lg font-bold text-gray-900 mt-0.5 tabular">
                 <MoneyText paise={activeDailyBudgetPaise} />
               </p>
-              <span className="text-[11px] text-slate-500">Hard ceiling per calendar day</span>
+              <span className="text-[11px] text-gray-400">Hard ceiling per calendar day</span>
             </div>
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-              <span className="text-[11px] font-mono uppercase text-slate-400">Promo-Assisted Orders (7d)</span>
-              <p className="text-lg font-bold text-slate-200 mt-0.5 tabular">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <span className="text-[11px] font-mono uppercase text-gray-500">Promo-Assisted Orders (7d)</span>
+              <p className="text-lg font-bold text-gray-800 mt-0.5 tabular">
                 {promoOrders7d} {promoOrders7d === 1 ? "order" : "orders"}
               </p>
-              <span className="text-[11px] text-slate-500">Verified ledger orders in last 7 days</span>
+              <span className="text-[11px] text-gray-400">Verified ledger orders in last 7 days</span>
             </div>
-            <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-              <span className="text-[11px] font-mono uppercase text-slate-400">Merchant Promo Spend (7d)</span>
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <span className="text-[11px] font-mono uppercase text-gray-500">Merchant Promo Spend (7d)</span>
               <p className="text-lg font-bold text-emerald-400 mt-0.5 tabular">
                 <MoneyText paise={promoRestSpend7dPaise} />
               </p>
-              <span className="text-[11px] text-slate-500">Actual discount funded on delivered orders</span>
+              <span className="text-[11px] text-gray-400">Actual discount funded on delivered orders</span>
             </div>
           </div>
 
           {canEdit ? (
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Label className="text-xs font-medium text-slate-300">Select Daily Budget Cap (₹):</Label>
+              <Label className="text-xs font-medium text-gray-700">Select Daily Budget Cap (₹):</Label>
               <div className="flex gap-2">
                 {["100", "250", "500", "1000"].map((amt) => (
                   <button
@@ -841,8 +841,8 @@ function PromotionsPage() {
                     onClick={() => setAdBudgetRupees(amt)}
                     className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                       adBudgetRupees === amt
-                        ? "bg-emerald-600 text-white"
-                        : "border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700"
+                        ? "bg-[#E23744] text-gray-900"
+                        : "border border-gray-200 bg-white text-gray-700 hover:border-gray-300"
                     }`}
                   >
                     ₹{amt}
@@ -879,23 +879,23 @@ function PromotionsPage() {
         {/* Active Offers & Discounts Grid */}
         <div className="grid gap-4 md:grid-cols-2">
           <section className="space-y-2.5">
-            <h2 className="font-display text-base font-bold text-white">
+            <h2 className="font-display text-base font-bold text-gray-900">
               {t("promotions.restaurantFunded")} ({rest.length})
             </h2>
             {rest.length === 0 ? (
-              <Card className="text-xs text-slate-400 border-slate-800 bg-slate-900/60 p-4">
+              <Card className="text-xs text-gray-500 border-gray-200 bg-white shadow-xs p-4">
                 No restaurant-funded offers configured yet. Use the King AI Growth presets or the form above to launch a promotion.
               </Card>
             ) : (
               rest.map((p) => (
-                <Card key={p.id} className="space-y-2 border-slate-800 bg-slate-900/70 p-4">
+                <Card key={p.id} className="space-y-2 border-gray-200 bg-white shadow-xs p-4">
                   <div className="flex items-center justify-between">
-                    <div className="font-semibold text-sm text-white">{p.name}</div>
-                    <span className="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] font-mono uppercase text-emerald-400">
+                    <div className="font-semibold text-sm text-gray-900">{p.name}</div>
+                    <span className="rounded border border-gray-300 bg-gray-100 px-2 py-0.5 text-[10px] font-mono uppercase text-emerald-400">
                       {p.kind} · {p.isActive ? "ACTIVE" : "PAUSED"}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400">{p.estimate.narrative}</p>
+                  <p className="text-xs text-gray-500">{p.estimate.narrative}</p>
                   {canEdit ? (
                     <Button
                       size="sm"
@@ -927,23 +927,23 @@ function PromotionsPage() {
           </section>
 
           <section className="space-y-2.5">
-            <h2 className="font-display text-base font-bold text-white">
+            <h2 className="font-display text-base font-bold text-gray-900">
               {t("promotions.platformFunded")} ({plat.length})
             </h2>
             {plat.length === 0 ? (
-              <Card className="text-xs text-slate-400 border-slate-800 bg-slate-900/60 p-4">
+              <Card className="text-xs text-gray-500 border-gray-200 bg-white shadow-xs p-4">
                 Platform-sponsored campaigns automatically reimburse 100% of the coupon subsidy to your settlement ledger.
               </Card>
             ) : (
               plat.map((p) => (
-                <Card key={p.id} className="space-y-2 border-slate-800 bg-slate-900/70 p-4">
+                <Card key={p.id} className="space-y-2 border-gray-200 bg-white shadow-xs p-4">
                   <div className="flex items-center justify-between">
-                    <div className="font-semibold text-sm text-white">{p.name}</div>
+                    <div className="font-semibold text-sm text-gray-900">{p.name}</div>
                     <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono uppercase text-emerald-400">
                       {p.kind} · 100% REIMBURSED
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400">{p.estimate.narrative}</p>
+                  <p className="text-xs text-gray-500">{p.estimate.narrative}</p>
                   <div className="text-xs font-mono text-emerald-400">
                     Subsidy Value: <MoneyText paise={p.estimate.estimatedDailyCostPaise} />
                   </div>

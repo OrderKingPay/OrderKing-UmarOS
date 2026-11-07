@@ -153,15 +153,15 @@ function HoursPage() {
     >
       <div className="space-y-4">
         {/* Emergency Closure & Vacation Mode Controls */}
-        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2">
               <Clock3 className="size-5 text-emerald-400" />
               <div>
-                <h2 className="font-display text-base font-bold text-white">
+                <h2 className="font-display text-base font-bold text-gray-900">
                   Outlet Availability, Prep Time SLAs &amp; Holiday Controls
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-500">
                   Manage your weekly shifts, planned holidays, and rush-hour kitchen preparation buffers self-service.
                 </p>
               </div>
@@ -170,47 +170,47 @@ function HoursPage() {
               size="sm"
               disabled={saving}
               onClick={() => void handleSave()}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs shrink-0"
+              className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs shrink-0"
             >
               {saving ? "Saving Schedule..." : t("hours.save")}
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={emergency}
                 onChange={(e) => setEmergency(e.target.checked)}
-                className="mt-1 rounded border-slate-700 bg-slate-900 text-rose-500"
+                className="mt-1 rounded border-slate-700 bg-white text-rose-500"
               />
               <div>
-                <div className="text-xs font-semibold text-white">{t("hours.emergency")}</div>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <div className="text-xs font-semibold text-gray-900">{t("hours.emergency")}</div>
+                <p className="text-[11px] text-gray-500 mt-0.5">
                   Immediately halts new customer orders if your kitchen faces an unexpected equipment or utility issue.
                 </p>
               </div>
             </label>
 
-            <label className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={vacation}
                 onChange={(e) => setVacation(e.target.checked)}
-                className="mt-1 rounded border-slate-700 bg-slate-900 text-amber-500"
+                className="mt-1 rounded border-slate-700 bg-white text-amber-500"
               />
               <div>
-                <div className="text-xs font-semibold text-white">{t("hours.vacation")}</div>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <div className="text-xs font-semibold text-gray-900">{t("hours.vacation")}</div>
+                <p className="text-[11px] text-gray-500 mt-0.5">
                   Marks your storefront as temporarily on festival or multi-day leave without deleting your shift schedule.
                 </p>
               </div>
             </label>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-gray-200">
             <div>
-              <Label className="text-xs text-slate-300 flex items-center gap-1.5">
+              <Label className="text-xs text-gray-700 flex items-center gap-1.5">
                 <Clock3 className="size-3.5 text-emerald-400" />
                 {t("menu.prep")} (Standard Kitchen SLA)
               </Label>
@@ -220,14 +220,14 @@ function HoursPage() {
                 max={90}
                 value={prep}
                 onChange={(e) => setPrep(e.target.value)}
-                className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                className="mt-1 h-9 text-xs bg-white border-gray-200"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[11px] text-gray-500 mt-1">
                 Used during normal hours to dispatch riders so they arrive right as food is packed.
               </p>
             </div>
             <div>
-              <Label className="text-xs text-slate-300 flex items-center gap-1.5">
+              <Label className="text-xs text-gray-700 flex items-center gap-1.5">
                 <Flame className="size-3.5 text-amber-400" />
                 {t("hours.peak")} (Peak Rush SLA Buffer)
               </Label>
@@ -237,9 +237,9 @@ function HoursPage() {
                 max={120}
                 value={peak}
                 onChange={(e) => setPeak(e.target.value)}
-                className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
+                className="mt-1 h-9 text-xs bg-white border-gray-200"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[11px] text-gray-500 mt-1">
                 Applied when Peak Rush Mode is active so customers see realistic delivery ETAs.
               </p>
             </div>
@@ -254,11 +254,11 @@ function HoursPage() {
         </Card>
 
         {/* 1-Tap Schedule Templates & Weekly Holiday Toggles */}
-        <Card className="border-slate-800 bg-slate-900/70 p-5 space-y-4">
+        <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-emerald-400" />
-              <h3 className="font-display text-sm font-bold uppercase tracking-wider text-white">
+              <h3 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                 1-Tap Smart Schedule Templates
               </h3>
             </div>
@@ -299,14 +299,14 @@ function HoursPage() {
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-800 space-y-2">
+          <div className="pt-3 border-t border-gray-200 space-y-2">
             <div className="flex items-center gap-2">
               <CalendarOff className="size-4 text-amber-400" />
-              <h3 className="font-display text-sm font-bold uppercase tracking-wider text-white">
+              <h3 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                 Weekly Scheduled Day-Off / Holiday Toggles
               </h3>
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-gray-500">
               Select any weekday your kitchen remains closed every week:
             </p>
             <div className="flex flex-wrap gap-2">
@@ -320,7 +320,7 @@ function HoursPage() {
                     className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                       isOff
                         ? "border border-rose-500/40 bg-rose-500/15 text-rose-300"
-                        : "border border-slate-800 bg-slate-950/70 text-slate-300 hover:border-slate-700"
+                        : "border border-gray-200 bg-gray-50 text-gray-700 hover:border-slate-700"
                     }`}
                   >
                     {t(d)}: {isOff ? "Weekly Holiday (Closed)" : "Open"}
@@ -332,17 +332,17 @@ function HoursPage() {
         </Card>
 
         {/* Day-by-Day Shift Matrix */}
-        <Card className="border-slate-800 bg-slate-900/70 p-5 space-y-3">
+        <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-3">
           {DAYS.map((d, i) => {
             const isWeeklyHoliday = weeklyHolidays.includes(i);
             const dayShifts = shifts.filter((s) => s.weekday === i);
             return (
               <div
                 key={d}
-                className="grid gap-2 border-b border-slate-800/80 pb-3 last:border-b-0 last:pb-0 md:grid-cols-[140px_1fr]"
+                className="grid gap-2 border-b border-gray-200/80 pb-3 last:border-b-0 last:pb-0 md:grid-cols-[140px_1fr]"
               >
                 <div className="flex items-center justify-between md:block">
-                  <div className="font-semibold text-sm text-white">{t(d)}</div>
+                  <div className="font-semibold text-sm text-gray-900">{t(d)}</div>
                   {isWeeklyHoliday ? (
                     <span className="text-[10px] font-mono text-rose-400">WEEKLY OFF</span>
                   ) : (
@@ -358,7 +358,7 @@ function HoursPage() {
                       Marked as a Weekly Holiday above. Toggle off to accept orders on {t(d)}.
                     </div>
                   ) : dayShifts.length === 0 ? (
-                    <div className="text-xs text-slate-400 py-1">{t("hours.closed")}</div>
+                    <div className="text-xs text-gray-500 py-1">{t("hours.closed")}</div>
                   ) : null}
 
                   {!isWeeklyHoliday &&
@@ -371,9 +371,9 @@ function HoursPage() {
                             const next = shifts.map((x) => (x === s ? { ...x, open: e.target.value } : x));
                             setShifts(next);
                           }}
-                          className="h-9 text-xs bg-slate-950 border-slate-800 max-w-[140px]"
+                          className="h-9 text-xs bg-white border-gray-200 max-w-[140px]"
                         />
-                        <span className="text-xs text-slate-400">to</span>
+                        <span className="text-xs text-gray-500">to</span>
                         <Input
                           type="time"
                           value={s.close}
@@ -381,7 +381,7 @@ function HoursPage() {
                             const next = shifts.map((x) => (x === s ? { ...x, close: e.target.value } : x));
                             setShifts(next);
                           }}
-                          className="h-9 text-xs bg-slate-950 border-slate-800 max-w-[140px]"
+                          className="h-9 text-xs bg-white border-gray-200 max-w-[140px]"
                         />
                         <Button
                           size="sm"
@@ -410,11 +410,11 @@ function HoursPage() {
             );
           })}
 
-          <div className="pt-3 border-t border-slate-800 flex justify-end">
+          <div className="pt-3 border-t border-gray-200 flex justify-end">
             <Button
               disabled={saving}
               onClick={() => void handleSave()}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+              className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 font-semibold"
             >
               {saving ? "Saving Hours..." : t("hours.save")}
             </Button>

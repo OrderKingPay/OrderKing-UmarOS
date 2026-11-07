@@ -206,12 +206,21 @@ export function SelfServeLandingModule() {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 space-y-6 text-slate-100">
+    <div className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 space-y-6 text-gray-900 shadow-xl">
+      <div className="border-b border-gray-100 pb-4">
+        <h2 className="text-xl sm:text-2xl font-black text-gray-900">
+          Register your restaurant on OrderKing
+        </h2>
+        <p className="text-xs sm:text-sm text-gray-500 mt-1">
+          Complete these 3 simple steps to list your kitchen and begin receiving online food orders.
+        </p>
+      </div>
+
       <div className="grid grid-cols-3 gap-3">
         {[
-          { num: 1, title: "1. Restaurant & Address", sub: "Outlet Location" },
-          { num: 2, title: "2. FSSAI, PAN & GST", sub: "Legal Documents" },
-          { num: 3, title: "3. Bank Account", sub: "Daily Settlement" },
+          { num: 1, title: "1. Restaurant Details", sub: "Name & Location" },
+          { num: 2, title: "2. Legal Documents", sub: "FSSAI & PAN" },
+          { num: 3, title: "3. Bank Details", sub: "Daily Payouts" },
         ].map((item) => {
           const active = activeStep === item.num;
           const done = activeStep > item.num;
@@ -222,93 +231,113 @@ export function SelfServeLandingModule() {
               onClick={() => {
                 if (item.num < activeStep) setActiveStep(item.num as 1 | 2 | 3);
               }}
-              className={`rounded-xl border p-3 text-left transition-all ${
+              className={`rounded-2xl border p-3.5 text-left transition-all ${
                 active
-                  ? "border-emerald-500 bg-emerald-950/30 text-white"
+                  ? "border-red-500 bg-red-50/70 text-red-900 ring-2 ring-red-500/20"
                   : done
-                  ? "border-emerald-500/40 bg-slate-950 text-emerald-300"
-                  : "border-slate-800 bg-slate-950/60 text-slate-400"
+                  ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                  : "border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100/70"
               }`}
             >
-              <div className="flex items-center justify-between text-xs font-bold">
+              <div className="flex items-center justify-between text-xs sm:text-sm font-bold">
                 <span>{item.title}</span>
-                {done && <CheckCircle2 className="size-4 text-emerald-400" />}
+                {done && <CheckCircle2 className="size-4 text-emerald-600" />}
               </div>
-              <div className="text-[11px] text-slate-400 mt-0.5">{item.sub}</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">{item.sub}</div>
             </button>
           );
         })}
       </div>
 
       {error && (
-        <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-3 text-xs text-rose-200 flex items-center gap-2">
-          <AlertCircle className="size-4 text-rose-400 shrink-0" />
+        <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-700 flex items-center gap-2.5">
+          <AlertCircle className="size-4 text-red-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {activeStep === 1 && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-base font-bold text-white">
-            <Store className="size-5 text-emerald-400" />
-            <span>Step 1: Restaurant Details &amp; Outlet Address</span>
+        <div className="space-y-5">
+          <div className="flex items-center gap-2 text-base font-bold text-gray-900 border-b border-gray-100 pb-2">
+            <Store className="size-5 text-[#E23744]" />
+            <span>Step 1: Restaurant Details &amp; Address</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs text-slate-300">Restaurant Name *</Label>
+              <Label className="text-xs font-semibold text-gray-700">Restaurant Name *</Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Royal Darbar Kitchen"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">Owner / Manager Full Name *</Label>
+              <Label className="text-xs font-semibold text-gray-700">Owner / Manager Full Name *</Label>
               <Input
                 value={ownerName}
                 onChange={(e) => setOwnerName(e.target.value)}
                 placeholder="Enter full name"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">10-Digit Mobile Number *</Label>
+              <Label className="text-xs font-semibold text-gray-700">10-Digit Mobile Number *</Label>
               <Input
                 type="tel"
                 maxLength={10}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                 placeholder="9876543210"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">City / Town *</Label>
+              <Label className="text-xs font-semibold text-gray-700">City / Town *</Label>
               <Input
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="Guwahati / Silchar / Karimganj"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
               />
             </div>
             <div className="sm:col-span-2">
-              <Label className="text-xs text-slate-300">Complete Outlet Street Address (Address Proof) *</Label>
+              <Label className="text-xs font-semibold text-gray-700">Complete Outlet Street Address *</Label>
               <Input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Shop No., Building, Road, Locality"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
               />
             </div>
+            <div>
+              <Label className="text-xs font-semibold text-gray-700">Cuisines Served</Label>
+              <Input
+                value={cuisine}
+                onChange={(e) => setCuisine(e.target.value)}
+                placeholder="North Indian, Chinese, Biryani, Fast Food"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
+              />
+            </div>
+            <div>
+              <Label className="text-xs font-semibold text-gray-700">Diet Category</Label>
+              <select
+                value={diet}
+                onChange={(e) => setDiet(e.target.value)}
+                className="mt-1 w-full h-11 rounded-md border border-gray-300 bg-white px-3 text-xs sm:text-sm text-gray-900 focus:border-[#E23744] focus:outline-none"
+              >
+                <option value="NONVEG">Both Veg &amp; Non-Veg</option>
+                <option value="PUREVEG">Pure Veg</option>
+              </select>
+            </div>
           </div>
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-end pt-3">
             <Button
               type="button"
               onClick={() => {
                 if (validateStep1()) setActiveStep(2);
               }}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-11 rounded-xl flex items-center gap-2"
+              className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold px-8 h-12 rounded-xl flex items-center gap-2 shadow-md shadow-red-500/20"
             >
               <span>Continue to Step 2</span>
               <ArrowRight className="size-4" />
@@ -318,35 +347,45 @@ export function SelfServeLandingModule() {
       )}
 
       {activeStep === 2 && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-base font-bold text-white">
-            <FileCheck className="size-5 text-emerald-400" />
+        <div className="space-y-5">
+          <div className="flex items-center gap-2 text-base font-bold text-gray-900 border-b border-gray-100 pb-2">
+            <FileCheck className="size-5 text-[#E23744]" />
             <span>Step 2: FSSAI License, PAN Card &amp; Optional GST</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs text-slate-300">14-Digit FSSAI Food License Number *</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-gray-700">14-Digit FSSAI License Number *</Label>
+                <a
+                  href="https://foscos.fssai.gov.in"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] text-[#E23744] hover:underline"
+                >
+                  Apply on FoSCoS
+                </a>
+              </div>
               <Input
                 maxLength={14}
                 value={fssaiNumber}
                 onChange={(e) => setFssaiNumber(e.target.value.replace(/\D/g, "").slice(0, 14))}
                 placeholder="10020011000123"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">10-Character PAN Card Number *</Label>
+              <Label className="text-xs font-semibold text-gray-700">10-Character PAN Card Number *</Label>
               <Input
                 maxLength={10}
                 value={pan}
                 onChange={(e) => setPan(e.target.value.toUpperCase().slice(0, 10))}
                 placeholder="ABCDE1234F"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono uppercase"
               />
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3">
             <label className="flex items-start gap-3 cursor-pointer select-none">
               <input
                 type="checkbox"
@@ -355,14 +394,14 @@ export function SelfServeLandingModule() {
                   setHasGst(e.target.checked);
                   if (!e.target.checked) setGstin("");
                 }}
-                className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-emerald-500"
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#E23744] focus:ring-[#E23744]"
               />
               <div>
-                <div className="text-xs font-bold text-slate-100">
-                  My restaurant is GST registered (Have a 15-digit GSTIN)
+                <div className="text-xs font-bold text-gray-900">
+                  My restaurant is registered under GST (I have a 15-digit GSTIN)
                 </div>
-                <div className="text-[11px] text-slate-400 mt-0.5">
-                  Leave unticked if your restaurant is GST-exempt — onboarding proceeds automatically without GST.
+                <div className="text-[11px] text-gray-500 mt-0.5">
+                  Untick if your annual turnover is under ₹20 Lakhs — you can onboard without a GST number.
                 </div>
               </div>
             </label>
@@ -372,22 +411,22 @@ export function SelfServeLandingModule() {
                 value={gstin}
                 onChange={(e) => setGstin(e.target.value.toUpperCase().slice(0, 15))}
                 placeholder="18AABCU9603R1ZM (15-Character GSTIN)"
-                className="bg-slate-900 border-slate-700 text-slate-100 h-11 font-mono uppercase"
+                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono uppercase"
               />
             ) : (
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-3 py-2 text-xs text-emerald-300 flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
-                <span>Automatic Non-GST Onboarding Active — No GSTIN required.</span>
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-3.5 py-2.5 text-xs text-emerald-800 flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+                <span>Automatic Non-GST Onboarding Active — No GSTIN required for turnover &lt; ₹20L.</span>
               </div>
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => setActiveStep(1)}
-              className="border-slate-700 bg-slate-900 text-slate-200 h-11 px-5 rounded-xl"
+              className="border-gray-300 bg-white text-gray-700 hover:bg-gray-50 h-11 px-6 rounded-xl font-semibold"
             >
               Back
             </Button>
@@ -396,7 +435,7 @@ export function SelfServeLandingModule() {
               onClick={() => {
                 if (validateStep2()) setActiveStep(3);
               }}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-11 rounded-xl flex items-center gap-2"
+              className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold px-8 h-12 rounded-xl flex items-center gap-2 shadow-md shadow-red-500/20"
             >
               <span>Continue to Step 3</span>
               <ArrowRight className="size-4" />
@@ -406,57 +445,61 @@ export function SelfServeLandingModule() {
       )}
 
       {activeStep === 3 && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-base font-bold text-white">
-            <Banknote className="size-5 text-emerald-400" />
-            <span>Step 3: Settlement Bank Account &amp; Go Live</span>
+        <div className="space-y-5">
+          <div className="flex items-center gap-2 text-base font-bold text-gray-900 border-b border-gray-100 pb-2">
+            <Banknote className="size-5 text-[#E23744]" />
+            <span>Step 3: Settlement Bank Account for Daily Payouts</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs text-slate-300">Account Holder Name *</Label>
+              <Label className="text-xs font-semibold text-gray-700">Account Holder Name *</Label>
               <Input
                 value={holder || ownerName}
                 onChange={(e) => setHolder(e.target.value)}
                 placeholder="Account Holder Name"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">Bank Name</Label>
+              <Label className="text-xs font-semibold text-gray-700">Bank Name</Label>
               <Input
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                placeholder="e.g. State Bank of India / HDFC"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11"
+                placeholder="e.g. State Bank of India / HDFC Bank"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">Bank Account Number *</Label>
+              <Label className="text-xs font-semibold text-gray-700">Bank Account Number *</Label>
               <Input
                 value={bankAccount}
                 onChange={(e) => setBankAccount(e.target.value.replace(/\D/g, ""))}
                 placeholder="Enter Bank Account Number"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono"
               />
             </div>
             <div>
-              <Label className="text-xs text-slate-300">11-Character Bank IFSC Code *</Label>
+              <Label className="text-xs font-semibold text-gray-700">11-Character Bank IFSC Code *</Label>
               <Input
                 maxLength={11}
                 value={bankIfsc}
                 onChange={(e) => setBankIfsc(e.target.value.toUpperCase().slice(0, 11))}
                 placeholder="SBIN0001234"
-                className="mt-1 bg-slate-950 border-slate-800 text-slate-100 h-11 font-mono uppercase"
+                className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono uppercase"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2">
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 text-xs text-gray-600">
+            <span className="font-bold text-gray-900">T+1 Regular Daily Bank Payouts:</span> All earnings from customer orders are deposited directly into your verified bank account daily with a complete itemized statement.
+          </div>
+
+          <div className="flex items-center justify-between pt-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => setActiveStep(2)}
-              className="border-slate-700 bg-slate-900 text-slate-200 h-11 px-5 rounded-xl"
+              className="border-gray-300 bg-white text-gray-700 hover:bg-gray-50 h-11 px-6 rounded-xl font-semibold"
             >
               Back
             </Button>
@@ -464,10 +507,10 @@ export function SelfServeLandingModule() {
               type="button"
               disabled={busy}
               onClick={() => void handleStartOnboarding()}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 h-12 rounded-xl flex items-center gap-2"
+              className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold px-8 h-12 rounded-xl flex items-center gap-2 shadow-lg shadow-red-500/25"
             >
-              {busy ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
-              <span>{busy ? "Saving..." : "Complete Onboarding & Launch Kitchen →"}</span>
+              {busy ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
+              <span>{busy ? "Submitting Application..." : "Submit Application & Go Live →"}</span>
             </Button>
           </div>
         </div>
