@@ -116,7 +116,7 @@ export function PeriodLeaveModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md rounded-2xl border border-rose-500/30 bg-[#121723] p-5 text-foreground shadow-2xl space-y-4">
+      <div className="relative w-full max-w-md rounded-2xl border border-rose-500/30 bg-card p-5 text-foreground shadow-2xl space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
             <span className="flex size-9 items-center justify-center rounded-xl bg-rose-500/20 text-rose-400">

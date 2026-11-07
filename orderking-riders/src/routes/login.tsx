@@ -39,7 +39,6 @@ function sanitizePhone(input: string): string {
 function Login() {
   const { locale, setLocale, t } = useI18n();
 
-  // 2-Step Benchmark Authentication: "phone" -> "otp"
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState("");
@@ -53,8 +52,6 @@ function Login() {
   const cleanPhone = useMemo(() => sanitizePhone(mobileNumber), [mobileNumber]);
   const isPhoneValid = /^[6-9]\d{9}$/.test(cleanPhone);
 
-  // 30s countdown timer on Step 2 (OTP)
-  // WebOTP API for 1-tap SMS autofill on mobile devices (Tier-1 benchmark)
   useEffect(() => {
     if (step !== "otp") return;
     if (typeof window === "undefined" || !("OTPCredential" in window)) return;
@@ -104,7 +101,6 @@ function Login() {
     void setLocaleFn({ data: { locale: newLocale } }).catch(() => undefined);
   }
 
-  // Step 1: Send OTP
   async function handleSendOtp(channel: "sms" | "whatsapp" = "sms") {
     if (!isPhoneValid) {
       setError("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
@@ -134,7 +130,6 @@ function Login() {
     }
   }
 
-  // Step 2: Verify OTP & Authenticate Session with auto-submit
   async function verifyCode(overrideCode?: string, e?: FormEvent) {
     if (e) e.preventDefault();
 
@@ -158,7 +153,6 @@ function Login() {
 
       const { email, credential, destination } = verifyRes;
 
-      // 1. Save prefill & persistent session cookie for zero-bounce login
       try {
         setPhoneSession({
           id: "rd_" + cleanPhone,
@@ -193,7 +187,6 @@ function Login() {
         /* ignore storage quota */
       }
 
-      // 2. Authenticate session with Better Auth
       try {
         const signInRes = await authClient.signIn.email({
           email,
@@ -202,7 +195,6 @@ function Login() {
         });
 
         if (signInRes.error) {
-          // If not registered, create account then sign in
           const signUpRes = await authClient.signUp.email({
             email,
             password: credential,
@@ -211,7 +203,6 @@ function Login() {
           });
 
           if (signUpRes.error) {
-            // Fallback retry sign in
             await authClient.signIn.email({
               email,
               password: credential,
@@ -223,7 +214,6 @@ function Login() {
         console.warn("Better Auth session sync warning:", authErr);
       }
 
-      // 3. Seamlessly redirect: verified -> `/`, new / draft -> `/onboarding`
       window.location.href = destination;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Verification failed.";
@@ -234,36 +224,28 @@ function Login() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0A0D14] text-slate-100 flex flex-col justify-between selection:bg-[#E5A93C]/30 selection:text-white">
-      {/* Top Delivery Partner Navigation Header */}
-      <header className="border-b border-[#1E283D] bg-[#0E121B]/80 backdrop-blur-md sticky top-0 z-40">
+    <main className="min-h-screen bg-[#F8FAFC] text-gray-900 flex flex-col justify-between selection:bg-rose-500/20 selection:text-rose-900 font-sans">
+      {/* Top Header */}
+      <header className="border-b border-gray-200 bg-white sticky top-0 z-40">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-4 py-3">
           {/* Brand Mark */}
           <div className="flex items-center gap-2.5">
-            <div className="relative flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-700/30 border border-[#E5A93C]/40 shadow-[0_0_12px_rgba(229,169,60,0.2)]">
-              <img
-                src={DEFAULT_BRANDING.logoUrl}
-                alt="OrderKing Delivery Partner"
-                className="size-7 rounded-lg object-contain"
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = "none";
-                }}
-              />
-              <Bike className="size-5 text-[#E5A93C] absolute" />
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#E23744] text-white shadow-xs">
+              <Bike className="size-5" />
             </div>
             <div>
-              <p className="font-display text-sm font-bold tracking-wider leading-none text-white">
-                ORDERKING <span className="text-[#E5A93C]">DELIVERY PARTNER</span>
+              <p className="text-sm font-black tracking-tight leading-none text-gray-900">
+                ORDERKING <span className="text-[#E23744]">PARTNER</span>
               </p>
-              <p className="text-[10px] text-[#94A3B8] font-medium tracking-wide">
-                Delivery Partner Fleet
+              <p className="text-[11px] text-gray-500 font-medium">
+                Delivery Fleet
               </p>
             </div>
           </div>
 
           {/* Language Quick Selector */}
           <div className="flex items-center gap-1">
-            <div className="flex items-center rounded-full bg-[#161D2B] p-0.5 border border-[#1E283D]">
+            <div className="flex items-center rounded-full bg-gray-100 p-0.5 border border-gray-200">
               {PRIMARY_LANGUAGES.map((lang) => {
                 const isActive = locale === lang.code;
                 return (
@@ -273,8 +255,8 @@ function Login() {
                     onClick={() => handleLanguageSwitch(lang.code)}
                     className={`rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
                       isActive
-                        ? "bg-[#E5A93C] text-black shadow-sm"
-                        : "text-[#94A3B8] hover:text-white"
+                        ? "bg-[#E23744] text-white shadow-xs"
+                        : "text-gray-600 hover:text-gray-900"
                     }`}
                   >
                     {lang.native}
@@ -285,7 +267,7 @@ function Login() {
             <button
               type="button"
               onClick={() => setShowAllLanguages((v) => !v)}
-              className="flex size-7 items-center justify-center rounded-full border border-[#1E283D] bg-[#161D2B] text-[#94A3B8] hover:text-white hover:border-[#E5A93C]/50 transition"
+              className="flex size-7 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-gray-600 hover:text-gray-900 transition"
               title="Select Partner Language"
               aria-label="Select Partner Language"
             >
@@ -296,14 +278,14 @@ function Login() {
 
         {/* Expandable Regional Languages Dropdown Tray */}
         {showAllLanguages && (
-          <div className="border-t border-[#1E283D] bg-[#121723] px-4 py-3 text-xs animate-in slide-in-from-top-2 duration-150">
+          <div className="border-t border-gray-200 bg-gray-50 px-4 py-3 text-xs animate-in slide-in-from-top-2 duration-150">
             <div className="mx-auto max-w-lg">
-              <div className="flex items-center justify-between pb-2 text-[11px] font-semibold text-[#94A3B8]">
+              <div className="flex items-center justify-between pb-2 text-[11px] font-semibold text-gray-600">
                 <span>Select Delivery Partner Language:</span>
                 <button
                   type="button"
                   onClick={() => setShowAllLanguages(false)}
-                  className="text-[#E5A93C] hover:underline"
+                  className="text-[#E23744] font-bold hover:underline"
                 >
                   Close ✕
                 </button>
@@ -319,12 +301,12 @@ function Login() {
                     }}
                     className={`rounded-lg px-2.5 py-1.5 text-left text-xs transition truncate ${
                       locale === l.code
-                        ? "bg-[#E5A93C]/20 text-[#E5A93C] font-bold border border-[#E5A93C]/40"
-                        : "bg-[#161D2B] text-slate-300 hover:bg-[#1E283D]"
+                        ? "bg-[#E23744]/10 text-[#E23744] font-bold border border-[#E23744]/30"
+                        : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                     }`}
                   >
                     <span className="font-medium">{l.nativeLabel}</span>
-                    <span className="block text-[10px] text-muted-foreground">{l.englishName}</span>
+                    <span className="block text-[10px] text-gray-500">{l.englishName}</span>
                   </button>
                 ))}
               </div>
@@ -335,21 +317,14 @@ function Login() {
 
       {/* Main Delivery Partner Card */}
       <div className="mx-auto w-full max-w-md px-4 py-6 sm:py-8 flex-1 flex flex-col justify-center">
-        <div className="rounded-3xl border border-[#1E283D] bg-[#121723]/95 p-6 shadow-2xl backdrop-blur-md relative overflow-hidden">
-          {/* Subtle Ambient Glow */}
-          <div className="pointer-events-none absolute -top-24 -right-24 size-48 rounded-full bg-[#E5A93C]/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 size-48 rounded-full bg-[#2563EB]/10 blur-3xl" />
-
-          {/* ========================================================================= */}
-          {/* STEP 1: PHONE NUMBER ENTRY (Benchmark Screen 1)                           */}
-          {/* ========================================================================= */}
+        <div className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-7 shadow-xs">
           {step === "phone" ? (
-            <div className="mt-5 space-y-5">
+            <div className="space-y-5">
               <div>
-                <h1 className="font-display text-2xl font-black tracking-tight text-white">
+                <h1 className="text-2xl font-black tracking-tight text-gray-900">
                   Enter Mobile Number
                 </h1>
-                <p className="mt-1 text-xs text-[#94A3B8] leading-relaxed">
+                <p className="mt-1 text-xs text-gray-500 leading-relaxed">
                   We'll send a 6-digit OTP to verify your delivery partner account.
                 </p>
               </div>
@@ -362,11 +337,11 @@ function Login() {
                 className="space-y-4"
               >
                 <div className="space-y-1.5">
-                  <Label htmlFor="mobile-input" className="text-xs font-semibold text-[#94A3B8]">
+                  <Label htmlFor="mobile-input" className="text-xs font-semibold text-gray-700">
                     10-Digit Mobile Number
                   </Label>
                   <div className="relative flex items-center">
-                    <div className="absolute left-3 flex items-center gap-1.5 border-r border-[#1E283D] pr-2.5 text-sm font-bold text-white select-none">
+                    <div className="absolute left-3 flex items-center gap-1.5 border-r border-gray-200 pr-2.5 text-sm font-bold text-gray-800 select-none">
                       <span className="text-base" role="img" aria-label="India Flag">🇮🇳</span>
                       <span>+91</span>
                     </div>
@@ -385,27 +360,26 @@ function Login() {
                         setMobileNumber(val);
                         if (error) setError(null);
                       }}
-                      className="border-[#1E283D] bg-[#161D2B] pl-20 text-white placeholder:text-[#64748B] focus:border-[#E5A93C] focus:bg-[#0E121B] h-12 text-base font-medium tracking-wide rounded-2xl"
+                      className="border-gray-300 bg-white pl-20 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] focus:ring-2 focus:ring-[#E23744]/20 h-12 text-base font-semibold tracking-wide rounded-2xl shadow-xs"
                     />
                   </div>
                 </div>
 
                 {error && (
-                  <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2.5 text-xs font-semibold text-rose-400 animate-in fade-in duration-150">
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700 animate-in fade-in duration-150">
                     {error}
                   </div>
                 )}
 
-                {/* Benchmark Send OTP Button */}
                 <Button
                   type="submit"
                   disabled={pending || !isPhoneValid}
                   size="lg"
-                  className="w-full rounded-2xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wide text-black shadow-lg shadow-amber-500/25 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
+                  className="w-full rounded-2xl bg-[#E23744] hover:bg-[#d02e3b] py-3.5 text-base font-bold text-white shadow-sm transition active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
                 >
                   {pending ? (
                     <span className="flex items-center gap-2">
-                      <span className="size-4 border-2 border-black/40 border-t-black rounded-full animate-spin" />
+                      <span className="size-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                       Sending OTP...
                     </span>
                   ) : (
@@ -414,19 +388,18 @@ function Login() {
                 </Button>
               </form>
 
-              {/* Clean Legal Terms */}
-              <p className="text-center text-[11px] leading-relaxed text-[#94A3B8]">
+              <p className="text-center text-[11px] leading-relaxed text-gray-500">
                 By continuing, you agree to the{" "}
                 <Link
                   to="/onboarding"
-                  className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
+                  className="font-medium text-[#E23744] underline hover:text-red-700 transition"
                 >
                   Delivery Partner Terms
                 </Link>{" "}
                 &amp;{" "}
                 <Link
                   to="/onboarding"
-                  className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
+                  className="font-medium text-[#E23744] underline hover:text-red-700 transition"
                 >
                   Privacy Policy
                 </Link>
@@ -434,10 +407,7 @@ function Login() {
               </p>
             </div>
           ) : (
-            /* ========================================================================= */
-            /* STEP 2: 6-DIGIT OTP VERIFICATION (Benchmark Screen 2)                      */
-            /* ========================================================================= */
-            <div className="mt-5 space-y-5">
+            <div className="space-y-5">
               <div>
                 <button
                   type="button"
@@ -445,30 +415,29 @@ function Login() {
                     setStep("phone");
                     setError(null);
                   }}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#94A3B8] hover:text-[#E5A93C] transition mb-2"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-[#E23744] transition mb-2"
                 >
                   <ArrowLeft className="size-3.5" />
                   Change Mobile Number
                 </button>
-                <h1 className="font-display text-2xl font-black tracking-tight text-white">
+                <h1 className="text-2xl font-black tracking-tight text-gray-900">
                   Verify Mobile Number
                 </h1>
-                <p className="mt-1 text-xs text-[#94A3B8]">
+                <p className="mt-1 text-xs text-gray-500">
                   Enter the 6-digit code sent to{" "}
-                  <span className="font-bold text-white">+91-{cleanPhone}</span>
+                  <span className="font-bold text-gray-900">+91-{cleanPhone}</span>
                 </p>
               </div>
 
               <form onSubmit={(e) => void verifyCode(undefined, e)} className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="otp-input" className="text-xs font-semibold text-[#94A3B8]">
+                    <Label htmlFor="otp-input" className="text-xs font-semibold text-gray-700">
                       6-Digit OTP Code
                     </Label>
-                    <span className="text-[11px] text-[#64748B]">Auto-detecting SMS</span>
+                    <span className="text-[11px] text-gray-400">Auto-detecting SMS</span>
                   </div>
 
-                  {/* Tier-1 Benchmark 6 Individual Digit Slots */}
                   <div className="relative">
                     <div className="flex items-center justify-between gap-2 sm:gap-3">
                       {[0, 1, 2, 3, 4, 5].map((idx) => {
@@ -480,15 +449,15 @@ function Login() {
                             key={idx}
                             className={`relative flex h-14 flex-1 items-center justify-center rounded-2xl border-2 text-center font-mono text-2xl font-black transition-all ${
                               isFocused
-                                ? "border-[#E5A93C] bg-[#161D2B] shadow-[0_0_16px_rgba(229,169,60,0.25)] text-white scale-[1.02]"
+                                ? "border-[#E23744] bg-white ring-2 ring-[#E23744]/20 text-gray-900 scale-[1.02]"
                                 : isFilled
-                                ? "border-[#2563EB]/60 bg-[#161D2B] text-white"
-                                : "border-[#1E283D] bg-[#0E121B] text-slate-500"
+                                ? "border-gray-400 bg-white text-gray-900"
+                                : "border-gray-200 bg-gray-50 text-gray-400"
                             }`}
                           >
                             {digit}
                             {isFocused && !digit && !pending && (
-                              <span className="absolute bottom-3 h-0.5 w-4 rounded-full bg-[#E5A93C] animate-pulse" />
+                              <span className="absolute bottom-3 h-0.5 w-4 rounded-full bg-[#E23744] animate-pulse" />
                             )}
                           </div>
                         );
@@ -519,21 +488,20 @@ function Login() {
                 </div>
 
                 {error && (
-                  <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2.5 text-xs font-semibold text-rose-400 animate-in fade-in duration-150">
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700 animate-in fade-in duration-150">
                     {error}
                   </div>
                 )}
 
-                {/* Benchmark Verify & Continue CTA */}
                 <Button
                   type="submit"
                   disabled={pending || otp.replace(/\D/g, "").length !== 6}
                   size="lg"
-                  className="w-full rounded-2xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wide text-black shadow-lg shadow-amber-500/25 transition hover:brightness-110 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
+                  className="w-full rounded-2xl bg-[#E23744] hover:bg-[#d02e3b] py-3.5 text-base font-bold text-white shadow-sm transition active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
                 >
                   {pending ? (
                     <span className="flex items-center gap-2">
-                      <span className="size-4 border-2 border-black/40 border-t-black rounded-full animate-spin" />
+                      <span className="size-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                       Verifying Code...
                     </span>
                   ) : (
@@ -541,30 +509,29 @@ function Login() {
                   )}
                 </Button>
 
-                {/* Resend OTP Options */}
                 <div className="pt-2 flex flex-col gap-2">
-                  <div className="flex items-center justify-between text-xs text-[#94A3B8]">
+                  <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>Didn't receive the OTP?</span>
                     {canResend ? (
                       <button
                         type="button"
                         onClick={() => void handleSendOtp("sms")}
-                        className="font-bold text-[#E5A93C] hover:underline flex items-center gap-1"
+                        className="font-bold text-[#E23744] hover:underline flex items-center gap-1"
                       >
                         <RefreshCw className="size-3" />
                         Resend via SMS
                       </button>
                     ) : (
-                      <span className="text-[#64748B]">Resend in {countdown}s</span>
+                      <span className="text-gray-400">Resend in {countdown}s</span>
                     )}
                   </div>
 
                   <button
                     type="button"
                     onClick={() => void handleSendOtp("whatsapp")}
-                    className="w-full rounded-xl border border-[#1E283D] bg-[#161D2B] py-2 text-xs font-semibold text-emerald-400 hover:bg-[#1E283D] hover:border-emerald-500/40 transition flex items-center justify-center gap-1.5"
+                    className="w-full rounded-xl border border-gray-200 bg-white py-2 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 transition flex items-center justify-center gap-1.5 shadow-xs"
                   >
-                    <MessageCircle className="size-3.5 text-emerald-400" />
+                    <MessageCircle className="size-3.5 text-emerald-600" />
                     Resend via WhatsApp
                   </button>
                 </div>
@@ -575,7 +542,7 @@ function Login() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-[#1E283D] bg-[#0E121B] px-4 py-3 text-center text-[11px] text-[#64748B]">
+      <footer className="border-t border-gray-200 bg-white px-4 py-3 text-center text-[11px] text-gray-500">
         <p>
           OrderKing Delivery Partner Network · {DEFAULT_BRANDING.legalCompanyName}
         </p>

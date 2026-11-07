@@ -356,7 +356,7 @@ function Page() {
     <AppShell>
       <div className="space-y-4">
         {/* Luxury Obsidian Gold & Royal Sapphire Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#E5A93C]/40 bg-gradient-to-r from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-4 text-white shadow-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/40 bg-gradient-to-r from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-4 text-white shadow-xl">
           <div className="flex items-center gap-3">
             <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#E5A93C] to-[#B37D20] text-black shadow-lg shadow-[#E5A93C]/30">
               <Crown className="size-6" />
@@ -364,12 +364,12 @@ function Page() {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-display text-2xl font-bold tracking-wide text-white">
-                  King AI <span className="text-[#E5A93C]">Fleet Support</span>
+                  King AI <span className="text-primary">Fleet Support</span>
                 </h1>
                 <span className="rounded-full border border-[#2563EB] bg-[#2563EB]/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-300">
                   King AI · 24x7 Support
                 </span>
-                <span className="rounded-full border border-[#E5A93C]/50 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E5A93C]">
+                <span className="rounded-full border border-primary/50 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
                   Multilingual AI (10 Regional Languages · हिन्दी · தமிழ் · বাংলা · EN)
                 </span>
               </div>
@@ -385,7 +385,7 @@ function Page() {
               variant="outline"
               size="sm"
               onClick={() => speakText(advisorSpeechSummary, "advisor")}
-              className="h-8 border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
+              className="h-8 border-primary/50 bg-black/40 text-xs text-primary hover:bg-[#E5A93C]/20"
             >
               <Volume2 className="mr-1.5 size-3.5" />
               {speakingIdx === "advisor" ? "Stop Audio" : `Listen (${LOCALE_LABEL_MAP[locale].split(" ")[0]})`}
@@ -462,8 +462,8 @@ function Page() {
         ) : null}
 
         {busy ? (
-          <Card className="border-[#E5A93C]/40 bg-[#E5A93C]/10 p-3">
-            <p className="text-xs font-semibold text-[#E5A93C] dark:text-[#E5A93C]">
+          <Card className="border-primary/40 bg-[#E5A93C]/10 p-3">
+            <p className="text-xs font-semibold text-primary dark:text-primary">
               🛵 {t("aiDriving")} — Tap <strong>🔊 Listen</strong> on any response to hear voice guidance hands-free while riding safely.
             </p>
           </Card>
@@ -481,9 +481,9 @@ function Page() {
                 "auto_credit_wait",
               )
             }
-            className="flex flex-col items-start justify-between rounded-xl border border-[#E5A93C]/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-3 text-left transition hover:border-[#E5A93C] hover:shadow-lg group"
+            className="flex flex-col items-start justify-between rounded-xl border border-primary/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-3 text-left transition hover:border-primary hover:shadow-lg group"
           >
-            <div className="flex size-7 items-center justify-center rounded-lg bg-[#E5A93C]/20 text-[#E5A93C] group-hover:scale-110 transition-transform">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-[#E5A93C]/20 text-primary group-hover:scale-110 transition-transform">
               <Zap className="size-4" />
             </div>
             <div className="mt-2">
@@ -578,10 +578,10 @@ function Page() {
         </div>
 
         {/* Autonomous Rider Self-Diagnosis & Earnings Growth Advisor */}
-        <div className="rounded-2xl border border-[#E5A93C]/30 bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-4 text-white shadow-xl space-y-4">
+        <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-4 text-white shadow-xl space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#E5A93C]">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
                 King AI Autonomous Operations & Earnings Co-Pilot
               </p>
               <h2 className="text-base font-bold text-white">
@@ -612,12 +612,12 @@ function Page() {
                 {milestone.remaining > 0 ? (
                   <>
                     Complete <strong className="text-white">{milestone.remaining} more trips</strong>{" "}
-                    to unlock <strong className="text-[#E5A93C]">+{formatPaise(milestone.bonusPaise)}</strong> under{" "}
+                    to unlock <strong className="text-primary">+{formatPaise(milestone.bonusPaise)}</strong> under{" "}
                     <span className="text-sky-300 underline decoration-dotted">{milestone.tier}</span>!
                   </>
                 ) : (
                   <>
-                    You unlocked the <strong className="text-[#E5A93C]">{milestone.tier} (+{formatPaise(milestone.bonusPaise)})</strong>! Every additional trip adds full distance + surge pay.
+                    You unlocked the <strong className="text-primary">{milestone.tier} (+{formatPaise(milestone.bonusPaise)})</strong>! Every additional trip adds full distance + surge pay.
                   </>
                 )}
               </p>
@@ -639,7 +639,7 @@ function Page() {
               </div>
 
               <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-2 text-[11px] text-slate-300">
-                <strong className="text-[#E5A93C]">Peak Slot Maximizer:</strong> Stay logged into{" "}
+                <strong className="text-primary">Peak Slot Maximizer:</strong> Stay logged into{" "}
                 <span className="font-semibold text-white">{home?.rider.preferredZones || "your primary zone"}</span>{" "}
                 during <strong>Lunch (12:00–3:00 PM)</strong> and <strong>Dinner (7:00–11:00 PM)</strong> to hit your daily milestone 40% faster.
               </div>
@@ -648,7 +648,7 @@ function Page() {
             {/* 2. Live On-Trip & Wait-Time Guard */}
             <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#E5A93C]">
+                <span className="text-xs font-bold uppercase tracking-wider text-primary">
                   🧭 Live On-Trip & Wait-Time Guard
                 </span>
                 <span className="text-xs font-mono font-semibold text-sky-400">
@@ -660,7 +660,7 @@ function Page() {
                 <div className="rounded-lg border border-[#2563EB]/40 bg-[#2563EB]/10 p-2.5 space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span>Active Order #{activeOrder.orderCode}</span>
-                    <span className="font-mono text-[#E5A93C]">{formatPaise(activeOrder.expectedPayoutPaise)}</span>
+                    <span className="font-mono text-primary">{formatPaise(activeOrder.expectedPayoutPaise)}</span>
                   </div>
                   <p className="text-xs text-slate-300">
                     <strong className="text-white">{activeOrder.restaurant.name}</strong> → <strong className="text-white">{activeOrder.customer.area}</strong> · Stage:{" "}
@@ -705,7 +705,7 @@ function Page() {
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] text-[#E5A93C] underline"
+                      className="inline-flex items-center gap-1 text-[11px] text-primary underline"
                     >
                       <Navigation className="size-3" /> External GPS
                     </a>
@@ -745,12 +745,12 @@ function Page() {
         </div>
 
         {/* 1-Tap Multilingual Prompts (Bengali, Tamil, Hindi, English) */}
-        <div className="space-y-2 rounded-2xl border border-white/10 bg-[#0B0F19]/80 p-3.5 backdrop-blur-sm">
+        <div className="space-y-2 rounded-2xl border border-white/10 bg-card/80 p-3.5 backdrop-blur-sm">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2">
             <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
               Quick Prompts (বাংলা · हिन्दी · தமிழ் · English)
             </p>
-            <span className="text-[11px] font-semibold text-[#E5A93C]">0 Founder Headache</span>
+            <span className="text-[11px] font-semibold text-primary">0 Founder Headache</span>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -761,7 +761,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("রেস্তোরাঁয় ৬ মিনিটের বেশি অপেক্ষা করেছি — ওয়েট পে ক্রেডিট করুন", "auto_credit_wait")}
-              className="border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
+              className="border-primary/50 bg-black/40 text-xs text-primary hover:bg-[#E5A93C]/20"
             >
               🏬 বাংলা: ওয়েট পে ক্রেডিট (&gt;৬ মিনিট)
             </Button>
@@ -793,7 +793,7 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("உணவகத்தில் 6 நிமிடங்களுக்கு மேல் காத்திருப்பு — வெயிட் பே கிரெடிட் செய்யவும்", "auto_credit_wait")}
-              className="border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
+              className="border-primary/50 bg-black/40 text-xs text-primary hover:bg-[#E5A93C]/20"
             >
               🏬 தமிழ்: வெயிட் பே கிரெடிட் (&gt;6 நிமிடம்)
             </Button>
@@ -892,7 +892,7 @@ function Page() {
               className={
                 l.role === "user"
                   ? "ml-6 border border-[#2563EB]/30 bg-[#0F172A] p-3.5 text-white shadow"
-                  : "border border-[#E5A93C]/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-4 text-white shadow-lg"
+                  : "border border-primary/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-4 text-white shadow-lg"
               }
             >
               <div className="mb-2 flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
@@ -901,8 +901,8 @@ function Page() {
                     <>👤 {firstName} ({l.at})</>
                   ) : (
                     <>
-                      <Crown className="size-3.5 text-[#E5A93C]" />
-                      <span className="text-[#E5A93C]">King AI Fleet Support</span> ({l.at})
+                      <Crown className="size-3.5 text-primary" />
+                      <span className="text-primary">King AI Fleet Support</span> ({l.at})
                     </>
                   )}
                 </span>
@@ -911,7 +911,7 @@ function Page() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="h-7 border-[#E5A93C]/40 bg-black/40 px-2.5 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
+                    className="h-7 border-primary/40 bg-black/40 px-2.5 text-xs text-primary hover:bg-[#E5A93C]/20"
                     onClick={() => speakText(l.text, i)}
                   >
                     {speakingIdx === i ? <VolumeX className="mr-1 size-3" /> : <Volume2 className="mr-1 size-3" />}
@@ -947,7 +947,7 @@ function Page() {
             onChange={(e) => setQ(e.target.value)}
             placeholder={`${t("askAssistant")} (English, हिन्दी, தமிழ், বাংলা…)`}
             disabled={pending}
-            className="border-[#E5A93C]/40 bg-[#0B0F19] text-white placeholder:text-slate-500 focus:border-[#E5A93C] focus:ring-1 focus:ring-[#E5A93C]"
+            className="border-primary/40 bg-card text-white placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-[#E5A93C]"
           />
           <Button
             type="submit"

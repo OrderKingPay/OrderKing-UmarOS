@@ -165,18 +165,18 @@ function DailyMilestoneCard({
       : 100;
 
   return (
-    <section className="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-b from-[#131926] via-[#10141F] to-[#0E121B] p-4 shadow-xl space-y-3.5 relative overflow-hidden text-foreground">
+    <section className="rounded-2xl border border-border bg-card p-4 shadow-xs space-y-3.5 relative overflow-hidden text-card-foreground">
       {/* Background Ambient Glow */}
-      <div className="absolute -top-12 -right-12 size-36 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
+      
 
       {/* Daily Milestone Target Banner */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-[#E5A93C] border border-[#E5A93C]/30 shadow-inner">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-[#E23744] border border-red-200">
             <Target className="size-5" />
           </span>
           <div>
-            <h3 className="font-display text-sm font-extrabold text-white tracking-wide">
+            <h3 className="font-display text-sm font-extrabold text-foreground tracking-tight font-bold">
               {milestone.headline}
             </h3>
             <p className="text-[11px] text-muted-foreground">
@@ -184,13 +184,13 @@ function DailyMilestoneCard({
             </p>
           </div>
         </div>
-        <Badge tone="online" className="font-mono text-xs font-bold border-amber-500/40 bg-amber-500/15 text-[#E5A93C] shrink-0">
+        <Badge tone="online" className="font-mono text-xs font-bold border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-bold shrink-0">
           {completed}/{milestone.targetOrders} Completed
         </Badge>
       </div>
 
       {/* Visual Progress Bar: e.g. 6/10 orders completed */}
-      <div className="space-y-1.5 bg-black/40 p-3 rounded-xl border border-white/5">
+      <div className="space-y-1.5 bg-muted/40 p-3 rounded-xl border border-border">
         <div className="flex items-center justify-between text-xs font-semibold">
           <span className="text-foreground flex items-center gap-1.5">
             <span className="size-2 rounded-full bg-[#E5A93C] animate-pulse" />
@@ -200,7 +200,7 @@ function DailyMilestoneCard({
         </div>
         <div className="h-3 w-full bg-muted/40 rounded-full overflow-hidden p-0.5 border border-white/5">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-amber-500 via-[#E5A93C] to-emerald-400 transition-all duration-700 ease-out shadow-[0_0_12px_rgba(229,169,60,0.5)]"
+            className="h-full rounded-full bg-emerald-500 transition-all duration-700 ease-out"
             style={{ width: `${milestone.progressPct}%` }}
           />
         </div>
@@ -221,7 +221,7 @@ function DailyMilestoneCard({
               slab.isUnlocked
                 ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-400 font-bold shadow-xs"
                 : slab.isCurrentTarget
-                  ? "border-[#E5A93C] bg-amber-500/10 text-white shadow-[0_0_15px_rgba(229,169,60,0.2)]"
+                  ? "border-[#E23744] bg-red-50 text-[#E23744] font-bold shadow-xs"
                   : "border-border/60 bg-muted/20 text-muted-foreground opacity-75"
             }`}
           >
@@ -495,7 +495,7 @@ export function HelmetVerificationModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-      <div className="relative w-full max-w-sm rounded-2xl border border-primary/30 bg-[#121723] p-4 text-foreground shadow-2xl space-y-3.5">
+      <div className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-2xl space-y-3.5">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
             <span className="flex size-8 items-center justify-center rounded-lg bg-primary/20 text-primary">
@@ -503,10 +503,10 @@ export function HelmetVerificationModal({
             </span>
             <div>
               <h3 className="text-sm font-bold text-foreground">
-                Mandatory Live Helmet Verification
+                Safety Check: Helmet & Bag
               </h3>
               <p className="text-[11px] text-muted-foreground">
-                Tier-1 Safety Standard · Front Camera Live Check
+                Front camera live selfie check
               </p>
             </div>
           </div>
@@ -974,7 +974,7 @@ export function HomeView() {
         <div className="flex items-center justify-between gap-3">
           {/* Left: Partner identity & live duty radar pill */}
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="relative size-10 shrink-0 rounded-xl bg-gradient-to-br from-amber-500/20 to-[#E5A93C]/40 border border-[#E5A93C]/40 flex items-center justify-center font-display font-extrabold text-foreground shadow-sm">
+            <div className="relative size-10 shrink-0 rounded-xl bg-red-50 border border-red-200 text-[#E23744] flex items-center justify-center font-bold text-sm shadow-xs">
               {(home.rider.fullName || user?.displayName || "OK").slice(0, 2).toUpperCase()}
               <span
                 className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-card ${
@@ -1020,7 +1020,7 @@ export function HomeView() {
             <Button
               size="sm"
               onClick={() => setExternalDepositOpen(true)}
-              className="h-8 rounded-xl bg-gradient-to-r from-blue-600 via-[#2563EB] to-blue-700 text-white px-3 text-xs font-bold shadow-md shadow-blue-500/25 hover:from-blue-500 hover:to-blue-600 transition-all active:scale-[0.98]"
+              className="h-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3 text-xs font-bold shadow-xs transition-all active:scale-[0.98]"
             >
               <Wallet className="size-3.5 mr-1" />
               Deposit UPI
@@ -1676,7 +1676,7 @@ function OfferCard({
   const isCritical = remaining <= 5;
 
   return (
-    <Card className="p-5 space-y-4 border-2 border-[#E5A93C]/50 bg-[#121723] shadow-[0_0_30px_rgba(229,169,60,0.25)] relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <Card className="p-5 space-y-4 border border-border bg-card shadow-2xl rounded-2xl relative overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-card-foreground">
       {/* 30-Second Countdown Top Progress Edge */}
       <div className="absolute top-0 inset-x-0 h-1.5 bg-muted">
         <div
@@ -1754,13 +1754,13 @@ function OfferCard({
       </div>
 
       {/* Standard Earnings Floor Banner in Obsidian Gold */}
-      <div className="rounded-2xl border border-[#E5A93C]/40 bg-gradient-to-r from-amber-500/15 via-[#E5A93C]/20 to-amber-700/15 p-4 shadow-inner">
+      <div className="rounded-2xl border border-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 p-4 rounded-2xl shadow-xs">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E5A93C]">
               ★ {payout.labels.guaranteedEarningsTitle}
             </p>
-            <p className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-white drop-shadow-[0_0_12px_rgba(229,169,60,0.4)]">
+            <p className="mt-0.5 font-display text-3xl font-black tracking-tight text-emerald-800 dark:text-emerald-300">
               {formatPaise(offer.expectedPayoutPaise)}
             </p>
           </div>
@@ -1877,7 +1877,7 @@ function OfferCard({
           size="lg"
           disabled={pending}
           onClick={onAccept}
-          className="rounded-xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(229,169,60,0.35)] hover:from-amber-400 hover:to-amber-500 active:scale-[0.98] transition-all"
+          className="rounded-xl bg-emerald-600 hover:bg-emerald-500 py-3.5 font-sans text-base font-bold text-white shadow-md active:scale-[0.98] transition-all"
         >
           {t("accept")} Order
         </Button>

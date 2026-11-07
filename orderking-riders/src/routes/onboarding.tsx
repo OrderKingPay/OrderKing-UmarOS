@@ -234,7 +234,7 @@ export function RiderOnboardingPage() {
     <AppShell>
       <div className="mx-auto max-w-xl px-4 py-6 space-y-5 text-slate-100">
         {/* 5-Step Indicator */}
-        <div className="flex items-center justify-between border-b border-[#1E283D] pb-3">
+        <div className="flex items-center justify-between border-b border-border pb-3">
           {[
             { n: 1, label: "Mobile" },
             { n: 2, label: "Identity" },
@@ -251,7 +251,7 @@ export function RiderOnboardingPage() {
               }}
               className={`flex flex-col items-center gap-1 transition-all ${
                 step === s.n
-                  ? "text-[#E5A93C]"
+                  ? "text-primary"
                   : step > s.n
                   ? "text-emerald-400"
                   : "text-slate-500"
@@ -260,10 +260,10 @@ export function RiderOnboardingPage() {
               <div
                 className={`flex size-7 items-center justify-center rounded-full text-xs font-bold ${
                   step === s.n
-                    ? "bg-[#E5A93C] text-black"
+                    ? "bg-primary text-primary-foreground text-black"
                     : step > s.n
                     ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
-                    : "bg-[#0E121B] border border-slate-800 text-slate-500"
+                    : "bg-background border border-slate-800 text-slate-500"
                 }`}
               >
                 {step > s.n ? "✓" : s.n}
@@ -280,7 +280,7 @@ export function RiderOnboardingPage() {
           </div>
         )}
 
-        <div className="rounded-2xl border border-[#1E283D] bg-[#121723] p-5 space-y-4">
+        <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
           {/* STEP 1: MOBILE & BASIC PROFILE */}
           {step === 1 && (
             <div className="space-y-4">
@@ -296,7 +296,7 @@ export function RiderOnboardingPage() {
                     value={fullName}
                     onChange={(e) => { setFullName(e.target.value); setError(null); }}
                     placeholder="Enter your name"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
+                    className="mt-1 bg-background border-border text-foreground h-11"
                   />
                 </div>
                 <div>
@@ -309,7 +309,7 @@ export function RiderOnboardingPage() {
                       value={phone}
                       onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "").slice(0, 10)); setError(null); }}
                       placeholder="9876543210"
-                      className="bg-[#0E121B] border-[#1E283D] text-white h-11 pl-12 font-mono"
+                      className="bg-background border-border text-foreground h-11 pl-12 font-mono"
                     />
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export function RiderOnboardingPage() {
                       value={cityZone}
                       onChange={(e) => setCityZone(e.target.value)}
                       placeholder="Guwahati / Silchar"
-                      className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
+                      className="mt-1 bg-background border-border text-foreground h-11"
                     />
                   </div>
                   <div>
@@ -330,7 +330,7 @@ export function RiderOnboardingPage() {
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       placeholder="781001"
-                      className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                      className="mt-1 bg-background border-border text-foreground h-11 font-mono"
                     />
                   </div>
                 </div>
@@ -340,7 +340,7 @@ export function RiderOnboardingPage() {
                     value={serviceAddress}
                     onChange={(e) => { setServiceAddress(e.target.value); setError(null); }}
                     placeholder="House, Street, Locality"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
+                    className="mt-1 bg-background border-border text-foreground h-11"
                   />
                 </div>
               </div>
@@ -351,7 +351,7 @@ export function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep1()) setStep(2);
                   }}
-                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
                   Continue
                 </Button>
@@ -375,7 +375,7 @@ export function RiderOnboardingPage() {
                     value={aadhaarNumber}
                     onChange={(e) => { setAadhaarNumber(e.target.value.replace(/\D/g, "").slice(0, 12)); setError(null); }}
                     placeholder="12-digit UIDAI number"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                    className="mt-1 bg-background border-border text-foreground h-11 font-mono"
                   />
                   <p className="text-[10px] text-slate-400 mt-1">Verified with UIDAI checksum.</p>
                 </div>
@@ -387,7 +387,7 @@ export function RiderOnboardingPage() {
                     value={panNumber}
                     onChange={(e) => { setPanNumber(e.target.value.toUpperCase().slice(0, 10)); setError(null); }}
                     placeholder="ABCDE1234F"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
+                    className="mt-1 bg-background border-border text-foreground h-11 font-mono uppercase"
                   />
                 </div>
 
@@ -398,7 +398,7 @@ export function RiderOnboardingPage() {
                       value={dlNumber}
                       onChange={(e) => { setDlNumber(e.target.value.toUpperCase()); setError(null); }}
                       placeholder="AS0120200012345"
-                      className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
+                      className="mt-1 bg-background border-border text-foreground h-11 font-mono uppercase"
                     />
                   </div>
                 )}
@@ -409,7 +409,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(1)}
-                  className="border-[#1E283D] bg-[#0E121B] text-slate-300 h-11 px-5 rounded-xl"
+                  className="border-border bg-background text-slate-300 h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -418,7 +418,7 @@ export function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep2()) setStep(3);
                   }}
-                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
                   Continue
                 </Button>
@@ -450,8 +450,8 @@ export function RiderOnboardingPage() {
                     }}
                     className={`rounded-xl border p-3.5 text-xs font-semibold transition-all ${
                       vehicleCategory === v.id
-                        ? "border-[#E5A93C] bg-[#E5A93C]/20 text-[#E5A93C]"
-                        : "border-[#1E283D] bg-[#0E121B] text-slate-300"
+                        ? "border-primary bg-primary text-primary-foreground/20 text-primary"
+                        : "border-border bg-background text-slate-300"
                     }`}
                   >
                     <Bike className="size-5 mx-auto mb-1.5" />
@@ -467,7 +467,7 @@ export function RiderOnboardingPage() {
                     value={rcNumber}
                     onChange={(e) => { setRcNumber(e.target.value.toUpperCase()); setError(null); }}
                     placeholder="AS01AB1234"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
+                    className="mt-1 bg-background border-border text-foreground h-11 font-mono uppercase"
                   />
                 </div>
               ) : (
@@ -481,7 +481,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(2)}
-                  className="border-[#1E283D] bg-[#0E121B] text-slate-300 h-11 px-5 rounded-xl"
+                  className="border-border bg-background text-slate-300 h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -490,7 +490,7 @@ export function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep3()) setStep(4);
                   }}
-                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
                   Continue
                 </Button>
@@ -513,7 +513,7 @@ export function RiderOnboardingPage() {
                     value={bankAccountHolder || fullName}
                     onChange={(e) => setBankAccountHolder(e.target.value)}
                     placeholder="Name on bank passbook"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11"
+                    className="mt-1 bg-background border-border text-foreground h-11"
                   />
                 </div>
                 <div>
@@ -523,7 +523,7 @@ export function RiderOnboardingPage() {
                     value={bankAccountNumber}
                     onChange={(e) => { setBankAccountNumber(e.target.value.replace(/\D/g, "")); setError(null); }}
                     placeholder="Enter account number"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                    className="mt-1 bg-background border-border text-foreground h-11 font-mono"
                   />
                 </div>
                 <div>
@@ -532,7 +532,7 @@ export function RiderOnboardingPage() {
                     value={reenterAccountNumber}
                     onChange={(e) => { setReenterAccountNumber(e.target.value.replace(/\D/g, "")); setError(null); }}
                     placeholder="Re-enter account number"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                    className="mt-1 bg-background border-border text-foreground h-11 font-mono"
                   />
                 </div>
                 <div>
@@ -542,7 +542,7 @@ export function RiderOnboardingPage() {
                     value={ifsc}
                     onChange={(e) => { setIfsc(e.target.value.toUpperCase().slice(0, 11)); setError(null); }}
                     placeholder="SBIN0001234"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono uppercase"
+                    className="mt-1 bg-background border-border text-foreground h-11 font-mono uppercase"
                   />
                 </div>
                 <div>
@@ -551,7 +551,7 @@ export function RiderOnboardingPage() {
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     placeholder="mobile@upi"
-                    className="mt-1 bg-[#0E121B] border-[#1E283D] text-white h-11 font-mono"
+                    className="mt-1 bg-background border-border text-foreground h-11 font-mono"
                   />
                 </div>
               </div>
@@ -561,7 +561,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(3)}
-                  className="border-[#1E283D] bg-[#0E121B] text-slate-300 h-11 px-5 rounded-xl"
+                  className="border-border bg-background text-slate-300 h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -570,7 +570,7 @@ export function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep4()) setStep(5);
                   }}
-                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
                   Continue
                 </Button>
@@ -586,7 +586,7 @@ export function RiderOnboardingPage() {
                 <p className="text-xs text-slate-400 mt-0.5">Live photo capture for partner ID card.</p>
               </div>
 
-              <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#1E283D] rounded-2xl bg-[#0E121B] text-center">
+              <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-2xl bg-background text-center">
                 {selfiePhoto ? (
                   <div className="space-y-3">
                     <img
@@ -626,7 +626,7 @@ export function RiderOnboardingPage() {
                 </Button>
               </div>
 
-              <div className="rounded-xl border border-[#1E283D] bg-[#0E121B] p-3 flex items-center justify-between text-xs">
+              <div className="rounded-xl border border-border bg-background p-3 flex items-center justify-between text-xs">
                 <span className="text-slate-300">Delivery Bag Ready</span>
                 <span className="text-emerald-400 font-bold">Verified ✓</span>
               </div>
@@ -636,7 +636,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(4)}
-                  className="border-[#1E283D] bg-[#0E121B] text-slate-300 h-11 px-5 rounded-xl"
+                  className="border-border bg-background text-slate-300 h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -644,7 +644,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   disabled={pending}
                   onClick={() => void handleCompleteRiderOnboarding()}
-                  className="bg-[#E5A93C] hover:bg-amber-400 text-black font-bold px-6 h-12 rounded-xl flex items-center gap-2"
+                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-12 rounded-xl flex items-center gap-2"
                 >
                   <ShieldCheck className="size-4" />
                   <span>{pending ? "Activating..." : "Complete KYC"}</span>

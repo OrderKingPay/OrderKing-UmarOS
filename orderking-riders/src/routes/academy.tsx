@@ -129,25 +129,25 @@ function RiderAcademyPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-white flex items-center gap-2">
-              <BookOpen className="size-6 text-[#E5A93C]" />
+              <BookOpen className="size-6 text-primary" />
               <span>Rider Academy</span>
             </h1>
             <p className="text-xs text-slate-400 mt-1">
               Short 1-minute training modules for high service quality and safety.
             </p>
           </div>
-          <Badge className="bg-[#E5A93C]/20 text-[#E5A93C] border-[#E5A93C]/40 text-xs px-3 py-1">
+          <Badge className="bg-[#E5A93C]/20 text-primary border-primary/40 text-xs px-3 py-1">
             {completedCount}/{ACADEMY_MODULES.length} Completed
           </Badge>
         </div>
 
         {/* Progress Bar */}
-        <div className="rounded-2xl border border-[#1E283D] bg-[#121723] p-4 space-y-2">
+        <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
           <div className="flex items-center justify-between text-xs font-semibold">
             <span className="text-slate-300">Training Progress</span>
-            <span className="text-[#E5A93C] font-mono">{progressPercent}%</span>
+            <span className="text-primary font-mono">{progressPercent}%</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-[#0E121B] overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-card overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
@@ -168,12 +168,12 @@ function RiderAcademyPage() {
                 onClick={() => setActiveModule(mod.id)}
                 className={`rounded-xl border p-3.5 text-left transition-all ${
                   isSelected
-                    ? "border-[#E5A93C] bg-[#161D2B] text-white shadow-lg shadow-amber-500/10"
-                    : "border-[#1E283D] bg-[#0E121B] text-slate-300 hover:border-slate-700"
+                    ? "border-primary bg-muted text-white shadow-lg shadow-amber-500/10"
+                    : "border-border bg-card text-slate-300 hover:border-slate-700"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className={`p-2 rounded-lg ${isSelected ? "bg-[#E5A93C]/20 text-[#E5A93C]" : "bg-slate-800 text-slate-400"}`}>
+                  <div className={`p-2 rounded-lg ${isSelected ? "bg-[#E5A93C]/20 text-primary" : "bg-slate-800 text-slate-400"}`}>
                     <Icon className="size-4" />
                   </div>
                   {isDone ? (
@@ -193,10 +193,10 @@ function RiderAcademyPage() {
         </div>
 
         {/* Active Module Details */}
-        <div className="rounded-2xl border border-[#1E283D] bg-[#121723] p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-[#1E283D] pb-3">
+        <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-border pb-3">
             <div>
-              <div className="text-[10px] font-bold text-[#E5A93C] uppercase tracking-wider">
+              <div className="text-[10px] font-bold text-primary uppercase tracking-wider">
                 {selected.category} · {selected.duration}
               </div>
               <h2 className="text-base font-bold text-white mt-0.5">{selected.title}</h2>
@@ -222,7 +222,7 @@ function RiderAcademyPage() {
             <ul className="space-y-2">
               {selected.points.map((pt, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-xs text-slate-300">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#161D2B] border border-[#1E283D] text-[10px] font-bold text-[#E5A93C]">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted border border-border text-[10px] font-bold text-primary">
                     {i + 1}
                   </span>
                   <span>{pt}</span>
@@ -233,7 +233,7 @@ function RiderAcademyPage() {
 
           <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5 space-y-2">
             <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-              <ShieldCheck className="size-4 text-[#E5A93C]" />
+              <ShieldCheck className="size-4 text-primary" />
               <span>Safety &amp; Compliance Rule</span>
             </h4>
             <ul className="space-y-1.5">

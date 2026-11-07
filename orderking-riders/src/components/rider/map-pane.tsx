@@ -144,9 +144,9 @@ export function MapPane({
   const targetProj = isPickup ? pickupProj : dropProj;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#1E283D] bg-[#0E121B] shadow-[0_15px_35px_rgba(0,0,0,0.5)]">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
       {/* Top Header / Map Phase Banner */}
-      <div className="flex items-center justify-between border-b border-[#1E283D] bg-gradient-to-r from-[#121723] via-[#0E121B] to-[#121723] px-3.5 py-2 text-xs">
+      <div className="flex items-center justify-between border-b border-border bg-muted/40 px-3.5 py-2 text-xs">
         {deliveryState ? (
           <span className="flex items-center gap-1.5 font-bold text-[#e5a93c]">
             <Compass className="size-3.5 animate-spin" style={{ animationDuration: "8s" }} />
@@ -187,7 +187,7 @@ export function MapPane({
       </div>
 
       {/* SVG Map Canvas */}
-      <div className="relative bg-[#090B10]">
+      <div className="relative bg-muted/30">
         <svg
           viewBox="0 0 100 72"
           className="h-48 sm:h-56 w-full"
@@ -335,7 +335,7 @@ export function MapPane({
         </svg>
 
         {/* Map Overlay Key Indicator */}
-        <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded-lg bg-black/85 px-2.5 py-1 text-[10px] text-muted-foreground backdrop-blur-md border border-[#1E283D]">
+        <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded-lg bg-black/85 px-2.5 py-1 text-[10px] text-muted-foreground backdrop-blur-md border border-border">
           {isDeliveryMode ? (
             <>
               <span className="flex items-center gap-1 text-amber-400 font-semibold">
@@ -367,7 +367,7 @@ export function MapPane({
 
       {/* Bottom Route / Hotspot Actions Bar */}
       {isDeliveryMode ? (
-        <div className="flex items-center justify-between gap-2 p-3 border-t border-[#1E283D] bg-[#0E121B]">
+        <div className="flex items-center justify-between gap-2 p-3 border-t border-border bg-card">
           <div className="space-y-0.5 min-w-0 flex-1">
             <p className="flex items-center gap-1.5 text-xs text-foreground font-semibold truncate">
               <MapPin className="size-3.5 text-[#e5a93c] shrink-0" />
@@ -382,7 +382,7 @@ export function MapPane({
 
           {target ? (
             <div className="flex items-center gap-1.5 shrink-0">
-              <Button asChild size="sm" className="bg-[#e5a93c] text-black hover:bg-[#d49b2e] font-bold px-3">
+              <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold px-3">
                 <a href={googleNavigationUrl(target)} target="_blank" rel="noreferrer">
                   <Navigation className="size-3.5 mr-1" />
                   {navigateLabel}
@@ -398,7 +398,7 @@ export function MapPane({
         </div>
       ) : (
         /* Standby Heatmap Surge Recommendations Bar */
-        <div className="p-3 border-t border-[#1E283D] bg-[#0E121B] space-y-2">
+        <div className="p-3 border-t border-border bg-card space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 font-bold text-foreground">
               <TrendingUp className="size-3.5 text-[#e5a93c]" />
@@ -413,7 +413,7 @@ export function MapPane({
             {DEFAULT_DEMAND_HOTSPOTS.map((spot) => (
               <div
                 key={spot.id}
-                className="rounded-xl border border-[#1E283D] bg-[#121723] p-2 space-y-1 transition hover:border-amber-500/40"
+                className="rounded-xl border border-border bg-card p-2 space-y-1 transition hover:border-amber-500/40"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-medium text-muted-foreground truncate">

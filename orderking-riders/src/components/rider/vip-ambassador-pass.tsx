@@ -105,24 +105,24 @@ export function VipAmbassadorPass({
   return (
     <>
       <div
-        className={`relative overflow-hidden rounded-2xl border border-[#E5A93C]/40 bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-5 shadow-2xl text-white ${className}`}
+        className={`relative overflow-hidden rounded-2xl border border-primary/40 bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-5 shadow-2xl text-white ${className}`}
       >
         {/* Luxury Background Glow Highlights */}
         <div className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-[#E5A93C]/15 blur-3xl" />
         <div className="pointer-events-none absolute -left-16 -bottom-16 size-48 rounded-full bg-[#2563EB]/20 blur-3xl" />
 
         {/* Top Header & Elite Tier Badge */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-[#E5A93C]/20 pb-4">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-primary/20 pb-4">
           <div className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E5A93C] to-[#B37D20] text-black shadow-md shadow-[#E5A93C]/30">
               <Crown className="size-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display text-base font-bold tracking-wide text-[#E5A93C]">
+                <h3 className="font-display text-base font-bold tracking-wide text-primary">
                   OrderKing VIP Ambassador Pass
                 </h3>
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#E5A93C]/40 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E5A93C]">
+                <span className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
                   <Sparkles className="size-3" /> Elite Tier
                 </span>
               </div>
@@ -141,7 +141,7 @@ export function VipAmbassadorPass({
                 setActiveTab("pass");
                 setModalOpen(true);
               }}
-              className="h-8 border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20 hover:text-white"
+              className="h-8 border-primary/50 bg-black/40 text-xs text-primary hover:bg-[#E5A93C]/20 hover:text-white"
             >
               <QrCode className="mr-1.5 size-3.5" />
               Digital Pass
@@ -168,7 +168,7 @@ export function VipAmbassadorPass({
             <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
               Ledger Royalties
             </span>
-            <p className="font-mono text-base font-bold text-[#E5A93C]">
+            <p className="font-mono text-base font-bold text-primary">
               {formatPaise(stats?.totalEarnedPaise ?? 0)}
             </p>
             <p className="text-[10px] text-slate-400">Credited to wallet</p>
@@ -205,10 +205,10 @@ export function VipAmbassadorPass({
         {/* Value Proposition Grid */}
         <div className="relative z-10 mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-3">
           {/* Tile 1: Customer Discount */}
-          <div className="rounded-xl border border-[#E5A93C]/25 bg-black/50 p-3 backdrop-blur-sm">
-            <div className="flex items-center justify-between text-xs text-[#E5A93C]">
+          <div className="rounded-xl border border-primary/25 bg-black/50 p-3 backdrop-blur-sm">
+            <div className="flex items-center justify-between text-xs text-primary">
               <span className="font-semibold uppercase tracking-wider">Customer Gets</span>
-              <Gift className="size-4 text-[#E5A93C]" />
+              <Gift className="size-4 text-primary" />
             </div>
             <p className="mt-1 font-display text-2xl font-bold text-white">₹100 OFF</p>
             <p className="mt-0.5 text-[11px] leading-tight text-slate-300">
@@ -229,12 +229,12 @@ export function VipAmbassadorPass({
           </div>
 
           {/* Tile 3: Lifetime Micro-Royalty */}
-          <div className="rounded-xl border border-[#E5A93C]/40 bg-gradient-to-br from-[#E5A93C]/15 to-transparent p-3 backdrop-blur-sm">
-            <div className="flex items-center justify-between text-xs text-[#E5A93C]">
+          <div className="rounded-xl border border-primary/40 bg-gradient-to-br from-[#E5A93C]/15 to-transparent p-3 backdrop-blur-sm">
+            <div className="flex items-center justify-between text-xs text-primary">
               <span className="font-semibold uppercase tracking-wider">Lifetime Royalty</span>
-              <TrendingUp className="size-4 text-[#E5A93C]" />
+              <TrendingUp className="size-4 text-primary" />
             </div>
-            <p className="mt-1 font-display text-2xl font-bold text-[#E5A93C]">1% FOREVER</p>
+            <p className="mt-1 font-display text-2xl font-bold text-primary">1% FOREVER</p>
             <p className="mt-0.5 text-[11px] leading-tight text-slate-300">
               Earn 1% micro-royalty on every subsequent order placed by that customer forever.
             </p>
@@ -259,7 +259,7 @@ export function VipAmbassadorPass({
         ) : null}
 
         {/* Interactive VIP Code & Dynamic QR Section */}
-        <div className="relative z-10 mt-3 flex flex-col gap-4 rounded-xl border border-[#E5A93C]/30 bg-[#0B0F19]/90 p-3.5 sm:flex-row sm:items-center">
+        <div className="relative z-10 mt-3 flex flex-col gap-4 rounded-xl border border-primary/30 bg-card/90 p-3.5 sm:flex-row sm:items-center">
           {/* Dynamic QR Box */}
           <div className="flex shrink-0 items-center justify-center rounded-xl bg-white p-2 shadow-lg shadow-black/60">
             <img
@@ -277,7 +277,7 @@ export function VipAmbassadorPass({
                 Your Personal VIP Ambassador Code
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                <span className="rounded-lg border border-[#E5A93C]/40 bg-black/60 px-3 py-1 font-mono text-base font-bold tracking-wider text-[#E5A93C] select-all shadow-inner">
+                <span className="rounded-lg border border-primary/40 bg-black/60 px-3 py-1 font-mono text-base font-bold tracking-wider text-primary select-all shadow-inner">
                   {referralCode}
                 </span>
                 <Button
@@ -285,7 +285,7 @@ export function VipAmbassadorPass({
                   size="sm"
                   variant="outline"
                   onClick={() => void copyCode()}
-                  className="h-8 border-[#E5A93C]/40 bg-[#E5A93C]/10 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
+                  className="h-8 border-primary/40 bg-[#E5A93C]/10 text-xs text-primary hover:bg-[#E5A93C]/20"
                 >
                   {copied ? (
                     <>
@@ -318,14 +318,14 @@ export function VipAmbassadorPass({
         {/* Footer Guarantee */}
         <div className="relative z-10 mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
           <span>✓ Automated weekly Wednesday settlement for all referral bonuses &amp; royalties.</span>
-          <span className="text-[#E5A93C]">Positioned strictly as an elite courier earnings booster.</span>
+          <span className="text-primary">Positioned strictly as an elite courier earnings booster.</span>
         </div>
       </div>
 
       {/* Modal: Fullscreen Digital Pass / Print Slip / Calculator */}
       {modalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border-2 border-[#E5A93C] bg-gradient-to-b from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-6 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border-2 border-primary bg-gradient-to-b from-[#0B0F19] via-[#0F172A] to-[#1E293B] p-6 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <button
               type="button"
               onClick={() => setModalOpen(false)}
@@ -339,7 +339,7 @@ export function VipAmbassadorPass({
               <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#E5A93C] to-[#B37D20] text-black shadow-lg shadow-[#E5A93C]/40">
                 <Crown className="size-7" />
               </div>
-              <h4 className="mt-3 font-display text-xl font-bold tracking-wide text-[#E5A93C]">
+              <h4 className="mt-3 font-display text-xl font-bold tracking-wide text-primary">
                 ORDERKING VIP AMBASSADOR PASS
               </h4>
               <p className="text-xs text-slate-300">
@@ -387,7 +387,7 @@ export function VipAmbassadorPass({
             {/* Tab 1: Pass & QR */}
             {activeTab === "pass" ? (
               <div className="mt-4 space-y-4">
-                <div className="rounded-xl border border-[#E5A93C]/50 bg-white p-5 text-center text-slate-900 shadow-xl">
+                <div className="rounded-xl border border-primary/50 bg-white p-5 text-center text-slate-900 shadow-xl">
                   <p className="text-xs font-bold uppercase tracking-widest text-[#B37D20]">
                     Scan For ₹100 Instant Discount
                   </p>
@@ -401,7 +401,7 @@ export function VipAmbassadorPass({
                   <p className="text-[11px] font-semibold text-slate-600">
                     Or visit <strong>orderking.in/vip</strong> &amp; enter code:
                   </p>
-                  <div className="mt-1 inline-block rounded-lg bg-slate-900 px-4 py-1.5 font-mono text-lg font-bold tracking-widest text-[#E5A93C]">
+                  <div className="mt-1 inline-block rounded-lg bg-slate-900 px-4 py-1.5 font-mono text-lg font-bold tracking-widest text-primary">
                     {referralCode}
                   </div>
                 </div>
@@ -424,7 +424,7 @@ export function VipAmbassadorPass({
                     <span className="text-xs font-semibold text-slate-300">
                       Daily Pass Handovers:
                     </span>
-                    <span className="font-mono text-sm font-bold text-[#E5A93C]">
+                    <span className="font-mono text-sm font-bold text-primary">
                       {dailyHandovers} customers/day
                     </span>
                   </div>
@@ -487,9 +487,9 @@ export function VipAmbassadorPass({
             {activeTab === "ledger" ? (
               <div className="mt-4 space-y-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-lg bg-black/40 border border-[#E5A93C]/30 p-2.5">
+                  <div className="rounded-lg bg-black/40 border border-primary/30 p-2.5">
                     <span className="text-slate-400">Total Ambassador Earnings:</span>
-                    <p className="mt-1 font-mono text-base font-bold text-[#E5A93C]">
+                    <p className="mt-1 font-mono text-base font-bold text-primary">
                       {formatPaise(stats?.totalEarnedPaise ?? 0)}
                     </p>
                   </div>
@@ -549,7 +549,7 @@ export function VipAmbassadorPass({
               <Button
                 type="button"
                 variant="outline"
-                className="border-[#E5A93C]/50 text-[#E5A93C] hover:bg-[#E5A93C]/20"
+                className="border-primary/50 text-primary hover:bg-[#E5A93C]/20"
                 onClick={() => setModalOpen(false)}
               >
                 Done

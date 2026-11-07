@@ -169,7 +169,7 @@ export function FloatingEmergencySOS() {
       {/* FULL-SCREEN EMERGENCY SAFETY MODAL & DISPATCH HUB */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md transition-all">
-          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-red-500/40 bg-[#0E121B] shadow-[0_25px_60px_-15px_rgba(225,29,72,0.5)] text-foreground">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-red-500/40 bg-card shadow-[0_25px_60px_-15px_rgba(225,29,72,0.5)] text-foreground">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-red-500/30 bg-gradient-to-r from-red-950/80 via-[#161D2B] to-[#0E121B] px-5 py-3.5">
               <div className="flex items-center gap-2.5">
@@ -289,7 +289,7 @@ export function FloatingEmergencySOS() {
 
                     <a
                       href="tel:18001000"
-                      className="flex items-center justify-center gap-2 rounded-xl border border-[#1E283D] bg-[#161D2B] p-2.5 text-xs font-semibold text-foreground hover:bg-[#1E2638] transition"
+                      className="flex items-center justify-center gap-2 rounded-xl border border-border bg-muted p-2.5 text-xs font-semibold text-foreground hover:bg-muted/80 transition"
                     >
                       <PhoneCall className="size-3.5 text-[#e5a93c]" />
                       <span>OrderKing 24x7 Safety Command Desk (1800-100-ORDER)</span>
@@ -297,7 +297,7 @@ export function FloatingEmergencySOS() {
                   </div>
 
                   {/* Live GPS Telemetry Card */}
-                  <div className="rounded-xl border border-[#1E283D] bg-[#121723] p-3 text-xs space-y-2">
+                  <div className="rounded-xl border border-border bg-card p-3 text-xs space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5 font-bold text-foreground">
                         <Navigation className="size-3.5 text-[#e5a93c]" />
