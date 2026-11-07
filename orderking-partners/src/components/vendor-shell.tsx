@@ -242,16 +242,16 @@ export function VendorShell({
                 <Languages className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500" />
               </div>
 
-              {/* King AI Button */}
+              {/* Assistant Button */}
               <button
                 type="button"
-                className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-xs cursor-pointer active:scale-95 shrink-0"
+                className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-gray-200 bg-gray-50 px-3 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition shadow-xs cursor-pointer active:scale-95 shrink-0"
                 onClick={() => setSparkOpen(true)}
-                title="King AI — Restaurant Culinary & Growth Co-Pilot"
-                aria-label="Open King AI Assistant"
+                title="Restaurant Partner Assistant"
+                aria-label="Open Partner Assistant"
               >
-                <Sparkles className="size-4 text-amber-600 animate-pulse" />
-                <span className="tracking-tight">King AI</span>
+                <Sparkles className="size-4 text-gray-500" />
+                <span className="tracking-tight">Assistant</span>
               </button>
 
               {/* Outlet Online / Offline / Paused Toggle Pill */}

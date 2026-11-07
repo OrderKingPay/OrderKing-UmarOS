@@ -196,7 +196,7 @@ function DashboardPage() {
   const headerTitle =
     rawTitle && rawTitle.trim().length >= 3 && rawTitle.trim() !== "II"
       ? rawTitle.trim()
-      : "Restaurant Operations Center";
+      : "Restaurant Partner Dashboard";
 
   return (
     <VendorShell
@@ -239,11 +239,11 @@ function DashboardPage() {
                   </span>
                 ) : null}
               </div>
-              <h2 className="font-display text-2xl font-black text-gray-900 pt-1">
-                {d?.restaurantName ?? vendor.selected?.restaurantName ?? "Restaurant Operations Center"}
+              <h2 className="text-2xl font-black text-gray-900 pt-1">
+                {d?.restaurantName ?? vendor.selected?.restaurantName ?? "Restaurant Partner Dashboard"}
               </h2>
               <p className="text-xs text-gray-500">
-                Live kitchen orders, dispatch tracking, prep time controls, and daily bank payouts.
+                Live orders, kitchen preparation timings, and daily settlements.
               </p>
             </div>
 

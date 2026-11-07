@@ -238,7 +238,7 @@ function Login() {
                 ORDERKING <span className="text-[#E23744]">PARTNER</span>
               </p>
               <p className="text-[11px] text-gray-500 font-medium">
-                Delivery Fleet
+                Delivery Partner
               </p>
             </div>
           </div>
@@ -544,7 +544,7 @@ function Login() {
       {/* Footer */}
       <footer className="border-t border-gray-200 bg-white px-4 py-3 text-center text-[11px] text-gray-500">
         <p>
-          OrderKing Delivery Partner Network · {DEFAULT_BRANDING.legalCompanyName}
+          © {DEFAULT_BRANDING.legalCompanyName} · Delivery Partner
         </p>
       </footer>
     </main>

@@ -172,11 +172,7 @@ export function FloatingCashCard({
                   {cod.labels.limitTitle || "Pocket Balance (Cash on Delivery)"}
                 </CardTitle>
 
-                {/* Trust Tier Badge */}
-                <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-[10.5px] font-bold text-primary">
-                  <Crown className="size-3 text-amber-500" />
-                  {tierConfig.title}
-                </span>
+                
 
                 {/* Polite Status Badge */}
                 <Badge tone={politeMsg.badgeTone} className="text-[10px] font-semibold">
@@ -185,7 +181,7 @@ export function FloatingCashCard({
               </div>
 
               <p className="text-xs text-muted-foreground mt-0.5">
-                Dynamic Trust Limit: ₹{limitInr.toLocaleString("en-IN")} · Reconciled every Wednesday or via UPI
+                Cash Limit: ₹{limitInr.toLocaleString("en-IN")} · Reconciled every Wednesday or via UPI
               </p>
             </div>
           </div>
@@ -215,10 +211,10 @@ export function FloatingCashCard({
             />
           </div>
           <div className="flex justify-between text-[10.5px] text-muted-foreground">
-            <span>{utilizationPct}% holding capacity</span>
+            <span>{utilizationPct}% cash limit used</span>
             <span>
               {isBlocked
-                ? "Safe cap reached · Relax for 2 mins & clear via UPI"
+                ? "Cash limit reached · Please deposit via UPI to receive cash orders"
                 : `₹${headroomInr.toLocaleString("en-IN")} headroom remaining`}
             </span>
           </div>

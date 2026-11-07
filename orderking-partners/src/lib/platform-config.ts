@@ -111,7 +111,7 @@ export const platformConfig = {
     shortAppName: "Order King",
     aiBrandName: "King AI",
     aiAssistantName: "King AI",
-    tagline: "Your kitchen. Your orders. Your settlement.",
+    tagline: "Partner with OrderKing and grow your business",
     restaurantFacingBrandName: "Order King Partner",
     customerFacingBrand: "Order King",
     adminFacingBrand: "Order King Command",

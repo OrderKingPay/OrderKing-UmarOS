@@ -272,7 +272,7 @@ function Login() {
               </span>
             </div>
             <div className="text-xs text-gray-500">
-              Kitchen Command &amp; Direct Bank Settlements
+              Restaurant Partner Portal
             </div>
           </div>
         </Link>
@@ -312,12 +312,12 @@ function Login() {
           {/* Heading */}
           <div className="pb-4">
             <h1 className="font-display text-xl sm:text-2xl font-black text-gray-900">
-              {mode === "in" ? "Welcome Back to Your Kitchen" : "Register Your Restaurant"}
+              {mode === "in" ? "Partner Login" : "Partner Registration"}
             </h1>
             <p className="mt-1 text-xs text-gray-500">
               {mode === "in"
-                ? "Enter your 10-digit mobile number to access live orders, menu, and payouts."
-                : "Enter your mobile number to begin fast 10-minute partner registration."}
+                ? "Enter your mobile number to sign in to your restaurant dashboard."
+                : "Enter your mobile number to register your restaurant on OrderKing."}
             </p>
           </div>
 
@@ -338,7 +338,7 @@ function Login() {
                 )}
               >
                 <Phone className="size-3" />
-                <span>1-Tap Mobile OTP</span>
+                <span>Mobile OTP</span>
               </button>
               <button
                 type="button"
@@ -368,14 +368,14 @@ function Login() {
                   {mode === "up" ? (
                     <div>
                       <Label htmlFor="owner-name" className="text-xs font-semibold text-gray-700">
-                        Restaurateur / Owner Full Name
+                        Owner / Manager Full Name
                       </Label>
                       <div className="relative mt-1">
                         <Input
                           id="owner-name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Rajeshwari Iyer"
+                          placeholder="e.g. Rahul Sharma"
                           className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
                         />
                       </div>
@@ -384,9 +384,9 @@ function Login() {
 
                   <div>
                     <Label htmlFor="mobile-input" className="flex items-center justify-between text-xs font-semibold text-gray-700">
-                      <span>Indian 10-Digit Mobile Number</span>
-                      <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
-                        <Phone className="size-3" /> Jio / Airtel / Vi / BSNL
+                      <span>Mobile Number</span>
+                      <span className="text-[11px] text-gray-400 font-normal">
+                        10-digit number
                       </span>
                     </Label>
                     <div className="relative mt-1 flex items-center">
@@ -403,7 +403,7 @@ function Login() {
                       />
                     </div>
                     <p className="mt-1 text-[11px] text-gray-500">
-                      We will send a 6-digit SMS verification code.
+                      We will send an OTP verification code.
                     </p>
                   </div>
 
@@ -425,7 +425,7 @@ function Login() {
                       ) : (
                         <Phone className="size-4" />
                       )}
-                      <span>Send Verification Code (SMS)</span>
+                      <span>Send OTP (SMS)</span>
                     </Button>
 
                     <Button
@@ -433,10 +433,10 @@ function Login() {
                       variant="outline"
                       disabled={working || !isPhoneValid}
                       onClick={() => void handleSendOtp("whatsapp")}
-                      className="h-11 w-full border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
+                      className="h-11 w-full border-gray-200 bg-white text-gray-700 hover:bg-gray-50 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
                     >
                       <MessageCircle className="size-4 text-emerald-600" />
-                      <span>Instant Sign In via WhatsApp OTP</span>
+                      <span>Send OTP via WhatsApp</span>
                     </Button>
                   </div>
                 </>
@@ -501,7 +501,7 @@ function Login() {
                     className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all flex items-center justify-center gap-2"
                   >
                     {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
-                    <span>Verify &amp; Launch Kitchen</span>
+                    <span>Verify &amp; Continue</span>
                   </Button>
 
                   <div className="pt-2 flex flex-col gap-2 border-t border-gray-100">

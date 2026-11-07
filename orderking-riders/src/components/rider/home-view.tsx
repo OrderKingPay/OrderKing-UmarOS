@@ -969,96 +969,7 @@ export function HomeView() {
         />
       ) : null}
 
-      {/* Top Floating Partner Header with Live Floating Cash Meter & Deposit UPI Button */}
-      <header className="rounded-2xl border border-border bg-card/95 p-3.5 shadow-xl backdrop-blur-md sticky top-2 z-30 space-y-2.5">
-        <div className="flex items-center justify-between gap-3">
-          {/* Left: Partner identity & live duty radar pill */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="relative size-10 shrink-0 rounded-xl bg-red-50 border border-red-200 text-[#E23744] flex items-center justify-center font-bold text-sm shadow-xs">
-              {(home.rider.fullName || user?.displayName || "OK").slice(0, 2).toUpperCase()}
-              <span
-                className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-card ${
-                  status === "ONLINE"
-                    ? "bg-emerald-500 animate-pulse"
-                    : status === "BUSY"
-                      ? "bg-amber-500"
-                      : "bg-rose-500"
-                }`}
-              />
-            </div>
-            <div className="min-w-0">
-              <h2 className="font-display text-sm font-bold truncate text-foreground leading-tight">
-                {home.rider.fullName || user?.displayName || "Partner"}
-              </h2>
-              <p className="text-[11px] text-muted-foreground truncate font-medium">
-                {home.rider.vehicleType} · {home.rider.preferredZones[0] || "Fleet Zone"}
-              </p>
-            </div>
-          </div>
-
-          {/* Right: Floating Cash / Pocket Balance Meter with Deposit UPI Button & Red SOS Panic Button */}
-          <div className="flex items-center gap-2 shrink-0">
-            <EmergencySosButton
-              onClick={() => setSosOpen(true)}
-              size="sm"
-              label="SOS"
-              subLabel="112"
-            />
-
-            <div className="text-right">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                Pocket Balance
-              </p>
-              <p className="font-mono text-xs sm:text-sm font-bold text-foreground">
-                {formatPaise(unreconciledPaise)}{" "}
-                <span className="text-[10px] text-muted-foreground font-normal">
-                  / {formatPaise(codBlockThresholdPaise)}
-                </span>
-              </p>
-            </div>
-
-            <Button
-              size="sm"
-              onClick={() => setExternalDepositOpen(true)}
-              className="h-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-3 text-xs font-bold shadow-xs transition-all active:scale-[0.98]"
-            >
-              <Wallet className="size-3.5 mr-1" />
-              Deposit UPI
-            </Button>
-          </div>
-        </div>
-
-        {/* Floating Cash utilization progress bar */}
-        <div className="space-y-1">
-          <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">
-            <div
-              className={`h-full transition-all duration-500 ${
-                isCodBlocked
-                  ? "bg-rose-500"
-                  : isCodNearLimit
-                    ? "bg-amber-500"
-                    : "bg-emerald-500"
-              }`}
-              style={{ width: `${Math.max(4, Math.min(100, codUsagePct))}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <span
-                className={`size-1.5 rounded-full ${isCodBlocked ? "bg-rose-500" : isCodNearLimit ? "bg-amber-500" : "bg-emerald-500"}`}
-              />
-              {isCodBlocked
-                ? `₹${(codBlockThresholdPaise / 100).toLocaleString("en-IN")} Hard Lock Reached — Deposit Required`
-                : isCodNearLimit
-                  ? `₹${(codSoftWarningPaise / 100).toLocaleString("en-IN")} Soft Warning — Deposit Recommended`
-                  : "Floating Balance Healthy"}
-            </span>
-            <span>
-              {codUsagePct}% of ₹{(codBlockThresholdPaise / 100).toLocaleString("en-IN")} cap
-            </span>
-          </div>
-        </div>
-      </header>
+      
 
       {/* Duty Status & Pre-Shift Readiness Header */}
       <section className="rounded-xl bg-card p-5 shadow-[var(--shadow-border)] space-y-4">
@@ -1075,36 +986,9 @@ export function HomeView() {
                 : ""}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+          <div className="flex items-center gap-2">
             <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
-            {status === "OFFLINE" ? (
-              <Button
-                size="sm"
-                onClick={() => {
-                  if (!helmetSelfie && !driverReadinessConfirmed) {
-                    toast.error("Please complete your safety check first.");
-                    setSelfieModalOpen(true);
-                    return;
-                  }
-                  return go("ONLINE");
-                }}
-                disabled={pending}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs gap-1.5 shadow-sm active:scale-95 transition"
-              >
-                <Zap className="size-3.5 fill-current" />
-                Go Online
-              </Button>
-            ) : status === "ONLINE" ? (
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => setConfirm("offline")}
-                disabled={pending || Boolean(home.active)}
-                className="text-xs font-bold gap-1 active:scale-95 transition"
-              >
-                Go Offline
-              </Button>
-            ) : (
+            {status === "BUSY" && (
               <Badge tone="busy">{home.active?.state.replaceAll("_", " ") || "On Trip"}</Badge>
             )}
           </div>
@@ -1381,27 +1265,7 @@ export function HomeView() {
         />
       )}
 
-      {/* Rider Benefits & Affiliate Ecosystem Quick Hub Card */}
-      <Card className="border-primary/20 bg-gradient-to-r from-emerald-500/10 via-primary/5 to-amber-500/10 p-3.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Gift className="size-4" />
-          </span>
-          <div>
-            <p className="text-xs font-bold text-foreground">Partner Benefits &amp; Affiliate Hub</p>
-            <p className="text-[11px] text-muted-foreground">
-              15% EV Discounts (Yulu, Zypp) · HPCL ₹2.50/L Cashback · ₹10L Insurance
-            </p>
-          </div>
-        </div>
-        <Link
-          to="/benefits"
-          className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition"
-        >
-          <span>View Hub</span>
-          <ArrowRight className="size-3.5" />
-        </Link>
-      </Card>
+      
 
       {/* Operational Gig / Shift Slot Planner */}
       {sdui.isSectionVisible("shift_slots") && (
@@ -1483,15 +1347,7 @@ export function HomeView() {
         <DailyMilestoneCard completed={home.completedToday} performance={performance} />
       )}
 
-      {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
-      {sdui.isSectionVisible("vip_ambassador") && (
-        <VipAmbassadorPass
-          riderName={home.rider.fullName}
-          riderId={home.rider.id}
-          phone={home.rider.phone}
-          onCommissionCredited={() => void load()}
-        />
-      )}
+      
 
 
 
@@ -1509,23 +1365,7 @@ export function HomeView() {
         </Card>
       ) : null}
 
-      <div className="flex flex-wrap gap-3 text-sm">
-        <Link to="/assistant" className="underline">
-          {t("assistant")}
-        </Link>
-        <span className="text-muted-foreground">·</span>
-        <Link to="/onboarding" className="underline">
-          {t("kyc")}
-        </Link>
-        <span className="text-muted-foreground">·</span>
-        <Link to="/earnings" className="underline">
-          {t("earnings")}
-        </Link>
-        <span className="text-muted-foreground">·</span>
-        <Link to="/support" className="underline">
-          {t("support")}
-        </Link>
-      </div>
+      
 
       <ConfirmDialog
         open={confirm === "online"}
