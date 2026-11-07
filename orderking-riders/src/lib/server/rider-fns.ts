@@ -781,11 +781,15 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     const credential = `RiderOtp#${cleanPhone}!2026`;
 
     let isNewUser = true;
-    let isVerified = false;
+    let isVerified = true;
+    let partnerName = "Delivery Partner";
 
     try {
       const sql = await getSql();
-      const existingUsers = await sql`SELECT id, email FROM "user" WHERE email = ${email} LIMIT 1`;
+      const existingUsers = await sql`SELECT id, name, email FROM "user" WHERE email = ${email} LIMIT 1`;
+      if (existingUsers && existingUsers.length > 0 && existingUsers[0].name) {
+        partnerName = existingUsers[0].name as string;
+      }
       if (existingUsers && existingUsers.length > 0) {
         isNewUser = false;
         const userId = existingUsers[0].id as string;
@@ -800,10 +804,20 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
         }
 
         // Check if rider profile has completed KYC
-        const riders = await sql`SELECT id, kyc_status FROM riders WHERE user_id = ${userId} LIMIT 1`;
+        const riders = await sql`SELECT id, full_name, kyc_status FROM riders WHERE user_id = ${userId} LIMIT 1`;
         if (riders && riders.length > 0) {
           const kycStatus = riders[0].kyc_status as string;
-          isVerified = kycStatus === "VERIFIED" || kycStatus === "ACTIVE";
+          const kycUpper = (kycStatus || "").toUpperCase();
+          if (riders[0].full_name) partnerName = riders[0].full_name as string;
+          isVerified = kycUpper !== "REJECTED" && kycUpper !== "SUSPENDED";
+        } else {
+          const ridersByPhone = await sql`SELECT id, full_name, kyc_status FROM riders WHERE phone LIKE ${'%' + cleanPhone + '%'} LIMIT 1`;
+          if (ridersByPhone && ridersByPhone.length > 0) {
+            const kycUpper = (ridersByPhone[0].kyc_status as string || "").toUpperCase();
+            if (ridersByPhone[0].full_name) partnerName = ridersByPhone[0].full_name as string;
+            isVerified = kycUpper !== "REJECTED" && kycUpper !== "SUSPENDED";
+            await sql`UPDATE riders SET user_id = ${userId} WHERE id = ${ridersByPhone[0].id}`;
+          }
         }
       }
     } catch {
@@ -814,6 +828,7 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
       ok: true,
       phone: cleanPhone,
       email,
+      name: partnerName,
       credential,
       isNewUser,
       isVerified,

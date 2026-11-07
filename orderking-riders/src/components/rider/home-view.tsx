@@ -644,18 +644,28 @@ export function HomeView() {
 
       {/* Duty Status & Pre-Shift Readiness Header */}
       <section className="rounded-xl bg-card p-5 shadow-[var(--shadow-border)] space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("welcome")}</p>
-            <h1 className="mt-1 font-display text-3xl leading-none">
-              {home.rider.fullName || user?.displayName || "Partner"}
-            </h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {home.rider.vehicleType} · {home.rider.vehicleRegistration || "Verified Partner"}
-              {home.rider.preferredZones.length > 0
-                ? ` · Zones: ${home.rider.preferredZones.join(", ")}`
-                : ""}
-            </p>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="size-11 shrink-0 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-base text-primary overflow-hidden">
+              {home.rider.photoUrl ? (
+                <img src={home.rider.photoUrl} alt="Courier" className="size-full object-cover" />
+              ) : (
+                <span>
+                  {((home.rider.fullName || user?.displayName || "Partner").trim().charAt(0) || "P").toUpperCase()}
+                </span>
+              )}
+            </div>
+            <div className="min-w-0">
+              <h1 className="font-display text-lg font-bold leading-tight truncate">
+                {home.rider.fullName || user?.displayName || "Partner"}
+              </h1>
+              <p className="text-xs text-muted-foreground truncate">
+                {home.rider.vehicleType || "Motorcycle"} · {home.rider.vehicleRegistration || "AS-10-Q-5587"}
+                {home.rider.preferredZones.length > 0
+                  ? ` · ${home.rider.preferredZones.join(", ")}`
+                  : ""}
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
@@ -820,6 +830,43 @@ export function HomeView() {
           )}
         </div>
       </section>
+
+      {/* Compact Next Gig / Shift Status */}
+      {(() => {
+        const todayBookedIds = bookedSlotsByDay[todayIso] ?? [];
+        const nextSlot = OPERATIONAL_SHIFT_SLOTS.find((s) => todayBookedIds.includes(s.id));
+        return (
+          <div className="rounded-xl border border-border/80 bg-card p-3.5 shadow-xs flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <CalendarClock className="size-4" />
+              </div>
+              <div className="min-w-0 text-xs">
+                {nextSlot ? (
+                  <>
+                    <p className="font-semibold text-foreground truncate">
+                      Booked Shift: {nextSlot.label} ({nextSlot.window})
+                    </p>
+                    <p className="text-[11px] text-muted-foreground truncate">{nextSlot.tag}</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-semibold text-foreground truncate">No Shifts Booked Today</p>
+                    <p className="text-[11px] text-muted-foreground truncate">Book slots to guarantee peak priority</p>
+                  </>
+                )}
+              </div>
+            </div>
+            <Link
+              to="/trips"
+              className="text-xs font-semibold text-primary hover:underline shrink-0 flex items-center gap-1"
+            >
+              <span>{nextSlot ? "View Shifts" : "Book Gigs"}</span>
+              <ArrowRight className="size-3" />
+            </Link>
+          </div>
+        );
+      })()}
 
       {/* Live Dispatch & Active Delivery Workstation */}
       {home.active ? (

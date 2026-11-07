@@ -420,7 +420,7 @@ function Page() {
             <dl className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-sm">
               <Row k={t("payout")} v={formatPaise(data.totals.payout)} />
               <Row k={t("incentive")} v={formatPaise(data.totals.incentive)} />
-              <Row k="Ambassador Royalties" v={formatPaise(data.totals.referral ?? 0)} />
+              <Row k="Referral Bonus" v={formatPaise(data.totals.referral ?? 0)} />
               <Row k={t("customerTip")} v={formatPaise(data.totals.tip ?? 0)} />
               <Row k={t("adjustment")} v={formatPaise(data.totals.adjustment)} />
               <Row k={t("deduction")} v={formatPaise(data.totals.deduction)} />
@@ -462,7 +462,7 @@ function Page() {
 
           <div className="border-t border-border pt-2.5 text-xs text-muted-foreground space-y-1">
             <p>
-              <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Ambassador Royalties &amp; Bonuses + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
+              <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Partner Referral Bonuses + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
             </p>
             <p className="text-[11px]">
               Compliant with the Code on Social Security, 2020 · Independent Delivery Partner Ledger
@@ -492,7 +492,7 @@ function Page() {
                         : "border-border bg-muted/30 text-muted-foreground"
                     }`}
                   >
-                    {kind === "REFERRAL_COMMISSION" ? "VIP AMBASSADOR" : kind.replaceAll("_", " ")}
+                    {kind === "REFERRAL_COMMISSION" ? "Referrals" : kind.replaceAll("_", " ")}
                   </button>
                 ),
               )}
@@ -558,7 +558,7 @@ function Page() {
                           : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {l.kind === "REFERRAL_COMMISSION" ? "VIP AMBASSADOR" : l.kind}
+                      {l.kind === "REFERRAL_COMMISSION" ? "Referral" : l.kind}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">

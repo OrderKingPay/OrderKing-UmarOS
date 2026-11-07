@@ -421,10 +421,10 @@ function Page() {
                 Issue Resolution
               </h2>
             </div>
-            <Badge tone="online">AUTO-DIAGNOSIS</Badge>
+            <Badge tone="online">QUICK HELP</Badge>
           </div>
           <p className="text-xs text-muted-foreground">
-            Select your issue below. OrderKing Fleet AI automatically inspects your live order, wait timers, COD float, and earnings ledger to resolve your issue or attach verified audit telemetry without waiting for human call-center staff.
+            Select your issue below. OrderKing Support inspects your active order, wait timers, COD cash, and earnings to provide instant assistance or raise a priority support ticket.
           </p>
 
           {/* Workflow Selector Pills */}
@@ -525,8 +525,8 @@ function Page() {
                 onClick={() => void submitGuidedWorkflow()}
               >
                 {workflowSubmitting
-                  ? "Submitting Fleet Audit…"
-                  : `⚡ Log Verified ${activeWorkflow.title} Audit`}
+                  ? "Submitting Request…"
+                  : `Submit ${activeWorkflow.title} Request`}
               </Button>
             </div>
           </div>

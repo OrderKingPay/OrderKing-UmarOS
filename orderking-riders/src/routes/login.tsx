@@ -180,14 +180,14 @@ function Login() {
         throw new Error("Invalid verification code. Please check or request a new code.");
       }
 
-      const { email, credential, destination } = verifyRes;
+      const { email, credential, destination, name } = verifyRes as { email: string; credential: string; destination: string; name?: string };
 
       try {
         setPhoneSession({
           id: "rd_" + cleanPhone,
           phone: cleanPhone,
           email: `${cleanPhone}@rider.orderking.in`,
-          name: "Delivery Partner",
+          name: name || "Delivery Partner",
           role: "rider",
         });
       } catch {}
@@ -227,7 +227,7 @@ function Login() {
           const signUpRes = await authClient.signUp.email({
             email,
             password: credential,
-            name: "Delivery Partner",
+            name: name || "Delivery Partner",
             callbackURL: destination,
           });
 

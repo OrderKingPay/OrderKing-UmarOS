@@ -182,7 +182,7 @@ function Page() {
               Shift Window: {getCurrentEcosystemShift().startHour}:00 &ndash; {getCurrentEcosystemShift().endHour}:00 IST ({getShiftRemainingMinutes()} mins remaining)
             </span>
             <span className="font-mono text-[10px] uppercase font-bold text-amber-500">
-              Threat Level: {getCurrentEcosystemShift().threatLevel}
+              Safety Status: {getCurrentEcosystemShift().threatLevel === "NORMAL" ? "Normal Operations" : "Caution Advisory"}
             </span>
           </div>
 
@@ -190,7 +190,7 @@ function Page() {
           <div className="space-y-2 pt-1 border-t border-border/50">
             <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
               <AlertTriangle className="size-3.5 text-amber-500" />
-              <span>Active Threat Exclusion Zones (Current Shift)</span>
+              <span>Active Restricted &amp; Safety Advisory Zones (Current Shift)</span>
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {CANONICAL_THREAT_ZONES.filter((tz) => tz.activeShifts.includes(getCurrentEcosystemShift().type)).map((tz) => (
@@ -198,7 +198,7 @@ function Page() {
                   <div className="flex items-center justify-between gap-1">
                     <span className="font-bold text-foreground">{tz.name}</span>
                     <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-extrabold shrink-0 ${tz.threatLevel === "EXCLUSION_CURFEW" ? "bg-destructive/20 text-destructive" : "bg-amber-500/20 text-amber-500"}`}>
-                      {tz.threatLevel}
+                      {tz.threatLevel === "EXCLUSION_CURFEW" ? "Curfew Zone" : "Restricted Area"}
                     </span>
                   </div>
                   <p className="text-[11px] text-muted-foreground">{tz.advisoryNote}</p>
