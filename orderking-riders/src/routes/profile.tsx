@@ -86,12 +86,12 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
   {
     id: "settlement",
     title: "COD Floating Cash & Weekly Settlement Policy",
-    subtitle: "Integer-paise ledger accounting, TDS u/s 194-O & dispute resolution",
+    subtitle: "Direct bank payouts, TDS u/s 194-O & dispute resolution",
     statuteBadge: "Income Tax Act Sec 194-O",
     clauses: [
       {
-        heading: "1. Integer-Paise Ledger & Wednesday Settlement",
-        body: "All earnings, incentives, tips, and COD collections are recorded in exact integer paise to prevent rounding discrepancies. Net payable balances are settled every Wednesday via NEFT/IMPS to your verified bank account or UPI ID.",
+        heading: "1. Payout Cycles & Wednesday Settlement",
+        body: "All earnings, incentives, tips, and COD collections are recorded with complete transaction transparency to prevent discrepancies. Net payable balances are settled every Wednesday via NEFT/IMPS to your verified bank account or UPI ID.",
       },
       {
         heading: "2. COD Floating Cash Limit (₹2,500 Ceiling)",

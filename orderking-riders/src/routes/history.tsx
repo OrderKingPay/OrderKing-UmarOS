@@ -268,7 +268,7 @@ export function Page() {
           <div>
             <h1 className="font-display text-3xl">Trip &amp; Payout Log</h1>
             <p className="text-xs text-muted-foreground">
-              Audit per-trip pickup-to-drop distance, trip duration, and integer-paise payouts (Base + Distance + Wait + Tip)
+              Audit per-trip pickup-to-drop distance, trip duration, and payouts (Base + Distance + Wait + Tip)
             </p>
           </div>
           <Button
@@ -409,7 +409,7 @@ export function Page() {
           <Card className="p-6 text-center">
             <p className="text-sm font-medium text-foreground">{t("noHistory")}</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Completed, cancelled, and COD deliveries for the selected period appear here with full integer-paise payout breakdowns.
+              Completed, cancelled, and COD deliveries for the selected period appear here with full payout breakdowns.
             </p>
           </Card>
         ) : null}
@@ -525,7 +525,7 @@ export function Page() {
                     </div>
                   </div>
 
-                  {/* Compact Per-Trip Integer-Paise Summary Pill Strip */}
+                  {/* Compact Per-Trip Summary Pill Strip */}
                   <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/70 bg-muted/25 px-3 py-1.5 text-[11px] font-mono text-muted-foreground">
                     <span>Base: {formatINR(basePaise)}</span>
                     <span>·</span>
@@ -545,7 +545,7 @@ export function Page() {
                   {isExpanded ? (
                     <div className="border-t border-border pt-3 space-y-3 text-xs">
                       <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Per-Trip Statutory Payout Breakdown (Integer-Paise Ledger)
+                        Per-Trip Statutory Payout Breakdown
                       </CardTitle>
                       <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
                         <div className="flex justify-between">

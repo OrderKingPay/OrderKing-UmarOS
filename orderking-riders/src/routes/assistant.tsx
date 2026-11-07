@@ -167,7 +167,7 @@ function Page() {
         let greeting = "";
         if (locale === "bn") {
           greeting =
-            `নমস্কার ${firstName} বাবু! কিং এআই (কিং স্পার্ক) ফ্লিট সাপোর্টে আপনাকে স্বাগতম — আপনার স্বয়ংক্রিয় শিফট ও উপাৰ্জন কো-পাইলট।\n` +
+            `নমস্কার ${firstName} বাবু! কিং এআই ফ্লিট সাপোর্টে আপনাকে স্বাগতম — আপনার সহকারী কো-পাইলট।\n` +
             `• আজকের উপার্জন: ${formatPaise(e.totals.net)} (${h.completedToday}টি সম্পন্ন ট্রিপ | টিপস: ${formatPaise(e.totals.tip)} | বোনাস: ${formatPaise(e.totals.incentive)})\n` +
             `• মাইলস্টোন কোচ: ${ms.remaining > 0 ? `আর ${ms.remaining}টি ট্রিপ সম্পন্ন করলেই পাবেন +${formatPaise(ms.bonusPaise)} (${ms.tier})` : `অভিনন্দন! ${ms.tier} আনলক হয়েছে!`}\n` +
             (h.active
@@ -175,7 +175,7 @@ function Page() {
               : `• পিক স্লট পরামর্শ: লাঞ্চ (১২:০০–৩:০০) ও ডিনার (৭:০০–১১:০০) সময়ে হাই-ডিমান্ড জোনে থাকলে ট্রিপ সর্বোচ্চ হয়।`);
         } else if (locale === "hi") {
           greeting =
-            `नमस्ते ${firstName} जी! किंग एआई (किंग स्पार्क) फ्लीट सपोर्ट में आपका स्वागत है — आपका समर्पित ऑपरेशंस व अर्निंग्स मेंटर।\n` +
+            `नमस्ते ${firstName} जी! किंग एआई फ्लीट सपोर्ट में आपका स्वागत है — आपका राइडर पार्टनर साथी।\n` +
             `• आज की कुल कमाई: ${formatPaise(e.totals.net)} (${h.completedToday} पूर्ण ऑर्डर | 100% टिप्स: ${formatPaise(e.totals.tip)} | प्रोत्साहन राशि: ${formatPaise(e.totals.incentive)})\n` +
             `• माइलस्टोन कोच: ${ms.remaining > 0 ? `केवल ${ms.remaining} और डिलीवरी पूरी करके +${formatPaise(ms.bonusPaise)} (${ms.tier}) अनलॉक करें।` : `बधाई! ${ms.tier} अनलॉक हो गया है!`}\n` +
             (h.active
@@ -183,7 +183,7 @@ function Page() {
               : `• पीक शिफ्ट सलाह: लंच (12:00–3:00) और डिनर (7:00–11:00) के समय सबसे ज्यादा ऑर्डर उपलब्ध रहते हैं।`);
         } else {
           greeting =
-            `Hello ${firstName} ji! Welcome to King AI (King Spark) — your autonomous Fleet AI Support & Operations Co-Pilot.\n` +
+            `Hello ${firstName} ji! Welcome to King AI Fleet Support — your delivery partner co-pilot.\n` +
             `• Today's Take-Home: ${formatPaise(e.totals.net)} across ${h.completedToday} completed deliveries (Tips: ${formatPaise(e.totals.tip)} | Incentives: ${formatPaise(e.totals.incentive)}).\n` +
             `• Milestone Coach: ${ms.remaining > 0 ? `Complete ${ms.remaining} more trips to unlock +${formatPaise(ms.bonusPaise)} under ${ms.tier}.` : `You unlocked ${ms.tier} (+${formatPaise(ms.bonusPaise)})!`}\n` +
             (h.active
@@ -367,7 +367,7 @@ function Page() {
                   King AI <span className="text-[#E5A93C]">Fleet Support</span>
                 </h1>
                 <span className="rounded-full border border-[#2563EB] bg-[#2563EB]/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-300">
-                  King Spark · 0 Human Escalation
+                  King AI · 24x7 Support
                 </span>
                 <span className="rounded-full border border-[#E5A93C]/50 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E5A93C]">
                   Multilingual AI (10 Regional Languages · हिन्दी · தமிழ் · বাংলা · EN)

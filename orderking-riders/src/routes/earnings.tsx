@@ -203,7 +203,7 @@ function Page() {
           <div>
             <h1 className="font-display text-3xl">{t("earnings")}</h1>
             <p className="text-xs text-muted-foreground">
-              Exact integer-paise partner ledger · 100% transparent per-order accounting
+              Verified partner earnings ledger · 100% transparent per-order payouts
             </p>
           </div>
           <div className="flex items-center gap-2">
