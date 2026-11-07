@@ -14,6 +14,7 @@ import {
   sanitizeIndianPhone,
   isValidIndianPhone,
 } from "@/lib/server/sms-gateway";
+import { ORDERKING_ONBOARDING_DRAFT_KEY } from "@/routes/onboarding";
 import {
   ShieldCheck,
   ArrowRight,
@@ -63,7 +64,20 @@ function Login() {
   const [authMethod, setAuthMethod] = useState<"otp" | "password">("otp");
 
   const [otpStep, setOtpStep] = useState<"phone" | "code">("phone");
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [mobileNumber, setMobileNumber] = useState(() => {
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search).get("phone");
+      if (p) return p.replace(/\D/g, "").slice(-10);
+      try {
+        const raw = window.localStorage.getItem(ORDERKING_ONBOARDING_DRAFT_KEY);
+        if (raw) {
+          const d = JSON.parse(raw);
+          if (d.phone) return String(d.phone).replace(/\D/g, "").slice(-10);
+        }
+      } catch {}
+    }
+    return "";
+  });
   const [otpCode, setOtpCode] = useState("");
   const [, setWhatsAppUrl] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(30);
@@ -72,13 +86,40 @@ function Login() {
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [name, setName] = useState(() => {
+    if (typeof window !== "undefined") {
+      const n = new URLSearchParams(window.location.search).get("name");
+      if (n) return n.trim();
+      try {
+        const raw = window.localStorage.getItem(ORDERKING_ONBOARDING_DRAFT_KEY);
+        if (raw) {
+          const d = JSON.parse(raw);
+          if (d.ownerName || d.name) return String(d.ownerName || d.name).trim();
+        }
+      } catch {}
+    }
+    return "";
+  });
 
   const [error, setError] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
 
   const cleanPhone = useMemo(() => sanitizeIndianPhone(mobileNumber), [mobileNumber]);
   const isPhoneValid = isValidIndianPhone(cleanPhone);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const q = new URLSearchParams(window.location.search);
+    const m = q.get("mode");
+    if (m === "up" || m === "in") setMode(m);
+    const p = q.get("phone");
+    if (p) {
+      const sanitized = p.replace(/\D/g, "").slice(-10);
+      if (sanitized) setMobileNumber(sanitized);
+    }
+    const n = q.get("name");
+    if (n && n.trim()) setName(n.trim());
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

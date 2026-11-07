@@ -84,7 +84,7 @@ function setBearerToken(token: string | null): void {
 function inLivePreview(): boolean {
   return (
     typeof window !== "undefined" &&
-    window.location.hostname.endsWith(".grok-sandbox.com")
+    (window.self !== window.top || window.location.hostname.endsWith(".pages.dev") || window.location.hostname.endsWith(".orderkingpay.com"))
   );
 }
 

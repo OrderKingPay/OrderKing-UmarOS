@@ -255,7 +255,7 @@ function Home() {
       </section>
 
       {/* Active Partner Onboarding & Self-Serve Outlet Registration */}
-      <section id="onboarding-form" className="py-14 border-t border-gray-200 bg-[#F4F5F7]">
+      <section id="onboarding-form" className="py-14 border-t border-gray-200 bg-[#F4F5F7] scroll-mt-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <SelfServeLandingModule />
         </div>

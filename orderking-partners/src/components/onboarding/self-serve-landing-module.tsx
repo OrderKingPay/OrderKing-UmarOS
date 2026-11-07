@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
@@ -49,6 +49,35 @@ export function SelfServeLandingModule() {
   const [bankName, setBankName] = useState("");
   const [bankAccount, setBankAccount] = useState("");
   const [bankIfsc, setBankIfsc] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(ORDERKING_ONBOARDING_DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.name) setName(d.name);
+        if (d.ownerName) setOwnerName(d.ownerName);
+        if (d.phone) setPhone(d.phone);
+        if (d.email) setEmail(d.email);
+        if (d.city) setCity(d.city);
+        if (d.address) setAddress(d.address);
+        if (d.landmark) setLandmark(d.landmark);
+        if (d.cuisine) setCuisine(d.cuisine);
+        if (d.diet) setDiet(d.diet);
+        if (d.fssaiNumber) setFssaiNumber(d.fssaiNumber);
+        if (d.pan) setPan(d.pan);
+        if (d.gstin) {
+          setGstin(d.gstin);
+          setHasGst(true);
+        }
+        if (d.bankAccount) setBankAccount(d.bankAccount);
+        if (d.bankIfsc) setBankIfsc(d.bankIfsc);
+        if (d.bankName) setBankName(d.bankName);
+        if (d.holder) setHolder(d.holder);
+      }
+    } catch {}
+  }, []);
 
   function validateStep1(): boolean {
     if (!name.trim()) {
@@ -197,9 +226,19 @@ export function SelfServeLandingModule() {
         window.location.assign("/dashboard");
         return;
       }
-      navigate({ to: "/login", search: { mode: "up" } as any });
+      navigate({
+        to: "/login",
+        search: {
+          mode: "up",
+          phone: cleanPhone,
+          name: (ownerName || name).trim(),
+        } as any,
+      });
     } catch {
-      window.location.assign(user ? "/dashboard" : "/login?mode=up");
+      const targetUrl = user
+        ? "/dashboard"
+        : `/login?mode=up&phone=${encodeURIComponent(cleanPhone)}&name=${encodeURIComponent((ownerName || name).trim())}`;
+      window.location.assign(targetUrl);
     } finally {
       setBusy(false);
     }
