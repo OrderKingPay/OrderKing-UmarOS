@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { askAssistant } from "@/lib/server/api-more";
 import { getDashboard, quickThrottleKitchen } from "@/lib/server/api-orders";
-import { getMenu, saveItem, setAvailability } from "@/lib/server/api-menu";
+import { getMenu, saveItem, setAvailability, saveCategory } from "@/lib/server/api-menu";
 import { getAnalytics, getPromotions, getSettlements } from "@/lib/server/api-finance";
 import { formatINR, mulBps } from "@/lib/money";
 import type { DietFlag } from "@/lib/contracts";
@@ -19,7 +19,8 @@ import { platformConfig, type AppLanguage } from "@/lib/platform-config";
 import { orderKingSpark } from "@/lib/ai/order-king-spark";
 import { tryExecutePartnerAiCommand } from "@/lib/ai/partner-ai-actions";
 import { PARTNER_ACADEMY_MODULES, type SopModule } from "@/lib/academy/partner-sop-data";
-import { ShieldCheck, CheckCircle2 } from "lucide-react";
+import type { DigitizedMenuCatalog } from "@/lib/server/autonomous-onboarding";
+import { ShieldCheck, CheckCircle2, Paperclip, Image as ImageIcon, X, Sparkles, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/assistant")({ component: AssistantPage });
 
@@ -186,7 +187,18 @@ function AssistantPage() {
   const [selectedLangCode, setSelectedLangCode] = useState<string>(globalLang || "en");
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
-  const [log, setLog] = useState<{ role: "user" | "assistant"; text: string; langCode?: string }[]>([]);
+  const [log, setLog] = useState<
+    {
+      role: "user" | "assistant";
+      text: string;
+      langCode?: string;
+      imagePreview?: string;
+      digitizedMenu?: DigitizedMenuCatalog;
+    }[]
+  >([]);
+  const [attachedImage, setAttachedImage] = useState<{ base64: string; mimeType: string; name: string } | null>(null);
+  const [importingDishes, setImportingDishes] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [speakingGrowthBriefing, setSpeakingGrowthBriefing] = useState(false);
   const [listening, setListening] = useState(false);
@@ -789,18 +801,102 @@ function AssistantPage() {
     rec.start();
   }
 
+  function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setAttachedImage({
+        base64,
+        mimeType: file.type || "image/jpeg",
+        name: file.name,
+      });
+      setActionBanner(`Attached photo: ${file.name}. Type your question or press send to analyze & transcribe.`);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
+
+  async function handleCommitImportDigitizedCatalog(catalog: DigitizedMenuCatalog) {
+    if (!vendor.restaurantId || importingDishes) return;
+    setImportingDishes(true);
+    try {
+      const existingCategories = menu.data?.categories ?? [];
+      let createdDishes = 0;
+      for (const cat of catalog.categories) {
+        if (!cat.items.length) continue;
+        let catId = "";
+        const existingCat = existingCategories.find((c) => c.name.toLowerCase() === cat.name.toLowerCase());
+        if (existingCat) {
+          catId = existingCat.id;
+        } else {
+          const res = await saveCategory({
+            data: {
+              restaurantId: vendor.restaurantId,
+              name: cat.name,
+              sortOrder: existingCategories.length + cat.sortOrder,
+            },
+          });
+          catId = res.id;
+        }
+
+        for (const item of cat.items) {
+          await saveItem({
+            data: {
+              restaurantId: vendor.restaurantId,
+              categoryId: catId,
+              name: item.name,
+              description: item.description,
+              diet: item.diet === "VEG" || item.diet === "NONVEG" || item.diet === "EGG" ? item.diet : "VEG",
+              tags: `${item.diet} · ${item.category}`,
+              recommended: false,
+              prepMinutes: item.prepMinutes,
+              variants: [
+                {
+                  name: "Regular",
+                  pricePaise: item.pricePaise,
+                },
+              ],
+            },
+          });
+          createdDishes++;
+        }
+      }
+      setActionBanner(`✅ Successfully imported ${createdDishes} dishes from digitized menu card into your live store catalog!`);
+      await qc.invalidateQueries({ queryKey: ["menu"] });
+    } catch (err) {
+      setActionBanner(`❌ Error importing dishes: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally {
+      setImportingDishes(false);
+    }
+  }
+
   async function send(text: string) {
-    if (!text.trim()) return;
-    setBusy(true);
     const userQuestion = text.trim();
+    if (!userQuestion && !attachedImage) return;
+    setBusy(true);
+
+    const imagePayload = attachedImage;
+    setAttachedImage(null);
+
     const promptWithLanguage =
       activeLang.code === "en"
         ? userQuestion
         : `[Please reply in ${activeLang.name} (${activeLang.nativeName}, locale ${activeLang.bcp47})] ${userQuestion}`;
 
-    setLog((l) => [...l, { role: "user", text: userQuestion, langCode: activeLang.code }]);
+    setLog((l) => [
+      ...l,
+      {
+        role: "user",
+        text: userQuestion || (imagePayload ? `📷 Attached menu card / dish photo: ${imagePayload.name}` : ""),
+        langCode: activeLang.code,
+        imagePreview: imagePayload?.base64,
+      },
+    ]);
+
     try {
-      // 1. Try instant natural language action execution (Add dish, change price, stockout, sales check)
+      // 1. Try instant natural language action execution (Add dish, change price, stockout, sales check, menu digitize)
       const actionResult = await tryExecutePartnerAiCommand(userQuestion, {
         restaurantId: vendor.restaurantId,
         categories: menu.data?.categories ?? [],
@@ -825,7 +921,12 @@ function AssistantPage() {
         ]);
         setLog((l) => [
           ...l,
-          { role: "assistant", text: actionResult.replyText, langCode: activeLang.code },
+          {
+            role: "assistant",
+            text: actionResult.replyText,
+            langCode: activeLang.code,
+            digitizedMenu: actionResult.digitizedMenu,
+          },
         ]);
         setBusy(false);
         setQ("");
@@ -833,7 +934,12 @@ function AssistantPage() {
       }
 
       const res = await askAssistant({
-        data: { restaurantId: vendor.restaurantId, question: promptWithLanguage },
+        data: {
+          restaurantId: vendor.restaurantId,
+          question: promptWithLanguage,
+          imageBase64: imagePayload?.base64,
+          mimeType: imagePayload?.mimeType,
+        },
       });
       const isOk = typeof res === "object" && res !== null && "ok" in res && res.ok === true;
       const serverReply =
@@ -2357,24 +2463,108 @@ function AssistantPage() {
       </div>
       <div className="space-y-2">
         {log.map((m, i) => (
-          <Card key={i} className={m.role === "user" ? "bg-chili-soft" : ""}>
-            <div className="flex items-start justify-between gap-2">
-              <p className="whitespace-pre-wrap text-sm">{m.text}</p>
-              {m.role === "assistant" ? (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleSpeakMessage(m.text, i)}
-                  title={`Listen in ${activeLang.nativeName}`}
-                >
-                  {speakingIndex === i ? "⏹️ Stop" : `🔊 Listen in Your Language (${activeLang.nativeName})`}
-                </Button>
-              ) : null}
+          <Card key={i} className={m.role === "user" ? "bg-amber-500/10 border-amber-500/30" : "bg-surface"}>
+            <div className="flex flex-col gap-2">
+              {m.imagePreview && (
+                <div className="relative inline-block max-w-xs overflow-hidden rounded-lg border border-line">
+                  <img
+                    src={m.imagePreview}
+                    alt="Uploaded menu card"
+                    className="max-h-48 w-auto object-cover rounded-md"
+                  />
+                  <span className="absolute bottom-1 left-1 rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-mono text-white">
+                    📷 Attached Media
+                  </span>
+                </div>
+              )}
+              <div className="flex items-start justify-between gap-2">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.text}</p>
+                {m.role === "assistant" ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleSpeakMessage(m.text, i)}
+                    title={`Listen in ${activeLang.nativeName}`}
+                    className="shrink-0"
+                  >
+                    {speakingIndex === i ? "⏹️ Stop" : `🔊 (${activeLang.nativeName})`}
+                  </Button>
+                ) : null}
+              </div>
+
+              {m.digitizedMenu && m.digitizedMenu.totalDishesCount > 0 && (
+                <div className="mt-2 rounded-xl border border-emerald-500/40 bg-emerald-500/5 p-3 space-y-2.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-bold text-xs text-emerald-400 flex items-center gap-1.5">
+                      <Sparkles className="size-4" />
+                      Digitized Menu Catalog ({m.digitizedMenu.totalDishesCount} Dishes)
+                    </span>
+                    <span className="font-mono text-[10px] text-muted">
+                      {m.digitizedMenu.vegDishesCount} Veg · {m.digitizedMenu.nonVegDishesCount} Non-Veg · {m.digitizedMenu.eggDishesCount} Egg
+                    </span>
+                  </div>
+
+                  <div className="max-h-48 overflow-y-auto space-y-1.5 rounded-lg border border-line bg-surface p-2 text-xs">
+                    {m.digitizedMenu.categories.map((c) => (
+                      <div key={c.name} className="space-y-0.5">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted font-mono">{c.name}</div>
+                        {c.items.map((it) => (
+                          <div key={it.id || it.name} className="flex items-center justify-between py-0.5 text-[11px] border-b border-line/40 last:border-0">
+                            <span className="text-ink">
+                              {it.diet === "VEG" ? "🌱" : it.diet === "EGG" ? "🥚" : "🍗"} {it.name}
+                            </span>
+                            <span className="font-mono font-semibold text-leaf">₹{Math.round(it.pricePaise / 100)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    disabled={importingDishes}
+                    onClick={() => m.digitizedMenu && void handleCommitImportDigitizedCatalog(m.digitizedMenu)}
+                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                  >
+                    {importingDishes ? "Importing to Catalog..." : `⚡ Import All ${m.digitizedMenu.totalDishesCount} Dishes to Live Menu`}
+                  </Button>
+                </div>
+              )}
             </div>
           </Card>
         ))}
       </div>
+
+      {attachedImage && (
+        <div className="flex items-center justify-between rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs">
+          <div className="flex items-center gap-2">
+            <img src={attachedImage.base64} alt="Preview" className="size-8 rounded object-cover border border-amber-500/30" />
+            <div className="text-[11px] text-amber-200">
+              <span className="font-bold">Attached: </span>
+              {attachedImage.name}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setAttachedImage(null)}
+            className="rounded p-1 hover:bg-amber-500/20 text-amber-300"
+            title="Remove attachment"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handlePhotoSelect}
+      />
+
       <form
         className="flex flex-wrap sm:flex-nowrap gap-2"
         onSubmit={(e) => {
@@ -2392,15 +2582,28 @@ function AssistantPage() {
           <Button type="submit" disabled={busy}>
             {t("assistant.send")} ({activeLang.nativeName})
           </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={handleVoiceInput}
-            disabled={listening}
-          >
-            {listening ? `🎙️ Listening (${activeLang.code})...` : `🎙️ Speak (${activeLang.nativeName})`}
-          </Button>
+          <div className="flex gap-1.5">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              title="Upload physical menu card photo or dish photo for instant AI OCR transcription"
+              className="flex-1 text-xs"
+            >
+              📷 Photo
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={handleVoiceInput}
+              disabled={listening}
+              className="flex-1 text-xs"
+            >
+              {listening ? `🎙️ (${activeLang.code})...` : `🎙️ Speak`}
+            </Button>
+          </div>
         </div>
       </form>
     </VendorShell>

@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { Sparkles, X, Send, ShieldCheck, Clock, AlertCircle, Database, Store, Wallet, Globe, Volume2, TrendingUp, CalendarClock } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Sparkles, X, Send, ShieldCheck, Clock, AlertCircle, Database, Store, Wallet, Globe, Volume2, TrendingUp, CalendarClock, Camera, Paperclip, Image as ImageIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { askAssistant } from "@/lib/server/api-more";
-import { getMenu, saveItem, setAvailability } from "@/lib/server/api-menu";
+import { getMenu, saveItem, setAvailability, saveCategory } from "@/lib/server/api-menu";
 import { getDashboard, quickThrottleKitchen } from "@/lib/server/api-orders";
 import { getAnalytics, getPromotions, getSettlements } from "@/lib/server/api-finance";
 import { formatINR } from "@/lib/money";
@@ -15,6 +15,7 @@ import { useClientState } from "@/lib/client-state";
 import type { DietFlag } from "@/lib/contracts";
 import { platformConfig, type AppLanguage } from "@/lib/platform-config";
 import { tryExecutePartnerAiCommand } from "@/lib/ai/partner-ai-actions";
+import type { DigitizedMenuCatalog } from "@/lib/server/autonomous-onboarding";
 
 export interface OrderKingSparkModalProps {
   isOpen: boolean;
@@ -65,6 +66,8 @@ type ChatMessage = {
   text: string;
   timestamp: string;
   provenanceNote?: string;
+  imagePreview?: string;
+  digitizedMenu?: DigitizedMenuCatalog;
 };
 
 export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProps) {
@@ -74,6 +77,9 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
   const globalLang = useClientState((s) => s.lang);
   const setGlobalLang = useClientState((s) => s.setLang);
   const [selectedLangCode, setSelectedLangCode] = useState<string>(globalLang || "en");
+  const [attachedImage, setAttachedImage] = useState<{ base64: string; mimeType: string; name: string } | null>(null);
+  const [importingDishes, setImportingDishes] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Quiet-hours & Advisory Schedule Customizer state
   const [showScheduleDrawer, setShowScheduleDrawer] = useState(false);
@@ -351,9 +357,99 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     ].join("\n");
   }
 
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setAttachedImage({
+        base64,
+        mimeType: file.type || "image/jpeg",
+        name: file.name,
+      });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleCommitImportDigitizedCatalog = async (catalog: DigitizedMenuCatalog) => {
+    if (!restaurantId || importingDishes) return;
+    setImportingDishes(true);
+    try {
+      const existingCategories = menuQuery.data?.categories ?? [];
+      let createdDishes = 0;
+      for (const cat of catalog.categories) {
+        if (!cat.items.length) continue;
+        let catId = "";
+        const existingCat = existingCategories.find((c) => c.name.toLowerCase() === cat.name.toLowerCase());
+        if (existingCat) {
+          catId = existingCat.id;
+        } else {
+          const res = await saveCategory({
+            data: {
+              restaurantId,
+              name: cat.name,
+              sortOrder: existingCategories.length + cat.sortOrder,
+            },
+          });
+          catId = res.id;
+        }
+
+        for (const item of cat.items) {
+          await saveItem({
+            data: {
+              restaurantId,
+              categoryId: catId,
+              name: item.name,
+              description: item.description,
+              diet: item.diet === "VEG" || item.diet === "NONVEG" || item.diet === "EGG" ? item.diet : "VEG",
+              tags: `${item.diet} · ${item.category}`,
+              recommended: false,
+              prepMinutes: item.prepMinutes,
+              variants: [
+                {
+                  name: "Regular",
+                  pricePaise: item.pricePaise,
+                },
+              ],
+            },
+          });
+          createdDishes++;
+        }
+      }
+      void qc.invalidateQueries({ queryKey: ["menu", restaurantId] });
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `spark-import-${Date.now()}`,
+          sender: "spark",
+          text: `✅ Successfully imported ${createdDishes} dishes from digitized menu card into your live store catalog!`,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          provenanceNote: "Direct database commit.",
+        },
+      ]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `spark-import-err-${Date.now()}`,
+          sender: "spark",
+          text: `❌ Error importing dishes: ${err instanceof Error ? err.message : "Unknown error"}`,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } finally {
+      setImportingDishes(false);
+    }
+  };
+
   const handleSend = async (text: string) => {
     const question = text.trim();
-    if (!question || sending) return;
+    if ((!question && !attachedImage) || sending) return;
+
+    const imagePayload = attachedImage;
+    setAttachedImage(null);
 
     const promptWithLanguage =
       activeLang.code === "en"
@@ -365,8 +461,9 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
       {
         id: `usr-${Date.now()}`,
         sender: "user",
-        text: question,
+        text: question || (imagePayload ? `📷 Attached menu card / dish photo: ${imagePayload.name}` : ""),
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        imagePreview: imagePayload?.base64,
       },
     ]);
     setInputQuery("");
@@ -424,13 +521,21 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
               text: actionResult.replyText,
               timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
               provenanceNote: "Executed live kitchen action.",
+              digitizedMenu: actionResult.digitizedMenu,
             },
           ]);
           return;
         }
       }
 
-      const result = await askAssistant({ data: { restaurantId, question: promptWithLanguage } });
+      const result = await askAssistant({
+        data: {
+          restaurantId,
+          question: promptWithLanguage,
+          imageBase64: imagePayload?.base64,
+          mimeType: imagePayload?.mimeType,
+        },
+      });
       const responseText = result.ok
         ? result.text
         : result.text || "Hello! How can I help you today with your restaurant orders, menu, or daily settlements?";
@@ -1042,7 +1147,55 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                     : "border border-zinc-800 bg-zinc-900 text-zinc-200 space-y-2"
                 }`}
               >
+                {msg.imagePreview && (
+                  <div className="relative mb-2 inline-block max-w-xs overflow-hidden rounded-lg border border-zinc-700">
+                    <img
+                      src={msg.imagePreview}
+                      alt="Uploaded media"
+                      className="max-h-40 w-auto object-cover rounded-md"
+                    />
+                    <span className="absolute bottom-1 left-1 rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-mono text-white">
+                      📷 Attached Media
+                    </span>
+                  </div>
+                )}
                 <div className="whitespace-pre-wrap">{msg.text}</div>
+
+                {msg.digitizedMenu && msg.digitizedMenu.totalDishesCount > 0 && (
+                  <div className="mt-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 space-y-2 text-xs">
+                    <div className="flex items-center justify-between font-bold text-emerald-300">
+                      <span className="flex items-center gap-1.5">
+                        <Sparkles className="size-3.5" /> Digitized Dishes ({msg.digitizedMenu.totalDishesCount})
+                      </span>
+                      <span className="font-mono text-[10px] text-zinc-400">
+                        {msg.digitizedMenu.vegDishesCount}V · {msg.digitizedMenu.nonVegDishesCount}NV · {msg.digitizedMenu.eggDishesCount}E
+                      </span>
+                    </div>
+                    <div className="max-h-36 overflow-y-auto space-y-1 rounded border border-zinc-800 bg-zinc-950 p-2 text-[11px]">
+                      {msg.digitizedMenu.categories.map((c) => (
+                        <div key={c.name} className="space-y-0.5">
+                          <div className="font-mono text-[9px] uppercase text-zinc-500 font-bold">{c.name}</div>
+                          {c.items.map((it) => (
+                            <div key={it.id || it.name} className="flex items-center justify-between py-0.5 text-zinc-300">
+                              <span>{it.diet === "VEG" ? "🌱" : it.diet === "EGG" ? "🥚" : "🍗"} {it.name}</span>
+                              <span className="font-mono font-semibold text-emerald-400">₹{Math.round(it.pricePaise / 100)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      disabled={importingDishes}
+                      onClick={() => msg.digitizedMenu && void handleCommitImportDigitizedCatalog(msg.digitizedMenu)}
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+                    >
+                      {importingDishes ? "Importing to Menu..." : `⚡ Import All ${msg.digitizedMenu.totalDishesCount} Dishes to Live Store`}
+                    </Button>
+                  </div>
+                )}
+
                 {msg.sender === "spark" && (
                   <div className="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800 pt-2 text-[10px] text-zinc-400">
                     <div className="space-y-0.5">
@@ -1066,8 +1219,40 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           ))}
         </div>
 
+        {attachedImage && (
+          <div className="flex items-center justify-between border-t border-zinc-800 bg-amber-500/10 px-4 py-1.5 text-xs">
+            <div className="flex items-center gap-2">
+              <img src={attachedImage.base64} alt="Preview" className="size-7 rounded object-cover border border-amber-500/30" />
+              <span className="text-amber-300 font-medium text-[11px] truncate max-w-xs">{attachedImage.name}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAttachedImage(null)}
+              className="text-amber-400 hover:text-white"
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handlePhotoSelect}
+        />
+
         {/* Input Bar */}
         <div className="flex items-center gap-2 border-t border-zinc-800 bg-[#18181B] p-3">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            title="Upload menu card or dish photo"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition"
+          >
+            <Camera className="size-4" />
+          </button>
           <Input
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
@@ -1083,7 +1268,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           <Button
             type="button"
             onClick={() => void handleSend(inputQuery)}
-            disabled={!inputQuery.trim() || sending}
+            disabled={(!inputQuery.trim() && !attachedImage) || sending}
             className="h-10 bg-amber-500 px-4 text-xs font-bold text-black hover:bg-amber-400"
           >
             <Send className="mr-1.5 size-3.5" />

@@ -96,8 +96,18 @@ type SqlAdvisorSnapshot = {
 function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot): string {
   const q = question.toLowerCase().trim();
 
+  // Language script detection
+  const isBengaliOrAssamese = /[\u0980-\u09FF]/.test(question);
+  const isHindiOrDevanagari = /[\u0900-\u097F]/.test(question);
+
   // Natural greeting handler
-  if (/^(hi|hello|hey|good\s*morning|good\s*evening|নমস্কার|হ্যালো|नमस्ते|কেমন\s*আছেন|হাই|হায়)$/i.test(q)) {
+  if (/^(hi|hello|hey|good\s*morning|good\s*evening|নমস্কার|হ্যালো|नमस्ते|কেমন\s*আছেন|হাই|হায়|নমস্কাৰ|ভালনে|প্রণাম)$/i.test(q)) {
+    if (isBengaliOrAssamese) {
+      return `নমস্কার! আমি কিং এআই (King AI), আপনার অর্ডারকিং রেস্তোরাঁ সহযোগী। আপনার রান্নাঘরের অর্ডার, মেনু স্টক, রান্নার প্রস্তুতি সময় বা দৈনিক ব্যাংক সেটেলমেন্ট সংক্রান্ত বিষয়ে আমি কীভাবে সহায়তা করতে পারি?`;
+    }
+    if (isHindiOrDevanagari) {
+      return `नमस्ते! मैं किंग एआई (King AI) हूँ, आपका ऑर्डरकिंग रेस्टोरेंट पार्टनर सहायक। आज आपके किचन ऑर्डर्स, मेनू स्टॉक, प्रेप टाइमिंग या दैनिक बैंक सेटलमेंट में मैं आपकी क्या सहायता कर सकता हूँ?`;
+    }
     return `Hello! I am King AI, your OrderKing restaurant partner assistant. How can I help you today with your kitchen orders, menu items, prep timing, or daily bank settlements?`;
   }
 
@@ -110,36 +120,71 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
       ? snap.unavailableItems.map((i) => i.name).join(", ")
       : "All dishes are currently in stock.";
 
-  if (q.includes("sales") || q.includes("revenue") || q.includes("order") || q.includes("আজকের বিক্রি") || q.includes("আজকে কত")) {
-    return `Today's Summary for ${snap.restaurantName}:\n• Orders: ${snap.today.orders} placed (${snap.today.delivered} delivered, ${snap.today.pending} pending acceptance)\n• Gross Sales: ${formatINR(snap.today.sales_paise)}\n• Net Payout Accrued: ${formatINR(snap.today.payable_paise)}\n• Top Sellers: ${topSummary}`;
+  // Sales & Orders
+  if (q.includes("sales") || q.includes("revenue") || q.includes("order") || q.includes("আজকের বিক্রি") || q.includes("আজকে কত") || q.includes("बिक्री") || q.includes("कमाई") || q.includes("ऑर्डर")) {
+    if (isBengaliOrAssamese) {
+      return `📊 ${snap.restaurantName} এর আজকের লাইভ সারাংশ:\n• মোট অর্ডার: ${snap.today.orders} টি (${snap.today.delivered} ডেলিভার্ড, ${snap.today.pending} অপেক্ষমাণ)\n• গ্রস সেলস: ${formatINR(snap.today.sales_paise)}\n• নেট পেআউট (জমা হবে): ${formatINR(snap.today.payable_paise)}\n• সেরা বিক্রিত খাবার: ${topSummary}\n• স্টোরফ্রন্ট স্ট্যাটাস: ${snap.emergencyClosed ? "🔴 সাময়িক বন্ধ" : "🟢 লাইভ অর্ডার গ্রহণ করছে"}`;
+    }
+    if (isHindiOrDevanagari) {
+      return `📊 ${snap.restaurantName} की आज की लाइव रिपोर्ट:\n• कुल ऑर्डर्स: ${snap.today.orders} प्राप्त (${snap.today.delivered} डिलीवर, ${snap.today.pending} पेंडिंग)\n• कुल बिक्री (GMV): ${formatINR(snap.today.sales_paise)}\n• शुद्ध पेआउट (T+1 बैंक ट्रांसफर): ${formatINR(snap.today.payable_paise)}\n• टॉप सेलिंग डिशेस: ${topSummary}\n• स्टोर स्थिति: ${snap.emergencyClosed ? "🔴 पॉज्ड" : "🟢 ऑनलाइन और लाइव"}`;
+    }
+    return `Today's Summary for ${snap.restaurantName}:\n• Orders: ${snap.today.orders} placed (${snap.today.delivered} delivered, ${snap.today.pending} pending acceptance)\n• Gross Sales: ${formatINR(snap.today.sales_paise)}\n• Net Payout Accrued: ${formatINR(snap.today.payable_paise)}\n• Top Sellers: ${topSummary}\n• Storefront: ${snap.emergencyClosed ? "PAUSED" : "ONLINE & RECEIVING ORDERS"}`;
   }
 
-  if (q.includes("payout") || q.includes("settlement") || q.includes("bank") || q.includes("payment") || q.includes("টাকা") || q.includes("পেমেন্ট")) {
-    return `Daily Settlement for ${snap.restaurantName}:\n• Payout Schedule: Automatic T+1 daily settlement deposited directly into your verified bank account.\n• Accrued Net Payable: ${formatINR(snap.today.payable_paise)} for ${snap.today.delivered} delivered order(s).\n• Statutory Deductions: Accounted under Section 9(5) CGST and Section 194-O TDS. Full itemized ledgers are available in the Settlement tab.`;
+  // Payout, Settlement & Bank Transfers
+  if (q.includes("payout") || q.includes("settlement") || q.includes("bank") || q.includes("payment") || q.includes("টাকা") || q.includes("পেমেন্ট") || q.includes("पेआउट") || q.includes("खाता") || q.includes("बैंक") || q.includes("टैक्स") || q.includes("gst")) {
+    if (isBengaliOrAssamese) {
+      return `💳 ${snap.restaurantName} এর দৈনিক ব্যাংক সেটেলমেন্ট:\n• পেআউট শিডিউল: স্বয়ংক্রিয় T+1 দৈনিক সেটেলমেন্ট সরাসরি আপনার ভেরিফাইড ব্যাংক অ্যাকাউন্টে জমা হবে।\n• নেট প্রাপ্য ব্যালেন্স: ${formatINR(snap.today.payable_paise)} (${snap.today.delivered} টি সম্পন্ন অর্ডারের জন্য)।\n• কর ও আইনি সুবিধা: সেকশন ৯(৫) CGST (৫% ফুড জিএসটি) প্ল্যাটফর্মের মাধ্যমে স্বয়ংক্রিয়ভাবে জমা হয়। ০% ডাইন-ইন এবং স্বচ্ছ ডেলিভারি কমিশন। বিস্তারিত লেজার Settlement ট্যাবে দেখুন।`;
+    }
+    if (isHindiOrDevanagari) {
+      return `💳 ${snap.restaurantName} का दैनिक बैंक सेटलमेंट:\n• पेआउट शेड्यूल: स्वचालित T+1 दैनिक बैंक सेटलमेंट सीधे आपके सत्यापित बैंक खाते में क्रेडिट किया जाता है।\n• शुद्ध देय राशि: ${formatINR(snap.today.payable_paise)} (${snap.today.delivered} डिलीवर ऑर्डर्स के लिए)।\n• वैधानिक कटौती एवं कर: धारा 9(5) CGST के तहत 5% रेस्टोरेंट GST प्लेटफॉर्म द्वारा सीधे जमा किया जाता है। 0% डाइन-इन कमीशन। पूर्ण खाता Settlement टैब में उपलब्ध है।`;
+    }
+    return `Daily Settlement for ${snap.restaurantName}:\n• Payout Schedule: Automatic T+1 daily settlement deposited directly into your verified bank account.\n• Accrued Net Payable: ${formatINR(snap.today.payable_paise)} for ${snap.today.delivered} delivered order(s).\n• Statutory Deductions: Accounted under Section 9(5) CGST (5% restaurant GST remitted by OrderKing) and Section 194-O TDS. Full itemized ledgers are available in the Settlement tab.`;
   }
 
-  if (q.includes("menu") || q.includes("stock") || q.includes("item") || q.includes("dish") || q.includes("খাবার") || q.includes("মেনু")) {
-    return `Menu Overview for ${snap.restaurantName}:\n• Active Dishes: ${snap.catalogStats.totalItems}\n• Out of Stock: ${snap.unavailableItems.length > 0 ? unavailSummary : "None (all active dishes are available)"}\n• Photos & Details: ${snap.catalogStats.missingPhotos} dish(es) without photos. You can update photos, prices, and stock toggles anytime in the Menu tab.`;
+  // Menu, Stock & Items
+  if (q.includes("menu") || q.includes("stock") || q.includes("item") || q.includes("dish") || q.includes("খাবার") || q.includes("মেনু") || q.includes("मेनू") || q.includes("आइटम") || q.includes("स्टॉक") || q.includes("खत्म")) {
+    if (isBengaliOrAssamese) {
+      return `🍲 ${snap.restaurantName} এর মেনু ও স্টক বিশদ:\n• সক্রিয় খাবার সংখ্যা: ${snap.catalogStats.totalItems} টি\n• স্টক শেষ (Out of Stock): ${snap.unavailableItems.length > 0 ? unavailSummary : "কোনোটিই নয় (সব খাবার স্টকে আছে)"}\n• ছবি ছাড়া ডিশ: ${snap.catalogStats.missingPhotos} টি\n• বিবরণ ছাড়া ডিশ: ${snap.catalogStats.missingDescriptions} টি\nআপনি যেকোনো সময় মেনু ট্যাবে নতুন ডিশ যুক্ত করতে বা দাম ও স্টক পরিবর্তন করতে পারেন।`;
+    }
+    if (isHindiOrDevanagari) {
+      return `🍲 ${snap.restaurantName} का मेनू और स्टॉक ओवरव्यू:\n• सक्रिय डिशेस: ${snap.catalogStats.totalItems}\n• आउट ऑफ स्टॉक: ${snap.unavailableItems.length > 0 ? unavailSummary : "कोई नहीं (सभी डिशेस उपलब्ध हैं)"}\n• बिना फोटो वाली डिशेस: ${snap.catalogStats.missingPhotos}\n• विवरण के बिना डिशेस: ${snap.catalogStats.missingDescriptions}\nआप मेनू टैब में कभी भी फोटो, मूल्य या स्टॉक टॉगल अपडेट कर सकते हैं।`;
+    }
+    return `Menu Overview for ${snap.restaurantName}:\n• Active Dishes: ${snap.catalogStats.totalItems}\n• Out of Stock: ${snap.unavailableItems.length > 0 ? unavailSummary : "None (all active dishes are available)"}\n• Photos & Details: ${snap.catalogStats.missingPhotos} dish(es) without photos, ${snap.catalogStats.missingDescriptions} without descriptions. You can update photos, prices, and stock toggles anytime in the Menu tab.`;
   }
 
-  if (q.includes("dispute") || q.includes("refund") || q.includes("spill") || q.includes("missing")) {
-    return `Order Dispute Policy for ${snap.restaurantName}:\n• Delivery Spills / Transit Damage: Assigned 100% to logistics; your restaurant earnings are fully protected with ₹0 deduction.\n• Missing Items: If an item is inadvertently omitted, deduction is limited strictly to that item's value.\n• To view active dispute logs or claims, check the Guest Reviews & Disputes section.`;
+  // Storefront & Prep Time SLA
+  if (q.includes("open") || q.includes("close") || q.includes("pause") || q.includes("resume") || q.includes("prep") || q.includes("rush") || q.includes("समय") || q.includes("टाइम") || q.includes("রশ") || q.includes("পাউজ")) {
+    const statusText = snap.emergencyClosed ? "PAUSED / CLOSED" : "OPEN & ACCEPTING LIVE ORDERS";
+    return `⏱️ Kitchen Readiness & Timing for ${snap.restaurantName}:\n• Storefront: ${statusText}\n• Baseline Prep Buffer: ${snap.prepMinutes} minutes\n• Peak Rush Buffer: ${snap.peakPrepMinutes} minutes\n• FSSAI License: ${snap.fssaiNumber ? `Verified (${snap.fssaiNumber})` : "Pending Registration"}\nYou can toggle rush mode or pause orders anytime using the fast throttle controls.`;
   }
 
-  return `Hello! Here is your quick kitchen summary for ${snap.restaurantName}:\n• Storefront: ${snap.emergencyClosed ? "PAUSED" : "OPEN & ACCEPTING ORDERS"}\n• Today's Orders: ${snap.today.orders} placed, ${formatINR(snap.today.sales_paise)} gross sales\n• Kitchen Prep Buffer: ${snap.prepMinutes} mins\n• Menu: ${snap.catalogStats.totalItems} active dishes\n\nFeel free to ask any question about your daily orders, prep pace, menu catalog, or settlement ledger.`;
+  // Disputes & Cancellations
+  if (q.includes("dispute") || q.includes("refund") || q.includes("spill") || q.includes("missing") || q.includes("cancel") || q.includes("ক্যান্সেল") || q.includes("ক্ষতিপূরণ") || q.includes("कैंसिल") || q.includes("विवाद")) {
+    return `Order Dispute & Reimbursement Policy for ${snap.restaurantName}:\n• Delivery Spills / Transit Damage: Assigned 100% to logistics fault; your restaurant earnings are fully protected with ₹0 deduction.\n• Customer Cancellations After Kitchen Prep: 100% food value reimbursed to merchant.\n• Missing Items: Deduction is strictly limited to the value of the missing item with zero penalty.\n• All active dispute claims can be reviewed in the Guest Reviews & Disputes section.`;
+  }
+
+  // Busy Hours & Demand
+  if (q.includes("busy") || q.includes("rush hour") || q.includes("demand") || q.includes("peak") || q.includes("সময়") || q.includes("ভিড়")) {
+    const peakHours = snap.busyHoursLast7Days.map((h) => `${h.hour}:00 (${h.c} orders)`).join(", ");
+    return `Peak Order Hours (Past 7 Days) for ${snap.restaurantName}:\n• Top Demand Windows: ${peakHours || "Evenly distributed throughout the day"}\n• Recommended Kitchen Strategy: Keep high-frequency signature dishes prepped ahead during lunch (12:00–15:00) and dinner (19:00–22:00) peak hours.`;
+  }
+
+  return `Hello! Here is your kitchen operational snapshot for ${snap.restaurantName}:\n• Storefront: ${snap.emergencyClosed ? "PAUSED" : "OPEN & ACCEPTING ORDERS"}\n• Today's Orders: ${snap.today.orders} placed (${snap.today.delivered} delivered), ${formatINR(snap.today.sales_paise)} gross sales\n• Kitchen Prep Buffer: ${snap.prepMinutes} mins (Peak: ${snap.peakPrepMinutes} mins)\n• Active Menu Catalog: ${snap.catalogStats.totalItems} dishes (${snap.unavailableItems.length} out of stock)\n• Daily Accrued Payout: ${formatINR(snap.today.payable_paise)} (T+1 Direct Bank Deposit)\n\nFeel free to ask any question or command me to update dish prices, toggle stock, or activate kitchen rush mode.`;
 }
 
 export const askAssistant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; question: string }) => d)
+  .validator((d: { restaurantId?: string; question?: string; imageBase64?: string; mimeType?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "assistant.use", async (sql, ctx) => {
       if (!platformConfig.featureFlags.restaurant_ai) {
         return { ok: false as const, error: "NOT_CONNECTED", text: "Restaurant AI is disabled." };
       }
 
-      const question = data.question.trim().slice(0, 1000);
-      if (!question) throw new Error("Ask a question");
+      const rawQuestion = (data.question || "").trim().slice(0, 2000);
+      if (!rawQuestion && !data.imageBase64) throw new Error("Ask a question or attach an image");
+      const question = rawQuestion || "Analyze this attached menu/dish image.";
 
       const today = await sql<{
         orders: number;
@@ -250,32 +295,92 @@ export const askAssistant = createServerFn({ method: "POST" })
 
       await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'user', ${question})`;
 
-      const apiKey = process.env.OPENAI_API_KEY;
-      if (apiKey) {
+      const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+      const openaiKey = process.env.OPENAI_API_KEY;
+
+      const systemPrompt =
+        "You are King AI (OrderKing Partner Assistant), the authentic autonomous assistant for restaurant partners on OrderKing (OrderKingPay). You are deeply knowledgeable about commercial Indian restaurant kitchen operations, FSSAI regulations, 5% Section 9(5) CGST dual-bucket compliance (GSTIN: 18AFXPH9838M1Z9, Assam - 788710), double-entry paise accounting, T+1 bank payouts, prep buffers, and menu engineering.\n\n" +
+        "CRITICAL INSTRUCTIONS:\n" +
+        "1. Answer in the EXACT language used by the restaurant partner (Hindi, Bengali, Assamese, Gujarati, Marathi, Tamil, Telugu, Kannada, Malayalam, Punjabi, or English). If the user asks in Bengali, reply completely in Bengali. If in Hindi, reply in Hindi. If in English, reply in English.\n" +
+        "2. Provide exact facts and figures from the snapshot. Never fabricate imaginary order numbers, revenues, or policies.\n" +
+        "3. Maintain a respectful, encouraging, direct human tone. Never use dead marketing slogans or filler text.\n" +
+        "4. If an image or menu photo is attached, analyze and transcribe all dish names, categories, dietary tags (VEG, NONVEG, EGG), and prices in INR accurately.";
+
+      // 1. Google Gemini 2.5 Flash / 1.5 Flash via official REST API
+      if (geminiKey && geminiKey.trim().length > 10 && !geminiKey.includes("dummy")) {
         try {
-          const response = await fetch("https://api.openai.com/v1/responses", {
+          const userParts: any[] = [];
+          if (data.imageBase64) {
+            const cleanBase64 = data.imageBase64.replace(/^data:[a-zA-Z0-9/+-]+;base64,/, "");
+            userParts.push({
+              inlineData: {
+                mimeType: data.mimeType || "image/jpeg",
+                data: cleanBase64,
+              },
+            });
+          }
+          userParts.push({
+            text: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot, null, 2)}\n\nMerchant question:\n${question}`,
+          });
+
+          for (const model of ["gemini-2.5-flash", "gemini-1.5-flash"]) {
+            try {
+              const geminiRes = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey.trim()}`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    contents: [{ role: "user", parts: userParts }],
+                    generationConfig: {
+                      temperature: 0.25,
+                      maxOutputTokens: 1024,
+                    },
+                  }),
+                }
+              );
+
+              if (geminiRes.ok) {
+                const body = (await geminiRes.json()) as any;
+                const aiText = body.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                if (aiText) {
+                  await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'assistant', ${aiText})`;
+                  return { ok: true as const, text: aiText, snapshot };
+                }
+              }
+            } catch {
+              // try next model
+            }
+          }
+        } catch {
+          // fall through
+        }
+      }
+
+      // 2. OpenAI GPT-4o-mini via standard Chat Completions API
+      if (openaiKey && openaiKey.trim().length > 10 && !openaiKey.includes("dummy")) {
+        try {
+          const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${openaiKey.trim()}` },
             body: JSON.stringify({
               model: "gpt-4o-mini",
-              input: [
-                {
-                  role: "system",
-                  content:
-                    "You are Order King Restaurant AI (powered by King AI). Answer only from the authorized restaurant snapshot supplied by the server. Never invent metrics, prices, policies, integrations, refunds, payouts, or actions. You may recommend actions, but do not claim an action was executed unless the platform confirms it. Protect other restaurants and customer privacy. Amounts ending in _paise are integer paise; convert to INR only when useful. **CRITICAL:** Output exact, precise, and respectful local languages flawlessly. If the restaurant asks in Hindi, Bengali, or any supported Indian language, reply perfectly and completely in that exact language.",
-                },
+              messages: [
+                { role: "system", content: systemPrompt },
                 {
                   role: "user",
                   content: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot)}\n\nRestaurant question:\n${question}`,
                 },
               ],
-              max_output_tokens: 700,
+              max_tokens: 1024,
+              temperature: 0.3,
             }),
           });
 
           if (response.ok) {
-            const body = (await response.json()) as { output_text?: string };
-            const aiText = body.output_text?.trim();
+            const body = (await response.json()) as any;
+            const aiText = body.choices?.[0]?.message?.content?.trim();
             if (aiText) {
               await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'assistant', ${aiText})`;
               return { ok: true as const, text: aiText, snapshot };

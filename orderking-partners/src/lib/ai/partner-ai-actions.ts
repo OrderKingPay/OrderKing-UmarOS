@@ -9,6 +9,7 @@ import { quickThrottleKitchen } from "@/lib/server/api-orders";
 import { savePromotion } from "@/lib/server/api-finance";
 import { formatINR } from "@/lib/money";
 import type { DietFlag } from "@/lib/contracts";
+import { digitizeMenuFromOcr, type DigitizedMenuCatalog } from "@/lib/server/autonomous-onboarding";
 
 export interface PartnerAiCommandContext {
   restaurantId?: string;
@@ -51,8 +52,10 @@ export interface PartnerAiExecutionResult {
     | "RESTOCK"
     | "SALES_QUERY"
     | "THROTTLE_KITCHEN"
-    | "CREATE_PROMOTION";
+    | "CREATE_PROMOTION"
+    | "DIGITIZE_MENU";
   replyText: string;
+  digitizedMenu?: DigitizedMenuCatalog;
 }
 
 export async function tryExecutePartnerAiCommand(
@@ -67,15 +70,44 @@ export async function tryExecutePartnerAiCommand(
   }
 
   // -------------------------------------------------------------------------
+  // 0. ACTION: BULK MENU OCR / TEXT DIGITIZER
+  // If the query contains multiple lines with prices or items, run digitizer
+  // -------------------------------------------------------------------------
+  const lines = query.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const priceLineCount = lines.filter((l) => /(?:₹|Rs\.?|\bINR\b|\/-|\b[0-9]{2,4}\b)/i.test(l)).length;
+  if (lines.length >= 2 && priceLineCount >= 2 && ctx.canEditMenu) {
+    const catalog = digitizeMenuFromOcr(query);
+    if (catalog.totalDishesCount > 0) {
+      let preview = `📋 Digitized ${catalog.totalDishesCount} Dish(es) from your input:\n`;
+      for (const cat of catalog.categories) {
+        if (cat.items.length === 0) continue;
+        preview += `\n• [${cat.name}]\n`;
+        for (const item of cat.items) {
+          const dietEmoji = item.diet === "VEG" ? "🌱" : item.diet === "EGG" ? "🥚" : "🍗";
+          preview += `  - ${item.name} (${dietEmoji}): ₹${Math.round(item.pricePaise / 100)}\n`;
+        }
+      }
+      preview += `\nReady for 1-tap import to live store menu.`;
+      return {
+        handled: true,
+        action: "DIGITIZE_MENU",
+        replyText: preview,
+        digitizedMenu: catalog,
+      };
+    }
+  }
+
+  // -------------------------------------------------------------------------
   // 1. ACTION: ADD DISH
   // e.g.: "Add Paneer Butter Masala for 280 rupees veg"
   //       "Add Chicken Biryani 320 nonveg"
   //       "Paneer Tikka add karo 250 me veg"
   //       "Nayi dish add karo: Dal Makhani price 220 veg"
+  //       "চিকেন রোল ১২০ টাকা ননভেজ যোগ করো"
   // -------------------------------------------------------------------------
   const addMatch =
-    qLower.match(/(?:add|shamil karo|nayi dish|new dish)\s+(?:dish|item)?\s*[:\-]?\s*([a-zA-Z\s]+?)\s+(?:for|price|rate|ke liye|cost|at|me|₹|rs)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹|ke)?\s*(veg|non-veg|nonveg|non veg|egg)?/i) ||
-    qLower.match(/([a-zA-Z\s]+?)\s+(?:add karo|shamil karo)\s+(?:for|rate|price|me)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹)?\s*(veg|non-veg|nonveg|non veg|egg)?/i);
+    qLower.match(/(?:add|shamil karo|nayi dish|new dish|যোগ করো|যুক্ত করো|যোগ কৰক)\s+(?:dish|item|ডিশ)?\s*[:\-]?\s*([a-zA-Z\u0980-\u09FF\u0900-\u097F\s]+?)\s+(?:for|price|rate|ke liye|cost|at|me|₹|rs|দাম|টাকা|টকা)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹|ke|টাকা|টকা|रुपये)?\s*(veg|non-veg|nonveg|non veg|egg|ভেজ|ননভেজ)?/i) ||
+    qLower.match(/([a-zA-Z\u0980-\u09FF\u0900-\u097F\s]+?)\s+(?:add karo|shamil karo|যোগ করো|যুক্ত করো|যোগ কৰক)\s+(?:for|rate|price|me|দাম)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹|টাকা|টকা|रुपये)?\s*(veg|non-veg|nonveg|non veg|egg|ভেজ|ননভেজ)?/i);
 
   if (addMatch && ctx.canEditMenu) {
     const rawDishName = addMatch[1].trim();
@@ -84,13 +116,13 @@ export async function tryExecutePartnerAiCommand(
 
     // Clean dish name from filler words
     const cleanDishName = rawDishName
-      .replace(/^(dish|item|ek|one)\s+/i, "")
-      .replace(/\s+(ka|ki|ke|for|price)$/i, "")
+      .replace(/^(dish|item|ek|one|ডিশ|খাবার)\s+/i, "")
+      .replace(/\s+(ka|ki|ke|for|price|er|দাম)$/i, "")
       .trim();
 
     if (cleanDishName.length >= 2 && priceRupees > 0 && priceRupees < 100000) {
       const diet: DietFlag =
-        rawDiet.includes("non") ? "NONVEG" : rawDiet.includes("egg") ? "EGG" : "VEG";
+        rawDiet.includes("non") || rawDiet.includes("নন") ? "NONVEG" : rawDiet.includes("egg") ? "EGG" : "VEG";
 
       // Select default category or first available category
       let targetCategoryId = ctx.categories[0]?.id;
@@ -124,8 +156,8 @@ export async function tryExecutePartnerAiCommand(
 
       if (ctx.languageCode === "hi") {
         confirmation = `✅ डिश "${cleanDishName}" को ₹${priceRupees} (${dietTag}) में मेनू में जोड़ दिया गया है। ग्राहक अब इसे ऑर्डर कर सकते हैं!`;
-      } else if (ctx.languageCode === "bn") {
-        confirmation = `✅ "${cleanDishName}" ডিশটি ₹${priceRupees} (${dietTag}) মূল্যে যুক্ত করা হয়েছে। এখন লাইভ অর্ডারের জন্য প্রস্তুত!`;
+      } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
+        confirmation = `✅ "${cleanDishName}" ডিশটি ₹${priceRupees} (${dietTag}) মূল্যে মেনুতে যুক্ত করা হয়েছে। এখন লাইভ অর্ডারের জন্য প্রস্তুত!`;
       }
 
       return {
@@ -141,18 +173,19 @@ export async function tryExecutePartnerAiCommand(
   // e.g.: "Update Chicken Biryani price to 350"
   //       "Change price of Butter Naan to 60"
   //       "Chicken Biryani ka price 320 kar do"
+  //       "চিকেন বিরিয়ানির দাম ২৮০ টাকা করো"
   // -------------------------------------------------------------------------
   const priceMatch =
-    qLower.match(/(?:change|update|set|increase|decrease|badhao|ghatao)\s+(?:price of|rate of|price|rate)?\s*([a-zA-Z\s]+?)\s+(?:price|rate)?\s*(?:to|as|for|kar do|karo)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹)?/i) ||
-    qLower.match(/([a-zA-Z\s]+?)\s+(?:ka price|ka rate|price|rate)\s*(\d{2,5})\s*(?:kar do|karo|bana do)/i);
+    qLower.match(/(?:change|update|set|increase|decrease|badhao|ghatao|badha|ghata)\s+(?:price of|rate of|price|rate|দাম)?\s*([a-zA-Z\u0980-\u09FF\u0900-\u097F\s]+?)\s+(?:price|rate|to|as|for|kar do|karo|kardo|bana do|করো|কৰক|হবে)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹|টাকা|টকা|रुपये)?/i) ||
+    qLower.match(/([a-zA-Z\u0980-\u09FF\u0900-\u097F\s]+?)\s+(?:ka price|ka rate|price|rate|er dam|dam|দাম|মূল্য|র দাম)\s*(?:to|as|for|kar do|karo|হবে|করো|কৰক)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹|টাকা|টকা|रुपये)?/i);
 
   if (priceMatch && ctx.canEditMenu) {
     const rawTarget = priceMatch[1].trim().toLowerCase();
     const newPriceRupees = parseInt(priceMatch[2], 10);
 
     const cleanTarget = rawTarget
-      .replace(/^(the|item|dish)\s+/i, "")
-      .replace(/\s+(ka|ki|ke)$/i, "")
+      .replace(/^(the|item|dish|ডিশ|খাবার|আউটলেট)\s+/i, "")
+      .replace(/\s+(ka|ki|ke|er|r|এর|ৰ|দাম|price|rate)$/i, "")
       .trim();
 
     const matchedItem = ctx.items.find(
@@ -189,7 +222,7 @@ export async function tryExecutePartnerAiCommand(
 
       if (ctx.languageCode === "hi") {
         confirmation = `✅ "${matchedItem.name}" का मूल्य बदलकर ₹${newPriceRupees} कर दिया गया है। नया मूल्य ग्राहकों को तुरंत दिख रहा है!`;
-      } else if (ctx.languageCode === "bn") {
+      } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
         confirmation = `✅ "${matchedItem.name}" এর নতুন মূল্য ₹${newPriceRupees} নির্ধারণ করা হয়েছে। গ্রাহকদের জন্য সরাসরি আপডেট সম্পন্ন!`;
       }
 
@@ -207,19 +240,30 @@ export async function tryExecutePartnerAiCommand(
   //       "Mutton Biryani khatam ho gaya"
   //       "Restock Paneer Tikka"
   //       "Butter Naan in stock karo"
+  //       "পনীর বাটার মশলা শেষ"
+  //       "চিকেন রোল স্টকে আছে"
   // -------------------------------------------------------------------------
   const isStockoutIntent =
     qLower.includes("out of stock") ||
     qLower.includes("khatam ho gaya") ||
+    qLower.includes("khatam") ||
     qLower.includes("sold out") ||
     qLower.includes("unavailable") ||
-    qLower.includes("band karo");
+    qLower.includes("band karo") ||
+    qLower.includes("শেষ") ||
+    qLower.includes("নেই") ||
+    qLower.includes("ষ্টক শেষ");
 
   const isRestockIntent =
     qLower.includes("in stock") ||
     qLower.includes("restock") ||
     qLower.includes("available karo") ||
-    qLower.includes("chalu karo");
+    qLower.includes("chalu karo") ||
+    qLower.includes("स्टॉक में") ||
+    qLower.includes("स्टॉक आ गया") ||
+    qLower.includes("স্টকে আছে") ||
+    qLower.includes("ষ্টকত আছে") ||
+    qLower.includes("উপলব্ধ");
 
   if ((isStockoutIntent || isRestockIntent) && ctx.canEditAvailability) {
     // Find matching item in catalog
@@ -244,7 +288,7 @@ export async function tryExecutePartnerAiCommand(
 
       if (ctx.languageCode === "hi") {
         confirmation = `✅ "${matchedItem.name}" को ${targetStatus === "sold_out" ? "आउट ऑफ स्टॉक (समाप्त)" : "इन-स्टॉक (उपलब्ध)"} मार्क कर दिया गया है। तुरंत लाइव लागू!`;
-      } else if (ctx.languageCode === "bn") {
+      } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
         confirmation = `✅ "${matchedItem.name}" এখন ${targetStatus === "sold_out" ? "স্টক শেষ (Sold Out)" : "উপলব্ধ (In-Stock)"} হিসেবে চিহ্নিত করা হয়েছে।`;
       }
 
@@ -258,10 +302,6 @@ export async function tryExecutePartnerAiCommand(
 
   // -------------------------------------------------------------------------
   // 4. ACTION: SALES & DAILY ORDERS RECONCILIATION
-  // e.g.: "Aaj ki total sales aur orders kitne hue?"
-  //       "What are today's sales and orders?"
-  //       "Aaj ka sale batao"
-  //       "Delivered orders status"
   // -------------------------------------------------------------------------
   const isSalesIntent =
     qLower.includes("sales") ||
@@ -271,6 +311,10 @@ export async function tryExecutePartnerAiCommand(
     qLower.includes("kamai") ||
     qLower.includes("payout") ||
     qLower.includes("aaj ka") ||
+    qLower.includes("আজকের") ||
+    qLower.includes("বিক্রি") ||
+    qLower.includes("আজকে কত") ||
+    qLower.includes("कमाई") ||
     qLower.includes("today");
 
   if (isSalesIntent && ctx.dashboard) {
@@ -298,7 +342,7 @@ export async function tryExecutePartnerAiCommand(
         `• अनुमानित नेट T+1 पेआउट: ${formatINR(netPayoutPaise)} (सीधे बैंक खाते में)`,
         `• किचन स्थिति: ${ctx.dashboard.isOpen ? "🟢 खुला (ऑर्डर आ रहे हैं)" : "🔴 रुका हुआ"}`,
       ].join("\n");
-    } else if (ctx.languageCode === "bn") {
+    } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
       report = [
         `📊 আজকের লাইভ কিচেন পারফরম্যান্স রিপোর্ট:`,
         `• মোট বিক্রয় (GMV): ${formatINR(grossSalesPaise)}`,
@@ -318,11 +362,6 @@ export async function tryExecutePartnerAiCommand(
 
   // -------------------------------------------------------------------------
   // 5. ACTION: KITCHEN RUSH & PREPARATION THROTTLING
-  // e.g.: "Enable rush mode +15 mins"
-  //       "Kitchen me bheed hai prep buffer badhao"
-  //       "Normal mode kar do"
-  //       "Pause kitchen orders"
-  //       "Resume kitchen"
   // -------------------------------------------------------------------------
   const isRushIntent =
     qLower.includes("rush mode") ||
@@ -330,25 +369,32 @@ export async function tryExecutePartnerAiCommand(
     qLower.includes("overload") ||
     qLower.includes("prep buffer") ||
     qLower.includes("rush lagao") ||
+    qLower.includes("রশ মোড") ||
+    qLower.includes("ৰাশ্ব মোড") ||
     qLower.includes("too busy");
 
   const isNormalModeIntent =
     qLower.includes("normal mode") ||
     qLower.includes("rush band") ||
     qLower.includes("rush off") ||
-    qLower.includes("standard prep");
+    qLower.includes("standard prep") ||
+    qLower.includes("নরমাল মোড");
 
   const isPauseKitchenIntent =
     qLower.includes("pause kitchen") ||
     qLower.includes("emergency close") ||
     qLower.includes("orders roko") ||
-    qLower.includes("kitchen band karo");
+    qLower.includes("kitchen band karo") ||
+    qLower.includes("পাউজ") ||
+    qLower.includes("বন্ধ করো");
 
   const isResumeKitchenIntent =
     qLower.includes("resume kitchen") ||
     qLower.includes("open kitchen") ||
     qLower.includes("orders chalu") ||
-    qLower.includes("kitchen chalu karo");
+    qLower.includes("kitchen chalu karo") ||
+    qLower.includes("রেজিউম") ||
+    qLower.includes("চালু করো");
 
   if (isRushIntent && (ctx.canEditHours ?? true)) {
     await quickThrottleKitchen({
@@ -359,6 +405,9 @@ export async function tryExecutePartnerAiCommand(
     if (ctx.languageCode === "hi") {
       confirmation =
         "🚨 किचन रश मोड सक्रिय (+15 मिनट बफर जोड़ा गया)। नए ऑर्डर्स के लिए तैयारी समय 35 मिनट निर्धारित किया गया है और राइडर्स को देर से भेजा जाएगा ताकि भीड़ न लगे!";
+    } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
+      confirmation =
+        "🚨 কিচেন রাশ মোড সক্রিয় (+১৫ মিনিট বাফার যোগ করা হয়েছে)। নতুন অর্ডারের প্রস্তুতির সময় ৩৫ মিনিট নির্ধারণ করা হয়েছে!";
     }
     return {
       handled: true,
@@ -376,6 +425,9 @@ export async function tryExecutePartnerAiCommand(
     if (ctx.languageCode === "hi") {
       confirmation =
         "✅ सामान्य किचन मोड बहाल (20 मिनट मानक SLA)। राइडर डिस्पैच सामान्य समय पर पुनः सेट कर दिया गया है।";
+    } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
+      confirmation =
+        "✅ স্বাভাবিক কিচেন মোড পুনর্বহাল (২০ মিনিট মানদণ্ড SLA)।";
     }
     return {
       handled: true,
@@ -393,6 +445,9 @@ export async function tryExecutePartnerAiCommand(
     if (ctx.languageCode === "hi") {
       confirmation =
         "⏸️ इमरजेंसी किचन पॉज सक्रिय। नए ऑर्डर आना रोक दिया गया है। चालू ऑर्डर्स को तैयार करके राइडर को सौंपा जा सकता है।";
+    } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
+      confirmation =
+        "⏸️ জরুরি কিচেন পজ সক্রিয়। নতুন অর্ডার গ্রহণ সাময়িক স্থগিত করা হয়েছে।";
     }
     return {
       handled: true,
@@ -410,6 +465,9 @@ export async function tryExecutePartnerAiCommand(
     if (ctx.languageCode === "hi") {
       confirmation =
         "🟢 किचन पुनः चालू हो गया है और लाइव है। आपकी रसोई अब नए ग्राहक ऑर्डर स्वीकार कर रही है!";
+    } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
+      confirmation =
+        "🟢 কিচেন পুনরায় চালু এবং স্টোর লাইভ। আপনার রেস্তোরাঁ এখন সক্রিয়ভাবে নতুন অর্ডার গ্রহণ করছে!";
     }
     return {
       handled: true,
@@ -420,12 +478,10 @@ export async function tryExecutePartnerAiCommand(
 
   // -------------------------------------------------------------------------
   // 6. ACTION: CREATE PROMOTION / DYNAMIC DISCOUNT
-  // e.g.: "Create 20% discount offer"
-  //       "20 percent off ka promo lagao"
   // -------------------------------------------------------------------------
   const promoMatch =
-    qLower.match(/(?:create|launch|offer|lagao|banao)\s+(?:a\s+)?(\d{1,2})%\s*(?:discount|off|promo|chhoot)/i) ||
-    qLower.match(/(\d{1,2})%\s*(?:discount|off|promo|chhoot)\s+(?:lagao|karo|create)/i);
+    qLower.match(/(?:create|launch|offer|lagao|banao|অফার|ছাড়)\s+(?:a\s+)?(\d{1,2})%\s*(?:discount|off|promo|chhoot|ছাড়)/i) ||
+    qLower.match(/(\d{1,2})%\s*(?:discount|off|promo|chhoot|ছাড়)\s+(?:lagao|karo|create|দাও|করো)/i);
 
   if (promoMatch && (ctx.canEditPromotions ?? true)) {
     const percent = parseInt(promoMatch[1], 10);
@@ -447,6 +503,8 @@ export async function tryExecutePartnerAiCommand(
       let confirmation = `🎉 Promotion "${promoName}" Created & Live! Customers get ${percent}% off on orders above ₹299 (capped at ₹100). Live across OrderKing storefront!`;
       if (ctx.languageCode === "hi") {
         confirmation = `🎉 प्रमोशन "${promoName}" सफलतापूर्वक लाइव कर दिया गया है! ग्राहकों को ₹299 से अधिक के ऑर्डर पर ${percent}% छूट मिलेगी (अधिकतम ₹100)।`;
+      } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
+        confirmation = `🎉 অফার "${promoName}" সফলভাবে লাইভ করা হয়েছে! ₹২৯৯ এর উপরের অর্ডারে ${percent}% ছাড় (সর্বোচ্চ ₹১০০ পর্যন্ত)।`;
       }
 
       return {
