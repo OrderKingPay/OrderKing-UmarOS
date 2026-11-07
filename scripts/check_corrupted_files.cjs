@@ -11,7 +11,6 @@ const files = [
   'HDmaster/src/components/franchise/B2BSaaSSalesDeckGenerator.tsx',
   'HDmaster/src/components/playbook/launch-playbook-view.tsx',
   'HDmaster/src/components/pricing/CentralPricingSwitch.tsx',
-  'HDmaster/src/components/umaros-god-eye/UmarOsSupremeGodEyeApp.tsx',
   'orderking-customers/src/components/ai/capability-benchmark-hub.tsx',
   'orderking-customers/src/components/ai/emergency-recovery-hub.tsx',
   'orderking-customers/src/components/ai/supreme-founder-ai-chat.tsx',
