@@ -411,7 +411,7 @@ export class OrderKingSpark {
       refundApprovedPaise: dispute.claimAmountPaise,
       status: "DECIDED",
       legalSenseRationale: "Unclear liability split evenly between kitchen dispatch and transit partner.",
-      suggestedMerchantAction: "Review packing and dispatch telemetry for this order.",
+      suggestedMerchantAction: "Review packing and handover logs for this order.",
       gstReversalPaise: Math.round(dispute.claimAmountPaise * 0.5 * gstReversalRate),
     };
   }
@@ -793,7 +793,7 @@ Live menu items loaded with 1-tap stock control (86) and automated 06:00 AM next
         id,
         sender: "spark",
         text: `### 🍳 Kitchen Operations & SLA Monitor
-Live operational signals calculated from verified restaurant orders and SLA telemetry.`,
+Live operational metrics calculated from verified restaurant orders and delivery times.`,
         timestamp,
         actionCard: {
           type: "anomaly_alert",

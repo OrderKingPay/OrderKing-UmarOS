@@ -3320,7 +3320,7 @@ function MenuPage() {
               <div className="flex items-center gap-2">
                 <FileText className="size-5 text-emerald-400" />
                 <h3 className="font-display text-base font-bold text-white">
-                  Autonomous Menu Digitizer &amp; OCR Ingestion
+                  Menu Photo Upload &amp; OCR Digitizer
                 </h3>
               </div>
               <button
@@ -3337,7 +3337,7 @@ function MenuPage() {
 
             <p className="text-xs text-gray-700 leading-relaxed">
               Paste raw OCR text from a physical printed menu, chalkboard photo, or billing printout.
-              The autonomous parser will extract dish names, descriptions, section categories, FSSAI diet tags, and integer paise prices.
+              Upload photos of your printed menu card. The scanner will automatically extract dish names, descriptions, categories, and prices.
             </p>
 
             <Textarea

@@ -240,7 +240,7 @@ export const PARTNER_ACADEMY_MODULES: SopModule[] = [
         stepNumber: 1,
         title: "Food Spill Disputes: Logistics Liability Protection",
         instruction:
-          "When a customer uploads a spill photo, OrderKing King AI inspects packaging compliance and tamper seal telemetry. If the bag was sealed with tamper tape, liability is assigned 100% to Logistics, protecting your payout.",
+          "When a customer uploads a spill photo, OrderKing King AI inspects packaging compliance and tamper-evident packaging seals. If the bag was sealed with tamper tape, liability is assigned 100% to Logistics, protecting your payout.",
         criticalInvariant:
           "Always seal bags. Unsealed bags with reported spills result in shared 50/50 liability.",
       },

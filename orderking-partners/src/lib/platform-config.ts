@@ -130,7 +130,7 @@ export const platformConfig = {
     brandName: "King AI",
     assistantName: "King AI",
     engineName: "King AI Engine",
-    description: "Autonomous kitchen intelligence and culinary analytics",
+    description: "Restaurant kitchen operations and business analytics",
   },
   theme: {
     primary: "#B33A1B",

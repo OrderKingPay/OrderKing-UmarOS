@@ -489,7 +489,7 @@ export const requestRiderDispatch = createServerFn({ method: "POST" })
 
       await sql`
         insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
-        values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, ${rows[0].state || rows[0].status || 'READY'}, ${rows[0].state || rows[0].status || 'READY'}, 'restaurant', ${context.userId}, 'Partner requested autonomous rider dispatch')
+        values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, ${rows[0].state || rows[0].status || 'READY'}, ${rows[0].state || rows[0].status || 'READY'}, 'restaurant', ${context.userId}, 'Partner requested delivery partner')
       `;
 
       return {

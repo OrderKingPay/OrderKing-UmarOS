@@ -120,7 +120,7 @@ export function OrderCard({
           orderId: order.id,
         },
       });
-      toast.success("⚡ Autonomous Rider Dispatch Requested! Closest active couriers pinged via Haversine dispatch.");
+      toast.success("Delivery partner requested. Assigning nearby rider for order pickup.");
       onChanged?.();
     } catch (err: any) {
       toast.error(err.message || "Failed to ping rider dispatch.");
