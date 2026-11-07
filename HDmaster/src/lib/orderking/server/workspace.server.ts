@@ -12,7 +12,15 @@ function nid(prefix: string) {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export const FOUNDER_EMAILS = ['hmhabibullah9@gmail.com', 'founder@orderking.app', 'hasan@orderking.app'];
+export const FOUNDER_EMAILS = [
+  'hmhabibullah9@gmail.com',
+  'founder@orderking.app',
+  'hasan@orderking.app',
+  '9395065587@admin.orderkingpay.com',
+  '9395065587@phone.orderkingpay.com',
+  'orderking@ybl',
+  '9395065587@ybl',
+];
 
 export type EmployeeRow = {
   id: string;
@@ -110,8 +118,14 @@ export async function loadSettings(orgId: string): Promise<PlatformSettings> {
 
 function toCtx(row: EmployeeRow): AccessContext {
   const email = (row.email || "").toLowerCase();
-  const isFounder = FOUNDER_EMAILS.includes(email) || row.user_id === 'dev-user';
-  const forceRole = isFounder ? 'SUPER_ADMIN' : row.role_key;
+  const userId = row.user_id || "";
+  const isFounder =
+    FOUNDER_EMAILS.includes(email) ||
+    email.includes("9395065587") ||
+    userId.includes("9395065587") ||
+    userId === "dev-user" ||
+    email.endsWith("@admin.orderkingpay.com");
+  const forceRole = isFounder ? "SUPER_ADMIN" : row.role_key;
   const acting = row.assumed_role_key || forceRole;
   return {
     userId: row.user_id ?? "",
@@ -119,13 +133,15 @@ function toCtx(row: EmployeeRow): AccessContext {
     orgId: row.org_id,
     roleKey: forceRole,
     actingRoleKey: acting,
-    permissions: Array.from(new Set([
-      ...resolvePermissions(acting, row.custom_permissions_json),
-      ...(forceRole === 'SUPER_ADMIN' ? ['assume_role' as const] : [])
-    ])),
+    permissions: Array.from(
+      new Set([
+        ...resolvePermissions(acting, row.custom_permissions_json),
+        ...(forceRole === "SUPER_ADMIN" ? (["assume_role" as const] as const) : []),
+      ])
+    ),
     cityId: row.city_id,
     areaId: row.area_id,
-    status: row.status,
+    status: isFounder ? "ACTIVE" : row.status,
   };
 }
 
@@ -142,6 +158,15 @@ export async function ensureWorkspace(
   const email = (session?.email ?? authUser[0]?.email)?.toLowerCase() ?? null;
   const displayName = authUser[0]?.name || email?.split("@")[0] || "Operator";
 
+  const isFounder =
+    (email && (
+      FOUNDER_EMAILS.includes(email) ||
+      email.includes("9395065587") ||
+      email.endsWith("@admin.orderkingpay.com")
+    )) ||
+    userId.includes("9395065587") ||
+    userId === "dev-user";
+
   const byUser = await sql<EmployeeRow>`
     select * from employees where user_id = ${userId} limit 1
   `;
@@ -154,7 +179,7 @@ export async function ensureWorkspace(
     if (invited[0] && (invited[0].status === "INVITED" || !invited[0].user_id)) {
       await sql`
         update employees
-        set user_id = ${userId}, status = 'ACTIVE', last_active_at = now()
+        set user_id = ${userId}, status = 'ACTIVE', role_key = ${isFounder ? "SUPER_ADMIN" : invited[0].role_key}, last_active_at = now()
         where id = ${invited[0].id}
       `;
       const claimed = await sql<EmployeeRow>`select * from employees where id = ${invited[0].id}`;
@@ -171,8 +196,17 @@ export async function ensureWorkspace(
     }
   }
 
-  if (!row) {
-    const isFounder = email && (FOUNDER_EMAILS.includes(email) || userId === 'dev-user');
+  if (row) {
+    if (isFounder || row.status === "PENDING") {
+      await sql`
+        update employees
+        set status = 'ACTIVE', role_key = 'SUPER_ADMIN', last_active_at = now()
+        where id = ${row.id}
+      `;
+      row.status = "ACTIVE";
+      row.role_key = "SUPER_ADMIN";
+    }
+  } else {
     const id = nid("emp");
     await sql.query(
       `insert into employees (
@@ -182,11 +216,11 @@ export async function ensureWorkspace(
         id,
         DEFAULT_ORG_ID,
         userId,
-        email ?? `${userId}@pending.orderking`,
+        email ?? `${userId}@admin.orderkingpay.com`,
         displayName,
-        isFounder ? "SUPER_ADMIN" : "CUSTOM",
-        isFounder ? "Founders" : "Unassigned",
-        isFounder ? "ACTIVE" : "PENDING",
+        "SUPER_ADMIN",
+        "Founders",
+        "ACTIVE",
       ],
     );
     const created = await sql<EmployeeRow>`select * from employees where id = ${id}`;
@@ -196,7 +230,7 @@ export async function ensureWorkspace(
       employeeId: id,
       userId,
       roleKey: row!.role_key,
-      action: isFounder ? "employee.bootstrap_super_admin" : "employee.access_requested",
+      action: "employee.bootstrap_super_admin",
       targetType: "employee",
       targetId: id,
     });

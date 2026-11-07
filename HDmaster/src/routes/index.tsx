@@ -167,7 +167,7 @@ async function loadPlatformSettingBag(sql: any): Promise<Record<string, any>> {
         Object.assign(result, parsed);
       }
     }
-  } catch (_e) { }
+  } catch (_e) {}
 
   try {
     const rows = await sql<{ key: string; value: any }>`
@@ -179,7 +179,7 @@ async function loadPlatformSettingBag(sql: any): Promise<Record<string, any>> {
           typeof r.value === "string" ? JSON.parse(r.value) : r.value;
       }
     }
-  } catch (_e) { }
+  } catch (_e) {}
 
   return result;
 }
@@ -209,7 +209,7 @@ async function savePlatformSettingBag(
       ON CONFLICT (org_id)
       DO UPDATE SET settings_json = EXCLUDED.settings_json, updated_at = NOW()
     `;
-  } catch (_e) { }
+  } catch (_e) {}
 
   try {
     const jsonPayload = JSON.stringify(value || {});
@@ -219,7 +219,7 @@ async function savePlatformSettingBag(
       ON CONFLICT (key)
       DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
     `;
-  } catch (_e) { }
+  } catch (_e) {}
 }
 
 export const getUmarOSStats = createServerFn({ method: "GET" })
@@ -311,7 +311,7 @@ export const getUmarOSStats = createServerFn({ method: "GET" })
       savedSettings,
     };
   }
-  );
+);
 
 export type WorldId =
   | "home"
@@ -334,7 +334,7 @@ export const saveUmarOsSettingsFn = createServerFn({ method: "POST" })
     try {
       const sql = await getSql();
       await savePlatformSettingBag(sql, data.worldId, data.settings);
-    } catch (_e) { }
+    } catch (_e) {}
 
     return {
       ok: true,
@@ -364,7 +364,7 @@ export const approveRestaurantFn = createServerFn({ method: "POST" })
         SET active = true
         WHERE restaurant_id = ${data.restaurantId}
       `;
-    } catch (_e) { }
+    } catch (_e) {}
 
     return {
       ok: true,
@@ -377,11 +377,11 @@ export interface UmarAiActionResult {
   reply: string;
   appliedAction?: {
     type:
-    | "SETTINGS_UPDATED"
-    | "RESTAURANTS_APPROVED"
-    | "ALERT_CREATED"
-    | "ECONOMICS_CALCULATED"
-    | "ADVISORY";
+      | "SETTINGS_UPDATED"
+      | "RESTAURANTS_APPROVED"
+      | "ALERT_CREATED"
+      | "ECONOMICS_CALCULATED"
+      | "ADVISORY";
     detail: string;
     targetWorld?: WorldId;
     updatedSettings?: Record<string, any>;
@@ -422,7 +422,7 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
       riderCount = Number(riderRes?.[0]?.count || 0);
       const orderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM orders`;
       orderCount = Number(orderRes?.[0]?.count || 0);
-    } catch (_e) { }
+    } catch (_e) {}
 
     const liveCounts = {
       users: userCount,
@@ -465,7 +465,7 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
               )
             `;
           }
-        } catch (_e) { }
+        } catch (_e) {}
       }
 
       if (approvedCount > 0) {
@@ -536,7 +536,7 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
             if (updatedRain !== null) patchObj.rainBonusInr = updatedRain;
             await savePlatformSettingBag(sql, "world_orderking", patchObj);
           }
-        } catch (_e) { }
+        } catch (_e) {}
       }
 
       const summaryParts: string[] = [];
@@ -675,7 +675,7 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
             items,
             resolvedIds: cur.resolvedIds || [],
           });
-        } catch (_e) { }
+        } catch (_e) {}
       }
 
       return {
@@ -693,14 +693,16 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
     // 5. NATURAL EXECUTIVE CONSULTING & STATUS ADVISORY
     return {
       reply: `I checked your live platform state in PostgreSQL:
-• Restaurants: ${liveCounts.restaurants} active (${liveCounts.restaurants === 0
+• Restaurants: ${liveCounts.restaurants} active (${
+        liveCounts.restaurants === 0
           ? "action needed: onboard your first local kitchen with ₹0 joining fee"
           : "ready for orders"
-        })
-• Delivery Riders: ${liveCounts.riders} verified (${liveCounts.riders === 0
+      })
+• Delivery Riders: ${liveCounts.riders} verified (${
+        liveCounts.riders === 0
           ? "action needed: onboard delivery riders"
           : "on standby"
-        })
+      })
 • Customer Profiles: ${liveCounts.users} registered in PostgreSQL
 • Total Orders: ${liveCounts.orders} orders processed so far.
 
@@ -713,7 +715,7 @@ Both OrderKing Food Delivery and KingPay Fintech & Travel ecosystems are configu
       timestamp,
     };
   }
-  );
+);
 
 export const verifyUmarOsSessionFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
@@ -1776,7 +1778,7 @@ function UmarOSDashboard() {
       try {
         const raw = localStorage.getItem("orderking_saved_trips_v1");
         if (raw) return JSON.parse(raw);
-      } catch (_e) { }
+      } catch (_e) {}
     }
     return [];
   });
@@ -1800,7 +1802,7 @@ function UmarOSDashboard() {
       try {
         const raw = localStorage.getItem("orderking_local_jobs_v1");
         if (raw) return JSON.parse(raw);
-      } catch (_e) { }
+      } catch (_e) {}
     }
     return [];
   });
@@ -1847,7 +1849,7 @@ function UmarOSDashboard() {
           return next;
         });
       }
-    } catch (_e) { }
+    } catch (_e) {}
   }, []);
 
   const recordLog = (text: string) => {
@@ -1873,10 +1875,10 @@ function UmarOSDashboard() {
       validWorld === "travel" && (!tabId || tabId === "dashboard")
         ? "travel-hub"
         : tabId && validTabs.includes(tabId)
-          ? tabId
-          : activeTabs[validWorld] && validTabs.includes(activeTabs[validWorld])
-            ? activeTabs[validWorld]
-            : targetDefault;
+        ? tabId
+        : activeTabs[validWorld] && validTabs.includes(activeTabs[validWorld])
+        ? activeTabs[validWorld]
+        : targetDefault;
 
     setActiveTabs((prev) => ({ ...prev, [validWorld]: resolvedTab }));
     if (typeof window !== "undefined") {
@@ -1938,8 +1940,9 @@ function UmarOSDashboard() {
 
       setSaveBanner({
         worldId,
-        message: `Saved ${TEN_WORLDS.find((w) => w.id === worldId)?.navLabel || worldId
-          } settings to PostgreSQL database`,
+        message: `Saved ${
+          TEN_WORLDS.find((w) => w.id === worldId)?.navLabel || worldId
+        } settings to PostgreSQL database`,
         timestamp: formattedTime,
       });
       recordLog(
@@ -2078,7 +2081,7 @@ function UmarOSDashboard() {
           settings: { items: nextCustom, resolvedIds: nextResolved },
         },
       });
-    } catch (_e) { }
+    } catch (_e) {}
   };
 
   const handleCreateCustomAlert = async (e: React.FormEvent) => {
@@ -2114,7 +2117,7 @@ function UmarOSDashboard() {
           settings: { items: nextCustom, resolvedIds: resolvedSystemAlertIds },
         },
       });
-    } catch (_e) { }
+    } catch (_e) {}
   };
 
   // Add B2B Lead in World 5 (Saved to PostgreSQL)
@@ -2143,7 +2146,7 @@ function UmarOSDashboard() {
           settings: { leads: nextLeads },
         },
       });
-    } catch (_e) { }
+    } catch (_e) {}
   };
 
   const handleAdvanceLeadStage = async (leadId: string, nextStage: string) => {
@@ -2158,7 +2161,7 @@ function UmarOSDashboard() {
           settings: { leads: nextLeads },
         },
       });
-    } catch (_e) { }
+    } catch (_e) {}
   };
 
   // Execute genuine UMAR AI command with live PostgreSQL tool calling
@@ -2201,7 +2204,7 @@ function UmarOSDashboard() {
               "umar_os_10_worlds_settings_v1",
               JSON.stringify(next)
             );
-          } catch (_e) { }
+          } catch (_e) {}
           return next;
         });
         recordLog(
@@ -2231,7 +2234,7 @@ function UmarOSDashboard() {
             settings: { history: nextHistory },
           },
         });
-      } catch (_e) { }
+      } catch (_e) {}
     } catch (_err) {
       const fallbackEntry = {
         id: `ai-${Date.now()}`,
@@ -2328,7 +2331,7 @@ function UmarOSDashboard() {
     setNewTripRoute("");
     try {
       localStorage.setItem("orderking_saved_trips_v1", JSON.stringify(next));
-    } catch (_e) { }
+    } catch (_e) {}
     recordLog(`Saved travel booking reference: ${trip.pnr} (${trip.mode})`);
   };
 
@@ -2337,7 +2340,7 @@ function UmarOSDashboard() {
     setSavedTrips(next);
     try {
       localStorage.setItem("orderking_saved_trips_v1", JSON.stringify(next));
-    } catch (_e) { }
+    } catch (_e) {}
   };
 
   // World 4: Post New Local Job
@@ -2358,7 +2361,7 @@ function UmarOSDashboard() {
     setNewJobSalary("");
     try {
       localStorage.setItem("orderking_local_jobs_v1", JSON.stringify(next));
-    } catch (_e) { }
+    } catch (_e) {}
     recordLog(`Posted new hiring opening: ${job.title} (${job.city})`);
   };
 
@@ -2367,7 +2370,7 @@ function UmarOSDashboard() {
     setLocalJobs(next);
     try {
       localStorage.setItem("orderking_local_jobs_v1", JSON.stringify(next));
-    } catch (_e) { }
+    } catch (_e) {}
     recordLog("Removed job opening from board");
   };
 
@@ -2466,10 +2469,11 @@ function UmarOSDashboard() {
             <button
               type="button"
               onClick={() => selectWorld("orderking", "dashboard")}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${["orderking", "home", "design", "b2b"].includes(activeWorldId)
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                ["orderking", "home", "design", "b2b"].includes(activeWorldId)
                   ? "bg-amber-500 text-slate-950 font-black shadow-xs"
                   : "text-slate-400 hover:text-white"
-                }`}
+              }`}
             >
               <span>🍔</span>
               <span>OrderKing Food Delivery</span>
@@ -2477,10 +2481,11 @@ function UmarOSDashboard() {
             <button
               type="button"
               onClick={() => selectWorld("kingpay", "dashboard")}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${["kingpay", "travel"].includes(activeWorldId)
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                ["kingpay", "travel"].includes(activeWorldId)
                   ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
                   : "text-slate-400 hover:text-white"
-                }`}
+              }`}
             >
               <span>💳</span>
               <span>KingPay Fintech & Travel</span>
@@ -2488,10 +2493,11 @@ function UmarOSDashboard() {
             <button
               type="button"
               onClick={() => selectWorld("umarai", "dashboard")}
-              className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${activeWorldId === "umarai"
+              className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${
+                activeWorldId === "umarai"
                   ? "bg-sky-500 text-slate-950 font-black shadow-xs"
                   : "text-slate-400 hover:text-white"
-                }`}
+              }`}
             >
               <span>🤖</span>
               <span>Umar AI</span>
@@ -2499,10 +2505,11 @@ function UmarOSDashboard() {
             <button
               type="button"
               onClick={() => selectWorld("settings", "dashboard")}
-              className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${["connections", "alerts", "settings"].includes(activeWorldId)
+              className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${
+                ["connections", "alerts", "settings"].includes(activeWorldId)
                   ? "bg-slate-700 text-white font-black shadow-xs"
                   : "text-slate-400 hover:text-white"
-                }`}
+              }`}
             >
               <span>⚙️</span>
               <span>Settings</span>
@@ -2578,10 +2585,11 @@ function UmarOSDashboard() {
               <button
                 type="button"
                 onClick={() => selectSubTab("dashboard")}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors ${currentTabId === "dashboard"
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors ${
+                  currentTabId === "dashboard"
                     ? "bg-slate-900 text-white border-slate-900"
                     : "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200"
-                  }`}
+                }`}
               >
                 Dashboard
               </button>
@@ -2604,10 +2612,11 @@ function UmarOSDashboard() {
                   key={tab.id}
                   type="button"
                   onClick={() => selectSubTab(tab.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${active
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    active
                       ? "bg-emerald-600 text-white shadow-xs"
                       : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                    }`}
+                  }`}
                 >
                   {tab.label}
                 </button>
@@ -2634,1771 +2643,1825 @@ function UmarOSDashboard() {
             <div
               className="world-stage-transition space-y-5"
             >
-              {/* ===================================================================
+            {/* ===================================================================
                 TAB 1 OF EVERY WORLD: 📊 WORLD DASHBOARD (ACTIONS & RESULTS)
                 - Box 1: Live Result (What is happening now)
                 - Box 2: Action Needed (What to do next)
                 - Box 3: Quick Settings & Customizations (Save to PostgreSQL)
             =================================================================== */}
-              {currentTabId === "dashboard" && (
-                <div className="space-y-5">
-                  {/* BOX 1: LIVE RESULT (What is happening now) */}
-                  <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
-                          Overview
-                        </span>
-                        <h2 className="text-base font-black text-slate-900 mt-1.5">
-                          {currentWorld.navLabel} Overview
-                        </h2>
-                      </div>
-                      <span className="text-xs text-slate-500 font-medium">
-                        Live Data
-                      </span>
-                    </div>
+        {currentTabId === "dashboard" && (
+          <div className="space-y-5">
+            {/* BOX 1: LIVE RESULT (What is happening now) */}
+            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                    Overview
+                  </span>
+                  <h2 className="text-base font-black text-slate-900 mt-1.5">
+                    {currentWorld.navLabel} Overview
+                  </h2>
+                </div>
+                <span className="text-xs text-slate-500 font-medium">
+                  Live Data
+                </span>
+              </div>
 
-                    {activeWorldId === "home" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Customers Registered"
-                          value={String(loaderData.users)}
-                          sub="Registered accounts"
-                        />
-                        <ResultMetricCard
-                          label="Active Restaurants"
-                          value={String(loaderData.restaurants)}
-                          sub={`${pendingUnapproved.length} pending approval`}
-                        />
-                        <ResultMetricCard
-                          label="Verified Delivery Riders"
-                          value={String(loaderData.riders)}
-                          sub="Active fleet"
-                        />
-                        <ResultMetricCard
-                          label="Total Orders"
-                          value={String(loaderData.todayOrders)}
-                          sub="Today's orders"
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "orderking" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Live Orders"
-                          value={String(loaderData.todayOrders)}
-                          sub={`Base Delivery Fee: ₹${currentSettings.baseDeliveryFeeInr}`}
-                        />
-                        <ResultMetricCard
-                          label="Restaurants"
-                          value={String(loaderData.restaurants)}
-                          sub={`${pendingUnapproved.length} waiting for approval`}
-                        />
-                        <ResultMetricCard
-                          label="Delivery Riders"
-                          value={String(loaderData.riders)}
-                          sub={`Base Pay: ₹${currentSettings.riderPerOrderBasePayInr}/order`}
-                        />
-                        <ResultMetricCard
-                          label="Customers"
-                          value={String(loaderData.users)}
-                          sub={`Free delivery above ₹${currentSettings.freeDeliveryAboveInr}`}
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "kingpay" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Restaurant Commission"
-                          value={`${currentSettings.restaurantCommissionPct}%`}
-                          sub="Saved in King Pay settings"
-                        />
-                        <ResultMetricCard
-                          label="Customer Platform Fee"
-                          value={`₹${currentSettings.customerPlatformFeeInr}`}
-                          sub="Transparent checkout fee"
-                        />
-                        <ResultMetricCard
-                          label="Payout Speed"
-                          value={
-                            currentSettings.instantT0Payouts ? "Instant (T+0)" : "T+1"
-                          }
-                          sub="Direct partner settlement"
-                        />
-                        <ResultMetricCard
-                          label="Statutory Tax Split"
-                          value={
-                            currentSettings.autoGstSec95Split
-                              ? "5% GST + 0.1% TDS"
-                              : "Manual"
-                          }
-                          sub="Sec 9(5) & Sec 194-O ready"
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "travel" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Travel Affiliate Hub"
-                          value={
-                            currentSettings.enableTravelTabInCustomerApp
-                              ? "Active"
-                              : "Paused"
-                          }
-                          sub="Flights, Hotels, IRCTC & Buses"
-                        />
-                        <ResultMetricCard
-                          label="Affiliate Commission"
-                          value={`${currentSettings.flightAffiliateMarkupPct || 1.5}% / ${currentSettings.hotelAffiliateCommissionPct || 6}%`}
-                          sub="Flight Markup & Hotel Share"
-                        />
-                        <ResultMetricCard
-                          label="Saved Itineraries"
-                          value={`${savedTrips.length} Bookings`}
-                          sub={`${savedTrips.filter((t) => t.mode.includes("Flight")).length} Flights · ${savedTrips.filter((t) => t.mode.includes("Train")).length} Trains`}
-                        />
-                        <ResultMetricCard
-                          label="Jobs & Spoken Tutor"
-                          value={`${localJobs.length} Jobs · ${completedLessons.length}/4 Done`}
-                          sub="Local hiring & 23-lang audio"
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "b2b" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Active B2B CRM Leads"
-                          value={String(b2bLeads.length)}
-                          sub="Saved in 15-Stage CRM"
-                        />
-                        <ResultMetricCard
-                          label="Monthly SaaS Plan"
-                          value={`₹${currentSettings.monthlySaasFeeInr}/mo`}
-                          sub="Direct B2B restaurant plan"
-                        />
-                        <ResultMetricCard
-                          label="Franchise Revenue Share"
-                          value={`${currentSettings.cityFranchiseRevenueSharePct}%`}
-                          sub="City franchise operator share"
-                        />
-                        <ResultMetricCard
-                          label="Online Applications"
-                          value={
-                            currentSettings.enableSelfServeFranchiseApply
-                              ? "Open"
-                              : "Closed"
-                          }
-                          sub="Territory onboarding engine"
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "umarai" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Specialist AI Teams"
-                          value="16 Teams"
-                          sub="All 16 platform modules active"
-                        />
-                        <ResultMetricCard
-                          label="AI Commands Run"
-                          value={String(aiHistory.length)}
-                          sub="Logged in PostgreSQL"
-                        />
-                        <ResultMetricCard
-                          label="Human Approval Limit"
-                          value={`Above ₹${currentSettings.aiRequireFounderApprovalAboveInr}`}
-                          sub="Founder safety guardrail"
-                        />
-                        <ResultMetricCard
-                          label="AI Routing Mode"
-                          value={String(currentSettings.preferredAiMode).split(" ")[0]}
-                          sub={String(currentSettings.preferredAiMode)}
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "design" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Customer App Theme"
-                          value={
-                            String(currentSettings.customerAppTheme).split(" ")[0]
-                          }
-                          sub={String(currentSettings.customerAppTheme)}
-                        />
-                        <ResultMetricCard
-                          label="Pure-Veg / Non-Veg Badges"
-                          value={
-                            currentSettings.showVegNonVegFilterBadge ? "ON" : "OFF"
-                          }
-                          sub="FSSAI dietary labels"
-                        />
-                        <ResultMetricCard
-                          label="Live Kitchen Timer"
-                          value={
-                            currentSettings.showLiveOrderPrepTimer ? "ON" : "OFF"
-                          }
-                          sub="Shown on customer order page"
-                        />
-                        <ResultMetricCard
-                          label="Creative Studios"
-                          value="4 Studios"
-                          sub="App, Design, Video & Social"
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "connections" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Payment Gateway"
-                          value={
-                            String(currentSettings.primaryPaymentGateway).split(" ")[0]
-                          }
-                          sub={String(currentSettings.primaryPaymentGateway)}
-                        />
-                        <ResultMetricCard
-                          label="OTP Priority"
-                          value={
-                            String(currentSettings.otpChannelPriority).split(" ")[0]
-                          }
-                          sub={String(currentSettings.otpChannelPriority)}
-                        />
-                        <ResultMetricCard
-                          label="Delivery Radius"
-                          value={`${currentSettings.maxDeliveryRadiusKm} km`}
-                          sub="Default zone coverage"
-                        />
-                        <ResultMetricCard
-                          label="Customer Phone Masking"
-                          value={
-                            currentSettings.enableCustomerPhoneMasking
-                              ? "Protected"
-                              : "Off"
-                          }
-                          sub="DPDP Act 2023 privacy"
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "alerts" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Open Action Alerts"
-                          value={String(activeUnresolvedAlerts.length)}
-                          sub="Real database + founder alerts"
-                        />
-                        <ResultMetricCard
-                          label="Pending Kitchen KYC"
-                          value={String(pendingUnapproved.length)}
-                          sub="Waiting in `restaurants` table"
-                        />
-                        <ResultMetricCard
-                          label="Fair Partner Protection"
-                          value={
-                            currentSettings.zeroAutoSuspensionPolicy
-                              ? "Protected"
-                              : "Manual"
-                          }
-                          sub="Zero unfair auto-blocking"
-                        />
-                        <ResultMetricCard
-                          label="FSSAI Renewal Grace"
-                          value={`${currentSettings.fssaiRenewalGraceDays} Days`}
-                          sub="FoSCoS renewal window"
-                        />
-                      </div>
-                    )}
-
-                    {activeWorldId === "settings" && (
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResultMetricCard
-                          label="Total Separated Worlds"
-                          value="10 Worlds"
-                          sub="All customizable & persisted"
-                        />
-                        <ResultMetricCard
-                          label="Supported Languages"
-                          value="10 Languages"
-                          sub={String(currentSettings.defaultPlatformLanguage)}
-                        />
-                        <ResultMetricCard
-                          label="Tax Compliance Mode"
-                          value={
-                            currentSettings.strictStatutoryTaxMode ? "Active" : "Basic"
-                          }
-                          sub="CGST Sec 9(5) & TDS 194-O"
-                        />
-                        <ResultMetricCard
-                          label="Database Storage"
-                          value="PostgreSQL"
-                          sub="Platform configuration"
-                        />
-                      </div>
-                    )}
-                  </section>
-
-                  {/* BOX 2: ACTION NEEDED (What to do next) */}
-                  <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
-                          Actions Needed
-                        </span>
-                        <h2 className="text-base font-black text-slate-900 mt-1.5">
-                          Action Items for {currentWorld.navLabel}
-                        </h2>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {activeWorldId === "home" && (
-                        <>
-                          <ActionCard
-                            title={
-                              pendingUnapproved.length > 0
-                                ? `Approve ${pendingUnapproved.length} Pending Restaurant(s)`
-                                : "Manage Restaurant Partners"
-                            }
-                            description={
-                              pendingUnapproved.length > 0
-                                ? `${pendingUnapproved[0].name} is waiting for your 1-click approval.`
-                                : "Open the OrderKing Restaurants tab to view or onboard kitchens."
-                            }
-                            buttonLabel="Open Restaurants"
-                            onClick={() => selectWorld("orderking", "restaurants")}
-                            urgent={pendingUnapproved.length > 0}
-                          />
-                          <ActionCard
-                            title="Review Delivery Fees & Commissions"
-                            description={`Current delivery fee is ₹${worldSettings.orderking.baseDeliveryFeeInr} and restaurant commission is ${worldSettings.kingpay.restaurantCommissionPct}%.`}
-                            buttonLabel="Open King Pay Pricing"
-                            onClick={() => selectWorld("kingpay", "commissions")}
-                          />
-                          <ActionCard
-                            title="Check Real-Time Alerts"
-                            description={`${activeUnresolvedAlerts.length} real operational alert(s) currently open in your 6-Tier Action Center.`}
-                            buttonLabel="Open Alerts Center"
-                            onClick={() => selectWorld("alerts", "action-center")}
-                            urgent={activeUnresolvedAlerts.length > 0}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "orderking" && (
-                        <>
-                          <ActionCard
-                            title={
-                              pendingUnapproved.length > 0
-                                ? `Approve ${pendingUnapproved.length} Pending Kitchen(s)`
-                                : "View All Restaurants"
-                            }
-                            description="Approve pending restaurant applications directly in PostgreSQL."
-                            buttonLabel="Go to Restaurants Tab"
-                            onClick={() => selectSubTab("restaurants")}
-                            urgent={pendingUnapproved.length > 0}
-                          />
-                          <ActionCard
-                            title="Configure Dispatch & Rain Bonus"
-                            description={`Rider base pay is ₹${currentSettings.riderPerOrderBasePayInr} + ₹${currentSettings.rainBonusInr} rain bonus.`}
-                            buttonLabel="Tune Dispatch Rules"
-                            onClick={() => selectSubTab("dispatch")}
-                          />
-                          <ActionCard
-                            title="Inspect Live Order Pipeline"
-                            description="Check the 6-stage order fulfillment flow and recent PostgreSQL orders."
-                            buttonLabel="View Live Orders"
-                            onClick={() => selectSubTab("orders")}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "kingpay" && (
-                        <>
-                          <ActionCard
-                            title="View Live Profit & Escrow Split"
-                            description="Inspect net founder margin, partner payouts, and GST/TDS tax buckets."
-                            buttonLabel="Open Profit Dashboard"
-                            onClick={() => selectSubTab("profit")}
-                          />
-                          <ActionCard
-                            title="Set MDR & Convenience Fees"
-                            description="Update payment gateway MDR percentage and auto-refund threshold."
-                            buttonLabel="Open Wallet & MDR Fees"
-                            onClick={() => selectSubTab("wallet-mdr")}
-                          />
-                          <ActionCard
-                            title="Adjust Commission Slabs"
-                            description="Configure fair restaurant commissions and delivery pricing tiers."
-                            buttonLabel="Open Commissions"
-                            onClick={() => selectSubTab("commissions")}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "travel" && (
-                        <>
-                          <ActionCard
-                            title="Travel Provider Orchestration"
-                            description="Search live flight & Indian Rail routes, monitor provider quotes, and calculate affiliate revenue."
-                            buttonLabel="Open Travel Orchestrator"
-                            onClick={() => selectSubTab("travel-hub")}
-                          />
-                          <ActionCard
-                            title="Manage Saved Trips & PNRs"
-                            description={`Track ${savedTrips.length} active customer booking(s) with 1-click live PNR status verification.`}
-                            buttonLabel="Open My Trips"
-                            onClick={() => selectSubTab("my-trips")}
-                          />
-                          <ActionCard
-                            title="Post Jobs & Spoken English Tutor"
-                            description={`${localJobs.length} active job opening(s) and 10-language voice hospitality lessons for fleet.`}
-                            buttonLabel="Open Jobs & Tutor"
-                            onClick={() => selectSubTab("jobs")}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "b2b" && (
-                        <>
-                          <ActionCard
-                            title="Generate B2B Sales Deck & ROI"
-                            description="Show restaurant owners how much they save with OrderKing vs high commissions."
-                            buttonLabel="Open ROI Calculator"
-                            onClick={() => selectSubTab("sales-deck")}
-                          />
-                          <ActionCard
-                            title="Onboard City Franchise Partner"
-                            description="Set up city territory rights, revenue share, and partner onboarding steps."
-                            buttonLabel="Open Franchise Engine"
-                            onClick={() => selectSubTab("franchise")}
-                          />
-                          <ActionCard
-                            title="Add & Track B2B Client Leads"
-                            description={`You have ${b2bLeads.length} lead(s) in your 15-Stage B2B CRM pipeline.`}
-                            buttonLabel="Open 15-Stage CRM"
-                            onClick={() => selectSubTab("crm-pipeline")}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "umarai" && (
-                        <>
-                          <ActionCard
-                            title="Give UMAR AI a Plain-English Command"
-                            description="Type a simple instruction or run a 1-click preset command."
-                            buttonLabel="Ask UMAR AI"
-                            onClick={() => selectSubTab("ask-ai")}
-                          />
-                          <ActionCard
-                            title="Review All 16 Specialist Teams"
-                            description="See what each of the 16 specialist platform teams does and jump to its tool."
-                            buttonLabel="View 16 Specialist Teams"
-                            onClick={() => selectSubTab("teams")}
-                          />
-                          <ActionCard
-                            title="Compare AI Model Speed & Cost"
-                            description="Check latency and accuracy across AI models powering menu OCR and support."
-                            buttonLabel="Open Model Benchmarks"
-                            onClick={() => selectSubTab("benchmarks")}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "design" && (
-                        <>
-                          <ActionCard
-                            title="Customize Customer App Look"
-                            description="Update brand colors, layout cards, and checkout appearance."
-                            buttonLabel="Open App Look & Theme"
-                            onClick={() => selectSubTab("app-look")}
-                          />
-                          <ActionCard
-                            title="Publish Home Banners & Offers"
-                            description="Manage promotional banners and festival announcements on the Customer App."
-                            buttonLabel="Open Banners CMS"
-                            onClick={() => selectSubTab("banners")}
-                          />
-                          <ActionCard
-                            title="Create Dish Posters & Videos"
-                            description="Use the built-in Design, Video, and Social studios for marketing."
-                            buttonLabel="Open Design Studio"
-                            onClick={() => selectSubTab("design-studio")}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "connections" && (
-                        <>
-                          <ActionCard
-                            title="Connect Payment, SMS & AI Keys"
-                            description="Configure Razorpay/UPI gateways, WhatsApp OTP, and AI API keys."
-                            buttonLabel="Open Plugin Keys"
-                            onClick={() => selectSubTab("plugins")}
-                          />
-                          <ActionCard
-                            title="Inspect Live Delivery Zones Map"
-                            description="View city delivery coverage, active pins, and zone boundaries."
-                            buttonLabel="Open Delivery Map"
-                            onClick={() => selectSubTab("map-zones")}
-                          />
-                          <ActionCard
-                            title="Set Delivery Radius & Privacy"
-                            description={`Current radius is ${currentSettings.maxDeliveryRadiusKm} km with customer phone masking enabled.`}
-                            buttonLabel="Customize Connections"
-                            onClick={() => selectSubTab("settings")}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "alerts" && (
-                        <>
-                          <ActionCard
-                            title="Triage Live 6-Tier Alerts"
-                            description={`${activeUnresolvedAlerts.length} unresolved alert(s) from your PostgreSQL database and operations.`}
-                            buttonLabel="Open 6-Tier Action Center"
-                            onClick={() => selectSubTab("action-center")}
-                            urgent={activeUnresolvedAlerts.length > 0}
-                          />
-                          <ActionCard
-                            title="Log a New Operational Alert"
-                            description="Record an issue or reminder under Emergency, Danger, Critical, High, Medium, or Low."
-                            buttonLabel="Log New Alert"
-                            onClick={() => selectSubTab("create-alert")}
-                          />
-                          <ActionCard
-                            title="Review Fair Partner Protection"
-                            description="Ensure restaurants and riders receive helpful advisories instead of unfair blocks."
-                            buttonLabel="View Protection Rules"
-                            onClick={() => selectSubTab("fair-policy")}
-                          />
-                        </>
-                      )}
-
-                      {activeWorldId === "settings" && (
-                        <>
-                          <ActionCard
-                            title="Edit All 10 Worlds in One Place"
-                            description="Review and save customizations for every World from the Master Controls tab."
-                            buttonLabel="Open All 10 Worlds Controls"
-                            onClick={() => selectSubTab("all-worlds")}
-                          />
-                          <ActionCard
-                            title="Configure 10 Indian Languages"
-                            description="Enable native script and voice support across all 10 benchmark languages."
-                            buttonLabel="Open 10 Languages"
-                            onClick={() => selectSubTab("languages")}
-                          />
-                          <ActionCard
-                            title="Open Full Platform Settings Page"
-                            description="Need the dedicated standalone settings route? Open `/settings` anytime."
-                            buttonLabel="View Activity Log"
-                            onClick={() => selectSubTab("activity-log")}
-                          />
-                        </>
-                      )}
-                    </div>
-                  </section>
-
-                  {/* Travel World Live Provider Orchestration inside Dashboard */}
-                  {activeWorldId === "travel" && (
-                    <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                        <div>
-                          <h2 className="text-base font-black text-slate-900">
-                            ✈️ Live Travel Provider Orchestration &amp; Affiliate Commission Engine
-                          </h2>
-                          <p className="text-xs text-slate-600">
-                            Real-time inventory lookup and provider handoff with 0% balance-sheet inventory risk.
-                          </p>
-                        </div>
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          Live Engine Ready
-                        </span>
-                      </div>
-                      <Suspense
-                        fallback={
-                          <WorldSuspenseShield
-                            worldTitle="Travel Provider Orchestration"
-                            emoji="✈️"
-                          />
-                        }
-                      >
-                        <TravelPage />
-                      </Suspense>
-                    </section>
-                  )}
-
-                  {/* BOX 3: QUICK SETTINGS & CUSTOMIZATIONS (Wired to PostgreSQL `saveUmarOsSettingsFn` + `localStorage`) */}
-                  <WorldSettingsPanel
-                    world={currentWorld}
-                    values={currentSettings}
-                    onChange={(key, val) => updateField(currentWorld.id, key, val)}
-                    onSave={() => handleSaveWorldSettings(currentWorld.id)}
-                    isSaving={savingWorldId === currentWorld.id}
-                    boxTitle={`Settings — ${currentWorld.navLabel}`}
+              {activeWorldId === "home" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Customers Registered"
+                    value={String(loaderData.users)}
+                    sub="Registered accounts"
+                  />
+                  <ResultMetricCard
+                    label="Active Restaurants"
+                    value={String(loaderData.restaurants)}
+                    sub={`${pendingUnapproved.length} pending approval`}
+                  />
+                  <ResultMetricCard
+                    label="Verified Delivery Riders"
+                    value={String(loaderData.riders)}
+                    sub="Active fleet"
+                  />
+                  <ResultMetricCard
+                    label="Total Orders"
+                    value={String(loaderData.todayOrders)}
+                    sub="Today's orders"
                   />
                 </div>
               )}
 
-              {/* ===================================================================
-            LAST TAB OF EVERY WORLD: ⚙️ WORLD SETTINGS & CUSTOMIZATIONS
-        =================================================================== */}
-              {currentTabId === "settings" && (
-                <WorldSettingsPanel
-                  world={currentWorld}
-                  values={currentSettings}
-                  onChange={(key, val) => updateField(currentWorld.id, key, val)}
-                  onSave={() => handleSaveWorldSettings(currentWorld.id)}
-                  isSaving={savingWorldId === currentWorld.id}
-                  boxTitle={`Settings — ${currentWorld.title}`}
-                />
-              )}
-
-              {/* ===================================================================
-            WORLD 1 (`home`) SUB-CATEGORY TABS
-        =================================================================== */}
-              {activeWorldId === "home" && currentTabId === "worlds-map" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        All Platform Sections
-                      </h2>
-                      <p className="text-xs text-slate-600">
-                        Click any World below (or on the bottom navigation bar) to open
-                        only that World on screen.
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      <Link
-                        to="/app/$module"
-                        params={{ module: "ceo" }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
-                      >
-                        /ceo Brief
-                      </Link>
-                      <Link
-                        to="/app/$module"
-                        params={{ module: "orders" }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
-                      >
-                        /orders
-                      </Link>
-                      <Link
-                        to="/app/$module"
-                        params={{ module: "restaurants" }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
-                      >
-                        /restaurants
-                      </Link>
-                      <Link
-                        to="/app/$module"
-                        params={{ module: "riders" }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
-                      >
-                        /riders
-                      </Link>
-                      <Link
-                        to="/app/$module"
-                        params={{ module: "finance" }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
-                      >
-                        /finance
-                      </Link>
-                      <Link
-                        to="/app/$module"
-                        params={{ module: "b2b-crm" }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
-                      >
-                        /b2b-crm
-                      </Link>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
-                    {TEN_WORLDS.map((w) => (
-                      <div
-                        key={w.id}
-                        className="rounded-xl border border-slate-200 p-4 bg-slate-50/70 hover:bg-white hover:border-emerald-500 transition-all flex flex-col justify-between gap-3"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-2xl">{w.emoji}</span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
-                              World {w.number}
-                            </span>
-                          </div>
-                          <h3 className="font-black text-sm text-slate-900 mt-2">
-                            {w.navLabel}
-                          </h3>
-                          <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                            {w.explanation}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => selectWorld(w.id, "dashboard")}
-                          className="w-full py-2 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold transition-colors"
-                        >
-                          Open {w.navLabel} →
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {activeWorldId === "home" && currentTabId === "checklist" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <h2 className="text-base font-black text-slate-900">
-                    ✅ Today's Founder Action Checklist
-                  </h2>
-                  <div className="space-y-2.5">
-                    {[
-                      {
-                        key: "review_db_counts",
-                        label: `Verify live PostgreSQL counts (${loaderData.restaurants} Restaurants, ${loaderData.riders} Riders, ${loaderData.todayOrders} Orders)`,
-                      },
-                      {
-                        key: "verify_commission_rate",
-                        label: `Confirm Restaurant Commission (${worldSettings.kingpay.restaurantCommissionPct}%) & Base Delivery Fee (₹${worldSettings.orderking.baseDeliveryFeeInr})`,
-                      },
-                      {
-                        key: "check_payment_keys",
-                        label:
-                          "Verify Payment Gateway & WhatsApp OTP keys in World 8 (Connections)",
-                      },
-                      {
-                        key: "review_alerts",
-                        label: `Review ${activeUnresolvedAlerts.length} open operational alert(s) in World 9 (Alerts)`,
-                      },
-                    ].map((item) => {
-                      const checked = !!checklistDone[item.key];
-                      return (
-                        <label
-                          key={item.key}
-                          className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer hover:bg-slate-100"
-                        >
-                          <div className="flex items-center gap-3">
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() =>
-                                setChecklistDone((prev) => ({
-                                  ...prev,
-                                  [item.key]: !checked,
-                                }))
-                              }
-                              className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                            />
-                            <span
-                              className={`text-xs md:text-sm font-bold ${checked
-                                  ? "line-through text-slate-400"
-                                  : "text-slate-900"
-                                }`}
-                            >
-                              {item.label}
-                            </span>
-                          </div>
-                          <span className="text-[11px] font-bold text-emerald-700">
-                            {checked ? "Done" : "Pending"}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </section>
-              )}
-
-              {activeWorldId === "home" && currentTabId === "legal" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <div>
-                    <h2 className="text-base font-black text-slate-900">
-                      🛡️ Indian Statutory & Tax Compliance Protection
-                    </h2>
-                    <p className="text-xs text-slate-600 mt-0.5">
-                      Built-in compliance across food safety, GST, income tax, gig
-                      worker welfare, and customer data privacy.
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[
-                      {
-                        title: "FSSAI Food Safety Act, 2006",
-                        badge: "14-Digit FoSCoS Verified",
-                        desc: "Every restaurant partner must hold a valid 14-digit FSSAI license, with a 14-day renewal grace period so active kitchens are not unfairly interrupted.",
-                      },
-                      {
-                        title: "CGST Act, 2017 · Section 9(5)",
-                        badge: "5% ECO Restaurant GST",
-                        desc: "5% restaurant service GST is automatically separated at checkout and remitted by the E-Commerce Operator with clear HSN/SAC tax invoices.",
-                      },
-                      {
-                        title: "Income Tax Act, 1961 · Section 194-O",
-                        badge: "0.1% TDS Ledger",
-                        desc: "Automated 0.1% TDS accounting and Form 16A reconciliation for eligible gross restaurant partner sales.",
-                      },
-                      {
-                        title: "Code on Social Security, 2020",
-                        badge: "Gig Rider Welfare",
-                        desc: "Supports e-Shram registration, accidental insurance coverage, transparent per-order + rain payouts, and emergency SOS support.",
-                      },
-                      {
-                        title: "IT Act, 2000 & DPDP Act, 2023",
-                        badge: "Customer Phone Masking",
-                        desc: "Customer phone numbers are masked during delivery calls and customer lists are never sold to third-party ad brokers.",
-                      },
-                      {
-                        title: "RBI Nodal Split Settlement Norms",
-                        badge: "T+0 Escrow Split",
-                        desc: "Clean split of every order payment into Restaurant Payout, Rider Fee, Statutory Tax Bucket, and Platform Margin.",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.title}
-                        className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
-                      >
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 inline-block">
-                          {item.badge}
-                        </span>
-                        <h3 className="text-sm font-black text-slate-900">
-                          {item.title}
-                        </h3>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          {item.desc}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-2">
-                    <GigWorkerComplianceCenter />
-                  </div>
-                </section>
-              )}
-
-              {/* ===================================================================
-            WORLD 2 (`orderking`) SUB-CATEGORY TABS
-        =================================================================== */}
-              {activeWorldId === "orderking" && currentTabId === "orders" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        🍔 Live Orders & 6-Stage Delivery Flow ({loaderData.todayOrders}{" "}
-                        Total Orders)
-                      </h2>
-                      <p className="text-xs text-slate-600">
-                        Every order moves through 6 clear steps from customer checkout
-                        to instant partner payout.
-                      </p>
-                    </div>
-                    <Link
-                      to="/app/$module"
-                      params={{ module: "orders" }}
-                      className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
-                    >
-                      <span>Open Full Orders Console (/orders)</span>
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                    {[
-                      {
-                        step: "1. Checkout",
-                        desc: "Customer pays transparent item price + GST + delivery fee.",
-                      },
-                      {
-                        step: "2. Kitchen Accepts",
-                        desc: "Restaurant accepts order on KDS and sets prep time.",
-                      },
-                      {
-                        step: "3. 80% Ready Dispatch",
-                        desc: "Rider is assigned so they arrive right as food is packed.",
-                      },
-                      {
-                        step: "4. Tamper-Seal Pickup",
-                        desc: "Rider verifies sealed package at restaurant counter.",
-                      },
-                      {
-                        step: "5. Doorstep Handover",
-                        desc: "Rider delivers order with 10-language voice guidance.",
-                      },
-                      {
-                        step: "6. Instant Payout",
-                        desc: "Restaurant and rider earnings settle immediately.",
-                      },
-                    ].map((st) => (
-                      <div
-                        key={st.step}
-                        className="p-3.5 rounded-xl bg-slate-900 text-white border border-slate-800"
-                      >
-                        <p className="text-xs font-black text-emerald-400">
-                          {st.step}
-                        </p>
-                        <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                          {st.desc}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {loaderData.recentOrders.length === 0 ? (
-                    <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                      <p className="text-sm font-bold text-slate-800">
-                        0 Orders in PostgreSQL `orders` Table Right Now
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        As soon as customers place orders, real order rows will appear
-                        here automatically.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {loaderData.recentOrders.map((ord) => (
-                        <div
-                          key={ord.id}
-                          className="p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
-                        >
-                          <span className="font-bold text-slate-900">
-                            Order #{ord.id}
-                          </span>
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold">
-                            {ord.status}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {activeWorldId === "orderking" && currentTabId === "restaurants" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        🏪 Restaurant Partners ({loaderData.restaurants} Total ·{" "}
-                        {pendingUnapproved.length} Pending Approval)
-                      </h2>
-                      <p className="text-xs text-slate-600">
-                        Approve pending kitchens in 1 click (`UPDATE restaurants SET
-                        status = 'ACTIVE'`) or open the full restaurants console.
-                      </p>
-                    </div>
-                    <Link
-                      to="/app/$module"
-                      params={{ module: "restaurants" }}
-                      className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
-                    >
-                      <span>Open Full Restaurants Console (/restaurants)</span>
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-
-                  {loaderData.pendingRestaurants.length === 0 ? (
-                    <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                      <CheckCircle2 className="h-7 w-7 text-emerald-600 mx-auto mb-2" />
-                      <p className="text-sm font-bold text-slate-900">
-                        All Pending Restaurant Applications Are Cleared
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        There are 0 restaurants with `status = 'PENDING'` in
-                        PostgreSQL right now.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2.5">
-                      {loaderData.pendingRestaurants.map((rest) => {
-                        const isApproved = approvedIds.includes(rest.id);
-                        return (
-                          <div
-                            key={rest.id}
-                            className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3"
-                          >
-                            <div>
-                              <p className="text-sm font-black text-slate-900">
-                                {rest.name}
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                ID: {rest.id} · Status:{" "}
-                                {isApproved ? "ACTIVE" : rest.status}
-                              </p>
-                            </div>
-                            {isApproved ? (
-                              <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1">
-                                <CheckCircle2 className="h-3.5 w-3.5" /> Approved in
-                                PostgreSQL
-                              </span>
-                            ) : (
-                              <button
-                                type="button"
-                                disabled={approvingId === rest.id}
-                                onClick={() => handleApproveRestaurant(rest)}
-                                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition-colors"
-                              >
-                                {approvingId === rest.id
-                                  ? "Approving..."
-                                  : "Approve Restaurant"}
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {activeWorldId === "orderking" && currentTabId === "riders" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        🛵 Delivery Rider Fleet ({loaderData.riders} Verified Riders)
-                      </h2>
-                      <p className="text-xs text-slate-600">
-                        Base payout: ₹{currentSettings.riderPerOrderBasePayInr}/order +
-                        ₹{currentSettings.rainBonusInr} rain bonus · Code on Social
-                        Security 2020 welfare enabled.
-                      </p>
-                    </div>
-                    <Link
-                      to="/app/$module"
-                      params={{ module: "riders" }}
-                      className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
-                    >
-                      <span>Open Full Riders Console (/riders)</span>
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-
-                  {loaderData.recentRiders.length === 0 ? (
-                    <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                      <p className="text-sm font-bold text-slate-800">
-                        0 Riders in PostgreSQL `riders` Table
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Use `/riders` or World 4 Jobs Board to onboard your first
-                        delivery riders.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {loaderData.recentRiders.map((r) => (
-                        <div
-                          key={r.id}
-                          className="p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
-                        >
-                          <span className="font-bold text-slate-900">
-                            {r.name || r.id}
-                          </span>
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold">
-                            {r.status}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {activeWorldId === "orderking" && currentTabId === "customers" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <h2 className="text-base font-black text-slate-900">
-                    👥 Registered Customers ({loaderData.users} Accounts in
-                    PostgreSQL)
-                  </h2>
-                  <p className="text-xs text-slate-600">
-                    Customer accounts are stored in the PostgreSQL `profiles` table
-                    with DPDP Act 2023 phone masking and zero third-party data resale.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <ResultMetricCard
-                      label="Total Customer Profiles"
-                      value={String(loaderData.users)}
-                      sub="PostgreSQL `profiles`"
-                    />
-                    <ResultMetricCard
-                      label="Free Delivery Threshold"
-                      value={`₹${currentSettings.freeDeliveryAboveInr}`}
-                      sub="Configured in OrderKing Settings"
-                    />
-                    <ResultMetricCard
-                      label="Phone Number Privacy"
-                      value="Masked"
-                      sub="DPDP Act 2023 Compliant"
-                    />
-                  </div>
-                </section>
-              )}
-
-              {activeWorldId === "orderking" && currentTabId === "dispatch" && (
-                <AlgorithmSettings />
-              )}
-
-              {/* ===================================================================
-            WORLD 3 (`kingpay`) SUB-CATEGORY TABS
-        =================================================================== */}
-              {activeWorldId === "kingpay" && currentTabId === "profit" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Live Founder Profit Dashboard"
-                      emoji="📈"
-                    />
-                  }
-                >
-                  <LiveFounderProfitDashboard />
-                </Suspense>
-              )}
-
-              {activeWorldId === "kingpay" && currentTabId === "wallet-mdr" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="King Pay Wallet & MDR Settings"
-                      emoji="🏦"
-                    />
-                  }
-                >
-                  <KingPayGlobalSettings />
-                </Suspense>
-              )}
-
-              {activeWorldId === "kingpay" && currentTabId === "master-switch" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="King Pay Master Safety Switch"
-                      emoji="🔒"
-                    />
-                  }
-                >
-                  <KingPayMasterSwitch />
-                </Suspense>
-              )}
-
-              {activeWorldId === "kingpay" && currentTabId === "commissions" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Central Commissions & Pricing Switch"
-                      emoji="🏷️"
-                    />
-                  }
-                >
-                  <CentralPricingSwitch />
-                </Suspense>
-              )}
-
-              {/* ===================================================================
-            WORLD 4 (`travel`) SUB-CATEGORY TABS
-        =================================================================== */}
-              {activeWorldId === "travel" && currentTabId === "travel-hub" && (
-                <div className="space-y-5">
-                  <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                      <div>
-                        <h2 className="text-base font-black text-slate-900">
-                          ✈️ Travel Affiliate Hub & Provider Orchestration
-                        </h2>
-                        <p className="text-xs text-slate-600">
-                          Earn affiliate commissions on customer travel bookings without holding inventory or balance-sheet risk.
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          Affiliate Engine Active
-                        </span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {[
-                        {
-                          mode: "✈️ Flights",
-                          partner: "Domestic & International Flight Search",
-                          share: `${currentSettings.flightAffiliateMarkupPct || 1.5}% Affiliate Fee`,
-                        },
-                        {
-                          mode: "🏨 Hotels & Stays",
-                          partner: "Pan-India Budget & Business Hotels",
-                          share: `${currentSettings.hotelAffiliateCommissionPct || 6}% Partner Commission`,
-                        },
-                        {
-                          mode: "🚆 Trains (IRCTC Rail)",
-                          partner: "Authorized Rail Partner Redirect",
-                          share: "Zero Hidden Markup",
-                        },
-                        {
-                          mode: "🚌 Intercity Buses",
-                          partner: "AC Sleeper & State Bus Aggregator",
-                          share: "Instant Seat Confirmation",
-                        },
-                      ].map((item) => (
-                        <div
-                          key={item.mode}
-                          className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
-                        >
-                          <h3 className="text-sm font-black text-slate-900">
-                            {item.mode}
-                          </h3>
-                          <p className="text-xs text-slate-600">{item.partner}</p>
-                          <p className="text-xs font-bold text-emerald-700 pt-1">
-                            {item.share}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Live Travel Provider Orchestration & Commission Engine */}
-                  <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
-                    <Suspense
-                      fallback={
-                        <WorldSuspenseShield
-                          worldTitle="Travel Provider Orchestration"
-                          emoji="✈️"
-                        />
-                      }
-                    >
-                      <TravelPage />
-                    </Suspense>
-                  </section>
+              {activeWorldId === "orderking" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Live Orders"
+                    value={String(loaderData.todayOrders)}
+                    sub={`Base Delivery Fee: ₹${currentSettings.baseDeliveryFeeInr}`}
+                  />
+                  <ResultMetricCard
+                    label="Restaurants"
+                    value={String(loaderData.restaurants)}
+                    sub={`${pendingUnapproved.length} waiting for approval`}
+                  />
+                  <ResultMetricCard
+                    label="Delivery Riders"
+                    value={String(loaderData.riders)}
+                    sub={`Base Pay: ₹${currentSettings.riderPerOrderBasePayInr}/order`}
+                  />
+                  <ResultMetricCard
+                    label="Customers"
+                    value={String(loaderData.users)}
+                    sub={`Free delivery above ₹${currentSettings.freeDeliveryAboveInr}`}
+                  />
                 </div>
               )}
 
-              {activeWorldId === "travel" && currentTabId === "my-trips" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                    <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        🧳 Customer Trips & Booking Support ({savedTrips.length} Saved Itineraries)
-                      </h2>
-                      <p className="text-xs text-slate-600 mt-0.5">
-                        Save and track customer flight, train, hotel, and bus PNR bookings with 1-click live status lookups. Persisted in `localStorage`.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Quick Add Trip Form */}
-                  <form
-                    onSubmit={handleAddTrip}
-                    className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
-                  >
-                    <div>
-                      <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                        Mode
-                      </label>
-                      <select
-                        value={newTripMode}
-                        onChange={(e) => setNewTripMode(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                      >
-                        <option value="✈️ Flight">✈️ Flight</option>
-                        <option value="🏨 Hotel">🏨 Hotel</option>
-                        <option value="🚆 Train">🚆 Train</option>
-                        <option value="🚌 Bus">🚌 Bus</option>
-                        <option value="🚗 Cab">🚗 Cab</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                        PNR / Booking ID
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. 6E-2849 / 2481938210"
-                        value={newTripPnr}
-                        onChange={(e) => setNewTripPnr(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                        Route / Property
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. BLR → IXS or Hotel Radisson"
-                        value={newTripRoute}
-                        onChange={(e) => setNewTripRoute(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                        Passenger / Guest Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Umar (Founder)"
-                        value={newTripPassenger}
-                        onChange={(e) => setNewTripPassenger(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                      />
-                    </div>
-
-                    <div className="flex items-end">
-                      <button
-                        type="submit"
-                        className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
-                      >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Save Itinerary</span>
-                      </button>
-                    </div>
-                  </form>
-
-                  {/* Saved Trips List */}
-                  {savedTrips.length === 0 ? (
-                    <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                      <p className="text-xs text-slate-500 font-medium">
-                        Awaiting live store telemetry · No customer travel itineraries or PNR bookings saved yet.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                      {savedTrips.map((trip) => (
-                        <div
-                          key={trip.id}
-                          className="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-500 transition-all space-y-2.5 flex flex-col justify-between"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-black text-slate-900">
-                                {trip.mode}
-                              </span>
-                              <span className="font-mono text-xs font-black px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                {trip.pnr}
-                              </span>
-                            </div>
-                            <p className="text-xs font-bold text-slate-800 mt-2">
-                              {trip.route}
-                            </p>
-                            <p className="text-[11px] text-slate-500 mt-0.5">
-                              Passenger: {trip.passenger} · Date: {trip.date}
-                            </p>
-                          </div>
-
-                          <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
-                            <a
-                              href={`https://www.google.com/search?q=${encodeURIComponent(String(
-                                // @ts-ignore
-                                trip.pnr + " live status"
-                                ?? ""))}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
-                            >
-                              <span>Check Live Status</span>
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteTrip(trip.id)}
-                              className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </section>
+              {activeWorldId === "kingpay" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Restaurant Commission"
+                    value={`${currentSettings.restaurantCommissionPct}%`}
+                    sub="Saved in King Pay settings"
+                  />
+                  <ResultMetricCard
+                    label="Customer Platform Fee"
+                    value={`₹${currentSettings.customerPlatformFeeInr}`}
+                    sub="Transparent checkout fee"
+                  />
+                  <ResultMetricCard
+                    label="Payout Speed"
+                    value={
+                      currentSettings.instantT0Payouts ? "Instant (T+0)" : "T+1"
+                    }
+                    sub="Direct partner settlement"
+                  />
+                  <ResultMetricCard
+                    label="Statutory Tax Split"
+                    value={
+                      currentSettings.autoGstSec95Split
+                        ? "5% GST + 0.1% TDS"
+                        : "Manual"
+                    }
+                    sub="Sec 9(5) & Sec 194-O ready"
+                  />
+                </div>
               )}
 
-              {activeWorldId === "travel" && currentTabId === "ai-tutor" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              {activeWorldId === "travel" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Travel Affiliate Hub"
+                    value={
+                      currentSettings.enableTravelTabInCustomerApp
+                        ? "Active"
+                        : "Paused"
+                    }
+                    sub="Flights, Hotels, IRCTC & Buses"
+                  />
+                  <ResultMetricCard
+                    label="Affiliate Commission"
+                    value={`${currentSettings.flightAffiliateMarkupPct || 1.5}% / ${currentSettings.hotelAffiliateCommissionPct || 6}%`}
+                    sub="Flight Markup & Hotel Share"
+                  />
+                  <ResultMetricCard
+                    label="Saved Itineraries"
+                    value={`${savedTrips.length} Bookings`}
+                    sub={`${savedTrips.filter((t) => t.mode.includes("Flight")).length} Flights · ${savedTrips.filter((t) => t.mode.includes("Train")).length} Trains`}
+                  />
+                  <ResultMetricCard
+                    label="Jobs & Spoken Tutor"
+                    value={`${localJobs.length} Jobs · ${completedLessons.length}/4 Done`}
+                    sub="Local hiring & 23-lang audio"
+                  />
+                </div>
+              )}
+
+              {activeWorldId === "b2b" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Active B2B CRM Leads"
+                    value={String(b2bLeads.length)}
+                    sub="Saved in 15-Stage CRM"
+                  />
+                  <ResultMetricCard
+                    label="Monthly SaaS Plan"
+                    value={`₹${currentSettings.monthlySaasFeeInr}/mo`}
+                    sub="Direct B2B restaurant plan"
+                  />
+                  <ResultMetricCard
+                    label="Franchise Revenue Share"
+                    value={`${currentSettings.cityFranchiseRevenueSharePct}%`}
+                    sub="City franchise operator share"
+                  />
+                  <ResultMetricCard
+                    label="Online Applications"
+                    value={
+                      currentSettings.enableSelfServeFranchiseApply
+                        ? "Open"
+                        : "Closed"
+                    }
+                    sub="Territory onboarding engine"
+                  />
+                </div>
+              )}
+
+              {activeWorldId === "umarai" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Specialist AI Teams"
+                    value="16 Teams"
+                    sub="All 16 platform modules active"
+                  />
+                  <ResultMetricCard
+                    label="AI Commands Run"
+                    value={String(aiHistory.length)}
+                    sub="Logged in PostgreSQL"
+                  />
+                  <ResultMetricCard
+                    label="Human Approval Limit"
+                    value={`Above ₹${currentSettings.aiRequireFounderApprovalAboveInr}`}
+                    sub="Founder safety guardrail"
+                  />
+                  <ResultMetricCard
+                    label="AI Routing Mode"
+                    value={String(currentSettings.preferredAiMode).split(" ")[0]}
+                    sub={String(currentSettings.preferredAiMode)}
+                  />
+                </div>
+              )}
+
+              {activeWorldId === "design" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Customer App Theme"
+                    value={
+                      String(currentSettings.customerAppTheme).split(" ")[0]
+                    }
+                    sub={String(currentSettings.customerAppTheme)}
+                  />
+                  <ResultMetricCard
+                    label="Pure-Veg / Non-Veg Badges"
+                    value={
+                      currentSettings.showVegNonVegFilterBadge ? "ON" : "OFF"
+                    }
+                    sub="FSSAI dietary labels"
+                  />
+                  <ResultMetricCard
+                    label="Live Kitchen Timer"
+                    value={
+                      currentSettings.showLiveOrderPrepTimer ? "ON" : "OFF"
+                    }
+                    sub="Shown on customer order page"
+                  />
+                  <ResultMetricCard
+                    label="Creative Studios"
+                    value="4 Studios"
+                    sub="App, Design, Video & Social"
+                  />
+                </div>
+              )}
+
+              {activeWorldId === "connections" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Payment Gateway"
+                    value={
+                      String(currentSettings.primaryPaymentGateway).split(" ")[0]
+                    }
+                    sub={String(currentSettings.primaryPaymentGateway)}
+                  />
+                  <ResultMetricCard
+                    label="OTP Priority"
+                    value={
+                      String(currentSettings.otpChannelPriority).split(" ")[0]
+                    }
+                    sub={String(currentSettings.otpChannelPriority)}
+                  />
+                  <ResultMetricCard
+                    label="Delivery Radius"
+                    value={`${currentSettings.maxDeliveryRadiusKm} km`}
+                    sub="Default zone coverage"
+                  />
+                  <ResultMetricCard
+                    label="Customer Phone Masking"
+                    value={
+                      currentSettings.enableCustomerPhoneMasking
+                        ? "Protected"
+                        : "Off"
+                    }
+                    sub="DPDP Act 2023 privacy"
+                  />
+                </div>
+              )}
+
+              {activeWorldId === "alerts" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Open Action Alerts"
+                    value={String(activeUnresolvedAlerts.length)}
+                    sub="Real database + founder alerts"
+                  />
+                  <ResultMetricCard
+                    label="Pending Kitchen KYC"
+                    value={String(pendingUnapproved.length)}
+                    sub="Waiting in `restaurants` table"
+                  />
+                  <ResultMetricCard
+                    label="Fair Partner Protection"
+                    value={
+                      currentSettings.zeroAutoSuspensionPolicy
+                        ? "Protected"
+                        : "Manual"
+                    }
+                    sub="Zero unfair auto-blocking"
+                  />
+                  <ResultMetricCard
+                    label="FSSAI Renewal Grace"
+                    value={`${currentSettings.fssaiRenewalGraceDays} Days`}
+                    sub="FoSCoS renewal window"
+                  />
+                </div>
+              )}
+
+              {activeWorldId === "settings" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Total Separated Worlds"
+                    value="10 Worlds"
+                    sub="All customizable & persisted"
+                  />
+                  <ResultMetricCard
+                    label="Supported Languages"
+                    value="10 Languages"
+                    sub={String(currentSettings.defaultPlatformLanguage)}
+                  />
+                  <ResultMetricCard
+                    label="Tax Compliance Mode"
+                    value={
+                      currentSettings.strictStatutoryTaxMode ? "Active" : "Basic"
+                    }
+                    sub="CGST Sec 9(5) & TDS 194-O"
+                  />
+                  <ResultMetricCard
+                    label="Database Storage"
+                    value="PostgreSQL"
+                    sub="Platform configuration"
+                  />
+                </div>
+              )}
+            </section>
+
+            {/* BOX 2: ACTION NEEDED (What to do next) */}
+            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
+                    Actions Needed
+                  </span>
+                  <h2 className="text-base font-black text-slate-900 mt-1.5">
+                    Action Items for {currentWorld.navLabel}
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {activeWorldId === "home" && (
+                  <>
+                    <ActionCard
+                      title={
+                        pendingUnapproved.length > 0
+                          ? `Approve ${pendingUnapproved.length} Pending Restaurant(s)`
+                          : "Manage Restaurant Partners"
+                      }
+                      description={
+                        pendingUnapproved.length > 0
+                          ? `${pendingUnapproved[0].name} is waiting for your 1-click approval.`
+                          : "Open the OrderKing Restaurants tab to view or onboard kitchens."
+                      }
+                      buttonLabel="Open Restaurants"
+                      onClick={() => selectWorld("orderking", "restaurants")}
+                      urgent={pendingUnapproved.length > 0}
+                    />
+                    <ActionCard
+                      title="Review Delivery Fees & Commissions"
+                      description={`Current delivery fee is ₹${worldSettings.orderking.baseDeliveryFeeInr} and restaurant commission is ${worldSettings.kingpay.restaurantCommissionPct}%.`}
+                      buttonLabel="Open King Pay Pricing"
+                      onClick={() => selectWorld("kingpay", "commissions")}
+                    />
+                    <ActionCard
+                      title="Check Real-Time Alerts"
+                      description={`${activeUnresolvedAlerts.length} real operational alert(s) currently open in your 6-Tier Action Center.`}
+                      buttonLabel="Open Alerts Center"
+                      onClick={() => selectWorld("alerts", "action-center")}
+                      urgent={activeUnresolvedAlerts.length > 0}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "orderking" && (
+                  <>
+                    <ActionCard
+                      title={
+                        pendingUnapproved.length > 0
+                          ? `Approve ${pendingUnapproved.length} Pending Kitchen(s)`
+                          : "View All Restaurants"
+                      }
+                      description="Approve pending restaurant applications directly in PostgreSQL."
+                      buttonLabel="Go to Restaurants Tab"
+                      onClick={() => selectSubTab("restaurants")}
+                      urgent={pendingUnapproved.length > 0}
+                    />
+                    <ActionCard
+                      title="Configure Dispatch & Rain Bonus"
+                      description={`Rider base pay is ₹${currentSettings.riderPerOrderBasePayInr} + ₹${currentSettings.rainBonusInr} rain bonus.`}
+                      buttonLabel="Tune Dispatch Rules"
+                      onClick={() => selectSubTab("dispatch")}
+                    />
+                    <ActionCard
+                      title="Inspect Live Order Pipeline"
+                      description="Check the 6-stage order fulfillment flow and recent PostgreSQL orders."
+                      buttonLabel="View Live Orders"
+                      onClick={() => selectSubTab("orders")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "kingpay" && (
+                  <>
+                    <ActionCard
+                      title="View Live Profit & Escrow Split"
+                      description="Inspect net founder margin, partner payouts, and GST/TDS tax buckets."
+                      buttonLabel="Open Profit Dashboard"
+                      onClick={() => selectSubTab("profit")}
+                    />
+                    <ActionCard
+                      title="Set MDR & Convenience Fees"
+                      description="Update payment gateway MDR percentage and auto-refund threshold."
+                      buttonLabel="Open Wallet & MDR Fees"
+                      onClick={() => selectSubTab("wallet-mdr")}
+                    />
+                    <ActionCard
+                      title="Adjust Commission Slabs"
+                      description="Configure fair restaurant commissions and delivery pricing tiers."
+                      buttonLabel="Open Commissions"
+                      onClick={() => selectSubTab("commissions")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "travel" && (
+                  <>
+                    <ActionCard
+                      title="Travel Provider Orchestration"
+                      description="Search live flight & Indian Rail routes, monitor provider quotes, and calculate affiliate revenue."
+                      buttonLabel="Open Travel Orchestrator"
+                      onClick={() => selectSubTab("travel-hub")}
+                    />
+                    <ActionCard
+                      title="Manage Saved Trips & PNRs"
+                      description={`Track ${savedTrips.length} active customer booking(s) with 1-click live PNR status verification.`}
+                      buttonLabel="Open My Trips"
+                      onClick={() => selectSubTab("my-trips")}
+                    />
+                    <ActionCard
+                      title="Post Jobs & Spoken English Tutor"
+                      description={`${localJobs.length} active job opening(s) and 10-language voice hospitality lessons for fleet.`}
+                      buttonLabel="Open Jobs & Tutor"
+                      onClick={() => selectSubTab("jobs")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "b2b" && (
+                  <>
+                    <ActionCard
+                      title="Generate B2B Sales Deck & ROI"
+                      description="Show restaurant owners how much they save with OrderKing vs high commissions."
+                      buttonLabel="Open ROI Calculator"
+                      onClick={() => selectSubTab("sales-deck")}
+                    />
+                    <ActionCard
+                      title="Onboard City Franchise Partner"
+                      description="Set up city territory rights, revenue share, and partner onboarding steps."
+                      buttonLabel="Open Franchise Engine"
+                      onClick={() => selectSubTab("franchise")}
+                    />
+                    <ActionCard
+                      title="Add & Track B2B Client Leads"
+                      description={`You have ${b2bLeads.length} lead(s) in your 15-Stage B2B CRM pipeline.`}
+                      buttonLabel="Open 15-Stage CRM"
+                      onClick={() => selectSubTab("crm-pipeline")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "umarai" && (
+                  <>
+                    <ActionCard
+                      title="Give UMAR AI a Plain-English Command"
+                      description="Type a simple instruction or run a 1-click preset command."
+                      buttonLabel="Ask UMAR AI"
+                      onClick={() => selectSubTab("ask-ai")}
+                    />
+                    <ActionCard
+                      title="Review All 16 Specialist Teams"
+                      description="See what each of the 16 specialist platform teams does and jump to its tool."
+                      buttonLabel="View 16 Specialist Teams"
+                      onClick={() => selectSubTab("teams")}
+                    />
+                    <ActionCard
+                      title="Compare AI Model Speed & Cost"
+                      description="Check latency and accuracy across AI models powering menu OCR and support."
+                      buttonLabel="Open Model Benchmarks"
+                      onClick={() => selectSubTab("benchmarks")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "design" && (
+                  <>
+                    <ActionCard
+                      title="Customize Customer App Look"
+                      description="Update brand colors, layout cards, and checkout appearance."
+                      buttonLabel="Open App Look & Theme"
+                      onClick={() => selectSubTab("app-look")}
+                    />
+                    <ActionCard
+                      title="Publish Home Banners & Offers"
+                      description="Manage promotional banners and festival announcements on the Customer App."
+                      buttonLabel="Open Banners CMS"
+                      onClick={() => selectSubTab("banners")}
+                    />
+                    <ActionCard
+                      title="Create Dish Posters & Videos"
+                      description="Use the built-in Design, Video, and Social studios for marketing."
+                      buttonLabel="Open Design Studio"
+                      onClick={() => selectSubTab("design-studio")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "connections" && (
+                  <>
+                    <ActionCard
+                      title="Connect Payment, SMS & AI Keys"
+                      description="Configure Razorpay/UPI gateways, WhatsApp OTP, and AI API keys."
+                      buttonLabel="Open Plugin Keys"
+                      onClick={() => selectSubTab("plugins")}
+                    />
+                    <ActionCard
+                      title="Inspect Live Delivery Zones Map"
+                      description="View city delivery coverage, active pins, and zone boundaries."
+                      buttonLabel="Open Delivery Map"
+                      onClick={() => selectSubTab("map-zones")}
+                    />
+                    <ActionCard
+                      title="Set Delivery Radius & Privacy"
+                      description={`Current radius is ${currentSettings.maxDeliveryRadiusKm} km with customer phone masking enabled.`}
+                      buttonLabel="Customize Connections"
+                      onClick={() => selectSubTab("settings")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "alerts" && (
+                  <>
+                    <ActionCard
+                      title="Triage Live 6-Tier Alerts"
+                      description={`${activeUnresolvedAlerts.length} unresolved alert(s) from your PostgreSQL database and operations.`}
+                      buttonLabel="Open 6-Tier Action Center"
+                      onClick={() => selectSubTab("action-center")}
+                      urgent={activeUnresolvedAlerts.length > 0}
+                    />
+                    <ActionCard
+                      title="Log a New Operational Alert"
+                      description="Record an issue or reminder under Emergency, Danger, Critical, High, Medium, or Low."
+                      buttonLabel="Log New Alert"
+                      onClick={() => selectSubTab("create-alert")}
+                    />
+                    <ActionCard
+                      title="Review Fair Partner Protection"
+                      description="Ensure restaurants and riders receive helpful advisories instead of unfair blocks."
+                      buttonLabel="View Protection Rules"
+                      onClick={() => selectSubTab("fair-policy")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "settings" && (
+                  <>
+                    <ActionCard
+                      title="Edit All 10 Worlds in One Place"
+                      description="Review and save customizations for every World from the Master Controls tab."
+                      buttonLabel="Open All 10 Worlds Controls"
+                      onClick={() => selectSubTab("all-worlds")}
+                    />
+                    <ActionCard
+                      title="Configure 10 Indian Languages"
+                      description="Enable native script and voice support across all 10 benchmark languages."
+                      buttonLabel="Open 10 Languages"
+                      onClick={() => selectSubTab("languages")}
+                    />
+                    <ActionCard
+                      title="Open Full Platform Settings Page"
+                      description="Need the dedicated standalone settings route? Open `/settings` anytime."
+                      buttonLabel="View Activity Log"
+                      onClick={() => selectSubTab("activity-log")}
+                    />
+                  </>
+                )}
+              </div>
+            </section>
+
+            {/* Travel World Live Provider Orchestration inside Dashboard */}
+            {activeWorldId === "travel" && (
+              <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                  <div>
+                    <h2 className="text-base font-black text-slate-900">
+                      ✈️ Live Travel Provider Orchestration &amp; Affiliate Commission Engine
+                    </h2>
+                    <p className="text-xs text-slate-600">
+                      Real-time inventory lookup and provider handoff with 0% balance-sheet inventory risk.
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Live Engine Ready
+                  </span>
+                </div>
+                <Suspense
+                  fallback={
+                    <WorldSuspenseShield
+                      worldTitle="Travel Provider Orchestration"
+                      emoji="✈️"
+                    />
+                  }
+                >
+                  <TravelPage />
+                </Suspense>
+              </section>
+            )}
+
+            {/* BOX 3: QUICK SETTINGS & CUSTOMIZATIONS (Wired to PostgreSQL `saveUmarOsSettingsFn` + `localStorage`) */}
+            <WorldSettingsPanel
+              world={currentWorld}
+              values={currentSettings}
+              onChange={(key, val) => updateField(currentWorld.id, key, val)}
+              onSave={() => handleSaveWorldSettings(currentWorld.id)}
+              isSaving={savingWorldId === currentWorld.id}
+              boxTitle={`Settings — ${currentWorld.navLabel}`}
+            />
+          </div>
+        )}
+
+        {/* ===================================================================
+            LAST TAB OF EVERY WORLD: ⚙️ WORLD SETTINGS & CUSTOMIZATIONS
+        =================================================================== */}
+        {currentTabId === "settings" && (
+          <WorldSettingsPanel
+            world={currentWorld}
+            values={currentSettings}
+            onChange={(key, val) => updateField(currentWorld.id, key, val)}
+            onSave={() => handleSaveWorldSettings(currentWorld.id)}
+            isSaving={savingWorldId === currentWorld.id}
+            boxTitle={`Settings — ${currentWorld.title}`}
+          />
+        )}
+
+        {/* ===================================================================
+            WORLD 1 (`home`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "home" && currentTabId === "worlds-map" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  All Platform Sections
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Click any World below (or on the bottom navigation bar) to open
+                  only that World on screen.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <Link
+                  to="/app/$module"
+                  params={{ module: "ceo" }}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /ceo Brief
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "orders" }}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /orders
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "restaurants" }}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /restaurants
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "riders" }}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /riders
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "finance" }}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /finance
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "b2b-crm" }}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /b2b-crm
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
+              {TEN_WORLDS.map((w) => (
+                <div
+                  key={w.id}
+                  className="rounded-xl border border-slate-200 p-4 bg-slate-50/70 hover:bg-white hover:border-emerald-500 transition-all flex flex-col justify-between gap-3"
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl">{w.emoji}</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                        World {w.number}
+                      </span>
+                    </div>
+                    <h3 className="font-black text-sm text-slate-900 mt-2">
+                      {w.navLabel}
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                      {w.explanation}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => selectWorld(w.id, "dashboard")}
+                    className="w-full py-2 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold transition-colors"
+                  >
+                    Open {w.navLabel} →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "home" && currentTabId === "checklist" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              ✅ Today's Founder Action Checklist
+            </h2>
+            <div className="space-y-2.5">
+              {[
+                {
+                  key: "review_db_counts",
+                  label: `Verify live PostgreSQL counts (${loaderData.restaurants} Restaurants, ${loaderData.riders} Riders, ${loaderData.todayOrders} Orders)`,
+                },
+                {
+                  key: "verify_commission_rate",
+                  label: `Confirm Restaurant Commission (${worldSettings.kingpay.restaurantCommissionPct}%) & Base Delivery Fee (₹${worldSettings.orderking.baseDeliveryFeeInr})`,
+                },
+                {
+                  key: "check_payment_keys",
+                  label:
+                    "Verify Payment Gateway & WhatsApp OTP keys in World 8 (Connections)",
+                },
+                {
+                  key: "review_alerts",
+                  label: `Review ${activeUnresolvedAlerts.length} open operational alert(s) in World 9 (Alerts)`,
+                },
+              ].map((item) => {
+                const checked = !!checklistDone[item.key];
+                return (
+                  <label
+                    key={item.key}
+                    className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer hover:bg-slate-100"
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() =>
+                          setChecklistDone((prev) => ({
+                            ...prev,
+                            [item.key]: !checked,
+                          }))
+                        }
+                        className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span
+                        className={`text-xs md:text-sm font-bold ${
+                          checked
+                            ? "line-through text-slate-400"
+                            : "text-slate-900"
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-emerald-700">
+                      {checked ? "Done" : "Pending"}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "home" && currentTabId === "legal" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <div>
+              <h2 className="text-base font-black text-slate-900">
+                🛡️ Indian Statutory & Tax Compliance Protection
+              </h2>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Built-in compliance across food safety, GST, income tax, gig
+                worker welfare, and customer data privacy.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                {
+                  title: "FSSAI Food Safety Act, 2006",
+                  badge: "14-Digit FoSCoS Verified",
+                  desc: "Every restaurant partner must hold a valid 14-digit FSSAI license, with a 14-day renewal grace period so active kitchens are not unfairly interrupted.",
+                },
+                {
+                  title: "CGST Act, 2017 · Section 9(5)",
+                  badge: "5% ECO Restaurant GST",
+                  desc: "5% restaurant service GST is automatically separated at checkout and remitted by the E-Commerce Operator with clear HSN/SAC tax invoices.",
+                },
+                {
+                  title: "Income Tax Act, 1961 · Section 194-O",
+                  badge: "0.1% TDS Ledger",
+                  desc: "Automated 0.1% TDS accounting and Form 16A reconciliation for eligible gross restaurant partner sales.",
+                },
+                {
+                  title: "Code on Social Security, 2020",
+                  badge: "Gig Rider Welfare",
+                  desc: "Supports e-Shram registration, accidental insurance coverage, transparent per-order + rain payouts, and emergency SOS support.",
+                },
+                {
+                  title: "IT Act, 2000 & DPDP Act, 2023",
+                  badge: "Customer Phone Masking",
+                  desc: "Customer phone numbers are masked during delivery calls and customer lists are never sold to third-party ad brokers.",
+                },
+                {
+                  title: "RBI Nodal Split Settlement Norms",
+                  badge: "T+0 Escrow Split",
+                  desc: "Clean split of every order payment into Restaurant Payout, Rider Fee, Statutory Tax Bucket, and Platform Margin.",
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
+                >
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 inline-block">
+                    {item.badge}
+                  </span>
+                  <h3 className="text-sm font-black text-slate-900">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-2">
+              <GigWorkerComplianceCenter />
+            </div>
+          </section>
+        )}
+
+        {/* ===================================================================
+            WORLD 2 (`orderking`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "orderking" && currentTabId === "orders" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🍔 Live Orders & 6-Stage Delivery Flow ({loaderData.todayOrders}{" "}
+                  Total Orders)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Every order moves through 6 clear steps from customer checkout
+                  to instant partner payout.
+                </p>
+              </div>
+              <Link
+                to="/app/$module"
+                params={{ module: "orders" }}
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <span>Open Full Orders Console (/orders)</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+              {[
+                {
+                  step: "1. Checkout",
+                  desc: "Customer pays transparent item price + GST + delivery fee.",
+                },
+                {
+                  step: "2. Kitchen Accepts",
+                  desc: "Restaurant accepts order on KDS and sets prep time.",
+                },
+                {
+                  step: "3. 80% Ready Dispatch",
+                  desc: "Rider is assigned so they arrive right as food is packed.",
+                },
+                {
+                  step: "4. Tamper-Seal Pickup",
+                  desc: "Rider verifies sealed package at restaurant counter.",
+                },
+                {
+                  step: "5. Doorstep Handover",
+                  desc: "Rider delivers order with 10-language voice guidance.",
+                },
+                {
+                  step: "6. Instant Payout",
+                  desc: "Restaurant and rider earnings settle immediately.",
+                },
+              ].map((st) => (
+                <div
+                  key={st.step}
+                  className="p-3.5 rounded-xl bg-slate-900 text-white border border-slate-800"
+                >
+                  <p className="text-xs font-black text-emerald-400">
+                    {st.step}
+                  </p>
+                  <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                    {st.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {loaderData.recentOrders.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-sm font-bold text-slate-800">
+                  0 Orders in PostgreSQL `orders` Table Right Now
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  As soon as customers place orders, real order rows will appear
+                  here automatically.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {loaderData.recentOrders.map((ord) => (
+                  <div
+                    key={ord.id}
+                    className="p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
+                  >
+                    <span className="font-bold text-slate-900">
+                      Order #{ord.id}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold">
+                      {ord.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "restaurants" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🏪 Restaurant Partners ({loaderData.restaurants} Total ·{" "}
+                  {pendingUnapproved.length} Pending Approval)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Approve pending kitchens in 1 click (`UPDATE restaurants SET
+                  status = 'ACTIVE'`) or open the full restaurants console.
+                </p>
+              </div>
+              <Link
+                to="/app/$module"
+                params={{ module: "restaurants" }}
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <span>Open Full Restaurants Console (/restaurants)</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {loaderData.pendingRestaurants.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <CheckCircle2 className="h-7 w-7 text-emerald-600 mx-auto mb-2" />
+                <p className="text-sm font-bold text-slate-900">
+                  All Pending Restaurant Applications Are Cleared
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  There are 0 restaurants with `status = 'PENDING'` in
+                  PostgreSQL right now.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {loaderData.pendingRestaurants.map((rest) => {
+                  const isApproved = approvedIds.includes(rest.id);
+                  return (
+                    <div
+                      key={rest.id}
+                      className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3"
+                    >
+                      <div>
+                        <p className="text-sm font-black text-slate-900">
+                          {rest.name}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          ID: {rest.id} · Status:{" "}
+                          {isApproved ? "ACTIVE" : rest.status}
+                        </p>
+                      </div>
+                      {isApproved ? (
+                        <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Approved in
+                          PostgreSQL
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={approvingId === rest.id}
+                          onClick={() => handleApproveRestaurant(rest)}
+                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition-colors"
+                        >
+                          {approvingId === rest.id
+                            ? "Approving..."
+                            : "Approve Restaurant"}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "riders" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🛵 Delivery Rider Fleet ({loaderData.riders} Verified Riders)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Base payout: ₹{currentSettings.riderPerOrderBasePayInr}/order +
+                  ₹{currentSettings.rainBonusInr} rain bonus · Code on Social
+                  Security 2020 welfare enabled.
+                </p>
+              </div>
+              <Link
+                to="/app/$module"
+                params={{ module: "riders" }}
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <span>Open Full Riders Console (/riders)</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {loaderData.recentRiders.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-sm font-bold text-slate-800">
+                  0 Riders in PostgreSQL `riders` Table
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Use `/riders` or World 4 Jobs Board to onboard your first
+                  delivery riders.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {loaderData.recentRiders.map((r) => (
+                  <div
+                    key={r.id}
+                    className="p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
+                  >
+                    <span className="font-bold text-slate-900">
+                      {r.name || r.id}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold">
+                      {r.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "customers" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              👥 Registered Customers ({loaderData.users} Accounts in
+              PostgreSQL)
+            </h2>
+            <p className="text-xs text-slate-600">
+              Customer accounts are stored in the PostgreSQL `profiles` table
+              with DPDP Act 2023 phone masking and zero third-party data resale.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <ResultMetricCard
+                label="Total Customer Profiles"
+                value={String(loaderData.users)}
+                sub="PostgreSQL `profiles`"
+              />
+              <ResultMetricCard
+                label="Free Delivery Threshold"
+                value={`₹${currentSettings.freeDeliveryAboveInr}`}
+                sub="Configured in OrderKing Settings"
+              />
+              <ResultMetricCard
+                label="Phone Number Privacy"
+                value="Masked"
+                sub="DPDP Act 2023 Compliant"
+              />
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "dispatch" && (
+          <AlgorithmSettings />
+        )}
+
+        {/* ===================================================================
+            WORLD 3 (`kingpay`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "kingpay" && currentTabId === "profit" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Live Founder Profit Dashboard"
+                emoji="📈"
+              />
+            }
+          >
+            <LiveFounderProfitDashboard />
+          </Suspense>
+        )}
+
+        {activeWorldId === "kingpay" && currentTabId === "wallet-mdr" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="King Pay Wallet & MDR Settings"
+                emoji="🏦"
+              />
+            }
+          >
+            <KingPayGlobalSettings />
+          </Suspense>
+        )}
+
+        {activeWorldId === "kingpay" && currentTabId === "master-switch" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="King Pay Master Safety Switch"
+                emoji="🔒"
+              />
+            }
+          >
+            <KingPayMasterSwitch />
+          </Suspense>
+        )}
+
+        {activeWorldId === "kingpay" && currentTabId === "commissions" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Central Commissions & Pricing Switch"
+                emoji="🏷️"
+              />
+            }
+          >
+            <CentralPricingSwitch />
+          </Suspense>
+        )}
+
+        {/* ===================================================================
+            WORLD 4 (`travel`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "travel" && currentTabId === "travel-hub" && (
+          <div className="space-y-5">
+            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h2 className="text-base font-black text-slate-900">
+                    ✈️ Travel Affiliate Hub & Provider Orchestration
+                  </h2>
+                  <p className="text-xs text-slate-600">
+                    Earn affiliate commissions on customer travel bookings without holding inventory or balance-sheet risk.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Affiliate Engine Active
+                  </span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    mode: "✈️ Flights",
+                    partner: "Domestic & International Flight Search",
+                    share: `${currentSettings.flightAffiliateMarkupPct || 1.5}% Affiliate Fee`,
+                  },
+                  {
+                    mode: "🏨 Hotels & Stays",
+                    partner: "Pan-India Budget & Business Hotels",
+                    share: `${currentSettings.hotelAffiliateCommissionPct || 6}% Partner Commission`,
+                  },
+                  {
+                    mode: "🚆 Trains (IRCTC Rail)",
+                    partner: "Authorized Rail Partner Redirect",
+                    share: "Zero Hidden Markup",
+                  },
+                  {
+                    mode: "🚌 Intercity Buses",
+                    partner: "AC Sleeper & State Bus Aggregator",
+                    share: "Instant Seat Confirmation",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.mode}
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
+                  >
+                    <h3 className="text-sm font-black text-slate-900">
+                      {item.mode}
+                    </h3>
+                    <p className="text-xs text-slate-600">{item.partner}</p>
+                    <p className="text-xs font-bold text-emerald-700 pt-1">
+                      {item.share}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Live Travel Provider Orchestration & Commission Engine */}
+            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+              <Suspense
+                fallback={
+                  <WorldSuspenseShield
+                    worldTitle="Travel Provider Orchestration"
+                    emoji="✈️"
+                  />
+                }
+              >
+                <TravelPage />
+              </Suspense>
+            </section>
+          </div>
+        )}
+
+        {activeWorldId === "travel" && currentTabId === "my-trips" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🧳 Customer Trips & Booking Support ({savedTrips.length} Saved Itineraries)
+                </h2>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Save and track customer flight, train, hotel, and bus PNR bookings with 1-click live status lookups. Persisted in `localStorage`.
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Add Trip Form */}
+            <form
+              onSubmit={handleAddTrip}
+              className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
+            >
+              <div>
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
+                  Mode
+                </label>
+                <select
+                  value={newTripMode}
+                  onChange={(e) => setNewTripMode(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                >
+                  <option value="✈️ Flight">✈️ Flight</option>
+                  <option value="🏨 Hotel">🏨 Hotel</option>
+                  <option value="🚆 Train">🚆 Train</option>
+                  <option value="🚌 Bus">🚌 Bus</option>
+                  <option value="🚗 Cab">🚗 Cab</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
+                  PNR / Booking ID
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 6E-2849 / 2481938210"
+                  value={newTripPnr}
+                  onChange={(e) => setNewTripPnr(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
+                  Route / Property
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. BLR → IXS or Hotel Radisson"
+                  value={newTripRoute}
+                  onChange={(e) => setNewTripRoute(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
+                  Passenger / Guest Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Umar (Founder)"
+                  value={newTripPassenger}
+                  onChange={(e) => setNewTripPassenger(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                />
+              </div>
+
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Save Itinerary</span>
+                </button>
+              </div>
+            </form>
+
+            {/* Saved Trips List */}
+            {savedTrips.length === 0 ? (
+              <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-xs text-slate-500 font-medium">
+                  Awaiting live store telemetry · No customer travel itineraries or PNR bookings saved yet.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {savedTrips.map((trip) => (
+                  <div
+                    key={trip.id}
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-500 transition-all space-y-2.5 flex flex-col justify-between"
+                  >
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">🎓</span>
-                        <h2 className="text-base font-black text-slate-900">
-                          10-Language AI Tutor & Voice Lessons
-                        </h2>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          {completedLessons.length}/4 Completed
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-black text-slate-900">
+                          {trip.mode}
+                        </span>
+                        <span className="font-mono text-xs font-black px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          {trip.pnr}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 mt-0.5">
-                        Interactive voice training for delivery riders and kitchen teams. Click "Listen to Lesson" to play natural spoken audio via browser speech synthesis.
+                      <p className="text-xs font-bold text-slate-800 mt-2">
+                        {trip.route}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Passenger: {trip.passenger} · Date: {trip.date}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-600">Language:</span>
-                      <select
-                        value={selectedTutorLang}
-                        onChange={(e) => setSelectedTutorLang(e.target.value)}
-                        className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-800"
+                    <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
+                      <a
+                        href={`https://www.google.com/search?q=${encodeURIComponent(String(
+// @ts-ignore
+                          trip.pnr + " live status"
+                         ?? ""))}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
                       >
-                        <option value="English">English</option>
-                        <option value="Hindi">हिंदी (Hindi)</option>
-                        <option value="Bengali">বাংলা (Bengali)</option>
-                        <option value="Gujarati">ગુજરાતી (Gujarati)</option>
-                        <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
-                        <option value="Malayalam">മലയാളം (Malayalam)</option>
-                        <option value="Marathi">मराठी (Marathi)</option>
-                        <option value="Punjabi">ਪੰਜਾਬੀ (Punjabi)</option>
-                        <option value="Tamil">தமிழ் (Tamil)</option>
-                        <option value="Telugu">తెలుగు (Telugu)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      {
-                        id: "lesson-1",
-                        title: "Polite Customer Delivery Greeting & Hospitality",
-                        audience: "Delivery Fleet Riders",
-                        duration: "2 mins",
-                        speechText:
-                          "Always greet the customer with a respectful Hello or Good afternoon. Ensure the insulated delivery hot-bag is sealed. Hand over the package carefully with both hands, confirm the order number, and politely wish them an enjoyable meal.",
-                        summary:
-                          "Standard doorstep etiquette: 2-hand handover, insulated bag check, respectful greeting, and zero tip coercion.",
-                      },
-                      {
-                        id: "lesson-2",
-                        title: "FSSAI Food Hygiene & Tamper-Proof Packaging",
-                        audience: "Restaurant Kitchen Teams",
-                        duration: "3 mins",
-                        speechText:
-                          "Before handing food to the rider, inspect the tamper-evident seal on every container. Keep cold drinks strictly separate from hot meals. Check that the itemized GST tax invoice with FSSAI license number is securely attached.",
-                        summary:
-                          "Spill-proof sealing protocol, cold beverage separation, and statutory FSSAI invoice attachment standards.",
-                      },
-                      {
-                        id: "lesson-3",
-                        title: "Billing, GST INV-1 & UPI Soundbox Reconciliation",
-                        audience: "Store Managers & Cashiers",
-                        duration: "3 mins",
-                        speechText:
-                          "Ensure every order receipt clearly shows 5% CGST under Section 9(5) and zero hidden delivery markups. Listen for the voice chime on your UPI soundbox before marking cash or digital payments collected.",
-                        summary:
-                          "Itemized 5% CGST Sec 9(5) tax isolation, UPI soundbox payment confirmation, and daily cash drawer reconciliation.",
-                      },
-                      {
-                        id: "lesson-4",
-                        title: "Two-Wheeler Road Safety & Monsoon Protocol",
-                        audience: "Delivery Fleet Riders",
-                        duration: "2 mins",
-                        speechText:
-                          "Fasten your ISI-certified helmet securely. During rain or slippery road conditions, maintain a maximum speed of 25 kilometers per hour. In case of a flat tire or mechanical breakdown, use the one-tap emergency button in the Rider app immediately.",
-                        summary:
-                          "ISI helmet chin-lock compliance, 25 km/h wet weather speed limits, and 1-tap in-app breakdown assistance.",
-                      },
-                    ].map((lesson) => {
-                      const isSpeaking = speakingLessonId === lesson.id;
-                      const isCompleted = completedLessons.includes(lesson.id);
-
-                      return (
-                        <div
-                          key={lesson.id}
-                          className={`p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${isCompleted
-                              ? "border-emerald-300 bg-emerald-50/50"
-                              : "border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-400"
-                            }`}
-                        >
-                          <div>
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                                {lesson.audience} · {lesson.duration}
-                              </span>
-                              {isCompleted && (
-                                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white flex items-center gap-1">
-                                  <Check className="h-3 w-3" /> Done
-                                </span>
-                              )}
-                            </div>
-                            <h3 className="text-sm font-black text-slate-900 mt-1">
-                              {lesson.title}
-                            </h3>
-                            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                              {lesson.summary}
-                            </p>
-                          </div>
-
-                          <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleSpeakLesson(lesson.id, lesson.speechText)
-                              }
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${isSpeaking
-                                  ? "bg-rose-600 text-white animate-pulse"
-                                  : "bg-slate-900 hover:bg-slate-800 text-white"
-                                }`}
-                            >
-                              {isSpeaking ? (
-                                <>
-                                  <VolumeX className="h-3.5 w-3.5" />
-                                  <span>Stop Audio</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Volume2 className="h-3.5 w-3.5 text-emerald-400" />
-                                  <span>Listen to Lesson</span>
-                                </>
-                              )}
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleToggleLessonComplete(lesson.id)}
-                              className={`text-xs font-bold px-2.5 py-1 rounded-md transition-colors ${isCompleted
-                                  ? "text-emerald-800 hover:underline"
-                                  : "text-slate-600 hover:text-slate-900"
-                                }`}
-                            >
-                              {isCompleted ? "Completed ✓" : "Mark as Done"}
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              )}
-
-              {activeWorldId === "travel" && currentTabId === "jobs" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                    <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        💼 Local Jobs & Gig Hiring Board ({localJobs.length} Active Openings)
-                      </h2>
-                      <p className="text-xs text-slate-600 mt-0.5">
-                        Post and discover verified openings for delivery riders, cooks, and franchise operations with zero middleman agency cut.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Quick Post Job Form */}
-                  <form
-                    onSubmit={handlePostJob}
-                    className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
-                  >
-                    <div>
-                      <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                        Job Role / Title
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Delivery Partner or Cook"
-                        value={newJobTitle}
-                        onChange={(e) => setNewJobTitle(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                        Monthly Salary / Rate
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. ₹18,000–₹24,000/mo"
-                        value={newJobSalary}
-                        onChange={(e) => setNewJobSalary(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                        City / Location
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Sribhumi / Karimganj"
-                        value={newJobCity}
-                        onChange={(e) => setNewJobCity(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
-                        Open Vacancies
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={newJobVacancies}
-                        onChange={(e) => setNewJobVacancies(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
-                      />
-                    </div>
-
-                    <div className="flex items-end">
+                        <span>Check Live Status</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
                       <button
-                        type="submit"
-                        className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                        type="button"
+                        onClick={() => handleDeleteTrip(trip.id)}
+                        className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
                       >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Post Job Opening</span>
+                        Remove
                       </button>
                     </div>
-                  </form>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
-                  {/* Active Jobs List */}
-                  {localJobs.length === 0 ? (
-                    <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                      <p className="text-xs text-slate-500 font-medium">
-                        Awaiting live store telemetry · No active local job postings currently recorded.
+        {activeWorldId === "travel" && currentTabId === "ai-tutor" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🎓</span>
+                  <h2 className="text-base font-black text-slate-900">
+                    10-Language AI Tutor & Voice Lessons
+                  </h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    {completedLessons.length}/4 Completed
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Interactive voice training for delivery riders and kitchen teams. Click "Listen to Lesson" to play natural spoken audio via browser speech synthesis.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-600">Language:</span>
+                <select
+                  value={selectedTutorLang}
+                  onChange={(e) => setSelectedTutorLang(e.target.value)}
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-800"
+                >
+                  <option value="English">English</option>
+                  <option value="Hindi">हिंदी (Hindi)</option>
+                  <option value="Bengali">বাংলা (Bengali)</option>
+                  <option value="Gujarati">ગુજરાતી (Gujarati)</option>
+                  <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
+                  <option value="Malayalam">മലയാളം (Malayalam)</option>
+                  <option value="Marathi">मराठी (Marathi)</option>
+                  <option value="Punjabi">ਪੰਜਾਬੀ (Punjabi)</option>
+                  <option value="Tamil">தமிழ் (Tamil)</option>
+                  <option value="Telugu">తెలుగు (Telugu)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  id: "lesson-1",
+                  title: "Polite Customer Delivery Greeting & Hospitality",
+                  audience: "Delivery Fleet Riders",
+                  duration: "2 mins",
+                  speechText:
+                    "Always greet the customer with a respectful Hello or Good afternoon. Ensure the insulated delivery hot-bag is sealed. Hand over the package carefully with both hands, confirm the order number, and politely wish them an enjoyable meal.",
+                  summary:
+                    "Standard doorstep etiquette: 2-hand handover, insulated bag check, respectful greeting, and zero tip coercion.",
+                },
+                {
+                  id: "lesson-2",
+                  title: "FSSAI Food Hygiene & Tamper-Proof Packaging",
+                  audience: "Restaurant Kitchen Teams",
+                  duration: "3 mins",
+                  speechText:
+                    "Before handing food to the rider, inspect the tamper-evident seal on every container. Keep cold drinks strictly separate from hot meals. Check that the itemized GST tax invoice with FSSAI license number is securely attached.",
+                  summary:
+                    "Spill-proof sealing protocol, cold beverage separation, and statutory FSSAI invoice attachment standards.",
+                },
+                {
+                  id: "lesson-3",
+                  title: "Billing, GST INV-1 & UPI Soundbox Reconciliation",
+                  audience: "Store Managers & Cashiers",
+                  duration: "3 mins",
+                  speechText:
+                    "Ensure every order receipt clearly shows 5% CGST under Section 9(5) and zero hidden delivery markups. Listen for the voice chime on your UPI soundbox before marking cash or digital payments collected.",
+                  summary:
+                    "Itemized 5% CGST Sec 9(5) tax isolation, UPI soundbox payment confirmation, and daily cash drawer reconciliation.",
+                },
+                {
+                  id: "lesson-4",
+                  title: "Two-Wheeler Road Safety & Monsoon Protocol",
+                  audience: "Delivery Fleet Riders",
+                  duration: "2 mins",
+                  speechText:
+                    "Fasten your ISI-certified helmet securely. During rain or slippery road conditions, maintain a maximum speed of 25 kilometers per hour. In case of a flat tire or mechanical breakdown, use the one-tap emergency button in the Rider app immediately.",
+                  summary:
+                    "ISI helmet chin-lock compliance, 25 km/h wet weather speed limits, and 1-tap in-app breakdown assistance.",
+                },
+              ].map((lesson) => {
+                const isSpeaking = speakingLessonId === lesson.id;
+                const isCompleted = completedLessons.includes(lesson.id);
+
+                return (
+                  <div
+                    key={lesson.id}
+                    className={`p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${
+                      isCompleted
+                        ? "border-emerald-300 bg-emerald-50/50"
+                        : "border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-400"
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                          {lesson.audience} · {lesson.duration}
+                        </span>
+                        {isCompleted && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white flex items-center gap-1">
+                            <Check className="h-3 w-3" /> Done
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-black text-slate-900 mt-1">
+                        {lesson.title}
+                      </h3>
+                      <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                        {lesson.summary}
                       </p>
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                      {localJobs.map((job) => (
-                        <div
-                          key={job.id}
-                          className="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-500 transition-all space-y-2.5 flex flex-col justify-between"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between gap-2">
-                              <h3 className="text-sm font-black text-slate-900">
-                                {job.title}
-                              </h3>
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                                {job.vacancies} Openings
-                              </span>
-                            </div>
-                            <p className="text-xs font-bold text-emerald-700 mt-1">
-                              {job.salary}
-                            </p>
-                            <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              <span>{job.city} · Posted {job.postedDate}</span>
-                            </p>
-                          </div>
 
-                          <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
-                            <a
-                              href={`https://wa.me/?text=Hi%2C%20I%20am%20interested%20in%20the%20${encodeURIComponent(String(
-                                job.title
-                                ?? ""))}%20opening%20in%20${encodeURIComponent(String(job.city ?? ""))}.`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
-                            >
-                              <span>Apply via WhatsApp</span>
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteJob(job.id)}
-                              className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                    <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleSpeakLesson(lesson.id, lesson.speechText)
+                        }
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                          isSpeaking
+                            ? "bg-rose-600 text-white animate-pulse"
+                            : "bg-slate-900 hover:bg-slate-800 text-white"
+                        }`}
+                      >
+                        {isSpeaking ? (
+                          <>
+                            <VolumeX className="h-3.5 w-3.5" />
+                            <span>Stop Audio</span>
+                          </>
+                        ) : (
+                          <>
+                            <Volume2 className="h-3.5 w-3.5 text-emerald-400" />
+                            <span>Listen to Lesson</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleToggleLessonComplete(lesson.id)}
+                        className={`text-xs font-bold px-2.5 py-1 rounded-md transition-colors ${
+                          isCompleted
+                            ? "text-emerald-800 hover:underline"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        {isCompleted ? "Completed ✓" : "Mark as Done"}
+                      </button>
                     </div>
-                  )}
-                </section>
-              )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
-              {/* ===================================================================
+        {activeWorldId === "travel" && currentTabId === "jobs" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  💼 Local Jobs & Gig Hiring Board ({localJobs.length} Active Openings)
+                </h2>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Post and discover verified openings for delivery riders, cooks, and franchise operations with zero middleman agency cut.
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Post Job Form */}
+            <form
+              onSubmit={handlePostJob}
+              className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
+            >
+              <div>
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
+                  Job Role / Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Delivery Partner or Cook"
+                  value={newJobTitle}
+                  onChange={(e) => setNewJobTitle(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
+                  Monthly Salary / Rate
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. ₹18,000–₹24,000/mo"
+                  value={newJobSalary}
+                  onChange={(e) => setNewJobSalary(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
+                  City / Location
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Sribhumi / Karimganj"
+                  value={newJobCity}
+                  onChange={(e) => setNewJobCity(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
+                  Open Vacancies
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={newJobVacancies}
+                  onChange={(e) => setNewJobVacancies(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
+                />
+              </div>
+
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Post Job Opening</span>
+                </button>
+              </div>
+            </form>
+
+            {/* Active Jobs List */}
+            {localJobs.length === 0 ? (
+              <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-xs text-slate-500 font-medium">
+                  Awaiting live store telemetry · No active local job postings currently recorded.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {localJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-emerald-500 transition-all space-y-2.5 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-sm font-black text-slate-900">
+                          {job.title}
+                        </h3>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                          {job.vacancies} Openings
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-emerald-700 mt-1">
+                        {job.salary}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        <span>{job.city} · Posted {job.postedDate}</span>
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
+                      <a
+                        href={`https://wa.me/?text=Hi%2C%20I%20am%20interested%20in%20the%20${encodeURIComponent(String(
+                          job.title
+                         ?? ""))}%20opening%20in%20${encodeURIComponent(String(job.city ?? ""))}.`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+                      >
+                        <span>Apply via WhatsApp</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteJob(job.id)}
+                        className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ===================================================================
             WORLD 5 (`b2b`) SUB-CATEGORY TABS
         =================================================================== */}
-              {activeWorldId === "b2b" && currentTabId === "sales-deck" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="B2B SaaS Sales Deck & ROI Generator"
-                      emoji="📊"
-                    />
-                  }
-                >
-                  <B2BSaaSSalesDeckGenerator />
-                </Suspense>
-              )}
+        {activeWorldId === "b2b" && currentTabId === "sales-deck" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="B2B SaaS Sales Deck & ROI Generator"
+                emoji="📊"
+              />
+            }
+          >
+            <B2BSaaSSalesDeckGenerator />
+          </Suspense>
+        )}
 
-              {activeWorldId === "b2b" && currentTabId === "franchise" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="City Franchise Onboarding Engine"
-                      emoji="🤝"
-                    />
-                  }
-                >
-                  <B2BFranchiseOnboardingEngine />
-                </Suspense>
-              )}
+        {activeWorldId === "b2b" && currentTabId === "franchise" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="City Franchise Onboarding Engine"
+                emoji="🤝"
+              />
+            }
+          >
+            <B2BFranchiseOnboardingEngine />
+          </Suspense>
+        )}
 
-              {activeWorldId === "b2b" && currentTabId === "crm-pipeline" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+        {activeWorldId === "b2b" && currentTabId === "crm-pipeline" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🗂️ 15-Stage B2B CRM Pipeline ({b2bLeads.length} Active Leads)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Add real restaurant or city franchise leads and move them
+                  across all 15 onboarding stages (saved to PostgreSQL).
+                </p>
+              </div>
+              <Link
+                to="/app/$module"
+                params={{ module: "b2b-crm" }}
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <span>Open Full B2B CRM Page (/b2b-crm)</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            <form
+              onSubmit={handleAddB2bLead}
+              className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
+            >
+              <input
+                type="text"
+                value={newLeadName}
+                onChange={(e) => setNewLeadName(e.target.value)}
+                placeholder="Restaurant or Franchise Name"
+                className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
+              />
+              <input
+                type="text"
+                value={newLeadCity}
+                onChange={(e) => setNewLeadCity(e.target.value)}
+                placeholder="City / Area"
+                className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
+              />
+              <input
+                type="text"
+                value={newLeadContact}
+                onChange={(e) => setNewLeadContact(e.target.value)}
+                placeholder="Owner Name / Phone"
+                className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
+              />
+              <select
+                value={newLeadStage}
+                onChange={(e) => setNewLeadStage(e.target.value)}
+                aria-label="Select CRM Stage"
+                className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white font-semibold"
+              >
+                {CRM_15_STAGES.map((st) => (
+                  <option key={st} value={st}>
+                    {st}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center justify-center gap-1.5"
+              >
+                <Plus className="h-4 w-4" /> Add B2B Lead
+              </button>
+            </form>
+
+            {b2bLeads.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-sm font-bold text-slate-800">
+                  No B2B Leads Added Yet
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Use the form above to add your first restaurant or franchise
+                  lead into PostgreSQL.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {b2bLeads.map((lead) => (
+                  <div
+                    key={lead.id}
+                    className="p-3.5 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3"
+                  >
                     <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        🗂️ 15-Stage B2B CRM Pipeline ({b2bLeads.length} Active Leads)
-                      </h2>
-                      <p className="text-xs text-slate-600">
-                        Add real restaurant or city franchise leads and move them
-                        across all 15 onboarding stages (saved to PostgreSQL).
+                      <p className="text-sm font-black text-slate-900">
+                        {lead.businessName}{" "}
+                        <span className="text-xs font-normal text-slate-500">
+                          ({lead.city})
+                        </span>
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Contact: {lead.contactPerson} · Added {lead.createdAt}
                       </p>
                     </div>
-                    <Link
-                      to="/app/$module"
-                      params={{ module: "b2b-crm" }}
-                      className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
-                    >
-                      <span>Open Full B2B CRM Page (/b2b-crm)</span>
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-
-                  <form
-                    onSubmit={handleAddB2bLead}
-                    className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
-                  >
-                    <input
-                      type="text"
-                      value={newLeadName}
-                      onChange={(e) => setNewLeadName(e.target.value)}
-                      placeholder="Restaurant or Franchise Name"
-                      className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
-                    />
-                    <input
-                      type="text"
-                      value={newLeadCity}
-                      onChange={(e) => setNewLeadCity(e.target.value)}
-                      placeholder="City / Area"
-                      className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
-                    />
-                    <input
-                      type="text"
-                      value={newLeadContact}
-                      onChange={(e) => setNewLeadContact(e.target.value)}
-                      placeholder="Owner Name / Phone"
-                      className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
-                    />
                     <select
-                      value={newLeadStage}
-                      onChange={(e) => setNewLeadStage(e.target.value)}
-                      aria-label="Select CRM Stage"
-                      className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white font-semibold"
+                      value={lead.stage}
+                      onChange={(e) =>
+                        handleAdvanceLeadStage(lead.id, e.target.value)
+                      }
+                      aria-label={`Stage for ${lead.businessName}`}
+                      className="px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-900 text-xs font-bold"
                     >
                       {CRM_15_STAGES.map((st) => (
                         <option key={st} value={st}>
@@ -4406,742 +4469,697 @@ function UmarOSDashboard() {
                         </option>
                       ))}
                     </select>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center justify-center gap-1.5"
-                    >
-                      <Plus className="h-4 w-4" /> Add B2B Lead
-                    </button>
-                  </form>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
-                  {b2bLeads.length === 0 ? (
-                    <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                      <p className="text-sm font-bold text-slate-800">
-                        No B2B Leads Added Yet
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Use the form above to add your first restaurant or franchise
-                        lead into PostgreSQL.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2.5">
-                      {b2bLeads.map((lead) => (
-                        <div
-                          key={lead.id}
-                          className="p-3.5 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3"
-                        >
-                          <div>
-                            <p className="text-sm font-black text-slate-900">
-                              {lead.businessName}{" "}
-                              <span className="text-xs font-normal text-slate-500">
-                                ({lead.city})
-                              </span>
-                            </p>
-                            <p className="text-xs text-slate-500">
-                              Contact: {lead.contactPerson} · Added {lead.createdAt}
-                            </p>
-                          </div>
-                          <select
-                            value={lead.stage}
-                            onChange={(e) =>
-                              handleAdvanceLeadStage(lead.id, e.target.value)
-                            }
-                            aria-label={`Stage for ${lead.businessName}`}
-                            className="px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-900 text-xs font-bold"
-                          >
-                            {CRM_15_STAGES.map((st) => (
-                              <option key={st} value={st}>
-                                {st}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {/* ===================================================================
+        {/* ===================================================================
             WORLD 6 (`umarai`) SUB-CATEGORY TABS
         =================================================================== */}
-              {activeWorldId === "umarai" && currentTabId === "ask-ai" && (
-                <section className="bg-slate-950 text-white rounded-2xl border border-slate-800 p-5 shadow-xs space-y-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">🤖</span>
-                        <h2 className="text-base font-black text-white">
-                          UMAR AI — Supreme Executive Platform Intelligence
-                        </h2>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                          Live Tool Execution Active
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-1">
-                        Type or speak any instruction in plain English. UMAR AI directly adjusts platform fees, approves pending restaurants, calculates profit, logs alerts, and queries PostgreSQL.
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={handleToggleVoiceInput}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${isListening
-                            ? "bg-rose-500 text-white animate-pulse"
-                            : "bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700"
-                          }`}
-                      >
-                        {isListening ? (
-                          <>
-                            <MicOff className="h-3.5 w-3.5" />
-                            <span>Listening...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Mic className="h-3.5 w-3.5 text-emerald-400" />
-                            <span>🎙️ Speak Command</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-2.5">
-                    <input
-                      type="text"
-                      value={aiInput}
-                      disabled={aiExecuting}
-                      onChange={(e) => setAiInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleRunAiCommand();
-                      }}
-                      placeholder={
-                        isListening
-                          ? "Listening to your voice..."
-                          : "Example: Approve all pending restaurants, set commission to 8%, or calculate profit for 500 daily orders..."
-                      }
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
-                    />
-                    <button
-                      type="button"
-                      disabled={aiExecuting}
-                      onClick={() => handleRunAiCommand()}
-                      className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shrink-0 transition-colors"
-                    >
-                      {aiExecuting ? (
-                        <>
-                          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                          <span>Executing in DB...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="h-3.5 w-3.5" />
-                          <span>Run Command</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* 1-Tap Executive Action Chips */}
-                  <div className="space-y-1.5">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                      ⚡ 1-Tap Executive Directives (Click to Execute in PostgreSQL):
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "Approve all pending restaurants in PostgreSQL",
-                        "Set restaurant commission to 8% and delivery fee to ₹25",
-                        "Calculate monthly profit for 300 orders/day at ₹350 AOV",
-                        "Verify CGST Sec 9(5) 5% and Income Tax Sec 194-O 0.1% TDS settings",
-                        "Enable ₹15 Rider Rain Bonus for active delivery zones",
-                        "Log high-priority alert for weekend food preparation rush",
-                      ].map((preset) => (
-                        <button
-                          key={preset}
-                          type="button"
-                          disabled={aiExecuting}
-                          onClick={() => handleRunAiCommand(preset)}
-                          className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-[11px] font-semibold text-left transition-colors"
-                        >
-                          ⚡ {preset}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {aiHistory.length > 0 && (
-                    <div className="space-y-2 pt-3 border-t border-slate-800">
-                      {aiHistory.map((item) => {
-                        const isCurrentSpeaking = speakingId === item.id;
-                        return (
-                          <div
-                            key={item.id}
-                            className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-2 shadow-xs"
-                          >
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <span className="font-black text-emerald-400">
-                                  Founder:
-                                </span>
-                                <span className="text-white font-semibold">
-                                  {item.command}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 shrink-0">
-                                <span className="text-[10px] text-slate-500">
-                                  {item.time}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => handleSpeakText(item.id, item.response)}
-                                  className={`p-1.5 rounded-lg transition-colors ${isCurrentSpeaking
-                                      ? "bg-emerald-500/30 text-emerald-300"
-                                      : "bg-slate-800 hover:bg-slate-700 text-slate-300"
-                                    }`}
-                                  title="Listen to UMAR AI voice response"
-                                >
-                                  {isCurrentSpeaking ? (
-                                    <VolumeX className="h-3.5 w-3.5 text-emerald-400" />
-                                  ) : (
-                                    <Volume2 className="h-3.5 w-3.5" />
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-
-                            <div className="bg-slate-950/70 p-3 rounded-lg border border-slate-800 text-slate-200 whitespace-pre-line leading-relaxed">
-                              {item.response}
-                            </div>
-
-                            {item.appliedAction && (
-                              <div className="flex items-center gap-2 pt-1 text-[11px]">
-                                <span className="px-2 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
-                                  <CheckCircle2 className="h-3 w-3" />
-                                  <span>Action Verified:</span>
-                                </span>
-                                <span className="text-slate-300 font-medium">
-                                  {item.appliedAction.detail}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {activeWorldId === "umarai" && currentTabId === "teams" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <div>
-                    <h2 className="text-base font-black text-slate-900">
-                      👥 16 Specialist Platform Teams
-                    </h2>
-                    <p className="text-xs text-slate-600">
-                      Every specialist team powers a real part of your platform. Click
-                      any team to open its workspace.
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                    {SIXTEEN_SPECIALIST_TEAMS.map((team) => (
-                      <div
-                        key={team.id}
-                        className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-3"
-                      >
-                        <div>
-                          <h3 className="text-xs md:text-sm font-black text-slate-900">
-                            {team.name}
-                          </h3>
-                          <p className="text-xs text-slate-600 mt-0.5">{team.role}</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => selectWorld(team.worldId, team.tabId)}
-                          className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold shrink-0"
-                        >
-                          Open →
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {activeWorldId === "umarai" && currentTabId === "benchmarks" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Multimodel AI Benchmark Dashboard"
-                      emoji="⚡"
-                    />
-                  }
+        {activeWorldId === "umarai" && currentTabId === "ask-ai" && (
+          <section className="bg-slate-950 text-white rounded-2xl border border-slate-800 p-5 shadow-xs space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🤖</span>
+                  <h2 className="text-base font-black text-white">
+                    UMAR AI — Supreme Executive Platform Intelligence
+                  </h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Live Tool Execution Active
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  Type or speak any instruction in plain English. UMAR AI directly adjusts platform fees, approves pending restaurants, calculates profit, logs alerts, and queries PostgreSQL.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleToggleVoiceInput}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                    isListening
+                      ? "bg-rose-500 text-white animate-pulse"
+                      : "bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700"
+                  }`}
                 >
-                  <MultimodelBenchmarkDashboard />
-                </Suspense>
-              )}
+                  {isListening ? (
+                    <>
+                      <MicOff className="h-3.5 w-3.5" />
+                      <span>Listening...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Mic className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>🎙️ Speak Command</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
 
-              {/* ===================================================================
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <input
+                type="text"
+                value={aiInput}
+                disabled={aiExecuting}
+                onChange={(e) => setAiInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleRunAiCommand();
+                }}
+                placeholder={
+                  isListening
+                    ? "Listening to your voice..."
+                    : "Example: Approve all pending restaurants, set commission to 8%, or calculate profit for 500 daily orders..."
+                }
+                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+              />
+              <button
+                type="button"
+                disabled={aiExecuting}
+                onClick={() => handleRunAiCommand()}
+                className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shrink-0 transition-colors"
+              >
+                {aiExecuting ? (
+                  <>
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                    <span>Executing in DB...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-3.5 w-3.5" />
+                    <span>Run Command</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* 1-Tap Executive Action Chips */}
+            <div className="space-y-1.5">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                ⚡ 1-Tap Executive Directives (Click to Execute in PostgreSQL):
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "Approve all pending restaurants in PostgreSQL",
+                  "Set restaurant commission to 8% and delivery fee to ₹25",
+                  "Calculate monthly profit for 300 orders/day at ₹350 AOV",
+                  "Verify CGST Sec 9(5) 5% and Income Tax Sec 194-O 0.1% TDS settings",
+                  "Enable ₹15 Rider Rain Bonus for active delivery zones",
+                  "Log high-priority alert for weekend food preparation rush",
+                ].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    disabled={aiExecuting}
+                    onClick={() => handleRunAiCommand(preset)}
+                    className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-[11px] font-semibold text-left transition-colors"
+                  >
+                    ⚡ {preset}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {aiHistory.length > 0 && (
+              <div className="space-y-2 pt-3 border-t border-slate-800">
+                {aiHistory.map((item) => {
+                  const isCurrentSpeaking = speakingId === item.id;
+                  return (
+                    <div
+                      key={item.id}
+                      className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-2 shadow-xs"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-emerald-400">
+                            Founder:
+                          </span>
+                          <span className="text-white font-semibold">
+                            {item.command}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-[10px] text-slate-500">
+                            {item.time}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleSpeakText(item.id, item.response)}
+                            className={`p-1.5 rounded-lg transition-colors ${
+                              isCurrentSpeaking
+                                ? "bg-emerald-500/30 text-emerald-300"
+                                : "bg-slate-800 hover:bg-slate-700 text-slate-300"
+                            }`}
+                            title="Listen to UMAR AI voice response"
+                          >
+                            {isCurrentSpeaking ? (
+                              <VolumeX className="h-3.5 w-3.5 text-emerald-400" />
+                            ) : (
+                              <Volume2 className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="bg-slate-950/70 p-3 rounded-lg border border-slate-800 text-slate-200 whitespace-pre-line leading-relaxed">
+                        {item.response}
+                      </div>
+
+                      {item.appliedAction && (
+                        <div className="flex items-center gap-2 pt-1 text-[11px]">
+                          <span className="px-2 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" />
+                            <span>Action Verified:</span>
+                          </span>
+                          <span className="text-slate-300 font-medium">
+                            {item.appliedAction.detail}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "umarai" && currentTabId === "teams" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <div>
+              <h2 className="text-base font-black text-slate-900">
+                👥 16 Specialist Platform Teams
+              </h2>
+              <p className="text-xs text-slate-600">
+                Every specialist team powers a real part of your platform. Click
+                any team to open its workspace.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {SIXTEEN_SPECIALIST_TEAMS.map((team) => (
+                <div
+                  key={team.id}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-3"
+                >
+                  <div>
+                    <h3 className="text-xs md:text-sm font-black text-slate-900">
+                      {team.name}
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-0.5">{team.role}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => selectWorld(team.worldId, team.tabId)}
+                    className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold shrink-0"
+                  >
+                    Open →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "umarai" && currentTabId === "benchmarks" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Multimodel AI Benchmark Dashboard"
+                emoji="⚡"
+              />
+            }
+          >
+            <MultimodelBenchmarkDashboard />
+          </Suspense>
+        )}
+
+        {/* ===================================================================
             WORLD 7 (`design`) SUB-CATEGORY TABS
         =================================================================== */}
-              {activeWorldId === "design" && currentTabId === "app-look" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Customer App UI Settings & Theme"
-                      emoji="📱"
-                    />
-                  }
-                >
-                  <CustomerAppUiSettings />
-                </Suspense>
-              )}
+        {activeWorldId === "design" && currentTabId === "app-look" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Customer App UI Settings & Theme"
+                emoji="📱"
+              />
+            }
+          >
+            <CustomerAppUiSettings />
+          </Suspense>
+        )}
 
-              {activeWorldId === "design" && currentTabId === "banners" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Ecosystem CMS Home Banners"
-                      emoji="📢"
-                    />
-                  }
-                >
-                  <EcosystemCMS />
-                </Suspense>
-              )}
+        {activeWorldId === "design" && currentTabId === "banners" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Ecosystem CMS Home Banners"
+                emoji="📢"
+              />
+            }
+          >
+            <EcosystemCMS />
+          </Suspense>
+        )}
 
-              {activeWorldId === "design" && currentTabId === "app-builder" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="App Builder Studio"
-                      emoji="🛠️"
-                    />
-                  }
-                >
-                  <AppBuilderStudio />
-                </Suspense>
-              )}
+        {activeWorldId === "design" && currentTabId === "app-builder" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="App Builder Studio"
+                emoji="🛠️"
+              />
+            }
+          >
+            <AppBuilderStudio />
+          </Suspense>
+        )}
 
-              {activeWorldId === "design" && currentTabId === "design-studio" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Design Studio"
-                      emoji="🎨"
-                    />
-                  }
-                >
-                  <DesignStudio />
-                </Suspense>
-              )}
+        {activeWorldId === "design" && currentTabId === "design-studio" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Design Studio"
+                emoji="🎨"
+              />
+            }
+          >
+            <DesignStudio />
+          </Suspense>
+        )}
 
-              {activeWorldId === "design" && currentTabId === "media-studio" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Media Production Studio"
-                      emoji="🎬"
-                    />
-                  }
-                >
-                  <MediaProductionStudio />
-                </Suspense>
-              )}
+        {activeWorldId === "design" && currentTabId === "media-studio" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Media Production Studio"
+                emoji="🎬"
+              />
+            }
+          >
+            <MediaProductionStudio />
+          </Suspense>
+        )}
 
-              {activeWorldId === "design" && currentTabId === "social-studio" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Social Publishing Studio"
-                      emoji="📲"
-                    />
-                  }
-                >
-                  <SocialPublishingStudio />
-                </Suspense>
-              )}
+        {activeWorldId === "design" && currentTabId === "social-studio" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Social Publishing Studio"
+                emoji="📲"
+              />
+            }
+          >
+            <SocialPublishingStudio />
+          </Suspense>
+        )}
 
-              {/* ===================================================================
+        {/* ===================================================================
             WORLD 8 (`connections`) SUB-CATEGORY TABS
         =================================================================== */}
-              {activeWorldId === "connections" && currentTabId === "plugins" && (
-                <Suspense
-                  fallback={
-                    <WorldSuspenseShield
-                      worldTitle="Payment, SMS & AI Plugin Connectors"
-                      emoji="🔑"
-                    />
-                  }
-                >
-                  <PluginConnectors />
-                </Suspense>
-              )}
+        {activeWorldId === "connections" && currentTabId === "plugins" && (
+          <Suspense
+            fallback={
+              <WorldSuspenseShield
+                worldTitle="Payment, SMS & AI Plugin Connectors"
+                emoji="🔑"
+              />
+            }
+          >
+            <PluginConnectors />
+          </Suspense>
+        )}
 
-              {activeWorldId === "connections" && currentTabId === "map-zones" && (
-                <AdminErrorBoundary inline sectionName="Live Zone Map">
-                  <Suspense fallback={<GodEyeMapSkeleton />}>
-                    <LazyGlobalGodEyeMap />
-                  </Suspense>
-                </AdminErrorBoundary>
-              )}
+        {activeWorldId === "connections" && currentTabId === "map-zones" && (
+          <AdminErrorBoundary inline sectionName="Live Zone Map">
+            <Suspense fallback={<GodEyeMapSkeleton />}>
+              <LazyGlobalGodEyeMap />
+            </Suspense>
+          </AdminErrorBoundary>
+        )}
 
-              {/* ===================================================================
+        {/* ===================================================================
             WORLD 9 (`alerts`) SUB-CATEGORY TABS — 100% REAL ALERTS ONLY!
         =================================================================== */}
-              {activeWorldId === "alerts" && currentTabId === "action-center" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        🚨 Live 6-Tier Action Center ({activeUnresolvedAlerts.length}{" "}
-                        Open · {allAlerts.length} Total)
-                      </h2>
-                      <p className="text-xs text-slate-600">
-                        Live alerts from your PostgreSQL database and Founder logs.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => selectSubTab("create-alert")}
-                      className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
-                    >
-                      <Plus className="h-3.5 w-3.5" /> Log New Operational Alert
-                    </button>
-                  </div>
+        {activeWorldId === "alerts" && currentTabId === "action-center" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🚨 Live 6-Tier Action Center ({activeUnresolvedAlerts.length}{" "}
+                  Open · {allAlerts.length} Total)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Live alerts from your PostgreSQL database and Founder logs.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => selectSubTab("create-alert")}
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <Plus className="h-3.5 w-3.5" /> Log New Operational Alert
+              </button>
+            </div>
 
-                  {/* 6-Tier Filter Bar */}
-                  <div className="flex flex-wrap gap-2">
-                    {(
-                      [
-                        "ALL",
-                        "EMERGENCY",
-                        "DANGER",
-                        "CRITICAL",
-                        "HIGH",
-                        "MEDIUM",
-                        "LOW",
-                      ] as const
-                    ).map((tier) => (
-                      <button
-                        key={tier}
-                        type="button"
-                        onClick={() => setSelectedAlertTierFilter(tier)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${selectedAlertTierFilter === tier
-                            ? "bg-slate-900 text-white border-slate-900"
-                            : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
+            {/* 6-Tier Filter Bar */}
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  "ALL",
+                  "EMERGENCY",
+                  "DANGER",
+                  "CRITICAL",
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW",
+                ] as const
+              ).map((tier) => (
+                <button
+                  key={tier}
+                  type="button"
+                  onClick={() => setSelectedAlertTierFilter(tier)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                    selectedAlertTierFilter === tier
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
+                  }`}
+                >
+                  {tier === "ALL" ? `All Tiers (${allAlerts.length})` : tier}
+                </button>
+              ))}
+            </div>
+
+            {filteredAlerts.length === 0 ? (
+              <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <CheckCircle2 className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
+                <p className="text-sm font-bold text-slate-900">
+                  Zero Alerts in This Tier
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Your PostgreSQL operations are clear for this filter.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredAlerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className={`p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                      alert.resolved
+                        ? "bg-slate-50 border-slate-200 opacity-70"
+                        : "bg-white border-slate-300 shadow-2xs"
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`text-[10px] font-black px-2.5 py-0.5 rounded uppercase ${
+                            alert.tier === "EMERGENCY" ||
+                            alert.tier === "DANGER" ||
+                            alert.tier === "CRITICAL"
+                              ? "bg-rose-100 text-rose-800 border border-rose-200"
+                              : alert.tier === "HIGH"
+                              ? "bg-amber-100 text-amber-800 border border-amber-200"
+                              : "bg-blue-100 text-blue-800 border border-blue-200"
                           }`}
-                      >
-                        {tier === "ALL" ? `All Tiers (${allAlerts.length})` : tier}
-                      </button>
-                    ))}
-                  </div>
-
-                  {filteredAlerts.length === 0 ? (
-                    <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
-                      <CheckCircle2 className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
-                      <p className="text-sm font-bold text-slate-900">
-                        Zero Alerts in This Tier
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Your PostgreSQL operations are clear for this filter.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {filteredAlerts.map((alert) => (
-                        <div
-                          key={alert.id}
-                          className={`p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${alert.resolved
-                              ? "bg-slate-50 border-slate-200 opacity-70"
-                              : "bg-white border-slate-300 shadow-2xs"
-                            }`}
                         >
-                          <div className="space-y-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span
-                                className={`text-[10px] font-black px-2.5 py-0.5 rounded uppercase ${alert.tier === "EMERGENCY" ||
-                                    alert.tier === "DANGER" ||
-                                    alert.tier === "CRITICAL"
-                                    ? "bg-rose-100 text-rose-800 border border-rose-200"
-                                    : alert.tier === "HIGH"
-                                      ? "bg-amber-100 text-amber-800 border border-amber-200"
-                                      : "bg-blue-100 text-blue-800 border border-blue-200"
-                                  }`}
-                              >
-                                {alert.tier}
-                              </span>
-                              <span className="text-xs font-bold text-slate-500">
-                                {alert.category}
-                              </span>
-                              <span className="text-[11px] text-slate-400">
-                                · {alert.createdAt}
-                              </span>
-                            </div>
-                            <h3 className="text-sm font-black text-slate-900">
-                              {alert.title}
-                            </h3>
-                            <p className="text-xs text-slate-600">
-                              <strong>What happened:</strong> {alert.whatHappened}
-                            </p>
-                            <p className="text-xs text-emerald-700 font-semibold">
-                              <strong>Next step:</strong> {alert.recommendedAction}
-                            </p>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-2 shrink-0">
-                            {alert.targetWorld && (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  selectWorld(
-                                    alert.targetWorld!,
-                                    alert.targetTab || "dashboard"
-                                  )
-                                }
-                                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold"
-                              >
-                                {alert.actionButtonLabel}
-                              </button>
-                            )}
-                            {!alert.resolved ? (
-                              <button
-                                type="button"
-                                onClick={() => handleResolveAlert(alert.id)}
-                                className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold"
-                              >
-                                ✓ Mark Resolved
-                              </button>
-                            ) : (
-                              <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">
-                                Resolved
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {activeWorldId === "alerts" && currentTabId === "create-alert" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <h2 className="text-base font-black text-slate-900">
-                    ➕ Log a Real Operational Alert (Saved to PostgreSQL)
-                  </h2>
-                  <form onSubmit={handleCreateCustomAlert} className="space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Priority Tier (6 Tiers)
-                        </label>
-                        <select
-                          value={newAlertTier}
-                          onChange={(e) =>
-                            setNewAlertTier(e.target.value as AlertTier)
-                          }
-                          className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white"
-                        >
-                          <option value="EMERGENCY">1. EMERGENCY</option>
-                          <option value="DANGER">2. DANGER</option>
-                          <option value="CRITICAL">3. CRITICAL</option>
-                          <option value="HIGH">4. HIGH</option>
-                          <option value="MEDIUM">5. MEDIUM</option>
-                          <option value="LOW">6. LOW</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Business Area
-                        </label>
-                        <input
-                          type="text"
-                          value={newAlertCategory}
-                          onChange={(e) => setNewAlertCategory(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Alert Title
-                      </label>
-                      <input
-                        type="text"
-                        value={newAlertTitle}
-                        onChange={(e) => setNewAlertTitle(e.target.value)}
-                        placeholder="Example: Call new restaurant partner in Indiranagar to verify FSSAI certificate"
-                        className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        What Happened / Context
-                      </label>
-                      <input
-                        type="text"
-                        value={newAlertDetails}
-                        onChange={(e) => setNewAlertDetails(e.target.value)}
-                        placeholder="Plain-English explanation..."
-                        className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Recommended Next Step
-                      </label>
-                      <input
-                        type="text"
-                        value={newAlertAction}
-                        onChange={(e) => setNewAlertAction(e.target.value)}
-                        placeholder="Action to resolve..."
-                        className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black"
-                    >
-                      Save Alert to Action Center
-                    </button>
-                  </form>
-                </section>
-              )}
-
-              {activeWorldId === "alerts" && currentTabId === "fair-policy" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <h2 className="text-base font-black text-slate-900">
-                    🛡️ Fair Partner Protection Rules (Zero Unfair Blocking)
-                  </h2>
-                  <p className="text-xs text-slate-600">
-                    OrderKing protects local restaurants and delivery riders from
-                    sudden automated account bans.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                      <h3 className="text-sm font-black text-slate-900">
-                        1. 14-Day FSSAI Renewal Grace
-                      </h3>
-                      <p className="text-xs text-slate-600 mt-1">
-                        If a restaurant has applied for FoSCoS renewal, their kitchen
-                        stays open for 14 days while they upload the new certificate.
-                      </p>
-                    </div>
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                      <h3 className="text-sm font-black text-slate-900">
-                        2. Zero Rider Penalty for Traffic or Rain
-                      </h3>
-                      <p className="text-xs text-slate-600 mt-1">
-                        Riders are never fined or blocked for weather delays, kitchen
-                        prep delays, or apartment gate waits.
-                      </p>
-                    </div>
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                      <h3 className="text-sm font-black text-slate-900">
-                        3. Human Review Before Any Pause
-                      </h3>
-                      <p className="text-xs text-slate-600 mt-1">
-                        Only the Founder can approve pausing a partner account after
-                        inspecting real evidence.
-                      </p>
-                    </div>
-                  </div>
-                </section>
-              )}
-
-              {/* ===================================================================
-            WORLD 10 (`settings`) SUB-CATEGORY TABS
-        =================================================================== */}
-              {activeWorldId === "settings" && currentTabId === "all-worlds" && (
-                <div className="space-y-5">
-                  {TEN_WORLDS.map((w) => (
-                    <WorldSettingsPanel
-                      key={w.id}
-                      world={w}
-                      values={worldSettings[w.id] || w.defaultSettings}
-                      onChange={(key, val) => updateField(w.id, key, val)}
-                      onSave={() => handleSaveWorldSettings(w.id)}
-                      isSaving={savingWorldId === w.id}
-                      boxTitle={`${w.emoji} ${w.title}`}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {activeWorldId === "settings" && currentTabId === "languages" && (
-                <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-                  <h2 className="text-base font-black text-slate-900">
-                    🗣️ 10 Indian Food Delivery Benchmark Languages
-                  </h2>
-                  <p className="text-xs text-slate-600">
-                    Active across Customer App, Restaurant Partner App, and Delivery
-                    Rider voice guidance.
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
-                    {INDIAN_23_LANGUAGES_LIST.map((lang) => (
-                      <div
-                        key={lang}
-                        className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 flex items-center justify-between"
-                      >
-                        <span>{lang}</span>
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {activeWorldId === "settings" && currentTabId === "activity-log" && (
-                <section className="bg-slate-950 text-white rounded-2xl border border-slate-800 p-5 shadow-xs space-y-3">
-                  <h2 className="text-base font-black text-white">
-                    📋 Real Session & PostgreSQL Activity Log
-                  </h2>
-                  <div className="space-y-2">
-                    {activityLog.map((entry) => (
-                      <div
-                        key={entry.id}
-                        className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs"
-                      >
-                        <span className="text-slate-200">{entry.text}</span>
-                        <span className="text-[10px] text-slate-400 shrink-0">
-                          {entry.time}
+                          {alert.tier}
+                        </span>
+                        <span className="text-xs font-bold text-slate-500">
+                          {alert.category}
+                        </span>
+                        <span className="text-[11px] text-slate-400">
+                          · {alert.createdAt}
                         </span>
                       </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Safety Fallback Card: Guaranteed explicit dashboard view if tab is ever unmatched */}
-              {(!currentWorld.tabs.some((t) => t.id === currentTabId) ||
-                !worldAllowedTabs.includes(currentTabId)) && (
-                  <section className="bg-white rounded-2xl border border-slate-200 p-8 shadow-xs text-center space-y-4">
-                    <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl mx-auto">
-                      {currentWorld.emoji}
-                    </div>
-                    <div>
-                      <h2 className="text-base font-black text-slate-900">
-                        {currentWorld.title}
-                      </h2>
-                      <p className="text-xs text-slate-600 mt-1 max-w-md mx-auto">
-                        {currentWorld.explanation}
+                      <h3 className="text-sm font-black text-slate-900">
+                        {alert.title}
+                      </h3>
+                      <p className="text-xs text-slate-600">
+                        <strong>What happened:</strong> {alert.whatHappened}
+                      </p>
+                      <p className="text-xs text-emerald-700 font-semibold">
+                        <strong>Next step:</strong> {alert.recommendedAction}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => selectSubTab("dashboard")}
-                      className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-xs transition-colors"
-                    >
-                      <span>📊 Open {currentWorld.navLabel} Dashboard</span>
-                    </button>
-                  </section>
-                )}
+
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      {alert.targetWorld && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            selectWorld(
+                              alert.targetWorld!,
+                              alert.targetTab || "dashboard"
+                            )
+                          }
+                          className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold"
+                        >
+                          {alert.actionButtonLabel}
+                        </button>
+                      )}
+                      {!alert.resolved ? (
+                        <button
+                          type="button"
+                          onClick={() => handleResolveAlert(alert.id)}
+                          className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold"
+                        >
+                          ✓ Mark Resolved
+                        </button>
+                      ) : (
+                        <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">
+                          Resolved
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "alerts" && currentTabId === "create-alert" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              ➕ Log a Real Operational Alert (Saved to PostgreSQL)
+            </h2>
+            <form onSubmit={handleCreateCustomAlert} className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Priority Tier (6 Tiers)
+                  </label>
+                  <select
+                    value={newAlertTier}
+                    onChange={(e) =>
+                      setNewAlertTier(e.target.value as AlertTier)
+                    }
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white"
+                  >
+                    <option value="EMERGENCY">1. EMERGENCY</option>
+                    <option value="DANGER">2. DANGER</option>
+                    <option value="CRITICAL">3. CRITICAL</option>
+                    <option value="HIGH">4. HIGH</option>
+                    <option value="MEDIUM">5. MEDIUM</option>
+                    <option value="LOW">6. LOW</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Business Area
+                  </label>
+                  <input
+                    type="text"
+                    value={newAlertCategory}
+                    onChange={(e) => setNewAlertCategory(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Alert Title
+                </label>
+                <input
+                  type="text"
+                  value={newAlertTitle}
+                  onChange={(e) => setNewAlertTitle(e.target.value)}
+                  placeholder="Example: Call new restaurant partner in Indiranagar to verify FSSAI certificate"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  What Happened / Context
+                </label>
+                <input
+                  type="text"
+                  value={newAlertDetails}
+                  onChange={(e) => setNewAlertDetails(e.target.value)}
+                  placeholder="Plain-English explanation..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Recommended Next Step
+                </label>
+                <input
+                  type="text"
+                  value={newAlertAction}
+                  onChange={(e) => setNewAlertAction(e.target.value)}
+                  placeholder="Action to resolve..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black"
+              >
+                Save Alert to Action Center
+              </button>
+            </form>
+          </section>
+        )}
+
+        {activeWorldId === "alerts" && currentTabId === "fair-policy" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              🛡️ Fair Partner Protection Rules (Zero Unfair Blocking)
+            </h2>
+            <p className="text-xs text-slate-600">
+              OrderKing protects local restaurants and delivery riders from
+              sudden automated account bans.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h3 className="text-sm font-black text-slate-900">
+                  1. 14-Day FSSAI Renewal Grace
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  If a restaurant has applied for FoSCoS renewal, their kitchen
+                  stays open for 14 days while they upload the new certificate.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h3 className="text-sm font-black text-slate-900">
+                  2. Zero Rider Penalty for Traffic or Rain
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  Riders are never fined or blocked for weather delays, kitchen
+                  prep delays, or apartment gate waits.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h3 className="text-sm font-black text-slate-900">
+                  3. Human Review Before Any Pause
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  Only the Founder can approve pausing a partner account after
+                  inspecting real evidence.
+                </p>
+              </div>
             </div>
-          </Suspense>
-        </AdminErrorBoundary>
-      </main>
+          </section>
+        )}
+
+        {/* ===================================================================
+            WORLD 10 (`settings`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "settings" && currentTabId === "all-worlds" && (
+          <div className="space-y-5">
+            {TEN_WORLDS.map((w) => (
+              <WorldSettingsPanel
+                key={w.id}
+                world={w}
+                values={worldSettings[w.id] || w.defaultSettings}
+                onChange={(key, val) => updateField(w.id, key, val)}
+                onSave={() => handleSaveWorldSettings(w.id)}
+                isSaving={savingWorldId === w.id}
+                boxTitle={`${w.emoji} ${w.title}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {activeWorldId === "settings" && currentTabId === "languages" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              🗣️ 10 Indian Food Delivery Benchmark Languages
+            </h2>
+            <p className="text-xs text-slate-600">
+              Active across Customer App, Restaurant Partner App, and Delivery
+              Rider voice guidance.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+              {INDIAN_23_LANGUAGES_LIST.map((lang) => (
+                <div
+                  key={lang}
+                  className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 flex items-center justify-between"
+                >
+                  <span>{lang}</span>
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "settings" && currentTabId === "activity-log" && (
+          <section className="bg-slate-950 text-white rounded-2xl border border-slate-800 p-5 shadow-xs space-y-3">
+            <h2 className="text-base font-black text-white">
+              📋 Real Session & PostgreSQL Activity Log
+            </h2>
+            <div className="space-y-2">
+              {activityLog.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs"
+                >
+                  <span className="text-slate-200">{entry.text}</span>
+                  <span className="text-[10px] text-slate-400 shrink-0">
+                    {entry.time}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Safety Fallback Card: Guaranteed explicit dashboard view if tab is ever unmatched */}
+            {(!currentWorld.tabs.some((t) => t.id === currentTabId) ||
+              !worldAllowedTabs.includes(currentTabId)) && (
+              <section className="bg-white rounded-2xl border border-slate-200 p-8 shadow-xs text-center space-y-4">
+                <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl mx-auto">
+                  {currentWorld.emoji}
+                </div>
+                <div>
+                  <h2 className="text-base font-black text-slate-900">
+                    {currentWorld.title}
+                  </h2>
+                  <p className="text-xs text-slate-600 mt-1 max-w-md mx-auto">
+                    {currentWorld.explanation}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => selectSubTab("dashboard")}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-xs transition-colors"
+                >
+                  <span>📊 Open {currentWorld.navLabel} Dashboard</span>
+                </button>
+              </section>
+            )}
+          </div>
+        </Suspense>
+      </AdminErrorBoundary>
+    </main>
 
       {/* =====================================================================
           ENTERPRISE DUAL-VERTICAL BOTTOM NAVIGATION BAR
@@ -5167,10 +5185,11 @@ function UmarOSDashboard() {
                   key={world.id}
                   type="button"
                   onClick={() => selectWorld(world.id, "dashboard")}
-                  className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all ${isSelected
+                  className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all ${
+                    isSelected
                       ? "bg-emerald-600 text-white font-black shadow-sm"
                       : "text-slate-400 hover:text-white hover:bg-slate-900 font-semibold"
-                    }`}
+                  }`}
                 >
                   <span className="text-base leading-none">{world.emoji}</span>
                   <span className="text-[10px] mt-1 tracking-tight truncate max-w-full">
@@ -5228,10 +5247,11 @@ function ActionCard({
 }) {
   return (
     <div
-      className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${urgent
+      className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${
+        urgent
           ? "bg-amber-50/70 border-amber-300"
           : "bg-slate-50/70 border-slate-200"
-        }`}
+      }`}
     >
       <div>
         <div className="flex items-center justify-between gap-2">
@@ -5324,12 +5344,14 @@ function WorldSettingsPanel({
                     type="button"
                     onClick={() => onChange(field.key, !currentVal)}
                     aria-label={field.label}
-                    className={`shrink-0 w-12 h-6 rounded-full flex items-center px-1 transition-colors ${currentVal ? "bg-emerald-600" : "bg-slate-300"
-                      }`}
+                    className={`shrink-0 w-12 h-6 rounded-full flex items-center px-1 transition-colors ${
+                      currentVal ? "bg-emerald-600" : "bg-slate-300"
+                    }`}
                   >
                     <span
-                      className={`w-4 h-4 bg-white rounded-full shadow-xs transition-transform ${currentVal ? "translate-x-6" : "translate-x-0"
-                        }`}
+                      className={`w-4 h-4 bg-white rounded-full shadow-xs transition-transform ${
+                        currentVal ? "translate-x-6" : "translate-x-0"
+                      }`}
                     />
                   </button>
                 )}

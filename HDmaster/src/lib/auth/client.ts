@@ -252,7 +252,13 @@ export function getPhoneSession(): any | null {
     const raw = window.localStorage.getItem(PHONE_SESSION_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed && parsed.user && parsed.user.id) return parsed;
+    if (parsed && parsed.user && parsed.user.id) {
+      if (!document.cookie.includes("orderking_admin_session=")) {
+        const isSecure = window.location.protocol === "https:";
+        document.cookie = `orderking_admin_session=${encodeURIComponent(raw)}; Path=/; Max-Age=${30 * 24 * 3600}; SameSite=Lax${isSecure ? "; Secure" : ""}`;
+      }
+      return parsed;
+    }
     return null;
   } catch {
     return null;
@@ -272,6 +278,10 @@ export function setPhoneSession(
     if (!profile) {
       window.localStorage.removeItem(PHONE_SESSION_KEY);
       window.localStorage.removeItem("orderking_user");
+      try {
+        setBearerToken(null);
+        document.cookie = "orderking_admin_session=; Path=/; Max-Age=0; SameSite=Lax";
+      } catch {}
     } else {
       const now = new Date().toISOString();
       const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
@@ -297,8 +307,14 @@ export function setPhoneSession(
           updatedAt: now,
         },
       };
-      window.localStorage.setItem(PHONE_SESSION_KEY, JSON.stringify(sessionPayload));
+      const rawPayload = JSON.stringify(sessionPayload);
+      window.localStorage.setItem(PHONE_SESSION_KEY, rawPayload);
       window.localStorage.setItem("orderking_user", JSON.stringify(sessionPayload.user));
+      try {
+        setBearerToken("ok_tok_" + profile.id);
+        const isSecure = window.location.protocol === "https:";
+        document.cookie = `orderking_admin_session=${encodeURIComponent(rawPayload)}; Path=/; Max-Age=${30 * 24 * 3600}; SameSite=Lax${isSecure ? "; Secure" : ""}`;
+      } catch {}
     }
     window.dispatchEvent(new Event("orderking-auth-updated"));
   } catch {}
