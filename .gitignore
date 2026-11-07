@@ -64,3 +64,6 @@ scripts/inspect-*.cjs
 scripts/verify-*.cjs
 scripts/scratch/
 
+
+telecom_secrets.json
+*_secrets.json
