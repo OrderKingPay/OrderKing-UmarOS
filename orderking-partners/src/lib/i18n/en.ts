@@ -1,7 +1,7 @@
 export const en = {
   app: {
     name: "Order King Partner",
-    tagline: "Your restaurant. Your orders. Your settlement.",
+    tagline: "Merchant Operations",
     simulated: "SANDBOX",
     real: "LIVE",
     verified: "VERIFIED",

@@ -6,7 +6,7 @@ export const te: MessageTree = {
   app: {
     ...en.app,
     name: "ఆర్డర్ కింగ్ భాగస్వామి",
-    tagline: "మీ వంటగది. మీ ఆర్డర్లు. మీ సెటిల్మెంట్.",
+    tagline: "మర్చంట్ ఆపరేషన్స్",
   },
   nav: {
     ...en.nav,

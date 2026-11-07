@@ -3,7 +3,7 @@ import type { MessageTree } from "./en";
 export const bn: MessageTree = {
   app: {
     name: "অর্ডার কিং পার্টনার",
-    tagline: "আপনার রেস্তোরাঁ। আপনার অর্ডার। আপনার সেটেলমেন্ট।",
+    tagline: "মার্চেন্ট অপারেশনস",
     simulated: "স্যান্ডবক্স",
     real: "লাইভ কিচেন",
     verified: "যাচাইকৃত পার্টনার",

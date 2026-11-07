@@ -6,7 +6,7 @@ export const ta: MessageTree = {
   app: {
     ...en.app,
     name: "ஆர்டர் கிங் பார்ட்னர்",
-    tagline: "உங்கள் சமையலறை. உங்கள் ஆர்டர்கள். உங்கள் தீர்வு.",
+    tagline: "வணிகர் செயல்பாடுகள்",
   },
   nav: {
     ...en.nav,

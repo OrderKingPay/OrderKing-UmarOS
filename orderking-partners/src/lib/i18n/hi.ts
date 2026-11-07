@@ -6,7 +6,7 @@ export const hi: MessageTree = {
   app: {
     ...en.app,
     name: "ऑर्डर किंग पार्टनर",
-    tagline: "आपकी रसोई। आपके ऑर्डर्स। आपका सेटलमेंट।",
+    tagline: "मर्चेंट ऑपरेशंस",
   },
   nav: {
     ...en.nav,

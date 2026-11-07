@@ -151,7 +151,7 @@ export function VendorShell({
                 {branding.appName || t("app.name")}
               </div>
               <div className="text-xs text-gray-500 truncate max-w-[150px]">
-                {restaurantName ?? (branding.tagline || t("app.tagline"))}
+                {restaurantName || "Merchant Operations"}
               </div>
             </div>
           </div>
