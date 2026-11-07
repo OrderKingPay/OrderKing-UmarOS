@@ -30,10 +30,10 @@ export function OfflineBanner({ stale: _stale }: { stale?: boolean }) {
     return (
       <div
         role="status"
-        className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b border-rose-500/40 bg-rose-950 px-4 py-2 text-xs font-semibold text-rose-200 shadow-md backdrop-blur-sm"
+        className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-900 shadow-sm"
       >
         <div className="flex items-center gap-2">
-          <WifiOff className="size-4 text-rose-400 shrink-0 animate-pulse" />
+          <WifiOff className="size-4 text-rose-600 shrink-0" />
           <span>
             Kitchen Wi-Fi / Mobile Network Offline. Live orders and KOT actions are queued safely in offline local storage.
           </span>
@@ -41,7 +41,7 @@ export function OfflineBanner({ stale: _stale }: { stale?: boolean }) {
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="rounded bg-rose-800 hover:bg-rose-700 px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase text-white transition shrink-0"
+          className="rounded bg-rose-600 hover:bg-rose-700 px-2.5 py-1 text-[11px] font-bold text-white transition shrink-0"
         >
           Reconnect
         </button>
@@ -52,15 +52,15 @@ export function OfflineBanner({ stale: _stale }: { stale?: boolean }) {
   return (
     <div
       role="status"
-      className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b border-amber-500/40 bg-amber-950/90 px-4 py-1.5 text-xs font-semibold text-amber-200 shadow-sm backdrop-blur-sm"
+      className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900 shadow-xs"
     >
       <div className="flex items-center gap-2">
-        <AlertTriangle className="size-3.5 text-amber-400 shrink-0" />
+        <AlertTriangle className="size-3.5 text-amber-600 shrink-0" />
         <span>
           Slow Network (2G / EDGE) Detected. Kitchen portal is operating in low-latency cached mode.
         </span>
       </div>
-      <span className="text-[10px] font-mono uppercase text-amber-400 bg-amber-900/50 px-1.5 py-0.5 rounded">
+      <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
         Low-Bandwidth Mode
       </span>
     </div>

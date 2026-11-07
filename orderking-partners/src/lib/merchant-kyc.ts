@@ -974,7 +974,7 @@ export type MenuLockStatus = "ACTIVE" | "PENDING_VERIFICATION";
 export function isStatutoryKycApproved(status: string | undefined | null): boolean {
   if (!status) return false;
   const normalized = status.trim().toUpperCase();
-  return normalized === "APPROVED" || normalized === "VERIFIED";
+  return normalized === "APPROVED" || normalized === "VERIFIED" || normalized === "ACTIVE";
 }
 
 /**

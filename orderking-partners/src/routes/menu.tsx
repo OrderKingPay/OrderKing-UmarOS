@@ -304,8 +304,8 @@ function MenuPage() {
   });
   const isMenuLocked = Boolean(menu.data?.isMenuLocked);
   const menuStatus = menu.data?.menuStatus ?? "PENDING_VERIFICATION";
-  const canEdit = vendor.role ? can(vendor.role, "menu.edit") && !isMenuLocked : false;
-  const canAvail = vendor.role ? can(vendor.role, "availability.edit") && !isMenuLocked : false;
+  const canEdit = vendor.role ? can(vendor.role, "menu.edit") : false;
+  const canAvail = vendor.role ? can(vendor.role, "availability.edit") : false;
 
   const [catName, setCatName] = useState("");
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
@@ -1237,33 +1237,30 @@ function MenuPage() {
 
       {/* Statutory KYC Menu Locking Banner: Locked in PENDING_VERIFICATION */}
       {isMenuLocked && (
-        <div className="rounded-xl border border-amber-500/40 bg-amber-950/20 p-4 shadow-sm space-y-3">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-amber-500/10 border border-amber-500/30 p-2 text-amber-400 shrink-0">
-                <Lock className="size-5" />
+              <div className="rounded-lg bg-amber-100 border border-amber-300 p-2 text-amber-700 shrink-0">
+                <ShieldCheck className="size-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="inline-block size-2 rounded-full bg-amber-400 animate-pulse" />
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-bold">
-                    MENU STATUS: LOCKED ({menuStatus})
+                  <span className="inline-block size-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800">
+                    Menu Under Review ({menuStatus})
                   </span>
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 mt-0.5">
-                  Statutory KYC Verification Pending
+                  Storefront Verification in Progress
                 </h3>
                 <p className="text-xs text-gray-700 mt-1 max-w-2xl leading-relaxed">
-                  Under Indian statutory regulations (FSSAI 14-digit registration, PAN, Bank IFSC, and GSTIN rules),
-                  this restaurant's digital menu is locked in{" "}
-                  <span className="font-mono font-semibold text-amber-300">PENDING_VERIFICATION</span> state.
-                  Live customer catalogue display and item editing are locked until statutory KYC is approved.
+                  You can freely add, edit, and organize your dishes and categories. Your menu will become visible to customers for live orders once onboarding review is approved.
                 </p>
               </div>
             </div>
-            <Button asChild size="sm" className="bg-amber-600 hover:bg-amber-500 text-white shrink-0 font-medium">
+            <Button asChild size="sm" className="bg-[#E23744] hover:bg-[#d32f2f] text-white shrink-0 font-semibold rounded-xl">
               <Link to="/onboarding">
-                <ShieldCheck className="mr-1.5 size-4" /> Complete Statutory KYC
+                <ShieldCheck className="mr-1.5 size-4" /> View KYC Status
               </Link>
             </Button>
           </div>

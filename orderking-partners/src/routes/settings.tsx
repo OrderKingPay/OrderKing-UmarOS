@@ -398,7 +398,7 @@ function SettingsPage() {
         <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
-              <Building2 className="size-5 text-emerald-400" />
+              <Building2 className="size-5 text-emerald-700" />
               <div>
                 <h2 className="font-display text-base font-bold text-gray-900">
                   Multi-Outlet Locations &amp; Switcher
@@ -409,15 +409,15 @@ function SettingsPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-center">
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
+              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
                 {memberships.length} {memberships.length === 1 ? "OUTLET" : "OUTLETS"}
               </span>
             </div>
           </div>
 
           {outletSwitchMsg ? (
-            <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-3 text-xs text-emerald-300 flex items-center gap-2">
-              <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-50 p-3 text-xs text-emerald-800 flex items-center gap-2">
+              <CheckCircle2 className="size-4 shrink-0 text-emerald-700" />
               <span>{outletSwitchMsg}</span>
             </div>
           ) : null}
@@ -426,11 +426,11 @@ function SettingsPage() {
           {memberships.length > 1 ? (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50">
               <div className="flex items-center gap-2">
-                <Store className="size-4 text-emerald-400" />
+                <Store className="size-4 text-emerald-700" />
                 <span className="text-xs font-semibold text-gray-800">Quick Location Switcher:</span>
               </div>
               <select
-                className="h-9 rounded-lg border border-gray-200 bg-white shadow-xs px-3 text-xs font-semibold text-emerald-300 outline-none focus:border-emerald-500"
+                className="h-9 rounded-lg border border-gray-200 bg-white shadow-xs px-3 text-xs font-semibold text-emerald-800 outline-none focus:border-emerald-500"
                 value={vendor.restaurantId ?? ""}
                 onChange={(e) => {
                   const m = memberships.find((x: any) => x.restaurantId === e.target.value);
@@ -455,7 +455,7 @@ function SettingsPage() {
                   key={m.restaurantId}
                   className={`rounded-xl border p-4 space-y-3 transition ${
                     isActive
-                      ? "border-emerald-500/50 bg-emerald-950/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                      ? "border-emerald-500/50 bg-emerald-50 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
                       : "border-gray-200 bg-gray-50 hover:border-gray-300"
                   }`}
                 >
@@ -471,7 +471,7 @@ function SettingsPage() {
                       </div>
                     </div>
                     {isActive ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
                         <CheckCircle2 className="size-3" /> ACTIVE
                       </span>
                     ) : (
@@ -488,7 +488,7 @@ function SettingsPage() {
                     </div>
                     <div>
                       <span className="text-gray-500">Status: </span>
-                      <span className="font-mono text-emerald-400">{m.verificationStatus}</span>
+                      <span className="font-mono text-emerald-700">{m.verificationStatus}</span>
                     </div>
                     <div>
                       <span className="text-gray-500">Delivery Commission: </span>
@@ -496,7 +496,7 @@ function SettingsPage() {
                     </div>
                     <div>
                       <span className="text-gray-500">Ledger: </span>
-                      <span className="font-mono text-emerald-400">{m.dataLabel}</span>
+                      <span className="font-mono text-emerald-700">{m.dataLabel}</span>
                     </div>
                   </div>
 
@@ -510,7 +510,7 @@ function SettingsPage() {
                       Switch to This Location
                     </Button>
                   ) : (
-                    <div className="text-[11px] text-center font-medium text-emerald-400 py-1 bg-emerald-500/10 rounded-lg">
+                    <div className="text-[11px] text-center font-medium text-emerald-700 py-1 bg-emerald-500/10 rounded-lg">
                       Currently Managing This Location
                     </div>
                   )}
@@ -525,7 +525,7 @@ function SettingsPage() {
           <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2.5">
-                <Cpu className="size-5 text-emerald-400" />
+                <Cpu className="size-5 text-emerald-700" />
                 <div>
                   <h2 className="font-display text-base font-bold text-gray-900">
                     Restaurant Health &amp; Operational Readiness
@@ -548,32 +548,32 @@ function SettingsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                 <div className="text-[10px] font-mono text-gray-500">14-DIGIT FSSAI LICENSE</div>
-                <div className={`font-bold mt-1 ${fssaiReady ? "text-emerald-400" : "text-amber-400"}`}>
+                <div className={`font-bold mt-1 ${fssaiReady ? "text-emerald-700" : "text-amber-700"}`}>
                   {fssaiReady ? `Verified (${r?.fssai_number})` : "Action Needed in KYC"}
                 </div>
               </div>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                 <div className="text-[10px] font-mono text-gray-500">PAYOUT BANK ACCOUNT</div>
-                <div className={`font-bold mt-1 ${bankReady ? "text-emerald-400" : "text-amber-400"}`}>
+                <div className={`font-bold mt-1 ${bankReady ? "text-emerald-700" : "text-amber-700"}`}>
                   {bankReady ? `Ready (${r?.bank_ifsc})` : "Action Needed in KYC"}
                 </div>
               </div>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                 <div className="text-[10px] font-mono text-gray-500">PAN (TDS §194-O)</div>
-                <div className={`font-bold mt-1 ${panReady ? "text-emerald-400" : "text-amber-400"}`}>
+                <div className={`font-bold mt-1 ${panReady ? "text-emerald-700" : "text-amber-700"}`}>
                   {panReady ? `Linked (${r?.pan})` : "Action Needed in KYC"}
                 </div>
               </div>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                 <div className="text-[10px] font-mono text-gray-500">KITCHEN STATUS</div>
-                <div className={`font-bold mt-1 ${r?.emergency_closed ? "text-rose-400" : "text-emerald-400"}`}>
+                <div className={`font-bold mt-1 ${r?.emergency_closed ? "text-rose-600" : "text-emerald-700"}`}>
                   {r?.emergency_closed ? "Paused (Tap to Restore)" : "Active & Accepting Orders"}
                 </div>
               </div>
             </div>
 
             {diagMsg ? (
-              <div className="text-xs text-emerald-400 flex items-center gap-1.5">
+              <div className="text-xs text-emerald-700 flex items-center gap-1.5">
                 <CheckCircle2 className="size-4" />
                 <span>{diagMsg}</span>
               </div>
@@ -584,7 +584,7 @@ function SettingsPage() {
         <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
-              <Scale className="size-5 text-emerald-400" />
+              <Scale className="size-5 text-emerald-700" />
               <div>
                 <h2 className="font-display text-base font-bold text-gray-900">
                   Partner Commission &amp; Revenue Rates
@@ -595,7 +595,7 @@ function SettingsPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-center">
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
+              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
                 STANDARD: {(standardDeliveryBps / 100).toFixed(1)}% ({standardDeliveryBps} BPS) · OUTLET: {(effectiveBps / 100).toFixed(1)}%
               </span>
             </div>
@@ -605,7 +605,7 @@ function SettingsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
               <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Standard Delivery Rate</div>
-              <div className="text-2xl font-bold font-display text-emerald-400">
+              <div className="text-2xl font-bold font-display text-emerald-700">
                 {(standardDeliveryBps / 100).toFixed(1)}%
               </div>
               <div className="text-[11px] text-gray-500">
@@ -613,11 +613,11 @@ function SettingsPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-300">Active Outlet Rate</div>
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-50 p-3.5 space-y-1">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-800">Active Outlet Rate</div>
               <div className="text-2xl font-bold font-display text-gray-900 flex items-baseline gap-1.5">
                 <span>{(effectiveBps / 100).toFixed(1)}%</span>
-                <span className="text-xs font-mono text-emerald-400 font-normal">({effectiveBps} bps)</span>
+                <span className="text-xs font-mono text-emerald-700 font-normal">({effectiveBps} bps)</span>
               </div>
               <div className="text-[11px] text-gray-700">
                 {effectiveBps === dineInBps
@@ -630,7 +630,7 @@ function SettingsPage() {
 
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
               <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Dine-In Commission</div>
-              <div className="text-2xl font-bold font-display text-emerald-400">
+              <div className="text-2xl font-bold font-display text-emerald-700">
                 {(dineInBps / 100).toFixed(1)}%
               </div>
               <div className="text-[11px] text-gray-500">
@@ -639,137 +639,24 @@ function SettingsPage() {
             </div>
           </div>
 
-          {/* Interactive Tier Selector */}
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs font-semibold text-gray-800">
-                Select Delivery Tier for This Outlet:
-              </Label>
-              <span className="text-[10px] font-mono text-gray-500">{deliveryTiers.length} CURATED TIERS</span>
+          {/* Commercial Payout Schedule & Terms */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="size-4 text-emerald-700" />
+              <span className="font-bold text-xs text-gray-900">
+                Commercial Payout Terms &amp; Settlement Schedule:
+              </span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-              {deliveryTiers.map((tier) => {
-                const isSelected = effectiveBps === tier.bps;
-                const isDefault = tier.bps === standardDeliveryBps;
-                return (
-                  <button
-                    key={tier.key}
-                    type="button"
-                    disabled={!isAuthorizedToNegotiate}
-                    onClick={() => setNegotiatedBps(tier.bps)}
-                    className={`rounded-xl border p-3 text-left transition flex flex-col justify-between ${
-                      isSelected
-                        ? "border-emerald-500 bg-emerald-500/15 text-gray-900 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-                        : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
-                    } ${!isAuthorizedToNegotiate ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-bold text-xs">{tier.percentage}%</span>
-                        {isSelected ? (
-                          <span className="text-[10px] font-mono text-emerald-400 font-semibold flex items-center gap-0.5">
-                            <Check className="size-3" /> ACTIVE
-                          </span>
-                        ) : isDefault ? (
-                          <span className="text-[10px] font-mono text-amber-400 font-semibold">DEFAULT</span>
-                        ) : (
-                          <span className="text-[10px] font-mono text-gray-400">{tier.bps} bps</span>
-                        )}
-                      </div>
-                      <div className="text-xs font-semibold text-gray-900 mt-1">{tier.label}</div>
-                    </div>
-                    <div className="text-[10px] text-gray-500 mt-2 leading-relaxed">{tier.description}</div>
-                  </button>
-                );
-              })}
-            </div>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Delivery orders are processed with the platform standard 10% logistics commission covering rider delivery, real-time live map tracking, and customer payment gateway costs. Dine-in and takeaway orders have zero commission (0%). All net sales are settled directly into your registered bank account on a daily T+1 schedule (excluding bank holidays).
+            </p>
           </div>
-
-          {/* Negotiated Rate Input (Slider & Number) */}
-          {isAuthorizedToNegotiate ? (
-            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/80 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <Sliders className="size-4 text-emerald-400" />
-                  <span className="font-bold text-xs text-gray-900">
-                    Custom Negotiated Rate (0% to 35%):
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {negotiatedBps !== null && negotiatedBps !== contractedBps ? (
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => setNegotiatedBps(null)}
-                      className="h-7 text-[10px] text-gray-700 border-gray-300 hover:text-gray-900"
-                    >
-                      Reset to Contracted ({(contractedBps / 100).toFixed(1)}%)
-                    </Button>
-                  ) : null}
-                  <Button
-                    size="sm"
-                    disabled={commissionSaving || !vendor.restaurantId}
-                    onClick={() => void handleSaveNegotiatedCommission()}
-                    className="h-8 bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs font-semibold px-3"
-                  >
-                    {commissionSaving ? "Saving Rate..." : "Save Negotiated Commission Rate"}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-4 items-center pt-1">
-                <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] font-mono text-gray-500">
-                    <span>{dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} (Dine-In)</span>
-                    <span>18% (Enterprise)</span>
-                    <span className="text-emerald-400 font-bold">{(standardDeliveryBps / 100).toFixed(0)}% (Standard Default)</span>
-                    <span>35% (Max)</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={35}
-                    step={0.5}
-                    value={effectiveBps / 100}
-                    onChange={(e) => setNegotiatedBps(Math.round(Number(e.target.value) * 100))}
-                    className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-                  />
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Input
-                    type="number"
-                    min={0}
-                    max={35}
-                    step={0.1}
-                    value={(effectiveBps / 100).toFixed(1)}
-                    onChange={(e) => {
-                      const val = Math.min(35, Math.max(0, Number(e.target.value)));
-                      setNegotiatedBps(Math.round(val * 100));
-                    }}
-                    className="h-9 text-xs bg-white border-gray-200 font-mono text-center text-emerald-400 font-bold"
-                  />
-                  <span className="text-xs font-bold text-gray-500">%</span>
-                </div>
-              </div>
-
-              {commissionMsg ? (
-                <div className="text-xs text-emerald-400 flex items-center gap-1.5 pt-1">
-                  <CheckCircle2 className="size-4 shrink-0" />
-                  <span>{commissionMsg}</span>
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <div className="rounded-xl border border-gray-200 bg-white/40 p-3 text-xs text-gray-500">
-              {t("settings.financialLocked")} Contact your restaurant owner or manager to adjust delivery commission tiers.
-            </div>
-          )}
 
           {/* Live Itemized Payout Calculation Preview */}
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/80 pb-2.5">
               <div className="flex items-center gap-2">
-                <Calculator className="size-4 text-emerald-400" />
+                <Calculator className="size-4 text-emerald-700" />
                 <span className="font-bold text-xs text-gray-900">
                   Live Settlement Breakdown Preview ({(effectiveBps / 100).toFixed(1)}% Commission):
                 </span>
@@ -808,11 +695,11 @@ function SettingsPage() {
                   <span className="text-gray-700">
                     Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
                   </span>
-                  <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 rounded">
+                  <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 px-1.5 rounded">
                     {effectiveBps} BPS
                   </span>
                 </div>
-                <span className="font-mono font-semibold text-rose-400">
+                <span className="font-mono font-semibold text-rose-600">
                   - {formatINR(previewBreakdown.commissionPaise)}
                 </span>
               </div>
@@ -825,20 +712,20 @@ function SettingsPage() {
                     ({formatINR(previewBreakdown.commissionCgstPaise)} CGST + {formatINR(previewBreakdown.commissionSgstPaise)} SGST)
                   </span>
                 </div>
-                <span className="font-mono font-semibold text-rose-400">
+                <span className="font-mono font-semibold text-rose-600">
                   - {formatINR(previewBreakdown.commissionGstPaise)}
                 </span>
               </div>
 
               {/* 5% §9(5) Food GST */}
-              <div className="flex items-center justify-between py-1 border-b border-gray-200/60 bg-emerald-950/20 px-2 rounded">
+              <div className="flex items-center justify-between py-1 border-b border-gray-200/60 bg-emerald-50 px-2 rounded">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-emerald-300 font-medium">5% §9(5) Food GST (CGST Act 2017)</span>
-                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                  <span className="text-emerald-800 font-medium">5% §9(5) Food GST (CGST Act 2017)</span>
+                  <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
                     REMITTED BY ORDER KING / NOT DEBITED
                   </span>
                 </div>
-                <span className="font-mono font-semibold text-emerald-400">
+                <span className="font-mono font-semibold text-emerald-700">
                   {formatINR(previewBreakdown.sec9_5GstPaise)}
                 </span>
               </div>
@@ -851,7 +738,7 @@ function SettingsPage() {
                     ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST credited in GSTR-8)
                   </span>
                 </div>
-                <span className="font-mono font-semibold text-rose-400">
+                <span className="font-mono font-semibold text-rose-600">
                   - {formatINR(previewBreakdown.tcsSec52Paise)}
                 </span>
               </div>
@@ -862,7 +749,7 @@ function SettingsPage() {
                   <span className="text-gray-700">1% TDS under Section 194-O Income Tax Act 1961</span>
                   <span className="text-[10px] font-mono text-gray-500">(Deposited against your registered PAN)</span>
                 </div>
-                <span className="font-mono font-semibold text-rose-400">
+                <span className="font-mono font-semibold text-rose-600">
                   - {formatINR(previewBreakdown.tdsSec194OPaise)}
                 </span>
               </div>
@@ -870,7 +757,7 @@ function SettingsPage() {
               {/* Total Deductions */}
               <div className="flex items-center justify-between py-1.5 border-b border-gray-200 font-semibold text-gray-700">
                 <span>Total Deductions (Excl. 9(5) Remitted by Order King)</span>
-                <span className="font-mono text-rose-400">
+                <span className="font-mono text-rose-600">
                   - {formatINR(previewBreakdown.totalDeductionsPaise)}
                 </span>
               </div>
@@ -878,14 +765,14 @@ function SettingsPage() {
               {/* Net Restaurant Payable */}
               <div className="flex items-center justify-between pt-2.5">
                 <div>
-                  <div className="text-xs uppercase tracking-wider font-bold text-emerald-300">
+                  <div className="text-xs uppercase tracking-wider font-bold text-emerald-800">
                     Net Restaurant Payout (NRP)
                   </div>
                   <div className="text-[10px] font-mono text-gray-500">
                     Daily bank disbursement amount after statutory deductions
                   </div>
                 </div>
-                <div className="text-2xl font-bold font-display text-emerald-400 font-mono">
+                <div className="text-2xl font-bold font-display text-emerald-700 font-mono">
                   {formatINR(previewBreakdown.netRestaurantPayablePaise)}
                 </div>
               </div>
@@ -947,7 +834,7 @@ function SettingsPage() {
           <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2.5">
-                <MessageSquare className="size-5 text-emerald-400" />
+                <MessageSquare className="size-5 text-emerald-700" />
                 <div>
                   <h2 className="font-display text-base font-bold text-gray-900">
                     Daily Sales Reports &amp; Kitchen Alerts
@@ -957,17 +844,17 @@ function SettingsPage() {
                   </p>
                 </div>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
+              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
                 REAL-TIME DISPATCH
               </span>
             </div>
 
             {/* Test Dispatch Feedback */}
             {testDispatchMsg ? (
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-3 text-xs text-emerald-300 flex items-start gap-2">
-                <CheckCircle2 className="size-4 shrink-0 text-emerald-400 mt-0.5" />
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-50 p-3 text-xs text-emerald-800 flex items-start gap-2">
+                <CheckCircle2 className="size-4 shrink-0 text-emerald-700 mt-0.5" />
                 <div>
-                  <div className="font-bold uppercase tracking-wider text-[10px] text-emerald-400">
+                  <div className="font-bold uppercase tracking-wider text-[10px] text-emerald-700">
                     {testDispatchMsg.channel} Test Dispatch Result
                   </div>
                   <div className="mt-0.5">{testDispatchMsg.text}</div>
@@ -981,10 +868,10 @@ function SettingsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
                     <div className="flex items-center gap-2">
-                      <MessageSquare className="size-4 text-emerald-400" />
+                      <MessageSquare className="size-4 text-emerald-700" />
                       <span className="font-bold text-sm text-gray-900">WhatsApp Shift Summary</span>
                     </div>
-                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 px-2 py-0.5 rounded">
                       NIGHTLY 23:00 IST
                     </span>
                   </div>
@@ -1019,10 +906,10 @@ function SettingsPage() {
 
                   {/* Shift Report Inclusions */}
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                    <div className="text-emerald-400">✓ Net Sales &amp; Revenue</div>
-                    <div className="text-emerald-400">✓ 5% Food GST Remitted</div>
-                    <div className="text-emerald-400">✓ Estimated Net Payout</div>
-                    <div className="text-emerald-400">✓ Delivered Order Count</div>
+                    <div className="text-emerald-700">✓ Net Sales &amp; Revenue</div>
+                    <div className="text-emerald-700">✓ 5% Food GST Remitted</div>
+                    <div className="text-emerald-700">✓ Estimated Net Payout</div>
+                    <div className="text-emerald-700">✓ Delivered Order Count</div>
                   </div>
                 </div>
 
@@ -1031,9 +918,9 @@ function SettingsPage() {
                   variant="secondary"
                   disabled={testingChannel === "whatsapp"}
                   onClick={() => void handleTestNotification("whatsapp")}
-                  className="w-full text-xs border-gray-300 hover:border-emerald-500/50 hover:bg-emerald-950/40"
+                  className="w-full text-xs border-gray-300 hover:border-emerald-500/50 hover:bg-emerald-50"
                 >
-                  <Send className="mr-1.5 size-3.5 text-emerald-400" />
+                  <Send className="mr-1.5 size-3.5 text-emerald-700" />
                   {testingChannel === "whatsapp" ? "Dispatching WhatsApp..." : "Send Test WhatsApp Report"}
                 </Button>
               </div>
@@ -1043,10 +930,10 @@ function SettingsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
                     <div className="flex items-center gap-2">
-                      <AlertTriangle className="size-4 text-amber-400" />
+                      <AlertTriangle className="size-4 text-amber-700" />
                       <span className="font-bold text-sm text-gray-900">SMS Rush &amp; Kitchen Alerts</span>
                     </div>
-                    <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 px-2 py-0.5 rounded">
                       PRIORITY SMS
                     </span>
                   </div>
@@ -1081,10 +968,10 @@ function SettingsPage() {
 
                   {/* SMS Inclusions */}
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                    <div className="text-amber-400">✓ Kitchen Rush Surge Alert</div>
-                    <div className="text-amber-400">✓ Sold-Out (86) Dish Alert</div>
-                    <div className="text-amber-400">✓ Prep Buffer Adjustments</div>
-                    <div className="text-amber-400">✓ Emergency Pause Alert</div>
+                    <div className="text-amber-700">✓ Kitchen Rush Surge Alert</div>
+                    <div className="text-amber-700">✓ Sold-Out (86) Dish Alert</div>
+                    <div className="text-amber-700">✓ Prep Buffer Adjustments</div>
+                    <div className="text-amber-700">✓ Emergency Pause Alert</div>
                   </div>
                 </div>
 
@@ -1095,7 +982,7 @@ function SettingsPage() {
                   onClick={() => void handleTestNotification("sms")}
                   className="w-full text-xs border-gray-300 hover:border-amber-500/50 hover:bg-amber-950/40"
                 >
-                  <Send className="mr-1.5 size-3.5 text-amber-400" />
+                  <Send className="mr-1.5 size-3.5 text-amber-700" />
                   {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
                 </Button>
               </div>
@@ -1164,7 +1051,7 @@ function SettingsPage() {
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200">
-              <div className="text-xs text-emerald-400 font-medium">
+              <div className="text-xs text-emerald-700 font-medium">
                 {notifMsg ?? ""}
               </div>
               <Button
@@ -1182,7 +1069,7 @@ function SettingsPage() {
         <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2">
-              <Globe className="size-4 text-emerald-400" />
+              <Globe className="size-4 text-emerald-700" />
               <div>
                 <h2 className="font-display text-base font-bold text-gray-900">
                   All 22 Scheduled Languages of India + English ({ALL_INDIAN_LANGUAGES.length} Languages)
@@ -1226,7 +1113,7 @@ function SettingsPage() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-sm">{item.native}</span>
-                    <span className="text-[10px] font-mono uppercase text-emerald-400">{item.code}</span>
+                    <span className="text-[10px] font-mono uppercase text-emerald-700">{item.code}</span>
                   </div>
                   <div className="text-[11px] text-gray-500 mt-0.5">{item.label} · {item.region}</div>
                 </button>
@@ -1245,7 +1132,7 @@ function SettingsPage() {
           <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users className="size-4 text-emerald-400" />
+                <Users className="size-4 text-emerald-700" />
                 <h2 className="font-display text-base font-bold text-gray-900">{t("settings.staff")}</h2>
               </div>
               <span className="text-[11px] font-mono text-gray-500">STAFF ACCESS CONTROL</span>
@@ -1254,7 +1141,7 @@ function SettingsPage() {
               {staffQ.data?.staff.map((s) => (
                 <li key={s.id} className="flex justify-between py-2.5 text-gray-800">
                   <span>{s.email ?? s.user_id}</span>
-                  <span className="font-mono text-emerald-400">{s.role}</span>
+                  <span className="font-mono text-emerald-700">{s.role}</span>
                 </li>
               ))}
             </ul>
@@ -1302,7 +1189,7 @@ function SettingsPage() {
                 {t("settings.add")}
               </Button>
             </div>
-            {msg ? <p className="text-xs text-emerald-400">{msg}</p> : null}
+            {msg ? <p className="text-xs text-emerald-700">{msg}</p> : null}
           </Card>
         ) : null}
           </div>
@@ -1315,7 +1202,7 @@ function SettingsPage() {
         <Card id="partner-charter" className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
             <div className="flex items-center gap-2.5">
-              <ShieldCheck className="size-5 text-emerald-400" />
+              <ShieldCheck className="size-5 text-emerald-700" />
               <div>
                 <h2 className="font-display text-base font-bold text-gray-900">
                   Restaurant Partner Charter &amp; Standards
@@ -1325,7 +1212,7 @@ function SettingsPage() {
                 </p>
               </div>
             </div>
-            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
+            <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
               PARTNER CHARTER
             </span>
           </div>
@@ -1344,7 +1231,7 @@ function SettingsPage() {
                     className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-white/60 transition"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <FileText className="size-4 text-emerald-400 shrink-0" />
+                      <FileText className="size-4 text-emerald-700 shrink-0" />
                       <span className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                         {sec.title}
                       </span>

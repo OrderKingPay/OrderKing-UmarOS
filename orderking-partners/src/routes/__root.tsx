@@ -2,9 +2,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@
 import { AnimatePresence, motion } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/lib/auth/provider";
-import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { OfflineDetector } from "@/components/offline-detector";
 import { platformConfig } from "@/lib/platform-config";
 import { flushQueue, registerDefaultTransitionFn } from "@/lib/offline/durable-queue";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
@@ -147,9 +145,7 @@ function Root() {
         <HeadContent />
       </head>
       <body>
-        <PreviewHostBridge />
-        <OfflineDetector />
-        <AuthProvider>
+                        <AuthProvider>
           <QueryClientProvider client={queryClient}>
             <PartnerCustomizationBridge>
               <ErrorBoundary>
@@ -174,27 +170,16 @@ function Root() {
 function PartnerCustomizationBridge({ children }: { children: React.ReactNode }) {
   const vendor = useVendor();
 
-  // Mount Live SSE Customization Sync to /api/sync/customizations
-  // Order King central platform commission tiers and dining settings update live in real-time
-  const sync = useCustomizationSync({
-    url: "/api/sync/customizations",
-    latestUrl: "/api/sync/customizations/latest",
-    platform: "partner_app",
-    autoConnect: true,
-  });
-
   const mergedCustomization = useMemo(() => {
     const base: any = vendor.customization ?? {};
-    const live: any = sync.state ?? {};
     return {
       ...base,
-      ...live,
-      commissionConfig: live.commissionConfig ?? base.commissionConfig,
-      diningSettings: live.diningSettings ?? base.diningSettings,
-      merchantEconomics: live.merchantEconomics ?? base.merchantEconomics,
-      merchantBranding: live.merchantBranding ?? base.merchantBranding,
+      commissionConfig: base.commissionConfig,
+      diningSettings: base.diningSettings,
+      merchantEconomics: base.merchantEconomics,
+      merchantBranding: base.merchantBranding,
     };
-  }, [vendor.customization, sync.state]);
+  }, [vendor.customization]);
 
   return (
     <CustomizationProvider customization={mergedCustomization}>
