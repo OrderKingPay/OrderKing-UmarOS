@@ -72,7 +72,7 @@ export function FleetRunnerPlatformApp() {
 
       <main style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 14 }}>
         <section style={{ background: '#18181b', borderRadius: 10, border: '1px solid #27272a', padding: 16 }}>
-          <h3 style={{ margin: '0 0 10px 0', fontSize: 15, fontWeight: 700 }}>4-Hour Gig Shift Perimeter & Corridor Batching</h3>
+          <h3 style={{ margin: '0 0 10px 0', fontSize: 15, fontWeight: 700 }}>Gig Shift Perimeter &amp; Hotspot Zones</h3>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
             {[
               { id: 'DAY_12KM', label: 'Day Gig (12.0 km • MG ₹450)' },

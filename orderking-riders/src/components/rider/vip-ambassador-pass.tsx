@@ -20,7 +20,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { getAmbassadorStatsFn, creditReferralCommissionFn } from "@/lib/server/rider-fns";
+import { getAmbassadorStatsFn } from "@/lib/server/rider-fns";
 import type { AmbassadorStats } from "@/lib/rider/types";
 import { formatPaise } from "@/lib/rider/money";
 
@@ -45,7 +45,7 @@ export function VipAmbassadorPass({
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"pass" | "calculator" | "ledger">("pass");
   const [stats, setStats] = useState<AmbassadorStats | null>(null);
-  const [simulating, setSimulating] = useState(false);
+  // Simulated credit removed for strict real-world compliance
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [dailyHandovers, setDailyHandovers] = useState<number>(15);
 
@@ -79,37 +79,6 @@ export function VipAmbassadorPass({
       }
     } catch {
       // ignore
-    }
-  };
-
-  const handleSimulateCredit = async (type: "FIRST_ORDER_BONUS" | "LIFETIME_ROYALTY") => {
-    setSimulating(true);
-    setFeedbackMessage(null);
-    try {
-      const randomOrder = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
-      const randomOrderTotal = type === "LIFETIME_ROYALTY" ? Math.floor(45000 + Math.random() * 35000) : undefined;
-      const res = await creditReferralCommissionFn({
-        data: {
-          type,
-          orderCode: randomOrder,
-          customerName: `Customer #${cleanId.slice(-3)}`,
-          orderTotalPaise: randomOrderTotal,
-        },
-      });
-
-      const msg =
-        type === "FIRST_ORDER_BONUS"
-          ? `✓ ₹25.00 Instant Cash Bonus credited directly to your courier wallet ledger!`
-          : `✓ ${formatPaise(res.amountPaise)} (1% Lifetime Micro-Royalty) credited to your ledger for order #${res.orderCode}!`;
-
-      setFeedbackMessage(msg);
-      await loadStats();
-      onCommissionCredited?.();
-      setTimeout(() => setFeedbackMessage(null), 6000);
-    } catch {
-      setFeedbackMessage("Unable to process referral credit at this moment.");
-    } finally {
-      setSimulating(false);
     }
   };
 

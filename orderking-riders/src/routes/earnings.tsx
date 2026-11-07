@@ -237,7 +237,7 @@ function Page() {
                 {payout.labels.rateCardTitle}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Exact Indian delivery matrix · SafeInteger paise arithmetic (100 paise = 1 INR)
+                Transparent per-order earnings based on distance, wait time, and customer tips
               </p>
             </div>
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">

@@ -857,7 +857,7 @@ export function HomeView() {
 
   async function go(statusNext: "ONLINE" | "OFFLINE") {
     if (statusNext === "ONLINE" && !helmetSelfie && !driverReadinessConfirmed) {
-      toast.error("Please confirm driver readiness check before going online.");
+      toast.error("Please complete your safety check before going online.");
       setSelfieModalOpen(true);
       return;
     }
@@ -1082,7 +1082,7 @@ export function HomeView() {
                 size="sm"
                 onClick={() => {
                   if (!helmetSelfie && !driverReadinessConfirmed) {
-                    toast.error("Please confirm driver readiness check first.");
+                    toast.error("Please complete your safety check first.");
                     setSelfieModalOpen(true);
                     return;
                   }
@@ -1095,39 +1095,17 @@ export function HomeView() {
                 Go Online
               </Button>
             ) : status === "ONLINE" ? (
-              <div className="flex items-center gap-1.5">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={triggerManualGpsPing}
-                  disabled={gpsPinging}
-                  className="text-xs font-semibold gap-1.5 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 active:scale-95 transition"
-                  title="Send real-time GPS telemetry ping to database"
-                >
-                  <Radio className="size-3.5 animate-pulse text-emerald-500" />
-                  {gpsPinging ? "Pinging..." : "GPS Ping"}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => setConfirm("offline")}
-                  disabled={pending || Boolean(home.active)}
-                  className="text-xs font-bold gap-1 active:scale-95 transition"
-                >
-                  Go Offline
-                </Button>
-              </div>
-            ) : (
               <Button
                 size="sm"
-                variant="outline"
-                onClick={triggerManualGpsPing}
-                disabled={gpsPinging}
-                className="text-xs font-semibold gap-1.5 border-amber-500/30 text-amber-600 hover:bg-amber-500/10 active:scale-95 transition"
+                variant="destructive"
+                onClick={() => setConfirm("offline")}
+                disabled={pending || Boolean(home.active)}
+                className="text-xs font-bold gap-1 active:scale-95 transition"
               >
-                <Radio className="size-3.5 animate-pulse text-amber-500" />
-                {gpsPinging ? "Pinging..." : "GPS Ping"}
+                Go Offline
               </Button>
+            ) : (
+              <Badge tone="busy">{home.active?.state.replaceAll("_", " ") || "On Trip"}</Badge>
             )}
           </div>
         </div>
@@ -1157,7 +1135,7 @@ export function HomeView() {
           );
         })()}
 
-        {/* Pre-Shift Driver Readiness & Automated Dispatch Synchronization */}
+        {/* Safety Check */}
         <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
@@ -1166,67 +1144,19 @@ export function HomeView() {
               ) : (
                 <Camera className="size-4 text-primary" />
               )}
-              Pre-Shift Readiness &amp; Dispatch Sync
+              Safety Check
             </span>
             <span className="text-[11px] font-semibold">
               {allReady ? (
                 <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                  <CheckCircle2 className="size-3.5" /> Readiness Verified
+                  <CheckCircle2 className="size-3.5" /> Verified
                 </span>
               ) : (
                 <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                  Readiness Check Required
+                  Required to Go Online
                 </span>
               )}
             </span>
-          </div>
-
-          {/* Automated Driver Readiness Toggle & Dispatch Telemetry */}
-          <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-2.5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <span className="text-xs font-bold text-foreground block">
-                  Automated Driver Readiness
-                </span>
-                <span className="text-[11px] text-muted-foreground block">
-                  Confirms safety gear, thermal bag, GPS telemetry &amp; battery for dispatches
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={toggleDriverReadiness}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                  driverReadinessConfirmed ? "bg-emerald-600" : "bg-muted"
-                }`}
-                role="switch"
-                aria-checked={driverReadinessConfirmed}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                    driverReadinessConfirmed ? "translate-x-5" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Proximity & Dynamic KPT Dispatch Synchronization Indicators */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
-              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
-                <Radio className={`size-3.5 shrink-0 ${allReady ? "text-emerald-500 animate-pulse" : "text-muted-foreground"}`} />
-                <div>
-                  <span className="font-semibold text-foreground block">Proximity Dispatch Radar</span>
-                  <span className="text-[10px] text-muted-foreground">Operating zone radius &amp; corridor batching active</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg bg-background/80 border border-border p-2">
-                <Clock3 className={`size-3.5 shrink-0 ${allReady ? "text-amber-500" : "text-muted-foreground"}`} />
-                <div>
-                  <span className="font-semibold text-foreground block">Dynamic KPT Sync</span>
-                  <span className="text-[10px] text-muted-foreground">Arrival matched to food ready time (0-min dwell)</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           {helmetSelfie ? (
@@ -1239,10 +1169,10 @@ export function HomeView() {
                 />
                 <div className="space-y-0.5 text-xs">
                   <p className="font-bold text-emerald-900 dark:text-emerald-200">
-                    BIS Helmet &amp; Uniform Bag Verified
+                    Helmet &amp; Bag Selfie Verified
                   </p>
                   <p className="text-[11px] text-muted-foreground font-mono">
-                    Verified at {helmetVerifiedAt} · Shift Unlocked
+                    Verified at {helmetVerifiedAt} · Ready to deliver
                   </p>
                 </div>
               </div>
@@ -1259,16 +1189,14 @@ export function HomeView() {
           ) : (
             <div className="flex items-center justify-between gap-3 pt-0.5">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                {driverReadinessConfirmed
-                  ? "Readiness verified via automated checklist. You can also upload a live selfie anytime."
-                  : "Toggle automated readiness above or take a front-camera selfie wearing your strapped helmet and delivery bag."}
+                Take a selfie wearing your helmet and delivery bag to start receiving orders.
               </p>
               <Button
                 type="button"
-                variant="outline"
+                variant="default"
                 size="sm"
                 onClick={() => setSelfieModalOpen(true)}
-                className="text-xs font-semibold gap-1.5 shrink-0"
+                className="text-xs font-semibold gap-1.5 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Camera className="size-3.5" />
                 <span>Take Selfie</span>
@@ -1282,7 +1210,7 @@ export function HomeView() {
           {status === "OFFLINE" ? (
             <div className="space-y-1.5">
               <SwipeSlider
-                label={allReady ? "Swipe to Go Online" : "Confirm Readiness to Go Online"}
+                label={allReady ? "Swipe to Go Online" : "Complete Safety Check to Go Online"}
                 variant="online"
                 disabled={!allReady || pending}
                 loading={pending}
@@ -1302,8 +1230,8 @@ export function HomeView() {
                 </span>
                 <span>
                   {allReady
-                    ? "Readiness verified ✓ Ready to swipe"
-                    : "Confirm driver readiness to go online"}
+                    ? "Safety check verified ✓ Ready to swipe"
+                    : "Complete safety check to go online"}
                 </span>
               </div>
             </div>
@@ -1420,7 +1348,7 @@ export function HomeView() {
             <Badge tone="offline">Duty Offline</Badge>
           </div>
           <CardMeta className="mt-1">
-            You are currently offline. Complete your pre-shift readiness check and tap <strong>{t("goOnline")}</strong> above to activate live dispatches and start earning.
+            You are currently offline. Complete your safety check and tap <strong>{t("goOnline")}</strong> above to start receiving orders.
           </CardMeta>
           <div className="pt-1">
             <MapPane
@@ -1484,9 +1412,9 @@ export function HomeView() {
                 <CalendarClock className="size-4" />
               </span>
               <div>
-                <CardTitle className="text-base">Operational Gig / Shift Slot Planner</CardTitle>
+                <CardTitle className="text-base">Today&apos;s Gigs</CardTitle>
                 <p className="text-xs text-muted-foreground">
-                  Book shifts for {activeShiftDateIso} · {activeDayBookedSlots.length} slot
+                  Available shifts for {activeShiftDateIso} · {activeDayBookedSlots.length} slot
                   {activeDayBookedSlots.length === 1 ? "" : "s"} ({bookedHoursTotal} hrs) booked
                 </p>
               </div>
@@ -1541,7 +1469,7 @@ export function HomeView() {
                     onClick={() => toggleSlotBooking(slot.id)}
                     className="shrink-0"
                   >
-                    {isBooked ? "✓ Booked (Cancel)" : "Book Gig Slot"}
+                    {isBooked ? "✓ Booked" : "Book Gig"}
                   </Button>
                 </div>
               );
@@ -1565,10 +1493,7 @@ export function HomeView() {
         />
       )}
 
-      {/* Self-Service Per-Order Payout Calculator */}
-      {sdui.isSectionVisible("payout_calculator") && (
-        <SelfServicePayoutCalculator />
-      )}
+
 
       {home.notifications.length ? (
         <Card>
