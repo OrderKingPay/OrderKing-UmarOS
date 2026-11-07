@@ -455,7 +455,7 @@ export const MAPS_LOGISTICS: readonly TechRegistryItem[] = [
     isProductionReady: true,
     tags: ["osm", "tiles", "cartography", "open-source", "fallback"],
     description:
-      "Open cartographic tile network providing unlimited, sovereign map rendering across all dashboard panels, god-eye maps, and customer tracking views."
+      "Open cartographic tile network providing unlimited, sovereign map rendering across all dashboard panels, live operations maps, and customer tracking views."
   },
   {
     id: "osrm_routing",

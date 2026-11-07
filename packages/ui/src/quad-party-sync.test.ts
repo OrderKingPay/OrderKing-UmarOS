@@ -126,7 +126,7 @@ describe("ORDERKING Quad-Party WebSocket Real-Time Synchronization Engine", () =
         }
       );
 
-      // 4. Umar OS subscribes to the entire ecosystem (God-Eye view)
+      // 4. Umar OS subscribes to the entire ecosystem (Central operations view)
       client.subscribe(
         { role: "umar_os" },
         (e) => {
@@ -168,8 +168,8 @@ describe("ORDERKING Quad-Party WebSocket Real-Time Synchronization Engine", () =
       assert.equal((riderFleetReceived as QuadPartyOrderPayload).event, "ORDER_ACCEPTED");
       assert.equal((riderFleetReceived as QuadPartyOrderPayload).restaurantId, restaurantId);
 
-      // Party 4: Umar OS God-Eye oversight immediately updated
-      assert.ok(umarOsReceived, "Umar OS must receive God-Eye update");
+      // Party 4: Umar OS operational oversight immediately updated
+      assert.ok(umarOsReceived, "Umar OS must receive operational update");
       assert.equal((umarOsReceived as QuadPartyOrderPayload).orderId, orderId);
     });
 

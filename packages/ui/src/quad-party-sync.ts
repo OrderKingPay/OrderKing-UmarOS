@@ -6,7 +6,7 @@
  * 1. Customer Tracking (orderking-customers)
  * 2. Partner Kitchen Display System (orderking-partners KDS)
  * 3. Rider Fleet Terminal (orderking-riders)
- * 4. Umar OS God-Eye Oversight (HDmaster)
+ * 4. Umar OS Central Oversight (HDmaster)
  *
  * Invariants:
  * - Sub-second latency (< 50ms local, < 200ms edge WebSocket).
@@ -353,7 +353,7 @@ export class QuadPartySyncClient {
     filter: QuadPartySubscriptionFilter,
     payload: QuadPartyOrderPayload
   ): boolean {
-    // Umar OS receives ALL events across the ecosystem (God-Eye view)
+    // Umar OS receives ALL events across the ecosystem (Central operations view)
     if (filter.role === "umar_os") return true;
 
     // Order ID exact match
@@ -405,7 +405,7 @@ export class QuadPartySyncClient {
     if (filter.role === "partner_kds" && filter.restaurantId) {
       this.getOrCreateChannel(`restaurant:${filter.restaurantId}`);
     }
-    // Global channel for fleet & god-eye
+    // Global channel for fleet & operations
     if (filter.role === "rider_fleet" || filter.role === "umar_os") {
       this.getOrCreateChannel(QUAD_SYNC_GLOBAL_CHANNEL);
     }

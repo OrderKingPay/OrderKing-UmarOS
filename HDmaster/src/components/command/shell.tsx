@@ -1464,7 +1464,7 @@ export function CommandShell() {
 
       {/* LUXURY FLOATING COMMAND CONSOLE DOCK (10 WORLDS) */}
       <nav
-        aria-label="UMAR OS 10-World Bottom Command Navigation"
+        aria-label="UMAR OS Operations Bottom Navigation"
         className="fixed bottom-3 inset-x-0 z-40 pointer-events-none mx-auto max-w-7xl px-3 sm:px-4"
       >
         <div className="pointer-events-auto relative rounded-3xl bg-surface/90 backdrop-blur-2xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_1px_1px_0_rgba(255,255,255,0.1)] px-3 py-2 flex items-center justify-between gap-1.5 overflow-x-auto scrollbar-none">

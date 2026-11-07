@@ -1,9 +1,9 @@
 // File: HDmaster/src/lib/orderking/umaros/umaros-supreme-controller.ts
-// UmarOS Operations Center (Zomato God-Eye Ops Parity + Total Cross-Platform Customization):
-// - Real-Time God-Eye Map (active order clusters, rider GPS coordinates, kitchen load status)
+// UmarOS Operations Center (Cross-Platform Customization & Enterprise Governance):
+// - Real-Time Operations Map (active order clusters, rider GPS coordinates, kitchen load status)
 // - Full Cross-Platform Customizer (Add, Edit, Delete, Move Up/Down/Left/Right, Purge, Color & Option Controls)
 // - Founder Master Dials (Flights Rs 399, Trains Rs 40, Hotels Rs 250, Shift Perimeters, Telecom Priority)
-// - 1-Tap Customer Dispute Arbitration (Razorpay edge refund + immutable PostgreSQL audit trail)
+// - Customer Dispute Arbitration (Razorpay edge refund + immutable PostgreSQL audit trail)
 
 export type TargetPlatformId =
   | 'orderking-customers'

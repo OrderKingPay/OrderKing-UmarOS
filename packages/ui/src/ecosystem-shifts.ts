@@ -6,7 +6,7 @@
  * - Customers: Dynamic availability display, quote fee engine, radius blockers.
  * - Partners: KDS active order filtering, prep radius limits, out-of-radius warnings.
  * - Riders: Shift boundaries, safety exclusion alerts, hazard telemetry, SOS dialer.
- * - Umar OS: Command center telemetry, God-Eye map, audit logs, and live telemetry feeds.
+ * - Umar OS: Command center telemetry, live operations map, audit logs, and live telemetry feeds.
  */
 
 export type EcosystemShiftType = "DAY" | "EVENING" | "LATE_NIGHT";

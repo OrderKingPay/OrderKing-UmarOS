@@ -1569,8 +1569,8 @@ const SIXTEEN_SPECIALIST_TEAMS = [
   },
   {
     id: "team-06",
-    name: "Team 6: UMAR OS 10-World Founder Command Center",
-    role: "Clean 10-World bottom navigation, live dashboards, and PostgreSQL settings.",
+    name: "Team 6: UMAR OS Operations Command Center",
+    role: "Central operations console, live dashboards, and PostgreSQL settings.",
     worldId: "home" as WorldId,
     tabId: "dashboard",
   },
@@ -1662,7 +1662,7 @@ const INDIAN_10_LANGUAGES_LIST = [
 const INDIAN_23_LANGUAGES_LIST = INDIAN_10_LANGUAGES_LIST;
 
 // ============================================================================
-// 4. MAIN 10-WORLD FOUNDER OPERATING SYSTEM COMPONENT
+// 4. MAIN UMAR OS ENTERPRISE PLATFORM COMPONENT
 // ============================================================================
 
 function UmarOSDashboard() {

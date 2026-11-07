@@ -67,3 +67,5 @@ scripts/scratch/
 
 telecom_secrets.json
 *_secrets.json
+*CV.*
+scripts/generate-cv.cjs
