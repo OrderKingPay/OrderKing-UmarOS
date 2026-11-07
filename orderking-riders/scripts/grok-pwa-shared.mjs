@@ -230,6 +230,7 @@ export function grokXCreatorHeadTags(creator = readXCreator(), creatorId = readX
 /** Platform "Created with Grok" banner — injected into every HTML document. */
 export function grokExtensionsHeadTags(projectId = readGrokProjectId()) {
   const id = escapeHtml(projectId);
+  return [];
   const tags = [];
   if (projectId) {
     tags.push(`<meta name="grok-project-id" content="${id}">`);
