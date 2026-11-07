@@ -159,7 +159,7 @@ function SettingsPage() {
   type SettingsTab = "PROFILE" | "OPERATIONS" | "PRINTER" | "ALERTS" | "STAFF" | "LEGAL";
   const [activeTab, setActiveTab] = useState<SettingsTab>("PROFILE");
 
-  // King AI Communications Engine State
+  // Partner Communications Engine State
   const [waEnabled, setWaEnabled] = useState<boolean | null>(null);
   const [waConsent, setWaConsent] = useState<boolean | null>(null);
   const [waPhone, setWaPhone] = useState<string | null>(null);
@@ -284,7 +284,7 @@ function SettingsPage() {
         },
       });
       await qc.invalidateQueries({ queryKey: ["kingai-notif-config", vendor.restaurantId] });
-      setNotifMsg("King AI notification channels and dispatch preferences saved successfully.");
+      setNotifMsg("Notification channels and alert preferences saved successfully.");
     } catch (err) {
       setNotifMsg(err instanceof Error ? err.message : "Failed to save notification preferences");
     } finally {
@@ -520,7 +520,7 @@ function SettingsPage() {
           </div>
         </Card>
 
-        {/* King AI Kitchen Health & Instant Recovery */}
+        {/* Restaurant Health & Operational Readiness */}
         {vendor.restaurantId ? (
           <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
@@ -528,7 +528,7 @@ function SettingsPage() {
                 <Cpu className="size-5 text-emerald-400" />
                 <div>
                   <h2 className="font-display text-base font-bold text-gray-900">
-                    King AI Kitchen Health &amp; Instant Recovery
+                    Restaurant Health &amp; Operational Readiness
                   </h2>
                   <p className="text-xs text-gray-500">
                     Real-time readiness checks for your food safety license, payout bank account, and kitchen status. Reset order flow and restore kitchen bells with a single tap.
@@ -784,7 +784,7 @@ function SettingsPage() {
                     className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold transition ${
                       previewBasketInr === amt
                         ? "bg-emerald-500 text-gray-900"
-                        : "bg-gray-100 text-gray-700 hover:bg-slate-700"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     ₹{amt}
@@ -913,7 +913,7 @@ function SettingsPage() {
           />
         ) : null}
 
-        {/* Catalogue & King AI Autonomous Stock Controls */}
+        {/* Menu Catalogue & Inventory Controls */}
         {vendor.restaurantId ? (
           <CatalogueStockControlsPanel
             restaurantId={vendor.restaurantId}
@@ -942,7 +942,7 @@ function SettingsPage() {
           />
         ) : null}
 
-        {/* King AI Daily Reports & Kitchen Alerts */}
+        {/* Daily Sales Reports & Kitchen Alerts */}
         {vendor.restaurantId ? (
           <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
@@ -950,7 +950,7 @@ function SettingsPage() {
                 <MessageSquare className="size-5 text-emerald-400" />
                 <div>
                   <h2 className="font-display text-base font-bold text-gray-900">
-                    King AI Daily Reports &amp; Kitchen Alerts
+                    Daily Sales Reports &amp; Kitchen Alerts
                   </h2>
                   <p className="text-xs text-gray-500">
                     Configure evening WhatsApp summaries, critical SMS kitchen alerts, and monthly tax statements with ease.
@@ -1188,7 +1188,7 @@ function SettingsPage() {
                   All 22 Scheduled Languages of India + English ({ALL_INDIAN_LANGUAGES.length} Languages)
                 </h2>
                 <p className="text-xs text-gray-500">
-                  Switch your partner portal, kitchen voice announcements, and King AI assistant into your preferred language:
+                  Switch your partner portal, kitchen voice announcements, and partner assistant into your preferred language:
                 </p>
               </div>
             </div>

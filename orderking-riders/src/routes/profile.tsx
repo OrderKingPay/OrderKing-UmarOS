@@ -224,7 +224,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Active</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.licenceNumber || "Verified DL-AS012023004812"}
+                {rider?.licenceNumber || "Pending upload"}
               </p>
               <p className="text-[10px] text-muted-foreground">Motorcycle with Gear (MCWG)</p>
             </div>
@@ -236,7 +236,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">{rider?.vehicleType ?? "MOTORCYCLE"}</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.vehicleRegistration || "AS-01-EF-2490"}
+                {rider?.vehicleRegistration || "Pending registration"}
               </p>
               <p className="text-[10px] text-muted-foreground">Commercial Transport Permit</p>
             </div>
@@ -263,7 +263,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">DigiLocker</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "•••• •••• 8821"}
+                {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "Pending verification"}
               </p>
               <p className="text-[10px] text-muted-foreground">UIDAI Masked Aadhaar / PAN</p>
             </div>

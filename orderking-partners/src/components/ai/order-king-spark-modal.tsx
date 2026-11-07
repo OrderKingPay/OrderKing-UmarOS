@@ -177,7 +177,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     {
       id: "init",
       sender: "spark",
-      text: "Order King — King AI Kitchen Partner is ready across 10 official benchmark languages. Inspect your live storefront status, order volume and AOV growth recommendations, restore out-of-stock dishes, adjust kitchen prep times between Standard (20m) and Peak Rush (35m), or review transparent payout calculations. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
+      text: "OrderKing Partner Assistant is ready across 10 Indian languages. Check live orders, menu stock, prep timings, and daily payout calculations.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       provenanceNote:
         "Source: Your restaurant's live menu catalog, configured prep times, dashboard state, and verified settlement ledger.",
@@ -343,7 +343,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     }
 
     return [
-      `King AI Kitchen Summary (${totalItems} active dishes across ${totalCategories} categories):`,
+      `Kitchen Catalog Summary (${totalItems} active dishes across ${totalCategories} categories):`,
       `• Storefront: ${dashQuery.data?.isOpen ? "Accepting Orders (Online)" : "Paused (Offline)"}`,
       `• Stock Status: ${inStock.length} in stock, ${outOfStock.length} out of stock`,
       `• Kitchen Prep: ${avgPrepMinutes} mins standard prep pacing`,
@@ -381,7 +381,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
             ? "नमस्ते! मैं आपका ऑर्डरकिंग रेस्टोरेंट असिस्टेंट हूँ। आज आपके किचन, ऑर्डर, मेनू या पेआउट के बारे में मैं आपकी क्या सहायता कर सकता हूँ?"
             : activeLang.code === "as"
               ? "নমস্কাৰ! মই আপোনাৰ অৰ্ডাৰকিং ৰেষ্টুৰেণ্ট সহযোগী। আজি আপোনাৰ পাকঘৰ, অৰ্ডাৰ, মেন্যু বা পে'আউট সম্পৰ্কে কেনেদৰে সহায় কৰিব পাৰোঁ?"
-              : "Hello! I am King AI, your OrderKing restaurant partner assistant. How can I help you today with your kitchen orders, menu items, prep timing, or daily bank settlements?";
+              : "Hello! I am your OrderKing restaurant partner assistant. How can I help you today with your kitchen orders, menu items, prep timing, or daily bank settlements?";
 
       setMessages((prev) => [
         ...prev,
@@ -390,7 +390,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           sender: "spark",
           text: greetingReply,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          provenanceNote: "King AI Restaurant Assistant",
+          provenanceNote: "Partner Assistant",
         },
       ]);
       setSending(false);
@@ -423,7 +423,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
               sender: "spark",
               text: actionResult.replyText,
               timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-              provenanceNote: "Executed live kitchen action through King AI partner engine.",
+              provenanceNote: "Executed live kitchen action.",
             },
           ]);
           return;
@@ -441,7 +441,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           sender: "spark",
           text: responseText,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          provenanceNote: "King AI Restaurant Assistant",
+          provenanceNote: "Partner Assistant",
         },
       ]);
     } catch (_error) {
@@ -457,7 +457,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                 ? "नमस्ते! अपने रेस्टोरेंट के लाइव ऑर्डर, मेनू या पेआउट के बारे में मुझसे कोई भी प्रश्न पूछें।"
                 : "Hello! I am your OrderKing partner assistant. Feel free to ask about your live orders, menu catalog, kitchen prep pace, or daily payout ledgers.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          provenanceNote: "King AI Restaurant Assistant",
+          provenanceNote: "Partner Assistant",
         },
       ]);
     } finally {
@@ -605,10 +605,10 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
             <div>
               <div className="flex items-center gap-2">
                 <span id="spark-modal-title" className="text-sm font-extrabold tracking-wide text-white">
-                  Order King · King AI
+                  OrderKing Partner Assistant
                 </span>
                 <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                  KING AI · 10 OFFICIAL LANGUAGES
+                  10 INDIAN LANGUAGES
                 </span>
               </div>
               <span className="mt-0.5 block text-[11px] text-zinc-400">
@@ -645,7 +645,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
               type="button"
               onClick={onClose}
               className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-              aria-label="Close King AI Assistant"
+              aria-label="Close Partner Assistant"
             >
               <X className="size-5" />
             </button>
@@ -786,7 +786,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           <div className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-3 space-y-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
-                King AI Kitchen Insights &amp; Growth Playbook ({catalogRecommendations.totalItems} Dishes · Menu Score: {catalogRecommendations.storefrontConversionScore}%)
+                Kitchen Insights &amp; Growth Playbook ({catalogRecommendations.totalItems} Dishes · Menu Score: {catalogRecommendations.storefrontConversionScore}%)
               </span>
               <span className="rounded-md border border-zinc-700 bg-zinc-800/80 px-2 py-0.5 text-[10px] font-mono text-zinc-300">
                 Weekly Orders: {catalogRecommendations.dayparts.map((d) => `${d.label}: ${d.orders}`).join(" · ")}
@@ -1077,7 +1077,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                 void handleSend(inputQuery);
               }
             }}
-            placeholder={`Ask King AI in ${activeLang.nativeName} (${activeLang.name}) about menu, prep times, or payouts...`}
+            placeholder={`Ask in ${activeLang.nativeName} (${activeLang.name}) about menu, prep times, or payouts...`}
             className="h-10 flex-1 border-zinc-700 bg-zinc-900 text-xs text-white placeholder:text-zinc-500 sm:text-sm"
           />
           <Button

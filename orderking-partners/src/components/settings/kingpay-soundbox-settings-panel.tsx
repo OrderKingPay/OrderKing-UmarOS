@@ -16,7 +16,6 @@ export interface KingpaySoundboxSettingsPanelProps {
   restaurantId?: string;
 }
 
-// 10 Mandatory food-tech benchmark announcement languages
 const CORE_SOUNDBOX_LANGUAGES: {
   code: AppLanguage;
   label: string;
@@ -36,7 +35,7 @@ const CORE_SOUNDBOX_LANGUAGES: {
 ];
 
 export function KingpaySoundboxSettingsPanel({
-  restaurantId,
+  restaurantId: _restaurantId,
 }: KingpaySoundboxSettingsPanelProps) {
   // 1. Voice Announcement Language Selector
   const [selectedLang, setSelectedLang] = useState<AppLanguage>(() => {
@@ -99,10 +98,9 @@ export function KingpaySoundboxSettingsPanel({
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = bcp47;
-      // Volume level 1 to 5 mapped to 0.2 to 1.0
-      utterance.volume = Math.max(0.2, Math.min(1.0, volumeLevel / 5));
       utterance.rate = 0.95;
       utterance.pitch = 1.05;
+      utterance.volume = volumeLevel / 5;
 
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => setIsSpeaking(false);
@@ -112,12 +110,11 @@ export function KingpaySoundboxSettingsPanel({
 
       setLiveAudioConfirm({
         text,
-        langName: `${langMeta?.native ?? langToUse} (${langMeta?.label ?? langToUse})`,
+        langName: langMeta?.label ?? langToUse,
         level: volumeLevel,
         timestamp: new Date().toLocaleTimeString(),
       });
-    } catch (err) {
-      console.error("Test announcement failed", err);
+    } catch {
       setIsSpeaking(false);
     }
   };
@@ -125,8 +122,8 @@ export function KingpaySoundboxSettingsPanel({
   const handleStopAnnouncement = () => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
+      setIsSpeaking(false);
     }
-    setIsSpeaking(false);
   };
 
   const handleSaveSoundboxSettings = () => {
@@ -139,7 +136,7 @@ export function KingpaySoundboxSettingsPanel({
       }
       const langMeta = INDIAN_LANGUAGE_CATALOG.find((l) => l.code === selectedLang);
       setSaveMsg(
-        `KingPay Soundbox Audio Announcement Engine saved: Voice Language: ${langMeta?.label} (${langMeta?.native}), Volume Level: ${volumeLevel}/5.`,
+        `Audio announcement settings saved: ${langMeta?.label} (${langMeta?.native}), Volume Level ${volumeLevel}/5.`,
       );
     } catch (err) {
       setSaveMsg(err instanceof Error ? err.message : "Failed to save soundbox settings");
@@ -151,36 +148,25 @@ export function KingpaySoundboxSettingsPanel({
   const currentLangMeta = INDIAN_LANGUAGE_CATALOG.find((l) => l.code === selectedLang);
 
   return (
-    <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-5">
+    <Card className="border-gray-200 bg-white p-6 space-y-6 text-gray-900 rounded-2xl shadow-xs">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="relative">
-            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-              <Radio className="size-5" />
-            </div>
-            {isSpeaking && (
-              <span className="absolute -top-1 -right-1 flex size-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full size-3 bg-emerald-500" />
-              </span>
-            )}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-red-50 border border-red-100 text-[#E23744]">
+            <Radio className="size-5" />
           </div>
           <div>
-            <h2 className="font-display text-base font-bold text-white flex items-center gap-2">
-              KingPay Soundbox Audio Announcement Engine
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">
-                INSTANT AUDIO ALERTS
-              </span>
+            <h2 className="font-display text-base font-bold text-gray-900 flex items-center gap-2">
+              Voice Announcements &amp; Soundbox
             </h2>
-            <p className="text-xs text-slate-400">
-              Instant, crystal-clear voice announcements upon UPI and KingPay order settlements in your team&apos;s preferred regional language.
+            <p className="text-xs text-gray-500">
+              Clear voice alerts for new orders and payments in your kitchen's preferred language.
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-1 rounded">
-            LEVEL {volumeLevel}/5 · {currentLangMeta?.label.toUpperCase()}
+          <span className="text-xs font-semibold text-gray-600 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">
+            Level {volumeLevel}/5 · {currentLangMeta?.label}
           </span>
         </div>
       </div>
@@ -188,25 +174,22 @@ export function KingpaySoundboxSettingsPanel({
       {/* Grid: Voice Announcement Language & Soundbox Audio Volume */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Section 1: Voice Announcement Language Selector */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3.5 flex flex-col justify-between">
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <Globe className="size-4 text-emerald-400" />
-                <span className="font-bold text-sm text-white">
-                  Voice Announcement Language
+                <Globe className="size-4 text-[#E23744]" />
+                <span className="font-bold text-xs text-gray-900">
+                  Announcement Language
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
-                10 CORE LANGUAGES
-              </span>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Select the primary voice announcement language broadcast over the KingPay Soundbox counter terminal:
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Select the language used for live voice announcements:
             </p>
 
-            {/* Quick Select Buttons for 10 Mandated Languages */}
+            {/* Quick Select Buttons */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {CORE_SOUNDBOX_LANGUAGES.map((l) => {
                 const isSelected = selectedLang === l.code;
@@ -215,64 +198,48 @@ export function KingpaySoundboxSettingsPanel({
                     key={l.code}
                     type="button"
                     onClick={() => setSelectedLang(l.code)}
-                    className={`p-2 rounded-xl border text-left transition flex flex-col justify-between ${
+                    className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-between ${
                       isSelected
-                        ? "border-emerald-500 bg-emerald-500/15 text-white shadow-[0_0_10px_rgba(16,185,129,0.15)]"
-                        : "border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700"
+                        ? "border-[#E23744] bg-red-50 text-red-900 shadow-xs"
+                        : "border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-xs">{l.native}</span>
                       {isSelected ? (
-                        <CheckCircle2 className="size-3 text-emerald-400" />
+                        <CheckCircle2 className="size-3 text-[#E23744]" />
                       ) : null}
                     </div>
-                    <div className="text-[10px] text-slate-400 mt-0.5 font-medium">{l.label}</div>
+                    <div className="text-[10px] text-gray-500 mt-0.5">{l.label}</div>
                   </button>
                 );
               })}
             </div>
-
-            {/* Comprehensive All-India Language Dropdown */}
-            <div className="pt-1 flex items-center justify-between gap-2">
-              <span className="text-xs text-slate-400">All 10 Official Languages:</span>
-              <select
-                value={selectedLang}
-                onChange={(e) => setSelectedLang(e.target.value as AppLanguage)}
-                className="h-8 rounded-lg border border-slate-800 bg-slate-900 px-2.5 text-xs font-semibold text-emerald-300 outline-none focus:border-emerald-500"
-              >
-                {INDIAN_LANGUAGE_CATALOG.map((item) => (
-                  <option key={item.code} value={item.code}>
-                    {item.native} ({item.label} · {item.region})
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Active Voice Language:</span>
-            <span className="font-mono text-emerald-400 font-bold">
+          <div className="pt-2 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-between">
+            <span>Selected Language:</span>
+            <span className="font-bold text-gray-900">
               {currentLangMeta?.native} ({currentLangMeta?.label})
             </span>
           </div>
         </div>
 
         {/* Section 2: Soundbox Audio Volume Slider (Level 1 to 5) */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3.5 flex flex-col justify-between">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3.5 flex flex-col justify-between">
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <Volume2 className="size-4 text-emerald-400" />
-                <span className="font-bold text-sm text-white">Soundbox Audio Volume</span>
+                <Volume2 className="size-4 text-[#E23744]" />
+                <span className="font-bold text-xs text-gray-900">Voice Announcement Volume</span>
               </div>
-              <span className="text-sm font-bold font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-0.5 rounded">
+              <span className="text-xs font-bold text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-md shadow-xs">
                 Level {volumeLevel} of 5
               </span>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Adjust hardware output volume for different kitchen and cashier environments (from quiet cafe to noisy rush hours):
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Set the voice announcement volume level for your kitchen environment:
             </p>
 
             {/* Volume Slider: Level 1 to 5 */}
@@ -284,52 +251,30 @@ export function KingpaySoundboxSettingsPanel({
                 step={1}
                 value={volumeLevel}
                 onChange={(e) => setVolumeLevel(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#E23744]"
               />
-              <div className="grid grid-cols-5 text-center text-[10px] font-mono text-slate-400">
-                <span className={volumeLevel === 1 ? "text-emerald-400 font-bold" : ""}>
-                  L1 (20%)
-                </span>
-                <span className={volumeLevel === 2 ? "text-emerald-400 font-bold" : ""}>
-                  L2 (40%)
-                </span>
-                <span className={volumeLevel === 3 ? "text-emerald-400 font-bold" : ""}>
-                  L3 (60%)
-                </span>
-                <span className={volumeLevel === 4 ? "text-emerald-400 font-bold" : ""}>
-                  L4 (80%)
-                </span>
-                <span className={volumeLevel === 5 ? "text-emerald-400 font-bold" : ""}>
-                  L5 (100%)
-                </span>
+              <div className="grid grid-cols-5 text-center text-[11px] text-gray-400">
+                <span className={volumeLevel === 1 ? "text-gray-900 font-bold" : ""}>L1</span>
+                <span className={volumeLevel === 2 ? "text-gray-900 font-bold" : ""}>L2</span>
+                <span className={volumeLevel === 3 ? "text-gray-900 font-bold" : ""}>L3</span>
+                <span className={volumeLevel === 4 ? "text-gray-900 font-bold" : ""}>L4</span>
+                <span className={volumeLevel === 5 ? "text-gray-900 font-bold" : ""}>L5</span>
               </div>
-            </div>
-
-            {/* Environment Recommendation Pill */}
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 text-xs flex items-center justify-between">
-              <span className="text-slate-400">Environment Preset:</span>
-              <span className="font-semibold text-slate-200">
-                {volumeLevel === 1 && "Quiet Cafe / Reception Counter"}
-                {volumeLevel === 2 && "Indoor Casual Dining"}
-                {volumeLevel === 3 && "Standard Restaurant Dining Hall"}
-                {volumeLevel === 4 && "Bustling Open Kitchen & Counter (Default)"}
-                {volumeLevel === 5 && "High-Noise Rush Hour / High-Volume Kitchen"}
-              </span>
             </div>
 
             {/* Test Amount Selector */}
             <div className="space-y-1.5 pt-1">
-              <span className="text-xs text-slate-300 font-medium">Test Order Amount:</span>
-              <div className="flex items-center gap-1.5">
-                {[50, 150, 450, 1200, 2500].map((amt) => (
+              <span className="text-xs text-gray-600 font-medium">Test Order Amount:</span>
+              <div className="flex items-center gap-2">
+                {[50, 150, 450, 1200].map((amt) => (
                   <button
                     key={amt}
                     type="button"
                     onClick={() => setTestAmount(amt)}
-                    className={`px-2.5 py-1 rounded text-xs font-mono font-semibold transition ${
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
                       testAmount === amt
-                        ? "bg-emerald-500 text-white"
-                        : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                        ? "bg-[#E23744] text-white shadow-xs"
+                        : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                     }`}
                   >
                     ₹{amt}
@@ -340,16 +285,16 @@ export function KingpaySoundboxSettingsPanel({
           </div>
 
           {/* Test Announcement Action Button */}
-          <div className="pt-2 border-t border-slate-800/80 flex items-center gap-2">
+          <div className="pt-2 border-t border-gray-200 flex items-center gap-2">
             <Button
               size="sm"
               type="button"
               disabled={isSpeaking}
               onClick={() => handlePlayTestAnnouncement()}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
+              className="flex-1 bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold h-10 rounded-xl"
             >
               <Volume2 className="mr-1.5 size-4" />
-              Play Test Announcement (₹{testAmount})
+              Play Sample Voice Alert (₹{testAmount})
             </Button>
             {isSpeaking && (
               <Button
@@ -357,9 +302,9 @@ export function KingpaySoundboxSettingsPanel({
                 variant="destructive"
                 type="button"
                 onClick={handleStopAnnouncement}
-                className="text-xs"
+                className="text-xs h-10 px-4 rounded-xl"
               >
-                <Square className="mr-1 size-3" /> Stop
+                <Square className="mr-1.5 size-3.5" /> Stop
               </Button>
             )}
           </div>
@@ -368,31 +313,25 @@ export function KingpaySoundboxSettingsPanel({
 
       {/* Live Audio Confirmation Banner */}
       {liveAudioConfirm ? (
-        <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 text-xs flex items-start gap-2.5">
-          <CheckCircle2 className="size-4 shrink-0 text-emerald-400 mt-0.5" />
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5 text-xs flex items-start gap-2.5 shadow-xs">
+          <CheckCircle2 className="size-4 shrink-0 text-emerald-600 mt-0.5" />
           <div className="space-y-0.5">
-            <div className="font-bold text-emerald-300 flex items-center gap-2">
-              <span>Live Soundbox Audio Confirmation</span>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/20 px-1.5 py-0.2 rounded">
-                AT {liveAudioConfirm.timestamp}
-              </span>
+            <div className="font-bold text-emerald-800">
+              Sample Voice Announcement Played
             </div>
-            <div className="text-slate-200">
-              Broadcasted: &quot;<span className="text-white font-semibold">{liveAudioConfirm.text}</span>&quot;
-            </div>
-            <div className="text-[11px] text-emerald-400/80 font-mono">
-              Language: {liveAudioConfirm.langName} · Volume: Level {liveAudioConfirm.level}/5
+            <div className="text-gray-700">
+              &quot;{liveAudioConfirm.text}&quot;
             </div>
           </div>
         </div>
       ) : null}
 
       {/* Footer Save Action */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800">
-        <div className="text-xs text-emerald-400 flex items-center gap-1.5 min-h-[20px]">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100">
+        <div className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5 min-h-[20px]">
           {saveMsg ? (
             <>
-              <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
               <span>{saveMsg}</span>
             </>
           ) : null}
@@ -401,9 +340,9 @@ export function KingpaySoundboxSettingsPanel({
           size="sm"
           disabled={saving}
           onClick={handleSaveSoundboxSettings}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4"
+          className="bg-[#E23744] hover:bg-[#d32f2f] text-white text-xs font-bold px-6 h-10 rounded-xl shadow-xs"
         >
-          {saving ? "Saving Soundbox Settings..." : "Save KingPay Soundbox Settings"}
+          {saving ? "Saving..." : "Save Soundbox Settings"}
         </Button>
       </div>
     </Card>

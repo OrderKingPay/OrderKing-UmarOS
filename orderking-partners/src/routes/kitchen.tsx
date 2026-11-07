@@ -467,7 +467,7 @@ export function KitchenPage({
               size="sm"
               variant="secondary"
               onClick={() => stopContinuousAlarm()}
-              className="text-xs border-gray-300 bg-gray-100 hover:bg-slate-700 text-gray-800"
+              className="text-xs border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800"
             >
               <BellOff className="mr-1.5 size-3.5 text-amber-400" />
               Silence Alarm
@@ -480,7 +480,7 @@ export function KitchenPage({
                 speakKitchenOrder("KOT-8421", 45000, testVoiceLang);
                 toast.info(`Voice alert played in ${testVoiceLang.toUpperCase()} (${getVoiceBcp47(testVoiceLang)})`);
               }}
-              className="text-xs border-gray-300 bg-gray-100 hover:bg-slate-700 text-gray-800"
+              className="text-xs border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800"
             >
               <BellRing className="mr-1.5 size-3.5 text-emerald-400" />
               Test Speaker ({testVoiceLang.toUpperCase()})

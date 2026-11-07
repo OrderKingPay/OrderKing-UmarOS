@@ -91,7 +91,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (isPending) {
     return (
       <div className="mx-auto min-h-dvh max-w-lg p-4">
-        <p className="font-display text-2xl font-bold text-foreground">OrderKing Partner</p>
+        <p className="font-display text-2xl font-bold text-foreground">OrderKing Delivery Partner</p>
         <Skeleton className="mt-4 h-16 w-40" />
         <Skeleton className="mt-6 h-48 w-full rounded-xl" />
         <Skeleton className="mt-4 h-24 w-full rounded-xl" />
@@ -164,7 +164,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             />
             <div className="min-w-0">
               <p className="truncate font-display text-base sm:text-lg font-bold leading-none text-fg">
-                OrderKing Partner
+                OrderKing Delivery Partner
               </p>
               <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
                 {riderProfile?.fullName

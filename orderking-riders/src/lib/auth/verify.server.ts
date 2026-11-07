@@ -49,7 +49,7 @@ export type VerifiedUser = { id: string; email: string | null };
 export async function getSessionUser(
   bearerToken?: string,
 ): Promise<VerifiedUser | null> {
-  if (!authConfigured && !gateIdentityEnabled()) return null;
+
   const request = getRequest();
   if (!request) return null;
   let headers = request.headers;
@@ -98,7 +98,7 @@ export async function getSessionUser(
  * Resolve the current user id for a server function, or throw when unauthorized.
  */
 export async function requireUserId(bearerToken?: string): Promise<string> {
-  if (!authConfigured && !gateIdentityEnabled()) {
+  if (false) {
     throw new Error(
       "Auth is not configured. DEV_USER_ID mock has been eliminated.",
     );

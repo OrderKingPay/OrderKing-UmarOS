@@ -25,7 +25,7 @@ export const SparkAIWorkspace: React.FC<SparkAIWorkspaceProps> = ({
     {
       id: "init",
       sender: "SPARK_AI",
-      text: "OrderKing King AI active. Upload your physical menu card photo, daily sales CSV, or invoice to parse items, optimize margins, or diagnose kitchen bottlenecks.",
+      text: "OrderKing Partner Assistant active. Upload your physical menu card photo, daily sales CSV, or invoice to parse items, optimize margins, or diagnose kitchen bottlenecks.",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -88,7 +88,7 @@ export const SparkAIWorkspace: React.FC<SparkAIWorkspaceProps> = ({
     <div style={{ display: "flex", flexDirection: "column", height: "85vh", backgroundColor: "#0F172A", borderRadius: "12px", border: "1px solid #334155", color: "#F8FAFC", overflow: "hidden" }}>
       <header style={{ padding: "16px", backgroundColor: "#1E293B", borderBottom: "1px solid #334155", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: "18px", color: "#EA580C", fontWeight: 700 }}>King AI Partner Intelligence</h2>
+          <h2 style={{ margin: 0, fontSize: "18px", color: "#EA580C", fontWeight: 700 }}>Partner Assistant Intelligence</h2>
           <span style={{ fontSize: "12px", color: "#94A3B8" }}>Outlet ID: {restaurantId} | Multi-Modal Document & KDS Engine</span>
         </div>
       </header>
@@ -154,7 +154,7 @@ export const SparkAIWorkspace: React.FC<SparkAIWorkspaceProps> = ({
             value={inputText}
             onChange={e => setInputText(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleSend()}
-            placeholder="Ask King AI (e.g. 'Extract items from menu', 'Diagnose prep delays')..."
+            placeholder="Ask Partner Assistant (e.g. 'Extract items from menu', 'Diagnose prep delays')..."
             style={{ flex: 1, padding: "10px 14px", backgroundColor: "#0F172A", border: "1px solid #334155", borderRadius: "6px", color: "#FFF", outline: "none" }}
           />
           <button

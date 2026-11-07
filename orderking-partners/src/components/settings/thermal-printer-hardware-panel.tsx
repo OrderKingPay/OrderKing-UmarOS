@@ -8,9 +8,6 @@ import {
   CheckCircle2,
   Copy,
   Receipt,
-  Utensils,
-  User,
-  Bike,
   Eye,
   X,
 } from "lucide-react";
@@ -21,16 +18,16 @@ export interface ThermalPrinterHardwarePanelProps {
 }
 
 export function ThermalPrinterHardwarePanel({
-  restaurantId,
+  restaurantId: _restaurantId,
   restaurantName = "OrderKing Partner Kitchen",
 }: ThermalPrinterHardwarePanelProps) {
-  // 1. Thermal Receipt Paper Width Selector (58mm / 2-inch vs 80mm / 3-inch)
+  // 1. Thermal Receipt Paper Width Selector (58mm vs 80mm)
   const [paperWidth, setPaperWidth] = useState<PaperWidth>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("ok_paper_width");
       if (saved === "58mm" || saved === "80mm") return saved;
     }
-    return "80mm"; // 80mm standard
+    return "80mm";
   });
 
   // 2. Auto-Print Kitchen Order Ticket (KOT) on Acceptance Toggle
@@ -41,10 +38,10 @@ export function ThermalPrinterHardwarePanel({
       const fallback = localStorage.getItem("ok_auto_print_on_order");
       if (fallback !== null) return fallback === "true";
     }
-    return true; // Enabled by default
+    return true;
   });
 
-  // 3. Number of KOT copies to print (1 Kitchen, 1 Customer, 1 Rider)
+  // 3. Number of KOT copies to print
   const [kitchenCopies, setKitchenCopies] = useState<number>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("ok_kot_copies_kitchen");
@@ -92,7 +89,7 @@ export function ThermalPrinterHardwarePanel({
         localStorage.setItem("ok_kot_copies_rider", String(riderCopies));
       }
       setSaveMsg(
-        `Thermal Printer hardware settings saved: ${paperWidth} Paper, Auto-Print on Acceptance is ${autoPrintKot ? "ENABLED" : "DISABLED"}, Total Copies: ${totalCopies} (${kitchenCopies} Kitchen, ${customerCopies} Customer, ${riderCopies} Rider).`,
+        `Printer configuration saved: ${paperWidth} paper, auto-print ${autoPrintKot ? "enabled" : "disabled"}, ${totalCopies} total copies.`,
       );
     } catch (err) {
       setSaveMsg(err instanceof Error ? err.message : "Failed to save printer settings");
@@ -101,31 +98,31 @@ export function ThermalPrinterHardwarePanel({
     }
   };
 
-  const handlePreviewReceipt = (copyType: "KITCHEN" | "CUSTOMER" | "RIDER") => {
+  const handleGeneratePreview = (copyType: "KITCHEN" | "CUSTOMER" | "RIDER") => {
     const res = generateEscPosReceipt(
       {
         restaurantName,
         orderNumber: "OK-8942",
         orderType: "DELIVERY",
-        tableOrArea: "Station Pass / Order King Delivery",
+        tableOrArea: "Delivery Order",
         timestamp: new Date().toLocaleString("en-IN"),
         prepMinutes: 20,
         items: [
           {
-            name: "Murgh Dum Biryani (Special)",
+            name: "Dum Biryani",
             quantity: 2,
             pricePaise: 54000,
-            station: "CURRY",
-            instructions: "Double spicy, separate raita",
+            station: "MAIN",
+            instructions: "Extra raita",
           },
           {
-            name: "Butter Garlic Naan (Crisp)",
+            name: "Butter Naan",
             quantity: 3,
             pricePaise: 18000,
-            station: "TANDOOR",
+            station: "BREAD",
           },
           {
-            name: "Gulab Jamun (2 pcs)",
+            name: "Gulab Jamun",
             quantity: 1,
             pricePaise: 8000,
             station: "DESSERT",
@@ -137,8 +134,8 @@ export function ThermalPrinterHardwarePanel({
         cgstPaise: 1975,
         sgstPaise: 1975,
         totalPaise: 82950,
-        specialInstructions: `*** ${copyType} COPY *** Handover token verified. Food grade sealed container.`,
-        qrPayload: "https://orderking.in/r/OK-8942",
+        specialInstructions: `*** ${copyType} COPY ***`,
+        qrPayload: "https://partner.orderkingpay.com/orders",
         autoCut: true,
       },
       paperWidth,
@@ -152,28 +149,25 @@ export function ThermalPrinterHardwarePanel({
   };
 
   return (
-    <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-5">
+    <Card className="border-gray-200 bg-white p-6 space-y-6 text-gray-900 rounded-2xl shadow-xs">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-red-50 border border-red-100 text-[#E23744]">
             <Printer className="size-5" />
           </div>
           <div>
-            <h2 className="font-display text-base font-bold text-white flex items-center gap-2">
-              Thermal POS Printer &amp; Kitchen Ticket Settings
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">
-                ESC/POS HARDWARE
-              </span>
+            <h2 className="font-display text-base font-bold text-gray-900 flex items-center gap-2">
+              Receipt &amp; Kitchen Order Printers
             </h2>
-            <p className="text-xs text-slate-400">
-              Configure receipt roll dimensions, automated KOT printing upon order acceptance, and multi-station ticket routing.
+            <p className="text-xs text-gray-500">
+              Configure receipt roll sizes, automatic ticket printing upon order acceptance, and print copies.
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-1 rounded">
-            {paperWidth.toUpperCase()} · {totalCopies} COPIES CONFIGURED
+          <span className="text-xs font-semibold text-gray-600 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">
+            {paperWidth} · {totalCopies} Copies
           </span>
         </div>
       </div>
@@ -181,20 +175,17 @@ export function ThermalPrinterHardwarePanel({
       {/* Main Grid: Paper Width, Auto-Print Toggle, and Copies */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Section 1: Paper Width Selector */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3.5 flex flex-col justify-between">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3.5 flex flex-col justify-between">
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <Receipt className="size-4 text-emerald-400" />
-                <span className="font-bold text-sm text-white">Paper Roll Width</span>
+                <Receipt className="size-4 text-[#E23744]" />
+                <span className="font-bold text-xs text-gray-900">Receipt Paper Width</span>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
-                {paperWidth === "80mm" ? "48 COLS" : "32 COLS"}
-              </span>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Select your thermal receipt printer roll dimensions to calibrate ESC/POS column alignment and auto-wrapping:
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Select your thermal receipt printer roll width for optimal text formatting:
             </p>
 
             <div className="grid grid-cols-1 gap-2.5">
@@ -204,21 +195,18 @@ export function ThermalPrinterHardwarePanel({
                 onClick={() => setPaperWidth("58mm")}
                 className={`p-3 rounded-xl border text-left transition flex items-center justify-between ${
                   paperWidth === "58mm"
-                    ? "border-emerald-500 bg-emerald-500/15 text-white shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-                    : "border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700"
+                    ? "border-[#E23744] bg-red-50 text-red-900 shadow-xs"
+                    : "border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-xs text-slate-100">58mm (2-Inch)</span>
-                    <span className="text-[10px] font-mono text-slate-400">· Mobile POS</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
-                    Compact bluetooth / handheld printer (32 columns)
+                  <div className="font-bold text-xs">58mm (2-Inch)</div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">
+                    Compact Bluetooth / Handheld POS
                   </div>
                 </div>
                 {paperWidth === "58mm" ? (
-                  <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="size-4 text-[#E23744] shrink-0" />
                 ) : null}
               </button>
 
@@ -228,39 +216,31 @@ export function ThermalPrinterHardwarePanel({
                 onClick={() => setPaperWidth("80mm")}
                 className={`p-3 rounded-xl border text-left transition flex items-center justify-between ${
                   paperWidth === "80mm"
-                    ? "border-emerald-500 bg-emerald-500/15 text-white shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-                    : "border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700"
+                    ? "border-[#E23744] bg-red-50 text-red-900 shadow-xs"
+                    : "border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-xs text-slate-100">80mm (3-Inch)</span>
-                    <span className="text-[10px] font-mono text-emerald-400">· Standard KOT</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
-                    Heavy-duty kitchen &amp; billing desktop printer (48 columns)
+                  <div className="font-bold text-xs">80mm (3-Inch)</div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">
+                    Standard Kitchen &amp; Billing Desk Printer
                   </div>
                 </div>
                 {paperWidth === "80mm" ? (
-                  <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="size-4 text-[#E23744] shrink-0" />
                 ) : null}
               </button>
             </div>
           </div>
-
-          <div className="pt-2 border-t border-slate-800/80 text-[10px] font-mono text-slate-500 flex justify-between">
-            <span>ESC/POS Standard</span>
-            <span>Raw Bytecode Generation</span>
-          </div>
         </div>
 
-        {/* Section 2: Auto-Print KOT on Acceptance */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3.5 flex flex-col justify-between">
+        {/* Section 2: Auto-Print on Acceptance */}
+        <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3.5 flex flex-col justify-between">
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <FileText className="size-4 text-emerald-400" />
-                <span className="font-bold text-sm text-white">Auto-Print on Accept</span>
+                <FileText className="size-4 text-[#E23744]" />
+                <span className="font-bold text-xs text-gray-900">Auto-Print on Accept</span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -269,207 +249,184 @@ export function ThermalPrinterHardwarePanel({
                   onChange={(e) => setAutoPrintKot(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E23744]"></div>
               </label>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
-              When enabled, clicking &quot;Accept Order&quot; on the Live Board or KDS instantly dispatches print jobs to your thermal printers with zero manual taps.
+            <p className="text-xs text-gray-600 leading-relaxed">
+              When enabled, accepting an order automatically prints the kitchen order ticket without requiring extra taps.
             </p>
 
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3 space-y-1.5 text-xs">
+            <div className="rounded-xl border border-gray-200 bg-white p-3 space-y-2 text-xs shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="text-slate-300 font-medium">Trigger Condition:</span>
-                <span className="font-mono text-emerald-400 font-bold">STATE → ACCEPTED</span>
+                <span className="text-gray-600">Trigger:</span>
+                <span className="font-semibold text-gray-900">On Order Acceptance</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-300 font-medium">Print Protocol:</span>
-                <span className="font-mono text-slate-400">ESC/POS (TCP / USB / BT)</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-300 font-medium">Paper Auto-Cut:</span>
-                <span className="font-mono text-emerald-400">GS V 66 0 (Cut Enabled)</span>
+                <span className="text-gray-600">Status:</span>
+                <span className={`font-semibold ${autoPrintKot ? "text-emerald-700" : "text-gray-500"}`}>
+                  {autoPrintKot ? "Automatic" : "Manual"}
+                </span>
               </div>
             </div>
           </div>
-
-          <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400">
-            {autoPrintKot ? "✅ Zero-tap ticket dispatch active." : "⏸️ Manual ticket print required."}
-          </div>
         </div>
 
-        {/* Section 3: Number of KOT Copies to Print */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3.5 flex flex-col justify-between">
+        {/* Section 3: Number of Copies */}
+        <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3.5 flex flex-col justify-between">
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <Copy className="size-4 text-emerald-400" />
-                <span className="font-bold text-sm text-white">Number of KOT Copies</span>
+                <Copy className="size-4 text-[#E23744]" />
+                <span className="font-bold text-xs text-gray-900">Print Copies</span>
               </div>
-              <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded">
+              <span className="text-xs font-bold text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-md shadow-xs">
                 {totalCopies} Total
               </span>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Distribute tickets automatically across kitchen station, customer invoice, and rider delivery handover:
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Select how many copies are generated per order:
             </p>
 
             <div className="space-y-2.5">
-              {/* Copy 1: Kitchen Copy */}
-              <div className="flex items-center justify-between p-2 rounded-lg border border-slate-800 bg-slate-900/60">
-                <div className="flex items-center gap-2">
-                  <Utensils className="size-3.5 text-emerald-400" />
-                  <div>
-                    <div className="text-xs font-semibold text-slate-200">1. Kitchen Copy</div>
-                    <div className="text-[10px] text-slate-400">Prep stations / Head chef pass</div>
-                  </div>
+              {/* Kitchen Copy */}
+              <div className="flex items-center justify-between p-2.5 rounded-xl border border-gray-200 bg-white shadow-xs">
+                <div>
+                  <div className="font-bold text-xs text-gray-900">Kitchen Copy</div>
+                  <div className="text-[11px] text-gray-500">For chef &amp; preparation line</div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  {[1, 2].map((cnt) => (
+                  {[1, 2, 3].map((num) => (
                     <button
-                      key={cnt}
+                      key={num}
                       type="button"
-                      onClick={() => setKitchenCopies(cnt)}
-                      className={`px-2 py-0.5 rounded text-xs font-mono font-semibold transition ${
-                        kitchenCopies === cnt
-                          ? "bg-emerald-500 text-white"
-                          : "bg-slate-800 text-slate-400 hover:text-white"
+                      onClick={() => setKitchenCopies(num)}
+                      className={`size-7 rounded-lg text-xs font-bold transition ${
+                        kitchenCopies === num
+                          ? "bg-[#E23744] text-white shadow-xs"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      {cnt}
+                      {num}
                     </button>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => handlePreviewReceipt("KITCHEN")}
-                    title="Preview Kitchen Ticket"
-                    className="p-1 rounded text-slate-400 hover:text-emerald-400 transition"
-                  >
-                    <Eye className="size-3.5" />
-                  </button>
                 </div>
               </div>
 
-              {/* Copy 2: Customer Copy */}
-              <div className="flex items-center justify-between p-2 rounded-lg border border-slate-800 bg-slate-900/60">
-                <div className="flex items-center gap-2">
-                  <User className="size-3.5 text-sky-400" />
-                  <div>
-                    <div className="text-xs font-semibold text-slate-200">2. Customer Copy</div>
-                    <div className="text-[10px] text-slate-400">Guest invoice &amp; statutory tax receipt</div>
-                  </div>
+              {/* Customer Copy */}
+              <div className="flex items-center justify-between p-2.5 rounded-xl border border-gray-200 bg-white shadow-xs">
+                <div>
+                  <div className="font-bold text-xs text-gray-900">Customer Bill</div>
+                  <div className="text-[11px] text-gray-500">Attach to food package</div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  {[0, 1, 2].map((cnt) => (
+                  {[0, 1, 2].map((num) => (
                     <button
-                      key={cnt}
+                      key={num}
                       type="button"
-                      onClick={() => setCustomerCopies(cnt)}
-                      className={`px-2 py-0.5 rounded text-xs font-mono font-semibold transition ${
-                        customerCopies === cnt
-                          ? "bg-sky-500 text-white"
-                          : "bg-slate-800 text-slate-400 hover:text-white"
+                      onClick={() => setCustomerCopies(num)}
+                      className={`size-7 rounded-lg text-xs font-bold transition ${
+                        customerCopies === num
+                          ? "bg-[#E23744] text-white shadow-xs"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      {cnt}
+                      {num}
                     </button>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => handlePreviewReceipt("CUSTOMER")}
-                    title="Preview Customer Invoice"
-                    className="p-1 rounded text-slate-400 hover:text-sky-400 transition"
-                  >
-                    <Eye className="size-3.5" />
-                  </button>
                 </div>
               </div>
 
-              {/* Copy 3: Rider Copy */}
-              <div className="flex items-center justify-between p-2 rounded-lg border border-slate-800 bg-slate-900/60">
-                <div className="flex items-center gap-2">
-                  <Bike className="size-3.5 text-amber-400" />
-                  <div>
-                    <div className="text-xs font-semibold text-slate-200">3. Rider Copy</div>
-                    <div className="text-[10px] text-slate-400">Bag token &amp; rider delivery handover</div>
-                  </div>
+              {/* Rider Copy */}
+              <div className="flex items-center justify-between p-2.5 rounded-xl border border-gray-200 bg-white shadow-xs">
+                <div>
+                  <div className="font-bold text-xs text-gray-900">Rider Handover</div>
+                  <div className="text-[11px] text-gray-500">Delivery verification slip</div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  {[0, 1, 2].map((cnt) => (
+                  {[0, 1, 2].map((num) => (
                     <button
-                      key={cnt}
+                      key={num}
                       type="button"
-                      onClick={() => setRiderCopies(cnt)}
-                      className={`px-2 py-0.5 rounded text-xs font-mono font-semibold transition ${
-                        riderCopies === cnt
-                          ? "bg-amber-500 text-black font-bold"
-                          : "bg-slate-800 text-slate-400 hover:text-white"
+                      onClick={() => setRiderCopies(num)}
+                      className={`size-7 rounded-lg text-xs font-bold transition ${
+                        riderCopies === num
+                          ? "bg-[#E23744] text-white shadow-xs"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      {cnt}
+                      {num}
                     </button>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => handlePreviewReceipt("RIDER")}
-                    title="Preview Rider Handover Ticket"
-                    className="p-1 rounded text-slate-400 hover:text-amber-400 transition"
-                  >
-                    <Eye className="size-3.5" />
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="pt-2 border-t border-slate-800/80 text-[10px] font-mono text-slate-400 flex justify-between">
-            <span>Routing: 1 Kitchen · 1 Customer · 1 Rider</span>
-            <button
-              type="button"
-              onClick={() => handlePreviewReceipt("KITCHEN")}
-              className="text-emerald-400 hover:underline"
-            >
-              Test Print Preview
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Ticket Preview Modal / Drawer */}
+      {/* Preview Section */}
+      <div className="pt-2 flex flex-wrap items-center gap-2">
+        <span className="text-xs text-gray-500 font-semibold mr-1">Preview Format:</span>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => handleGeneratePreview("KITCHEN")}
+          className="h-8 text-xs font-semibold rounded-lg border-gray-200 bg-white hover:bg-gray-50 text-gray-700"
+        >
+          <Eye className="mr-1.5 size-3.5 text-gray-500" /> Kitchen Ticket
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => handleGeneratePreview("CUSTOMER")}
+          className="h-8 text-xs font-semibold rounded-lg border-gray-200 bg-white hover:bg-gray-50 text-gray-700"
+        >
+          <Eye className="mr-1.5 size-3.5 text-gray-500" /> Customer Bill
+        </Button>
+      </div>
+
+      {/* Ticket Preview Modal */}
       {previewTicket?.show ? (
-        <div className="rounded-xl border border-emerald-500/40 bg-slate-950 p-4 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <div className="flex items-center gap-2">
-              <Receipt className="size-4 text-emerald-400" />
-              <span className="font-bold text-xs text-white">
-                Live ESC/POS Sample Print Preview ({paperWidth} · {previewTicket.copyType} COPY)
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <span className="font-bold text-sm text-gray-900">
+                {previewTicket.copyType} Preview ({paperWidth})
               </span>
+              <button
+                type="button"
+                onClick={() => setPreviewTicket(null)}
+                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+              >
+                <X className="size-4" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setPreviewTicket(null)}
-              className="text-slate-400 hover:text-white"
-            >
-              <X className="size-4" />
-            </button>
+            <pre className="max-h-80 overflow-y-auto rounded-xl bg-gray-50 border border-gray-200 p-3.5 font-mono text-[11px] leading-relaxed text-gray-800 whitespace-pre">
+              {previewTicket.text}
+            </pre>
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                onClick={() => setPreviewTicket(null)}
+                className="bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold px-4 rounded-xl"
+              >
+                Close Preview
+              </Button>
+            </div>
           </div>
-          <pre
-            className={`font-mono text-[10px] sm:text-xs leading-tight bg-slate-900 text-emerald-300 p-3 rounded-lg overflow-x-auto border border-slate-800 ${
-              paperWidth === "58mm" ? "max-w-[340px]" : "max-w-[460px]"
-            }`}
-          >
-            {previewTicket.text}
-          </pre>
         </div>
       ) : null}
 
       {/* Footer Save Action */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800">
-        <div className="text-xs text-emerald-400 flex items-center gap-1.5 min-h-[20px]">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100">
+        <div className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5 min-h-[20px]">
           {saveMsg ? (
             <>
-              <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
               <span>{saveMsg}</span>
             </>
           ) : null}
@@ -478,9 +435,9 @@ export function ThermalPrinterHardwarePanel({
           size="sm"
           disabled={saving}
           onClick={handleSaveHardware}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4"
+          className="bg-[#E23744] hover:bg-[#d32f2f] text-white text-xs font-bold px-6 h-10 rounded-xl shadow-xs"
         >
-          {saving ? "Saving Hardware Settings..." : "Save Thermal POS Printer Settings"}
+          {saving ? "Saving..." : "Save Printer Settings"}
         </Button>
       </div>
     </Card>

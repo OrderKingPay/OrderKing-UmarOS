@@ -40,7 +40,18 @@ function Login() {
   const { locale, setLocale, t } = useI18n();
 
   const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [mobileNumber, setMobileNumber] = useState(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const raw = localStorage.getItem("orderking_rider_prefill");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.phone) return String(parsed.phone);
+        }
+      }
+    } catch {}
+    return "";
+  });
   const [otp, setOtp] = useState("");
 
   const [pending, setPending] = useState(false);
@@ -51,6 +62,21 @@ function Login() {
 
   const cleanPhone = useMemo(() => sanitizePhone(mobileNumber), [mobileNumber]);
   const isPhoneValid = /^[6-9]\d{9}$/.test(cleanPhone);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem("orderking_rider_session");
+      if (raw && !window.location.search.includes("logout")) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.phone && /^[6-9]\d{9}$/.test(parsed.phone)) {
+          const cookieVal = encodeURIComponent(raw);
+          document.cookie = `orderking_rider_session=${cookieVal}; path=/; max-age=2592000; SameSite=Lax; Secure`;
+          window.location.href = "/";
+        }
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (step !== "otp") return;
@@ -169,7 +195,7 @@ function Login() {
             email: `${cleanPhone}@rider.orderking.in`,
           }),
         );
-        document.cookie = `orderking_rider_session=${sessionPayload}; path=/; max-age=2592000; SameSite=Lax`;
+        document.cookie = `orderking_rider_session=${sessionPayload}; path=/; max-age=2592000; SameSite=Lax; Secure`;
         localStorage.setItem(
           "orderking_rider_prefill",
           JSON.stringify({

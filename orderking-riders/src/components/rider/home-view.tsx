@@ -59,7 +59,7 @@ import { FloatingCashCard } from "./floating-cash-card";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 import { calculateDailyMilestoneProgress, calculateTier1MilestoneBonus } from "@/lib/rider/gig-engine";
-import { VipAmbassadorPass } from "./vip-ambassador-pass";
+
 import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
@@ -592,7 +592,9 @@ export function HomeView() {
     const verifiedTime = new Date().toLocaleTimeString();
     setHelmetSelfie(photoUrl);
     setHelmetVerifiedAt(verifiedTime);
+    setDriverReadinessConfirmed(true);
     try {
+      window.localStorage.setItem("ok_driver_readiness_v1", "true");
       window.localStorage.setItem(
         HELMET_SELFIE_STORAGE_KEY,
         JSON.stringify({ photo: photoUrl, verifiedAt: verifiedTime }),
@@ -600,6 +602,8 @@ export function HomeView() {
     } catch {
       // Ignore
     }
+    // Seamlessly transition online upon selfie verification
+    void go("ONLINE");
   }
 
   function handleClearHelmetSelfie() {
@@ -955,13 +959,13 @@ export function HomeView() {
           {status === "OFFLINE" ? (
             <div className="space-y-1.5">
               <SwipeSlider
-                label={allReady ? "Swipe to Go Online" : "Complete Safety Check to Go Online"}
+                label="Swipe to Go Online"
                 variant="online"
-                disabled={!allReady || pending}
+                disabled={pending}
                 loading={pending}
                 onComplete={() => {
                   if (!allReady) {
-                    toast.error("Please confirm driver readiness check first.");
+                    toast.info("Safety Check: Please verify your helmet to go online.");
                     setSelfieModalOpen(true);
                     return;
                   }
@@ -969,14 +973,14 @@ export function HomeView() {
                 }}
               />
               <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
-                <span className="flex items-center gap-1.5 text-rose-400 font-semibold">
+                <span className="flex items-center gap-1.5 text-rose-500 font-semibold">
                   <span className="size-2 rounded-full bg-rose-500" />
                   Duty Offline
                 </span>
                 <span>
                   {allReady
-                    ? "Safety check verified ✓ Ready to swipe"
-                    : "Complete safety check to go online"}
+                    ? "Safety verified ✓ Swipe to go online"
+                    : "Swipe to verify helmet & go online"}
                 </span>
               </div>
             </div>

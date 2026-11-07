@@ -690,7 +690,7 @@ function AssistantPage() {
     }
   }
 
-  function handleExportKingAiTelemetry() {
+  function handleExportOperationsReport() {
     const payload = {
       exportedAt: new Date().toISOString(),
       ecosystem: "Order King · Partner Assistant Partner Intelligence",
@@ -741,7 +741,7 @@ function AssistantPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `order-king-ai-telemetry-${vendor.restaurantId ?? "outlet"}-${new Date()
+    a.download = `restaurant-operations-report-${vendor.restaurantId ?? "outlet"}-${new Date()
       .toISOString()
       .slice(0, 10)}.json`;
     a.click();
@@ -905,7 +905,7 @@ function AssistantPage() {
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-leaf animate-pulse" />
             <span className="text-xs font-extrabold uppercase tracking-wider text-ink">
-              👑 KING AI KITCHEN PARTNER — INTELLIGENT RESTAURANT OPERATIONS
+              Restaurant Operations & Growth Advisory
             </span>
           </div>
           <span className="font-mono text-[11px] font-semibold text-leaf">
@@ -1397,7 +1397,7 @@ function AssistantPage() {
             >
               🔄 Refresh Live Checks
             </Button>
-            <Button variant="secondary" size="sm" onClick={handleExportKingAiTelemetry}>
+            <Button variant="secondary" size="sm" onClick={handleExportOperationsReport}>
               📥 Export Order Summary
             </Button>
           </div>

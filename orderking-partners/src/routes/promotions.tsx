@@ -884,7 +884,7 @@ function PromotionsPage() {
             </h2>
             {rest.length === 0 ? (
               <Card className="text-xs text-gray-500 border-gray-200 bg-white shadow-xs p-4">
-                No restaurant-funded offers configured yet. Use the King AI Growth presets or the form above to launch a promotion.
+                No restaurant-funded offers configured yet. Use the offer templates or the form above to launch a promotion.
               </Card>
             ) : (
               rest.map((p) => (

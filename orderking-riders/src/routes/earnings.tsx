@@ -23,7 +23,7 @@ import {
   STANDARD_DAILY_MILESTONES,
   calculateDailyMilestoneProgress,
 } from "@/lib/rider/gig-engine";
-import { VipAmbassadorPass } from "@/components/rider/vip-ambassador-pass";
+
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
 export const Route = createFileRoute("/earnings")({ component: Page });
@@ -336,13 +336,7 @@ function Page() {
           </Card>
         ) : null}
 
-        {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
-        <VipAmbassadorPass
-          riderName={rider?.fullName}
-          riderId={rider?.id}
-          phone={rider?.phone}
-          onCommissionCredited={() => void loadEarnings()}
-        />
+        
 
         {/* Period Presets & Custom Date Range Filter */}
         <Card className="space-y-3">

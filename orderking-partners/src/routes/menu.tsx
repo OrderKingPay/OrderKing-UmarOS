@@ -892,7 +892,7 @@ function MenuPage() {
           enhancedImageUrl: enhancedDataUrl,
           activePhotoMode: "enhanced",
           photoModified: true,
-          photoAttested: true, // Auto-attested for King AI studio visuals
+          photoAttested: true, // Attested for dish visuals
           aiGenerated: true,
           studioStyle: styleToUse,
           availableVisualAngles: allVisualAngles,
@@ -1343,7 +1343,7 @@ function MenuPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setOcrModalOpen(true)}
-                className="border-gray-300 bg-gray-100 hover:bg-slate-700 text-gray-800 font-bold text-xs"
+                className="border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs"
                 title="Digitize physical paper menu or raw dish text into structured catalog"
               >
                 <FileText className="mr-1 size-3.5 text-emerald-400" />
@@ -2224,7 +2224,7 @@ function MenuPage() {
                         <div className="flex items-center gap-1.5 min-w-0">
                           <Sparkles className="size-3 text-amber-400 shrink-0" />
                           <span className="truncate font-semibold">
-                            King AI: ₹{(sparkDrawerPricing.recommendedPricePaise / 100).toFixed(0)}
+                            Recommended: ₹{(sparkDrawerPricing.recommendedPricePaise / 100).toFixed(0)}
                             <span className="text-gray-500 font-normal ml-1">
                               ({sparkDrawerPricing.priceDeltaPaise >= 0 ? "+" : ""}{formatINR(sparkDrawerPricing.priceDeltaPaise)})
                             </span>
@@ -2466,7 +2466,7 @@ function MenuPage() {
                           className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border transition ${
                             editor.originalImageUrl === angleUrl || editor.imageUrl === angleUrl
                               ? "border-amber-400 ring-2 ring-amber-400/30"
-                              : "border-gray-300 hover:border-slate-500 opacity-80 hover:opacity-100"
+                              : "border-gray-300 hover:border-gray-400 opacity-80 hover:opacity-100"
                           }`}
                         >
                           <img
@@ -2496,7 +2496,7 @@ function MenuPage() {
                       const file = e.target.files?.[0];
                       if (file) void handleDishPhotoFileChange(file);
                     }}
-                    className="text-xs file:mr-2 file:rounded-md file:border file:border-gray-300 file:bg-gray-100 file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-gray-800 hover:file:bg-slate-700"
+                    className="text-xs file:mr-2 file:rounded-md file:border file:border-gray-300 file:bg-gray-100 file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-gray-800 hover:file:bg-gray-200"
                   />
                   {uploadingImage ? (
                     <span className="text-xs font-mono text-amber-400 animate-pulse">
@@ -2608,7 +2608,7 @@ function MenuPage() {
                           }
                           className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
                             editor.activePhotoMode === "original"
-                              ? "bg-gray-100 text-white border border-slate-600"
+                              ? "bg-gray-900 text-white border border-gray-700"
                               : "bg-white text-gray-500 hover:text-white"
                           }`}
                         >
@@ -2643,7 +2643,7 @@ function MenuPage() {
                       />
                       <span className="absolute left-2 bottom-2 rounded-md bg-black/85 border border-amber-500/40 px-2 py-0.5 text-[10px] font-mono font-bold uppercase text-amber-300 flex items-center gap-1">
                         <Sparkles className="size-2.5 text-amber-400" />
-                        {editor.aiGenerated ? "King AI Studio Certified · 4:3" : "4:3 Studio Framing"}
+                        {editor.aiGenerated ? "Dish Photo · 4:3" : "4:3 Studio Framing"}
                       </span>
                       <button
                         type="button"
@@ -2887,7 +2887,7 @@ function MenuPage() {
                       >
                         Select All
                       </button>
-                      <span className="text-slate-600">·</span>
+                      <span className="text-gray-400">·</span>
                       <button
                         type="button"
                         onClick={() => setEditor({ ...editor, addonIds: [] })}
@@ -3008,7 +3008,7 @@ function MenuPage() {
                           };
                           setEditor({ ...editor, modifierGroups: [...editor.modifierGroups, newGroup] });
                         }}
-                        className="rounded-md border border-gray-300 bg-gray-100 px-2.5 py-1 text-[11px] text-gray-800 hover:bg-slate-700 hover:text-white"
+                        className="rounded-md border border-gray-300 bg-gray-100 px-2.5 py-1 text-[11px] text-gray-800 hover:bg-gray-200"
                       >
                         + Choose Crust (Radio · Min 1, Max 1)
                       </button>
@@ -3036,7 +3036,7 @@ function MenuPage() {
                           };
                           setEditor({ ...editor, modifierGroups: [...editor.modifierGroups, newGroup] });
                         }}
-                        className="rounded-md border border-gray-300 bg-gray-100 px-2.5 py-1 text-[11px] text-gray-800 hover:bg-slate-700 hover:text-white"
+                        className="rounded-md border border-gray-300 bg-gray-100 px-2.5 py-1 text-[11px] text-gray-800 hover:bg-gray-200"
                       >
                         + Extra Cheese &amp; Toppings (Checkbox · Min 0, Max 4)
                       </button>
@@ -3134,7 +3134,7 @@ function MenuPage() {
                                 const updated = editor.modifierGroups.filter((_, idx) => idx !== grpIdx);
                                 setEditor({ ...editor, modifierGroups: updated });
                               }}
-                              className="text-slate-500 hover:text-rose-400 p-1"
+                              className="text-gray-400 hover:text-rose-600 p-1"
                               title="Delete Modifier Group"
                             >
                               <Trash2 className="size-4" />
@@ -3208,7 +3208,7 @@ function MenuPage() {
                                     updated[grpIdx].options = group.options.filter((_, idx) => idx !== optIdx);
                                     setEditor({ ...editor, modifierGroups: updated });
                                   }}
-                                  className="text-slate-500 hover:text-rose-400"
+                                  className="text-gray-400 hover:text-rose-600"
                                 >
                                   <Trash2 className="size-3.5" />
                                 </button>

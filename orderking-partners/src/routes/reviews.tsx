@@ -151,7 +151,7 @@ function ReviewsPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="space-y-4">
-        {/* Customer Sentiment, Rating Distribution & King AI Assistant Header */}
+        {/* Customer Sentiment, Rating Distribution & Smart Assistant Header */}
         <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-4">
             <div className="flex items-center gap-4">
@@ -166,7 +166,7 @@ function ReviewsPage() {
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="font-display text-base font-bold text-gray-900">
-                    Customer Rating Analytics &amp; King AI Reply Assistant
+                    Customer Rating Analytics &amp; Smart Reply Assistant
                   </h2>
                   <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400 flex items-center gap-1">
                     <ShieldCheck className="size-3" /> 100% Verified Order Reviews
@@ -382,7 +382,7 @@ function ReviewRow({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 text-xs text-amber-300 font-medium">
               <Sparkles className="size-3.5 text-amber-400" />
-              <span>King AI Human-Style Review Response Assistant</span>
+              <span>Customer Review Reply Assistant</span>
             </div>
             <div className="flex flex-wrap items-center gap-1.5">
               {(
@@ -422,7 +422,7 @@ function ReviewRow({
           <Textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Draft a polite, empathetic response with King AI above or write your personal reply..."
+            placeholder="Draft a polite, customer-friendly response above or write your personal reply..."
             className="text-xs bg-white border-gray-200"
           />
 

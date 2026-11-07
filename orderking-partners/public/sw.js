@@ -1,18 +1,16 @@
 /**
  * OrderKing Partner & Kitchen Service Worker
- * Zero-Lag Offline Architecture for restaurant kitchens, KOT display stations,
+ * Clean, Zero-Lag Offline Architecture for restaurant kitchens, KOT display stations,
  * and high-volume billing counters.
- * Zero external dependencies: uses native IndexedDB directly.
  */
 
-const SW_VERSION = "orderking-partner-v3-live-truth";
+const SW_VERSION = "ok-partner-v5-clean";
 const CACHE_NAME = `ok-partner-${SW_VERSION}`;
 const STATIC_ASSETS = [
   "/offline.html",
   "/favicon.ico",
   "/icon-192.png",
   "/manifest.json",
-  "/__grok/manifest.webmanifest",
 ];
 
 const IDB_NAME = "orderking-partner-sw";
@@ -101,7 +99,7 @@ self.addEventListener("message", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // Bypass payments, telemetry, and event-streams
+  // Bypass payments and telemetry event-streams
   if (
     url.hostname.includes("razorpay.com") ||
     url.pathname.startsWith("/api/webhooks/") ||
@@ -111,7 +109,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // HTML Entry Points & Navigation requests: NETWORK-FIRST to guarantee live truth and zero stale bundle traps
+  // HTML Entry Points & Navigation requests: NETWORK-FIRST to guarantee live truth
   const isHtmlRequest =
     event.request.mode === "navigate" ||
     url.pathname === "/" ||
@@ -140,6 +138,49 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Static JavaScript & CSS Bundles: NETWORK-FIRST to prevent stale bundle traps
+  if (
+    event.request.method === "GET" &&
+    (url.pathname.startsWith("/assets/") || /\.(?:css|js)$/i.test(url.pathname))
+  ) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Static images and fonts: cache-first with network fallback
+  if (
+    event.request.method === "GET" &&
+    (url.pathname.startsWith("/food/") ||
+      url.pathname.startsWith("/brand/") ||
+      /\.(?:png|jpg|jpeg|webp|avif|svg|ico|woff2)$/i.test(url.pathname))
+  ) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        return (
+          cached ||
+          fetch(event.request).then((response) => {
+            if (response.ok) {
+              const clone = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
+            }
+            return response;
+          })
+        );
+      })
+    );
+    return;
+  }
+
   // Partner Catalog & Menu APIs: Stale-While-Revalidate with IndexedDB
   if (url.pathname.startsWith("/api/")) {
     if (event.request.method === "GET" && isPublicCatalogPath(url.pathname)) {
@@ -162,9 +203,7 @@ self.addEventListener("fetch", (event) => {
             })
             .catch(() => null);
 
-          // Return cached catalog instantly for 0-lag kitchen menu browsing
           if (cached?.body != null) {
-            event.waitUntil(fetchPromise);
             return new Response(cached.body, {
               status: 200,
               headers: cached.headers || { "Content-Type": "application/json" },
@@ -174,7 +213,7 @@ self.addEventListener("fetch", (event) => {
           const fresh = await fetchPromise;
           if (fresh) return fresh;
 
-          return new Response(JSON.stringify({ error: "Partner catalog offline and not cached yet", offline: true }), {
+          return new Response(JSON.stringify({ error: "Partner catalog offline", offline: true }), {
             status: 503,
             headers: { "Content-Type": "application/json" },
           });
@@ -217,32 +256,6 @@ self.addEventListener("fetch", (event) => {
       return;
     }
   }
-
-  // Static assets (CSS, JS, WebAssembly, fonts, icons): cache-first with background revalidation.
-  if (
-    event.request.method === "GET" &&
-    (url.pathname.startsWith("/assets/") ||
-      url.pathname.startsWith("/food/") ||
-      url.pathname.startsWith("/brand/") ||
-      url.pathname.startsWith("/__grok/") ||
-      /\.(?:png|jpg|jpeg|webp|avif|svg|ico|woff2|css|js)$/i.test(url.pathname))
-  ) {
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        const refresh = fetch(event.request)
-          .then((response) => {
-            if (response.ok) {
-              const clone = response.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
-            }
-            return response;
-          })
-          .catch(() => cached);
-
-        return cached || refresh;
-      })
-    );
-  }
 });
 
 // Background Sync handler
@@ -250,8 +263,6 @@ self.addEventListener("sync", (event) => {
   if (event.tag === "sync-partner-orders" || event.tag === "sync-orders") {
     event.waitUntil(
       (async () => {
-        console.log("[Partner SW] Background sync event triggered:", event.tag);
-        // Post message to client windows to invoke durable-queue flush
         const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
         for (const client of clients) {
           client.postMessage({ type: "ORDERKING_SYNC_TRIGGER", tag: event.tag });
@@ -261,7 +272,7 @@ self.addEventListener("sync", (event) => {
   }
 });
 
-// Native Web Push notifications for incoming orders and kitchen soundbox
+// Native Web Push notifications for incoming orders
 self.addEventListener("push", (event) => {
   if (!event.data) return;
   try {
@@ -272,7 +283,7 @@ self.addEventListener("push", (event) => {
       icon: payload.icon || "/icon-192.png",
       badge: payload.badge || "/icon-192.png",
       vibrate: [200, 100, 200, 100, 400],
-      data: payload.data || { url: "/kitchen" },
+      data: payload.data || { url: "/orders" },
       tag: payload.tag || "kitchen-order-alert",
       renotify: true,
       requireInteraction: true,
@@ -284,7 +295,7 @@ self.addEventListener("push", (event) => {
       self.registration.showNotification("OrderKing Kitchen", {
         body: text,
         icon: "/icon-192.png",
-        data: { url: "/kitchen" },
+        data: { url: "/orders" },
       })
     );
   }
@@ -292,7 +303,7 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const targetUrl = event.notification.data?.url || "/kitchen";
+  const targetUrl = event.notification.data?.url || "/orders";
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
