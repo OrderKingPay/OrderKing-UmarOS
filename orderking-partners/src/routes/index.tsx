@@ -224,15 +224,15 @@ function Home() {
 
               {/* Explainer Visual Card */}
               <div className="lg:col-span-5">
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-950 p-6 text-white shadow-xl">
+                <div className="relative overflow-hidden rounded-2xl border border-red-100 bg-red-50/60 p-6 text-gray-900 shadow-sm">
                   <div className="space-y-3">
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-wider">
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-1 text-[10px] font-bold text-[#E23744] uppercase tracking-wider">
                       <span>Quick Guide</span>
                     </div>
-                    <h3 className="text-base font-bold text-white">
+                    <h3 className="text-base font-bold text-gray-900">
                       How to onboard your restaurant
                     </h3>
-                    <p className="text-xs text-gray-300 leading-relaxed">
+                    <p className="text-xs text-gray-600 leading-relaxed">
                       Follow our 3-step self-serve guide to register your restaurant, upload your menu, and begin receiving live orders immediately.
                     </p>
                     <div className="pt-2">
@@ -273,7 +273,7 @@ function Home() {
               Why should you partner with OrderKing?
             </h2>
             <p className="mt-3 text-gray-600 text-sm sm:text-base">
-              OrderKing enables you to get 60% more revenue, 10x new customers, and boost your kitchen visibility.
+              OrderKing enables you to grow your business, reach new customers, and manage online orders efficiently.
             </p>
           </div>
 
@@ -577,31 +577,31 @@ function Home() {
       </section>
 
       {/* Modern Partner Footer */}
-      <footer className="border-t border-gray-200 bg-gray-900 py-12 text-gray-400 text-xs">
+      <footer className="border-t border-gray-200 bg-white py-12 text-gray-600 text-xs">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <OrderKingMark className="size-8 text-[#E23744]" />
-            <span className="font-display text-lg font-bold text-white">{platformConfig.brand.appName}</span>
-            <span className="text-gray-600">|</span>
-            <span className="text-xs text-gray-400">
+            <span className="font-display text-lg font-bold text-gray-900">{platformConfig.brand.appName}</span>
+            <span className="text-gray-300">|</span>
+            <span className="text-xs text-gray-500">
               © {new Date().getFullYear()} OrderKing Foods Private Limited (GSTIN: 18AFXPH9838M1Z9, Assam - 788710). All rights reserved.
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-6 text-xs text-gray-400">
-            <a href="#why-partner" className="hover:text-white transition">
+          <div className="flex flex-wrap items-center gap-6 text-xs text-gray-600">
+            <a href="#why-partner" className="hover:text-gray-900 transition">
               Why Partner
             </a>
-            <a href="#how-it-works" className="hover:text-white transition">
+            <a href="#how-it-works" className="hover:text-gray-900 transition">
               How It Works
             </a>
-            <a href="#requirements" className="hover:text-white transition">
+            <a href="#requirements" className="hover:text-gray-900 transition">
               Requirements
             </a>
-            <a href="#faqs" className="hover:text-white transition">
+            <a href="#faqs" className="hover:text-gray-900 transition">
               FAQs
             </a>
-            <Link to="/login" className="hover:text-white transition">
+            <Link to="/login" className="hover:text-gray-900 transition font-medium">
               Partner Login
             </Link>
           </div>

@@ -427,7 +427,7 @@ export function UniversalPosHardwareManager({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-display text-xl font-bold text-foreground">
-                  Universal POS, KOT &amp; Thermal Printer Gateway
+                  Printer & POS Settings
                 </h2>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
                   printerConnected || posConnected
@@ -480,7 +480,7 @@ export function UniversalPosHardwareManager({
             <span className="text-xl">🧾</span>
             <div>
               <h3 className="font-display font-bold text-base text-foreground">
-                1. Universal Thermal Bill &amp; Kitchen KOT Gateway
+                1. Thermal Bill & Kitchen KOT Printer
               </h3>
               <p className="text-xs text-muted">
                 ESC/POS native bytecode protocol supporting 58mm (32 cols) and 80mm (48 cols) with auto-cut and cash drawer trigger.
@@ -718,20 +718,7 @@ export function UniversalPosHardwareManager({
           </Button>
         </div>
 
-        {/* Live Socket Logs & Telemetry Stream */}
-        <div className="rounded-xl border border-line bg-gray-50 p-3 text-gray-800 font-mono text-[11px] space-y-1">
-          <div className="flex items-center justify-between border-b border-gray-200 pb-1.5 text-[10px] text-gray-500">
-            <span>Hardware Telemetry Stream (Port 9100 / WebUSB / WebBluetooth)</span>
-            <span>Buffer: {receiptResult.bytes.length} bytes · {paperWidth}</span>
-          </div>
-          <div className="max-h-24 overflow-y-auto space-y-0.5 text-gray-700">
-            {socketLogs.map((log, i) => (
-              <div key={i} className="truncate">
-                {log}
-              </div>
-            ))}
-          </div>
-        </div>
+        
       </Card>
 
       {/* SECTION 2: PETPOOJA & URBANPIPER BIDIRECTIONAL BRIDGING */}
@@ -741,7 +728,7 @@ export function UniversalPosHardwareManager({
             <span className="text-xl">🏬</span>
             <div>
               <h3 className="font-display font-bold text-base text-foreground">
-                2. Petpooja &amp; UrbanPiper Bidirectional POS Bridge
+                2. POS Integration (Petpooja, UrbanPiper, Posist)
               </h3>
               <p className="text-xs text-muted">
                 Complete two-way integration: Inbound Webhook Order Ingestion, Live Item 86 Out-of-Stock Sync, and KOT Dispatch.
@@ -877,89 +864,7 @@ export function UniversalPosHardwareManager({
         </div>
       </Card>
 
-      {/* SECTION 3: AI HARDWARE COPILOT & 1-CLICK AUTO-SETUP WIZARD */}
-      <Card className="p-5 border-indigo-500/30 bg-indigo-500/5 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-start gap-2.5">
-            <span className="text-2xl">🤖</span>
-            <div>
-              <h4 className="font-display font-bold text-sm text-foreground">
-                AI Universal Hardware Setup &amp; Self-Healing POS Copilot
-              </h4>
-              <p className="text-xs text-muted mt-0.5">
-                Stuck with printer baud rates, USB serial COM drivers, or Petpooja API tokens? The AI Kitchen Assistant automatically scans your local subnet, discovers Bluetooth/USB thermal printers, and repairs connection drops with zero human staff required.
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              type="button"
-              onClick={() => {
-                toast.info("Probing local subnet on Port 9100...");
-                appendSocketLog("[AUTO-SCAN] Probing local network for Port 9100 ESC/POS printer...");
-                setTimeout(() => {
-                  appendSocketLog("[AUTO-SCAN] Connect USB/Bluetooth Thermal Printer (ESC/POS) or save manual IP.");
-                  toast.info("Connect USB/Bluetooth Thermal Printer (ESC/POS)");
-                }, 800);
-              }}
-              className="text-xs font-bold border-indigo-500/40 text-indigo-700 dark:text-indigo-300"
-            >
-              🔍 Auto-Scan Subnet IP
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              type="button"
-              onClick={handleWebBluetoothConnect}
-              className="text-xs font-bold border-indigo-500/40 text-indigo-700 dark:text-indigo-300"
-            >
-              📡 Scan Bluetooth / USB
-            </Button>
-            <Button
-              size="sm"
-              variant="primary"
-              type="button"
-              onClick={() => {
-                setPrinterInterface("network");
-                setPaperWidth("80mm");
-                setAutoPrintOnOrder(true);
-                setAutoCutPaper(true);
-                appendSocketLog("[1-CLICK-AI] Configured 80mm ESC/POS Network Gateway defaults. Awaiting hardware pairing.");
-                toast.info("Connect USB/Bluetooth Thermal Printer (ESC/POS)");
-              }}
-              className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs"
-            >
-              🛠️ 1-Click AI Auto-Configure Everything
-            </Button>
-          </div>
-        </div>
-
-        {/* Diagnostic Status Indicators */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-          <div className="rounded-lg bg-surface p-2 border border-line text-center">
-            <span className="text-[10px] text-muted block">ESC/POS Engine</span>
-            <span className="text-xs font-bold text-leaf font-mono">58mm &amp; 80mm READY</span>
-          </div>
-          <div className="rounded-lg bg-surface p-2 border border-line text-center">
-            <span className="text-[10px] text-muted block">Port 9100 Socket</span>
-            <span className={`text-xs font-bold font-mono ${socketStatus === "CONNECTED" ? "text-leaf" : "text-muted"}`}>
-              {socketStatus === "CONNECTED" ? "TCP RAW ACTIVE" : "AWAITING LINK"}
-            </span>
-          </div>
-          <div className="rounded-lg bg-surface p-2 border border-line text-center">
-            <span className="text-[10px] text-muted block">POS Bidirectional</span>
-            <span className={`text-xs font-bold font-mono ${posConnected ? "text-leaf" : "text-muted"}`}>
-              {posConnected ? `${selectedPos.name.toUpperCase()} ACTIVE` : "AWAITING LINK"}
-            </span>
-          </div>
-          <div className="rounded-lg bg-surface p-2 border border-line text-center">
-            <span className="text-[10px] text-muted block">Item 86 Auto-Sync</span>
-            <span className="text-xs font-bold text-indigo-600 font-mono">ENABLED</span>
-          </div>
-        </div>
-      </Card>
+      
 
       {/* ESC/POS RECEIPT & BYTECODE INSPECTOR MODAL */}
       {showTestPrintModal && (

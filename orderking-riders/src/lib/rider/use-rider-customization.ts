@@ -177,11 +177,11 @@ export function useRiderCustomization(): RiderCustomizationTokens {
   );
   const rateCardTitle = getText(
     "rider.payout.rate_card_title",
-    "Tier-1 Algorithmic Payout Rate Card"
+    "Delivery Partner Rate Card"
   );
   const guaranteedEarningsTitle = getText(
     "rider.payout.guaranteed_earnings",
-    "★ Guaranteed Partner Earnings"
+    "Total Order Earnings"
   );
   const milestoneSubtext = `${baseFareText} + ${distanceRateText}`;
 

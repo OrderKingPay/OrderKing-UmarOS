@@ -224,11 +224,11 @@ function OrdersPage() {
                 <div className="flex items-center gap-2">
                   <Flame className="size-5 text-rose-600 animate-bounce" />
                   <h2 className="text-sm sm:text-base font-black uppercase tracking-wide text-rose-900">
-                    KITCHEN RUSH OVERLOAD BUFFER ACTIVE (+{rushBuffer} MINS)
+                    Kitchen Rush Mode (+{rushBuffer} mins)
                   </h2>
                 </div>
                 <p className="text-xs text-rose-700 mt-0.5">
-                  Prep SLA dynamically buffered by +{rushBuffer}m across all active incoming orders · Rider pickup arrival window pushed back to prevent premature courier wait.
+                  Additional preparation time applied across active incoming orders.
                 </p>
               </div>
             </div>

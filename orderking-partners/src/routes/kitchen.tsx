@@ -448,7 +448,7 @@ export function KitchenPage({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
-                  Kitchen Display System (KDS) — Live Queue Telemetry
+                  Kitchen Display System (KDS)
                 </h2>
                 <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
                   {q.data ? `SYNCED ${new Date(q.data.serverTime).toLocaleTimeString()}` : "SYNCING"}
@@ -458,7 +458,7 @@ export function KitchenPage({
                 </span>
               </div>
               <p className="text-xs text-gray-500 mt-0.5">
-                Self-service audio hardware diagnostics, 10-language voice alerts, real-time stage counters, and 120s order SLA enforcement.
+                Manage order preparation stages and coordinate food handover with delivery partners.
               </p>
             </div>
           </div>
@@ -541,86 +541,7 @@ export function KitchenPage({
           })}
         </div>
 
-        {/* Dynamic KPT & Station Load Telemetry */}
-        <div className="pt-2 border-t border-gray-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2 text-gray-700">
-            <Clock className="size-3.5 text-emerald-400" />
-            <span>
-              Dynamic KPT Dispatch Synchronization:{" "}
-              <strong className="text-emerald-400">
-                {20 + throttleBuffer}m base ETA
-              </strong>
-              {throttleBuffer > 0 ? ` (+${throttleBuffer}m kitchen throttle)` : " (Optimal pacing)"}
-            </span>
-          </div>
-          <span className="text-[10px] font-mono text-gray-500">
-            Nominal Capacity: 6 concurrent tickets · Courier dispatch synchronized to packaging
-          </span>
-        </div>
-      </Card>
-
-      {/* King Pay Merchant Soundbox Software */}
-      <Card className="border border-primary/30 bg-primary/5 p-4 space-y-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="text-xl">📢</span>
-            <div>
-              {soundboxQuery.data?.active ? (
-                <>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm text-foreground">King Pay Virtual Soundbox Active</h3>
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                      WebSocket Live &amp; Connected
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Zero physical hardware cost. Announces incoming orders and UPI payments aloud across 10 official benchmark languages.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm text-foreground">King Pay Voice Soundbox</h3>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Activate to announce incoming orders and UPI payments aloud across 10 official benchmark languages.
-                  </p>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2">
-            {!soundboxQuery.data?.active && (
-              <Button
-                size="sm"
-                onClick={async () => {
-                  await activateSoundbox({ data: { restaurantId: vendor.restaurantId } });
-                  void qc.invalidateQueries({ queryKey: ["soundbox", vendor.restaurantId] });
-                }}
-                className="shrink-0 text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                Activate Voice Soundbox
-              </Button>
-            )}
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                playKitchenBell();
-                speakKitchenOrder("KOT-8421", 45000, testVoiceLang);
-              }}
-              className="shrink-0 text-xs font-medium"
-            >
-              🔊 Test Soundbox Voice
-            </Button>
-          </div>
-        </div>
-        {soundboxQuery.data?.active && (
-          <div className="mt-4 pt-3 border-t border-emerald-500/20">
-            <KingPaySoundboxEngine merchantId={vendor.restaurantId || "default-merchant"} defaultLang={lang} />
-          </div>
-        )}
-      </Card>
+        </Card>
 
       {/* MAIN CONTENT BASED ON SELECTED TAB */}
       {activeTab === "BOARD" && (

@@ -152,7 +152,7 @@ function Page() {
     rows.push(["SUMMARY", "", "Net Payable", "", String(data.totals.netPayable), (data.totals.netPayable / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Delivery Payout", "", String(data.totals.payout), (data.totals.payout / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Incentives", "", String(data.totals.incentive), (data.totals.incentive / 100).toFixed(2)]);
-    rows.push(["SUMMARY", "", "Ambassador Royalties", "", String(data.totals.referral ?? 0), ((data.totals.referral ?? 0) / 100).toFixed(2)]);
+    rows.push(["SUMMARY", "", "Referral Bonus", "", String(data.totals.referral ?? 0), ((data.totals.referral ?? 0) / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Customer Tips", "", String(data.totals.tip ?? 0), ((data.totals.tip ?? 0) / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Cash Collected", "", String(data.totals.cashCollected), (data.totals.cashCollected / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Cash Reconciled", "", String(data.totals.cashReconciled), (data.totals.cashReconciled / 100).toFixed(2)]);
@@ -229,7 +229,7 @@ function Page() {
           </div>
         </div>
 
-        {/* Tier-1 Algorithmic Rate Card Summary */}
+        {/* Delivery Partner Rate Card */}
         <div className="rounded-xl border border-border bg-card p-4 text-sm shadow-xs space-y-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>

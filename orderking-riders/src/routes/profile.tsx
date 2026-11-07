@@ -207,7 +207,7 @@ function Page() {
               </span>
               <div>
                 <CardTitle className="text-base font-bold">Fleet KYC &amp; Verification</CardTitle>
-                <CardMeta>Driving license, vehicle RC, insulated thermal bag &amp; statutory compliance</CardMeta>
+                <CardMeta>Driving license, vehicle RC, and document verification</CardMeta>
               </div>
             </div>
             <Badge tone={rider?.kycStatus === "VERIFIED" ? "online" : "busy"} className="gap-1 font-mono">
@@ -472,7 +472,7 @@ function Page() {
                 {DEFAULT_BRANDING.legalCompanyName} · {DEFAULT_BRANDING.domain}
               </CardMeta>
             </div>
-            <Badge tone="online">Statutory</Badge>
+            <Badge tone="online">Policies</Badge>
           </div>
           <p className="text-xs text-muted-foreground">{t("legalNote")}</p>
 

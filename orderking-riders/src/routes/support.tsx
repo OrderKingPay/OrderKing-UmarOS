@@ -262,7 +262,7 @@ function Page() {
           `Latest Settlement: ${latestSettlement ? `${formatPaise(latestSettlement.amountPaise)} [${latestSettlement.status}]` : "Scheduled Wednesday 2:00 PM IST"} · Dest: ${payoutDest}`,
         ],
         resolutionAdvice:
-          "📊 Statutory floor guarantees ₹35 base (up to 2 km) + ₹8/km beyond 2 km + ₹1/min kitchen wait (>10m) + 100% customer tips. Submit below to trigger an automated Order King route-distance & payout ledger audit.",
+          "📊 Payout guarantees ₹35 base (up to 2 km) + ₹12/km beyond 2 km + ₹1/min kitchen wait (>10m) + 100% customer tips. Submit below to trigger an automated Order King route-distance & payout ledger audit.",
         auditHeader: `[FLEET_AUTO_AUDIT | WORKFLOW=PAYOUT_AUDIT | RIDER=${riderId.slice(0, 8)} | TRIPS_TODAY=${home?.completedToday ?? 0} | NET_INR=${((earnings?.totals.net ?? 0) / 100).toFixed(2)} | SETTLEMENT=${latestSettlement?.status ?? "NONE"} | DEST=${payoutDest}]`,
       };
     }
@@ -537,11 +537,11 @@ function Page() {
           <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
             <span className="text-lg">⚖️</span>
             <h2 className="text-sm font-bold tracking-tight">
-              STATUTORY GIG-WORKER HELPLINES, SOS & OMBUDSMAN
+              Emergency Helplines & Support Contacts
             </h2>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            Direct 1-tap escalation to Indian emergency responders and statutory authorities under the Code on Social Security, 2020 (MoLE) & IT Act, 2000.
+            24x7 Emergency Helplines (Police 112, Medical 108) and Partner Grievance Support.
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
             <a
@@ -603,7 +603,7 @@ function Page() {
               <span>📩</span>
               <div>
                 <div>Rider Grievance</div>
-                <div className="text-[10px] font-normal text-muted-foreground">Statutory Nodal Officer</div>
+                <div className="text-[10px] font-normal text-muted-foreground">Grievance Officer</div>
               </div>
             </a>
           </div>

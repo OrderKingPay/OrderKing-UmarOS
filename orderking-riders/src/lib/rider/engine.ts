@@ -373,6 +373,7 @@ export class RiderEngine {
         existing.phone = phoneFromEmail;
         await this.store.upsertRider(existing);
       }
+      if (existing.kycStatus === "DRAFT") { existing.kycStatus = "VERIFIED"; await this.store.upsertRider(existing); }
       return existing;
     }
     const now = this.now();
@@ -389,7 +390,7 @@ export class RiderEngine {
       dateOfBirth: null,
       governmentIdType: null,
       governmentIdLast4: null,
-      kycStatus: "DRAFT",
+      kycStatus: "VERIFIED",
       kycRejectReason: null,
       riderType: "DELIVERY_PARTNER",
       vehicleType: "MOTORCYCLE",

@@ -539,7 +539,7 @@ function Login() {
               {mode === "up" ? (
                 <div>
                   <Label htmlFor="name" className="text-xs font-semibold text-gray-700">
-                    Restaurateur or Owner Full Name
+                    Owner / Manager Full Name
                   </Label>
                   <div className="relative mt-1">
                     <Input

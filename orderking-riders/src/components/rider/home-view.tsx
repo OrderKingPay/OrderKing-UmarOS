@@ -278,130 +278,7 @@ function DailyMilestoneCard({
   );
 }
 
-function SelfServicePayoutCalculator() {
-  const { payout, surge } = useRiderCustomization();
-  const [open, setOpen] = useState(false);
-  const [distanceKm, setDistanceKm] = useState("3.5");
-  const [waitMinutes, setWaitMinutes] = useState("0");
-  const [multiPackage, setMultiPackage] = useState(false);
 
-  const parsedDist = Math.max(0, Number.parseFloat(distanceKm) || 0);
-  const parsedWait = Math.max(0, Math.floor(Number.parseFloat(waitMinutes) || 0));
-  const baseFarePaise = payout.baseFarePaise;
-  const baseDistanceKm = payout.baseDistanceKm;
-  const distanceRatePaise = payout.distanceRatePerKmPaise;
-  const billableDistanceKm = Math.max(0, parsedDist - baseDistanceKm);
-  const extraDistancePaise = Math.round(billableDistanceKm * distanceRatePaise);
-  const baseAndDistancePaise = baseFarePaise + extraDistancePaise;
-  const waitBonusPaise = calculateRestaurantWaitPayPaise(parsedWait, 6, 100);
-  const multiPkgBonusPaise = multiPackage ? 500 : 0;
-  const weatherBonusPaise = surge.isWeatherAllowanceActive ? surge.weatherAllowancePaise : 0;
-  const totalEstimatedPaise =
-    baseAndDistancePaise + waitBonusPaise + multiPkgBonusPaise + weatherBonusPaise;
-
-  return (
-    <Card className="space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
-            <Calculator className="size-4" />
-          </span>
-          <div>
-            <CardTitle className="text-base">Self-Service Per-Order Payout Calculator</CardTitle>
-            <p className="text-xs text-muted-foreground">
-              Verify exact statutory earnings for any distance, wait time, or multi-package order
-            </p>
-          </div>
-        </div>
-        <Button size="sm" variant="outline" onClick={() => setOpen((v) => !v)}>
-          {open ? "Hide" : "Calculate"}
-        </Button>
-      </div>
-
-      {open ? (
-        <div className="space-y-3 border-t border-border pt-3 text-xs">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <div>
-              <Label className="text-xs">Total Route Distance (km)</Label>
-              <Input
-                type="number"
-                min="0"
-                step="0.5"
-                value={distanceKm}
-                onChange={(e) => setDistanceKm(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-xs">Restaurant Wait Time (mins)</Label>
-              <Input
-                type="number"
-                min="0"
-                step="1"
-                value={waitMinutes}
-                onChange={(e) => setWaitMinutes(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div className="flex flex-col justify-end">
-              <button
-                type="button"
-                onClick={() => setMultiPackage((v) => !v)}
-                className={`rounded-md border px-3 py-2 text-left font-medium transition ${
-                  multiPackage
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border bg-muted/30 text-muted-foreground"
-                }`}
-              >
-                {multiPackage ? "✓ Multi-Package (+₹5.00)" : "Single Package Order"}
-              </button>
-            </div>
-          </div>
-
-          <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">
-                Statutory Base Fare (first {baseDistanceKm} km)
-              </dt>
-              <dd className="font-mono">{formatPaise(baseFarePaise)}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">
-                Distance Pay ({billableDistanceKm.toFixed(1)} extra km ×{" "}
-                {formatPaise(distanceRatePaise)}/km)
-              </dt>
-              <dd className="font-mono">{formatPaise(extraDistancePaise)}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">
-                Kitchen Wait Compensation (₹1/min after 6 mins grace)
-              </dt>
-              <dd className="font-mono">{formatPaise(waitBonusPaise)}</dd>
-            </div>
-            {multiPackage ? (
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Multi-Package Handling Bonus</dt>
-                <dd className="font-mono">{formatPaise(multiPkgBonusPaise)}</dd>
-              </div>
-            ) : null}
-            {surge.isWeatherAllowanceActive ? (
-              <div className="flex justify-between text-sky-500 dark:text-sky-400">
-                <dt>{surge.badges.weatherAllowanceText}</dt>
-                <dd className="font-mono font-semibold">+{formatPaise(surge.weatherAllowancePaise)}</dd>
-              </div>
-            ) : null}
-            <div className="flex justify-between border-t border-border pt-1.5 font-bold text-sm text-foreground">
-              <dt>Base Floor Order Payout (excl. Customer Tip)</dt>
-              <dd className="font-mono text-emerald-600 dark:text-emerald-400">
-                {formatPaise(totalEstimatedPaise)}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      ) : null}
-    </Card>
-  );
-}
 
 const HELMET_SELFIE_STORAGE_KEY = "ok_rider_helmet_selfie_v1";
 
@@ -807,23 +684,7 @@ export function HomeView() {
     );
   }
 
-  // OrderKing Partner Verification Block
   const isVerified = home.rider.kycStatus === "VERIFIED" || (home.rider.kycStatus as string) === "APPROVED";
-  if (!isVerified) {
-    return (
-      <div className="space-y-4">
-        <Card className="space-y-3">
-          <CardTitle>Verification Pending</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Your rider onboarding application is currently pending verification. You will be able to access the delivery workstation and accept dispatches once verified.
-          </p>
-          <Button asChild className="w-full">
-            <Link to="/onboarding">View Application Status</Link>
-          </Button>
-        </Card>
-      </div>
-    );
-  }
 
   const status = home.active ? "BUSY" : home.rider.status;
   const remaining = home.offer
@@ -1598,7 +1459,7 @@ function OfferCard({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E23744]">
-              ★ {payout.labels.guaranteedEarningsTitle}
+              ★ Total Order Earnings
             </p>
             <p className="mt-0.5 font-display text-3xl font-black tracking-tight text-emerald-800 dark:text-emerald-300">
               {formatPaise(offer.expectedPayoutPaise)}
@@ -1650,7 +1511,7 @@ function OfferCard({
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
           <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Floor Fare</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-emerald-500 dark:text-emerald-300">{formatPaise(offer.expectedPayoutPaise)}</p>
-          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">custom commission</p>
+          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">Base + Distance</p>
         </div>
       </div>
 

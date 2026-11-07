@@ -719,17 +719,17 @@ function DashboardPage() {
 
             <Link
               to="/assistant"
-              className="rounded-2xl border border-amber-200 bg-amber-50/50 p-4 hover:border-amber-400 hover:bg-amber-100/50 transition flex items-start justify-between gap-2 group"
+              className="rounded-2xl border border-gray-200 bg-gray-50/70 p-4 hover:border-red-300 hover:bg-red-50/30 transition flex items-start justify-between gap-2 group"
             >
               <div>
-                <div className="text-xs font-bold text-amber-900 group-hover:text-amber-800 transition-colors">
-                  King AI Co-Pilot
+                <div className="text-xs font-bold text-gray-900 group-hover:text-[#E23744] transition-colors">
+                  Partner Assistant
                 </div>
-                <div className="text-[11px] text-amber-700 mt-0.5">
-                  Menu photo digitizer &amp; culinary photo studio
+                <div className="text-[11px] text-gray-500 mt-0.5">
+                  Menu digitization and smart suggestions
                 </div>
               </div>
-              <Sparkles className="size-4 text-amber-600 shrink-0 animate-pulse" />
+              <Sparkles className="size-4 text-[#E23744] shrink-0" />
             </Link>
 
             <Link

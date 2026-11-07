@@ -220,45 +220,24 @@ export function FloatingCashCard({
           </div>
         </div>
 
-        {/* Next Tier Progression Teaser */}
-        {tierProgression.nextTier && (
-          <div className="mt-2.5 flex items-center justify-between rounded-lg bg-muted/40 px-2.5 py-1.5 text-[11px] text-muted-foreground border border-border/50">
-            <span className="flex items-center gap-1.5 font-medium text-foreground">
-              <Sparkles className="size-3.5 text-amber-500" />
-              <span>Next: {tierProgression.nextTier.title}</span>
-            </span>
-            <span>
-              Complete <strong className="text-primary font-bold">{tierProgression.deliveriesNeededForNextTier}</strong> more trips to unlock ₹{tierProgression.nextTier.floatingCashLimitInr.toLocaleString("en-IN")} limit
-            </span>
-          </div>
-        )}
-
-        {/* Polite Human-Style Empathic Alert Notice */}
+        {/* Alert Notice */}
         {isBlocked ? (
-          <div className="mt-3 rounded-xl border border-amber-300 bg-amber-100/70 p-3 text-xs text-amber-950 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-100 space-y-1.5">
-            <div className="flex items-start gap-2">
-              <Coffee className="size-4 shrink-0 text-amber-700 dark:text-amber-400 mt-0.5" />
-              <div>
-                <p className="font-bold text-amber-900 dark:text-amber-200">
-                  {politeMsg.headline}
-                </p>
-                <p className="mt-0.5 leading-relaxed text-amber-900/90 dark:text-amber-200/90">
-                  {politeMsg.greetingAndStatus} {politeMsg.suggestedAction}
-                </p>
-              </div>
+          <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-950 space-y-1">
+            <div className="flex items-center gap-2 font-bold text-amber-900">
+              <AlertTriangle className="size-4 shrink-0 text-amber-600" />
+              <span>Cash limit reached (₹{limitInr.toLocaleString("en-IN")})</span>
             </div>
-            <div className="border-t border-amber-300/60 pt-1.5 text-[11px] text-amber-800 dark:text-amber-300 flex items-center justify-between">
-              <span>{politeMsg.prepaidOrdersUninterruptedNotice}</span>
-              <span className="font-semibold">{politeMsg.chaiBreakEncouragement}</span>
-            </div>
+            <p className="text-muted-foreground leading-relaxed">
+              Please deposit cash via UPI to receive new cash orders. Prepaid orders remain active.
+            </p>
           </div>
         ) : isWarning ? (
-          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50/80 p-2.5 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50/80 p-2.5 text-xs text-amber-900">
             <AlertTriangle className="size-4 shrink-0 text-amber-600 mt-0.5" />
             <div className="space-y-0.5">
-              <p className="font-semibold">{politeMsg.headline}</p>
+              <p className="font-semibold">Approaching Cash Limit</p>
               <p className="text-muted-foreground leading-relaxed">
-                {politeMsg.suggestedAction} (Prepaid deliveries continue uninterrupted).
+                Deposit cash via UPI before reaching ₹{limitInr.toLocaleString("en-IN")} to avoid pause on cash orders.
               </p>
             </div>
           </div>
@@ -267,7 +246,7 @@ export function FloatingCashCard({
         {/* Action Row */}
         <div className="mt-3 pt-2.5 border-t border-border/60 flex flex-wrap items-center justify-between gap-2">
           <span className="text-[11px] text-muted-foreground">
-            Offsets in Wednesday payout · Zero penalty
+            Offsets in weekly payout · 1-tap UPI deposit
           </span>
           <div className="flex items-center gap-2">
             {balanceInr > 0 && (

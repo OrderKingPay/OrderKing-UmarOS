@@ -45,7 +45,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "English",
     nativeName: "English",
     region: "Pan-India",
-    greeting: "Order King Kitchen Desk & King AI Partner",
+    greeting: "Order King Kitchen Desk & Partner Assistant Partner",
     statusHeader: "Live Kitchen & Storefront Status",
     payoutHeader: "Verified Direct Payout & Earnings Ledger",
     menuHeader: "Menu Studio & Kitchen Quality",
@@ -56,7 +56,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Hindi",
     nativeName: "हिन्दी",
     region: "North & Central India",
-    greeting: "ऑर्डर किंग और King AI किचन साथी",
+    greeting: "ऑर्डर किंग और Partner Assistant किचन साथी",
     statusHeader: "लाइव किचन और स्टोरफ्रंट स्थिति",
     payoutHeader: "सत्यापित प्रत्यक्ष पेआउट और आय लेजर",
     menuHeader: "मेनू स्टूडियो और किचन गुणवत्ता",
@@ -67,7 +67,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Bengali",
     nativeName: "বাংলা",
     region: "West Bengal & Tripura",
-    greeting: "অর্ডার কিং ও King AI কিচেন পার্টনার",
+    greeting: "অর্ডার কিং ও Partner Assistant কিচেন পার্টনার",
     statusHeader: "লাইভ কিচেন ও স্টোরফ্রন্ট স্থিতি",
     payoutHeader: "যাচাইকৃত সরাসরি পেআউট ও আয় লেজার",
     menuHeader: "মেনু স্টুডিও ও কিচেন মান",
@@ -78,7 +78,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Gujarati",
     nativeName: "ગુજરાતી",
     region: "Gujarat & DNHDD",
-    greeting: "ઓર્ડર કિંગ અને King AI કિચન પાર્ટનર",
+    greeting: "ઓર્ડર કિંગ અને Partner Assistant કિચન પાર્ટનર",
     statusHeader: "લાઇવ કિચન અને સ્ટોરફ્રન્ટ સ્થિતિ",
     payoutHeader: "ચકાસાયેલ સીધી ચુકવણી અને કમાણી ખાતાવહી",
     menuHeader: "મેનુ સ્ટુડિયો અને કિચન ગુણવત્તા",
@@ -89,7 +89,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Kannada",
     nativeName: "ಕನ್ನಡ",
     region: "Karnataka",
-    greeting: "ಆರ್ಡರ್ ಕಿಂಗ್ ಮತ್ತು King AI ಕಿಚನ್ ಪಾರ್ಟ್ನರ್",
+    greeting: "ಆರ್ಡರ್ ಕಿಂಗ್ ಮತ್ತು Partner Assistant ಕಿಚನ್ ಪಾರ್ಟ್ನರ್",
     statusHeader: "ಲೈವ್ ಕಿಚನ್ ಮತ್ತು ಸ್ಟೋರ್‌ಫ್ರಂಟ್ ಸ್ಥಿತಿ",
     payoutHeader: "ಪರಿಶೀಲಿಸಿದ ನೇರ ಪಾವತಿ ಮತ್ತು ಗಳಿಕೆ ಲೆಡ್ಜರ್",
     menuHeader: "ಮೆನು ಸ್ಟುಡಿಯೋ ಮತ್ತು ಕಿಚನ್ ಗುಣಮಟ್ಟ",
@@ -100,7 +100,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Malayalam",
     nativeName: "മലയാളം",
     region: "Kerala & Lakshadweep",
-    greeting: "ഓർഡർ കിംഗ് & King AI കിച്ചൺ പാർട്ണർ",
+    greeting: "ഓർഡർ കിംഗ് & Partner Assistant കിച്ചൺ പാർട്ണർ",
     statusHeader: "ലൈവ് കിച്ചൺ & സ്റ്റോർഫ്രണ്ട് നില",
     payoutHeader: "പരിശോധിച്ച നേരിട്ടുള്ള പേഔട്ടും വരുമാന ലെഡ്ജറും",
     menuHeader: "മെനു സ്റ്റുഡിയോ & കിച്ചൺ ഗുണനിലവാരം",
@@ -111,7 +111,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Marathi",
     nativeName: "मराठी",
     region: "Maharashtra & Goa",
-    greeting: "ऑर्डर किंग आणि King AI किचन पार्टनर",
+    greeting: "ऑर्डर किंग आणि Partner Assistant किचन पार्टनर",
     statusHeader: "थेट किचन आणि स्टोअरफ्रंट स्थिती",
     payoutHeader: "सत्यापित थेट पेआउट आणि कमाई लेजर",
     menuHeader: "मेनू स्टुडिओ आणि किचन गुणवत्ता",
@@ -122,7 +122,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Punjabi",
     nativeName: "ਪੰਜਾਬੀ",
     region: "Punjab & Chandigarh",
-    greeting: "ਆਰਡਰ ਕਿੰਗ ਅਤੇ King AI ਕਿਚਨ ਪਾਰਟਨਰ",
+    greeting: "ਆਰਡਰ ਕਿੰਗ ਅਤੇ Partner Assistant ਕਿਚਨ ਪਾਰਟਨਰ",
     statusHeader: "ਲਾਈਵ ਕਿਚਨ ਅਤੇ ਸਟੋਰਫਰੰਟ ਸਥਿਤੀ",
     payoutHeader: "ਪ੍ਰਮਾਣਿਤ ਸਿੱਧੀ ਅਦਾਇਗੀ ਅਤੇ ਕਮਾਈ ਖਾਤਾ",
     menuHeader: "ਮੀਨੂ ਸਟੂਡੀਓ ਅਤੇ ਕਿਚਨ ਕੁਆਲਿਟੀ",
@@ -133,7 +133,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Tamil",
     nativeName: "தமிழ்",
     region: "Tamil Nadu & Puducherry",
-    greeting: "ஆர்டர் கிங் & King AI கிச்சன் பார்ட்னர்",
+    greeting: "ஆர்டர் கிங் & Partner Assistant கிச்சன் பார்ட்னர்",
     statusHeader: "நேரடி சமையலறை மற்றும் கடை நிலை",
     payoutHeader: "சரிபார்க்கப்பட்ட நேரடி வருவாய் லெட்ஜர்",
     menuHeader: "மெனு ஸ்டுடியோ மற்றும் சமையலறை தரம்",
@@ -144,7 +144,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Telugu",
     nativeName: "తెలుగు",
     region: "Andhra Pradesh & Telangana",
-    greeting: "ఆర్డర్ కింగ్ & King AI కిచెన్ పార్ట్‌నర్",
+    greeting: "ఆర్డర్ కింగ్ & Partner Assistant కిచెన్ పార్ట్‌నర్",
     statusHeader: "లైవ్ కిచెన్ & స్టోర్‌ఫ్రంట్ స్థితి",
     payoutHeader: "ధృవీకరించబడిన ప్రత్యక్ష చెల్లింపు & ఆదాయం లెడ్జర్",
     menuHeader: "మెనూ స్టూడియో & కిచెన్ నాణ್ಯత",
@@ -251,7 +251,7 @@ function AssistantPage() {
   const [applyingPrepSlaFix, setApplyingPrepSlaFix] = useState(false);
   const [actionBanner, setActionBanner] = useState<string | null>(null);
 
-  // King AI Conversational Engine Interactive Assistant State
+  // Partner Assistant Conversational Engine Interactive Assistant State
   const defaultDisputes = useMemo(() => orderKingSpark.getActiveDisputes(), []);
   const [selectedDisputeId, setSelectedDisputeId] = useState<string>(defaultDisputes[0]?.disputeId ?? "dsp-spill-101");
   const selectedDispute = useMemo(
@@ -532,7 +532,7 @@ function AssistantPage() {
       `Storefront is currently ${dash.data?.isOpen ? "Open and receiving orders" : "Paused"}.`,
       `Your Storefront Conversion Score is ${menuAudit.storefrontConversionScore} percent across ${menuAudit.total} dishes.`,
       `Current Average Order Value is ${formatINR(growthPlaybook.liveAovPaise)}.`,
-      `To lift Average Order Value by 25 percent while protecting net margin, King AI recommends a minimum order discount threshold of Rupees ${growthPlaybook.recommendedThresholdRupees}.`,
+      `To lift Average Order Value by 25 percent while protecting net margin, Partner Assistant recommends a minimum order discount threshold of Rupees ${growthPlaybook.recommendedThresholdRupees}.`,
       menuAudit.outOfStock.length > 0
         ? `Warning: ${menuAudit.outOfStock.length} dishes are currently out of stock, causing an estimated daily revenue leakage of ${formatINR(growthPlaybook.estimatedDailyLeakagePaise)}.`
         : `All ${menuAudit.inStock.length} catalog dishes are in stock with zero stockout leakage.`,
@@ -693,7 +693,7 @@ function AssistantPage() {
   function handleExportKingAiTelemetry() {
     const payload = {
       exportedAt: new Date().toISOString(),
-      ecosystem: "Order King · King AI Partner Intelligence",
+      ecosystem: "Order King · Partner Assistant Partner Intelligence",
       restaurantId: vendor.restaurantId,
       restaurantName: dash.data?.restaurantName ?? null,
       language: activeLang,
@@ -746,7 +746,7 @@ function AssistantPage() {
       .slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setActionBanner("Exported verified King AI JSON summary from live restaurant database.");
+    setActionBanner("Exported verified Partner Assistant JSON summary from live restaurant database.");
   }
 
   function handleSpeakMessage(text: string, idx: number) {
@@ -899,7 +899,7 @@ function AssistantPage() {
 
   return (
     <VendorShell title={t("nav.assistant")} dataLabel={vendor.dataLabel}>
-      {/* King AI Kitchen Partner Banner */}
+      {/* Partner Assistant Kitchen Partner Banner */}
       <Card className="border-leaf/40 bg-leaf-soft/30 p-3.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -945,7 +945,7 @@ function AssistantPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-xs font-bold uppercase tracking-wider text-ink">
-              🇮🇳 10 BENCHMARK LANGUAGES — CHEF &amp; KITCHEN AI
+              Select Operational Language
             </h2>
             <p className="text-[11px] text-muted">
               Select your language. Kitchen insights, voice dictation, read-aloud audio, and culinary consulting operate natively in your chosen script.
@@ -999,7 +999,7 @@ function AssistantPage() {
               🕒 CHEF ADVISORY SCHEDULE &amp; KITCHEN RUSH QUIET HOURS
             </h2>
             <p className="text-xs text-muted">
-              Busy cooking during the lunch or dinner rush? Set your kitchen quiet hours, and King AI will deliver your consultations during afternoon breaks or after service in {activeLang.nativeName}.
+              Busy cooking during the lunch or dinner rush? Set your kitchen quiet hours, and Partner Assistant will deliver your consultations during afternoon breaks or after service in {activeLang.nativeName}.
             </p>
           </div>
           {advisoryPrefs.savedAt ? (
@@ -1398,7 +1398,7 @@ function AssistantPage() {
               🔄 Refresh Live Checks
             </Button>
             <Button variant="secondary" size="sm" onClick={handleExportKingAiTelemetry}>
-              📥 Export King AI Telemetry
+              📥 Export Order Summary
             </Button>
           </div>
         </div>
@@ -1616,11 +1616,11 @@ function AssistantPage() {
             </div>
           </div>
 
-          {/* MODULE 3: King AI Menu Studio & Quality Standards */}
+          {/* MODULE 3: Partner Assistant Menu Studio & Quality Standards */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                3. King AI Menu Studio &amp; Quality Standards
+                3. Partner Assistant Menu Studio &amp; Quality Standards
               </h3>
               <span className="rounded-full border border-line bg-surface px-2 py-0.5 font-mono text-[10px] font-semibold text-muted">
                 {menuAudit.total} Dishes Scanned
@@ -1834,12 +1834,12 @@ function AssistantPage() {
                 6. Order King Partner Tools &amp; Direct Integrations
               </h3>
               <span className="rounded-full border border-leaf/40 bg-leaf-soft px-2 py-0.5 font-mono text-[10px] font-bold text-leaf">
-                DIRECT CONTROL
+                QUICK ACCESS
               </span>
             </div>
 
             <p className="text-[11px] text-muted">
-              Every growth campaign, payout reconciliation, KDS order flow, thermal KOT printer, and menu update is directly controlled by your restaurant team without delays.
+              Directly manage promotions, payouts, orders, and restaurant settings.
             </p>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
@@ -1876,20 +1876,20 @@ function AssistantPage() {
               >
                 <div className="font-bold text-ink">🔒 Immutable Audit Trail</div>
                 <div className="mt-0.5 text-[10px] text-muted">
-                  Every price, stock &amp; payout event logged under IT Act 2000
+                  View detailed event history
                 </div>
               </Link>
             </div>
           </div>
 
-          {/* MODULE 7: King AI Order Dispute & Transit Resolution */}
+          {/* MODULE 7: Partner Assistant Order Dispute & Transit Resolution */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                7. King AI Order Dispute &amp; Transit Resolution
+                7. Partner Assistant Order Dispute &amp; Transit Resolution
               </h3>
               <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
-                FAIR LIABILITY PROTECTION
+                RESOLUTION
               </span>
             </div>
             <p className="text-[11px] text-muted">
@@ -1984,11 +1984,11 @@ function AssistantPage() {
             )}
           </div>
 
-          {/* MODULE 8: King AI Menu Description & Culinary Pricing Studio */}
+          {/* MODULE 8: Partner Assistant Menu Description & Culinary Pricing Studio */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                8. King AI Menu Description &amp; Culinary Pricing Studio
+                8. Partner Assistant Menu Description &amp; Culinary Pricing Studio
               </h3>
               <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300">
                 HIGH-MARGIN CONVERSION
@@ -2208,7 +2208,7 @@ function AssistantPage() {
                     }}
                     className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1"
                   >
-                    <span>Ask King AI about this SOP</span>
+                    <span>Ask Partner Assistant about this SOP</span>
                     <span className="font-mono">→</span>
                   </button>
 

@@ -504,7 +504,7 @@ export function DeliveryActions({
             </div>
 
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Tier-1 Delivery Standard: Snap a clear photo of the physical paper bill attached to the parcel before confirming pickup.
+              Optional: Snap a photo of the restaurant bill attached to the parcel.
             </p>
 
             <input
@@ -552,15 +552,12 @@ export function DeliveryActions({
           </div>
 
           <SwipeSlider
-            label={billPhoto ? "Swipe to Confirm Pickup" : "Snap Bill Photo to Unlock Pickup"}
+            label="Swipe to Confirm Pickup"
             variant="emerald"
-            disabled={!billPhoto || pending}
+            disabled={pending}
             loading={pending}
             onComplete={() => {
-              if (!billPhoto) {
-                toast.error("Please photograph the paper bill attached to the food package first");
-                return;
-              }
+              
               const finalCode = code.trim() || d.pickupCode;
               return act("PICKUP", {
                 pickupCode: finalCode,
