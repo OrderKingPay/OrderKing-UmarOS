@@ -409,10 +409,10 @@ function Login() {
                   {pending ? (
                     <span className="flex items-center gap-2">
                       <span className="size-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                      Sending OTP via SMS...
+                      Sending OTP...
                     </span>
                   ) : (
-                    "Send OTP via SMS →"
+                    "Send OTP →"
                   )}
                 </Button>
 

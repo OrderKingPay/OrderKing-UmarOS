@@ -817,7 +817,7 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
       credential,
       isNewUser,
       isVerified,
-      destination: "/",
+      destination: isVerified ? "/" : "/onboarding",
     };
   });
 
