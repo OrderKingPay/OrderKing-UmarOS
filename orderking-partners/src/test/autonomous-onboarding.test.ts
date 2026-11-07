@@ -202,6 +202,28 @@ Sweet Lassi 60
         }
       }
     });
+
+    it("parses CSV and TSV exported menus into structured categories with integer paise", () => {
+      const sampleCsv = `Category,Dish Name,FSSAI Diet,Variants & Prices (INR),Serving & Tags
+Starters,Paneer Tikka,VEG,Rs.220.00,Serves 1-2
+Starters,Chicken Malai Tikka,NONVEG,Rs.290.00,Serves 2
+Main Course,Butter Chicken,NONVEG,Rs.340.00,Signature dish
+Breads,Butter Naan,VEG,Rs.50.00,Fresh tandoor
+Desserts,Gulab Jamun,VEG,Rs.80.00,2 pieces`;
+
+      const result = digitizeMenuFromOcr(sampleCsv);
+      expect(result.totalDishesCount).toBe(5);
+      expect(result.categories.length).toBe(4);
+      expect(result.vegDishesCount).toBe(3);
+      expect(result.nonVegDishesCount).toBe(2);
+
+      const butterChicken = result.categories
+        .flatMap((c) => c.items)
+        .find((it) => it.name === "Butter Chicken");
+      expect(butterChicken).toBeDefined();
+      expect(butterChicken?.pricePaise).toBe(34000);
+      expect(butterChicken?.diet).toBe("NONVEG");
+    });
   });
 
   describe("End-to-End Autonomous Merchant Onboarding", () => {

@@ -50,6 +50,7 @@ export const en = {
     academy: "Operations Academy",
     hours: "Operating Hours",
     settings: "Settings",
+    support: "Help Center & Support",
     onboarding: "Restaurant Profile",
     availability: "Availability",
   },

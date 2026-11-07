@@ -10,6 +10,7 @@ import { savePromotion } from "@/lib/server/api-finance";
 import { formatINR } from "@/lib/money";
 import type { DietFlag } from "@/lib/contracts";
 import { digitizeMenuFromOcr, type DigitizedMenuCatalog } from "@/lib/server/autonomous-onboarding";
+import { createPartnerTicket, type TicketCategory } from "@/lib/server/api-support";
 
 export interface PartnerAiCommandContext {
   restaurantId?: string;
@@ -53,9 +54,11 @@ export interface PartnerAiExecutionResult {
     | "SALES_QUERY"
     | "THROTTLE_KITCHEN"
     | "CREATE_PROMOTION"
-    | "DIGITIZE_MENU";
+    | "DIGITIZE_MENU"
+    | "CREATE_SUPPORT_TICKET";
   replyText: string;
   digitizedMenu?: DigitizedMenuCatalog;
+  createdTicketId?: string;
 }
 
 export async function tryExecutePartnerAiCommand(
@@ -176,7 +179,7 @@ export async function tryExecutePartnerAiCommand(
   //       "চিকেন বিরিয়ানির দাম ২৮০ টাকা করো"
   // -------------------------------------------------------------------------
   const priceMatch =
-    qLower.match(/(?:change|update|set|increase|decrease|badhao|ghatao|badha|ghata)\s+(?:price of|rate of|price|rate|দাম)?\s*([a-zA-Z\u0980-\u09FF\u0900-\u097F\s]+?)\s+(?:price|rate|to|as|for|kar do|karo|kardo|bana do|করো|কৰক|হবে)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹|টাকা|টকা|रुपये)?/i) ||
+    qLower.match(/(?:change|update|set|increase|decrease|badhao|ghatao|badha|ghata)\s+(?:price of|rate of|price|rate|দাম)?\s*([a-zA-Z\u0980-\u09FF\u0900-\u097F\s]+?)\s+(?:price|rate|to|as|for|kar do|karo|kardo|bana do|করো|কৰক|হবে)?\s*(?:₹|rs\.?|inr)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹|টাকা|টকা|रुपये)?/i) ||
     qLower.match(/([a-zA-Z\u0980-\u09FF\u0900-\u097F\s]+?)\s+(?:ka price|ka rate|price|rate|er dam|dam|দাম|মূল্য|র দাম)\s*(?:to|as|for|kar do|karo|হবে|করো|কৰক)?\s*(\d{2,5})\s*(?:rupees|rs|inr|₹|টাকা|টকা|रुपये)?/i);
 
   if (priceMatch && ctx.canEditMenu) {
@@ -301,6 +304,144 @@ export async function tryExecutePartnerAiCommand(
   }
 
   // -------------------------------------------------------------------------
+  // 7. ACTION: CREATE SUPPORT TICKET / DESK ISSUE
+  // Matches requests like:
+  // - "Create a support ticket about delayed payout"
+  // - "Raise ticket for order spill on order ORD-123"
+  // - "Open support ticket: POS printer not printing"
+  // - "Help with payout dispute, raise support ticket"
+  // - "অভিযোগ জানাতে চাই / সাপোর্ট টিকিট খুলুন"
+  // - "सपोर्ट टिकट बनाएं / शिकायत दर्ज करें"
+  // -------------------------------------------------------------------------
+  const isTicketIntent =
+    qLower.includes("ticket") ||
+    qLower.includes("টিকিট") ||
+    qLower.includes("support ticket") ||
+    qLower.includes("সাপোর্ট টিকিট") ||
+    qLower.includes("सपोर्ट टिकट") ||
+    qLower.includes("raise ticket") ||
+    qLower.includes("open ticket") ||
+    qLower.includes("create ticket") ||
+    qLower.includes("शिकायत दर्ज") ||
+    qLower.includes("help desk") ||
+    qLower.includes("raise issue") ||
+    qLower.includes("support desk");
+
+  if (isTicketIntent) {
+    let category: TicketCategory = "OTHER";
+    if (
+      qLower.includes("payout") ||
+      qLower.includes("settlement") ||
+      qLower.includes("bank") ||
+      qLower.includes("payment") ||
+      qLower.includes("টাকা") ||
+      qLower.includes("পেমেন্ট") ||
+      qLower.includes("সেটেলমেন্ট") ||
+      qLower.includes("भुगतान") ||
+      qLower.includes("पैसे")
+    ) {
+      category = "PAYOUT_ISSUE";
+    } else if (
+      qLower.includes("spill") ||
+      qLower.includes("leak") ||
+      qLower.includes("transit") ||
+      qLower.includes("damaged") ||
+      qLower.includes("পড়ে গেছে") ||
+      qLower.includes("নষ্ট") ||
+      qLower.includes("ক্ষতি") ||
+      qLower.includes("खराब") ||
+      qLower.includes("dispute")
+    ) {
+      category = "ORDER_DISPUTE";
+    } else if (
+      qLower.includes("printer") ||
+      qLower.includes("kot") ||
+      qLower.includes("pos") ||
+      qLower.includes("hardware") ||
+      qLower.includes("bluetooth") ||
+      qLower.includes("প্রিন্টার") ||
+      qLower.includes("प्रिंटर")
+    ) {
+      category = "HARDWARE_POS_SYNC";
+    } else if (
+      qLower.includes("fssai") ||
+      qLower.includes("gst") ||
+      qLower.includes("pan") ||
+      qLower.includes("license") ||
+      qLower.includes("compliance") ||
+      qLower.includes("লাইসেন্স")
+    ) {
+      category = "FSSAI_COMPLIANCE";
+    } else if (
+      qLower.includes("menu") ||
+      qLower.includes("dish") ||
+      qLower.includes("item") ||
+      qLower.includes("মেনু") ||
+      qLower.includes("দাম")
+    ) {
+      category = "MENU_UPDATE_REQUEST";
+    }
+
+    const orderMatch = query.match(/(?:order\s*(?:#|id)?|ord_)\s*([A-Za-z0-9_-]{4,36})/i);
+    const orderId = orderMatch ? orderMatch[1] : undefined;
+
+    let subject = query.slice(0, 100);
+    subject = subject
+      .replace(/^(?:please\s+)?(?:create|raise|open)\s+(?:a\s+)?(?:support\s+)?ticket\s*(?:about|for|regarding|on|:)?\s*/i, "")
+      .replace(/^(?:सपोर्ट टिकट बनाएं|शिकायत दर्ज करें|সাপোর্ট টিকিট খুলুন)\s*(?::|সম্পর্কে)?\s*/i, "")
+      .trim();
+    if (!subject) {
+      subject = `${category.replace(/_/g, " ")} inquiry`;
+    }
+
+    try {
+      const ticketRes = await createPartnerTicket({
+        data: {
+          restaurantId: ctx.restaurantId,
+          category,
+          subject,
+          description: query,
+          orderId,
+          priority:
+            category === "PAYOUT_ISSUE" || category === "ORDER_DISPUTE"
+              ? "HIGH"
+              : "NORMAL",
+        },
+      });
+
+      let confirmation = `🎫 Support Ticket Created: #${ticketRes.ticketNumber}\n• Category: ${category}\n• Subject: "${subject}"\n• Status: ${ticketRes.status}\n\n`;
+      if (ticketRes.aiResolutionSummary) {
+        confirmation += `🤖 Instant AI Resolution:\n${ticketRes.aiResolutionSummary}\n\n`;
+      }
+      confirmation += `Track this ticket or message partner care anytime under Help Center & Support (/support).`;
+
+      if (ctx.languageCode === "hi") {
+        confirmation = `🎫 सपोर्ट टिकट दर्ज किया गया: #${ticketRes.ticketNumber}\n• श्रेणी: ${category}\n• विषय: "${subject}"\n• स्थिति: ${ticketRes.status}\n\n`;
+        if (ticketRes.aiResolutionSummary) {
+          confirmation += `🤖 त्वरित समाधान:\n${ticketRes.aiResolutionSummary}\n\n`;
+        }
+        confirmation += `आप हेल्प सेंटर (/support) पर इस टिकट की स्थिति देख सकते हैं।`;
+      } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
+        confirmation = `🎫 সাপোর্ট টিকিট খোলা হয়েছে: #${ticketRes.ticketNumber}\n• বিভাগ: ${category}\n• বিষয়: "${subject}"\n• অবস্থা: ${ticketRes.status}\n\n`;
+        if (ticketRes.aiResolutionSummary) {
+          confirmation += `🤖 তাৎক্ষণিক সমাধান:\n${ticketRes.aiResolutionSummary}\n\n`;
+        }
+        confirmation += `আপনি হেল্প সেন্টার ও সাপোর্ট ডেস্কে (/support) এই টিকিটের ট্র্যাক ও উত্তর দিতে পারবেন।`;
+      }
+
+      return {
+        handled: true,
+        action: "CREATE_SUPPORT_TICKET",
+        replyText: confirmation,
+        createdTicketId: ticketRes.ticketId,
+      };
+    } catch (err) {
+      console.error("[PartnerAiActions] Failed to create support ticket:", err);
+    }
+  }
+
+
+  // -------------------------------------------------------------------------
   // 4. ACTION: SALES & DAILY ORDERS RECONCILIATION
   // -------------------------------------------------------------------------
   const isSalesIntent =
@@ -314,6 +455,8 @@ export async function tryExecutePartnerAiCommand(
     qLower.includes("আজকের") ||
     qLower.includes("বিক্রি") ||
     qLower.includes("আজকে কত") ||
+    qLower.includes("बिक्री") ||
+    qLower.includes("आज") ||
     qLower.includes("कमाई") ||
     qLower.includes("today");
 

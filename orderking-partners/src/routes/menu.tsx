@@ -24,7 +24,7 @@ import {
 } from "@/lib/server/api-menu";
 import { OneTapStockToggle } from "@/components/one-tap-stock-toggle";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
-import { orderKingSpark } from "@/lib/ai/order-king-spark";
+import { orderKingSpark } from "@/lib/ai/order-king-spark"; import { askAssistant } from "@/lib/server/api-more";
 import { toast } from "sonner";
 import { supabaseCloud } from "@/lib/db-cloud";
 import { LocalStockoutScheduler, formatStockoutRemaining } from "@/lib/menu/timed-stockout";
@@ -59,6 +59,7 @@ import {
   ArrowDown,
   Pencil,
   Download,
+  UploadCloud,
   Check,
   Layers,
   Receipt,
@@ -328,6 +329,9 @@ function MenuPage() {
   const [rawOcrText, setRawOcrText] = useState("");
   const [digitizedCatalog, setDigitizedCatalog] = useState<DigitizedMenuCatalog | null>(null);
   const [importingOcr, setImportingOcr] = useState(false);
+  const [uploadedMenuFile, setUploadedMenuFile] = useState<File | null>(null);
+  const [fileParsing, setFileParsing] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [showAllergenEditor, setShowAllergenEditor] = useState(false);
 
   const [quickDishInput, setQuickDishInput] = useState("");
@@ -1014,6 +1018,75 @@ function MenuPage() {
       setQuickFeedback("Failed to add dish. Please try again.");
     } finally {
       setIsAddingQuickDish(false);
+    }
+  }
+
+  async function handleMenuFileUpload(file: File) {
+    setUploadedMenuFile(file);
+    setFileParsing(true);
+    try {
+      const fileName = file.name.toLowerCase();
+      if (
+        fileName.endsWith(".csv") ||
+        fileName.endsWith(".tsv") ||
+        fileName.endsWith(".txt") ||
+        fileName.endsWith(".json")
+      ) {
+        const text = await file.text();
+        setRawOcrText(text);
+        const catalog = digitizeMenuFromOcr(text);
+        if (catalog && catalog.totalDishesCount > 0) {
+          setDigitizedCatalog(catalog);
+          toast.success(`Extracted ${catalog.totalDishesCount} dishes from ${file.name}`);
+        } else {
+          toast.info(`Loaded text from ${file.name}. Review and click Parse.`);
+        }
+      } else if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const dataUrl = e.target?.result as string;
+          setImagePreviewUrl(dataUrl);
+          try {
+            toast.info("Extracting menu dishes with King AI multimodal vision...");
+            const aiRes = await askAssistant({
+              data: {
+                restaurantId: vendor.restaurantId,
+                imageBase64: dataUrl,
+                mimeType: file.type || "image/jpeg",
+                question:
+                  "Extract all dishes from this printed restaurant menu photo. Format each item on a new line: Category, Dish Name, Price in INR, and Diet (VEG or NONVEG).",
+              },
+            });
+            if (aiRes.ok && aiRes.text) {
+              setRawOcrText(aiRes.text);
+              const catalog = digitizeMenuFromOcr(aiRes.text);
+              if (catalog && catalog.totalDishesCount > 0) {
+                setDigitizedCatalog(catalog);
+                toast.success(`Extracted ${catalog.totalDishesCount} dishes from menu photo!`);
+              }
+            }
+          } catch (err) {
+            console.error("AI photo OCR extraction error:", err);
+            toast.error("Could not auto-extract from photo. You can type or paste items below.");
+          } finally {
+            setFileParsing(false);
+          }
+        };
+        reader.readAsDataURL(file);
+        return;
+      } else {
+        const text = await file.text();
+        setRawOcrText(text);
+        const catalog = digitizeMenuFromOcr(text);
+        if (catalog && catalog.totalDishesCount > 0) {
+          setDigitizedCatalog(catalog);
+          toast.success(`Extracted ${catalog.totalDishesCount} dishes from ${file.name}`);
+        }
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to read menu file");
+    } finally {
+      setFileParsing(false);
     }
   }
 
@@ -3314,13 +3387,14 @@ function MenuPage() {
 
       {/* OCR / Bulk Menu Digitizer Modal */}
       {ocrModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <FileText className="size-5 text-emerald-700" />
-                <h3 className="font-display text-base font-bold text-white">
-                  Menu Photo Upload &amp; OCR Digitizer
+                <UploadCloud className="size-5 text-emerald-600" />
+                <h3 className="font-display text-base font-bold text-gray-900">
+                  Menu File Upload &amp; OCR Digitizer
                 </h3>
               </div>
               <button
@@ -3328,36 +3402,135 @@ function MenuPage() {
                 onClick={() => {
                   setOcrModalOpen(false);
                   setDigitizedCatalog(null);
+                  setUploadedMenuFile(null);
+                  setImagePreviewUrl(null);
                 }}
-                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-white"
+                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <p className="text-xs text-gray-700 leading-relaxed">
-              Paste raw OCR text from a physical printed menu, chalkboard photo, or billing printout.
-              Upload photos of your printed menu card. The scanner will automatically extract dish names, descriptions, categories, and prices.
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Upload a menu spreadsheet (CSV / TSV), POS item export, text file, or physical printed menu card photo.
+              Dishes, categories, prices, and FSSAI dietary classifications are automatically extracted.
             </p>
 
-            <Textarea
-              rows={8}
-              value={rawOcrText}
-              onChange={(e) => setRawOcrText(e.target.value)}
-              placeholder="Paste raw menu text or OCR output here... Example:&#10;&#10;STARTERS&#10;Paneer Tikka - ₹220&#10;Chicken Malai Kebab - ₹280 [NV]&#10;&#10;MAIN COURSE&#10;Butter Chicken - ₹340&#10;Dal Makhani - ₹210 [VEG]&#10;&#10;BREADS&#10;Butter Naan - ₹50"
-              className="font-mono text-xs bg-white border-gray-200 text-gray-800"
-            />
+            {/* Drag & Drop File Upload Area */}
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const droppedFiles = e.dataTransfer.files;
+                if (droppedFiles && droppedFiles.length > 0) {
+                  void handleMenuFileUpload(droppedFiles[0]);
+                }
+              }}
+              className="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/60 p-5 text-center transition hover:border-emerald-500 hover:bg-emerald-50/20"
+            >
+              <input
+                type="file"
+                accept=".csv,.tsv,.txt,.json,.png,.jpg,.jpeg,.webp"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    void handleMenuFileUpload(files[0]);
+                  }
+                }}
+                className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
+                title="Click or drag a file to upload"
+              />
 
-            <div className="flex items-center justify-between gap-3">
+              <div className="pointer-events-none flex flex-col items-center gap-2">
+                <div className="rounded-full bg-emerald-100 p-2.5 text-emerald-600">
+                  <UploadCloud className="size-6" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-gray-800">
+                    Click to browse or drop menu file here
+                  </span>
+                  <p className="text-[11px] text-gray-500 mt-0.5">
+                    Supports .CSV, .TSV, .TXT, .JSON or Camera Photos (.JPG, .PNG, .WEBP)
+                  </p>
+                </div>
+              </div>
+
+              {uploadedMenuFile && (
+                <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-xs text-emerald-800 font-medium">
+                  <FileText className="size-3.5 text-emerald-600" />
+                  <span className="font-mono">{uploadedMenuFile.name}</span>
+                  <span className="text-[10px] text-emerald-600">
+                    ({(uploadedMenuFile.size / 1024).toFixed(1)} KB)
+                  </span>
+                </div>
+              )}
+
+              {fileParsing && (
+                <div className="mt-3 flex items-center gap-2 text-xs font-bold text-emerald-700 animate-pulse">
+                  <RefreshCw className="size-3.5 animate-spin" />
+                  <span>Processing file &amp; extracting dishes...</span>
+                </div>
+              )}
+            </div>
+
+            {/* Photo Preview if image was uploaded */}
+            {imagePreviewUrl && (
+              <div className="relative rounded-xl border border-gray-200 bg-gray-50 p-2 flex items-center gap-3">
+                <img
+                  src={imagePreviewUrl}
+                  alt="Uploaded Menu Card"
+                  className="h-16 w-24 object-cover rounded-lg border border-gray-200 shadow-xs"
+                />
+                <div className="text-xs text-gray-700">
+                  <span className="font-bold block">Menu Card Photo Attached</span>
+                  <span className="text-[11px] text-gray-500">
+                    Multimodal King AI vision parsed dish entries into editable text below.
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Raw Extracted / Editable Text */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] font-semibold text-gray-600">
+                <span>Extracted Menu Text / Manual Entry:</span>
+                <span className="font-mono text-gray-400">{rawOcrText.length} chars</span>
+              </div>
+              <Textarea
+                rows={6}
+                value={rawOcrText}
+                onChange={(e) => setRawOcrText(e.target.value)}
+                placeholder="Paste raw menu text or CSV here... Example:
+
+STARTERS
+Paneer Tikka - ₹220
+Chicken Malai Kebab - ₹280 [NV]
+
+MAIN COURSE
+Butter Chicken - ₹340
+Dal Makhani - ₹210 [VEG]
+
+BREADS
+Butter Naan - ₹50"
+                className="font-mono text-xs bg-white border-gray-300 text-gray-800 focus:border-emerald-500"
+              />
+            </div>
+
+            {/* Parse & Import Actions */}
+            <div className="flex items-center justify-between gap-3 pt-1">
               <Button
                 type="button"
                 variant="secondary"
                 size="sm"
                 onClick={handleDigitizeText}
-                disabled={!rawOcrText.trim()}
-                className="text-xs font-bold"
+                disabled={!rawOcrText.trim() || fileParsing}
+                className="text-xs font-bold border border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800"
               >
-                <Sparkles className="mr-1.5 size-3.5 text-amber-400" /> Parse &amp; Digitize Dishes
+                <Sparkles className="mr-1.5 size-3.5 text-amber-500" /> Parse &amp; Digitize Dishes
               </Button>
 
               {digitizedCatalog && (
@@ -3365,30 +3538,61 @@ function MenuPage() {
                   type="button"
                   size="sm"
                   onClick={() => void handleCommitDigitizedMenu()}
-                  disabled={importingOcr}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
+                  disabled={importingOcr || fileParsing}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm"
                 >
                   <CheckCircle2 className="mr-1.5 size-3.5" />
-                  {importingOcr ? "Importing to Database..." : `Import ${digitizedCatalog.totalDishesCount} Dishes to Menu`}
+                  {importingOcr
+                    ? "Importing to Database..."
+                    : `Import ${digitizedCatalog.totalDishesCount} Dishes to Live Menu`}
                 </Button>
               )}
             </div>
 
+            {/* Extracted Dishes Preview */}
             {digitizedCatalog && (
-              <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono text-emerald-700">
-                  <span>Extracted: {digitizedCatalog.totalDishesCount} Dishes in {digitizedCatalog.categories.length} Categories</span>
-                  <span>🌱 {digitizedCatalog.vegDishesCount} Veg · 🍗 {digitizedCatalog.nonVegDishesCount} Non-Veg · 🥚 {digitizedCatalog.eggDishesCount} Egg</span>
+              <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-4 space-y-3">
+                <div className="flex items-center justify-between text-xs font-semibold text-emerald-800 border-b border-gray-200 pb-2">
+                  <span>
+                    Extracted: {digitizedCatalog.totalDishesCount} Dishes in{" "}
+                    {digitizedCatalog.categories.length} Categories
+                  </span>
+                  <span className="text-[11px] font-mono">
+                    🌱 {digitizedCatalog.vegDishesCount} Veg · 🍗{" "}
+                    {digitizedCatalog.nonVegDishesCount} Non-Veg · 🥚{" "}
+                    {digitizedCatalog.eggDishesCount} Egg
+                  </span>
                 </div>
-                <div className="space-y-2 max-h-48 overflow-y-auto divide-y divide-gray-200/60 text-xs">
+                <div className="space-y-3 max-h-52 overflow-y-auto divide-y divide-gray-200 text-xs pr-1">
                   {digitizedCatalog.categories.map((c) => (
                     <div key={c.id} className="pt-2">
-                      <span className="font-bold text-gray-800 uppercase tracking-wide text-[11px] block">{c.name}</span>
-                      <ul className="mt-1 space-y-1">
+                      <span className="font-bold text-gray-900 uppercase tracking-wide text-[11px] block">
+                        {c.name}
+                      </span>
+                      <ul className="mt-1.5 space-y-1">
                         {c.items.map((it) => (
-                          <li key={it.id} className="flex justify-between text-gray-700">
-                            <span>{it.diet === "VEG" ? "🌱" : it.diet === "EGG" ? "🥚" : "🍗"} {it.name}</span>
-                            <span className="font-mono text-emerald-700">{it.formattedPrice}</span>
+                          <li
+                            key={it.id}
+                            className="flex items-center justify-between text-gray-700 bg-white px-2.5 py-1.5 rounded-lg border border-gray-100"
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <span>
+                                {it.diet === "VEG"
+                                  ? "🌱"
+                                  : it.diet === "EGG"
+                                  ? "🥚"
+                                  : "🍗"}
+                              </span>
+                              <span className="font-medium text-gray-900">{it.name}</span>
+                              {it.description && (
+                                <span className="text-[11px] text-gray-500 italic max-w-xs truncate">
+                                  — {it.description}
+                                </span>
+                              )}
+                            </span>
+                            <span className="font-mono font-bold text-emerald-700">
+                              {it.formattedPrice}
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -3400,6 +3604,7 @@ function MenuPage() {
           </div>
         </div>
       )}
+    
     </VendorShell>
   );
 }

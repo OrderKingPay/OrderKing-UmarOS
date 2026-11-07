@@ -217,14 +217,184 @@ export async function verifyGSTIN(gstin: string): Promise<GSTINValidationResult>
 }
 
 // ============================================================================
-// 3. OCR / TEXT MENU DIGITIZER
+// 3. OCR / TEXT / CSV MENU DIGITIZER
 // ============================================================================
 
 /**
- * Parses raw text or OCR output into structured dishes, descriptions, categories,
+ * Parses CSV, TSV, or semicolon-delimited tabular menu records into a DigitizedMenuCatalog.
+ * Supports OrderKing exports, Zomato/Swiggy partner catalog sheets, POS dumps, and user spreadsheets.
+ */
+export function parseMenuFromTabular(rawContent: string): DigitizedMenuCatalog | null {
+  const lines = rawContent
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
+  if (lines.length < 2) return null;
+
+  // Detect delimiter
+  const firstLine = lines[0];
+  let delimiter = ",";
+  if (firstLine.includes("\t")) {
+    delimiter = "\t";
+  } else if (firstLine.includes(";") && !firstLine.includes(",")) {
+    delimiter = ";";
+  } else if (!firstLine.includes(",") && !firstLine.includes("\t")) {
+    return null;
+  }
+
+  const splitRow = (row: string): string[] => {
+    if (delimiter === "\t") {
+      return row.split("\t").map((c) => c.replace(/^["']|["']$/g, "").trim());
+    }
+    const result: string[] = [];
+    let cur = "";
+    let inQuotes = false;
+    for (let i = 0; i < row.length; i++) {
+      const ch = row[i];
+      if (ch === '"' || ch === "'") {
+        inQuotes = !inQuotes;
+      } else if (ch === delimiter && !inQuotes) {
+        result.push(cur.replace(/^["']|["']$/g, "").trim());
+        cur = "";
+      } else {
+        cur += ch;
+      }
+    }
+    result.push(cur.replace(/^["']|["']$/g, "").trim());
+    return result;
+  };
+
+  const headerParts = splitRow(lines[0]).map((h) => h.toLowerCase());
+  let catIdx = headerParts.findIndex((h) => h.includes("cat") || h.includes("section") || h.includes("group"));
+  let nameIdx = headerParts.findIndex((h) => h.includes("name") || h.includes("dish") || h.includes("item") || h.includes("title"));
+  let priceIdx = headerParts.findIndex((h) => h.includes("price") || h.includes("rate") || h.includes("amount") || h.includes("inr") || h.includes("paise") || h.includes("variant") || h.includes("cost"));
+  let dietIdx = headerParts.findIndex((h) => h.includes("diet") || h.includes("type") || h.includes("veg") || h.includes("fssai"));
+  let descIdx = headerParts.findIndex((h) => h.includes("desc") || h.includes("detail") || h.includes("info") || h.includes("tag"));
+
+  const hasHeader = nameIdx >= 0 || priceIdx >= 0;
+  let startIndex = 1;
+
+  if (!hasHeader) {
+    const sampleCols = splitRow(lines[0]);
+    if (sampleCols.length === 2) {
+      nameIdx = 0;
+      priceIdx = 1;
+      startIndex = 0;
+    } else if (sampleCols.length >= 3) {
+      catIdx = 0;
+      nameIdx = 1;
+      priceIdx = 2;
+      if (sampleCols.length >= 4) dietIdx = 3;
+      startIndex = 0;
+    } else {
+      return null;
+    }
+  }
+
+  if (nameIdx < 0 || priceIdx < 0) return null;
+
+  const categoriesMap: Map<string, DigitizedMenuItem[]> = new Map();
+  let itemIdCounter = 1;
+
+  for (let i = startIndex; i < lines.length; i++) {
+    const cols = splitRow(lines[i]);
+    if (cols.length <= Math.max(nameIdx, priceIdx)) continue;
+
+    const rawName = cols[nameIdx]?.trim();
+    const rawPrice = cols[priceIdx]?.trim();
+    if (!rawName || !rawPrice) continue;
+
+    const priceMatch = rawPrice.match(/([0-9]{1,5}(?:\.[0-9]{1,2})?)/);
+    if (!priceMatch) continue;
+    const pricePaise = Math.round(parseFloat(priceMatch[1]) * 100);
+    if (pricePaise <= 0) continue;
+
+    const rawCategory = catIdx >= 0 && cols[catIdx] ? cols[catIdx].trim() : "Main";
+    const category = rawCategory || "Main";
+
+    let diet: DietFlag = "NONVEG";
+    if (dietIdx >= 0 && cols[dietIdx]) {
+      const dietStr = cols[dietIdx].toUpperCase();
+      if (dietStr.includes("VEGAN")) diet = "VEGAN";
+      else if (dietStr === "VEG" || dietStr.includes("VEGETARIAN") || dietStr === "V" || (dietStr.includes("YES") && headerParts[dietIdx]?.includes("veg"))) diet = "VEG";
+      else if (dietStr.includes("EGG")) diet = "EGG";
+      else diet = "NONVEG";
+    } else {
+      diet = inferDiet(rawName);
+    }
+
+    const description = descIdx >= 0 && cols[descIdx] ? cols[descIdx].trim() : "";
+
+    const item: DigitizedMenuItem = {
+      id: `d_${itemIdCounter++}`,
+      name: rawName,
+      description,
+      category,
+      diet,
+      pricePaise,
+      formattedPrice: `₹${(pricePaise / 100).toFixed(0)}`,
+      prepMinutes: 20,
+      inStock: true,
+    };
+
+    if (!categoriesMap.has(category)) {
+      categoriesMap.set(category, []);
+    }
+    categoriesMap.get(category)!.push(item);
+  }
+
+  let totalDishesCount = 0;
+  let vegDishesCount = 0;
+  let nonVegDishesCount = 0;
+  let eggDishesCount = 0;
+
+  const categories: DigitizedCategory[] = [];
+  let sortOrder = 1;
+
+  for (const [catName, items] of categoriesMap.entries()) {
+    if (items.length > 0) {
+      categories.push({
+        id: `cat_${catName.toLowerCase().replace(/[^a-z0-9]/g, "_")}`,
+        name: catName,
+        sortOrder: sortOrder++,
+        items,
+      });
+
+      for (const it of items) {
+        totalDishesCount++;
+        if (it.diet === "VEG" || it.diet === "VEGAN") vegDishesCount++;
+        else if (it.diet === "NONVEG") nonVegDishesCount++;
+        else if (it.diet === "EGG") eggDishesCount++;
+      }
+    }
+  }
+
+  if (totalDishesCount === 0) return null;
+
+  return {
+    categories,
+    totalDishesCount,
+    vegDishesCount,
+    nonVegDishesCount,
+    eggDishesCount,
+    digitizedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Parses raw text, OCR output, or CSV/TSV table into structured dishes, descriptions, categories,
  * veg/non-veg tags, and integer paise prices.
  */
 export function digitizeMenuFromOcr(rawOcrText: string): DigitizedMenuCatalog {
+  // If the text looks like a CSV, TSV, or spreadsheet dump, attempt tabular parse first
+  if (rawOcrText.includes(",") || rawOcrText.includes("\t") || rawOcrText.includes(";")) {
+    const tabular = parseMenuFromTabular(rawOcrText);
+    if (tabular && tabular.totalDishesCount > 0) {
+      return tabular;
+    }
+  }
+
   const lines = rawOcrText
     .split(/\r?\n/)
     .map((l) => l.trim())

@@ -71,6 +71,12 @@ const NAV_ITEM_METADATA: Record<
     subtitle: "FSSAI license, PAN details & bank settlement account",
     tag: "Profile",
   },
+  "/support": {
+    title: "Help Center & Support Desk",
+    subtitle: "Raise tickets for payouts, transit spills, menu updates & hardware",
+    tag: "Support",
+    highlight: true,
+  },
   "/settings": {
     title: "Outlet Settings & Hardware",
     subtitle: "Printer integration, POS hardware & staff permissions",

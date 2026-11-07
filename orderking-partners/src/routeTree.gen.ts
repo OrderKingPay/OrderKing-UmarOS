@@ -28,6 +28,7 @@ import { Route as PromotionsRouteImport } from './routes/promotions'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SettlementsRouteImport } from './routes/settlements'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiV1CatalogRouteImport } from './routes/api/v1/catalog'
 
@@ -126,6 +127,11 @@ const SettlementsRoute = SettlementsRouteImport.update({
   path: '/settlements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/reviews': typeof ReviewsRoute
   '/settings': typeof SettingsRoute
   '/settlements': typeof SettlementsRoute
+  '/support': typeof SupportRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/v1/catalog': typeof ApiV1CatalogRoute
 }
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/reviews': typeof ReviewsRoute
   '/settings': typeof SettingsRoute
   '/settlements': typeof SettlementsRoute
+  '/support': typeof SupportRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/v1/catalog': typeof ApiV1CatalogRoute
 }
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/reviews': typeof ReviewsRoute
   '/settings': typeof SettingsRoute
   '/settlements': typeof SettlementsRoute
+  '/support': typeof SupportRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/v1/catalog': typeof ApiV1CatalogRoute
 }
@@ -229,6 +238,7 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/settings'
     | '/settlements'
+    | '/support'
     | '/api/auth/$'
     | '/api/v1/catalog'
   fileRoutesByTo: FileRoutesByTo
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/settings'
     | '/settlements'
+    | '/support'
     | '/api/auth/$'
     | '/api/v1/catalog'
   id:
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/settings'
     | '/settlements'
+    | '/support'
     | '/api/auth/$'
     | '/api/v1/catalog'
   fileRoutesById: FileRoutesById
@@ -299,6 +311,7 @@ export interface RootRouteChildren {
   ReviewsRoute: typeof ReviewsRoute
   SettingsRoute: typeof SettingsRoute
   SettlementsRoute: typeof SettlementsRoute
+  SupportRoute: typeof SupportRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiV1CatalogRoute: typeof ApiV1CatalogRoute
 }
@@ -438,6 +451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettlementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -475,6 +495,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReviewsRoute: ReviewsRoute,
   SettingsRoute: SettingsRoute,
   SettlementsRoute: SettlementsRoute,
+  SupportRoute: SupportRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiV1CatalogRoute: ApiV1CatalogRoute,
 }

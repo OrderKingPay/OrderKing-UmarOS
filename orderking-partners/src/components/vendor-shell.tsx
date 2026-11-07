@@ -18,6 +18,7 @@ import {
   CalendarDays,
   Flame,
   GraduationCap,
+  LifeBuoy,
 } from "lucide-react";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -61,6 +62,7 @@ export const MORE_NAV = [
   { to: "/assistant", key: "nav.assistant", icon: Sparkles, perm: "assistant.use" as Permission },
   { to: "/notifications", key: "nav.notifications", icon: Bell, perm: "notifications.view" as Permission },
   { to: "/onboarding", key: "nav.onboarding", icon: Store, perm: "onboarding.edit" as Permission },
+  { to: "/support", key: "nav.support", icon: LifeBuoy, perm: "dashboard.view" as Permission },
   { to: "/settings", key: "nav.settings", icon: Settings, perm: "settings.view" as Permission },
 ] as const;
 

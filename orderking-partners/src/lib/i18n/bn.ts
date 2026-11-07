@@ -52,6 +52,7 @@ export const bn: MessageTree = {
     academy: "অপারেশনস একাডেমি",
     hours: "খোলা থাকার সময়",
     settings: "সেটিংস",
+    support: "সহায়তা কেন্দ্র ও টিকিট",
     onboarding: "রেস্তোরাঁর প্রোফাইল",
     availability: "খাবারের স্টক",
   },
