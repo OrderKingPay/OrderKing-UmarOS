@@ -62,11 +62,23 @@ const FAQS: FaqItem[] = [
 function Home() {
   const { user } = useCurrentUserState();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [heroPhone, setHeroPhone] = useState("");
 
   if (user) return <Navigate to="/dashboard" />;
 
   const toggleFaq = (index: number) => {
     setOpenFaqIndex((prev) => (prev === index ? null : index));
+  };
+
+  const handleHeroQuickStart = (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = heroPhone.replace(/\D/g, "").slice(-10);
+    if (clean.length === 10) {
+      window.location.assign(`/login?mode=up&phone=${clean}`);
+    } else {
+      const el = document.getElementById("onboarding-form");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -140,25 +152,40 @@ function Home() {
             Connect with thousands of customers across your city, boost your kitchen revenue, and take your restaurant to new heights.
           </p>
 
-          {/* Primary Action Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              asChild
-              size="lg"
-              className="h-14 px-8 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-base rounded-2xl shadow-xl shadow-red-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          {/* Instant 1-Tap Mobile Quick-Start Onboarding */}
+          <form onSubmit={handleHeroQuickStart} className="mt-8 mx-auto max-w-lg flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative w-full">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 font-mono">+91</span>
+              <input
+                type="tel"
+                maxLength={10}
+                value={heroPhone}
+                onChange={(e) => setHeroPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                placeholder="Enter 10-digit mobile number"
+                className="w-full h-14 pl-14 pr-4 rounded-2xl border border-gray-300 bg-white text-gray-900 font-mono text-base placeholder:text-gray-400 focus:border-[#E23744] focus:ring-2 focus:ring-red-500/20 shadow-sm outline-none transition"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full sm:w-auto shrink-0 h-14 px-8 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-base rounded-2xl shadow-xl shadow-red-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
             >
-              <a href="#onboarding-form" className="flex items-center justify-center gap-2">
-                Register your restaurant <ArrowRight className="size-5" />
-              </a>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="h-14 px-7 rounded-2xl border border-gray-300 bg-white text-sm font-bold text-gray-800 hover:border-gray-400 hover:bg-gray-50 transition-all shadow-sm"
-            >
-              <Link to="/login">Login to existing restaurant</Link>
-            </Button>
+              <span>Get Started</span>
+              <ArrowRight className="size-5" />
+            </button>
+          </form>
+
+          {/* Quick Links & Existing Partner Login */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm text-gray-600">
+            <a href="#onboarding-form" className="hover:text-[#E23744] font-semibold underline underline-offset-4">
+              Or fill 3-step self-serve details below ↓
+            </a>
+            <span className="text-gray-300">•</span>
+            <div className="flex items-center gap-1.5">
+              <span>Already registered?</span>
+              <Link to="/login" className="font-bold text-[#E23744] hover:underline">
+                Partner Login →
+              </Link>
+            </div>
           </div>
 
           {/* Zomato Benchmark 10-Minute Requirement Floating Card */}
