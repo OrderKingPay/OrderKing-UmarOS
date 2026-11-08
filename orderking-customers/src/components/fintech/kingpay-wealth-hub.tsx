@@ -98,7 +98,7 @@ export const LEGAL_AFFILIATE_CATEGORIES: LegalAffiliateCategoryOption[] = [
   { id: "credit_cards", label: "Credit Cards", icon: "💳", badge: "Pre-Approved" },
   { id: "micro_loans", label: "Micro Loans", icon: "⚡", badge: "Short-Term Micro" },
   { id: "investments", label: "Mutual Funds & Protection", icon: "🛡️" },
-  { id: "franchise", label: "Territory Franchise", icon: "📍", badge: "1% Royalty" },
+  { id: "franchise", label: "Territory Franchise", icon: "📍", badge: "Partner Share" },
   { id: "merchant_capital", label: "Merchant Capital", icon: "🏪", badge: "14% APY" },
   { id: "referral", label: "Referral Wealth", icon: "🎁", badge: "₹500 / Friend" },
 ];
@@ -108,7 +108,7 @@ export const DIGITAL_GOLD_PRODUCTS: DigitalGoldOption[] = [
     id: "safegold",
     partnerName: "SafeGold (Digital Gold India)",
     purity: "24K 99.9% Pure Gold",
-    vaultCustodian: "Brink's India Secure Bullion Vaults",
+    vaultCustodian: "Brink's India Vaults",
     trustee: "IDBI Trusteeship Services Ltd",
     liveRatePerGram: 7450,
     minInvestment: 10,
@@ -124,13 +124,13 @@ export const DIGITAL_GOLD_PRODUCTS: DigitalGoldOption[] = [
   {
     id: "augmont",
     partnerName: "Augmont Gold For All",
-    purity: "24K 99.9% Fine Bullion",
+    purity: "24K 99.9% Pure Gold",
     vaultCustodian: "Sequel Logistics High-Security Vaults",
     trustee: "Beacon Trusteeship Ltd",
     liveRatePerGram: 7455,
     minInvestment: 10,
     features: [
-      "NABH and BIS certified sovereign bullion refinery",
+      "NABH and BIS certified gold refinery",
       "Automated daily, weekly, or monthly Gold SIP",
       "Direct bank withdrawal or doorstep gold delivery",
       "Complete transparency with live spot price integration",
@@ -304,7 +304,7 @@ export function KingPayWealthHub() {
       window.open(url, "_blank", "noopener,noreferrer");
     }
     toast.success(`Redirecting to ${partnerName} verified portal`, {
-      description: "OrderKing royalty tracking code attached.",
+      description: "Partner referral link attached.",
     });
   };
 
@@ -410,7 +410,7 @@ export function KingPayWealthHub() {
               title="24K BIS Digital Gold"
               partner="SafeGold & Augmont"
               badge="BIS 99.9% Pure"
-              description="Accumulate certified pure 24K gold starting from just ₹10. Stored in institutional Brink's and Sequel high-security vaults, protected by IDBI Trusteeship."
+              description="Buy certified 24K pure gold from ₹10. Stored securely with Brink's and Sequel, protected by IDBI Trusteeship."
               statLabel="Live Spot Rate"
               statValue={`₹${currentGoldProduct.liveRatePerGram.toLocaleString("en-IN")}/gm`}
               onClick={() => setSelectedCategory("digital_gold")}
@@ -469,9 +469,9 @@ export function KingPayWealthHub() {
               icon="📍"
               title="PIN Code Territory Franchise"
               partner="OrderKing Zone Allocation"
-              badge="1% Lifetime Royalty"
-              description="Claim an exclusive localized postal PIN code zone and earn 1% recurring royalties on every OrderKing food and KingPay transaction inside your area."
-              statLabel="Zone Royalty"
+              badge="Partner Share"
+              description="Claim an exclusive localized postal PIN code zone and earn 1% recurring share on every OrderKing food and KingPay transaction inside your area."
+              statLabel="Partner Share"
               statValue="1% Zone GMV"
               onClick={() => setSelectedCategory("franchise")}
             />
@@ -496,7 +496,7 @@ export function KingPayWealthHub() {
               badge="₹500 / Friend + 1% Back"
               description="Share your unique VIP invite link. Get ₹500 instant cash upon their first order plus 1% lifetime cashback on every future purchase they make."
               statLabel="Direct Reward"
-              statValue="₹500 + 1% Royalty"
+              statValue="₹500 + 1% Share"
               onClick={() => setSelectedCategory("referral")}
               buttonText="Open Referral System ➔"
             />

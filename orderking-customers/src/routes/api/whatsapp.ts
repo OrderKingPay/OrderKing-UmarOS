@@ -77,7 +77,7 @@ export const Route = createFileRoute("/api/whatsapp")({
             /* ignore db error */
           }
 
-          // 2. Generate sovereign 24/7 care response in local language (en/hi/bn/syl)
+          // 2. Generate 24/7 care response in local language (en/hi/bn/syl)
           const botCare = generateBotCareResponse(text, {
             orderId: activeOrder?.public_id || activeOrder?.id,
             orderStatus: activeOrder?.status,
@@ -94,7 +94,7 @@ export const Route = createFileRoute("/api/whatsapp")({
           if (process.env.GEMINI_API_KEY) {
             try {
               const prompt = `
-                You are OrderKing's Sovereign AI Customer Care Assistant. 
+                You are OrderKing Customer Support. 
                 User message: "${text}"
                 Detected Language: ${botCare.language} (en, hi, bn, or syl)
                 Grounding reply template: "${botCare.replyText}"
@@ -123,7 +123,7 @@ export const Route = createFileRoute("/api/whatsapp")({
                 parsed = { ...parsed, ...geminiParsed };
               }
             } catch (aiErr) {
-              console.warn("Gemini WhatsApp enhancement skipped, using sovereign deterministic care reply:", aiErr);
+              console.warn("Gemini WhatsApp enhancement skipped, using fallback care reply:", aiErr);
             }
           }
 

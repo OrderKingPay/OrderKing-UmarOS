@@ -62,7 +62,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
     try {
       navigator.clipboard.writeText(ticket.pnr);
       setCopiedPnr(true);
-      toast.success(`Copied Sovereign PNR: ${ticket.pnr}`);
+      toast.success(`Copied PNR: ${ticket.pnr}`);
       setTimeout(() => setCopiedPnr(false), 2000);
     } catch {
       toast.info(`PNR: ${ticket.pnr}`);
@@ -78,7 +78,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
   };
 
   const handleShareWhatsApp = () => {
-    const text = `🎫 *OrderKing Sovereign E-Ticket*\n` +
+    const text = `🎫 *OrderKing E-Ticket*\n` +
       `*PNR:* ${ticket.pnr}\n` +
       `*Service:* ${ticket.carrierName} (${ticket.serviceNumber})\n` +
       `*Route:* ${ticket.origin.city} ➔ ${ticket.destination.city}\n` +
@@ -122,7 +122,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
             <div className="flex items-center gap-2 mb-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 text-[11px] font-black tracking-wide">
                 <CheckCircle2 className="size-3.5" />
-                SOVEREIGN CONFIRMED E-TICKET
+                CONFIRMED E-TICKET
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-sky-400/20 text-sky-300 border border-sky-400/30 text-[10px] font-extrabold uppercase">
                 Verified E-Ticket
@@ -153,7 +153,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-gradient-to-br from-slate-50 to-indigo-50/50 p-4 rounded-2xl border border-slate-200">
             <div className="space-y-1">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
-                OrderKing Sovereign PNR
+                Booking PNR
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-xl sm:text-2xl font-black font-mono tracking-wider text-slate-900">
@@ -345,7 +345,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
               <ShieldCheck className="size-4 text-emerald-600" />
               {ticket.mode === "train"
                 ? "Indian Railways IRCTC Cancellation & TDR Policy"
-                : "Sovereign Cancellation & Instant Wallet Refund Guarantee"}
+                : "Cancellation & Instant Refund Policy"}
             </span>
             {ticket.mode === "train" ? (
               <>

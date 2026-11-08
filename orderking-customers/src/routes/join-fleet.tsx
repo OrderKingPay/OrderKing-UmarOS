@@ -102,7 +102,7 @@ export function JoinFleetPage() {
         setApplicationId(res.applicationId);
       }
       setSubmittedSuccess(true);
-      toast.success("Rider partner onboarding details submitted! Welcome to OrderKing Fleet.");
+      toast.success("Rider onboarding submitted. Verification in progress.");
     } catch (err: any) {
       console.warn("Rider onboarding submission error:", err);
       setSubmittedSuccess(true);

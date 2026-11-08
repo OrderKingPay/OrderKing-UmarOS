@@ -1369,11 +1369,11 @@ function CheckoutPage() {
                       <div className="flex items-center gap-1.5">
                         <span className="font-bold text-amber-950 dark:text-amber-100 flex items-center gap-1.5">
                           <span>👑</span>
-                          <span>Consumer Platform Fee</span>
+                          <span>Platform Fee</span>
                         </span>
                         <BillTooltip
-                          title="Platform Fee (Founder Gross Profit)"
-                          text="Flat ₹6.00 to ₹10.00 platform fee representing 100% founder gross profit. Supports high-reliability 24/7 cloud servers, bank-grade payment encryption, and round-the-clock live dispatch monitoring."
+                          title="Platform Fee"
+                          text="This fee helps maintain 24/7 platform support and secure order processing."
                         />
                       </div>
                       <span className="tabular-nums font-extrabold text-amber-950 dark:text-amber-200">
@@ -1399,11 +1399,11 @@ function CheckoutPage() {
                       </div>
 
                       <div className="flex justify-between items-center text-[10px] text-zinc-500 dark:text-zinc-400 font-mono pt-1">
-                        <span>• Restaurant Food GST (Sec 9(5) CGST 5%)</span>
+                        <span>• Restaurant GST (5%)</span>
                         <span>{quote.data.quote.taxBreakdown?.foodGstIncludedInMenu ? "Included in Item Prices" : formatPaise(quote.data.quote.taxBreakdown?.foodGstPaise ?? 0, { locale })}</span>
                       </div>
                       <div className="flex justify-between items-center text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
-                        <span>• Services GST (18% on Platform &amp; Services)</span>
+                        <span>• GST on Platform Services (18%)</span>
                         <span>{formatPaise(quote.data.quote.taxBreakdown?.servicesGstPaise ?? 0, { locale })}</span>
                       </div>
                     </div>

@@ -316,11 +316,8 @@ export function LocationDialog({
                 <Crown className="size-5 fill-slate-950" />
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full border border-amber-300/60 leading-none">
-                  Sovereign Delivery Hub
-                </span>
-                <Dialog.Title className="text-xl font-black tracking-tight text-gray-950 mt-0.5">
-                  Choose Your Food Zone
+                <Dialog.Title className="text-xl font-black tracking-tight text-gray-950">
+                  Select Delivery Location
                 </Dialog.Title>
               </div>
             </div>
