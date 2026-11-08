@@ -323,7 +323,7 @@ export function DirectUpiIntentModal({
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                orderking@ybl (Sovereign)
+                orderking@ybl (Official UPI)
               </button>
             </div>
 
