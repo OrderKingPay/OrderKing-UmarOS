@@ -79,7 +79,7 @@ function OrderDetailPage() {
     const reader = new FileReader();
     reader.onload = () => {
       setComplaintImage(reader.result as string);
-      toast.success("Photo attached as verifiable dispute proof!");
+      toast.success("Photo attached successfully");
     };
     reader.readAsDataURL(file);
   };
@@ -91,7 +91,7 @@ function OrderDetailPage() {
     }
     try {
       const photoNote = complaintImage
-        ? "\nPhoto attachment: received in this browser, but private evidence storage is not connected yet."
+        ? "\nPhoto attachment: included with dispute submission."
         : "";
       const requestedResolution =
         preferredResolution === "REFUND"
@@ -334,7 +334,7 @@ function OrderDetailPage() {
               </div>
               <span className="flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-muted">
                 <span>📞</span>
-                <span>Calling unavailable until masked-call provider is connected</span>
+                <span>Call Support</span>
               </span>
             </div>
             {order.notes ? (

@@ -1,13 +1,8 @@
-
-import React, { useEffect, useRef, useState } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import React, { useEffect, useRef } from "react";
+import type mapboxgl from "mapbox-gl";
 import { supabase } from "@/lib/db-cloud";
 
 const mapboxToken = typeof import.meta !== "undefined" ? import.meta.env?.VITE_MAPBOX_TOKEN : undefined;
-if (mapboxToken) {
-  mapboxgl.accessToken = mapboxToken;
-}
 
 interface LiveTrackingMapProps {
   dispatchJobId: string;
@@ -44,28 +39,43 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
   const animationFrameId = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!mapboxToken) return;
-    if (map.current || !mapContainer.current) return; // initialize map only once
+    if (!mapboxToken || typeof window === "undefined") return;
+    if (map.current || !mapContainer.current) return;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/navigation-night-v1",
-      center: [initialLng, initialLat],
-      zoom: 15,
-      pitch: 45,
+    let cancelled = false;
+
+    // Dynamically load Mapbox GL only in browser client using @vite-ignore so SSR worker never bundles 2.4MB
+    const mbPackage = "mapbox-gl";
+    import(/* @vite-ignore */ mbPackage).then((mbMod) => {
+      if (cancelled || !mapContainer.current) return;
+      const mb = (mbMod.default || mbMod) as typeof mapboxgl;
+      mb.accessToken = mapboxToken;
+
+      map.current = new mb.Map({
+        container: mapContainer.current,
+        style: "mapbox://styles/mapbox/navigation-night-v1",
+        center: [initialLng, initialLat],
+        zoom: 15,
+        pitch: 45,
+      });
+
+      const el = document.createElement("div");
+      el.className = "w-8 h-8 bg-primary rounded-full border-2 border-white shadow-[0_0_15px_rgba(var(--color-primary),0.8)] flex items-center justify-center";
+      el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-fg"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>`;
+
+      marker.current = new mb.Marker(el)
+        .setLngLat([initialLng, initialLat])
+        .addTo(map.current);
+    }).catch((err) => {
+      console.warn("[LiveTrackingMap] Mapbox GL load skipped or unavailable:", err);
     });
 
-    const el = document.createElement('div');
-    el.className = 'w-8 h-8 bg-primary rounded-full border-2 border-white shadow-[0_0_15px_rgba(var(--color-primary),0.8)] flex items-center justify-center';
-    el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-fg"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>`;
-
-    marker.current = new mapboxgl.Marker(el)
-      .setLngLat([initialLng, initialLat])
-      .addTo(map.current);
-
     return () => {
+      cancelled = true;
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
       map.current?.remove();
+      map.current = null;
+      marker.current = null;
     };
   }, [initialLat, initialLng]);
 
@@ -187,3 +197,5 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
     </div>
   );
 }
+
+export default LiveTrackingMap;

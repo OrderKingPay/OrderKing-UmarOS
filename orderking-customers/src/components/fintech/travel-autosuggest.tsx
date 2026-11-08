@@ -37,15 +37,17 @@ export function loadTravelCatalogs(): Promise<void> {
   }
   if (!catalogLoadPromise) {
     catalogLoadPromise = Promise.all([
-      import("./airports.json"),
-      import("./stations.json"),
+      fetch("/data/airports.json").then((r) => r.ok ? r.json() : STATIC_AIRPORTS_SEED).catch(() => STATIC_AIRPORTS_SEED),
+      fetch("/data/stations.json").then((r) => r.ok ? r.json() : STATIC_STATIONS_SEED).catch(() => STATIC_STATIONS_SEED),
     ])
-      .then(([airportsMod, stationsMod]) => {
-        fullAirportCatalog = (airportsMod.default || airportsMod) as AirportItem[];
-        fullStationCatalog = (stationsMod.default || stationsMod) as StationItem[];
+      .then(([airports, stations]) => {
+        fullAirportCatalog = (airports || STATIC_AIRPORTS_SEED) as AirportItem[];
+        fullStationCatalog = (stations || STATIC_STATIONS_SEED) as StationItem[];
       })
       .catch((err) => {
-        console.warn("[travel-autosuggest] Dynamic catalog load failed, using fallback seeds:", err);
+        console.warn("[travel-autosuggest] Catalog load fallback to seeds:", err);
+        fullAirportCatalog = STATIC_AIRPORTS_SEED as AirportItem[];
+        fullStationCatalog = STATIC_STATIONS_SEED as StationItem[];
       });
   }
   return catalogLoadPromise;

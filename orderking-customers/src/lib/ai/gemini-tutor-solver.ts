@@ -6,7 +6,7 @@
  * academic problem solving with real derivations, formula proofs, and step marking.
  */
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai/web";
 
 export interface AcademicSolveParams {
   message: string;

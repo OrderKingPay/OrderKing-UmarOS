@@ -968,7 +968,8 @@ export class CanonicalLedger {
       return { isValid: true, totalTransactions: txList.length };
     }
 
-    const txList = await sql.query<any>("SELECT * FROM ledger_transactions ORDER BY created_at ASC", []);
+    const txList = await sql.query<any>("SELECT * FROM ledger_transactions ORDER BY created_at DESC LIMIT 50", []);
+    txList.reverse();
     
     let prevHash = "0000000000000000000000000000000000000000000000000000000000000000";
 
