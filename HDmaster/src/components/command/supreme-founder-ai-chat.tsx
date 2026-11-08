@@ -435,7 +435,7 @@ function RadialOrbVisualizer({
               : "bg-emerald-500/20 text-emerald-300 border-emerald-400/40"
           }`}
         >
-          {isSpeaking ? "AI Speaking (100% Real)" : isListening ? "Listening to Founder..." : "Duplex Voice Ready"}
+          {isSpeaking ? "AI Speaking" : isListening ? "Listening..." : "Voice Ready"}
         </span>
       </div>
     </div>
@@ -1979,10 +1979,10 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-amber-400" />
-            <span className="text-sm font-bold text-white">Autonomous Frontier Evolution</span>
+            <span className="text-sm font-bold text-white">Model Evolution Updates</span>
           </div>
           <Badge className="bg-amber-500/20 text-amber-300 text-[10px] font-bold">
-            {report.availableUpgrades?.length || 3} Next-Gen Models Ready
+            {report.availableUpgrades?.length || 3} Updates Available
           </Badge>
         </div>
 
@@ -2457,11 +2457,11 @@ function FounderWorkHub({
     setTimeout(() => {
       setIsAuditing(false);
       setAuditPassed(true);
-      toast.success("🛡️ 160-Suite Integrity Verified: Zero Blockers, Zero Fabrication, All Systems Nominal.");
+      toast.success("🛡️ 160-Suite Integrity Verified: All Systems Nominal.");
     }, 600);
   };
 
-  // 5 Non-Negotiable Strict Tasks (100% Truthful, Zero-Fabrication)
+  // 5 Non-Negotiable Strict Tasks
   const STRICT_TASKS = [
     {
       id: "task-1",
@@ -2475,7 +2475,7 @@ function FounderWorkHub({
         "Delivers personalized WhatsApp/Email pitch with direct fleet math & ₹92,500 advance lock.",
         "Includes statutory NDA & Section 79 IT Act compliant direct ordering agreement.",
       ],
-      strictStatus: "100% READY · ZERO FABRICATION",
+      strictStatus: "READY",
       actionLabel: "Launch Client Acquisition Machine",
       query: "Find 5 high-paying client prospects and draft zero-commission pitches",
     },

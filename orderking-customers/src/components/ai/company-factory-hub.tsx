@@ -60,8 +60,8 @@ export const FACTORY_STAGES: CompanyStage[] = [
     name: "3. Brand & Design Tokens",
     icon: "🎨",
     artifactTitle: "Brand Identity, Voice & Design Tokens",
-    artifactSummary: "Sovereign Gold & Emerald palette, premium typography, trustworthy voice.",
-    artifactContent: `# Brand Design System\n\n- **Primary Brand Color:** Emerald Green (#059669) - Trust, freshness, prosperity.\n- **Accent Color:** Sovereign Gold (#F59E0B) - Royalty, quality, distinction.\n- **Background:** Deep Obsidian (#07130F) - Modern, luxury, battery-friendly.\n- **Brand Mission:** "Order King: Uncompromising Quality. Absolute Operational Transparency."`,
+    artifactSummary: "Warm Gold & Emerald palette, clean typography, trustworthy voice.",
+    artifactContent: `# Brand Design System\n\n- **Primary Brand Color:** Emerald Green (#059669) - Trust, freshness, prosperity.\n- **Accent Color:** Warm Gold (#F59E0B) - Quality and distinction.\n- **Background:** Deep Obsidian (#07130F) - Modern, clean, battery-friendly.\n- **Brand Mission:** "Order King: Reliable Service. Clear Operational Transparency."`,
   },
   {
     step: 4,

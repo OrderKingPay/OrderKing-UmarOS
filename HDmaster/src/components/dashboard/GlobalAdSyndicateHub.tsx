@@ -343,7 +343,7 @@ export function GlobalAdSyndicateHub({
         </div>
       )}
 
-      {/* Aggregate Real KPI Cards (Zero fake data - starts at 0) */}
+      {/* Aggregate KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
@@ -399,13 +399,13 @@ export function GlobalAdSyndicateHub({
             <ShieldCheck className="h-4 w-4 text-slate-700" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold tracking-tight text-slate-900">100% Real</span>
+            <span className="text-2xl font-bold tracking-tight text-slate-900">Live</span>
             <span className="text-xs font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
               Verified
             </span>
           </div>
           <p className="text-[11px] text-slate-500 mt-1">
-            No mock seeds. All metrics increment only via booked actions
+            All metrics increment only via booked actions
           </p>
         </div>
       </div>

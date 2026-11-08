@@ -843,7 +843,7 @@ export function RoyalAiConcierge({
       };
     }
 
-    // 8. Instant Micro-Loans / Sovereign Credit Line
+    // 8. Instant Micro-Loans / Credit Line
     if (
       q.includes("loan") ||
       q.includes("credit") ||

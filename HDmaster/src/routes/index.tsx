@@ -825,7 +825,7 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
           model: "gemini-2.5-flash",
           contents: prompt,
           config: {
-            systemInstruction: `You are Umar AI, the executive platform intelligence for OrderKing and KingPay founded by Hasan Mohammed. Answer directly, concisely, and practically in authentic human style. No marketing slogans, no fake claims, no generic fluff. PostgreSQL platform statistics: ${liveCounts.restaurants} active restaurants, ${liveCounts.riders} active riders, ${liveCounts.users} users, ${liveCounts.orders} orders processed.`,
+            systemInstruction: `You are Umar AI, the executive platform intelligence for OrderKing and KingPay founded by Hasan Mohammed. Answer directly, concisely, and practically. PostgreSQL platform statistics: ${liveCounts.restaurants} active restaurants, ${liveCounts.riders} active riders, ${liveCounts.users} users, ${liveCounts.orders} orders processed.`,
           },
         });
         const replyText = aiRes.text?.trim();
@@ -4832,7 +4832,7 @@ function UmarOSDashboard() {
         )}
 
         {/* ===================================================================
-            WORLD 9 (`alerts`) SUB-CATEGORY TABS — 100% REAL ALERTS ONLY!
+            WORLD 9 (`alerts`) SUB-CATEGORY TABS
         =================================================================== */}
         {activeWorldId === "alerts" && currentTabId === "action-center" && (
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">

@@ -336,7 +336,7 @@ export function WifiCaptivePortalHub({
         </div>
       )}
 
-      {/* Real Aggregate Metrics Cards (Zero fake data - starts at 0) */}
+      {/* Aggregate Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
@@ -484,7 +484,7 @@ export function WifiCaptivePortalHub({
           </div>
         )}
 
-        {/* Routers Ledger Table (Starts empty - Zero fake data) */}
+        {/* Routers Ledger Table */}
         <div className="pt-2">
           <div className="text-[11px] font-semibold text-slate-500 mb-2">
             Active Hardware Fleet ({routers.length})
@@ -645,7 +645,7 @@ export function WifiCaptivePortalHub({
             />
           </div>
 
-          {/* Campaigns Ledger (Starts at 0 - Zero fake data) */}
+          {/* Campaigns Ledger */}
           <div className="space-y-2 pt-1">
             <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
               <span>External Brand Ad Campaigns ({brandCampaigns.length})</span>

@@ -252,7 +252,7 @@ function RewardsPage() {
           <div className="flex items-center justify-between">
             <div>
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-bold text-amber-800 dark:text-amber-200">
-                👑 King Club Rewards Vault
+                👑 King Club Rewards
               </span>
               <h1 className="mt-2 font-display text-2xl font-bold text-fg">
                 Your King Coins
@@ -300,10 +300,10 @@ function RewardsPage() {
         {/* WhatsApp Viral Bounties Acquisition Engine */}
         <WhatsAppViralBountiesWidget source="rewards_vault" />
 
-        {/* Delete Legacy Aggregator Bounty: ₹500 KingPay Wallet Switch Bounty */}
+        {/* Welcome Offers & Promo Coupons */}
         <CompetitorBounty className="mt-4" />
 
-        {/* Post-Order Dopamine Wheel & Retention Engine */}
+        {/* Member Dining Perks */}
         <RetentionRoulette orderId="rewards_vault_spin" className="mt-4" />
 
         {/* Category Filters */}
@@ -412,9 +412,9 @@ function RewardsPage() {
 
         {/* Zero-Loss Guardrail Notice */}
         <div className="rounded-[var(--radius-lg)] border border-border bg-surface-2/40 p-3 text-center text-xs text-muted">
-          <p className="font-semibold text-fg">100% Authentic OrderKing Loyalty &amp; Rewards</p>
+          <p className="font-semibold text-fg">OrderKing Rewards</p>
           <p className="mt-0.5 text-[11px]">
-            Redeem King Coins earned on food orders for genuine OrderKing discounts and verified partner benefits without platform markups.
+            Redeem King Coins earned on food orders for discounts and partner benefits.
           </p>
         </div>
       </div>

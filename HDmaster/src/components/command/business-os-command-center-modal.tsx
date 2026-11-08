@@ -129,7 +129,7 @@ export function BusinessOsCommandCenterModal({
                 </h3>
               </div>
               <p className="text-xs text-slate-400">
-                Live multi-model orchestration · Lawful revenue discovery · Strict approval gates · Zero fabrication
+                Live multi-model orchestration · Revenue discovery · Approval gates
               </p>
             </div>
           </div>

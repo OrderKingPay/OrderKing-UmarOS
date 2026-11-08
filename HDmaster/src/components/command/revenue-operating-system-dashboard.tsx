@@ -119,7 +119,7 @@ export function RevenueOperatingSystemDashboard() {
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold tracking-tight text-white">Revenue Operating System</h1>
               <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
-                Zero-Fabrication Mode Active
+                Live Mode Active
               </Badge>
               <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30 text-[10px]">
                 20-Stage Operating Loop

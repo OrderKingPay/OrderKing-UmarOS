@@ -521,7 +521,7 @@ export function AiMediaStudioModal({
               <div className="space-y-2">
                 <label className="text-xs font-bold text-amber-300 flex items-center justify-between">
                   <span>Enter Video Motion &amp; Cinematics Prompt:</span>
-                  <span className="text-[10px] text-muted font-normal">Kinetic AI Motion · 60FPS · 100% Realistic</span>
+                  <span className="text-[10px] text-muted font-normal">AI Motion · 60FPS</span>
                 </label>
                 <div className="flex gap-2">
                   <Input

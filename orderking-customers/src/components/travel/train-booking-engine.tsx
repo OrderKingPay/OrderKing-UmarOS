@@ -918,7 +918,7 @@ export function TrainBookingEngine({
               </Button>
             </div>
             <span className="text-[10px] text-slate-500 block">
-              Indian Railways requires captcha verification directly on indianrail.gov.in. Zero fake or simulated PNRs.
+              Redirecting to indianrail.gov.in for captcha verification and booking.
             </span>
           </form>
 

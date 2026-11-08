@@ -1119,7 +1119,7 @@ export function UmarOS_AI_Terminal() {
         </div>
       </header>
 
-      {/* 2. REAL-TIME PLATFORM TELEMETRY METRIC STRIP (ZERO FAKE DATA) */}
+      {/* 2. REAL-TIME PLATFORM TELEMETRY METRIC STRIP */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border-b border-slate-200 bg-white divide-x divide-y sm:divide-y-0 divide-slate-200 text-slate-800">
         <div className="p-3.5 flex flex-col justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">Total GMV</span>
@@ -2003,7 +2003,7 @@ export function UmarOS_AI_Terminal() {
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 3: LIVE AUTONOMOUS TELEMETRY & AUDITS (ZERO FAKE DATA)                */}
+        {/* TAB 3: LIVE AUTONOMOUS TELEMETRY & AUDITS                */}
         {/* ========================================================================= */}
         {activeTab === "telemetry" && (
           <div className="space-y-6">
@@ -2011,7 +2011,7 @@ export function UmarOS_AI_Terminal() {
               <div>
                 <h3 className="text-sm font-bold text-slate-900">PostgreSQL Canonical Telemetry Inspection</h3>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Direct database queries against orders, couriers, restaurants, refunds, and double-entry ledger. Zero mock data.
+                  Direct database queries against orders, couriers, restaurants, refunds, and double-entry ledger.
                 </p>
               </div>
               <Button

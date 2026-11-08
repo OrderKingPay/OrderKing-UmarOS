@@ -130,7 +130,7 @@ function SettingsPage() {
                 </p>
                 <p className="text-[11px] text-emerald-700 font-extrabold mt-1 flex items-center gap-1">
                   <span className="size-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-                  100% Real-Time High-Accuracy GPS Active
+                  Live GPS Active
                 </p>
               </div>
               <Link

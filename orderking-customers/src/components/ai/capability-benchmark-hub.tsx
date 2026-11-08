@@ -59,7 +59,7 @@ export function CapabilityBenchmarkHub() {
               <Badge tone="primary">Measured Reality Standard</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-300">
-              Rigorously measures reasoning, coding, research, tool selection, planning, voice latency, and recovery. Zero fabricated multipliers.
+              Measures reasoning, coding, research, tool selection, planning, voice latency, and recovery accuracy.
             </p>
           </div>
           <Button

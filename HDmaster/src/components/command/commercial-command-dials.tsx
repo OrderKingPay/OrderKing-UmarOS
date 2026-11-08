@@ -2003,7 +2003,7 @@ function TravelPartnerGovernanceSection() {
         </div>
       </div>
 
-      {/* Card 3: Commercial Controls (Cashback & Sovereign Fee Lock) */}
+      {/* Card 3: Commercial Controls (Cashback & Platform Fee Lock) */}
       <div className="rounded-xl border border-border/80 bg-surface/50 p-5 space-y-4">
         <h3 className="text-sm font-bold text-white flex items-center gap-2">
           <DollarSign className="size-4 text-emerald-400" />

@@ -505,7 +505,7 @@ export function KingPayWealthHub() {
       )}
 
       {/* ========================================================= */}
-      {/* 1. DIGITAL GOLD BULLION & SAVINGS VAULT (ENHANCEMENT)    */}
+      {/* 1. DIGITAL GOLD & SAVINGS                                */}
       {/* ========================================================= */}
       {shouldShowSection("digital_gold") && (
         <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-br from-[#1a1500] via-surface to-amber-950/20 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
@@ -517,16 +517,16 @@ export function KingPayWealthHub() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-400 border border-amber-500/30 mb-2">
-                  <Coins className="size-3.5" /> 24K 99.9% Certified Bullion
+                  <Coins className="size-3.5" /> 24K 99.9% Pure Gold
                 </div>
                 <h3 className="text-2xl font-black text-fg flex items-center gap-2">
-                  24K 24K Digital Gold
+                  24K Digital Gold
                   <span className="text-xs font-bold bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
                     BIS Hallmarked
                   </span>
                 </h3>
                 <p className="text-sm text-muted max-w-xl mt-1">
-                  Accumulate certified pure 24 Karat gold starting from just ₹10. Stored in institutional Brink's and Sequel high-security vaults, protected by IDBI Trusteeship.
+                  Buy certified 24 Karat pure gold from ₹10. Stored securely with Brink's and Sequel, protected by IDBI Trusteeship.
                 </p>
               </div>
 
@@ -605,7 +605,7 @@ export function KingPayWealthHub() {
                           }}
                           className="w-full bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl shadow-md text-xs py-2"
                         >
-                          Visit Official Bullion Vault <ExternalLink className="size-3.5 ml-1.5" />
+                          View Partner Details <ExternalLink className="size-3.5 ml-1.5" />
                         </Button>
                       </div>
                     );
@@ -684,12 +684,12 @@ export function KingPayWealthHub() {
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-[10px] text-muted mt-1">
-                      <span>Vault Purity Standard</span>
-                      <span className="font-semibold text-fg">999.0 Fine Bullion</span>
+                      <span>Purity Standard</span>
+                      <span className="font-semibold text-fg">99.9% Pure Gold</span>
                     </div>
                     <div className="flex justify-between items-center text-[10px] text-muted mt-0.5">
                       <span>Storage Charges</span>
-                      <span className="font-semibold text-emerald-400">Vault Custody Included</span>
+                      <span className="font-semibold text-emerald-400">Secure Storage Included</span>
                     </div>
                   </div>
                 </div>
@@ -712,7 +712,7 @@ export function KingPayWealthHub() {
 
             <div className="flex flex-wrap items-center justify-center gap-6 pt-2 text-[11px] text-muted border-t border-border/40">
               <span className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-emerald-500" /> BIS Hallmarked 99.9% Pure</span>
-              <span className="flex items-center gap-1.5"><Lock className="size-3.5 text-emerald-500" /> 100% Insured in Brink's Vaults</span>
+              <span className="flex items-center gap-1.5"><Lock className="size-3.5 text-emerald-500" /> 100% Insured Storage</span>
               <span className="flex items-center gap-1.5"><Zap className="size-3.5 text-emerald-500" /> Instant Bank Sellback Liquidity</span>
             </div>
           </div>
@@ -1181,7 +1181,7 @@ export function KingPayWealthHub() {
               </div>
               <h3 className="text-2xl font-black text-violet-400">Digital Territory Franchise</h3>
               <p className="text-sm text-muted">
-                Claim a localized PIN Code and earn <strong className="text-fg">1% royalty</strong> on every OrderKing transaction within that zone. Become an Authorized District Partner in the OrderKing ecosystem.
+                Claim a localized PIN Code and earn <strong className="text-fg">1% partner share</strong> on every OrderKing transaction within that zone. Become an Authorized District Partner in the OrderKing ecosystem.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
                 <span className="flex items-center gap-1.5 text-xs font-medium text-violet-500/80">

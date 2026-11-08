@@ -558,7 +558,7 @@ export function OemLockScreenHub({
           </div>
         </div>
 
-        {/* Live Aggregated Metrics (Zero fake data - starts at 0) */}
+        {/* Live Aggregated Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
           <div className="rounded-lg border border-slate-200 bg-white p-3 text-center">
             <div className="text-slate-500 text-[11px]">Active Campaigns</div>
@@ -586,7 +586,7 @@ export function OemLockScreenHub({
           </div>
         </div>
 
-        {/* Active Campaigns Table (Starts at 0 - Zero fake data) */}
+        {/* Active Campaigns Table */}
         <div className="space-y-3 pt-2">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">

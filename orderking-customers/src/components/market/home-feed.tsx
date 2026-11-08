@@ -856,7 +856,7 @@ export function HomeFeed({
                   <div className="flex items-center justify-center gap-2 text-stone-600">
                     <Eye className="size-4 text-amber-600" />
                     <span className="text-xs font-black uppercase tracking-wider text-amber-800">
-                      Viewing Mode
+                      Explore Hubs
                     </span>
                   </div>
                   <div>
@@ -864,7 +864,7 @@ export function HomeFeed({
                       Popular Locations
                     </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5 font-medium">
-                      Explore restaurants and food menus in other cities.
+                      Explore restaurants and food menus in available service zones.
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
@@ -887,7 +887,7 @@ export function HomeFeed({
                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-200 hover:border-amber-400 bg-stone-50 hover:bg-amber-50/60 text-xs font-bold text-gray-800 hover:text-amber-950 transition active:scale-95 cursor-pointer shadow-2xs"
                       >
                         <MapPin className="size-3 text-amber-600" />
-                        <span>Browse Flagship Hub ({hub.cityName}) — Viewing Mode</span>
+                        <span>{hub.cityName} ({hub.zoneName})</span>
                       </button>
                     ))}
                   </div>

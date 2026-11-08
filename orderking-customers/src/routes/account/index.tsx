@@ -8,7 +8,6 @@ import { DeviceAvatar } from "@/components/common/device-avatar";
 import { useBrand, useT } from "@/components/providers";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { ensureProfile, getLoyalty, requestDeletion, updateProfile } from "@/lib/server/account";
-import { VipGoldPassHub } from "@/components/market/vip-gold-pass-hub";
 import { useLocationStore, type AddressTag } from "@/lib/stores/location";
 import { Home, Briefcase, MapPin, Plus, Trash2, CheckCircle2, Crown, Sparkles, Navigation } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -34,7 +33,6 @@ function AccountPage() {
     enabled: Boolean(user),
   });
 
-  const [vipHubOpen, setVipHubOpen] = useState(false);
   const [newAddressOpen, setNewAddressOpen] = useState(false);
   const [newAddressTag, setNewAddressTag] = useState<AddressTag>("HOME");
   const [newHouseNo, setNewHouseNo] = useState("");
@@ -133,39 +131,14 @@ function AccountPage() {
                     <h2 className="font-display text-lg font-black text-white truncate">
                       {name || user.displayName || "OrderKing Member"}
                     </h2>
-                    <span className="rounded-full bg-amber-400/20 border border-amber-400/50 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider text-amber-300">
-                      VIP Gold
+                    <span className="rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[10px] font-bold text-stone-200">
+                      Member
                     </span>
                   </div>
                   <p className="text-xs text-stone-300 truncate mt-0.5">{user.primaryEmail}</p>
                   {phone && <p className="text-[11px] font-mono text-amber-200 mt-0.5">📞 {phone}</p>}
                 </div>
               </div>
-            </div>
-
-            {/* VIP Gold Pass Hub Trigger Card */}
-            <div className="mt-4 overflow-hidden rounded-3xl border-2 border-amber-400/80 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 p-4 text-stone-950 shadow-md flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex size-11 items-center justify-center rounded-2xl bg-stone-950 text-amber-300 text-xl shadow-md">
-                  👑
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="font-display font-black text-sm text-stone-950">OrderKing VIP Gold Pass</h3>
-                    <span className="rounded-full bg-stone-950 text-amber-300 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider">
-                      Tier-1 Luxury
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-800 font-medium">fast delivery • Zero Surge • VIP Priority Support</p>
-                </div>
-              </div>
-              <Button
-                type="button"
-                onClick={() => setVipHubOpen(true)}
-                className="rounded-xl bg-stone-950 hover:bg-stone-900 text-amber-300 font-extrabold text-xs px-3.5 py-2 shadow-sm shrink-0 cursor-pointer"
-              >
-                Manage Pass
-              </Button>
             </div>
 
             {/* Profile Edit Form */}
@@ -748,9 +721,6 @@ function AccountPage() {
         ) : null}
         <p className="mt-2 text-xs text-muted">{t("account.deleteHint")}</p>
         <p className="mt-8 text-xs text-subtle">{domain.webUrl}</p>
-        {vipHubOpen ? (
-          <VipGoldPassHub isOpen={vipHubOpen} onClose={() => setVipHubOpen(false)} />
-        ) : null}
       </div>
     </CustomerShell>
   );

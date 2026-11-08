@@ -199,7 +199,7 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   // Loans & Wealth
   { id: "s-wl-1", category: "Wealth", title: "Pre-Approved Instant Credit Line (₹5,00,000)", sub: "Zero Paperwork · Instant Bank Disbursement", icon: "💰", action: "wealth", keywords: "loan credit line money instant cash pre approved finance" },
   { id: "s-wl-2", category: "Wealth", title: "9.10% High-Yield Fixed Deposit (FD)", sub: "CRISIL AAA-Rated · Shriram Finance & Bajaj", icon: "📈", action: "wealth", keywords: "fd fixed deposit interest wealth investment save return" },
-  { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "99.99% Pure Sovereign Gold from ₹10", icon: "👑", action: "wealth", keywords: "gold 24k digital gold wealth bullion safe" },
+  { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "24K 99.9% Pure Gold from ₹10", icon: "👑", action: "wealth", keywords: "gold 24k digital gold wealth savings safe" },
 ];
 
 export function SupremeKingPayExperience() {
@@ -1196,7 +1196,7 @@ export function SupremeKingPayExperience() {
                 onClick={() => setUseCustomVpa(!useCustomVpa)}
                 className="text-xs text-amber-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
-                <span>{useCustomVpa ? "Use Sovereign VPA" : "Pay a Custom UPI ID"}</span>
+                <span>{useCustomVpa ? "Use OrderKing UPI" : "Pay a Custom UPI ID"}</span>
               </button>
               {useCustomVpa && (
                 <input

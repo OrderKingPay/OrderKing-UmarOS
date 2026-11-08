@@ -148,7 +148,7 @@ export function FounderSovereignDeck() {
 
   return (
     <div className="space-y-6">
-      {/* UMAR OS: SOVEREIGN FOUNDER CONTROL DECK */}
+      {/* UMAR OS: FOUNDER CONTROL DECK */}
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
         <div className="flex items-center gap-3">
           <div className="flex size-11 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/30 shadow-lg">
@@ -457,7 +457,7 @@ export function FounderSovereignDeck() {
         </div>
       )}
 
-      {/* TAB 5: SOVEREIGN TELEMETRY & OPERATIONS (EXISTING CORE) */}
+      {/* TAB 5: TELEMETRY & OPERATIONS (EXISTING CORE) */}
       {deckTab === "telemetry" && (
         <>
           {/* 1. MASTER CIRCUIT BREAKERS & OVERRIDES */}
@@ -706,7 +706,7 @@ export function FounderSovereignDeck() {
               <div>
                 <h2 className="font-display text-lg font-bold text-fg flex items-center gap-2">
                   <Terminal className="size-5 text-amber-500" />
-                  Sovereign Executive Directives
+                  Executive Directives
                 </h2>
                 <p className="text-xs text-muted">Direct root platform interventions executed with zero delay</p>
               </div>
@@ -816,7 +816,7 @@ export function FounderSovereignDeck() {
               <div>
                 <h2 className="font-display text-base font-bold text-fg flex items-center gap-2">
                   <Terminal className="size-4.5 text-muted" />
-                  Immutable Founder Sovereign Audit Log
+                  Immutable Founder Audit Log
                 </h2>
                 <p className="text-xs text-muted">Cryptographically verified record of all executive directives</p>
               </div>

@@ -291,7 +291,7 @@ function RadialOrbVisualizer({
               : "bg-[#D4AF37]/10 text-emerald-300 border-emerald-400/40"
           }`}
         >
-          {isSpeaking ? "AI Speaking (100% Real)" : isListening ? "Listening to Founder..." : "Duplex Voice Ready"}
+          {isSpeaking ? "AI Speaking" : isListening ? "Listening..." : "Voice Ready"}
         </span>
       </div>
     </div>

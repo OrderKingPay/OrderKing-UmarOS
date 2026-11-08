@@ -136,7 +136,7 @@ const ROYAL_THEME_PRESETS = [
     accentColor: "#D97706",
     surfaceColor: "#071712",
     themeMode: "dark" as const,
-    desc: "Signature sovereign heritage green with warm royal gold accents",
+    desc: "Signature heritage green with warm gold accents",
   },
   {
     id: "crimson_slate",
@@ -149,7 +149,7 @@ const ROYAL_THEME_PRESETS = [
   },
   {
     id: "midnight_sovereign",
-    name: "Midnight Sovereign Dark",
+    name: "Midnight Dark Mode",
     primaryColor: "#4F46E5",
     accentColor: "#38BDF8",
     surfaceColor: "#090D16",
@@ -640,7 +640,7 @@ function SettingsPage() {
         nextBrand.primaryColor = "#4F46E5";
         nextBrand.surfaceColor = "#090D16";
         nextBrand.themeMode = "dark";
-        appliedChanges.push("Theme Preset → Midnight Sovereign Dark");
+        appliedChanges.push("Theme Preset → Midnight Dark Mode");
       }
 
       if (lower.includes("dark mode") || lower.includes("dark theme")) {
@@ -1510,7 +1510,7 @@ function SettingsPage() {
                   />
                   <ToggleRow
                     title="Dark Surface Default Mode"
-                    description="Default client surfaces to sovereign dark theme (`dark` vs `light`)."
+                    description="Default client surfaces to dark theme (`dark` vs `light`)."
                     isOn={brandState.themeMode === "dark"}
                     onToggle={() =>
                       setBrandState((p) => ({
@@ -1597,7 +1597,7 @@ function SettingsPage() {
 
           {expandedCats.cat2 && (
             <div className="p-6 space-y-6">
-              {/* Sub-Category 2-Core: UmarOS Master Sovereign Controls & Central Switchboard */}
+              {/* Sub-Category 2-Core: Master Operational Controls & Switchboard */}
               <div className="rounded-2xl border-2 border-emerald-600/30 bg-gradient-to-br from-emerald-950/5 via-slate-50 to-emerald-50/20 p-5 space-y-6 shadow-sm">
                 <div className="border-b border-emerald-100 pb-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -1607,7 +1607,7 @@ function SettingsPage() {
                     </div>
                     <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                       <Settings2 className="h-5 w-5 text-emerald-600" />
-                      Sub-Category 2-Core · Sovereign Commercial Dials &amp; Master Control Center
+                      Sub-Category 2-Core · Commercial Dials &amp; Control Center
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
                       Unified controls for commission &amp; payout tiers, 1–15 km dispatch boundaries, rush-hour surge pricing, IoT soundbox voice announcements, thermal KOT printing, and smart zero-delivery fallbacks.
@@ -1615,15 +1615,15 @@ function SettingsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold px-2.5 py-1">
-                      Zero-Competitor Clean
+                      Operational Standard
                     </span>
                     <span className="rounded-full bg-slate-100 text-slate-700 text-[10px] font-mono font-bold px-2.5 py-1">
-                      Employee-less Autonomy
+                      Automated Systems
                     </span>
                   </div>
                 </div>
 
-                {/* 1. Sovereign 4-Tier Commission & Payout Architecture */}
+                {/* 1. 4-Tier Commission & Payout Architecture */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-mono uppercase tracking-wider text-slate-700 font-bold flex items-center gap-1.5">
@@ -2079,7 +2079,7 @@ function SettingsPage() {
                     <div>
                       <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                         <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                        5. Smart Zero-Delivery Fallback &amp; Non-Delivery Sovereign Utilities
+                        5. Zero-Delivery Fallback &amp; Alternative Utilities
                       </h4>
                       <p className="text-xs text-slate-500">
                         When food delivery is unavailable in a user's pin/zone, seamlessly present high-margin non-delivery utilities so the user extracts value and the founder captures revenue.
@@ -2176,7 +2176,7 @@ function SettingsPage() {
                   </div>
 
                   <ToggleRow
-                    title="Enable Sovereign Affiliate Travel Deep-Links"
+                    title="Enable Affiliate Travel Portals"
                     description="Routes customers searching for travel snacks or meals to official IRCTC / airline booking portals with founder referral tagging."
                     isOn={masterControlsState.affiliate_travel_enabled}
                     onToggle={() =>
@@ -2199,11 +2199,11 @@ function SettingsPage() {
                           max_delivery_radius_km: masterControlsState.delivery_radius_km,
                           surge_multiplier_cap: masterControlsState.rush_hour_surge_multiplier,
                         },
-                        "Saved UmarOS Master Sovereign Controls & Commercial Dials",
+                        "Saved Master Operational Controls",
                       )
                     }
                     saving={saving}
-                    label="Save Sovereign Master Controls"
+                    label="Save Master Controls"
                   />
                 </div>
               </div>

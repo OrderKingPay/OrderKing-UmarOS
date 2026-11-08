@@ -1,4 +1,3 @@
-
 import { createFileRoute } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { useBrand } from "@/components/providers";
@@ -6,30 +5,44 @@ import { useBrand } from "@/components/providers";
 export const Route = createFileRoute("/about")({ component: AboutPage });
 
 function AboutPage() {
-  const { brand, marketplace, invoice } = useBrand();
+  const { brand, invoice } = useBrand();
   return (
     <CustomerShell>
-      <article className="px-4 py-5 text-sm text-muted">
-        <h1 className="font-display text-3xl text-fg">{brand.appName}</h1>
-        <p className="mt-2 text-fg">{brand.tagline}</p>
-        <p className="mt-4">{brand.description}</p>
-        <h2 className="mt-6 font-display text-xl text-fg">How this marketplace works</h2>
-        <ul className="mt-2 list-disc space-y-1 pl-5">
-          <li>Location first, then kitchens, then a server-priced cart.</li>
-          <li>Every rupee line has a name and a reason. No miscellaneous fees.</li>
-          <li>Commission defaults to {marketplace.defaultCommissionBps / 100}% and is stored on the order.</li>
-          <li>Partner kitchens are verified and labelled. Ratings are omitted until verified reviews exist.</li>
-          <li>English and Bengali strings come from a central dictionary, not inline text.</li>
-          <li>Brand, colours, fees and city come from central configuration.</li>
-        </ul>
-        <h2 className="mt-6 font-display text-xl text-fg">UX choices</h2>
-        <p className="mt-2">
-          Public food apps put search, location and a persistent cart within one thumb-reach. We kept that pattern and
-          eliminated hidden charges and complicated memberships. Tracking relies on live GPS location.
-        </p>
-        <p className="mt-4 text-xs">
-          Invoice entity: {invoice.companyName}. GSTIN {invoice.gstin}. FSSAI {invoice.fssai}.
-        </p>
+      <article className="max-w-2xl mx-auto px-4 py-6 text-sm text-muted space-y-6">
+        <div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-fg">{brand.appName}</h1>
+          <p className="mt-1.5 text-base text-fg font-medium">{brand.tagline}</p>
+          <p className="mt-2 text-sm leading-relaxed">{brand.description}</p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-surface p-5 space-y-3">
+          <h2 className="font-display text-lg font-bold text-fg">Our Delivery Commitment</h2>
+          <ul className="space-y-2 text-xs sm:text-sm">
+            <li className="flex items-start gap-2.5">
+              <span className="text-emerald-500 font-bold">✓</span>
+              <span><strong>Fresh &amp; Direct:</strong> Orders prepared fresh by verified local restaurants and kitchens.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-emerald-500 font-bold">✓</span>
+              <span><strong>Transparent Pricing:</strong> Clear bill breakdown with zero hidden fees.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-emerald-500 font-bold">✓</span>
+              <span><strong>Live Order Tracking:</strong> Real-time GPS tracking from the kitchen to your doorstep.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-emerald-500 font-bold">✓</span>
+              <span><strong>Dedicated Support:</strong> Instant assistance for your orders and delivery inquiries.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="rounded-2xl border border-border/80 bg-surface-2/40 p-4 space-y-1.5 text-xs">
+          <h3 className="font-semibold text-fg">Regulatory &amp; FSSAI Details</h3>
+          <p className="text-muted leading-relaxed">
+            Operating under {invoice.companyName} · GSTIN: <span className="font-mono">{invoice.gstin}</span> · FSSAI License: <span className="font-mono">{invoice.fssai}</span>
+          </p>
+        </div>
       </article>
     </CustomerShell>
   );

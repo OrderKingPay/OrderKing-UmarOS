@@ -7,7 +7,7 @@
  * Rules:
  * 1. Zero entry fee: Rewards are unlocked organically via food orders > ₹299 or friend referrals.
  * 2. Guaranteed value: Every scratch card has real, redeemable value (no empty 'better luck next time').
- * 3. 24K Pure Digital Gold: Micro-savings backed 1:1 by institutional bullion vaults (Augmont / SafeGold).
+ * 3. 24K Pure Digital Gold: Micro-savings backed 1:1 by insured physical gold vaults (Augmont / SafeGold).
  */
 
 export type RewardType = "CASHBACK" | "DIGITAL_GOLD" | "PARTNER_VOUCHER" | "BUMPER_GOLD";

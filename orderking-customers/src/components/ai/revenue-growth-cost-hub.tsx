@@ -76,7 +76,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "9395065587@ybl" }: { fou
     setSelectedOpp(opp);
     const draft = buildCustomizedApplication(opp);
     setApplicationDraft(draft);
-    toast.success(`Application drafted for "${opp.title}" with zero fabricated credentials!`);
+    toast.success(`Application drafted for "${opp.title}"`);
   };
 
   const handleApproveAndSubmitApp = () => {

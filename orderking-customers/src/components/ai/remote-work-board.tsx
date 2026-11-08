@@ -79,7 +79,7 @@ export function RemoteWorkBoard({
             </Badge>
           </div>
           <p className="text-xs text-muted">
-            Direct Opportunity Discovery · Verified USD / Global Contracts · Strict Zero-Fabrication Standard
+            Direct Opportunity Discovery · Verified USD / Global Contracts
           </p>
         </div>
 

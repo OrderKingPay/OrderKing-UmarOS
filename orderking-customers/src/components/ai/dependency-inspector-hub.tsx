@@ -47,7 +47,7 @@ export function DependencyInspectorHub() {
             <div className="flex items-center gap-2">
               <Key className="h-6 w-6 text-sky-400" />
               <h2 className="text-xl font-bold text-fg">Dependency Inspector & Ecosystem Discovery (§27, §30)</h2>
-              <Badge tone="primary">Zero-Fabrication Reality</Badge>
+              <Badge tone="primary">Live Audit</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-300">
               Actively inspects API credentials, highlights missing keys with setup guides, and enforces verified local fallback execution.

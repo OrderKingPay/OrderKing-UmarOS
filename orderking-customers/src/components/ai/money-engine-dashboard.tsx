@@ -57,7 +57,7 @@ export function MoneyEngineDashboard({
             </Badge>
           </div>
           <p className="text-xs text-muted">
-            Zero-Fabrication Accounting · Actual vs Pending vs Forecast Revenue · Immutable Event Ledger
+            Actual vs Pending vs Forecast Revenue · Immutable Event Ledger
           </p>
         </div>
 

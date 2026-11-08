@@ -464,7 +464,7 @@ export function SystemMasterSettingsModal({
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-bold text-slate-300 block mb-2">
-                  Young Female Natural Voice Personas (100% Realistic Native Accents):
+                  Voice Personas (Native Accents):
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {[
@@ -515,7 +515,7 @@ export function SystemMasterSettingsModal({
           {activeTab === "models" && (
             <div className="space-y-4">
               <div>
-                <h4 className="text-xs font-bold text-white mb-1">👑 Verified Production AI Models (Zero-Fabrication):</h4>
+                <h4 className="text-xs font-bold text-white mb-1">👑 Production AI Models:</h4>
                 <p className="text-[11px] text-slate-400 mb-3">
                   Every model maps to a verified API model ID. Pinging runs a real API handshake with measured round-trip latency.
                 </p>

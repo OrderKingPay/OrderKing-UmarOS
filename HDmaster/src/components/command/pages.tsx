@@ -374,7 +374,7 @@ export function DashboardPage() {
 function CeoPage() {
   return (
     <div className="space-y-4">
-      {/* UMAR OS: SOVEREIGN FOUNDER CONTROL DECK */}
+      {/* UMAR OS: FOUNDER CONTROL DECK */}
       <UmarOS_AI_Terminal />
       <CommercialCommandDials />
       <LiveFounderProfitDashboard />
@@ -2023,7 +2023,7 @@ function MarketingPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm">🏛️ Government Subsidies &amp; Global Cloud Grants Registry</h3>
-              <span className="text-xs text-emerald-600 font-medium">100% Genuine, Legal &amp; Direct Bank Wire</span>
+              <span className="text-xs text-emerald-600 font-medium">Verified &amp; Direct Bank Wire</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">

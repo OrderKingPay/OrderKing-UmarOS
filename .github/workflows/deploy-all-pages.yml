@@ -16,6 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
+    env:
+      NODE_ENV: production
+      CLOUDFLARE_ACCOUNT_ID: fc53b6fd613df944a3a46606cfbf21d0
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      VITE_AUTH_ENABLED: "true"
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
+      RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -27,7 +37,7 @@ jobs:
         with:
           version: 9.15.4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -45,15 +55,7 @@ jobs:
             echo "Notice: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets. Cloudflare Pages git integration handles deployment directly."
           fi
         env:
-          NODE_ENV: production
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          VITE_AUTH_ENABLED: "true"
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: https://orderkingpay.com
-          RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
-          RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || 'fc53b6fd613df944a3a46606cfbf21d0' }}
 
       - name: Build & Deploy Rider App
         run: |
@@ -64,13 +66,7 @@ jobs:
             echo "Notice: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets. Cloudflare Pages git integration handles deployment directly."
           fi
         env:
-          NODE_ENV: production
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          VITE_AUTH_ENABLED: "true"
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: https://rider.orderkingpay.com
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || 'fc53b6fd613df944a3a46606cfbf21d0' }}
 
       - name: Build & Deploy Restaurant Partner App
         run: |
@@ -81,13 +77,7 @@ jobs:
             echo "Notice: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets. Cloudflare Pages git integration handles deployment directly."
           fi
         env:
-          NODE_ENV: production
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          VITE_AUTH_ENABLED: "true"
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: https://partner.orderkingpay.com
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || 'fc53b6fd613df944a3a46606cfbf21d0' }}
 
       - name: Build & Deploy Central Admin (HDmaster)
         run: |
@@ -98,10 +88,4 @@ jobs:
             echo "Notice: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets. Cloudflare Pages git integration handles deployment directly."
           fi
         env:
-          NODE_ENV: production
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          VITE_AUTH_ENABLED: "true"
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: https://admin.orderkingpay.com
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || 'fc53b6fd613df944a3a46606cfbf21d0' }}
