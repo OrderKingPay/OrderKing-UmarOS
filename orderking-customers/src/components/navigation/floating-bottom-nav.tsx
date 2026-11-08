@@ -79,7 +79,7 @@ export const BENCHMARK_FOOD_TABS = [
 export const BENCHMARK_KINGPAY_TABS = [
   { id: "terminal", label: "Terminal", to: "/king-pay" },
   { id: "split", label: "Split Bill", to: "/king-pay?tab=split" },
-  { id: "vault", label: "Gold Vault", to: "/wallet" },
+  { id: "vault", label: "Wallet", to: "/wallet" },
   { id: "ledger", label: "Passbook", to: "/earn" },
   { id: "support", label: "Assistance", to: "/king-pay/assist" },
 ];

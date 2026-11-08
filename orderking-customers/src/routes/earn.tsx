@@ -52,11 +52,11 @@ function CrownOpportunitiesPage() {
                   <Crown className="size-5" aria-hidden="true" />
                 </div>
                 <span className="text-xs font-black uppercase tracking-[0.25em] text-amber-300">
-                  OrderKing Crown Privilege
+                  Privilege Rewards
                 </span>
               </div>
               <h1 className="mt-3.5 text-3xl font-black tracking-tight sm:text-4xl">
-                Rewards without confusion
+                Rewards & Offers
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stone-300 font-medium">
                 Crown Promotional Credits are eligible-order discounts, not cash or UPI withdrawals.
@@ -65,7 +65,7 @@ function CrownOpportunitiesPage() {
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5">
                 <span className="inline-flex items-center rounded-full border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-yellow-400/30 to-amber-500/20 px-3.5 py-1.5 text-xs font-black text-amber-200 shadow-sm">
-                  <Sparkles className="mr-1.5 inline size-3.5 text-amber-300" /> Transparent Order Discounts · Active
+                  <Sparkles className="mr-1.5 inline size-3.5 text-amber-300" /> Verified Discounts
                 </span>
               </div>
             </div>
@@ -124,14 +124,14 @@ function CrownOpportunitiesPage() {
                 <div className="flex items-center gap-2 text-emerald-700">
                   <BadgeCheck className="size-5" aria-hidden="true" />
                   <p className="text-xs font-black uppercase tracking-wider text-emerald-800">
-                    Live Consumer Protection Suite
+                    Payment Utilities
                   </p>
                 </div>
                 <h2 id="live-features-heading" className="mt-1 text-xl font-black text-stone-900">
                   Active Financial Utilities
                 </h2>
                 <p className="text-xs text-stone-500">
-                  Zero placeholder blockers. Fully operational tools with 0% gateway markup.
+                  Split bills, view receipts, and pay via UPI.
                 </p>
               </div>
 

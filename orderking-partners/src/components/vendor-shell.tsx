@@ -38,7 +38,6 @@ import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { listOrders } from "@/lib/server/api-orders";
 import { supabaseCloud } from "@/lib/db-cloud";
-import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
 import { PartnerFloatingBottomNav } from "./navigation/partner-bottom-nav";
 import { OutletStatusPill } from "./outlet/outlet-status-pill";
 import { useMerchantBranding } from "@orderking/ui";
@@ -60,11 +59,9 @@ export const MORE_NAV = [
   { to: "/analytics", key: "nav.analytics", icon: LineChart, perm: "analytics.view" as Permission },
   { to: "/reviews", key: "nav.reviews", icon: Star, perm: "reviews.view" as Permission },
   { to: "/hours", key: "nav.hours", icon: Clock3, perm: "hours.edit" as Permission },
-  { to: "/academy", key: "nav.academy", icon: GraduationCap, perm: "dashboard.view" as Permission },
-  { to: "/assistant", key: "nav.assistant", icon: Sparkles, perm: "assistant.use" as Permission },
-  { to: "/notifications", key: "nav.notifications", icon: Bell, perm: "notifications.view" as Permission },
-  { to: "/onboarding", key: "nav.onboarding", icon: Store, perm: "onboarding.edit" as Permission },
   { to: "/support", key: "nav.support", icon: LifeBuoy, perm: "dashboard.view" as Permission },
+  { to: "/onboarding", key: "nav.onboarding", icon: Store, perm: "onboarding.edit" as Permission },
+  { to: "/notifications", key: "nav.notifications", icon: Bell, perm: "notifications.view" as Permission },
   { to: "/settings", key: "nav.settings", icon: Settings, perm: "settings.view" as Permission },
 ] as const;
 
@@ -93,7 +90,6 @@ export function VendorShell({
   const role = vendor.role;
   const primary = PRIMARY_NAV.filter((item) => !role || can(role, item.perm));
   const more = MORE_NAV.filter((item) => !role || can(role, item.perm));
-  const [sparkOpen, setSparkOpen] = useState(false);
 
   const liveOrdersQ = useQuery({
     queryKey: ["orders", vendor.restaurantId, "live"],
@@ -296,12 +292,8 @@ export function VendorShell({
 
       {/* Docked Mobile Bottom Navigation */}
       <PartnerFloatingBottomNav
-        onOpenSpark={() => setSparkOpen(true)}
         pendingOrdersCount={pendingOrdersCount}
       />
-
-      {/* Partner Assistant Modal */}
-      <OrderKingSparkModal isOpen={sparkOpen} onClose={() => setSparkOpen(false)} />
     </div>
   );
 }

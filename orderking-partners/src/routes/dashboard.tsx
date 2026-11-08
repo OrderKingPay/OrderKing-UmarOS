@@ -32,6 +32,7 @@ import {
   Flame,
   Sparkles,
   Tag,
+  LifeBuoy,
   PauseCircle,
   PlayCircle,
   ShieldCheck,
@@ -718,18 +719,18 @@ function DashboardPage() {
             </Link>
 
             <Link
-              to="/assistant"
+              to="/support"
               className="rounded-2xl border border-gray-200 bg-gray-50/70 p-4 hover:border-red-300 hover:bg-red-50/30 transition flex items-start justify-between gap-2 group"
             >
               <div>
                 <div className="text-xs font-bold text-gray-900 group-hover:text-[#E23744] transition-colors">
-                  Partner Assistant
+                  Help Desk &amp; Tickets
                 </div>
                 <div className="text-[11px] text-gray-500 mt-0.5">
-                  Menu digitization and smart suggestions
+                  Store diagnostics, disputes &amp; support
                 </div>
               </div>
-              <Sparkles className="size-4 text-[#E23744] shrink-0" />
+              <LifeBuoy className="size-4 text-[#E23744] shrink-0" />
             </Link>
 
             <Link

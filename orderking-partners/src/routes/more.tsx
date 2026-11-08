@@ -49,18 +49,6 @@ const NAV_ITEM_METADATA: Record<
     subtitle: "Opening hours, slot schedules & temporary closures",
     tag: "Operations",
   },
-  "/academy": {
-    title: "Partner Training & Standard Guidelines",
-    subtitle: "Packaging standards, SLA guidelines & FSSAI food safety",
-    tag: "Training",
-    highlight: true,
-  },
-  "/assistant": {
-    title: "Partner Assistant",
-    subtitle: "Menu suggestions, sales forecasts & operational assistance",
-    tag: "Assistant",
-    highlight: true,
-  },
   "/notifications": {
     title: "Order Alerts & Notifications",
     subtitle: "Real-time dispatch updates, notes & audio alerts",
@@ -191,7 +179,6 @@ function MorePage() {
 
           {items.map((item) => {
             const meta = NAV_ITEM_METADATA[item.to];
-            const isKingAi = item.to === "/assistant";
             return (
               <Link
                 key={item.to}
@@ -199,26 +186,14 @@ function MorePage() {
                 className="group flex min-h-16 items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4 hover:border-[#E23744] hover:shadow-sm transition"
               >
                 <div className="flex items-center gap-3.5">
-                  <div
-                    className={`flex size-10 items-center justify-center rounded-xl transition group-hover:scale-105 ${
-                      isKingAi
-                        ? "bg-amber-50 text-amber-600"
-                        : "bg-gray-100 text-[#E23744]"
-                    }`}
-                  >
+                  <div className="flex size-10 items-center justify-center rounded-xl transition group-hover:scale-105 bg-gray-100 text-[#E23744]">
                     <item.icon className="size-5" />
                   </div>
                   <div>
                     <div className="font-bold text-gray-900 flex items-center gap-2 text-sm">
                       <span>{meta?.title ?? t(item.key)}</span>
                       {meta?.tag && (
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[9px] font-bold border ${
-                            isKingAi
-                              ? "bg-amber-50 border-amber-200 text-amber-800"
-                              : "bg-gray-100 border-gray-200 text-gray-700"
-                          }`}
-                        >
+                        <span className="rounded-full px-2 py-0.5 text-[9px] font-bold border bg-gray-100 border-gray-200 text-gray-700">
                           {meta.tag}
                         </span>
                       )}

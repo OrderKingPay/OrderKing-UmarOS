@@ -315,3 +315,126 @@ export const resolvePartnerTicket = createServerFn({ method: "POST" })
       return { ok: true as const };
     });
   });
+
+export interface StoreDiagnosticsResult {
+  restaurantId: string;
+  restaurantName: string;
+  currentTimeIst: string;
+  isOnline: boolean;
+  isEmergencyClosed: boolean;
+  isOpenByHours: boolean;
+  currentShiftLabel: string;
+  totalItems: number;
+  outOfStockCount: number;
+  fssaiNumber: string | null;
+  todayOrdersCount: number;
+  lastOrderAt: string | null;
+  city: string;
+  address: string;
+}
+
+export const getStoreDiagnostics = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "dashboard.view", async (sql, ctx) => {
+      // 1. Restaurant Status
+      const rest = await sql<{
+        id: string;
+        name: string;
+        display_name: string | null;
+        emergency_closed: boolean;
+        vacation_mode: boolean;
+        prep_minutes: number;
+        fssai_number: string | null;
+        city: string | null;
+        address: string | null;
+      }>`
+        select id, name, display_name, emergency_closed, vacation_mode, prep_minutes, fssai_number, city, address
+        from restaurants
+        where id = ${ctx.restaurantId}
+        limit 1
+      `;
+      const restaurant = rest[0];
+
+      // 2. Items & Stock
+      const itemsCount = await sql<{ total: number; active: number }>`
+        select count(*)::int as total,
+               count(*) filter (where is_active = true)::int as active
+        from items
+        where restaurant_id = ${ctx.restaurantId}
+      `;
+      const unavailCount = await sql<{ count: number }>`
+        select count(*)::int as count
+        from item_availability a
+        join items i on i.id = a.item_id
+        where a.restaurant_id = ${ctx.restaurantId}
+          and a.status <> 'available'
+      `;
+
+      // 3. Operating Hours & Current Shift Check
+      const hours = await sql<{ weekday: number; open_minutes: number; close_minutes: number }>`
+        select weekday, open_minutes, close_minutes
+        from restaurant_hours
+        where restaurant_id = ${ctx.restaurantId}
+        order by weekday, open_minutes
+      `;
+
+      // Calculate IST time (UTC + 5:30)
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      const istTime = new Date(utc + 3600000 * 5.5);
+      const istDay = istTime.getDay();
+      const istMinutes = istTime.getHours() * 60 + istTime.getMinutes();
+      const istTimeFormatted = `${String(istTime.getHours() % 12 || 12).padStart(2, "0")}:${String(istTime.getMinutes()).padStart(2, "0")} ${istTime.getHours() >= 12 ? "PM" : "AM"} IST`;
+
+      const todayShifts = hours.filter((h) => h.weekday === istDay);
+      let isOpenByHours = todayShifts.length === 0;
+      let currentShiftLabel = "24×7 Active";
+
+      if (todayShifts.length > 0) {
+        isOpenByHours = todayShifts.some(
+          (s) => istMinutes >= s.open_minutes && istMinutes <= s.close_minutes
+        );
+        const shiftStrings = todayShifts.map((s) => {
+          const openH = Math.floor(s.open_minutes / 60);
+          const openM = s.open_minutes % 60;
+          const closeH = Math.floor(s.close_minutes / 60);
+          const closeM = s.close_minutes % 60;
+          const formatTime = (h: number, m: number) =>
+            `${String(h % 12 || 12).padStart(2, "0")}:${String(m).padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`;
+          return `${formatTime(openH, openM)} – ${formatTime(closeH, closeM)}`;
+        });
+        currentShiftLabel = shiftStrings.join(", ");
+      }
+
+      // Today's orders
+      const todayOrders = await sql<{ count: number; last_order_at: string | null }>`
+        select count(*)::int as count,
+               max(placed_at)::text as last_order_at
+        from orders
+        where restaurant_id = ${ctx.restaurantId}
+          and placed_at >= date_trunc('day', now())
+      `;
+
+      const isEmergencyClosed = Boolean(restaurant?.emergency_closed || restaurant?.vacation_mode);
+      const isOnline = !isEmergencyClosed && isOpenByHours;
+
+      return {
+        restaurantId: ctx.restaurantId,
+        restaurantName: restaurant?.display_name || restaurant?.name || "Restaurant Partner",
+        currentTimeIst: istTimeFormatted,
+        isOnline,
+        isEmergencyClosed,
+        isOpenByHours,
+        currentShiftLabel,
+        totalItems: itemsCount[0]?.active ?? 0,
+        outOfStockCount: unavailCount[0]?.count ?? 0,
+        fssaiNumber: restaurant?.fssai_number ?? null,
+        todayOrdersCount: todayOrders[0]?.count ?? 0,
+        lastOrderAt: todayOrders[0]?.last_order_at ?? null,
+        city: restaurant?.city || "Assam",
+        address: restaurant?.address || "",
+      };
+    });
+  });

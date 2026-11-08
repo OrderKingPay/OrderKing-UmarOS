@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -11,10 +11,13 @@ import {
   createPartnerTicket,
   replyToPartnerTicket,
   resolvePartnerTicket,
+  getStoreDiagnostics,
   type TicketCategory,
   type TicketPriority,
   type PartnerTicketView,
+  type StoreDiagnosticsResult,
 } from "@/lib/server/api-support";
+import { quickThrottleKitchen } from "@/lib/server/api-orders";
 import {
   LifeBuoy,
   Plus,
@@ -30,6 +33,11 @@ import {
   ChevronUp,
   FileText,
   UserCheck,
+  Store,
+  Activity,
+  CheckCircle,
+  XCircle,
+  ArrowRight,
 } from "lucide-react";
 
 export const Route = createFileRoute("/support")({ component: SupportPage });
@@ -68,6 +76,36 @@ function SupportPage() {
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
+
+  const [diagnosticsOpen, setDiagnosticsOpen] = useState(true);
+  const [resuming, setResuming] = useState(false);
+
+  const diagQuery = useQuery({
+    queryKey: ["store_diagnostics", vendor.restaurantId],
+    queryFn: () => getStoreDiagnostics({ data: { restaurantId: vendor.restaurantId } }),
+    enabled: Boolean(vendor.restaurantId),
+    refetchInterval: 15000,
+  });
+
+  const diag = diagQuery.data;
+
+  async function handleResumeStore() {
+    if (!vendor.restaurantId || resuming) return;
+    setResuming(true);
+    try {
+      await quickThrottleKitchen({ data: { restaurantId: vendor.restaurantId, mode: "RESUME" } });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["store_diagnostics", vendor.restaurantId] }),
+        qc.invalidateQueries({ queryKey: ["dashboard", vendor.restaurantId] }),
+        qc.invalidateQueries({ queryKey: ["bootstrap"] }),
+      ]);
+      setBanner("✅ Storefront successfully resumed Online. Live orders enabled.");
+    } catch (err) {
+      setBanner(`❌ Failed to resume store: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally {
+      setResuming(false);
+    }
+  }
 
   const ticketsQuery = useQuery({
     queryKey: ["partner_tickets", vendor.restaurantId],
@@ -209,6 +247,163 @@ function SupportPage() {
           </div>
         </div>
       </Card>
+
+      {/* 1. Storefront Health & Order Diagnostics (Why am I not receiving orders?) */}
+      <Card className="border-gray-200 bg-white p-4 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div
+              className={`flex size-8 items-center justify-center rounded-lg ${
+                diag?.isOnline ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-[#E23744]"
+              }`}
+            >
+              <Store className="size-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-gray-900">
+                  Storefront Status &amp; Order Diagnostics
+                </span>
+                {diag && (
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      diag.isOnline
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : "bg-rose-50 text-rose-700 border border-rose-200"
+                    }`}
+                  >
+                    <span
+                      className={`size-1.5 rounded-full ${diag.isOnline ? "bg-emerald-500" : "bg-rose-500"}`}
+                    />
+                    {diag.isEmergencyClosed ? "PAUSED" : diag.isOpenByHours ? "ONLINE" : "CLOSED SHIFT"}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-500">
+                Instant live diagnosis of storefront readiness, operating shifts, menu inventory, and delivery connectivity.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDiagnosticsOpen(!diagnosticsOpen)}
+            className="flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-gray-900 cursor-pointer"
+          >
+            <span>{diagnosticsOpen ? "Hide" : "Show Check"}</span>
+            {diagnosticsOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+          </button>
+        </div>
+
+        {diagnosticsOpen && (
+          <div className="mt-3.5 space-y-3 pt-3 border-t border-gray-100">
+            {diagQuery.isLoading ? (
+              <div className="text-xs text-gray-500 py-2">Running live storefront diagnostics...</div>
+            ) : diag ? (
+              <>
+                {/* Status Alert Banner */}
+                {diag.isEmergencyClosed ? (
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-900 font-medium">
+                    <div className="flex items-center gap-2">
+                      <XCircle className="size-4 text-rose-600 shrink-0" />
+                      <span>
+                        <strong>Storefront is currently PAUSED.</strong> Live customer orders cannot be received until you resume.
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      disabled={resuming}
+                      onClick={() => void handleResumeStore()}
+                      className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs rounded-lg h-7 px-3 cursor-pointer"
+                    >
+                      {resuming ? "Resuming..." : "Resume Store Online"}
+                    </Button>
+                  </div>
+                ) : !diag.isOpenByHours ? (
+                  <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 font-medium">
+                    <Clock className="size-4 text-amber-600 shrink-0" />
+                    <span>
+                      <strong>Outside Operating Shift.</strong> Current time is {diag.currentTimeIst}. Today&apos;s shift: {diag.currentShiftLabel}. Orders resume during shift hours.
+                    </span>
+                  </div>
+                ) : diag.totalItems === 0 ? (
+                  <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 font-medium">
+                    <span>
+                      <strong>No Active Dishes.</strong> All items are inactive. Add dishes in the Menu section to start receiving orders.
+                    </span>
+                    <Link to="/menu" className="font-bold underline text-amber-900">
+                      Go to Menu
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-900 font-medium">
+                    <CheckCircle className="size-4 text-emerald-600 shrink-0" />
+                    <span>
+                      <strong>Storefront is Healthy and Online.</strong> Orders from nearby customers within your delivery radius in {diag.city} will ring directly on your Kitchen Desk.
+                    </span>
+                  </div>
+                )}
+
+                {/* 4 Checklist Cards */}
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-2.5">
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Store State</div>
+                    <div
+                      className={`mt-0.5 font-bold ${diag.isEmergencyClosed ? "text-rose-600" : "text-emerald-700"}`}
+                    >
+                      {diag.isEmergencyClosed ? "Paused (Emergency)" : "Online & Active"}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-2.5">
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Operating Shift</div>
+                    <div className="mt-0.5 font-bold text-gray-800 truncate" title={diag.currentShiftLabel}>
+                      {diag.isOpenByHours ? "Active Shift" : "Shift Closed"} ({diag.currentShiftLabel})
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-2.5">
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Menu Inventory</div>
+                    <div className="mt-0.5 font-bold text-gray-800">
+                      {diag.totalItems} Active ({diag.outOfStockCount} Out of Stock)
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-2.5">
+                    <div className="text-[10px] uppercase font-bold text-gray-400">FSSAI / KYC</div>
+                    <div className="mt-0.5 font-bold text-gray-800 truncate">
+                      {diag.fssaiNumber ? `Verified (${diag.fssaiNumber})` : "Pending Registration"}
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-xs text-gray-500 py-1">Connect your restaurant outlet to view diagnostics.</div>
+            )}
+          </div>
+        )}
+      </Card>
+
+      {/* Quick Action Navigation Pills */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Link
+          to="/reviews"
+          className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:border-[#E23744] hover:text-[#E23744] transition shadow-xs"
+        >
+          <span>⚖️ Order Complaints &amp; Spillage Deductions</span>
+          <ArrowRight className="size-3 text-gray-400" />
+        </Link>
+        <Link
+          to="/settlements"
+          className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:border-[#E23744] hover:text-[#E23744] transition shadow-xs"
+        >
+          <span>💳 Bank Settlements &amp; Daily Payout Ledger</span>
+          <ArrowRight className="size-3 text-gray-400" />
+        </Link>
+        <Link
+          to="/hours"
+          className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:border-[#E23744] hover:text-[#E23744] transition shadow-xs"
+        >
+          <span>🕒 Kitchen Hours &amp; Shift Timings</span>
+          <ArrowRight className="size-3 text-gray-400" />
+        </Link>
+      </div>
 
       {banner ? (
         <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-semibold text-emerald-900">

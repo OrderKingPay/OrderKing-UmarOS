@@ -679,7 +679,7 @@ export function HomeFeed({
                           : "Your Location"}
                       </span>
                       <span className="text-[11px] text-gray-600 block truncate font-medium">
-                        Food delivery is not available in your location, kindly update your location.
+                        Delivery is currently unavailable in this area.
                       </span>
                     </div>
                   </div>
@@ -697,10 +697,10 @@ export function HomeFeed({
                 <div className="space-y-3 pt-2">
                   <div className="text-center">
                     <h4 className="text-sm sm:text-base font-black text-gray-950 tracking-tight">
-                      Active KingPay Services in Your Area
+                      Available Services
                     </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
-                      You can access KingPay financial, travel, career, and learning services below anytime.
+                      Book travel, pay bills, or explore courses and jobs.
                     </p>
                   </div>
 
@@ -848,7 +848,7 @@ export function HomeFeed({
                   </div>
                 </div>
 
-                {/* Honest "Explore Flagship Menus (Viewing Only)" */}
+                {/* Honest "Popular Locations" */}
                 <div
                   data-testid="flagship-viewing-mode-card"
                   className="rounded-2xl border border-stone-200/90 bg-white p-4 sm:p-5 shadow-xs text-center space-y-3"
@@ -861,10 +861,10 @@ export function HomeFeed({
                   </div>
                   <div>
                     <h4 className="text-sm sm:text-base font-black text-gray-950">
-                      Explore Flagship Menus (Viewing Only)
+                      Popular Locations
                     </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5 font-medium">
-                      Preview live food menus and cuisine selections in viewing mode without doorstep delivery to your current pin.
+                      Explore restaurants and food menus in other cities.
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
