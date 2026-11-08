@@ -56,7 +56,7 @@ export const Route = createFileRoute("/app/founder-command")({
   head: () => ({
     meta: [
       { title: "Order King" },
-      { name: "description", content: "Order King — Sovereign Founder AI System" },
+      { name: "description", content: "Order King — Founder Operations System" },
     ],
   }),
   component: FounderCommandPage,
@@ -133,7 +133,7 @@ export function FounderCommandPage() {
   const [products] = useState([
     {
       id: "PROD-901",
-      name: "Sovereign FinTech & POS Turnkey License",
+      name: "FinTech & POS Merchant Module",
       priceInr: 49999,
       salesCount: 0,
       totalEarned: 0,
@@ -997,7 +997,7 @@ export function FounderCommandPage() {
               <div className="flex items-center gap-2">
                 <Power className="size-5 text-amber-400" />
                 <h2 className="text-sm font-black uppercase tracking-wider text-amber-300">
-                  Master Sovereign Circuit Breakers
+                  Master Operational Circuit Breakers
                 </h2>
               </div>
               <span className="text-xs text-amber-400 font-mono">Cross-App Telemetry Bus: AWAITING CONNECTION</span>

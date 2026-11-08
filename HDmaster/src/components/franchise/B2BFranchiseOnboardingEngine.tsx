@@ -555,7 +555,7 @@ export function B2BFranchiseOnboardingEngine() {
                                 }`}
                               >
                                 {c.tier === "EXECUTIVE_FLAGSHIP"
-                                  ? "Sovereign Flagship (₹50k)"
+                                  ? "Executive Flagship (₹50k)"
                                   : c.tier === "PRIORITY_PARTNER"
                                   ? "Growth Partner (₹25k)"
                                   : "Standard Priority (₹10k)"}
@@ -800,7 +800,7 @@ export function B2BFranchiseOnboardingEngine() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-purple-900 uppercase tracking-wider">
-                      Sovereign Flagship
+                      Executive Flagship
                     </span>
                     <span className="text-base font-black text-purple-950">₹50,000</span>
                   </div>
