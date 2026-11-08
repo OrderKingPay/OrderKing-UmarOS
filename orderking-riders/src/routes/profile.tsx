@@ -51,7 +51,7 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
     clauses: [
       {
         heading: "1. Independent Gig Engagement",
-        body: "You engage with Orderkingpay on a non-exclusive, principal-to-principal basis as an Independent Delivery Partner. You retain full freedom to choose your online hours, book optional operational gig slots, and accept or decline dispatch offers.",
+        body: "You engage with Orderkingpay on a non-exclusive, principal-to-principal basis as an Independent Delivery Partner. You retain full freedom to choose your online hours, book optional shift slots, and accept or decline dispatch offers.",
       },
       {
         heading: "2. Transparent Per-Order Rate Card",
@@ -106,7 +106,7 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
 ];
 
 const RIDER_TYPES: ReadonlyArray<{ id: RiderType; label: string }> = [
-  { id: "DELIVERY_PARTNER", label: "Standard Gig Partner" },
+  { id: "DELIVERY_PARTNER", label: "Delivery Partner" },
   { id: "FULL_TIME", label: "Full-Time Dedicated" },
   { id: "PART_TIME", label: "Part-Time / Shift" },
 ];
@@ -340,7 +340,7 @@ function Page() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <Label className="text-xs">Settlement UPI ID (Wednesday Payouts)</Label>
+                <Label className="text-xs">Payout UPI ID</Label>
                 <Input
                   value={payoutUpi}
                   onChange={(e) => setPayoutUpi(e.target.value)}

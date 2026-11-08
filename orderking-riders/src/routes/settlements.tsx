@@ -162,7 +162,7 @@ export function SettlementsDesk() {
       ["Partner Name", rider?.fullName || "Verified Delivery Partner"],
       ["Partner ID", rider?.id || "N/A"],
       ["Registered Mobile", rider?.phone || "N/A"],
-      ["Settlement UPI Mandate", rider?.payoutUpi || "Not Configured"],
+      ["Payout UPI ID", rider?.payoutUpi || "Not Configured"],
       ["Bank Account Last 4", rider?.payoutBankLast4 ? `XXXX-${rider.payoutBankLast4}` : "UPI Linked"],
       ["Statement Generated At", new Date().toISOString()],
       [],
@@ -224,7 +224,7 @@ export function SettlementsDesk() {
         },
       });
       setDisputeNote("");
-      toast.success("Settlement reconciliation ticket logged in Order King Support Desk.");
+      toast.success("Support query submitted.");
     } catch (e) {
       toast.error(errorMessage(e, t("actionNotConfirmed")));
     } finally {
@@ -330,7 +330,7 @@ export function SettlementsDesk() {
                 <Building2 className="size-5" />
               </div>
               <div>
-                <CardTitle>Active Bank &amp; UPI Settlement Mandate</CardTitle>
+                <CardTitle>Bank Account &amp; UPI Details</CardTitle>
                 <CardMeta>
                   All weekly Wednesday settlements and instant tip transfers are routed to this account
                 </CardMeta>
@@ -344,7 +344,7 @@ export function SettlementsDesk() {
               className="inline-flex items-center gap-1.5"
             >
               <Edit3 className="size-3.5" />
-              <span>{editingMandate ? "Cancel" : "Update UPI / Bank Mandate"}</span>
+              <span>{editingMandate ? "Cancel" : "Update Bank / UPI"}</span>
             </Button>
           </div>
 
@@ -376,7 +376,7 @@ export function SettlementsDesk() {
               </div>
               <div className="flex items-end">
                 <Button type="submit" className="w-full" disabled={savingMandate}>
-                  {savingMandate ? "Saving Mandate..." : "Save Settlement Mandate"}
+                  {savingMandate ? "Saving..." : "Save Bank / UPI"}
                 </Button>
               </div>
             </form>
@@ -391,7 +391,7 @@ export function SettlementsDesk() {
               <div className="rounded-xl border border-border bg-bg/60 p-3">
                 <span className="text-[11px] text-muted-foreground block">Linked Bank Account</span>
                 <p className="mt-0.5 text-sm font-bold text-fg">
-                  {rider?.payoutBankLast4 ? `A/C Ending XXXX-${rider.payoutBankLast4}` : "Settled via UPI Mandate"}
+                  {rider?.payoutBankLast4 ? `A/C Ending XXXX-${rider.payoutBankLast4}` : "Settled via UPI"}
                 </p>
               </div>
               <div className="rounded-xl border border-border bg-bg/60 p-3">
