@@ -16,3 +16,4 @@ async function inspect(proj) {
 for (const p of ["orderking-customers", "orderking-partners", "orderking-riders", "orderking-hdmaster"]) {
   await inspect(p);
 }
+
