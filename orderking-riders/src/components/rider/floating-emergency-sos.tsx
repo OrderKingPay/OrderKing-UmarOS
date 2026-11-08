@@ -292,7 +292,7 @@ export function FloatingEmergencySOS() {
                       className="flex items-center justify-center gap-2 rounded-xl border border-border bg-muted p-2.5 text-xs font-semibold text-foreground hover:bg-muted/80 transition"
                     >
                       <PhoneCall className="size-3.5 text-[#e5a93c]" />
-                      <span>OrderKing 24x7 Safety Command Desk (1800-100-ORDER)</span>
+                      <span>OrderKing 24x7 Safety Helpline (1800-100-ORDER)</span>
                     </a>
                   </div>
 

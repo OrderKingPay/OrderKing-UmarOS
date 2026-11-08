@@ -280,7 +280,7 @@ export function RiderEmergencySafetySheet({
           lng: payload.lng,
         },
       });
-      toast.error("🚨 OrderKing Safety Command Desk Notified! Direct Lines Open.");
+      toast.error("🚨 Emergency helpline notified. Direct lines are open.");
     } catch {
       // Telemetry continues offline via native dialers
     }

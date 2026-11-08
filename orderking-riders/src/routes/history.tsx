@@ -332,7 +332,7 @@ export function Page() {
   return (
     <AppShell>
       <div className="space-y-4">
-        {/* Segmented Tab Bar: Book Gigs & Shifts vs Past Trips & History */}
+        {/* Segmented Tab Bar: Shifts vs Past Orders */}
         <div className="grid grid-cols-2 rounded-xl bg-muted/70 p-1 border border-border">
           <button
             type="button"
@@ -345,7 +345,7 @@ export function Page() {
             )}
           >
             <CalendarClock className="size-4" />
-            <span>Book Gigs &amp; Shifts</span>
+            <span>Shifts</span>
           </button>
           <button
             type="button"
@@ -358,7 +358,7 @@ export function Page() {
             )}
           >
             <RouteIcon className="size-4" />
-            <span>Past Trips &amp; History</span>
+            <span>Past Orders</span>
           </button>
         </div>
 
@@ -433,7 +433,7 @@ export function Page() {
                           : "bg-emerald-600 hover:bg-emerald-500 text-white"
                       }`}
                     >
-                      {isBooked ? "✓ Booked" : "Book Gig"}
+                      {isBooked ? "✓ Booked" : "Book Slot"}
                     </Button>
                   </div>
                 );

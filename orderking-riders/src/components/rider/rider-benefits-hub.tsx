@@ -611,7 +611,7 @@ export function RiderBenefitsHub({
               </div>
             </div>
             <Badge tone="online" className="shrink-0">
-              Statutory Welfare Protection
+              Active Partner Insurance
             </Badge>
           </div>
 
