@@ -68,10 +68,36 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
     }
 
     const ticketId = newId("tkt");
+    const detailMsg = data.details?.trim() || "Order support request";
     await sql`
       insert into support_tickets (id, user_id, order_id, topic, message, status)
-      values (${ticketId}, ${context.userId}, ${order.id}, ${data.issueType}, ${data.details?.trim() || "Order support request"}, 'open')
+      values (${ticketId}, ${context.userId}, ${order.id}, ${data.issueType}, ${detailMsg}, 'open')
     `;
+
+    try {
+      await sql`
+        insert into tickets (
+          id, org_id, queue, category, status, priority, subject,
+          customer_id, order_id, sla_minutes, opened_at, data_mode
+        ) values (
+          ${ticketId}, 'org_orderking', 'customer', ${data.issueType},
+          'OPEN', ${data.issueType === 'cancel_order' || data.issueType === 'food_spilled' || data.issueType === 'missing_item' ? 'HIGH' : 'NORMAL'},
+          ${`Customer report: ${data.issueType} on order #${order.public_id}`},
+          ${context.userId}, ${order.id}, 30, now(), 'ACTUAL'
+        )
+        on conflict (id) do nothing
+      `;
+      await sql`
+        insert into ticket_messages (
+          id, ticket_id, org_id, visibility, author_type, author_employee_id, body, created_at
+        ) values (
+          ${newId("tm")}, ${ticketId}, 'org_orderking', 'public', 'customer', null, ${detailMsg}, now()
+        )
+        on conflict (id) do nothing
+      `;
+    } catch (syncErr) {
+      console.warn("[customer ticket central sync warning]:", syncErr);
+    }
 
     return {
       ok: true,

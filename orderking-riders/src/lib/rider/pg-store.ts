@@ -855,6 +855,24 @@ export class PgStore implements RiderStore {
        values ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
       [t.id, t.riderId, userId, t.deliveryId, t.topic, t.message, t.status, t.createdAt, t.updatedAt],
     );
+
+    // Synchronize to central Umar OS tickets table
+    try {
+      await this.sql.query(
+        `insert into tickets (id, org_id, queue, category, status, priority, subject, rider_id, order_id, sla_minutes, opened_at, data_mode)
+         values ($1, 'org_orderking', 'rider', $2, 'OPEN', 'HIGH', $3, $4, $5, 30, now(), 'ACTUAL')
+         on conflict (id) do nothing`,
+        [t.id, t.topic, `Rider ticket: ${t.topic}`, t.riderId, t.deliveryId || null],
+      );
+      await this.sql.query(
+        `insert into ticket_messages (id, ticket_id, org_id, visibility, author_type, author_employee_id, body, created_at)
+         values ($1, $2, 'org_orderking', 'public', 'rider', null, $3, now())
+         on conflict (id) do nothing`,
+        ["tm_" + t.id, t.id, t.message],
+      );
+    } catch (err) {
+      console.warn("[rider ticket central sync warning]:", err);
+    }
   }
 
   async listTickets(userId: string) {

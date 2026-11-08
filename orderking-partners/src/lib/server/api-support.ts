@@ -219,6 +219,31 @@ export const createPartnerTicket = createServerFn({ method: "POST" })
         `;
       }
 
+      // Synchronize into central Umar OS tickets table
+      try {
+        await sql`
+          insert into tickets (
+            id, org_id, queue, category, status, priority, subject,
+            restaurant_id, order_id, sla_minutes, opened_at, data_mode
+          ) values (
+            ${ticketId}, 'org_orderking', 'restaurant', ${data.category},
+            ${aiStatus === 'RESOLVED' ? 'RESOLVED' : 'OPEN'}, ${data.priority}, ${subject},
+            ${ctx.restaurantId}, ${data.orderId || null}, 30, now(), 'ACTUAL'
+          )
+          on conflict (id) do nothing
+        `;
+        await sql`
+          insert into ticket_messages (
+            id, ticket_id, org_id, visibility, author_type, author_employee_id, body, created_at
+          ) values (
+            ${newId("tm")}, ${ticketId}, 'org_orderking', 'public', 'vendor', null, ${description}, now()
+          )
+          on conflict (id) do nothing
+        `;
+      } catch (syncErr) {
+        console.warn("[partner ticket central sync warning]:", syncErr);
+      }
+
       // 5. In-App Notification & Audit
       await notifyInApp(sql, {
         restaurantId: ctx.restaurantId,

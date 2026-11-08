@@ -1,5 +1,5 @@
 import dns from "node:dns";
-try { dns.setDefaultResultOrder?.("ipv4first"); } catch {}
+try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("verbatim"); } catch (_) {}
 
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
@@ -18,12 +18,6 @@ export function getDatabaseUrl() {
   }
   if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
     url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
-  }
-  if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
-    url = url.replace('sslmode=require', 'sslmode=no-verify');
-  }
-  if (url && url.includes('pooler.supabase.com') && !url.includes('sslmode=')) {
-    url += (url.includes('?') ? '&' : '?') + 'sslmode=no-verify&pgbouncer=true';
   }
   return url;
 }
@@ -125,8 +119,10 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INTERVAL, identity);
     const url: string = getDatabaseUrl() || "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
     const isRemote = url.includes("neon.tech") || url.includes("sslmode=") || url.includes("supabase.co") || !url.includes("localhost");
-    const pool = new Pool({ connectionString: url,
-      ssl: isRemote ? { rejectUnauthorized: false } : undefined,
+    const host = url.includes("@") ? url.split("@")[1].split(/[:\/?]/)[0] : undefined;
+    const pool = new Pool({
+      connectionString: url,
+      ssl: isRemote ? { rejectUnauthorized: false, servername: host } : undefined,
       connectionTimeoutMillis: 25000,
       idleTimeoutMillis: 15000,
       max: 10,
@@ -152,7 +148,7 @@ function createNeonSql(): Promise<Sql> {
           } catch (err) {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|ETIMEDOUT|ECONNABORTED|EPROTO|EPIPE|closed abruptly/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
             if (isTransient && attempt < 2) {
               await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
               continue;
@@ -180,7 +176,7 @@ function createNeonSql(): Promise<Sql> {
               client = undefined;
             }
             const msg = error instanceof Error ? error.message : String(error);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|ETIMEDOUT|ECONNABORTED|EPROTO|EPIPE|closed abruptly/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
             if (isTransient && attempt < 2) {
               await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
               continue;

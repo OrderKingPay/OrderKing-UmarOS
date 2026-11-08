@@ -92,14 +92,10 @@ function AccountPage() {
             <h1 className="font-display text-3xl font-black text-stone-900 tracking-tight">
               {t("account.title")}
             </h1>
-            <p className="mt-0.5 text-xs font-bold text-amber-800">
-              VIP Profile &amp; Royal Privileges
+            <p className="mt-0.5 text-xs font-medium text-stone-500">
+              Manage your profile, saved addresses, and preferences
             </p>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-950 shadow-2xs">
-            <span>👑</span>
-            <span>Prestige Member</span>
-          </span>
         </div>
 
         {isPending ? (
@@ -135,7 +131,7 @@ function AccountPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h2 className="font-display text-lg font-black text-white truncate">
-                      {name || user.displayName || "OrderKing Royalty"}
+                      {name || user.displayName || "OrderKing Member"}
                     </h2>
                     <span className="rounded-full bg-amber-400/20 border border-amber-400/50 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider text-amber-300">
                       VIP Gold

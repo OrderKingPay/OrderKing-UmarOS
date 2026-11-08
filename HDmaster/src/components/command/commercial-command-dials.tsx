@@ -2418,22 +2418,22 @@ export function CustomerSupportDisputeQueueSection() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-col gap-4 rounded-xl border border-rose-500/40 bg-gradient-to-r from-rose-950/40 via-slate-900 to-black p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
+      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between shadow-xs">
+        <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <Scale className="size-5 text-rose-400" />
-            <h2 className="text-lg font-black text-white">CENTRAL CUSTOMER SUPPORT DISPUTE QUEUE</h2>
-            <Badge className="border-rose-500/40 bg-rose-500/20 text-rose-300 font-mono text-[10px]">
-              1-TAP REFUND GATE
+            <Scale className="size-4 text-rose-600" />
+            <h2 className="text-base font-bold text-slate-900">Customer Disputes & Refunds</h2>
+            <Badge className="border-rose-200 bg-rose-50 text-rose-700 text-[10px]">
+              Live Queue
             </Badge>
           </div>
-          <p className="text-xs text-slate-300">
-            Real-time customer dispute queue. Directly approve refunds with double-entry ledger reversals or dismiss non-genuine claims with 1 tap.
+          <p className="text-xs text-slate-500">
+            Review customer complaints and process 1-tap refunds with automatic ledger adjustments.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge className="border-amber-500/40 bg-amber-950/60 text-amber-300 font-mono text-xs px-3 py-1">
-            Statutory 30-Min SLA Enforced
+          <Badge className="border-slate-200 bg-slate-50 text-slate-600 text-xs px-2.5 py-1">
+            30-Min Resolution Target
           </Badge>
         </div>
       </div>

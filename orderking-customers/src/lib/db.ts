@@ -1,6 +1,5 @@
-
 import dns from "node:dns";
-try { dns.setDefaultResultOrder?.("ipv4first"); } catch {}
+try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("verbatim"); } catch (_) {}
 
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
@@ -19,9 +18,6 @@ export function getDatabaseUrl() {
   }
   if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
     url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
-  }
-  if (url && url.includes('pooler.supabase.com') && url.includes('sslmode=require')) {
-    url = url.replace('sslmode=require', 'sslmode=no-verify');
   }
   return url;
 }
@@ -149,7 +145,7 @@ function createNeonSql(): Promise<Sql> {
           } catch (err) {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
             if (isTransient && attempt < 2) {
               await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
               continue;
@@ -177,7 +173,7 @@ function createNeonSql(): Promise<Sql> {
               client = undefined;
             }
             const msg = error instanceof Error ? error.message : String(error);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
             if (isTransient && attempt < 2) {
               await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
               continue;
@@ -246,5 +242,4 @@ if (typeof window === "undefined" && dbSource === "pglite") {
     throw err;
   });
 }
-
 
