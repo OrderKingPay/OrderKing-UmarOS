@@ -852,16 +852,16 @@ export function HomeView() {
                 ) : (
                   <>
                     <p className="font-semibold text-foreground truncate">No Shifts Booked Today</p>
-                    <p className="text-[11px] text-muted-foreground truncate">Book slots to guarantee peak priority</p>
+                    <p className="text-[11px] text-muted-foreground truncate">Book slots for your preferred hours</p>
                   </>
                 )}
               </div>
             </div>
             <Link
-              to="/trips"
+              to="/history"
               className="text-xs font-semibold text-primary hover:underline shrink-0 flex items-center gap-1"
             >
-              <span>{nextSlot ? "View Shifts" : "Book Gigs"}</span>
+              <span>{nextSlot ? "View Shifts" : "Book Shifts"}</span>
               <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -1145,31 +1145,23 @@ function OfferCard({
       </div>
 
       {/* Top Header: Order Code, 30s Countdown & Siren Audio Mute */}
-      <div className="flex items-start justify-between gap-2 pt-1">
+      <div className="flex items-center justify-between gap-2 pt-1">
         <div className="flex items-center gap-2">
-          <span className="relative flex size-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E23744] opacity-75" />
-            <span className="relative inline-flex size-3 rounded-full bg-[#E23744]" />
+          <span className="relative flex size-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
           </span>
-          <Badge tone="online" className="font-mono text-xs font-bold tracking-wider uppercase">
+          <span className="font-mono text-xs font-bold tracking-wider">
             Order #{offer.orderCode}
-          </Badge>
-          <span className="text-[11px] font-bold text-[#E23744] uppercase tracking-wider">
-            Incoming Dispatch
           </span>
           {surge.isMonsoonActive && (
-            <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-500/30">
-              ⚡ {surge.badges.monsoonText}
+            <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+              {surge.badges.monsoonText}
             </span>
           )}
           {surge.isPeakDinnerActive && (
-            <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/30">
-              🔥 {surge.badges.peakDinnerText}
-            </span>
-          )}
-          {surge.isWeatherAllowanceActive && (
-            <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-bold text-sky-400 border border-sky-500/30">
-              🌧️ {surge.badges.weatherAllowanceText}
+            <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+              {surge.badges.peakDinnerText}
             </span>
           )}
         </div>
@@ -1182,145 +1174,82 @@ function OfferCard({
             className={`flex size-8 items-center justify-center rounded-lg border transition ${
               muted
                 ? "border-border bg-muted/40 text-muted-foreground"
-                : "border-red-200 bg-[#E23744]/10 text-[#E23744] animate-pulse"
+                : "border-red-200 bg-[#E23744]/10 text-[#E23744]"
             }`}
-            title={muted ? "Unmute Dispatch Siren" : "Mute Siren"}
-            aria-label={muted ? "Unmute Dispatch Siren" : "Mute Siren"}
+            title={muted ? "Unmute Dispatch Alert" : "Mute"}
+            aria-label={muted ? "Unmute Dispatch Alert" : "Mute"}
           >
             {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
           </button>
 
           {/* 30-Second Pulsing Countdown Timer */}
           <div
-            className={`flex items-center gap-1.5 rounded-xl border px-3 py-1 font-display font-extrabold tabular-nums text-lg ${
+            className={`flex items-center gap-1 rounded-xl px-2.5 py-1 font-display font-extrabold tabular-nums text-sm ${
               isCritical
-                ? "border-rose-500 bg-rose-500/20 text-rose-400 animate-bounce"
+                ? "bg-rose-500/20 text-rose-500 animate-bounce"
                 : isUrgent
-                  ? "border-amber-500 bg-amber-500/20 text-amber-400 animate-pulse"
-                  : "border-red-200 bg-[#E23744]/15 text-[#E23744]"
+                  ? "bg-amber-500/20 text-amber-500 animate-pulse"
+                  : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
             }`}
           >
-            <Clock3 className="size-4" />
+            <Clock3 className="size-3.5" />
             <span>{remaining}s</span>
           </div>
         </div>
       </div>
 
-      {/* Guaranteed Order Earnings Floor Banner */}
-      <div className="rounded-2xl border border-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 p-4 rounded-2xl shadow-xs">
-        <div className="flex items-center justify-between">
+      {/* Payout & Distance Card */}
+      <div className="rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/30 p-4 shadow-xs">
+        <div className="flex items-baseline justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-wider font-extrabold text-foreground">
-              Order Payout
-            </p>
-            <p className="mt-0.5 font-display text-3xl font-black tracking-tight text-emerald-800 dark:text-emerald-300">
+            <p className="text-[11px] font-semibold text-muted-foreground">Earning</p>
+            <p className="font-display text-3xl font-black text-emerald-700 dark:text-emerald-300">
               {formatPaise(offer.expectedPayoutPaise)}
             </p>
           </div>
           <div className="text-right">
-            <span className="inline-block rounded-full bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
-              Guaranteed
+            <p className="text-[11px] font-semibold text-muted-foreground">Total Distance</p>
+            <p className="font-mono text-lg font-bold text-foreground">
+              {routeKm.toFixed(1)} km
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Route Stops: Pickup & Drop */}
+      <div className="space-y-2 text-xs">
+        {/* Pickup */}
+        <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+              <Store className="size-3.5 text-amber-500" />
+              Pickup · {offer.approxDistanceKm.toFixed(1)} km
             </span>
+            <Badge tone="busy" className="text-[10px] font-bold">
+              {offer.restaurant.preparationStatus === "READY" ? "Ready" : "Prep ~8-10m"}
+            </Badge>
           </div>
+          <p className="font-display text-sm font-bold text-foreground">{offer.restaurant.name}</p>
+          <p className="text-[11px] text-muted-foreground truncate">{offer.restaurant.address || offer.restaurant.area}</p>
+          {offer.restaurant.specialPickupInstructions && (
+            <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+              Note: {offer.restaurant.specialPickupInstructions}
+            </p>
+          )}
         </div>
 
-        {/* Payout Components Breakdown */}
-        <div className="mt-3 grid grid-cols-2 gap-2 border-t border-emerald-200 pt-2 text-xs">
-          <div className="text-muted-foreground">
-            {payout.labels.baseFareText} ({payout.baseDistanceKm} km): <span className="font-mono text-foreground font-semibold">{formatPaise(payout.baseFarePaise)}</span>
+        {/* Drop */}
+        <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+              <MapPin className="size-3.5 text-blue-500" />
+              Drop · {(offer.estimatedTravelKm || Math.max(0, routeKm - offer.approxDistanceKm)).toFixed(1)} km
+            </span>
+            <Badge tone={offer.cod ? "cod" : "online"} className="text-[10px] font-bold">
+              {offer.cod ? `Collect ${formatPaise(offer.codAmountPaise)}` : "Prepaid"}
+            </Badge>
           </div>
-          <div className="text-muted-foreground text-right">
-            {payout.labels.distanceRateText} ({extraKm.toFixed(1)} km): <span className="font-mono text-foreground font-semibold">{formatPaise(distanceComponentPaise)}</span>
-          </div>
-        </div>
-        {surge.isWeatherAllowanceActive && (
-          <div className="mt-1 flex items-center justify-between text-xs text-sky-400 border-t border-emerald-200 pt-1">
-            <span>🌧️ {surge.badges.weatherAllowanceText}</span>
-            <span className="font-mono font-semibold">+{formatPaise(surge.weatherAllowancePaise)}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Exact Dispatch Metrics: Pickup Distance, Delivery Distance, Estimated Prep, Guaranteed Payout */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-        <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Pickup</p>
-          <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{offer.approxDistanceKm.toFixed(1)} km</p>
-          <p className="text-[9px] text-muted-foreground">To Restaurant</p>
-        </div>
-        <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Drop</p>
-          <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{(offer.estimatedTravelKm || Math.max(0, offer.estimatedTotalRouteKm - offer.approxDistanceKm)).toFixed(1)} km</p>
-          <p className="text-[9px] text-muted-foreground">To Customer</p>
-        </div>
-        <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Prep Time</p>
-          <p className="mt-0.5 font-mono text-sm font-extrabold text-amber-400">
-            {offer.restaurant.preparationStatus === "READY" ? "Ready" : "~8-10m"}
-          </p>
-          <p className="text-[9px] text-muted-foreground">Kitchen</p>
-        </div>
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Fare</p>
-          <p className="mt-0.5 font-mono text-sm font-extrabold text-emerald-500 dark:text-emerald-300">{formatPaise(offer.expectedPayoutPaise)}</p>
-          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">Guaranteed</p>
-        </div>
-      </div>
-
-      {/* Restaurant Details Card */}
-      <div className="rounded-xl border border-border bg-muted/20 p-3.5 space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-[#E23744]">
-              <Store className="size-4" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Pickup</p>
-              <h3 className="font-display text-base font-bold text-foreground leading-tight">{offer.restaurant.name}</h3>
-            </div>
-          </div>
-          <Badge tone="busy" className="text-[10px] font-bold">
-            {offer.restaurant.preparationStatus}
-          </Badge>
-        </div>
-
-        <p className="text-xs text-muted-foreground pl-10">
-          {offer.restaurant.address || offer.restaurant.area}
-        </p>
-
-        {offer.restaurant.specialPickupInstructions && (
-          <p className="text-xs text-amber-300/90 bg-amber-500/10 border-l-2 border-amber-500 p-2 rounded-r-md">
-            <strong>Pickup Note:</strong> {offer.restaurant.specialPickupInstructions}
-          </p>
-        )}
-      </div>
-
-      {/* Customer Destination Card */}
-      <div className="rounded-xl border border-border bg-muted/20 p-3.5 space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400">
-              <MapPin className="size-4" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Drop</p>
-              <h3 className="font-display text-base font-bold text-foreground leading-tight">{offer.dropArea}</h3>
-            </div>
-          </div>
-          <Badge tone={offer.cod ? "cod" : "online"}>
-            {offer.cod ? `COD ${formatPaise(offer.codAmountPaise)}` : "Prepaid"}
-          </Badge>
-        </div>
-
-        <div className="flex items-center justify-between text-xs pt-1 pl-10">
-          <a
-            href={mapsPickupUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 font-semibold text-primary underline"
-          >
-            Preview Route in Maps <ExternalLink className="size-3" />
-          </a>
+          <p className="font-display text-sm font-bold text-foreground">{offer.dropArea}</p>
         </div>
       </div>
 
