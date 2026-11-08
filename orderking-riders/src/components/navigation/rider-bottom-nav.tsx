@@ -1,8 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Banknote,
-  CalendarClock,
   House,
+  ReceiptText,
   UserCheck,
   Wallet,
 } from "lucide-react";
@@ -26,7 +26,7 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
   return (
     <nav
       role="navigation"
-      aria-label="Order King Fleet Partner Navigation"
+      aria-label="Delivery Partner Navigation"
       className="fixed inset-x-0 bottom-2.5 sm:bottom-4 z-40 pointer-events-none mx-auto max-w-md px-2.5 sm:px-4"
     >
       <div className="pointer-events-auto relative rounded-[28px] bg-white/95 backdrop-blur-2xl border border-gray-200 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.12),inset_0_1px_1px_0_rgba(255,255,255,0.8)] px-1.5 pt-1.5 pb-2 transition-all">
@@ -78,10 +78,10 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
             </Link>
           </li>
 
-          {/* 2. GIGS */}
+          {/* 2. ORDERS */}
           <li className="w-full flex justify-center">
             <Link
-              to="/trips"
+              to="/history"
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isTripsActive
@@ -97,10 +97,10 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
                     : "group-hover:bg-gray-100",
                 )}
               >
-                <CalendarClock className="size-5" />
+                <ReceiptText className="size-5" />
               </div>
               <span className="mt-1 text-[10.5px] tracking-tight leading-none">
-                Gigs
+                Orders
               </span>
               {isTripsActive && (
                 <span className="size-1 rounded-full bg-[#E23744] mt-1 shadow-[0_0_6px_rgba(226,55,68,1)]" />

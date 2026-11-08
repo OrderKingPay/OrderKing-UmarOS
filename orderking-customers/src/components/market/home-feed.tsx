@@ -679,7 +679,7 @@ export function HomeFeed({
                           : "Your Location"}
                       </span>
                       <span className="text-[11px] text-gray-600 block truncate font-medium">
-                        Delivery is currently unavailable in this area.
+                        Food delivery is not available in your location, kindly update your location.
                       </span>
                     </div>
                   </div>
