@@ -1,16 +1,24 @@
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 
 console.log("=== INITIATING CLOUDFLARE PAGES WRANGLER DEPLOYMENT ===");
+
+const nodeExe = existsSync("C:\\Program Files\\nodejs\\node.exe")
+  ? "C:\\Program Files\\nodejs\\node.exe"
+  : process.execPath;
+
+const wranglerJs = resolve(process.cwd(), "node_modules/wrangler/bin/wrangler.js");
+
 let deployed = false;
 
 for (let i = 1; i <= 4; i++) {
   console.log(`\n[Deploy Attempt ${i}/4]...`);
   const res = spawnSync(
-    "npx",
-    ["wrangler", "pages", "deploy", "orderking-customers/dist", "--project-name=orderking-customers", "--branch=main", "--commit-dirty=true"],
+    nodeExe,
+    [wranglerJs, "pages", "deploy", "orderking-customers/dist", "--project-name=orderking-customers", "--branch=main", "--commit-dirty=true"],
     {
       stdio: "inherit",
-      shell: true,
       env: { ...process.env, CLOUDFLARE_API_TIMEOUT: "60000" }
     }
   );
@@ -21,7 +29,7 @@ for (let i = 1; i <= 4; i++) {
     break;
   }
   console.log(`[Attempt ${i} exited with code ${res.status}. Retrying in 4s...]`);
-  spawnSync("node", ["-e", "setTimeout(() => {}, 4000)"], { shell: true });
+  spawnSync(nodeExe, ["-e", "setTimeout(() => {}, 4000)"]);
 }
 
 if (!deployed) {

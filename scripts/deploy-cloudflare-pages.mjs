@@ -39,7 +39,12 @@ try {
     ...(API_TOKEN ? { CLOUDFLARE_API_TOKEN: API_TOKEN } : {})
   };
 
-  const cmd = `npx wrangler pages deploy "${distPath}" --project-name="${PROJECT_NAME}" --branch=main --commit-dirty=true`;
+  const nodeExe = existsSync("C:\\Program Files\\nodejs\\node.exe")
+    ? '"C:\\Program Files\\nodejs\\node.exe"'
+    : `"${process.execPath}"`;
+  const wranglerJs = `"${resolve(process.cwd(), "node_modules/wrangler/bin/wrangler.js")}"`;
+
+  const cmd = `${nodeExe} ${wranglerJs} pages deploy "${distPath}" --project-name="${PROJECT_NAME}" --branch=main --commit-dirty=true`;
   console.log(`Executing: ${cmd}\n`);
   execSync(cmd, { stdio: 'inherit', env });
   console.log(`\n✅ [SUCCESS] Deployment of ${PROJECT_NAME} to Cloudflare Pages completed!`);
