@@ -126,4 +126,28 @@ describe("Partner King AI Autonomous Multilingual Action Dispatcher", () => {
       })
     );
   });
+
+  it("handles storefront status check and why no orders queries with authentic diagnostics", async () => {
+    const res = await tryExecutePartnerAiCommand(
+      "Why am I not receiving orders right now? Check my storefront status.",
+      baseContext
+    );
+
+    expect(res.handled).toBe(true);
+    expect(res.action).toBe("STOREFRONT_STATUS");
+    expect(res.replyText).toContain("Storefront Status Check");
+    expect(res.replyText).toContain("ONLINE & ACCEPTING ORDERS");
+    expect(res.replyText).toContain("2 active dish(es) listed");
+
+    const hiRes = await tryExecutePartnerAiCommand(
+      "order kyu nahi aa raha hai? storefront status check karo",
+      {
+        ...baseContext,
+        languageCode: "hi",
+      }
+    );
+    expect(hiRes.handled).toBe(true);
+    expect(hiRes.action).toBe("STOREFRONT_STATUS");
+    expect(hiRes.replyText).toContain("स्टोर स्थिति जांच");
+  });
 });

@@ -183,10 +183,8 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     {
       id: "init",
       sender: "spark",
-      text: "OrderKing Partner Assistant is ready across 10 Indian languages. Check live orders, menu stock, prep timings, and daily payout calculations.",
+      text: "Hello! How can I help you today with your kitchen orders, menu items, prep timing, or daily bank settlements?",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      provenanceNote:
-        "Source: Your restaurant's live menu catalog, configured prep times, dashboard state, and verified settlement ledger.",
     },
   ]);
   const [inputQuery, setInputQuery] = useState("");
@@ -557,12 +555,11 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           sender: "spark",
           text:
             activeLang.code === "bn"
-              ? "নমস্কার! আপনার রেস্তোরাঁর লাইভ অর্ডার, মেনু বা পেমেন্ট সংক্রান্ত যে কোনো প্রশ্ন আমাকে জিজ্ঞাসা করতে পারেন।"
+              ? "সহযোগী সেবার সাথে সংযোগ স্থাপন করা যায়নি। অনুগ্রহ করে সংযোগ পরীক্ষা করে পুনরায় চেষ্টা করুন।"
               : activeLang.code === "hi"
-                ? "नमस्ते! अपने रेस्टोरेंट के लाइव ऑर्डर, मेनू या पेआउट के बारे में मुझसे कोई भी प्रश्न पूछें।"
-                : "Hello! I am your OrderKing partner assistant. Feel free to ask about your live orders, menu catalog, kitchen prep pace, or daily payout ledgers.",
+                ? "सहायक सेवा से संपर्क नहीं हो सका। कृपया अपना कनेक्शन जांचें या पुनः प्रयास करें।"
+                : "Unable to reach the assistant right now. Please check your network connection or try again.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          provenanceNote: "Partner Assistant",
         },
       ]);
     } finally {
@@ -702,42 +699,37 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     >
       <div className="relative flex h-[780px] max-h-[94vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-amber-500/30 bg-[#121214] text-slate-100 shadow-2xl break-words text-wrap">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 bg-[#18181B] px-4 py-3">
+        <div className="flex items-center justify-between border-b border-zinc-800 bg-[#18181B] px-4 py-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-black">
-              <Sparkles className="size-5" />
+            <div className="flex size-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+              <Sparkles className="size-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span id="spark-modal-title" className="text-sm font-extrabold tracking-wide text-white">
-                  OrderKing Partner Assistant
+                <span id="spark-modal-title" className="text-sm font-bold text-white">
+                  Partner Assistant
                 </span>
-                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                  10 INDIAN LANGUAGES
+                <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+                  <span className="size-1.5 rounded-full bg-emerald-400" />
+                  Online
                 </span>
               </div>
-              <span className="mt-0.5 block text-[11px] text-zinc-400">
-                Your Kitchen Partner: Live Orders · Transparent Payouts · Menu Quality · Growth Insights
-              </span>
+              {vendor.selected?.restaurantName && (
+                <span className="block text-[11px] text-zinc-400 truncate max-w-xs">
+                  {vendor.selected.restaurantName}
+                </span>
+              )}
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowScheduleDrawer((s) => !s)}
-              className="inline-flex items-center gap-1 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-xs font-semibold text-zinc-200 hover:bg-zinc-800"
-            >
-              <CalendarClock className="size-3.5 text-amber-400" />
-              <span>Quiet Hours ({preferredSlot.split(" ")[0]})</span>
-            </button>
             <div className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-xs">
-              <Globe className="size-3.5 text-amber-400" />
+              <Globe className="size-3.5 text-zinc-400" />
               <select
                 aria-label="Select Official Benchmark Language"
                 value={activeLang.code}
                 onChange={(e) => handleSelectLanguage(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-white focus:outline-none"
+                className="bg-transparent text-xs text-white focus:outline-none"
               >
                 {SPARK_INDIAN_LANGUAGES.map((l) => (
                   <option key={l.code} value={l.code} className="bg-zinc-900 text-white">
@@ -757,379 +749,20 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           </div>
         </div>
 
-        {/* Collapsible Quiet-Hours & Advisory Schedule Customizer */}
-        {showScheduleDrawer ? (
-          <div className="border-b border-zinc-800 bg-zinc-950 px-4 py-3 text-xs space-y-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="font-bold text-amber-300">
-                🕒 Chef Advisory Schedule &amp; Kitchen Rush Quiet Hours
-              </span>
-              <span className="text-[11px] text-zinc-400">
-                Saved to local kitchen profile · Playable anytime on demand
-              </span>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-3">
-              <div className="space-y-1">
-                <label className="flex items-center gap-1.5 text-[11px] text-zinc-300">
-                  <input
-                    type="checkbox"
-                    checked={lunchQuiet}
-                    onChange={(e) => {
-                      setLunchQuiet(e.target.checked);
-                      saveSchedulePrefs({
-                        lunchQuietHours: e.target.checked,
-                        dinnerQuietHours: dinnerQuiet,
-                        preferredSlot,
-                        focusTopic,
-                        languageCode: activeLang.code,
-                      });
-                    }}
-                  />
-                  <span>Quiet: Lunch Rush (12:30–15:30)</span>
-                </label>
-                <label className="flex items-center gap-1.5 text-[11px] text-zinc-300">
-                  <input
-                    type="checkbox"
-                    checked={dinnerQuiet}
-                    onChange={(e) => {
-                      setDinnerQuiet(e.target.checked);
-                      saveSchedulePrefs({
-                        lunchQuietHours: lunchQuiet,
-                        dinnerQuietHours: e.target.checked,
-                        preferredSlot,
-                        focusTopic,
-                        languageCode: activeLang.code,
-                      });
-                    }}
-                  />
-                  <span>Quiet: Dinner Rush (19:30–22:30)</span>
-                </label>
-              </div>
-              <div>
-                <div className="text-[10px] text-zinc-400 mb-1">Preferred Advisory Slot</div>
-                <select
-                  aria-label="Preferred Advisory Slot"
-                  value={preferredSlot}
-                  onChange={(e) => {
-                    const nextSlot = e.target.value as (typeof ADVISORY_SLOTS)[number];
-                    setPreferredSlot(nextSlot);
-                    saveSchedulePrefs({
-                      lunchQuietHours: lunchQuiet,
-                      dinnerQuietHours: dinnerQuiet,
-                      preferredSlot: nextSlot,
-                      focusTopic,
-                      languageCode: activeLang.code,
-                    });
-                  }}
-                  className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-[11px] text-white"
-                >
-                  {ADVISORY_SLOTS.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <div className="text-[10px] text-zinc-400 mb-1">Growth Focus Topic</div>
-                <select
-                  aria-label="Growth Focus Topic"
-                  value={focusTopic}
-                  onChange={(e) => {
-                    const nextTopic = e.target.value as (typeof FOCUS_TOPICS)[number];
-                    setFocusTopic(nextTopic);
-                    saveSchedulePrefs({
-                      lunchQuietHours: lunchQuiet,
-                      dinnerQuietHours: dinnerQuiet,
-                      preferredSlot,
-                      focusTopic: nextTopic,
-                      languageCode: activeLang.code,
-                    });
-                  }}
-                  className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-[11px] text-white"
-                >
-                  {FOCUS_TOPICS.map((tTopic) => (
-                    <option key={tTopic} value={tTopic}>
-                      {tTopic}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        ) : null}
-
-        {/* Mandatory Safeguard & Data Source Banner */}
-        <div className="border-b border-amber-500/30 bg-amber-950/25 px-4 py-2.5 space-y-1">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-300">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="size-4 shrink-0 text-amber-400" />
-              <span>Chef Review Required — No changes are applied without your explicit confirmation</span>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                handleSpeakText(
-                  buildVerifiedCatalogSummary("Full Storefront & Growth Playbook Briefing")
-                )
-              }
-              className="inline-flex items-center gap-1 rounded border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-300 hover:bg-amber-500/20"
-            >
-              <Volume2 className="size-3" /> 🔊 Listen in Your Language ({activeLang.nativeName})
-            </button>
-          </div>
-          <p className="text-[11px] text-zinc-300 flex items-center gap-1.5">
-            <Database className="size-3 shrink-0 text-emerald-400" />
-            <span>
-              <strong>Data Source:</strong> Recommendations are based directly on your live menu catalog, kitchen prep times, and verified order and earnings data.
-            </span>
-          </p>
-        </div>
-
-        {/* Grounded 4-Module Self-Service Diagnostics & Growth Bar */}
-        {menuQuery.data ? (
-          <div className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-3 space-y-2.5">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
-                Kitchen Insights &amp; Growth Playbook ({catalogRecommendations.totalItems} Dishes · Menu Score: {catalogRecommendations.storefrontConversionScore}%)
-              </span>
-              <span className="rounded-md border border-zinc-700 bg-zinc-800/80 px-2 py-0.5 text-[10px] font-mono text-zinc-300">
-                Weekly Orders: {catalogRecommendations.dayparts.map((d) => `${d.label}: ${d.orders}`).join(" · ")}
-              </span>
-            </div>
-
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 text-xs">
-              {/* 1. Storefront & Order Flow Check */}
-              <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-200 flex items-center gap-1">
-                    <Store className="size-3.5 text-emerald-400" /> Storefront Status
-                  </span>
-                  <span
-                    className={`font-mono text-[10px] font-bold ${
-                      dashQuery.data?.isOpen ? "text-emerald-400" : "text-rose-400"
-                    }`}
-                  >
-                    {dashQuery.data?.isOpen ? "OPEN" : "PAUSED"}
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-400">
-                  KYC: {dashQuery.data?.verificationStatus ?? "—"} · FSSAI:{" "}
-                  {dashQuery.data?.fssaiNumber ? "14-Digit Set" : "Missing"} · Pending:{" "}
-                  {dashQuery.data?.today.pending ?? 0}
-                </p>
-                {dashQuery.data && !dashQuery.data.isOpen && canHours ? (
-                  !confirmingResume ? (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmingResume(true)}
-                      className="w-full rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/20 transition"
-                    >
-                      Resume Outlet
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1.5 pt-1">
-                      <button
-                        type="button"
-                        disabled={applyingResume}
-                        onClick={() => void handleExplicitResumeOutlet()}
-                        className="flex-1 rounded-lg bg-emerald-600 px-2 py-1 text-[11px] font-bold text-white hover:bg-emerald-500"
-                      >
-                        {applyingResume ? "Resuming..." : "Confirm"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingResume(false)}
-                        className="rounded-lg border border-zinc-700 px-2 py-1 text-[11px] text-zinc-300 hover:bg-zinc-800"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )
-                ) : null}
-              </div>
-
-              {/* 2. Stock Availability & Revenue Guard */}
-              <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-200 flex items-center gap-1">
-                    <AlertCircle className="size-3.5 text-amber-400" /> Stock &amp; Revenue Guard
-                  </span>
-                  <span className="font-mono text-[11px] text-amber-300">
-                    {catalogRecommendations.outOfStock.length} Sold Out
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-400">
-                  {catalogRecommendations.outOfStock.length > 0
-                    ? `Est. Leakage: -${formatINR(catalogRecommendations.estimatedDailyLeakagePaise)}/day`
-                    : `All ${catalogRecommendations.inStock.length} dishes in stock (₹0 leakage).`}
-                </p>
-                {catalogRecommendations.outOfStock.length > 0 && canAvail ? (
-                  !confirmingRestock ? (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmingRestock(true)}
-                      className="w-full rounded-lg border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300 hover:bg-amber-500/20 transition"
-                    >
-                      Restore Stock ({catalogRecommendations.outOfStock.length})
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1.5 pt-1">
-                      <button
-                        type="button"
-                        disabled={applyingRestock}
-                        onClick={() => void handleExplicitRestockConfirmation()}
-                        className="flex-1 rounded-lg bg-emerald-600 px-2 py-1 text-[11px] font-bold text-white hover:bg-emerald-500"
-                      >
-                        {applyingRestock ? "Applying..." : "Confirm"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingRestock(false)}
-                        className="rounded-lg border border-zinc-700 px-2 py-1 text-[11px] text-zinc-300 hover:bg-zinc-800"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )
-                ) : null}
-              </div>
-
-              {/* 3. Prep Time SLA & Peak Rush Mode */}
-              <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-200 flex items-center gap-1">
-                    <Clock className="size-3.5 text-emerald-400" /> Prep Time &amp; Rush Mode
-                  </span>
-                  <span className="font-mono text-[11px] text-zinc-300">
-                    Avg {catalogRecommendations.avgPrepMinutes}m
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-400">
-                  {catalogRecommendations.missingPrepTime.length > 0
-                    ? `${catalogRecommendations.missingPrepTime.length} dish(es) unset.`
-                    : `Standard (20m) or Peak Rush (35m) buffer.`}
-                </p>
-                {catalogRecommendations.missingPrepTime.length > 0 && canEdit ? (
-                  !confirmingPrepSla ? (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmingPrepSla(true)}
-                      className="w-full rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/20 transition"
-                    >
-                      Set 20m SLA ({catalogRecommendations.missingPrepTime.length})
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1.5 pt-1">
-                      <button
-                        type="button"
-                        disabled={applyingPrepSla}
-                        onClick={() => void handleExplicitPrepSlaConfirmation()}
-                        className="flex-1 rounded-lg bg-emerald-600 px-2 py-1 text-[11px] font-bold text-white hover:bg-emerald-500"
-                      >
-                        {applyingPrepSla ? "Saving..." : "Confirm 20m"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingPrepSla(false)}
-                        className="rounded-lg border border-zinc-700 px-2 py-1 text-[11px] text-zinc-300 hover:bg-zinc-800"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )
-                ) : canHours ? (
-                  confirmingThrottle === null ? (
-                    <div className="flex gap-1 pt-0.5">
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingThrottle("NORMAL")}
-                        className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 px-2 py-1 text-[10px] font-semibold text-zinc-200 hover:bg-zinc-700"
-                      >
-                        20m Normal
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingThrottle("RUSH")}
-                        className="flex-1 rounded-lg border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-[10px] font-semibold text-amber-300 hover:bg-amber-500/20"
-                      >
-                        35m Rush
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1.5 pt-1">
-                      <button
-                        type="button"
-                        disabled={applyingThrottle}
-                        onClick={() => void handleExplicitThrottleMode(confirmingThrottle)}
-                        className="flex-1 rounded-lg bg-emerald-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-emerald-500"
-                      >
-                        {applyingThrottle
-                          ? "Applying..."
-                          : `Confirm ${confirmingThrottle === "RUSH" ? "35m" : "20m"}`}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingThrottle(null)}
-                        className="rounded-lg border border-zinc-700 px-2 py-1 text-[10px] text-zinc-300 hover:bg-zinc-800"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )
-                ) : null}
-              </div>
-
-              {/* 4. Order Value & Payout Summary */}
-              <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-zinc-200 flex items-center gap-1">
-                    <TrendingUp className="size-3.5 text-sky-400" /> Order Value &amp; Payout
-                  </span>
-                  <span className="font-mono text-[11px] text-emerald-400">
-                    {formatINR(settlementsQuery.data?.currentPayablePaise ?? 0)}
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-400">
-                  AOV {formatINR(catalogRecommendations.liveAovPaise)} → Target ₹
-                  {catalogRecommendations.recommendedThresholdRupees} Offer (+25% lift)
-                </p>
-                <div className="flex items-center justify-between text-[10px] text-zinc-400">
-                  <span className="flex items-center gap-1">
-                    <Wallet className="size-3 text-sky-400 shrink-0" />
-                    {catalogRecommendations.activePromosCount} Active Promo
-                  </span>
-                  <Link
-                    to="/promotions"
-                    onClick={onClose}
-                    className="font-semibold text-amber-400 underline"
-                  >
-                    Launch Offer →
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
-
         {/* Quick Query Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto border-b border-zinc-800/80 bg-zinc-900/60 px-4 py-2">
+        <div className="flex items-center gap-2 overflow-x-auto border-b border-zinc-800 bg-[#141416] px-4 py-2 text-xs">
           {[
-            ["⚖️ Dispute Resolution", "Review customer dispute: Food container spilled during transit vs missing items. Protect restaurant earnings from logistics fault."],
-            ["✨ Menu Studio", "Suggest appetizing dish descriptions, dietary allergen tags, and portion adjustments for signature dishes."],
-            ["📊 Daily Shift Summary", "Generate today's shift report and 9(5) GST tax recon with net payout."],
-            ["Why No Orders?", "Why am I not receiving orders right now? Check my storefront status."],
-            ["Order Value & Growth", "How can I increase my Average Order Value and prevent revenue loss from sold-out items?"],
-            ["Neighborhood Demand", "How do I capture more orders during Breakfast, Lunch, Snacks, Dinner, and Late-Night in my neighborhood?"],
-            ["Payout & Tax Breakdown", "Show my verified payout, GST Sec 9(5), and withholding tax breakdown"],
-            ["Menu Completeness", "Which dishes in my current menu catalog would benefit from prep time or description updates?"],
+            ["Storefront Status", "Why am I not receiving orders right now? Check my storefront status."],
+            ["Today's Sales", "Show today's orders and daily payout summary"],
+            ["Rush Mode", "Set kitchen rush mode buffer to 35m"],
+            ["Support Ticket", "Create a support ticket for partner assistance"],
           ].map(([label, query]) => (
             <button
               key={label}
               type="button"
               onClick={() => void handleSend(query)}
               disabled={sending}
-              className="whitespace-nowrap rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1 text-[11px] font-semibold text-zinc-300 transition hover:bg-zinc-700 hover:text-white disabled:opacity-50"
+              className="whitespace-nowrap rounded-lg border border-zinc-700 bg-zinc-800/80 px-3 py-1 text-xs font-medium text-zinc-300 transition hover:bg-zinc-700 hover:text-white disabled:opacity-50"
             >
               {label}
             </button>
@@ -1195,26 +828,21 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                     </Button>
                   </div>
                 )}
-
+              </div>
+              <div className="mt-1 flex items-center gap-2 px-1 text-[10px] text-zinc-500">
+                <span>{msg.timestamp}</span>
                 {msg.sender === "spark" && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800 pt-2 text-[10px] text-zinc-400">
-                    <div className="space-y-0.5">
-                      <div className="font-semibold text-amber-400">
-                        Chef Review Required — No changes are applied without your explicit confirmation
-                      </div>
-                      {msg.provenanceNote ? <div>{msg.provenanceNote}</div> : null}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleSpeakText(msg.text)}
-                      className="inline-flex items-center gap-1 rounded border border-zinc-700 bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-300 hover:bg-zinc-700"
-                    >
-                      <Volume2 className="size-3" /> 🔊 Listen in Your Language ({activeLang.nativeName})
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSpeakText(msg.text)}
+                    className="text-zinc-500 hover:text-zinc-300 transition"
+                    title="Listen"
+                    aria-label="Listen"
+                  >
+                    <Volume2 className="size-3" />
+                  </button>
                 )}
               </div>
-              <span className="mt-1 px-1 text-[10px] text-zinc-500">{msg.timestamp}</span>
             </div>
           ))}
         </div>
@@ -1262,7 +890,13 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                 void handleSend(inputQuery);
               }
             }}
-            placeholder={`Ask in ${activeLang.nativeName} (${activeLang.name}) about menu, prep times, or payouts...`}
+            placeholder={
+              activeLang.code === "hi"
+                ? "ऑर्डर, मेनू, तैयारी समय या पेआउट के बारे में पूछें..."
+                : activeLang.code === "bn"
+                  ? "অর্ডার, মেনু, রান্নার সময় বা পেমেন্ট নিয়ে প্রশ্ন করুন..."
+                  : "Ask about storefront status, menu, prep times, or payouts..."
+            }
             className="h-10 flex-1 border-zinc-700 bg-zinc-900 text-xs text-white placeholder:text-zinc-500 sm:text-sm"
           />
           <Button
@@ -1272,7 +906,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
             className="h-10 bg-amber-500 px-4 text-xs font-bold text-black hover:bg-amber-400"
           >
             <Send className="mr-1.5 size-3.5" />
-            {sending ? "Analyzing…" : `Send (${activeLang.nativeName})`}
+            {sending ? "Sending..." : "Send"}
           </Button>
         </div>
       </div>

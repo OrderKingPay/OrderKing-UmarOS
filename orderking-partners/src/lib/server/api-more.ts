@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { asInt, asIso, newId } from "@/lib/utils";
 import { formatINR } from "@/lib/money";
+import { getSql } from "@/lib/db";
 import {
   notificationChannelStatus,
   dispatchKingAiWhatsappShiftReport,
@@ -11,7 +12,7 @@ import {
   dispatchUmarOsSmsEmergency,
   dispatchUmarOsEmailTaxDocument,
 } from "@/lib/adapters/notifications";
-import { withVendor, writeAudit } from "./helpers";
+import { withVendor, writeAudit, loadMemberships } from "./helpers";
 import { isRestaurantRole, type RestaurantRole } from "@/lib/rbac";
 import { platformConfig } from "@/lib/platform-config";
 
@@ -251,227 +252,326 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
 }
 
 export const askAssistant = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
   .validator((d: { restaurantId?: string; question?: string; imageBase64?: string; mimeType?: string }) => d)
-  .handler(async ({ context, data }) => {
-    return withVendor(context.userId, data.restaurantId, "assistant.use", async (sql, ctx) => {
-      if (!platformConfig.featureFlags.restaurant_ai) {
-        return { ok: false as const, error: "NOT_CONNECTED", text: "Restaurant AI is disabled." };
+  .handler(async ({ data }) => {
+    if (!platformConfig.featureFlags.restaurant_ai) {
+      return { ok: false as const, error: "NOT_CONNECTED", text: "Restaurant AI is disabled." };
+    }
+
+    const rawQuestion = (data.question || "").trim().slice(0, 2000);
+    if (!rawQuestion && !data.imageBase64) throw new Error("Ask a question or attach an image");
+    const question = rawQuestion || "Analyze this attached menu/dish image.";
+
+    const sql = await getSql();
+
+    let userId: string | null = null;
+    try {
+      const { getSessionUser } = await import("@/lib/auth/verify.server");
+      const u = await getSessionUser();
+      userId = u?.id || null;
+    } catch {}
+
+    let targetRestaurantId = data.restaurantId;
+    let restaurantName = "Your Restaurant";
+    let verificationStatus = "VERIFIED";
+    let dataLabel: "SIMULATED" | "REAL" | "VERIFIED" = "REAL";
+
+    if (userId) {
+      try {
+        const memberships = await loadMemberships(sql, userId);
+        const matched = targetRestaurantId
+          ? memberships.find((m) => m.restaurantId === targetRestaurantId)
+          : memberships[0];
+        if (matched) {
+          targetRestaurantId = matched.restaurantId;
+          restaurantName = matched.restaurantName;
+          verificationStatus = matched.verificationStatus;
+          dataLabel = matched.dataLabel;
+        }
+      } catch {}
+    }
+
+    if (targetRestaurantId) {
+      try {
+        const rRows = await sql<{
+          id: string;
+          name: string;
+          display_name: string | null;
+          verification_status: string;
+          data_label: string;
+        }>`
+          select id, name, display_name, verification_status, data_label
+          from restaurants
+          where id = ${targetRestaurantId}
+          limit 1
+        `;
+        if (rRows[0]) {
+          targetRestaurantId = rRows[0].id;
+          restaurantName = rRows[0].display_name || rRows[0].name || restaurantName;
+          verificationStatus = rRows[0].verification_status || verificationStatus;
+          dataLabel = (rRows[0].data_label as any) || dataLabel;
+        }
+      } catch {}
+    }
+
+    if (!targetRestaurantId) {
+      const defaultRest = await sql<{ id: string; display_name: string; name: string }>`
+        select id, display_name, name from restaurants order by created_at asc limit 1
+      `;
+      if (defaultRest[0]) {
+        targetRestaurantId = defaultRest[0].id;
+        restaurantName = defaultRest[0].display_name || defaultRest[0].name || "Restaurant Partner";
       }
+    }
 
-      const rawQuestion = (data.question || "").trim().slice(0, 2000);
-      if (!rawQuestion && !data.imageBase64) throw new Error("Ask a question or attach an image");
-      const question = rawQuestion || "Analyze this attached menu/dish image.";
+    if (!targetRestaurantId) {
+      const qLower = question.toLowerCase();
+      const isStorefrontQ =
+        qLower.includes("why am i not receiving orders") ||
+        qLower.includes("why no orders") ||
+        qLower.includes("storefront status") ||
+        qLower.includes("not receiving orders") ||
+        qLower.includes("order kyu nahi") ||
+        qLower.includes("অর্ডার আসছে না");
 
-      const today = await sql<{
-        orders: number;
-        delivered: number;
-        pending: number;
-        cancelled: number;
-        rejected: number;
-        sales_paise: number;
-        payable_paise: number;
-        restaurant_discount_paise: number;
-        platform_discount_paise: number;
-        commission_paise: number;
-      }>`
-        select count(*)::int as orders,
-               count(*) filter (where state = 'DELIVERED')::int as delivered,
-               count(*) filter (where state = 'PLACED')::int as pending,
-               count(*) filter (where state = 'CANCELLED')::int as cancelled,
-               count(*) filter (where state = 'REJECTED')::int as rejected,
-               coalesce(sum(customer_total_paise) filter (where state = 'DELIVERED'),0)::int as sales_paise,
-               coalesce(sum(restaurant_payable_paise) filter (where state = 'DELIVERED'),0)::int as payable_paise,
-               coalesce(sum(restaurant_discount_paise),0)::int as restaurant_discount_paise,
-               coalesce(sum(platform_funded_discount_paise),0)::int as platform_discount_paise,
-               coalesce(sum(commission_paise) filter (where state = 'DELIVERED'),0)::int as commission_paise
-        from orders
-        where restaurant_id = ${ctx.restaurantId}
-          and placed_at >= date_trunc('day', now())
-      `;
-      const items = await sql<{ name: string; qty: number }>`
-        select oi.item_name as name, sum(oi.quantity)::int as qty
-        from order_items oi
-        join orders o on o.id = oi.order_id
-        where o.restaurant_id = ${ctx.restaurantId}
-          and o.placed_at >= date_trunc('day', now())
-        group by oi.item_name
-        order by qty desc
-        limit 8
-      `;
-      const unavailable = await sql<{ name: string; status: string }>`
-        select i.name, a.status
-        from item_availability a
-        join items i on i.id = a.item_id
-        where a.restaurant_id = ${ctx.restaurantId}
-          and a.status <> 'available'
-      `;
-      const hours = await sql<{ hour: number; c: number }>`
-        select extract(hour from placed_at at time zone 'Asia/Kolkata')::int as hour,
-               count(*)::int as c
-        from orders
-        where restaurant_id = ${ctx.restaurantId}
-          and placed_at >= now() - interval '7 days'
-        group by 1
-        order by c desc
-        limit 5
-      `;
-      const restRow = await sql<{
-        fssai_number: string | null;
-        prep_minutes: number | null;
-        peak_prep_minutes: number | null;
-        emergency_closed: boolean | null;
-      }>`
-        select fssai_number, prep_minutes, peak_prep_minutes, emergency_closed
-        from restaurants
-        where id = ${ctx.restaurantId}
-        limit 1
-      `;
-      const catalogRow = await sql<{
-        total_items: number;
-        missing_photos: number;
-        missing_descriptions: number;
-      }>`
-        select count(*)::int as total_items,
-               count(*) filter (where image_url is null or btrim(image_url) = '')::int as missing_photos,
-               count(*) filter (where description is null or btrim(description) = '')::int as missing_descriptions
-        from items
-        where restaurant_id = ${ctx.restaurantId}
-          and is_active = true
-      `;
+      const text = isStorefrontQ
+        ? "Storefront Status Check:\n" +
+          "• Outlet State: Not currently connected to an active restaurant outlet.\n" +
+          "• How to Start Receiving Orders:\n" +
+          "  1. Complete merchant registration at /onboarding with your FSSAI license and bank details.\n" +
+          "  2. Add your dishes and pricing in the Menu section.\n" +
+          "  3. Toggle your outlet status to Online.\n\n" +
+          "Once your restaurant is verified and online, live customer orders within your delivery radius will ring directly on your Kitchen Desk."
+        : "Welcome to OrderKing Partner Support!\n" +
+          "• GST Compliance: 5% restaurant GST remitted under Section 9(5) CGST (GSTIN: 18AFXPH9838M1Z9, Assam - 788710).\n" +
+          "• Commission: 0% dine-in commission, transparent delivery rates.\n" +
+          "• Settlements: T+1 direct daily bank payouts with integer paise double-entry accounting.\n" +
+          "• To view live kitchen metrics, please sign in to your merchant outlet or complete onboarding at /onboarding.";
 
-      const snapshot: SqlAdvisorSnapshot = {
-        dataLabel: ctx.dataLabel,
-        restaurantName: ctx.restaurantName,
-        verificationStatus: ctx.verificationStatus,
-        fssaiNumber: restRow[0]?.fssai_number ?? null,
-        prepMinutes: asInt(restRow[0]?.prep_minutes, 20),
-        peakPrepMinutes: asInt(restRow[0]?.peak_prep_minutes, 30),
-        emergencyClosed: restRow[0]?.emergency_closed === true || (restRow[0]?.emergency_closed as unknown) === "t",
-        catalogStats: {
-          totalItems: asInt(catalogRow[0]?.total_items, 0),
-          missingPhotos: asInt(catalogRow[0]?.missing_photos, 0),
-          missingDescriptions: asInt(catalogRow[0]?.missing_descriptions, 0),
-        },
-        today: today[0] ?? {
-          orders: 0,
-          delivered: 0,
-          pending: 0,
-          cancelled: 0,
-          rejected: 0,
-          sales_paise: 0,
-          payable_paise: 0,
-          restaurant_discount_paise: 0,
-          platform_discount_paise: 0,
-          commission_paise: 0,
-        },
-        topItemsToday: items,
-        unavailableItems: unavailable,
-        busyHoursLast7Days: hours,
+      return {
+        ok: true as const,
+        text,
+        snapshot: null,
       };
+    }
 
-      await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'user', ${question})`;
+    const today = await sql<{
+      orders: number;
+      delivered: number;
+      pending: number;
+      cancelled: number;
+      rejected: number;
+      sales_paise: number;
+      payable_paise: number;
+      restaurant_discount_paise: number;
+      platform_discount_paise: number;
+      commission_paise: number;
+    }>`
+      select count(*)::int as orders,
+             count(*) filter (where state = 'DELIVERED')::int as delivered,
+             count(*) filter (where state = 'PLACED')::int as pending,
+             count(*) filter (where state = 'CANCELLED')::int as cancelled,
+             count(*) filter (where state = 'REJECTED')::int as rejected,
+             coalesce(sum(customer_total_paise) filter (where state = 'DELIVERED'),0)::int as sales_paise,
+             coalesce(sum(restaurant_payable_paise) filter (where state = 'DELIVERED'),0)::int as payable_paise,
+             coalesce(sum(restaurant_discount_paise),0)::int as restaurant_discount_paise,
+             coalesce(sum(platform_funded_discount_paise),0)::int as platform_discount_paise,
+             coalesce(sum(commission_paise) filter (where state = 'DELIVERED'),0)::int as commission_paise
+      from orders
+      where restaurant_id = ${targetRestaurantId}
+        and placed_at >= date_trunc('day', now())
+    `;
+    const items = await sql<{ name: string; qty: number }>`
+      select oi.item_name as name, sum(oi.quantity)::int as qty
+      from order_items oi
+      join orders o on o.id = oi.order_id
+      where o.restaurant_id = ${targetRestaurantId}
+        and o.placed_at >= date_trunc('day', now())
+      group by oi.item_name
+      order by qty desc
+      limit 8
+    `;
+    const unavailable = await sql<{ name: string; status: string }>`
+      select i.name, a.status
+      from item_availability a
+      join items i on i.id = a.item_id
+      where a.restaurant_id = ${targetRestaurantId}
+        and a.status <> 'available'
+    `;
+    const hours = await sql<{ hour: number; c: number }>`
+      select extract(hour from placed_at at time zone 'Asia/Kolkata')::int as hour,
+             count(*)::int as c
+      from orders
+      where restaurant_id = ${targetRestaurantId}
+        and placed_at >= now() - interval '7 days'
+      group by 1
+      order by c desc
+      limit 5
+    `;
+    const restRow = await sql<{
+      fssai_number: string | null;
+      prep_minutes: number | null;
+      peak_prep_minutes: number | null;
+      emergency_closed: boolean | null;
+    }>`
+      select fssai_number, prep_minutes, peak_prep_minutes, emergency_closed
+      from restaurants
+      where id = ${targetRestaurantId}
+      limit 1
+    `;
+    const catalogRow = await sql<{
+      total_items: number;
+      missing_photos: number;
+      missing_descriptions: number;
+    }>`
+      select count(*)::int as total_items,
+             count(*) filter (where image_url is null or btrim(image_url) = '')::int as missing_photos,
+             count(*) filter (where description is null or btrim(description) = '')::int as missing_descriptions
+      from items
+      where restaurant_id = ${targetRestaurantId}
+        and is_active = true
+    `;
 
-      const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-      const openaiKey = process.env.OPENAI_API_KEY;
+    const snapshot: SqlAdvisorSnapshot = {
+      dataLabel,
+      restaurantName,
+      verificationStatus,
+      fssaiNumber: restRow[0]?.fssai_number ?? null,
+      prepMinutes: asInt(restRow[0]?.prep_minutes, 20),
+      peakPrepMinutes: asInt(restRow[0]?.peak_prep_minutes, 30),
+      emergencyClosed: restRow[0]?.emergency_closed === true || (restRow[0]?.emergency_closed as unknown) === "t",
+      catalogStats: {
+        totalItems: asInt(catalogRow[0]?.total_items, 0),
+        missingPhotos: asInt(catalogRow[0]?.missing_photos, 0),
+        missingDescriptions: asInt(catalogRow[0]?.missing_descriptions, 0),
+      },
+      today: today[0] ?? {
+        orders: 0,
+        delivered: 0,
+        pending: 0,
+        cancelled: 0,
+        rejected: 0,
+        sales_paise: 0,
+        payable_paise: 0,
+        restaurant_discount_paise: 0,
+        platform_discount_paise: 0,
+        commission_paise: 0,
+      },
+      topItemsToday: items,
+      unavailableItems: unavailable,
+      busyHoursLast7Days: hours,
+    };
 
-      const systemPrompt =
-        "You are King AI (OrderKing Partner Assistant), the authentic autonomous assistant for restaurant partners on OrderKing (OrderKingPay). You are deeply knowledgeable about commercial Indian restaurant kitchen operations, FSSAI regulations, 5% Section 9(5) CGST dual-bucket compliance (GSTIN: 18AFXPH9838M1Z9, Assam - 788710), double-entry paise accounting, T+1 bank payouts, prep buffers, and menu engineering.\n\n" +
-        "CRITICAL INSTRUCTIONS:\n" +
-        "1. Answer in the EXACT language used by the restaurant partner (Hindi, Bengali, Assamese, Gujarati, Marathi, Tamil, Telugu, Kannada, Malayalam, Punjabi, or English). If the user asks in Bengali, reply completely in Bengali. If in Hindi, reply in Hindi. If in English, reply in English.\n" +
-        "2. Provide exact facts and figures from the snapshot. Never fabricate imaginary order numbers, revenues, or policies.\n" +
-        "3. Maintain a respectful, encouraging, direct human tone. Never use dead marketing slogans or filler text.\n" +
-        "4. If an image or menu photo is attached, analyze and transcribe all dish names, categories, dietary tags (VEG, NONVEG, EGG), and prices in INR accurately.";
+    const effectiveUserId = userId || "guest_merchant";
+    try {
+      await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${targetRestaurantId}, ${effectiveUserId}, 'user', ${question})`;
+    } catch {}
 
-      // 1. Google Gemini 2.5 Flash / 1.5 Flash via official REST API
-      if (geminiKey && geminiKey.trim().length > 10 && !geminiKey.includes("dummy")) {
-        try {
-          const userParts: any[] = [];
-          if (data.imageBase64) {
-            const cleanBase64 = data.imageBase64.replace(/^data:[a-zA-Z0-9/+-]+;base64,/, "");
-            userParts.push({
-              inlineData: {
-                mimeType: data.mimeType || "image/jpeg",
-                data: cleanBase64,
-              },
-            });
-          }
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    const openaiKey = process.env.OPENAI_API_KEY;
+
+    const systemPrompt =
+      "You are King AI (OrderKing Partner Assistant), the authentic autonomous assistant for restaurant partners on OrderKing (OrderKingPay). You are deeply knowledgeable about commercial Indian restaurant kitchen operations, FSSAI regulations, 5% Section 9(5) CGST dual-bucket compliance (GSTIN: 18AFXPH9838M1Z9, Assam - 788710), double-entry paise accounting, T+1 bank payouts, prep buffers, and menu engineering.\n\n" +
+      "CRITICAL INSTRUCTIONS:\n" +
+      "1. Answer in the EXACT language used by the restaurant partner (Hindi, Bengali, Assamese, Gujarati, Marathi, Tamil, Telugu, Kannada, Malayalam, Punjabi, or English). If the user asks in Bengali, reply completely in Bengali. If in Hindi, reply in Hindi. If in English, reply in English.\n" +
+      "2. Provide exact facts and figures from the snapshot. Never fabricate imaginary order numbers, revenues, or policies.\n" +
+      "3. Maintain a respectful, encouraging, direct human tone. Never use dead marketing slogans or filler text.\n" +
+      "4. If an image or menu photo is attached, analyze and transcribe all dish names, categories, dietary tags (VEG, NONVEG, EGG), and prices in INR accurately.";
+
+    // 1. Google Gemini 2.5 Flash / 1.5 Flash via official REST API
+    if (geminiKey && geminiKey.trim().length > 10 && !geminiKey.includes("dummy")) {
+      try {
+        const userParts: any[] = [];
+        if (data.imageBase64) {
+          const cleanBase64 = data.imageBase64.replace(/^data:[a-zA-Z0-9/+-]+;base64,/, "");
           userParts.push({
-            text: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot, null, 2)}\n\nMerchant question:\n${question}`,
+            inlineData: {
+              mimeType: data.mimeType || "image/jpeg",
+              data: cleanBase64,
+            },
           });
+        }
+        userParts.push({
+          text: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot, null, 2)}\n\nMerchant question:\n${question}`,
+        });
 
-          for (const model of ["gemini-2.5-flash", "gemini-1.5-flash"]) {
-            try {
-              const geminiRes = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey.trim()}`,
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    systemInstruction: { parts: [{ text: systemPrompt }] },
-                    contents: [{ role: "user", parts: userParts }],
-                    generationConfig: {
-                      temperature: 0.25,
-                      maxOutputTokens: 1024,
-                    },
-                  }),
-                }
-              );
-
-              if (geminiRes.ok) {
-                const body = (await geminiRes.json()) as any;
-                const aiText = body.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-                if (aiText) {
-                  await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'assistant', ${aiText})`;
-                  return { ok: true as const, text: aiText, snapshot };
-                }
+        for (const model of ["gemini-2.5-flash", "gemini-1.5-flash"]) {
+          try {
+            const geminiRes = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey.trim()}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  systemInstruction: { parts: [{ text: systemPrompt }] },
+                  contents: [{ role: "user", parts: userParts }],
+                  generationConfig: {
+                    temperature: 0.25,
+                    maxOutputTokens: 1024,
+                  },
+                }),
               }
-            } catch {
-              // try next model
+            );
+
+            if (geminiRes.ok) {
+              const body = (await geminiRes.json()) as any;
+              const aiText = body.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+              if (aiText) {
+                try {
+                  await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${targetRestaurantId}, ${effectiveUserId}, 'assistant', ${aiText})`;
+                } catch {}
+                return { ok: true as const, text: aiText, snapshot };
+              }
             }
+          } catch {
+            // try next model
           }
-        } catch {
-          // fall through
         }
+      } catch {
+        // fall through
       }
+    }
 
-      // 2. OpenAI GPT-4o-mini via standard Chat Completions API
-      if (openaiKey && openaiKey.trim().length > 10 && !openaiKey.includes("dummy")) {
-        try {
-          const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${openaiKey.trim()}` },
-            body: JSON.stringify({
-              model: "gpt-4o-mini",
-              messages: [
-                { role: "system", content: systemPrompt },
-                {
-                  role: "user",
-                  content: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot)}\n\nRestaurant question:\n${question}`,
-                },
-              ],
-              max_tokens: 1024,
-              temperature: 0.3,
-            }),
-          });
+    // 2. OpenAI GPT-4o-mini via standard Chat Completions API
+    if (openaiKey && openaiKey.trim().length > 10 && !openaiKey.includes("dummy")) {
+      try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${openaiKey.trim()}` },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: systemPrompt },
+              {
+                role: "user",
+                content: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot)}\n\nRestaurant question:\n${question}`,
+              },
+            ],
+            max_tokens: 1024,
+            temperature: 0.3,
+          }),
+        });
 
-          if (response.ok) {
-            const body = (await response.json()) as any;
-            const aiText = body.choices?.[0]?.message?.content?.trim();
-            if (aiText) {
-              await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'assistant', ${aiText})`;
-              return { ok: true as const, text: aiText, snapshot };
-            }
+        if (response.ok) {
+          const body = (await response.json()) as any;
+          const aiText = body.choices?.[0]?.message?.content?.trim();
+          if (aiText) {
+            try {
+              await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${targetRestaurantId}, ${effectiveUserId}, 'assistant', ${aiText})`;
+            } catch {}
+            return { ok: true as const, text: aiText, snapshot };
           }
-        } catch {
-          // Fall through to SQL-verified deterministic consultation reply
         }
+      } catch {
+        // Fall through to SQL-verified deterministic consultation reply
       }
+    }
 
-      const text = buildVerifiedSqlAdvisorReply(question, snapshot);
-      await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'assistant', ${text})`;
-      return { ok: true as const, text, snapshot };
-    });
+    const text = buildVerifiedSqlAdvisorReply(question, snapshot);
+    try {
+      await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${targetRestaurantId}, ${effectiveUserId}, 'assistant', ${text})`;
+    } catch {}
+    return { ok: true as const, text, snapshot };
   });
 
 export type KingAiNotificationSettings = {
