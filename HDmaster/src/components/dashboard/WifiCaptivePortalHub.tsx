@@ -458,7 +458,7 @@ export function WifiCaptivePortalHub({
               onChange={(e) => setPortalTemplate(e.target.value as any)}
               className="w-full h-9 rounded-lg border border-slate-300 bg-white px-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
             >
-              <option value="orderking_voucher_splash">OrderKing Sovereign Voucher Splash</option>
+              <option value="orderking_voucher_splash">OrderKing Welcome Splash</option>
               <option value="interstitial_video_unlock">Interstitial Video Ad Unlock</option>
               <option value="quick_survey_perk">Quick 1-Question Survey Perk</option>
               <option value="minimal_fast_connect">Minimal Fast Connect Splash</option>
@@ -771,7 +771,7 @@ export function WifiCaptivePortalHub({
                   {previewUnlocked ? "Connected to Internet ✓" : "Claim Offer & Unlock Wi-Fi"}
                 </button>
                 <div className="text-[9px] text-slate-400">
-                  Powered by UmarOS Sovereign Radius Engine
+                  Powered by Umar OS Hotspot Engine
                 </div>
               </div>
             </div>
