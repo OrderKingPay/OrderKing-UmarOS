@@ -351,7 +351,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
       <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
         <div className="flex items-center gap-2">
           <Lock className="size-5 text-muted" />
-          <h3 className="text-sm font-black text-fg">Statutory Legal &amp; Compliance Hub</h3>
+          <h3 className="text-sm font-bold text-fg">Legal &amp; Compliance</h3>
         </div>
 
         <div className="space-y-2 text-xs text-muted">
@@ -373,7 +373,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
               <span className="text-[10px]">Third-Party Intermediary Safe Harbor Active</span>
             </div>
             <span className="text-[10px] text-primary font-extrabold bg-primary/10 px-2 py-0.5 rounded">
-              Statutory Shield
+              Verified Protection
             </span>
           </div>
 

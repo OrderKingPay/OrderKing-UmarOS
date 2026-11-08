@@ -225,7 +225,7 @@ export function PassengerDrawer({
               Sign In to Book Trip
             </h3>
             <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-              To reserve verified carrier seats with direct digital ticketing and sovereign digital gold rebates, please sign in to your OrderKing account. Guest checkout without verified KYC is not permitted.
+              To reserve verified carrier seats with direct digital ticketing, please sign in to your OrderKing account.
             </p>
           </div>
           <div className="pt-2 flex flex-col gap-2.5">
