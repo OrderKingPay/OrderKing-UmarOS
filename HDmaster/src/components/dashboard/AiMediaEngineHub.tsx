@@ -525,7 +525,7 @@ export function AiMediaEngineHub({
               </span>
               <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-0.5 font-medium text-secondary-foreground border border-border/50">
                 <DollarSign className="h-3 w-3 text-amber-500" />
-                ₹{form.bountyCashRewardInr} Bounty Drop
+                ₹{form.bountyCashRewardInr} Referral Drop
               </span>
             </div>
           </div>
@@ -748,7 +748,7 @@ export function AiMediaEngineHub({
                       }}
                       className="rounded bg-secondary/80 hover:bg-secondary px-2 py-1 text-[10px] font-medium text-foreground transition-colors"
                     >
-                      {p.rewardInr > 0 ? `₹${p.rewardInr} Bounty` : "B2B Pitch"}
+                      {p.rewardInr > 0 ? `₹${p.rewardInr} Reward` : "B2B Pitch"}
                     </button>
                   ))}
                 </div>
@@ -1099,7 +1099,7 @@ export function AiMediaEngineHub({
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-1.5 border-b border-border/50">
-                    <span className="text-muted-foreground">Bounty Offer</span>
+                    <span className="text-muted-foreground">Referral Offer</span>
                     <span className="font-bold text-amber-500">
                       ₹{activeRenderedVideo.bountyOfferInr} Instant Cash
                     </span>
@@ -1671,7 +1671,7 @@ export function AiMediaEngineHub({
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] pt-1 border-t border-border/50 text-muted-foreground">
-                      <span>Bounty: ₹{video.bountyOfferInr}</span>
+                      <span>Reward: ₹{video.bountyOfferInr}</span>
                       <span>Blasts: {video.blastCount.toLocaleString()}</span>
                     </div>
 

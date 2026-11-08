@@ -91,7 +91,7 @@ function CartPage() {
             Food delivery is currently restricted to active operational hubs. Enjoy standard fee UPI and nationwide bill payments on KingPay!
           </p>
           <Button asChild className="bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition">
-            <Link to="/king-pay">Open KingPay 👑</Link>
+            <Link to="/king-pay">Open KingPay</Link>
           </Button>
         </div>
       </CustomerShell>
@@ -108,20 +108,20 @@ function CartPage() {
       <div className="min-h-[85vh] bg-gradient-to-b from-amber-500/10 via-white to-amber-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-28 px-3 sm:px-6 py-6">
         <div className="max-w-3xl mx-auto space-y-6">
 
-          {/* Top Royal Banner */}
-          <div className="rounded-3xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 via-yellow-400/25 to-amber-600/15 p-4 sm:p-5 shadow-sm">
+          {/* Top Header */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-md text-xl">
-                  👑
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white font-bold text-lg">
+                  <ShoppingBag className="size-5" />
                 </div>
                 <div>
-                  <h1 className="font-display text-xl sm:text-2xl font-black text-zinc-950 dark:text-amber-100 tracking-tight">
+                  <h1 className="font-display text-xl font-bold text-slate-900 tracking-tight">
                     {t("cart.title") || "Your Cart"}
                   </h1>
                   {restaurantName && (
-                    <p className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                      Delivering fresh from <span className="text-amber-800 dark:text-amber-300 font-extrabold">{restaurantName}</span>
+                    <p className="text-xs text-slate-500">
+                      Delivering fresh from <span className="text-slate-900 font-semibold">{restaurantName}</span>
                     </p>
                   )}
                 </div>
@@ -130,13 +130,14 @@ function CartPage() {
               <button
                 type="button"
                 onClick={() => setScheduleModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-full bg-amber-400/30 hover:bg-amber-400/50 border border-amber-500/40 px-3 py-1.5 text-xs font-black text-amber-900 dark:text-amber-200 transition cursor-pointer active:scale-95 shadow-2xs"
+                className="flex items-center gap-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition cursor-pointer active:scale-95"
               >
                 <Clock className="size-3.5" />
                 <span>{scheduledTime ? `${scheduledTime.date} (${scheduledTime.timeSlot})` : "Schedule Delivery"}</span>
               </button>
             </div>
           </div>
+
           {/* Dynamic Ecosystem Shift Delivery Availability Banner */}
           <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 dark:bg-amber-950/20 px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold text-amber-950 dark:text-amber-200">
             <div className="flex items-center gap-2">

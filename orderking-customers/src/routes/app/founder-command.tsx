@@ -198,7 +198,7 @@ export function FounderCommandPage() {
         action: actionText,
         timestamp: "Just now",
         status: "SUCCESS",
-        detail: next ? "Emergency kill-switch engaged by founder" : "Normal operations restored by founder",
+        detail: next ? "Emergency pause engaged by administrator" : "Normal operations restored by administrator",
       },
       ...prev,
     ]);
@@ -1007,7 +1007,7 @@ export function FounderCommandPage() {
               {/* Killswitch */}
               <div className="rounded-xl border border-border bg-white/40 p-3 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-fg block">Emergency Platform Kill-Switch</span>
+                  <span className="text-xs font-bold text-fg block">Emergency Platform Pause Gate</span>
                   <span className="text-[10px] text-muted">Blocks all incoming orders/payments</span>
                 </div>
                 <button

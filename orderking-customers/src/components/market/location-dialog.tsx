@@ -332,7 +332,7 @@ export function LocationDialog({
           </div>
 
           <p className="mt-2 text-xs text-stone-600 leading-relaxed font-medium">
-            Explore authentic kitchens with <span className="font-bold text-amber-900">authentic menus</span> and <span className="font-bold text-emerald-800">direct chef delivery</span>.
+            Enter your delivery address to see restaurants delivering to your area.
           </p>
 
           {/* 1-Tap High-Accuracy GPS Auto-Detect Button */}
@@ -351,7 +351,7 @@ export function LocationDialog({
                   {locating ? "Detecting location..." : "Use current location"}
                 </span>
                 <span className="text-[10px] text-emerald-100 font-semibold block">
-                  Auto-detects nearest cloud kitchens in your radius
+                  Finds restaurants near your current location
                 </span>
               </div>
             </div>
@@ -384,7 +384,7 @@ export function LocationDialog({
           {filteredAreas !== null ? (
             <div className="mt-4 space-y-2">
               <span className="text-[11px] font-black uppercase tracking-wider text-stone-500">
-                Matching Dining Areas ({filteredAreas.length})
+                Matching Locations ({filteredAreas.length})
               </span>
               {filteredAreas.length === 0 ? (
                 /* Zero Dead-Ends Location Fallback */
@@ -395,12 +395,12 @@ export function LocationDialog({
                     </div>
                     <div>
                       <h4 className="text-xs font-black text-amber-950 uppercase tracking-tight">
-                        Zero Dead-Ends Delivery Assistance
+                        Area not yet serviceable
                       </h4>
                       <p className="text-[11px] text-stone-600 mt-0.5 leading-relaxed">
-                        Direct 25-minute hyper-local delivery is currently expanding to{" "}
+                        Delivery is not available in{" "}
                         <span className="font-bold text-stone-900 font-mono">"{searchQuery}"</span>.
-                        Here are the <strong>3 nearest active culinary hubs</strong> delivering to your zone:
+                        yet. Here are nearby available delivery zones:
                       </p>
                     </div>
                   </div>
@@ -408,7 +408,7 @@ export function LocationDialog({
                   {/* 3 Nearest Active Culinary Hubs with KM distance */}
                   <div className="space-y-2">
                     <span className="text-[10px] font-black uppercase tracking-wider text-amber-900/80 block">
-                      Recommended Active Culinary Hubs
+                      Nearby Available Zones
                     </span>
                     {(() => {
                       // Estimate reference coordinates
@@ -477,7 +477,7 @@ export function LocationDialog({
                             </div>
                           </div>
                           <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 shrink-0">
-                            Select Hub →
+                            Select Zone →
                           </span>
                         </button>
                       ));
@@ -505,10 +505,10 @@ export function LocationDialog({
                       className="flex flex-col items-start p-2.5 rounded-xl border border-amber-400/80 bg-amber-50/70 hover:bg-amber-100/80 text-left transition shadow-2xs cursor-pointer group"
                     >
                       <span className="text-[11px] font-black text-amber-950 flex items-center gap-1">
-                        <span>📅</span> Pre-Schedule Feast
+                        <span>📅</span> Schedule Advance Order
                       </span>
                       <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
-                        Schedule future bulk orders & catering slots from nearest active hubs.
+                        Schedule catering or bulk orders in advance.
                       </span>
                     </button>
 
@@ -531,10 +531,10 @@ export function LocationDialog({
                       className="flex flex-col items-start p-2.5 rounded-xl border border-emerald-400/80 bg-emerald-50/70 hover:bg-emerald-100/80 text-left transition shadow-2xs cursor-pointer group"
                     >
                       <span className="text-[11px] font-black text-emerald-950 flex items-center gap-1">
-                        <span>📦</span> Packaged Pantry Delivery
+                        <span>📦</span> Packaged Food Delivery
                       </span>
                       <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
-                        Direct pan-India delivery of artisanal masalas, tea, coffee & snacks.
+                        Delivery of packaged snacks, sweets, tea and pantry essentials.
                       </span>
                     </button>
                   </div>
@@ -616,9 +616,9 @@ export function LocationDialog({
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10.5px] font-black uppercase tracking-wider text-amber-900/80 flex items-center gap-1">
-                    <Sparkles className="size-3 text-amber-600" /> Popular Food Metros
+                    <Sparkles className="size-3 text-amber-600" /> Popular Cities
                   </span>
-                  <span className="text-[10px] font-bold text-stone-500">PAN-India Active</span>
+                  <span className="text-[10px] font-bold text-stone-500">Service Cities</span>
                 </div>
 
                 <div className="flex gap-2 overflow-x-auto pb-1.5 scrollbar-none">
@@ -649,7 +649,7 @@ export function LocationDialog({
                 <div className="flex items-center justify-between pb-1 border-b border-stone-100">
                   <span className="text-xs font-black text-stone-900 flex items-center gap-1.5">
                     <Building2 className="size-3.5 text-amber-700" />
-                    {activeHub.city} Food Neighborhoods
+                    {activeHub.city} Delivery Zones
                   </span>
                   <span className="text-[9.5px] font-extrabold uppercase tracking-wide text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full">
                     {activeHub.badge}
@@ -712,9 +712,9 @@ export function LocationDialog({
           <div className="mt-4 pt-3 border-t border-amber-900/10 flex items-center justify-between text-[10.5px] text-stone-500 font-semibold">
             <span className="flex items-center gap-1 text-emerald-800">
               <span className="size-1.5 rounded-full bg-emerald-500" />
-              100% FSSAI-Licensed Partner Kitchens
+              FSSAI-Licensed Restaurants
             </span>
-            <span className="text-amber-900 font-bold">Direct Kitchen Menu</span>
+            <span className="text-amber-900 font-bold">Verified Menus</span>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

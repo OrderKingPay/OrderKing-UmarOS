@@ -236,7 +236,7 @@ export function CommercialBypassDialsSection() {
             <p className="text-xs text-muted max-w-2xl">
               Operational bypass dials: Direct NPCI UPI VPA routing, Section 9(5) CGST statutory dialects,
               multi-brand kitchen virtualization, dynamic OTA convenience fee ceilings (₹499/₹1,299), rail Tatkal arbitrage,
-              telecom carrier failovers, proximity dispatch perimeters, fleet garage RSA markers, and viral bounty credits.
+              telecom carrier failovers, proximity dispatch perimeters, fleet garage RSA markers, and customer referral rewards.
             </p>
           </div>
 
@@ -944,14 +944,14 @@ export function CommercialBypassDialsSection() {
                 <div className="p-1.5 rounded-lg bg-teal-500/20 text-teal-400">
                   <Share2 className="size-4" />
                 </div>
-                <h3 className="font-bold text-sm text-white">9. WhatsApp Viral Bounty</h3>
+                <h3 className="font-bold text-sm text-white">9. Customer Referral Program</h3>
               </div>
               <Badge className="bg-teal-950 border-teal-500 text-teal-300 text-[10px] font-mono">
-                VIRAL LOOP
+                REFERRAL REWARDS
               </Badge>
             </div>
             <p className="text-xs text-muted">
-              P2P referral bounty credit dials & WhatsApp 1-tap invitation campaigns.
+              Referral reward credit controls & WhatsApp 1-tap invitation campaigns.
             </p>
 
             <div className="space-y-3 pt-2">

@@ -194,7 +194,7 @@ function OrderDetailPage() {
       <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-5 pb-28">
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-300 px-3 py-1 text-xs font-mono font-black text-amber-900 shadow-2xs">
-            👑 #{order.summary.publicId}
+            #{order.summary.publicId}
           </span>
           <span className="text-xs font-black text-stone-900 tabular-nums bg-white border border-amber-200 px-2.5 py-1 rounded-lg">
             {formatPaise(order.summary.totalPaise, { locale })}
@@ -785,7 +785,7 @@ function OrderDetailPage() {
                     {[
                       { id: "REFUND", label: "⚡ Instant Wallet Refund", desc: "Credited to KingPay Wallet" },
                       { id: "REDELIVERY", label: "🛵 Priority Redelivery", desc: "Fresh hot dish priority dispatch" },
-                      { id: "HDMASTER", label: "👑 HDmaster Escalation", desc: "Direct Founder Review" },
+                      { id: "OPERATIONS", label: "Operations Escalation", desc: "Senior Support Review" },
                     ].map((res) => (
                       <button
                         key={res.id}

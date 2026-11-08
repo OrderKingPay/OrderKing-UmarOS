@@ -68,7 +68,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "FEAST100",
     coinsRequired: 500,
     valueLabel: "Save ₹100",
-    badge: "🤝 Referral Perk",
+    badge: "Referral Reward",
     icon: "🎁",
     terms: "Valid on minimum food order of ₹499.",
     affiliateUrl: "/rewards",
@@ -83,7 +83,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "AMAZONKING",
     coinsRequired: 200,
     valueLabel: "Up to 60% OFF",
-    badge: "⭐ Mega Affiliate",
+    badge: "Amazon Deal",
     icon: "📦",
     terms: "Exclusive affiliate deals for OrderKing members across all pin codes in India.",
     affiliateUrl: "https://www.amazon.in?tag=orderking-21",
@@ -98,7 +98,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "FLIPKARTKING",
     coinsRequired: 300,
     valueLabel: "Flat ₹150 OFF",
-    badge: "🚀 National Partner",
+    badge: "Flipkart Deal",
     icon: "🛍️",
     terms: "Valid on min order of ₹999 on Flipkart website and app.",
     affiliateUrl: "https://www.flipkart.com?affid=orderking",
@@ -113,7 +113,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "MEESHOKING",
     coinsRequired: 150,
     valueLabel: "15% Extra OFF",
-    badge: "🔥 Advanced Saver",
+    badge: "Meesho Deal",
     icon: "🛒",
     terms: "Direct factory prices with free cash on delivery on Meesho.",
     affiliateUrl: "https://meesho.com?ref=orderking",
@@ -128,7 +128,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "HPFUEL50",
     coinsRequired: 500,
     valueLabel: "Worth ₹50 Fuel",
-    badge: "⛽ HPCL Alliance",
+    badge: "Fuel Voucher",
     icon: "⛽",
     terms: "Valid on min ₹300 fuel refill at partner HPCL pumps in Karimganj, Silchar & Sribhumi.",
     affiliateUrl: "https://hppay.in?ref=orderking",
@@ -143,7 +143,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "IOCL50",
     coinsRequired: 500,
     valueLabel: "Worth ₹50 Fuel",
-    badge: "🛢️ IndianOil Partner",
+    badge: "Fuel Voucher",
     icon: "🛢️",
     terms: "Valid on min ₹300 fuel refill at IndianOil stations nationwide.",
     affiliateUrl: "https://iocl.com/indianoil-one?ref=orderking",
@@ -158,7 +158,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "BPOCTANE100",
     coinsRequired: 1000,
     valueLabel: "Worth ₹100 Fuel",
-    badge: "⚡ BPCL Speed",
+    badge: "Fuel Cashback",
     icon: "⛽",
     terms: "Valid on min ₹1,000 fuel refill at Bharat Petroleum highway and city outlets.",
     affiliateUrl: "https://bharatpetroleum.in?ref=orderking",
@@ -188,7 +188,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "AIKINGSCHOLAR",
     coinsRequired: 1000,
     valueLabel: "Worth ₹1,999",
-    badge: "🎓 Scholarship Access",
+    badge: "Course Access",
     icon: "🤖",
     terms: "Full lifetime access with certificate. Sponsored by national EdTech alliance partner.",
     affiliateUrl: "https://orderking.in/courses/ai-masterclass?ref=affiliate",
@@ -250,7 +250,7 @@ function RewardsPage() {
           <div className="flex items-center justify-between">
             <div>
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-bold text-amber-800 dark:text-amber-200">
-                👑 King Club Rewards
+                King Club Rewards
               </span>
               <h1 className="mt-2 font-display text-2xl font-bold text-fg">
                 Your King Coins
@@ -273,7 +273,7 @@ function RewardsPage() {
             <div className="flex items-center gap-1.5">
               <span>📍</span>
               <span className="font-semibold text-fg">{location.cityName || "Barak Valley"}</span>
-              <span className="text-muted">(Location Verified)</span>
+              <span className="text-muted">({location.zoneName || "Current Zone"})</span>
             </div>
             <Link to="/king-pay" className="font-medium text-primary hover:underline">
               KingPay Hub →

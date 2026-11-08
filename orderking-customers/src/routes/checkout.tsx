@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   MapPin,
+  ShoppingBag,
   ShieldCheck,
   Check,
   Clock,
@@ -302,7 +303,7 @@ function CheckoutPage() {
                 },
               });
         clear();
-        toast.success(t("orders.placed") || "Order successfully placed! 👑");
+        toast.success(t("orders.placed") || "Order successfully placed!");
         void navigate({ to: "/orders/$id", params: { id: result.orderId } });
       };
 
@@ -422,24 +423,24 @@ function CheckoutPage() {
             </div>
           </div>
 
-          {/* Top Royal Banner */}
-          <div className="rounded-3xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 via-yellow-400/25 to-amber-600/15 p-4 sm:p-5 shadow-sm">
+          {/* Top Header */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-md text-xl">
-                  👑
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white font-bold text-lg">
+                  <ShoppingBag className="size-5" />
                 </div>
                 <div>
-                  <h1 className="font-display text-xl sm:text-2xl font-black text-zinc-950 dark:text-amber-100 tracking-tight">
+                  <h1 className="font-display text-xl font-bold text-slate-900 tracking-tight">
                     {t("checkout.title") || "Secure Checkout"}
                   </h1>
-                  <p className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                    Delivering fresh from <span className="text-amber-800 dark:text-amber-300 font-extrabold">{restaurantName || "Kitchen"}</span>
+                  <p className="text-xs text-slate-500">
+                    Delivering fresh from <span className="text-slate-900 font-semibold">{restaurantName || "Kitchen"}</span>
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+              <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700">
                 <Lock className="size-3.5 text-emerald-600" />
                 <span>256-bit SSL</span>
               </div>

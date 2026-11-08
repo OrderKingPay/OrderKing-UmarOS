@@ -1090,7 +1090,7 @@ function PlatformConnectorCard({
           size="sm"
           className="flex-1 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white"
           onClick={() => {
-            const telemetry = `OrderKing Sovereign Platform Telemetry:\n- Platform: ${activePlatform.name}\n- Category: ${activePlatform.category}\n- Latency: ${activePlatform.apiLatencyMs}ms\n- Auth: ${activePlatform.authMethod}\n- Guardrails: 100% Verified Zero-Leak Sandbox`;
+            const telemetry = `OrderKing Platform Telemetry:\n- Platform: ${activePlatform.name}\n- Category: ${activePlatform.category}\n- Latency: ${activePlatform.apiLatencyMs}ms\n- Auth: ${activePlatform.authMethod}\n- Guardrails: 100% Verified Zero-Leak Sandbox`;
             void navigator.clipboard?.writeText(telemetry);
             playAudioTone("ping");
             toast.success("Platform telemetry copied to clipboard!");
@@ -4014,7 +4014,7 @@ export function PremiumFounderAiChat({
                     playAudioTone("ping");
                     const found = verifiedModels.find((m) => m.id === nextModel);
                     if (found && found.connectionStatus === "CONFIGURATION_REQUIRED") {
-                      toast.warning(`${found.displayName}: Requires ${found.requiredEnvVar || "API key"}. Routing through Sovereign Local Core until configured.`);
+                      toast.warning(`${found.displayName}: Requires ${found.requiredEnvVar || "API key"}. Routing through Local Core until configured.`);
                     } else {
                       toast.success(`Active Model: ${nextModel.toUpperCase()}`);
                     }

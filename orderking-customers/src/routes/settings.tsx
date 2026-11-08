@@ -208,8 +208,8 @@ function SettingsPage() {
               {/* Toggle 3: Sound Effects */}
               <div className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-amber-50/30 p-3.5">
                 <div>
-                  <span className="text-xs font-black text-stone-900 block">Royal Order Chimes</span>
-                  <span className="text-[11px] text-stone-500">Melodic feedback on dispatch &amp; delivery</span>
+                  <span className="text-xs font-black text-stone-900 block">Order Sound Chimes</span>
+                  <span className="text-[11px] text-stone-500">Audio alerts on dispatch and delivery updates</span>
                 </div>
                 <button
                   type="button"

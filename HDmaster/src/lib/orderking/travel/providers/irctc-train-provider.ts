@@ -33,7 +33,7 @@ export class IrctcTrainProvider implements TravelProvider {
     if (this.activeRequests >= this.MAX_CONCURRENCY) {
       this.isCircuitBroken = true;
       this.circuitBreakUntil = Date.now() + 60000; // Trip for 60s
-      throw new Error("CAPACITY_EXCEEDED: 1000x Virtual Queue Limit hit.");
+      throw new Error("CAPACITY_EXCEEDED: Virtual Queue Limit reached.");
     }
   }
 

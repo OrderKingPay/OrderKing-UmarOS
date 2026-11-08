@@ -52,7 +52,7 @@ function CrownOpportunitiesPage() {
                   <Crown className="size-5" aria-hidden="true" />
                 </div>
                 <span className="text-xs font-black uppercase tracking-[0.25em] text-amber-300">
-                  Privilege Rewards
+                  OrderKing Rewards
                 </span>
               </div>
               <h1 className="mt-3.5 text-3xl font-black tracking-tight sm:text-4xl">
@@ -101,7 +101,7 @@ function CrownOpportunitiesPage() {
                 </div>
                 <div>
                   <h2 className="text-sm font-black text-amber-950">Crown Promotional Credits</h2>
-                  <p className="text-[11px] font-bold text-stone-400">Culinary privilege discounts</p>
+                  <p className="text-[11px] font-bold text-stone-400">Order discounts</p>
                 </div>
               </div>
               <p className="mt-3 text-xs leading-relaxed text-stone-600">

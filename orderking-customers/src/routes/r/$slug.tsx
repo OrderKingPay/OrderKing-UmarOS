@@ -23,6 +23,7 @@ import {
   Utensils,
   ChefHat,
   Activity,
+  Percent,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
@@ -346,7 +347,7 @@ function RestaurantPage() {
                 )}
                 {restaurant.card.promoted && (
                   <Badge className="bg-amber-500 text-zinc-950 font-bold shadow-md">
-                    👑 {t("common.ad")}
+                    {t("common.ad") || "Promoted"}
                   </Badge>
                 )}
 
@@ -512,30 +513,24 @@ function RestaurantPage() {
                 </div>
               )}
 
-              {/* OrderKing VIP Gold Pass Banner */}
-              <div className="mt-3.5 rounded-2xl border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-yellow-400/25 to-amber-600/15 p-4 shadow-sm">
+              {/* Offers Banner */}
+              <div className="mt-3.5 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xs">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-sm text-lg">
-                      👑
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 font-bold">
+                      <Percent className="size-4" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-display text-sm font-black text-zinc-950 dark:text-amber-100">
-                          OrderKing VIP Member Privileges
-                        </span>
-                        <span className="rounded-full bg-amber-400/30 border border-amber-500/40 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
-                          Gold Tier
-                        </span>
-                      </div>
-                      <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-0.5">
-                        fast delivery on orders above ₹199 + Extra 15% OFF (use code{" "}
-                        <strong className="font-mono text-amber-700 dark:text-amber-300 font-extrabold">VIPGOLD</strong>)
+                      <span className="text-xs font-bold text-slate-900 block">
+                        Flat ₹40 OFF above ₹299
+                      </span>
+                      <p className="text-[11px] text-slate-500">
+                        Use coupon code <strong className="font-mono text-emerald-700 font-bold">LOCAL40</strong> at checkout
                       </p>
                     </div>
                   </div>
-                  <span className="hidden sm:inline-flex rounded-xl bg-amber-500 text-zinc-950 px-3 py-1 text-xs font-black uppercase tracking-wider shadow-xs">
-                    VIP Priority
+                  <span className="rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 text-[11px] font-bold">
+                    Offer Active
                   </span>
                 </div>
               </div>
@@ -780,7 +775,7 @@ function RestaurantPage() {
 
                               {it.bestseller && (
                                 <span className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-900 dark:text-amber-200 border border-amber-400/40 shadow-2xs">
-                                  👑 Bestseller
+                                  ★ Bestseller
                                 </span>
                               )}
                             </div>

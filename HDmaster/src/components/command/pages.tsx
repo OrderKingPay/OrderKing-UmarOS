@@ -3959,7 +3959,7 @@ function SettingsPage() {
           </span>
         </div>
         <p className="text-xs text-muted">
-          Dispatches offers exclusively to the <strong>single closest online rider</strong> first via GPS distance. If declined or timed out, cascades sequentially to the <strong>next nearest rider</strong> with dynamic bounty escalation, ensuring zero wasted broadcast pings.
+          Dispatches offers exclusively to the <strong>single closest online rider</strong> first via GPS distance. If declined or timed out, cascades sequentially to the <strong>next nearest rider</strong> with dynamic incentive escalation, ensuring zero wasted broadcast pings.
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
           <Field label="Max Proximity Radius (km)">
@@ -3969,7 +3969,7 @@ function SettingsPage() {
               onChange={(e) => set("strategicDispatchRadiusKm" as any, Number(e.target.value))}
             />
           </Field>
-          <Field label="Bounty Escalation per Decline (paise) [1000 = +₹10]">
+          <Field label="Incentive Escalation per Decline (paise) [1000 = +₹10]">
             <Input
               type="number"
               value={cur.bountyEscalationPaise ?? 1000}

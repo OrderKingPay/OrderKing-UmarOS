@@ -728,7 +728,7 @@ export class HDmasterAutonomousDispatchAdapter implements DispatchPort {
     }
   }
 
-  /** Autonomous decline triggers cascading dispatch to next nearest rider with escalated bounty */
+  /** Autonomous decline triggers cascading dispatch to next nearest rider with escalated payout incentive */
   async exclusiveDecline(offerId: string, riderId: string, reason?: string): Promise<boolean> {
     const idempotencyKey = `cas_decline_${offerId}_${riderId}_${Date.now()}`;
     try {

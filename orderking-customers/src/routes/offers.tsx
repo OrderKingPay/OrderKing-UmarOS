@@ -62,7 +62,7 @@ function OffersPage() {
               {t("offers.title")}
             </h1>
             <p className="mt-0.5 text-xs font-bold text-amber-800">
-              Royal Coupons, Instant Savings &amp; VIP Passes
+              Available coupons and restaurant discounts
             </p>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-950 shadow-2xs">
