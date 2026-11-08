@@ -651,7 +651,7 @@ export function WifiCaptivePortalHub({
               <span>External Brand Ad Campaigns ({brandCampaigns.length})</span>
               {brandCampaigns.length === 0 && (
                 <span className="text-[11px] text-slate-400 italic">
-                  Zero fake data — all metrics start at 0
+                  No active campaigns
                 </span>
               )}
             </div>

@@ -461,10 +461,10 @@ export function SupportPage() {
               </div>
               <div>
                 <h2 className="font-display text-base font-black text-stone-900">
-                  Official Statutory Grievance &amp; Government Ombudsman
+                  Grievance Officer &amp; Consumer Helplines
                 </h2>
                 <p className="text-xs text-stone-500">
-                  Direct official escalation portals and national statutory toll-free helplines
+                  Official grievance escalation contacts and national toll-free helplines
                 </p>
               </div>
             </div>

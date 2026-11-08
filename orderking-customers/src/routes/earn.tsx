@@ -61,7 +61,7 @@ function CrownOpportunitiesPage() {
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stone-300 font-medium">
                 Crown Promotional Credits are eligible-order discounts, not cash or UPI withdrawals.
                 Discounts apply directly at checkout through verified merchant concessions.
-                Zero synthetic points, unbacked bullion claims, or simulated balances.
+
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5">
                 <span className="inline-flex items-center rounded-full border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-yellow-400/30 to-amber-500/20 px-3.5 py-1.5 text-xs font-black text-amber-200 shadow-sm">
@@ -84,8 +84,8 @@ function CrownOpportunitiesPage() {
                 </div>
               </div>
               <p className="mt-3 text-xs leading-relaxed text-stone-600">
-                Real balances require provider and ledger reconciliation. No cash balance is inferred
-                from page visits, referrals, survey answers or local browser activity.
+                Cashback and rewards are credited directly to your KingPay wallet on delivery confirmation.
+
               </p>
               <div className="mt-4 pt-3 border-t border-amber-900/5">
                 <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">
