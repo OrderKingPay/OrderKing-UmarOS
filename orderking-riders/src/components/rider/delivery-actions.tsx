@@ -10,7 +10,7 @@ import { deliveryActionFn, triggerMaskedCallFn } from "@/lib/server/rider-fns";
 import { TERMINAL_DELIVERY_STATES, type CashReconciliation, type Delivery } from "@/lib/rider/types";
 import { enqueueRiderOfflineAction, getRiderNetworkSpeed } from "@/lib/rider/rider-low-network";
 import { getTwoWheelerNavigationUris } from "@/lib/rider/maps";
-import { AlertTriangle, Camera, CheckCircle2, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, QrCode, RotateCcw, ShieldAlert, ShieldCheck, Wallet } from "lucide-react";
+import { AlertTriangle, Camera, CheckCircle2, Clock3, Compass, QrCode, RotateCcw, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "./confirm-dialog";
@@ -38,7 +38,6 @@ export function DeliveryActions({
   const [cancelOpen, setCancelOpen] = useState(false);
   const [hasVerifiedProof, setHasVerifiedProof] = useState(false);
   const [reason, setReason] = useState<string>(JUSTIFIED_OPERATIONAL_REASONS[0]);
-  const [sopOpen, setSopOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [billPhoto, setBillPhoto] = useState<string | null>(null);
   const [isCalling, setIsCalling] = useState(false);
@@ -298,7 +297,7 @@ export function DeliveryActions({
         </div>
       ) : null}
 
-      {/* OrderKing Partner Quick-Connect & Safety SOS Bar */}
+      {/* Quick-Connect & Safety SOS Bar */}
       <div className="grid grid-cols-4 gap-2 border-t border-border pt-2">
         {d.customer.contactAllowed ? (
           <button
@@ -306,12 +305,12 @@ export function DeliveryActions({
             disabled={pending || isCalling}
             onClick={() => void handleMaskedCustomerCall()}
             className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70 disabled:opacity-50"
-            title={`Virtual Telephony Bridge: ${getVirtualProxyDial(d.customer.contactMasked)}`}
+            title="Call Customer"
           >
             <span className="text-base">{isCalling ? "⏳" : "📞"}</span>
-            <span>{isCalling ? "Dialing..." : "Call"}</span>
+            <span>{isCalling ? "Calling..." : "Call"}</span>
             <span className="text-[10px] text-muted-foreground font-mono">
-              {getVirtualProxyDisplay(d.customer.contactMasked)}
+              •••• {d.customer.contactMasked ? d.customer.contactMasked.replace(/\D/g, "").slice(-4) : "1234"}
             </span>
           </button>
         ) : (
@@ -342,23 +341,23 @@ export function DeliveryActions({
           className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
         >
           <span className="text-base">🏬</span>
-          <span>Kitchen</span>
-          <span className="text-[10px] text-muted-foreground">Direct</span>
+          <span>Restaurant</span>
+          <span className="text-[10px] text-muted-foreground">Call</span>
         </a>
 
         <button
           type="button"
           onClick={() => setSosOpen(true)}
           className="flex flex-col items-center justify-center rounded-lg border border-red-500/50 bg-red-600/10 p-2 text-center text-xs font-bold text-red-500 transition hover:bg-red-600/20 active:scale-95"
-          title="Open OrderKing SOS Safety Emergency Panic Shield"
+          title="Emergency SOS"
         >
           <span className="text-base animate-pulse">🚨</span>
           <span>SOS</span>
-          <span className="text-[10px] text-red-400">112 Shield</span>
+          <span className="text-[10px] text-red-400">112</span>
         </button>
       </div>
 
-      {/* Turn-by-Turn GPS Navigation Button */}
+      {/* Navigation Button */}
       {!TERMINAL_DELIVERY_STATES.has(d.state) &&
         (() => {
           const isHeadingToCustomer = [
@@ -378,40 +377,23 @@ export function DeliveryActions({
           const primaryNavUrl = isAndroid ? navUris.intentUri : navUris.webUrl;
 
           return (
-            <div className="space-y-1.5">
-              <a
-                href={primaryNavUrl}
-                target={isAndroid ? undefined : "_blank"}
-                rel="noopener noreferrer"
-                onClick={(e) => {
-                  if (isAndroid) {
-                    // Launch Android Google Maps native navigation intent in two-wheeler mode (mode=b)
-                    window.location.href = navUris.intentUri;
-                    setTimeout(() => {
-                      // Fallback to web directions if intent was not handled
-                      window.open(navUris.webUrl, "_blank");
-                    }, 1500);
-                  }
-                }}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 active:scale-[0.99]"
-              >
-                <span>🧭</span> Navigate via Google Maps ({navTargetName})
-                <span className="rounded bg-emerald-700/70 px-1.5 py-0.5 text-[10px] font-mono">
-                  Two-Wheeler (mode=b)
-                </span>
-              </a>
-              <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground font-mono">
-                <span>Native Intent: google.navigation</span>
-                <a
-                  href={navUris.webUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline text-primary"
-                >
-                  Web Fallback ↗
-                </a>
-              </div>
-            </div>
+            <a
+              href={primaryNavUrl}
+              target={isAndroid ? undefined : "_blank"}
+              rel="noopener noreferrer"
+              onClick={() => {
+                if (isAndroid) {
+                  window.location.href = navUris.intentUri;
+                  setTimeout(() => {
+                    window.open(navUris.webUrl, "_blank");
+                  }, 1500);
+                }
+              }}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 active:scale-[0.99]"
+            >
+              <Compass className="size-4" />
+              <span>Start Navigation ({navTargetName})</span>
+            </a>
           );
         })()}
 
@@ -645,12 +627,10 @@ export function DeliveryActions({
             </div>
           ) : null}
 
-          <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-xs text-sky-950 dark:text-sky-200">
-            <p className="font-semibold flex items-center gap-1.5">
-              <span>🤝</span> Doorstep Handover Verification
-            </p>
-            <p className="mt-0.5 text-muted-foreground">
-              Verify customer handover via 4-digit PIN or scan the dynamic QR code directly from their OrderKing app.
+          <div className="rounded-lg border border-border bg-muted/20 px-3 py-2 text-xs">
+            <p className="font-semibold text-foreground">Doorstep Handover</p>
+            <p className="text-[11px] text-muted-foreground">
+              Ask customer for 4-digit delivery PIN or scan QR code.
             </p>
           </div>
 
@@ -704,7 +684,7 @@ export function DeliveryActions({
               <div className="flex items-center justify-between">
                 <span className="font-bold text-foreground flex items-center gap-1.5">
                   <QrCode className="size-4 text-primary" />
-                  <span>Dynamic Customer QR Handover</span>
+                  <span>Scan Customer QR</span>
                 </span>
                 {qrVerified && (
                   <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
@@ -712,9 +692,7 @@ export function DeliveryActions({
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Verify customer delivery QR code generated on the customer's phone for cryptographic proof of doorstep handover.
-              </p>
+              <p className="text-[11px] text-muted-foreground">Scan customer QR code to verify doorstep delivery.</p>
 
               <Button
                 type="button"
@@ -796,58 +774,6 @@ export function DeliveryActions({
         </div>
       ) : null}
 
-      {/* OrderKing Gold Standard On-Trip Self-Service Support & SOP Guide */}
-      <div className="rounded-lg border border-border bg-muted/20 overflow-hidden">
-        <button
-          type="button"
-          onClick={() => setSopOpen((v) => !v)}
-          className="w-full flex items-center justify-between gap-2 p-3 text-left text-xs font-semibold text-foreground hover:bg-muted/40 transition"
-        >
-          <span className="flex items-center gap-2">
-            <HelpCircle className="size-4 text-primary" />
-            On-Trip Self-Service Support &amp; Field Issue SOP Guide
-          </span>
-          {sopOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-        </button>
-
-        {sopOpen ? (
-          <div className="border-t border-border bg-card p-3 space-y-2.5 text-xs">
-            <div className="rounded-md border border-border bg-muted/20 p-2.5 space-y-1">
-              <p className="font-semibold text-foreground flex items-center gap-1.5">
-                <Clock3 className="size-3.5 text-primary" />
-                1. Kitchen Delay &gt; 10 Minutes
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Tap <strong>{t("imAtRestaurant")}</strong> as soon as you reach the outlet and tap{" "}
-                <strong>{t("restaurantNotReady")}</strong> if the package is still being prepared. Your wait timer starts automatically at arrival (`ARRIVED_AT_RESTAURANT`) and credits <strong>₹1.00/minute</strong> for every minute beyond 10 minutes upon delivery completion.
-              </p>
-            </div>
-
-            <div className="rounded-md border border-border bg-muted/20 p-2.5 space-y-1">
-              <p className="font-semibold text-foreground flex items-center gap-1.5">
-                <PhoneCall className="size-3.5 text-primary" />
-                2. Customer Unreachable at Drop Location
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                If the customer does not answer at the drop location, tap{" "}
-                <strong>{t("customerUnavailable")}</strong> to start the mandatory 10-minute wait timer, and log <strong>3 contact attempts</strong> using the button above. Once 3 attempts and 10 minutes are recorded, your base + distance payout is protected.
-              </p>
-            </div>
-
-            <div className="rounded-md border border-border bg-muted/20 p-2.5 space-y-1">
-              <p className="font-semibold text-foreground flex items-center gap-1.5">
-                <Wallet className="size-3.5 text-primary" />
-                3. COD Exact Change &amp; Handover Checklist
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                For Cash-on-Delivery orders, always tap{" "}
-                <strong>{t("cashCollected")}</strong> after receiving the exact order amount ({formatPaise(d.codAmountPaise)}) before entering the 4-digit customer handover PIN. Collected cash is added to your Floating Cash ledger and offset in Wednesday settlement.
-              </p>
-            </div>
-          </div>
-        ) : null}
-      </div>
-
       {d.state !== "DELIVERED" && d.state !== "RIDER_CANCELLED" && d.state !== "ORDER_CANCELLED" ? (
         <Button variant="ghost" className="w-full text-offline" onClick={() => setCancelOpen(true)}>
           {t("cancelDelivery")}
@@ -900,15 +826,13 @@ export function DeliveryActions({
                 </label>
               </div>
             ) : (
-              <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 space-y-1.5 text-xs">
-                <div className="flex items-center gap-2 text-emerald-950 dark:text-emerald-300 font-bold">
-                  <ShieldCheck className="size-4 shrink-0 text-emerald-500" />
-                  <span>Trip Reassignment</span>
-                </div>
-                <p className="text-emerald-900/90 dark:text-emerald-200/90 leading-relaxed">
-                  OrderKing respects delivery partner contingencies. Choosing a justified operational reason reassigns this trip immediately to the nearest available fleet partner without harsh penalty or score reduction.
+              <div className="rounded-xl border border-border bg-muted/20 p-3 text-xs">
+                <p className="font-semibold text-foreground">Trip Reassignment</p>
+                <p className="text-muted-foreground text-[11px] mt-0.5">
+                  Select a reason to reassign this order to the nearest available delivery partner.
                 </p>
               </div>
+                
             )}
 
             <div className="space-y-2">

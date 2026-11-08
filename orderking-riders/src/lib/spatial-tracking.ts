@@ -13,7 +13,7 @@ export interface TelematicsPayload {
   riderId: string;
   location: GPSCoordinate;
   batteryLevel: number;
-  networkType: '5G' | '4G' | '3G' | '2G' | 'Starlink' | 'Offline';
+  networkType: '5G' | '4G' | '3G' | '2G' | 'Offline';
   bearing?: number;
 }
 
@@ -410,7 +410,7 @@ export class SpatialTrackingService {
         throw new Error(`Telematics ingestion failed with status ${response.status}`);
       }
     } catch (error) {
-      console.warn('Transmission failed, queuing for Starlink/2G fallback sync.', error);
+      console.warn('Transmission failed, queuing for 2G/offline fallback sync.', error);
       this.fallbackQueue.enqueue(payload);
     }
   }
@@ -470,6 +470,6 @@ export class SpatialTrackingService {
           return '5G';
       }
     }
-    return 'Starlink'; // Default fallback assumption for high-latency sat connections
+    return '4G'; // Default fallback assumption for standard mobile connections
   }
 }
