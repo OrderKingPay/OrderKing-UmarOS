@@ -12,7 +12,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
     return new Response(
       JSON.stringify({
         success: true,
-        service: "OrderKing Sovereign VIP Travel & Air Concierge",
+        service: "OrderKing Travel Concierge",
         status: "OPERATIONAL",
         conciergeDesk: {
           whatsappDesk: "https://wa.me/919876543210",
@@ -68,7 +68,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
         normalizedType === "CONCIERGE_INQUIRY" ||
         Boolean(clientName || name || clientPhone || phone || category || serviceCategory)
       ) {
-        const guestName = String(clientName || name || "Valued Sovereign VIP Guest").trim();
+        const guestName = String(clientName || name || "Valued Guest").trim();
         const guestPhone = String(clientPhone || phone || "").trim();
         const guestEmail = String(clientEmail || email || "").trim();
         const selectedCategory = String(category || serviceCategory || "Private Aviation & Jet Charter");
