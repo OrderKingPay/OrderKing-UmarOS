@@ -460,12 +460,9 @@ function Page() {
             </div>
           ) : null}
 
-          <div className="border-t border-border pt-2.5 text-xs text-muted-foreground space-y-1">
+          <div className="border-t border-border pt-2 text-xs text-muted-foreground">
             <p>
-              <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Partner Referral Bonuses + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
-            </p>
-            <p className="text-[11px]">
-              Compliant with the Code on Social Security, 2020 · Independent Delivery Partner Ledger
+              Earnings include trip base fare, distance pay, milestone incentives, wait pay, and customer tips minus collected COD cash and applicable TDS.
             </p>
           </div>
         </Card>
@@ -476,7 +473,7 @@ function Page() {
             <div>
               <CardTitle>{t("statement")}</CardTitle>
               <p className="text-xs text-muted-foreground">
-                Filter entries by category or click &ldquo;Query&rdquo; on any line to log a payout audit ticket
+                Filter statement by category or click Query on any line to report an issue
               </p>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -501,7 +498,7 @@ function Page() {
 
           {disputeRef ? (
             <div className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-300">
-              Payout audit query logged (#{disputeRef}). Track status under{" "}
+              Query logged (#{disputeRef}). Track status under{" "}
               <Link to="/support" className="underline font-semibold">
                 Support Tickets
               </Link>
@@ -535,7 +532,7 @@ function Page() {
                 disabled={disputeBusy}
                 onClick={() => void submitPayoutDispute()}
               >
-                {disputeBusy ? "Submitting..." : "Submit Payout Audit Ticket"}
+                {disputeBusy ? "Submitting..." : "Submit Query"}
               </Button>
             </div>
           ) : null}

@@ -206,8 +206,8 @@ function Page() {
                 <ShieldCheck className="size-4" />
               </span>
               <div>
-                <CardTitle className="text-base font-bold">Fleet KYC &amp; Verification</CardTitle>
-                <CardMeta>Driving license, vehicle RC, and document verification</CardMeta>
+                <CardTitle className="text-base font-bold">KYC &amp; Vehicle Details</CardTitle>
+                <CardMeta>Verified driving license, RC, and ID documents</CardMeta>
               </div>
             </div>
             <Badge tone={rider?.kycStatus === "VERIFIED" ? "online" : "busy"} className="gap-1 font-mono">
@@ -270,7 +270,7 @@ function Page() {
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/60 text-xs">
-            <span className="text-muted-foreground">Documents reviewed under Order King Fleet Safety Standards.</span>
+            <span className="text-muted-foreground">Documents verified for active delivery.</span>
             <Link to="/onboarding" className="text-primary font-bold hover:underline inline-flex items-center gap-1">
               Manage KYC Identity &amp; Vehicle Documents <ArrowRight className="size-3" />
             </Link>
@@ -285,7 +285,7 @@ function Page() {
                 <Gift className="size-5" />
               </span>
               <div>
-                <CardTitle className="text-sm font-bold">Partner Benefits &amp; Affiliate Hub</CardTitle>
+                <CardTitle className="text-sm font-bold">Partner Benefits &amp; Rewards</CardTitle>
                 <p className="text-xs text-muted-foreground">
                   15% EV discounts (Yulu, Zypp), HPCL/IOCL ₹2.50/L fuel cashback &amp; ₹10L insurance
                 </p>

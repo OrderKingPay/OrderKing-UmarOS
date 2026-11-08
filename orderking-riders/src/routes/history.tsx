@@ -312,7 +312,7 @@ export function Page() {
         data: {
           topic: "PAYMENT_ISSUE",
           deliveryId: d.id,
-          message: `[Trip History Audit · Order #${d.orderCode} · State: ${d.state}] ${
+          message: `[Order #${d.orderCode}] ${
             queryNote.trim() ||
             "Please verify the base, distance, and wait-time payout for this trip."
           }`,
@@ -444,9 +444,9 @@ export function Page() {
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h1 className="font-display text-3xl">Trip &amp; Payout Log</h1>
+                <h1 className="font-display text-3xl">Order History</h1>
                 <p className="text-xs text-muted-foreground">
-                  Audit per-trip pickup-to-drop distance, trip duration, and payouts (Base + Distance + Wait + Tip)
+                  Completed and past delivery orders
                 </p>
               </div>
               <Button
@@ -499,7 +499,7 @@ export function Page() {
                   {tripSummary.totalDistanceKm.toFixed(1)} km
                 </p>
                 <p className="text-[11px] text-muted-foreground">
-                  Statutory rate: {formatINR(STATUTORY_BASE_FARE_PAISE)} first {STATUTORY_BASE_DISTANCE_KM} km +{" "}
+                  Rate card: {formatINR(STATUTORY_BASE_FARE_PAISE)} first {STATUTORY_BASE_DISTANCE_KM} km +{" "}
                   {formatINR(STATUTORY_DISTANCE_RATE_PER_KM_PAISE)}/km
                 </p>
               </Card>
@@ -723,7 +723,7 @@ export function Page() {
                       {isExpanded ? (
                         <div className="border-t border-border pt-3 space-y-3 text-xs">
                           <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">
-                            Per-Trip Statutory Payout Breakdown
+                            Trip Payout Breakdown
                           </CardTitle>
                           <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
                             <div className="flex justify-between">
@@ -736,10 +736,10 @@ export function Page() {
                             </div>
                             <div className="flex justify-between">
                               <dt className="text-muted-foreground">
-                                Base Fare (first {STATUTORY_BASE_DISTANCE_KM} km floor)
+                                Base Fare ({STATUTORY_BASE_DISTANCE_KM}.0 km)
                               </dt>
                               <dd className="font-mono">
-                                {formatINR(basePaise)} ({basePaise.toLocaleString("en-IN")} paise)
+                                {formatINR(basePaise)}
                               </dd>
                             </div>
                             <div className="flex justify-between">
@@ -747,7 +747,7 @@ export function Page() {
                                 Distance Pay ({Math.max(0, tripDistanceKm - STATUTORY_BASE_DISTANCE_KM).toFixed(1)} km beyond {STATUTORY_BASE_DISTANCE_KM} km)
                               </dt>
                               <dd className="font-mono">
-                                {formatINR(distancePaise)} ({distancePaise.toLocaleString("en-IN")} paise)
+                                {formatINR(distancePaise)}
                               </dd>
                             </div>
                             <div className="flex justify-between">
@@ -755,7 +755,7 @@ export function Page() {
                                 Wait-Time ({waitMins}m at kitchen) &amp; Multi-Package Bonus
                               </dt>
                               <dd className="font-mono">
-                                {formatINR(r.incentive)} ({r.incentive.toLocaleString("en-IN")} paise)
+                                {formatINR(r.incentive)}
                               </dd>
                             </div>
                             <div className="flex justify-between">
@@ -824,7 +824,7 @@ export function Page() {
                                   disabled={queryBusy}
                                   onClick={() => void submitTripQuery(r)}
                                 >
-                                  {queryBusy ? "Submitting..." : "Submit Audit Ticket"}
+                                  {queryBusy ? "Submitting..." : "Submit Query"}
                                 </Button>
                                 <Button
                                   size="sm"

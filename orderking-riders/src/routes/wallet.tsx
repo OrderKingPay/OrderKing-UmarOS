@@ -196,17 +196,17 @@ export function WalletPage() {
         {/* 3 Overview Metric Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="p-4 space-y-1.5 border-border">
-            <span className="text-xs font-semibold text-muted-foreground">Current In-Hand Cash</span>
+            <span className="text-xs font-semibold text-muted-foreground">In-Hand Cash</span>
             <div className="text-2xl font-extrabold font-mono text-foreground">
               {formatPaise(unreconciledPaise)}
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Physically collected from completed COD orders
+              Collected from completed cash orders
             </p>
           </Card>
 
           <Card className="p-4 space-y-1.5 border-border">
-            <span className="text-xs font-semibold text-muted-foreground">COD Float Ceiling</span>
+            <span className="text-xs font-semibold text-muted-foreground">Cash Limit</span>
             <div className="text-2xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400">
               ₹{(limitPaise / 100).toLocaleString("en-IN")}.00
             </div>
@@ -216,12 +216,12 @@ export function WalletPage() {
           </Card>
 
           <Card className="p-4 space-y-1.5 border-border">
-            <span className="text-xs font-semibold text-muted-foreground">Remaining COD Headroom</span>
+            <span className="text-xs font-semibold text-muted-foreground">Available Limit</span>
             <div className={`text-2xl font-extrabold font-mono ${isBlocked ? "text-rose-600" : "text-foreground"}`}>
               {formatPaise(remainingPaise)}
             </div>
             <p className="text-[11px] text-muted-foreground">
-              {isBlocked ? "Threshold exceeded! Deposit via UPI to unblock." : "Available capacity for cash orders"}
+              {isBlocked ? "Threshold exceeded! Deposit via UPI to unblock." : "Remaining limit before deposit is required"}
             </p>
           </Card>
         </div>
