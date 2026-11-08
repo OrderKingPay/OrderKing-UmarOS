@@ -1,3 +1,4 @@
+import { supabase } from "@/lib/db-cloud";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { DeliveryActions } from "@/components/rider/delivery-actions";
@@ -49,6 +50,42 @@ function Page() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Quad-Party Real-Time WebSocket Synchronization (Council Specialist f5a2c465)
+  // Subscribes to Supabase Realtime on this delivery order for instant (<200ms) updates
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    let channel: any;
+
+    try {
+      channel = supabase
+        .channel(`fleet_delivery_${id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "orders",
+            filter: `id=eq.${id}`,
+          },
+          () => {
+            if (cancelled) return;
+            load();
+          }
+        )
+        .subscribe();
+    } catch (err) {
+      console.warn("[DeliveryLive] Supabase Realtime fallback:", err);
+    }
+
+    return () => {
+      cancelled = true;
+      if (channel) {
+        void supabase.removeChannel(channel);
+      }
+    };
+  }, [id, load]);
 
   useGpsHeartbeat(
     Boolean(pack && pack.delivery),

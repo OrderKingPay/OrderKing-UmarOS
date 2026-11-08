@@ -9,8 +9,8 @@ export function errorMessage(e: unknown, fallback: string): string {
   return fallback;
 }
 
-export function newIdempotencyKey(): string {
-  return crypto.randomUUID();
+export function newIdempotencyKey(prefix = ""): string {
+  return prefix ? `${prefix}${crypto.randomUUID()}` : crypto.randomUUID();
 }
 
 export async function compressImage(file: File, maxBytes: number): Promise<{

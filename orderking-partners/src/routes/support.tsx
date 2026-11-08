@@ -17,7 +17,7 @@ import {
   type PartnerTicketView,
   type StoreDiagnosticsResult,
 } from "@/lib/server/api-support";
-import { quickThrottleKitchen } from "@/lib/server/api-orders";
+import { quickThrottleKitchen, listOrders } from "@/lib/server/api-orders";
 import {
   LifeBuoy,
   Plus,
@@ -38,6 +38,7 @@ import {
   CheckCircle,
   XCircle,
   ArrowRight,
+  MessageCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/support")({ component: SupportPage });
@@ -80,6 +81,13 @@ function SupportPage() {
   const [diagnosticsOpen, setDiagnosticsOpen] = useState(true);
   const [resuming, setResuming] = useState(false);
 
+  const recentOrdersQ = useQuery({
+    queryKey: ["orders", vendor.restaurantId, "recent_support"],
+    queryFn: () => listOrders({ data: { restaurantId: vendor.restaurantId, scope: "live" } }),
+    enabled: Boolean(vendor.restaurantId),
+  });
+  const recentOrders = recentOrdersQ.data?.orders ?? [];
+
   const diagQuery = useQuery({
     queryKey: ["store_diagnostics", vendor.restaurantId],
     queryFn: () => getStoreDiagnostics({ data: { restaurantId: vendor.restaurantId } }),
@@ -99,9 +107,9 @@ function SupportPage() {
         qc.invalidateQueries({ queryKey: ["dashboard", vendor.restaurantId] }),
         qc.invalidateQueries({ queryKey: ["bootstrap"] }),
       ]);
-      setBanner("✅ Storefront successfully resumed Online. Live orders enabled.");
+      setBanner("Storefront successfully resumed Online. Live orders enabled.");
     } catch (err) {
-      setBanner(`❌ Failed to resume store: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setBanner(`Failed to resume store: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setResuming(false);
     }
@@ -152,15 +160,15 @@ function SupportPage() {
 
       setBanner(
         res.status === "RESOLVED"
-          ? `✅ Ticket #${res.ticketNumber} created and resolved by King AI Autonomous First-Responder.`
+          ? `Ticket #${res.ticketNumber} created and resolved.`
           : res.status === "ESCALATED_TO_ADMIN"
-            ? `⚠️ Ticket #${res.ticketNumber} escalated with Priority SLA to Platform Admin (Hasan / merchant.care@orderking.in).`
-            : `Ticket #${res.ticketNumber} logged. King AI diagnostic active.`
+            ? `Ticket #${res.ticketNumber} escalated to Merchant Support Desk with Priority SLA.`
+            : `Ticket #${res.ticketNumber} logged.`
       );
 
       await qc.invalidateQueries({ queryKey: ["partner_tickets", vendor.restaurantId] });
     } catch (err) {
-      setBanner(`❌ Error creating ticket: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setBanner(`Error creating ticket: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setCreating(false);
     }
@@ -218,14 +226,26 @@ function SupportPage() {
               Submit tickets for payouts, order transit disputes, rider delays, or hardware support for {ticketsQuery.data?.restaurantName || "your restaurant"}.
             </p>
           </div>
-          <Button
-            size="sm"
-            onClick={() => setCreateModalOpen(true)}
-            className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold flex items-center gap-1.5 rounded-xl h-9 px-4 cursor-pointer"
-          >
-            <Plus className="size-4" />
-            Raise Support Ticket
-          </Button>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://wa.me/919395065587?text=Hello%20OrderKing%20Partner%20Support%2C%20I%20need%20assistance%20for%20my%20restaurant."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition shadow-xs cursor-pointer"
+              title="Open WhatsApp Partner Care"
+            >
+              <MessageCircle className="size-4 text-emerald-600" />
+              <span>WhatsApp Support</span>
+            </a>
+            <Button
+              size="sm"
+              onClick={() => setCreateModalOpen(true)}
+              className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold flex items-center gap-1.5 rounded-xl h-9 px-4 cursor-pointer"
+            >
+              <Plus className="size-4" />
+              Raise Support Ticket
+            </Button>
+          </div>
         </div>
 
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs font-mono">
@@ -242,7 +262,7 @@ function SupportPage() {
             <div className="text-sm font-bold text-emerald-700 mt-0.5">{resolvedCount}</div>
           </div>
           <div className="rounded-xl border border-red-200 bg-red-50/50 p-2.5">
-            <div className="text-[10px] uppercase text-red-700 font-bold">Admin Escalated</div>
+            <div className="text-[10px] uppercase text-red-700 font-bold">Escalated</div>
             <div className="text-sm font-bold text-red-700 mt-0.5">{escalatedCount}</div>
           </div>
         </div>
@@ -682,6 +702,58 @@ function SupportPage() {
                   ))}
                 </div>
               </div>
+
+              {newCategory === "ORDER_DISPUTE" && (
+                <div className="space-y-2 rounded-xl bg-gray-50 p-3 border border-gray-200">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-gray-700">
+                    <span>Quick Order Issue Templates</span>
+                    {recentOrders.length > 0 && <span className="text-gray-500 font-normal">Recent orders available</span>}
+                  </div>
+
+                  {recentOrders.length > 0 && (
+                    <select
+                      value={newOrderId}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setNewOrderId(val);
+                        if (val && !newSubject) {
+                          setNewSubject(`Dispute for order #${val}`);
+                        }
+                      }}
+                      className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-xs text-gray-900"
+                    >
+                      <option value="">-- Select from recent orders --</option>
+                      {recentOrders.map((ord: any) => (
+                        <option key={ord.id} value={ord.orderNumber || ord.id}>
+                          Order #{ord.orderNumber} ({ord.state})
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {[
+                      ["Container Spilled in Transit", "Food container leaked / spilled during transit by courier. Packaging was intact at handover.", "HIGH"],
+                      ["Customer Claims Missing Item", "Customer reported missing item. Checked kitchen packaging logs to reconcile.", "NORMAL"],
+                      ["Rider Pickup Delayed", "Food is ready on counter, rider has not arrived for pickup.", "HIGH"],
+                      ["Order Cancelled Post-Cooking", "Customer cancelled order after food was prepared. Food compensation requested.", "NORMAL"],
+                    ].map(([title, desc, prio]) => (
+                      <button
+                        key={title}
+                        type="button"
+                        onClick={() => {
+                          setNewSubject(newOrderId ? `${title} (Order #${newOrderId})` : title);
+                          setNewDescription(desc);
+                          setNewPriority(prio as TicketPriority);
+                        }}
+                        className="rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] font-semibold text-gray-700 hover:border-[#E23744] hover:text-[#E23744] transition cursor-pointer"
+                      >
+                        {title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-2">
                 <div>

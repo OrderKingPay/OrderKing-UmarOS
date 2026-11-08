@@ -25,6 +25,7 @@ export type TelecomProvider =
   | "2factor"
   | "msg91"
   | "twilio"
+  | "resilient_fallback"
   | "direct_channel"
   | "whatsapp";
 

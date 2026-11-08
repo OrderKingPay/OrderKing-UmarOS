@@ -156,30 +156,30 @@ export const createPartnerTicket = createServerFn({ method: "POST" })
         resolutionCode = "AUTO_LOGISTICS_SPILL_PROTECTED";
         resolvedAt = new Date().toISOString();
         aiSummary =
-          "🛡️ OrderKing Logistics Protection Policy Applied: Container spills, packaging drops, and transit physical damage are classified 100% as logistics liability. Your restaurant payout is fully protected with ₹0 deduction.";
+          "Logistics Protection Applied: Container spillage and transit damage are logistics liability. Your restaurant payout is protected with ₹0 deduction.";
       } else if (data.category === "PAYOUT_ISSUE" && (descLower.includes("when") || descLower.includes("timing") || descLower.includes("schedule") || descLower.includes("wednesday"))) {
         aiStatus = "RESOLVED";
         resolutionCode = "AUTO_SETTLEMENT_SCHEDULE_EXPLAINED";
         resolvedAt = new Date().toISOString();
         aiSummary =
-          "💳 Automatic Settlement Schedule: Net payable amounts accrued from delivered orders settle on a daily T+1 schedule directly into your registered bank account. Statutory deductions are limited strictly to Section 9(5) CGST (5% restaurant tax deposited on your behalf) and Section 194-O TDS (0.1%). Check the Settlement tab for batch IDs.";
+          "Settlement Schedule: Net payable amounts accrued from delivered orders settle on a daily T+1 schedule directly into your registered bank account. Statutory deductions are limited to Section 9(5) CGST (5% restaurant tax deposited on your behalf) and Section 194-O TDS (0.1%). Check the Settlements tab for batch details.";
       } else if (data.category === "HARDWARE_POS_SYNC" && (descLower.includes("printer") || descLower.includes("kot") || descLower.includes("esc/pos"))) {
         aiStatus = "RESOLVED";
         resolutionCode = "AUTO_HARDWARE_KOT_GUIDED";
         resolvedAt = new Date().toISOString();
         aiSummary =
-          "🖨️ Hardware & KOT Configuration: Ensure your 80mm/58mm thermal printer is paired via Bluetooth or assigned a static IP. Navigate to Settings -> Hardware to trigger a silent ESC/POS test ticket or enable automatic dual-KOT printing.";
+          "Hardware & KOT Configuration: Ensure your 80mm/58mm thermal printer is paired via Bluetooth or assigned a static IP. Navigate to Settings -> Hardware to trigger a test ticket or enable automatic KOT printing.";
       } else if (data.priority === "CRITICAL" || descLower.includes("fraud") || descLower.includes("bank account change") || descLower.includes("ifsc") || descLower.includes("legal") || descLower.includes("suspend")) {
-        // High risk / critical security -> Escalate to human platform administration
+        // High risk / critical security -> Escalate to platform operations
         aiStatus = "ESCALATED_TO_ADMIN";
         resolutionCode = "ESCALATED_CRITICAL_ADMIN_REVIEW";
         aiSummary =
-          "⚠️ High-Priority Escalation: This request requires verified platform administrative clearance under statutory KYC protocols. The ticket has been flagged for Hasan (Founder / Umar OS Admin) and an automated dispatch has been sent to merchant.care@orderking.in.";
+          "Priority Escalation: This request requires verified platform administrative review under statutory KYC protocols. The ticket has been routed to merchant operations desk with Priority SLA.";
       } else {
-        aiStatus = "AI_INVESTIGATING";
-        resolutionCode = "AI_DIAGNOSTIC_ACTIVE";
+        aiStatus = "OPEN";
+        resolutionCode = "DIAGNOSTIC_ACTIVE";
         aiSummary =
-          "🤖 King AI Autonomous Desk has received your ticket. Relevant order snapshots and financial ledger entries are being reconciled against your request.";
+          "Ticket received. Relevant order snapshots and financial ledger entries are being reconciled against your request.";
       }
 
       // 2. Insert Ticket into PostgreSQL
@@ -193,7 +193,7 @@ export const createPartnerTicket = createServerFn({ method: "POST" })
           ${data.priority}, ${aiStatus}, ${subject}, ${description}, ${data.orderId || null},
           ${data.attachmentUrl || null}, ${aiSummary}, ${resolutionCode},
           ${resolvedAt ? sql`${resolvedAt}::timestamptz` : null},
-          ${aiStatus === "ESCALATED_TO_ADMIN" ? "admin@orderkingpay.com" : null}
+          ${aiStatus === "ESCALATED_TO_ADMIN" ? "support@orderkingpay.com" : null}
         )
       `;
 
@@ -207,14 +207,14 @@ export const createPartnerTicket = createServerFn({ method: "POST" })
         )
       `;
 
-      // 4. Initial AI First-Responder Message
+      // 4. Initial First-Responder Message
       if (aiSummary) {
         await sql`
           insert into partner_ticket_messages (
             id, ticket_id, restaurant_id, author_type, author_user_id, author_name, body
           ) values (
             ${newId("tkm")}, ${ticketId}, ${ctx.restaurantId}, 'AI_ASSISTANT', null,
-            'King AI Autonomous Support', ${aiSummary}
+            'Partner Support Desk', ${aiSummary}
           )
         `;
       }
@@ -224,7 +224,7 @@ export const createPartnerTicket = createServerFn({ method: "POST" })
         restaurantId: ctx.restaurantId,
         type: "SUPPORT_TICKET",
         title: `Support Ticket Created: #${ticketNumber}`,
-        body: `Ticket "${subject}" is currently [${aiStatus}]. Resolution: ${resolutionCode}`,
+        body: `Ticket "${subject}" has been logged [${aiStatus}].`,
       });
 
       await writeAudit(sql, {

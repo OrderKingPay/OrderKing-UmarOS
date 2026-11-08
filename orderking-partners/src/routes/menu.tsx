@@ -1047,7 +1047,7 @@ function MenuPage() {
           const dataUrl = e.target?.result as string;
           setImagePreviewUrl(dataUrl);
           try {
-            toast.info("Extracting menu dishes with King AI multimodal vision...");
+            toast.info("Extracting dishes from menu photo...");
             const aiRes = await askAssistant({
               data: {
                 restaurantId: vendor.restaurantId,
@@ -3488,7 +3488,7 @@ function MenuPage() {
                 <div className="text-xs text-gray-700">
                   <span className="font-bold block">Menu Card Photo Attached</span>
                   <span className="text-[11px] text-gray-500">
-                    Multimodal King AI vision parsed dish entries into editable text below.
+                    Extracted dishes from photo are shown below.
                   </span>
                 </div>
               </div>

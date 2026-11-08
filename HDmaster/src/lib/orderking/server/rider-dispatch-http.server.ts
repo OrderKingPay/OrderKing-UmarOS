@@ -47,7 +47,7 @@ export async function handleRiderOffersHttp(request: Request): Promise<Response>
         select da.id, da.order_id, da.score, da.distance_m, da.eta_seconds, da.offered_at::text, (da.offered_at + interval '30 seconds')::text as expires_at,
                r.id as restaurant_id, r.name as restaurant_name, r.address as restaurant_address, (select lat from restaurant_outlets ro where ro.restaurant_id = r.id and ro.active = true limit 1) as restaurant_lat, (select lng from restaurant_outlets ro where ro.restaurant_id = r.id and ro.active = true limit 1) as restaurant_lng, cast(o.delivery_address_json->>'lat' as float) as customer_lat, cast(o.delivery_address_json->>'lng' as float) as customer_lng, cast(o.delivery_address_json->>'name' as text) as customer_name, cast(o.delivery_address_json->>'phone' as text) as customer_phone, cast(o.delivery_address_json->>'address' as text) as customer_address, z.name as zone_name, o.total_paise
         from dispatch_assignments da join orders o on o.id=da.order_id join restaurants r on r.id=o.restaurant_id join zones z on z.id=o.zone_id
-        where da.org_id=${ws.ctx.orgId} and da.rider_id=${riderId} and da.status='OFFERED' and o.data_mode='PRODUCTION' and o.status='READY'
+        where da.org_id=${ws.ctx.orgId} and da.rider_id=${riderId} and da.status='OFFERED' and o.data_mode='PRODUCTION' and o.status in ('PREPARING', 'READY')
           and da.offered_at > now() - interval '30 seconds' order by da.offered_at desc limit 5`;
       return json({ data: rows });
     }
@@ -96,7 +96,7 @@ export async function handleRiderOffersHttp(request: Request): Promise<Response>
           and da.offered_at > now()-interval '30 seconds'
           and o.org_id=${ws.ctx.orgId}
           and o.data_mode='PRODUCTION'
-          and o.status='READY'
+          and o.status in ('PREPARING', 'READY')
           and o.rider_id is null
           and r.org_id=${ws.ctx.orgId}
           and r.data_mode='PRODUCTION'
@@ -108,7 +108,7 @@ export async function handleRiderOffersHttp(request: Request): Promise<Response>
       order_claim as (
         update orders o set rider_id=c.rider_id, status='RIDER_ASSIGNED'
         from candidate c
-        where o.id=c.order_id and o.org_id=${ws.ctx.orgId} and o.data_mode='PRODUCTION' and o.status='READY' and o.rider_id is null
+        where o.id=c.order_id and o.org_id=${ws.ctx.orgId} and o.data_mode='PRODUCTION' and o.status in ('PREPARING', 'READY') and o.rider_id is null
         returning o.id, c.rider_id, c.offer_id
       ),
       rider_claim as (
@@ -127,7 +127,7 @@ export async function handleRiderOffersHttp(request: Request): Promise<Response>
     if (!accepted[0]) return json({ error: "Offer is no longer available or rider/order was already claimed", code: "OFFER_GONE" }, 409);
 
     const orderId = accepted[0].order_id;
-    await sql`insert into order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note) values (${nid("ev")},${ws.ctx.orgId},${orderId},${ws.ctx.employeeId},'READY','RIDER_ASSIGNED','rider.offer_accepted',${body.reason ?? null})`;
+    await sql`insert into order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note) values (${nid("ev")},${ws.ctx.orgId},${orderId},${ws.ctx.employeeId},'PREPARING','RIDER_ASSIGNED','rider.offer_accepted',${body.reason ?? null})`;
     const result = { offerId: body.offerId, orderId, riderId, decision: "ACCEPT" as const, status: "ACCEPTED" };
     await sql`insert into idempotency_keys (key,org_id,employee_id,action,response_json) values (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'rider.offer_accept',${JSON.stringify(result)}) on conflict (key) do nothing`;
     return json({ data: result });

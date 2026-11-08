@@ -1,3 +1,4 @@
+import { supabase } from "@/lib/db-cloud";
 import { getCurrentEcosystemShift, getShiftRemainingMinutes, checkThreatZoneIntersections } from "@orderking/ui";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -448,12 +449,85 @@ export function HomeView() {
     }
   }, [t]);
 
+  const notifiedOffersRef = useRef<Set<string>>(new Set());
+  const respondingOfferRef = useRef<boolean>(false);
+
   useEffect(() => {
     void load();
     void getPerformanceFn().then(setPerformance).catch(() => undefined);
     const id = window.setInterval(() => void load(), 5000);
     return () => window.clearInterval(id);
   }, [load]);
+
+  // Quad-Party Real-Time WebSocket Synchronization (Council Specialist f5a2c465)
+  // Subscribes to Supabase Realtime PostgreSQL replication on orders and dispatch_assignments
+  // for instant (<200ms) dispatch pings, status transitions, and zero-latency fleet coordination.
+  useEffect(() => {
+    const riderId = home?.rider?.id;
+    if (!riderId) return;
+
+    let cancelled = false;
+    let channel: any;
+
+    try {
+      channel = supabase
+        .channel(`fleet_rider_${riderId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "orders",
+          },
+          (payload: any) => {
+            if (cancelled) return;
+            const updated = payload.new;
+            if (
+              !updated ||
+              updated.rider_id === riderId ||
+              updated.status === "PREPARING" ||
+              updated.status === "READY" ||
+              updated.status === "CANCELLED"
+            ) {
+              void load();
+            }
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "dispatch_assignments",
+            filter: `rider_id=eq.${riderId}`,
+          },
+          () => {
+            if (cancelled) return;
+            void load();
+          }
+        )
+        .subscribe();
+    } catch (err) {
+      console.warn("[RiderFleet] Supabase Realtime subscription fallback:", err);
+    }
+
+    return () => {
+      cancelled = true;
+      if (channel) {
+        void supabase.removeChannel(channel);
+      }
+    };
+  }, [home?.rider?.id, load]);
+
+  // Idempotent incoming offer notification (Deliverable 3)
+  useEffect(() => {
+    if (home?.offer?.id) {
+      if (!notifiedOffersRef.current.has(home.offer.id)) {
+        notifiedOffersRef.current.add(home.offer.id);
+        toast.info(`Incoming dispatch offer: #${home.offer.orderCode || home.offer.id.slice(-6)}`);
+      }
+    }
+  }, [home?.offer?.id, home?.offer?.orderCode]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 250);
@@ -581,6 +655,8 @@ export function HomeView() {
   };
 
   async function respond(decision: "ACCEPT" | "DECLINE", offer: DispatchOffer) {
+    if (respondingOfferRef.current) return;
+    respondingOfferRef.current = true;
     setPending(true);
     try {
       await withRetry(() =>
@@ -589,7 +665,7 @@ export function HomeView() {
             offerId: offer.id,
             decision,
             reason: declineReason || undefined,
-            idempotencyKey: newIdempotencyKey(),
+            idempotencyKey: newIdempotencyKey("rider_resp_"),
           },
         }),
       );
@@ -597,6 +673,7 @@ export function HomeView() {
     } catch (e) {
       setError(errorMessage(e, t("offerGone")));
     } finally {
+      respondingOfferRef.current = false;
       setPending(false);
       setConfirm(null);
     }

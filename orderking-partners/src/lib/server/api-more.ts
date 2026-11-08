@@ -290,7 +290,7 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
     if (isHindiOrDevanagari) {
       return `नमस्ते! मैं किंग एआई (King AI) हूँ, आपका ऑर्डरकिंग रेस्टोरेंट पार्टनर सहायक। आज आपके किचन ऑर्डर्स, मेनू स्टॉक, प्रेप टाइमिंग या दैनिक बैंक सेटलमेंट में मैं आपकी क्या सहायता कर सकता हूँ?`;
     }
-    return `Hello! I am King AI, your OrderKing restaurant partner assistant. How can I help you today with your kitchen orders, menu items, prep timing, or daily bank settlements?`;
+    return `Hello! How can I assist you with your kitchen orders, menu items, prep timing, or settlements?`;
   }
 
   const topSummary =

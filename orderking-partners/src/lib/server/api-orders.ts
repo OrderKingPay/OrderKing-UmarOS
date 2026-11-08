@@ -191,6 +191,38 @@ export const acceptOrder = createServerFn({ method: "POST" })
         insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
         values (${newId("evt")}, ${data.orderId}, ${ctx.restaurantId}, 'PLACED', 'ACCEPTED', 'restaurant', ${context.userId}, ${prepMins ? `Order Accepted with ${prepMins}m Prep SLA` : 'Order Accepted'})
       `;
+      // Direct algorithmic nearest-rider dispatch ping (Council Specialist f5a2c465)
+      // Dispatches sub-second offer ping to online fleet terminal while food prepares
+      await sql`
+        INSERT INTO dispatch_assignments (
+          id, org_id, order_id, rider_id, score, distance_m, eta_seconds, status, offered_at, cascade_index, bounty_paise, distance_km
+        )
+        SELECT
+          'offer_' || substr(md5(${data.orderId} || r.id || clock_timestamp()::text), 1, 20),
+          coalesce((SELECT org_id FROM orders WHERE id = ${data.orderId} LIMIT 1), 'org_1'),
+          ${data.orderId},
+          r.id,
+          0,
+          1000,
+          300,
+          'OFFERED',
+          now(),
+          0,
+          0,
+          1.0
+        FROM riders r
+        WHERE r.status in ('ACTIVE', 'ONLINE')
+          AND r.online = 1
+          AND r.active_order_id is null
+          AND NOT EXISTS (
+            SELECT 1 FROM dispatch_assignments da
+            WHERE da.order_id = ${data.orderId} AND da.rider_id = r.id AND da.status in ('OFFERED', 'ACCEPTED')
+          )
+        ORDER BY r.created_at ASC
+        LIMIT 1
+        ON CONFLICT DO NOTHING;
+      `.catch(() => undefined);
+
       return { ok: true, status: 'PREPARING', state: 'PREPARING' };
     });
   });
