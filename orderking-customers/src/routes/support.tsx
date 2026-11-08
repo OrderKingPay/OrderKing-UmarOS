@@ -306,7 +306,7 @@ export function SupportPage() {
             <h2 className="font-display text-lg font-black text-stone-900">Order Status &amp; Resolution</h2>
           </div>
           <p className="mt-1 text-xs text-stone-600 leading-relaxed font-medium">
-            Check recorded status or save a formal inquiry for review. Refunds and cancellations require confirmation.
+            Check your live order status or raise a support ticket.
           </p>
 
           {/* Quick Action Diagnostics Chips */}
@@ -680,7 +680,7 @@ export function SupportPage() {
           <ul className="space-y-2.5">
             {(tickets.data?.tickets ?? []).length === 0 ? (
               <li className="rounded-2xl border border-amber-200/60 bg-amber-50/30 p-4 text-xs font-medium text-stone-500 text-center">
-                No tickets recorded yet.
+                No support tickets raised yet.
               </li>
             ) : (
               (tickets.data?.tickets ?? []).map((tk) => (

@@ -99,7 +99,7 @@ import { FounderSovereignDeck } from "./founder-sovereign-deck";
 import { FounderEconomics } from "../dashboard/FounderEconomics";
 import { UmarOS_AI_Terminal } from "../dashboard/UmarOS_AI_Terminal";
 import { LiveFounderProfitDashboard } from "../dashboard/LiveFounderProfitDashboard";
-import { CommercialCommandDials } from "./commercial-command-dials";
+import { CommercialCommandDials, CustomerSupportDisputeQueueSection } from "./commercial-command-dials";
 import { MANDATE_1_SPECIALIST_DEPARTMENTS } from "@/lib/orderking/ai/specialists";
 import { UmarOsVisualCustomizationStudio } from "@/components/customization/UmarOsVisualCustomizationStudio";
 
@@ -794,7 +794,7 @@ function RiderDetail({ id }: { id: string }) {
   );
 }
 
-function CustomersPage() {
+export function CustomersPage() {
   const nav = useNavigate();
   const q = useQuery({ queryKey: ["customers"], queryFn: () => loadCustomers({ data: {} }) });
   const rows = q.data && q.data.ok ? q.data.data : [];
@@ -984,27 +984,36 @@ function ZonesPage() {
   );
 }
 
-function SupportPage() {
-  const [queue, setQueue] = useState("");
+export function SupportPage({ queueOverride }: { queueOverride?: string } = {}) {
+  const [queue, setQueue] = useState(queueOverride ?? "");
   const nav = useNavigate();
   const q = useQuery({ queryKey: ["tickets", queue], queryFn: () => loadTickets({ data: { queue: queue || undefined } }) });
   const rows = q.data && q.data.ok ? q.data.data : [];
   return (
     <div className="space-y-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="font-display text-3xl">Support center</h1>
-        <div className="flex gap-2">
-          {["", "customer", "restaurant", "rider"].map((k) => (
-            <Button key={k || "all"} size="sm" variant={queue === k ? "primary" : "secondary"} onClick={() => setQueue(k)}>
-              {k || "All"}
-            </Button>
-          ))}
+        <div>
+          <h1 className="font-display text-2xl font-bold text-slate-900">
+            {queueOverride === "restaurant" ? "Restaurant Partner Grievances" : queueOverride === "rider" ? "Rider SOS & Fleet Tickets" : "Support Tickets"}
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Real-time ticket ledger with SLA tracking and audit resolution.
+          </p>
         </div>
+        {!queueOverride && (
+          <div className="flex gap-2">
+            {["", "customer", "restaurant", "rider"].map((k) => (
+              <Button key={k || "all"} size="sm" variant={queue === k ? "primary" : "secondary"} onClick={() => setQueue(k)}>
+                {k === "" ? "All" : k.charAt(0).toUpperCase() + k.slice(1)}
+              </Button>
+            ))}
+          </div>
+        )}
       </header>
       {q.data && !q.data.ok ? <Denied error={q.data.error} /> : (
         <DataTable
           columns={[
-            { key: "id", label: "Ticket" },
+            { key: "id", label: "Ticket ID" },
             { key: "queue", label: "Queue" },
             { key: "subject", label: "Subject" },
             { key: "status", label: "Status" },
@@ -1021,6 +1030,78 @@ function SupportPage() {
           onRow={(row) => void nav({ to: "/app/$module/$id", params: { module: "support", id: String(row._id) } })}
         />
       )}
+    </div>
+  );
+}
+
+export function SupportEscalationsHub() {
+  const [activeSubTab, setActiveSubTab] = useState<"disputes" | "partner" | "rider" | "all">("disputes");
+
+  return (
+    <div className="space-y-5">
+      {/* Navigation Sub-bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-xs">
+        <div>
+          <span className="text-[10px] font-black uppercase tracking-wider text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+            Issue Escalation Center
+          </span>
+          <h2 className="text-base font-black text-slate-900 mt-1">
+            Customer Complaints, Partner Disputes & Rider SOS
+          </h2>
+        </div>
+        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+          <button
+            type="button"
+            onClick={() => setActiveSubTab("disputes")}
+            className={`px-3 py-1.5 rounded-lg transition-colors ${
+              activeSubTab === "disputes"
+                ? "bg-rose-600 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Customer Disputes & 1-Tap Refunds
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSubTab("partner")}
+            className={`px-3 py-1.5 rounded-lg transition-colors ${
+              activeSubTab === "partner"
+                ? "bg-amber-600 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Restaurant Partner Tickets
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSubTab("rider")}
+            className={`px-3 py-1.5 rounded-lg transition-colors ${
+              activeSubTab === "rider"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Rider SOS & Fleet Issues
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSubTab("all")}
+            className={`px-3 py-1.5 rounded-lg transition-colors ${
+              activeSubTab === "all"
+                ? "bg-slate-900 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            All Tickets
+          </button>
+        </div>
+      </div>
+
+      {/* Active View */}
+      {activeSubTab === "disputes" && <CustomerSupportDisputeQueueSection />}
+      {activeSubTab === "partner" && <SupportPage queueOverride="restaurant" />}
+      {activeSubTab === "rider" && <SupportPage queueOverride="rider" />}
+      {activeSubTab === "all" && <SupportPage />}
     </div>
   );
 }

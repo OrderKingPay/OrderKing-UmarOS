@@ -78,6 +78,8 @@ import {
   SettlementsPage,
   FinancePage,
   EconomicsPage,
+  CustomersPage,
+  SupportEscalationsHub,
 } from "@/components/command/pages";
 
 const LazyGlobalGodEyeMap = lazyWithRetry(
@@ -1010,6 +1012,7 @@ const TEN_WORLDS: WorldDefinition[] = [
       { id: "riders", label: "Rider Fleet" },
       { id: "customers", label: "Customers" },
       { id: "dispatch", label: "Dispatch & Surge" },
+      { id: "support", label: "Issues & Escalations" },
       { id: "settings", label: "Configuration" },
     ],
     defaultSettings: {
@@ -1573,6 +1576,7 @@ export const SUB_CATEGORY_TABS: Record<WorldId, string[]> = {
     "riders",
     "customers",
     "dispatch",
+    "support",
     "settings",
   ],
   kingpay: [
@@ -3168,22 +3172,22 @@ function UmarOSDashboard() {
                       title={
                         pendingUnapproved.length > 0
                           ? `Approve ${pendingUnapproved.length} Pending Kitchen(s)`
-                          : "View All Restaurants"
+                          : "Restaurant Partners & KYC"
                       }
-                      description="Approve pending restaurant applications directly in PostgreSQL."
-                      buttonLabel="Go to Restaurants Tab"
+                      description="Review kitchen verification, FSSAI compliance, and onboarding."
+                      buttonLabel="Open Restaurants"
                       onClick={() => selectSubTab("restaurants")}
                       urgent={pendingUnapproved.length > 0}
                     />
                     <ActionCard
-                      title="Configure Dispatch & Rain Bonus"
-                      description={`Rider base pay is ₹${currentSettings.riderPerOrderBasePayInr} + ₹${currentSettings.rainBonusInr} rain bonus.`}
-                      buttonLabel="Tune Dispatch Rules"
-                      onClick={() => selectSubTab("dispatch")}
+                      title="Issues & Escalations Desk"
+                      description="Customer disputes with 1-tap refunds, partner grievances, and rider SOS."
+                      buttonLabel="Open Escalations"
+                      onClick={() => selectSubTab("support")}
                     />
                     <ActionCard
-                      title="Inspect Live Order Pipeline"
-                      description="Check the 6-stage order fulfillment flow and recent PostgreSQL orders."
+                      title="Live Order Cockpit"
+                      description="Real-time order statuses, delay alerts, and delivery tracking."
                       buttonLabel="View Live Orders"
                       onClick={() => selectSubTab("orders")}
                     />
@@ -3193,22 +3197,22 @@ function UmarOSDashboard() {
                 {activeWorldId === "kingpay" && (
                   <>
                     <ActionCard
-                      title="View Live Profit & Escrow Split"
-                      description="Inspect net founder margin, partner payouts, and GST/TDS tax buckets."
-                      buttonLabel="Open Profit Dashboard"
-                      onClick={() => selectSubTab("profit")}
+                      title="Settlements & Payout Batches"
+                      description="Approve T+0 / T+1 merchant and rider bank transfers."
+                      buttonLabel="Open Settlements"
+                      onClick={() => selectSubTab("settlements")}
                     />
                     <ActionCard
-                      title="Set MDR & Convenience Fees"
-                      description="Update payment gateway MDR percentage and auto-refund threshold."
-                      buttonLabel="Open Wallet & MDR Fees"
-                      onClick={() => selectSubTab("wallet-mdr")}
+                      title="Double-Entry Financial Ledger"
+                      description="Audit Gross GMV, commissions, platform fees, and statutory tax."
+                      buttonLabel="Open Finance Ledger"
+                      onClick={() => selectSubTab("finance")}
                     />
                     <ActionCard
-                      title="Adjust Commission Slabs"
-                      description="Configure fair restaurant commissions and delivery pricing tiers."
-                      buttonLabel="Open Commissions"
-                      onClick={() => selectSubTab("commissions")}
+                      title="Master Safety Switch"
+                      description="Instant fail-safe kill switches and auto-refund thresholds."
+                      buttonLabel="Open Safety Switch"
+                      onClick={() => selectSubTab("master-switch")}
                     />
                   </>
                 )}
@@ -3406,15 +3410,6 @@ function UmarOSDashboard() {
               </section>
             )}
 
-            {/* BOX 3: QUICK SETTINGS & CUSTOMIZATIONS (Wired to PostgreSQL `saveUmarOsSettingsFn` + `localStorage`) */}
-            <WorldSettingsPanel
-              world={currentWorld}
-              values={currentSettings}
-              onChange={(key, val) => updateField(currentWorld.id, key, val)}
-              onSave={() => handleSaveWorldSettings(currentWorld.id)}
-              isSaving={savingWorldId === currentWorld.id}
-              boxTitle={`Settings — ${currentWorld.navLabel}`}
-            />
           </div>
         )}
 
@@ -3729,31 +3724,15 @@ function UmarOSDashboard() {
         )}
 
         {activeWorldId === "orderking" && currentTabId === "customers" && (
-          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-            <h2 className="text-base font-black text-slate-900">
-              👥 Registered Customers ({loaderData.users} Accounts in PostgreSQL)
-            </h2>
-            <p className="text-xs text-slate-600">
-              Customer accounts are stored in the PostgreSQL `profiles` table with DPDP Act 2023 phone masking and zero third-party data resale.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <ResultMetricCard
-                label="Total Customer Profiles"
-                value={String(loaderData.users)}
-                sub="PostgreSQL `profiles`"
-              />
-              <ResultMetricCard
-                label="Free Delivery Threshold"
-                value={`₹${currentSettings.freeDeliveryAboveInr}`}
-                sub="Configured in OrderKing Settings"
-              />
-              <ResultMetricCard
-                label="Phone Number Privacy"
-                value="Masked"
-                sub="DPDP Act 2023 Compliant"
-              />
-            </div>
-          </section>
+          <div className="space-y-4">
+            <CustomersPage />
+          </div>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "support" && (
+          <div className="space-y-4">
+            <SupportEscalationsHub />
+          </div>
         )}
 
         {/* ===================================================================
