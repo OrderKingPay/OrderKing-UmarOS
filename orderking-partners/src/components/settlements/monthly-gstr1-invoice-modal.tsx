@@ -241,7 +241,7 @@ export function MonthlyGstr1InvoiceModal({
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-white">Monthly GSTR-1 Statutory Tax Invoice</h3>
+                <h3 className="font-bold text-sm text-white">Monthly GSTR-1 Tax Invoice</h3>
                 <span className="rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono font-bold">
                   CA-READY
                 </span>

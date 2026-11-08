@@ -83,7 +83,7 @@ const LEGAL_SECTIONS = [
     badge: "DPDP Act, 2023",
     body: [
       "Lawful & Respectful Data Handling: Under the Digital Personal Data Protection Act, 2023 (DPDP Act), Order King collects merchant KYC records (PAN, optional GSTIN if registered [turnover < ₹20L exempt], 14-digit FSSAI license, bank account & IFSC, authorized signatory details) solely to verify your kitchen, process fast direct bank payouts, and fulfill tax requirements.",
-      "Guest Privacy on Kitchen Tickets: Guest names, delivery notes, and masked contact numbers shared on Kitchen Order Tickets (KOT) are provided exclusively for order preparation and statutory receipts. Preserving guest privacy is paramount; phone numbers may not be extracted for external promotional messaging.",
+      "Guest Privacy on Kitchen Tickets: Guest names, delivery notes, and masked contact numbers shared on Kitchen Order Tickets (KOT) are provided exclusively for order preparation and customer receipts. Preserving guest privacy is paramount; phone numbers may not be extracted for external promotional messaging.",
       "Secure Record Retention: Financial ledgers, settlement batches, and tax invoices are securely archived for 8 financial years in accordance with Indian financial reporting standards.",
     ],
   },
@@ -374,7 +374,7 @@ function SettingsPage() {
             { id: "PRINTER", label: "Printer & Hardware" },
             { id: "ALERTS", label: "Alerts & Soundbox" },
             { id: "STAFF", label: "Staff Management" },
-            { id: "LEGAL", label: "Statutory & Policies" },
+            { id: "LEGAL", label: "Legal & Policies" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -769,7 +769,7 @@ function SettingsPage() {
                     Net Restaurant Payout (NRP)
                   </div>
                   <div className="text-[10px] font-mono text-gray-500">
-                    Daily bank disbursement amount after statutory deductions
+                    Daily bank payout amount after applicable deductions
                   </div>
                 </div>
                 <div className="text-2xl font-bold font-display text-emerald-700 font-mono">

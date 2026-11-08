@@ -184,7 +184,7 @@ export function KingPayMasterSwitch() {
       id: "p2p",
       label: "Wallet-to-Wallet Transfers",
       desc: "Locked until RBI Prepaid Payment Instrument (PPI) license approval.",
-      spec: "Strictly locked for statutory RBI compliance",
+      spec: "Locked for RBI regulatory compliance",
       locked: true,
     },
   ];
@@ -739,7 +739,7 @@ export function KingPayMasterSwitch() {
           <Lock className="w-3.5 h-3.5 text-slate-600" />
           <span>SECURITY: SHA-256 VERIFIED ADMIN ACCESS</span>
         </div>
-        <div>STATUTORY AUDIT LOG: ACTIVE</div>
+        <div>AUDIT LOG: ACTIVE</div>
       </div>
     </div>
   );

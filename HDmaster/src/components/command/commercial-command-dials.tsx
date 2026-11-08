@@ -2362,7 +2362,7 @@ function TravelPartnerGovernanceSection() {
 // 10. CENTRAL CUSTOMER SUPPORT DISPUTE QUEUE & 1-TAP REFUND ENGINE
 // ==========================================================================
 
-function CustomerSupportDisputeQueueSection() {
+export function CustomerSupportDisputeQueueSection() {
   const qc = useQueryClient();
 
   const disputesQ = useQuery({

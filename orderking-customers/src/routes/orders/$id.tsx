@@ -135,10 +135,8 @@ function OrderDetailPage() {
     },
   });
 
-  const { lastEvent, connected } = useOrderSSE(id, (event) => {
-    if (event.status && event.status !== detail.data?.order?.status) {
-      void detail.refetch();
-    }
+  const { lastEvent, connected } = useOrderSSE(id, (_event) => {
+    void detail.refetch();
   });
 
   const cancel = useMutation({ mutationFn: () => cancelMyOrder({ data: { orderId: id } }), onSuccess: () => void detail.refetch() });
@@ -907,7 +905,7 @@ function OrderDetailPage() {
             size="sm"
             className="w-full text-xs font-bold bg-[#25D366] hover:bg-[#20ba59] text-white flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             onClick={async () => {
-              toast.info("Acquiring GPS coordinates for autonomous dispatch...");
+              toast.info("Updating delivery partner with current location...");
               try {
                 const { coordinates } = await triggerWhatsAppDispatchWithGps({
                   storeType: "kitchen",

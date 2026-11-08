@@ -220,7 +220,7 @@ export function LegacyAggregatorSwitchFlow({ rider, onSuccess }: LegacyAggregato
       }
     }
     if (!governmentIdLast4.trim() || !/^\d{4}$/.test(governmentIdLast4.trim())) {
-      setError("Aadhaar Card last 4 digits are required for statutory KYC compliance.");
+      setError("Aadhaar Card last 4 digits are required for KYC verification.");
       return;
     }
     if (ifsc.trim() && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc.trim().toUpperCase())) {
@@ -334,7 +334,7 @@ export function LegacyAggregatorSwitchFlow({ rider, onSuccess }: LegacyAggregato
         </h1>
 
         <p className="mt-2.5 text-sm text-slate-600 max-w-2xl leading-relaxed">
-          Delivery partners with prior commercial last-mile experience can submit their existing fleet credentials, payout statement, or ID screenshot alongside statutory KYC details for expedited onboarding review.
+          Delivery partners with prior last-mile experience can submit their existing fleet credentials, payout statement, or ID screenshot alongside KYC details for expedited onboarding review.
         </p>
 
         {/* Institutional Fleet Standards */}

@@ -405,7 +405,7 @@ export function MasterCustomizationHub({
               Master Customization &amp; Autonomous Ecosystem Hub
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Centralized sovereign control center: Commercial tiers, geofencing radii, employee-less dispute resolution &amp; multi-platform feature flags.
+              Centralized operational settings: Commercial tiers, delivery radii, dispute resolution, and platform feature flags.
             </p>
           </div>
         </div>

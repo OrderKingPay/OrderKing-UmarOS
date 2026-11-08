@@ -603,7 +603,7 @@ function DashboardPage() {
             <div className="my-3 space-y-1.5">
               {(d?.attention?.length ?? 0) === 0 ? (
                 <p className="text-xs text-emerald-700 font-semibold">
-                  All statutory checks and kitchen queues are healthy.
+                  All store checks and kitchen queues are active.
                 </p>
               ) : (
                 d?.attention.map((item) => (

@@ -84,7 +84,7 @@ export function QuoteLines({ lines, locale }: { lines: QuoteLine[]; locale: stri
             </div>
             <p className="text-[10px] sm:text-[11px] text-amber-300/70 flex items-center gap-1">
               <ShieldCheck className="size-3 text-emerald-400" />
-              <span>Inclusive of statutory taxes &amp; GST</span>
+              <span>Taxes &amp; charges included</span>
             </p>
           </div>
 

@@ -358,7 +358,7 @@ export function SystemMasterSettingsModal({
                     <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">CLEAN STATE</Badge>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Performs a complete clean reboot of all 7 sovereign core engines. Flushes background workers, resets model handshakes, and initializes pure memory.
+                    Performs a clean system restart: flushes background workers, resets connections, and clears active cache.
                   </p>
                   <Button
                     onClick={handleRestart}

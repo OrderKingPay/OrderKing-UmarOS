@@ -66,7 +66,7 @@ export function FounderApprovalModal({
                 Founder Authorization Checkpoint
               </h3>
               <p className="text-xs text-muted">
-                Section 14 Sovereign Guard: High-impact action requires explicit founder signature.
+                Founder Confirmation: High-impact action requires explicit approval.
               </p>
             </div>
           </div>

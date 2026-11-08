@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 
 export type OrderSSEEvent = {
@@ -29,18 +28,20 @@ export function useOrderSSE(orderId: string | undefined, onEvent?: (e: OrderSSEE
         .on(
           "postgres_changes",
           {
-            event: "UPDATE",
+            event: "*",
             schema: "public",
             table: "orders",
             filter: `id=eq.${orderId}`,
           },
           (payload: any) => {
+            const raw = payload.new || {};
+            const rawStatus = raw.status || raw.state || "";
             const data: OrderSSEEvent = {
-              orderId: payload.new.id,
-              status: payload.new.status,
-              riderLat: payload.new.rider_lat,
-              riderLng: payload.new.rider_lng,
-              timestamp: new Date().toISOString()
+              orderId: raw.id || orderId,
+              status: String(rawStatus).toUpperCase(),
+              riderLat: raw.rider_lat ?? raw.current_lat,
+              riderLng: raw.rider_lng ?? raw.current_lng,
+              timestamp: new Date().toISOString(),
             };
             setLastEvent(data);
             onEvent?.(data);

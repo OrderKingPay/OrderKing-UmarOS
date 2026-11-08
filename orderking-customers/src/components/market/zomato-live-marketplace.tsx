@@ -1403,13 +1403,13 @@ export function ZomatoLiveMarketplace() {
         <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-white p-5 space-y-4 text-slate-900">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <h3 className="text-base font-extrabold">Your Cart &amp; Statutory Bill (Paise Precision)</h3>
+              <h3 className="text-base font-extrabold">Your Cart</h3>
               <button type="button" onClick={() => setShowCartSheet(false)} className="size-8 rounded-full bg-slate-100 font-bold">✕</button>
             </div>
 
             {cart.length === 0 ? (
               <div className="text-xs text-slate-500 py-6 text-center">
-                Your cart is empty. Tap <strong>ADD +</strong> on any dish from La Trio Pizza, Hotel Chandan, Chill Out, or Fusion Frenzy!
+                Your cart is empty. Add items from a restaurant to start your order.
               </div>
             ) : (
               <div className="space-y-3 text-xs">

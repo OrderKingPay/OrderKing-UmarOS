@@ -1387,8 +1387,8 @@ function CheckoutPage() {
                         <div className="flex items-center gap-1.5">
                           <span className="text-zinc-900 dark:text-zinc-100 font-bold">Govt Taxes (GST)</span>
                           <BillTooltip
-                            title="Statutory GST Compliance"
-                            text="Includes 5% restaurant food GST levied under Section 9(5) CGST (collected and remitted by OrderKing as an Electronic Commerce Operator) plus statutory 18% services GST on platform charges."
+                            title="Taxes & Fees"
+                            text="Includes restaurant taxes and applicable platform charges."
                           />
                         </div>
                         <span className="tabular-nums font-bold text-zinc-900 dark:text-zinc-100">
@@ -1471,7 +1471,7 @@ function CheckoutPage() {
                         </span>
                       </h3>
                       <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                        Autonomous dispatch bridge captures your live GPS coordinates via browser geolocation and routes directly to kitchen &amp; rider WhatsApp.
+                        Live order routing delivers your delivery location directly to kitchen and delivery partner.
                       </p>
                     </div>
                   </div>
