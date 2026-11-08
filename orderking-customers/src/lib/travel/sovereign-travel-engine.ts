@@ -323,7 +323,7 @@ export function calculateSovereignFareBreakdown(
   const count = Math.max(1, Math.floor(passengers));
   const baseFarePaiseTotal = quote.baseFarePaise * count;
   const taxesPaiseTotal = quote.carrierTaxesPaise * count;
-  const orderKingDeskFeePaise = 0; // Sovereign guarantee: 0 paise fee
+  const orderKingDeskFeePaise = 0; // Standard guarantee: 0 paise fee
   const grossCheckoutPaise = baseFarePaiseTotal + taxesPaiseTotal + orderKingDeskFeePaise;
 
   const otaConvenienceFeeTotal = quote.otaBenchmarkFeePaise * count;
