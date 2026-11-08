@@ -767,7 +767,7 @@ export function AiMediaEngineHub({
                 </div>
                 <div>
                   <label className="font-medium text-foreground block mb-1">
-                    Bounty Sovereign Cash Reward (₹ INR)
+                    Referral Cash Reward (₹ INR)
                   </label>
                   <input
                     type="number"
@@ -892,7 +892,7 @@ export function AiMediaEngineHub({
                     onChange={(e: any) => handleFieldChange("backgroundType", e.target.value)}
                     className="w-full h-8 rounded-lg border border-border bg-background px-2 text-xs text-foreground focus:ring-1 focus:ring-primary"
                   >
-                    <option value="cyber_dark">Dark Emerald Sovereign Studio (#0D3B2E)</option>
+                    <option value="cyber_dark">Dark Emerald Studio (#0D3B2E)</option>
                     <option value="kitchen_luxury">Commercial Stainless Kitchen</option>
                     <option value="studio_green">Green Screen Chroma Key</option>
                     <option value="transparent">Transparent Alpha Channel</option>
