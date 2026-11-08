@@ -7,7 +7,7 @@ for (let i = 1; i <= 4; i++) {
   console.log(`\n[Deploy Attempt ${i}/4]...`);
   const res = spawnSync(
     "npx",
-    ["wrangler", "pages", "deploy", "orderking-customers/dist", "--project-name=orderking-customers", "--branch=main", "--commit-dirty=true", "--no-bundle"],
+    ["wrangler", "pages", "deploy", "orderking-customers/dist", "--project-name=orderking-customers", "--branch=main", "--commit-dirty=true"],
     {
       stdio: "inherit",
       shell: true,
