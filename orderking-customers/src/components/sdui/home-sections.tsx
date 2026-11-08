@@ -30,7 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { LocationDialog } from "@/components/market/location-dialog";
 import { HomeFeed, VERIFIED_AVAILABLE_KITCHENS } from "@/components/market/home-feed";
-import { RoyalDiscoveryShowcase } from "@/components/market/royal-discovery-showcase";
+import { KitchenDiscoveryEmptyState } from "@/components/market/kitchen-discovery-empty-state";
 import { useLocationStore } from "@/lib/stores/location";
 import { useDietStore } from "@/lib/stores/diet";
 import { useCartStore } from "@/lib/stores/cart";
@@ -230,7 +230,7 @@ export function BannerCarouselSection({
       id: "verified_kitchens_offer",
       title: "Verified Kitchen Excellence",
       subtitle: "Explore available menus with transparent prices",
-      tag: "👑 Verified Kitchens",
+      tag: "Verified Kitchens",
       cta: "Explore Kitchens",
       link: "/search",
       gradient: "from-amber-500 via-yellow-400 to-amber-600",
@@ -239,7 +239,7 @@ export function BannerCarouselSection({
     },
     {
       id: "gold_crown_rewards",
-      title: "Crown Rewards",
+      title: "Rewards & Offers",
       subtitle: "View available rewards and eligibility",
       tag: "Reward information",
       cta: "View Rewards",
@@ -747,13 +747,13 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
         </div>
       )}
 
-      {/* 3D ULTRA-LUXURY REORDER PAST ITEMS */}
+      {/* Reorder Past Orders */}
       {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && (
         <div className="pt-4 mt-2 border-t border-amber-900/10">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="flex size-6 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-md text-xs">
-                👑
+              <span className="flex size-6 items-center justify-center rounded-lg bg-stone-100 text-stone-700 text-xs font-bold">
+                🔄
               </span>
               <h3 className="text-base font-black text-gray-950 tracking-tight">
                 Quick Reorder · Your Favorites

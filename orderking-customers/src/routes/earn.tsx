@@ -40,7 +40,7 @@ function CrownOpportunitiesPage() {
     <CustomerShell>
       <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-6 pb-32 text-stone-900">
         <div className="mx-auto max-w-5xl space-y-7">
-          {/* Royal Hero Header */}
+          {/* Earn Rewards Header */}
           <header className="relative overflow-hidden rounded-3xl border-2 border-amber-400/60 bg-gradient-to-br from-stone-950 via-stone-900 to-amber-950 p-6 text-white shadow-2xl sm:p-9">
             <div
               className="pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/10 blur-3xl"
@@ -111,7 +111,7 @@ function CrownOpportunitiesPage() {
               </p>
               <div className="mt-4 pt-3 border-t border-amber-900/5">
                 <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
-                  👑 Applied at food checkout
+                  Applied at food checkout
                 </span>
               </div>
             </div>

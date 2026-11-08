@@ -18,7 +18,7 @@ export function CustomerAppSkeleton({ className }: { className?: string }) {
       <div className="sticky top-0 z-30 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] border-b border-amber-900/10 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="size-8 rounded-xl bg-gradient-to-tr from-amber-400/40 via-yellow-300/30 to-amber-500/20 flex items-center justify-center">
-            <span className="text-sm">👑</span>
+            <span className="text-xs font-bold text-amber-700">OK</span>
           </div>
           <div className="space-y-1">
             <div className="h-4 w-24 bg-amber-200/50 rounded-md" />

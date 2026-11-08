@@ -561,7 +561,7 @@ export const POPULAR_RECHARGE_PLANS: MobileRechargePlan[] = [
     voice: "Unlimited",
     sms: "100/Day",
     category: "annual",
-    badge: "👑 365 Days Annual",
+    badge: "365 Days Annual",
     perks: "Full 1 Year Uncapped 5G (912.5 GB total)",
   },
   {
@@ -647,7 +647,7 @@ export const POPULAR_RECHARGE_PLANS: MobileRechargePlan[] = [
     voice: "Unlimited",
     sms: "100/Day",
     category: "annual",
-    badge: "👑 365 Days Annual",
+    badge: "365 Days Annual",
     perks: "Unlimited 5G, 730 GB Total, Wynk Music",
   },
   {
@@ -733,7 +733,7 @@ export const POPULAR_RECHARGE_PLANS: MobileRechargePlan[] = [
     voice: "Unlimited",
     sms: "100/Day",
     category: "annual",
-    badge: "👑 365 Days Full Year",
+    badge: "365 Days Full Year",
     perks: "No Daily Data Cap, Binge All Night",
   },
   {
@@ -807,7 +807,7 @@ export const POPULAR_RECHARGE_PLANS: MobileRechargePlan[] = [
     voice: "Unlimited",
     sms: "100/Day",
     category: "annual",
-    badge: "👑 395 Days Super Annual",
+    badge: "395 Days Super Annual",
     perks: "Extra 30 days validity free (1,185 GB total)",
   },
 ];

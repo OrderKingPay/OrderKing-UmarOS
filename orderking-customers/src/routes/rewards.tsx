@@ -303,7 +303,7 @@ function RewardsPage() {
           {(
             [
               { id: "all", label: "All Perks" },
-              { id: "orderking", label: "👑 OrderKing Loyalty" },
+              { id: "orderking", label: "OrderKing Loyalty" },
               { id: "ecommerce", label: "🛍️ E-Commerce" },
               { id: "fuel", label: "⛽ Fuel Alliance" },
               { id: "edtech", label: "🎓 AI Courses" },

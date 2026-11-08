@@ -180,7 +180,7 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
 
   // Utility Bills & BBPS
   { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Instant BBPS Payment & Legal Receipt · 0% Fee", icon: "⚡", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
-  { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "1-Tap Instant Top-up with 24K Gold Rebate", icon: "📱", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
+  { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "Instant 1-Tap Prepaid Top-Up", icon: "📱", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
   { id: "s-bb-3", category: "Bills", title: "FASTag Toll Balance Top-Up", sub: "NHAI National Highway Toll Wallet", icon: "🚗", action: "bills", keywords: "bill fastag toll car highway netc rfid" },
   { id: "s-bb-4", category: "Bills", title: "DTH & Cable TV Subscription", sub: "Tata Play, Airtel DTH, DishTV", icon: "📺", action: "bills", keywords: "bill dth tata play airtel dishtv television" },
 
@@ -199,7 +199,7 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   // Loans & Wealth
   { id: "s-wl-1", category: "Wealth", title: "Pre-Approved Instant Credit Line (₹5,00,000)", sub: "Zero Paperwork · Instant Bank Disbursement", icon: "💰", action: "wealth", keywords: "loan credit line money instant cash pre approved finance" },
   { id: "s-wl-2", category: "Wealth", title: "9.10% High-Yield Fixed Deposit (FD)", sub: "CRISIL AAA-Rated · Shriram Finance & Bajaj", icon: "📈", action: "wealth", keywords: "fd fixed deposit interest wealth investment save return" },
-  { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "24K 99.9% Pure Gold from ₹10", icon: "👑", action: "wealth", keywords: "gold 24k digital gold wealth savings safe" },
+  { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "24K 99.9% Pure Gold from ₹10", icon: "🪙", action: "wealth", keywords: "gold 24k digital gold wealth savings safe" },
 ];
 
 export function SupremeKingPayExperience() {

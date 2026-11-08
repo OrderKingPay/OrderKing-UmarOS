@@ -1482,7 +1482,7 @@ function FeaturedAdAuctionStudioSection() {
       setSelectedRestaurantId(campaigns[0].restaurantId);
     }
 
-    const rstId = selectedRestaurantId || (campaigns[0]?.restaurantId ?? "rst_royal_darbar");
+    const rstId = selectedRestaurantId || (campaigns[0]?.restaurantId ?? "rst_main_kitchen");
     setIsSubmitting(true);
     try {
       const res = await updateFeaturedAdBidFn({

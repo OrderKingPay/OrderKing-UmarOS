@@ -17,7 +17,7 @@ export function EarnPageSkeleton({ className }: { className?: string }) {
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-amber-900/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
         <div className="flex items-center gap-2.5">
           <div className="size-8 rounded-xl bg-amber-400/30 flex items-center justify-center">
-            <span className="text-sm">👑</span>
+            <span className="text-xs font-bold text-amber-700">OK</span>
           </div>
           <div className="space-y-1">
             <div className="h-4 w-28 rounded-md bg-amber-200/60" />
@@ -110,7 +110,7 @@ export function KingPayPageSkeleton({ className }: { className?: string }) {
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-amber-500/20 bg-[#0a0a0f]/95 px-4 py-3 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <div className="size-8 rounded-xl bg-gradient-to-tr from-amber-400/40 to-yellow-500/20 flex items-center justify-center">
-            <span className="text-sm">👑</span>
+            <span className="text-xs font-bold text-amber-700">OK</span>
           </div>
           <div className="h-5 w-24 rounded bg-amber-400/40" />
         </div>

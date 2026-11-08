@@ -66,7 +66,7 @@ function SettingsPage() {
             </div>
           </div>
 
-          {/* 10 Indian Languages Selector (Gold Luxury Grid) */}
+          {/* Language Selector */}
           <section className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3 mb-3.5">
               <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-xs">
@@ -142,7 +142,7 @@ function SettingsPage() {
             </div>
           </section>
 
-          {/* Sensory & Haptic Experience with Interactive 3D Luxury Toggles */}
+          {/* Preferences */}
           <section className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3 mb-3.5">
               <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs">

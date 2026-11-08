@@ -175,7 +175,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "👑 View 200 bps 24K Gold Rewards",
+        label: "View 200 bps Gold Rewards",
         url: "/rewards",
       },
     };
@@ -550,7 +550,7 @@ export function resolveSovereignResponse(
         reply: soldOutReply,
         action: {
           type: "CHECKOUT_POPUP",
-          label: "👑 1-Tap Checkout: Fresh Homestyle Thali",
+          label: "1-Tap Checkout: Fresh Homestyle Thali",
           dishName: "Royal Homestyle Thali",
           item: "Royal Homestyle Thali",
           quantity: 1,
@@ -609,7 +609,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "CHECKOUT_POPUP",
-        label: `👑 1-Tap Checkout: Chicken Dum Biryani (${quantity}x)`,
+        label: `1-Tap Checkout: Chicken Dum Biryani (${quantity}x)`,
         dishName: "Royal Chicken Dum Biryani (Handi)",
         item: "Royal Chicken Dum Biryani",
         quantity,
@@ -630,7 +630,7 @@ export function resolveSovereignResponse(
         reply: "Farmhouse Fresh Pizza is currently sold out (86'd) at the kitchen. Would you prefer our fresh Steamed Momos or Crispy Burger?",
         action: {
           type: "CHECKOUT_POPUP",
-          label: "👑 1-Tap Checkout: Steamed Momos (8 Pcs)",
+          label: "1-Tap Checkout: Steamed Momos (8 Pcs)",
           dishName: "Steamed Chicken Momos (8 Pcs)",
           item: "Steamed Chicken Momos (8 Pcs)",
           quantity: 1,
@@ -675,7 +675,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "CHECKOUT_POPUP",
-        label: `👑 1-Tap Checkout: Farmhouse Pizza (${quantity}x)`,
+        label: `1-Tap Checkout: Farmhouse Pizza (${quantity}x)`,
         dishName: "Farmhouse Fresh Pizza",
         item: "Farmhouse Fresh Pizza",
         quantity,
@@ -1389,7 +1389,7 @@ export function CustomerConciergeDrawer({
                 { label: "🍗 Order Dum Biryani", text: "I want to order Chicken Dum Biryani." },
                 { label: "🍕 Fresh Pizza", text: "Order fresh pizza." },
                 { label: "🚆 Train Tickets", text: "Book train tickets and check live PNR." },
-                { label: "👑 KingPay UPI", text: "How do I pay with KingPay UPI or scan BharatQR?" },
+                { label: "KingPay UPI", text: "How do I pay with KingPay UPI or scan BharatQR?" },
                 { label: "📦 Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
                 { label: "🛡️ Report Spilled/Late Food", text: "My food arrived cold and leaked. I need a refund." },
               ]

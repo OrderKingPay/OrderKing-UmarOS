@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
 import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { advanceSimulatedOrder, cancelMyOrder, getMyOrder, reorderItems } from "@/lib/server/orders";
+import { cancelMyOrder, getMyOrder, reorderItems } from "@/lib/server/orders";
 import { createTicket } from "@/lib/server/account";
 import { getMyHDmasterOrder } from "@/lib/server/hdmaster-order-read";
 import { submitOrderReview, getOrderReview } from "@/lib/server/reviews";
@@ -529,7 +529,7 @@ function OrderDetailPage() {
                   {/* Category 4: Order King App Experience */}
                   <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-surface">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">👑</span>
+                      <span className="text-lg">📱</span>
                       <div>
                         <span className="text-xs font-bold text-foreground block">Order King App</span>
                         <span className="text-[10px] text-muted">Ease &amp; speed</span>
@@ -617,31 +617,7 @@ function OrderDetailPage() {
         )}
 
         
-          {order.status === "DELIVERED" && (
-            <div className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-[#D4AF37]/30 bg-white p-5 shadow-[0_0_30px_rgba(212,175,55,0.15)] relative">
-              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#D4AF37]/10 blur-[50px] pointer-events-none"></div>
-              <div className="flex items-start gap-4 relative z-10">
-                <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#F59E0B] shadow-lg">
-                  <span className="text-2xl">👑</span>
-                </div>
-                <div>
-                  <h3 className="font-display font-bold text-fg text-lg leading-tight">Gift a VIP Invite</h3>
-                  <p className="text-xs text-muted mt-1 leading-relaxed">
-                    You have 1 exclusive invite remaining. Send it to a peer now. When they place their first order, your next meal (up to ₹500) is on us.
-                  </p>
-                  <button 
-                    onClick={() => {
-                      navigator.clipboard.writeText("https://orderking.app/black/invite/KING500");
-                      toast.success("VIP Invite Link Copied!");
-                    }}
-                    className="mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-bold text-black transition hover:bg-gray-200 active:scale-95"
-                  >
-                    Share Invite <span className="text-lg">🎁</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          
           {/* GOLD-STANDARD VERIFIED CUSTOMER COMPLAINT ROOM (STRICTLY DELIVERED ORDERS ONLY) */}
         {order.status === "DELIVERED" && (
           <div className="mt-4 rounded-[var(--radius-xl)] border-2 border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-surface to-rose-500/5 p-4 shadow-sm">
@@ -652,12 +628,12 @@ function OrderDetailPage() {
                 </span>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h3 className="font-bold text-sm text-foreground">Order Complaint & Resolution Room</h3>
+                    <h3 className="font-bold text-sm text-foreground">Report an Issue with this Order</h3>
                     <span className="rounded-full bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-800 dark:text-rose-300">
-                      Tier-1 Standard Redressal
+                      Support
                     </span>
                   </div>
-                  <p className="text-xs text-muted">Direct complaint channel exclusively for verified delivered orders</p>
+                  <p className="text-xs text-muted">Tell us what went wrong and our support team will help resolve it.</p>
                 </div>
               </div>
               <Button
@@ -666,7 +642,7 @@ function OrderDetailPage() {
                 className="text-xs font-semibold"
                 onClick={() => setComplaintOpen(!complaintOpen)}
               >
-                {complaintOpen ? "Close Room" : "Report Issue ➔"}
+                {complaintOpen ? "Cancel" : "Report Issue"}
               </Button>
             </div>
 
@@ -687,12 +663,12 @@ function OrderDetailPage() {
                   {submittedComplaint.resolution}
                 </p>
                 <div className="flex items-center justify-between pt-1 border-t border-border">
-                  <span className="text-[11px] text-muted">Escalated to HDmaster Founder Operations at {submittedComplaint.createdAt}</span>
+                  <span className="text-[11px] text-muted">Support ticket created at {submittedComplaint.createdAt}</span>
                   <a
                     href={`/support?ticket=${encodeURIComponent(String(submittedComplaint.ticketId || ""))}&orderId=${encodeURIComponent(String(id ?? ""))}`}
                     className="text-primary font-bold text-[11px] hover:underline"
                   >
-                    💬 Contact Founder Support →
+                    💬 Chat with Support →
                   </a>
                 </div>
               </div>
@@ -931,7 +907,7 @@ function OrderDetailPage() {
           </p>
         ) : null}
 
-        {/* Detailed Royal Invoice */}
+        {/* Order Bill Invoice */}
         <div className="mt-6 rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-2 mb-3 pb-3 border-b border-amber-900/10">
             <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs shadow-xs">

@@ -5,9 +5,10 @@ import { LocationDialog } from "@/components/market/location-dialog";
 import { useLocationStore } from "@/lib/stores/location";
 
 /**
- * Authentic, customer-safe empty state when no restaurants deliver to the current location.
+ * Authentic empty state matching industry delivery standards (Zomato/Swiggy)
+ * when no restaurants deliver to the customer's current location.
  */
-export function RoyalDiscoveryShowcase() {
+export function KitchenDiscoveryEmptyState() {
   const location = useLocationStore((s) => s.location);
   const [locationOpen, setLocationOpen] = useState(false);
 
@@ -61,3 +62,7 @@ export function RoyalDiscoveryShowcase() {
     </section>
   );
 }
+
+// Aliased export for backwards compatibility
+export { KitchenDiscoveryEmptyState as RoyalDiscoveryShowcase };
+

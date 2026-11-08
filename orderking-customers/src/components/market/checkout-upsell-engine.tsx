@@ -110,9 +110,9 @@ export function CheckoutUpsellEngine({
           </div>
           <div>
             <h3 className="font-display text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
-              Chef&apos;s Royal Pairings
+              Recommended Pairings
               <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[10px] font-extrabold text-amber-900 dark:text-amber-200 uppercase tracking-wider">
-                👑 1-Click Add
+                Quick Add
               </span>
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">

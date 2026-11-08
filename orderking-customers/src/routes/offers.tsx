@@ -71,7 +71,7 @@ function OffersPage() {
           </span>
         </div>
 
-        {/* Featured Luxury Deal Cards */}
+        {/* Featured Deals */}
         <div className="mt-5 space-y-3.5">
           {FEATURED_OFFERS.map((f) => (
             <div

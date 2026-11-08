@@ -693,7 +693,7 @@ export function HomeFeed({
                   </Button>
                 </div>
 
-                {/* Active KingPay Connected Services (3D Luxury Alignment) */}
+                {/* Active KingPay Connected Services */}
                 <div className="space-y-3 pt-2">
                   <div className="text-center">
                     <h4 className="text-sm sm:text-base font-black text-gray-950 tracking-tight">
@@ -711,8 +711,8 @@ export function HomeFeed({
                       className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
-                          <Crown className="size-4.5" />
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs group-hover:scale-105 transition-transform">
+                          <CreditCard className="size-4.5" />
                         </span>
                         <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
                           UPI

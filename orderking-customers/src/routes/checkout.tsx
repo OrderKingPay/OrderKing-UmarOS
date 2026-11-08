@@ -107,7 +107,6 @@ function BillTooltip({ text, title }: { text: string; title?: string }) {
         >
           {title && (
             <div className="font-extrabold text-amber-400 mb-1 flex items-center gap-1.5">
-              <span>👑</span>
               <span>{title}</span>
             </div>
           )}
@@ -402,7 +401,7 @@ function CheckoutPage() {
       <div className="min-h-[85vh] bg-gradient-to-b from-amber-500/10 via-white to-amber-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-32 px-3 sm:px-6 py-6">
         <div className="max-w-3xl mx-auto space-y-6">
 
-          {/* Luxury Breadcrumb / Step Indicator */}
+          {/* Checkout Steps */}
           <div className="flex items-center justify-between px-2">
             <Link
               to="/cart"
@@ -1029,7 +1028,7 @@ function CheckoutPage() {
                   )}
                 </div>
 
-                {/* KingPay Wallet: Royal 24k Gold Highlight Card */}
+                {/* KingPay Wallet Option */}
                 <div
                   className={`rounded-2xl border-2 transition-all p-4 duration-300 ${
                     method === "KING_PAY"
@@ -1048,8 +1047,8 @@ function CheckoutPage() {
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs">
-                            👑
+                          <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold shadow-xs">
+                            💳
                           </span>
                           <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
                             KingPay Wallet
@@ -1214,7 +1213,7 @@ function CheckoutPage() {
                 </div>
               </section>
 
-              {/* 3. ORDER SUMMARY WITH CRISP LUXURY BILL BREAKDOWN */}
+              {/* 3. Order Bill Breakdown */}
               <div className="rounded-3xl border border-amber-400/40 bg-gradient-to-b from-white via-zinc-50/70 to-amber-50/20 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-5 sm:p-6 shadow-xl space-y-4">
                 <div className="flex items-center justify-between border-b border-amber-400/20 dark:border-zinc-800 pb-3">
                   <div className="flex items-center gap-2.5">
@@ -1369,7 +1368,6 @@ function CheckoutPage() {
                     <div className="flex items-center justify-between text-sm py-1 rounded-xl bg-amber-500/10 dark:bg-amber-500/5 px-2.5 border border-amber-400/20">
                       <div className="flex items-center gap-1.5">
                         <span className="font-bold text-amber-950 dark:text-amber-100 flex items-center gap-1.5">
-                          <span>👑</span>
                           <span>Platform Fee</span>
                         </span>
                         <BillTooltip

@@ -402,7 +402,7 @@ function RestaurantPage() {
             </div>
           </div>
 
-          {/* 2. ELEVATED LUXURY RESTAURANT INFO CARD WITH GRADIENT RATING BADGE */}
+          {/* 2. Restaurant Info Header */}
           <div className="relative -mt-12 sm:-mt-16 mx-3 sm:mx-6 md:mx-auto max-w-4xl z-20">
             <div className="rounded-3xl border border-amber-500/25 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.12)]">
               {/* Title & Rating Row */}
@@ -548,7 +548,7 @@ function RestaurantPage() {
                 <span className="text-[11px] text-zinc-500 font-medium">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
               </div>
 
-              {/* Luxury Quick Action Ribbon: Group Order, Dining Reservation, Chef Notes, Nutrition */}
+              {/* Action Ribbon */}
               <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <button
                   type="button"
@@ -1034,7 +1034,7 @@ function RestaurantPage() {
               </div>
             </div>
           )}
-          {/* Orphaned Luxury Modals Mounted */}
+          {/* Action Modals */}
           <GroupOrderingModal
             isOpen={showGroupOrder}
             onClose={() => setShowGroupOrder(false)}

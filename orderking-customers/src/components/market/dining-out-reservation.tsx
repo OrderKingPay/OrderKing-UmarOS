@@ -112,7 +112,7 @@ export function DiningOutReservationModal({
                 <p className="text-[10px] text-muted capitalize">Area: {seatingArea.toLowerCase()} Seating</p>
               </div>
               <div className="rounded-lg bg-surface-2 p-3 text-[11px] text-muted text-left">
-                <p className="font-semibold text-fg">👑 OrderKing Dining Guarantee:</p>
+                <p className="font-semibold text-fg">Dining Reservation Guarantee:</p>
                 <p className="mt-1">
                   Table is held for up to 15 minutes past reservation time. Simply show your booking SMS or reference at the reception.
                 </p>

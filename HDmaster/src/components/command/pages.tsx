@@ -3297,7 +3297,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("onboard_restaurant: Onboard 'Royal Biryani House' in Karimganj Central with North Indian & Biryani cuisine, 10% commission, 10:00-23:00 hours, phone 9876543210, address Main Road", "restaurant_ops")}
+                  onClick={() => runPreset("onboard_restaurant: Onboard 'Karimganj Biryani House' in Karimganj Central with North Indian & Biryani cuisine, 10% commission, 10:00-23:00 hours, phone 9876543210, address Main Road", "restaurant_ops")}
                 >
                   <span className="font-semibold">🏪 Onboard Restaurant Partner</span>
                   <p className="text-[11px] text-muted">Activate new kitchen partner with commission & hours.</p>
@@ -3313,7 +3313,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-800 dark:text-purple-300 transition-all"
-                  onClick={() => runPreset("generate_menu: Generate full menu for Royal Biryani House with authentic culinary dish images, FSSAI diet tags, and realistic market pricing", "product")}
+                  onClick={() => runPreset("generate_menu: Generate full menu for Karimganj Biryani House with authentic culinary dish images, FSSAI diet tags, and realistic market pricing", "product")}
                 >
                   <span className="font-semibold">📋 Generate Menu from Catalog</span>
                   <p className="text-[11px] text-muted">Categorized dishes, prices, and FSSAI diet tags.</p>

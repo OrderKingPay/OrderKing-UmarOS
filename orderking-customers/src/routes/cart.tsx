@@ -81,8 +81,8 @@ function CartPage() {
     return (
       <CustomerShell>
         <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-12 text-center space-y-5 bg-gradient-to-b from-amber-500/10 via-surface to-surface-2/60">
-          <div className="flex size-20 items-center justify-center rounded-3xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 text-4xl shadow-lg">
-            👑
+          <div className="flex size-20 items-center justify-center rounded-3xl bg-amber-500/10 text-amber-600 shadow-sm border border-amber-500/20">
+            <ShoppingBag className="size-10" />
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-50">
             OrderKing Foods is not yet active in {location.cityName || "your region"}
@@ -159,10 +159,10 @@ function CartPage() {
               </div>
               <div className="space-y-1.5">
                 <h2 className="font-display text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-50">
-                  {t("cart.empty") || "Your feast plate is empty"}
+                  {t("cart.empty") || "Your cart is empty"}
                 </h2>
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
-                  {t("cart.emptyHint") || "Explore top verified restaurants and add mouthwatering dishes to get started."}
+                  {t("cart.emptyHint") || "Explore restaurants and add items to your cart."}
                 </p>
               </div>
               <Button asChild className="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-zinc-950 font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition-transform">

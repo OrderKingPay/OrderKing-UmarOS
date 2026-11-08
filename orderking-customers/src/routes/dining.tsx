@@ -35,7 +35,7 @@ function DiningPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10" />
             <img
               src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80"
-              alt="Luxury Dining Out"
+              alt="Dining Out"
               loading="lazy"
               decoding="async"
               className="absolute inset-0 size-full object-cover opacity-50"
