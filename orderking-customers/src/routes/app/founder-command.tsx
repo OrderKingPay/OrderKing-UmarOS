@@ -1165,12 +1165,12 @@ export function FounderCommandPage() {
               </div>
             </div>
 
-            {/* 4. HDmaster Sovereign Core */}
+            {/* 4. HDmaster Operational Core */}
             <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Database className="size-4 text-purple-400" />
-                  <span className="text-xs font-bold text-fg">4. Sovereign Core</span>
+                  <span className="text-xs font-bold text-fg">4. Operational Core</span>
                 </div>
                 <span className="text-[10px] font-mono text-amber-400">LOCAL</span>
               </div>
@@ -1250,7 +1250,7 @@ export function FounderCommandPage() {
             <div className="flex items-center gap-3">
               <Rocket className="size-6 text-amber-400" />
               <div>
-                <h2 className="text-lg font-bold text-fg">1-Command Sovereign App &amp; Website Deployer</h2>
+                <h2 className="text-lg font-bold text-fg">1-Command App &amp; Website Deployer</h2>
                 <p className="text-xs text-muted">
                   Type any natural language instruction. HDmaster instantly creates complete code, routes, schema &amp; edge deployment.
                 </p>

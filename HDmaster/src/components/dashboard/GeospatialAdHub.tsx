@@ -139,7 +139,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
   const [advertiserMode, setAdvertiserMode] = useState<"sovereign" | "commercial">(
     activeConfig.thirdPartyAdvertiserMonetization ? "commercial" : "sovereign"
   );
-  const [whitelistedAdvertiser, setWhitelistedAdvertiser] = useState<string>("OrderKing Sovereign Network");
+  const [whitelistedAdvertiser, setWhitelistedAdvertiser] = useState<string>("OrderKing Internal Network");
   const [clientRetailCpmRateInr, setClientRetailCpmRateInr] = useState<number>(
     activeConfig.thirdPartyRetailCpmRateInr || 110.0
   );
@@ -828,7 +828,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    Sovereign Only
+                    Internal Network Only
                   </button>
                   <button
                     type="button"
@@ -884,7 +884,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                       onChange={(e) => setWhitelistedAdvertiser(e.target.value)}
                       className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
                     >
-                      <option value="OrderKing Sovereign Network">OrderKing Sovereign Network (Internal Growth)</option>
+                      <option value="OrderKing Internal Network">OrderKing Network (Internal Growth)</option>
                       <option value="Haldiram's Express Hub">Haldiram&apos;s Express Hub (Sponsored Slot #1)</option>
                       <option value="Bikanervala Cloud Operations">Bikanervala Cloud Operations (Sponsored Slot #2)</option>
                       <option value="Chaayos Direct">Chaayos Direct (Breakfast Slot #3)</option>
