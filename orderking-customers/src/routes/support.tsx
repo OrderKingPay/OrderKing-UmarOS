@@ -152,7 +152,7 @@ export function SupportPage() {
               {t("support.title")}
             </h1>
             <p className="mt-0.5 text-xs font-bold text-amber-800">
-              24x7 Intelligent AI Concierge &amp; Statutory Grievance Redressal
+              Quick help for your orders, deliveries, and payments
             </p>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-black text-emerald-800 shadow-2xs">
@@ -173,10 +173,10 @@ export function SupportPage() {
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-black text-emerald-700">
                     AI Concierge
                   </span>
-                  <span className="text-[10px] text-stone-500">Autonomous Assistance</span>
+                  <span className="text-[10px] text-stone-500">24x7 Help</span>
                 </div>
                 <h2 className="font-display text-lg font-black text-stone-900">
-                  OrderKing Intelligent AI Support
+                  OrderKing Support
                 </h2>
               </div>
             </div>
@@ -242,7 +242,7 @@ export function SupportPage() {
             {isChatting && (
               <div className="flex items-center gap-2 text-xs text-amber-800 font-bold">
                 <span className="flex size-2 rounded-full bg-amber-500 animate-ping" />
-                <span>OrderKing Assistant is synthesizing answer...</span>
+                <span>Connecting with support...</span>
               </div>
             )}
           </div>
@@ -301,7 +301,7 @@ export function SupportPage() {
           <div className="flex items-center gap-2">
             <span className="flex size-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="rounded-full bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 text-xs font-black text-amber-950">
-              Order Diagnostics Bot
+              Order Help
             </span>
             <h2 className="font-display text-lg font-black text-stone-900">Order Status &amp; Resolution</h2>
           </div>
@@ -323,7 +323,7 @@ export function SupportPage() {
                   void triggerQuickResolve("where_order");
                 }}
               >
-                ⚡ Where is my food?
+                Where is my order?
               </Button>
               <Button
                 type="button"
