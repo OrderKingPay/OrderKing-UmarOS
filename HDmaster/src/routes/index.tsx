@@ -391,6 +391,8 @@ export interface UmarAiActionResult {
       | "RESTAURANTS_APPROVED"
       | "ALERT_CREATED"
       | "ECONOMICS_CALCULATED"
+      | "IMAGE_GENERATED"
+      | "VIDEO_GENERATED"
       | "ADVISORY";
     detail: string;
     targetWorld?: WorldId;
@@ -402,6 +404,8 @@ export interface UmarAiActionResult {
     riders: number;
     orders: number;
   };
+  imageUrls?: string[];
+  videoUrl?: string;
   timestamp: string;
 }
 
@@ -700,9 +704,147 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
       };
     }
 
-    // 5. NATURAL EXECUTIVE CONSULTING & STATUS ADVISORY
+    // 5. ACTION: IMAGE GENERATION (GOOGLE IMAGEN 3)
+    if (
+      lower.includes("image") ||
+      lower.includes("photo") ||
+      lower.includes("picture") ||
+      lower.includes("banner") ||
+      lower.includes("photography") ||
+      lower.includes("visual")
+    ) {
+      try {
+        const { generateHyperRealisticImage } = await import(
+          "@/lib/orderking/ai/multimodal-engine.server"
+        );
+        const imgRes = await generateHyperRealisticImage(prompt, {
+          aspectRatio: "1:1",
+          numberOfImages: 1,
+        });
+
+        if (imgRes.base64Images && imgRes.base64Images.length > 0) {
+          const imageUrls = imgRes.base64Images.map(
+            (b64) => `data:image/jpeg;base64,${b64}`
+          );
+          return {
+            reply: `Generated photorealistic visual using Google Imagen 3 for: "${prompt}".`,
+            appliedAction: {
+              type: "IMAGE_GENERATED",
+              detail: `Generated Imagen 3 visual for: "${prompt}"`,
+              targetWorld: "umarai",
+            },
+            liveCounts,
+            imageUrls,
+            timestamp,
+          };
+        }
+      } catch (err: any) {
+        return {
+          reply: `Google Imagen 3 Notice: ${
+            err?.message ||
+            "Please configure GEMINI_API_KEY in your environment to generate live photorealistic imagery."
+          }`,
+          appliedAction: {
+            type: "ADVISORY",
+            detail: "Imagen 3 requires GEMINI_API_KEY",
+            targetWorld: "umarai",
+          },
+          liveCounts,
+          timestamp,
+        };
+      }
+    }
+
+    // 6. ACTION: VIDEO GENERATION (GOOGLE VEO 2)
+    if (
+      lower.includes("video") ||
+      lower.includes("clip") ||
+      lower.includes("animation") ||
+      lower.includes("motion")
+    ) {
+      try {
+        const { submitVideoGenerationJob } = await import(
+          "@/lib/orderking/ai/multimodal-engine.server"
+        );
+        const vidRes = await submitVideoGenerationJob({
+          prompt,
+          durationSeconds: 5,
+          resolution: "720p",
+        });
+
+        if (vidRes.status === "failed") {
+          return {
+            reply: `Google Veo Notice: ${
+              vidRes.error ||
+              "Please configure GEMINI_API_KEY with Google Veo access to generate video clips."
+            }`,
+            appliedAction: {
+              type: "ADVISORY",
+              detail: "Veo requires GEMINI_API_KEY",
+              targetWorld: "umarai",
+            },
+            liveCounts,
+            timestamp,
+          };
+        }
+
+        return {
+          reply: `Initiated Google Veo video generation job (Job ID: ${vidRes.jobId}). Status: ${vidRes.status}.`,
+          appliedAction: {
+            type: "VIDEO_GENERATED",
+            detail: `Veo job submitted: ${vidRes.jobId}`,
+            targetWorld: "umarai",
+          },
+          liveCounts,
+          videoUrl: vidRes.videoUrl,
+          timestamp,
+        };
+      } catch (err: any) {
+        return {
+          reply: `Google Veo video error: ${err?.message || "Job initiation failed"}`,
+          appliedAction: {
+            type: "ADVISORY",
+            detail: "Veo engine error",
+            targetWorld: "umarai",
+          },
+          liveCounts,
+          timestamp,
+        };
+      }
+    }
+
+    // 7. EXECUTIVE CONSULTING & INTELLIGENT DIRECTIVE VIA GEMINI FLASH
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (apiKey) {
+      try {
+        const { GoogleGenAI } = await import("@google/genai");
+        const ai = new GoogleGenAI({ apiKey });
+        const aiRes = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: prompt,
+          config: {
+            systemInstruction: `You are Umar AI, the executive platform intelligence for OrderKing and KingPay founded by Hasan Mohammed. Answer directly, concisely, and practically in authentic human style. No marketing slogans, no fake claims, no generic fluff. PostgreSQL platform statistics: ${liveCounts.restaurants} active restaurants, ${liveCounts.riders} active riders, ${liveCounts.users} users, ${liveCounts.orders} orders processed.`,
+          },
+        });
+        const replyText = aiRes.text?.trim();
+        if (replyText) {
+          return {
+            reply: replyText,
+            appliedAction: {
+              type: "ADVISORY",
+              detail: "Executive response synthesized via Gemini Flash",
+              targetWorld: "umarai",
+            },
+            liveCounts,
+            timestamp,
+          };
+        }
+      } catch (_e) {}
+    }
+
+    // 8. NATURAL EXECUTIVE CONSULTING & STATUS ADVISORY (OFFLINE / DEFAULT)
     return {
-      reply: `I checked your live platform state in PostgreSQL:
+      reply: `Platform State (PostgreSQL):
 • Restaurants: ${liveCounts.restaurants} active (${
         liveCounts.restaurants === 0
           ? "action needed: onboard your first local kitchen with ₹0 joining fee"
@@ -1773,6 +1915,8 @@ function UmarOSDashboard() {
       command: string;
       response: string;
       appliedAction?: any;
+      imageUrls?: string[];
+      videoUrl?: string;
       time: string;
     }>
   >(() => {
@@ -2199,6 +2343,8 @@ function UmarOSDashboard() {
         command: text,
         response: res.reply,
         appliedAction: res.appliedAction,
+        imageUrls: res.imageUrls,
+        videoUrl: res.videoUrl,
         time: res.timestamp,
       };
 
@@ -4502,6 +4648,36 @@ function UmarOSDashboard() {
                       <div className="bg-slate-950/70 p-3 rounded-lg border border-slate-800 text-slate-200 whitespace-pre-line leading-relaxed">
                         {item.response}
                       </div>
+
+                      {item.imageUrls && item.imageUrls.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                          {item.imageUrls.map((imgUrl, imgIdx) => (
+                            <div
+                              key={imgIdx}
+                              className="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950 aspect-square group shadow-md"
+                            >
+                              <img
+                                src={imgUrl}
+                                alt={`Generated asset ${imgIdx + 1}`}
+                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                              />
+                              <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/75 text-[10px] font-mono text-emerald-400 border border-emerald-500/30">
+                                Google Imagen 3
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {item.videoUrl && (
+                        <div className="pt-1">
+                          <video
+                            src={item.videoUrl}
+                            controls
+                            className="w-full rounded-xl border border-slate-700 bg-slate-950 max-h-72"
+                          />
+                        </div>
+                      )}
 
                       {item.appliedAction && (
                         <div className="flex items-center gap-2 pt-1 text-[11px]">

@@ -1012,6 +1012,61 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
               VALUES ('global_governance', ${JSON.stringify(updated)}, 'system', 'Complete UmarOS platform configuration state', NOW())
               ON CONFLICT (key) DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = NOW()
             `;
+
+            // Direct synchronization into public.umar_os_config for real-time quad-party propagation
+            try {
+              await sql`
+                CREATE TABLE IF NOT EXISTS public.umar_os_config (
+                  key text PRIMARY KEY,
+                  value jsonb NOT NULL,
+                  description text,
+                  updated_by text,
+                  updated_at timestamptz NOT NULL DEFAULT now()
+                )
+              `;
+              await sql`
+                INSERT INTO public.umar_os_config (key, value, description, updated_at, updated_by)
+                VALUES (
+                  'platform_customizations',
+                  ${JSON.stringify(updated)}::jsonb,
+                  'Global platform customizations and killswitches from Umar OS',
+                  NOW(),
+                  'umar_os_admin'
+                )
+                ON CONFLICT (key) DO UPDATE SET
+                  value = EXCLUDED.value,
+                  updated_at = NOW(),
+                  updated_by = 'umar_os_admin'
+              `;
+              if (updated.central_pricing?.customRates) {
+                const cr = updated.central_pricing.customRates;
+                await sql`
+                  INSERT INTO public.umar_os_config (key, value, description, updated_at, updated_by)
+                  VALUES (
+                    'founder_fees',
+                    ${JSON.stringify({
+                      commissionPct: cr.commissionPct ?? 18,
+                      deliveryFeeInr: cr.deliveryFeeInr ?? 40,
+                      rainFeeInr: cr.rainFeeInr ?? 20,
+                      riderBasePayInr: cr.riderBasePayInr ?? 35,
+                      riderPerKmRateInr: cr.riderPerKmRateInr ?? 12,
+                      walletCashbackPct: cr.walletCashbackPct ?? 2,
+                      lateNightCodSafetyLockout: Boolean(cr.coolingOffDurationMinutes > 0),
+                      rainSurgeActive: Boolean((cr.rainFeeInr ?? 0) > 0),
+                    })}::jsonb,
+                    'Commercial fees, take-rates and killswitches',
+                    NOW(),
+                    'umar_os_admin'
+                  )
+                  ON CONFLICT (key) DO UPDATE SET
+                    value = EXCLUDED.value,
+                    updated_at = NOW(),
+                    updated_by = 'umar_os_admin'
+                `;
+              }
+            } catch (umarConfigErr) {
+              console.warn('[umar_os_config sync notice]', umarConfigErr);
+            }
           } catch (appConfErr) {
             console.warn('[app_configurations persistence notice]', appConfErr);
           }

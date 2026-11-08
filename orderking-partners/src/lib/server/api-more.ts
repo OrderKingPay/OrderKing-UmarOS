@@ -120,6 +120,83 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
       ? snap.unavailableItems.map((i) => i.name).join(", ")
       : "All dishes are currently in stock.";
 
+  // Storefront Status & "Why No Orders" Check
+  const isStorefrontCheck =
+    q.includes("why am i not receiving orders") ||
+    q.includes("why no orders") ||
+    q.includes("not receiving orders") ||
+    q.includes("check my storefront") ||
+    q.includes("storefront status") ||
+    q.includes("store status") ||
+    q.includes("outlet status") ||
+    q.includes("order kyu nahi") ||
+    q.includes("order kyu nhi") ||
+    q.includes("order nahi aa raha") ||
+    q.includes("অর্ডার আসছে না") ||
+    q.includes("অর্ডার পাচ্ছি না") ||
+    q.includes("অর্ডার কেন আসছে না");
+
+  if (isStorefrontCheck) {
+    const now = new Date();
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    const istTime = new Date(utc + 3600000 * 5.5);
+    const istHours = istTime.getHours();
+    const istMinutes = istTime.getMinutes();
+    const istFormatted = `${String(istHours % 12 || 12).padStart(2, "0")}:${String(istMinutes).padStart(2, "0")} ${istHours >= 12 ? "PM" : "AM"} IST`;
+
+    let timeContext = "";
+    if (istHours >= 0 && istHours < 9) {
+      timeContext = "Early Morning / Quiet Hours. Customer delivery demand across residential zones is minimal during late night and early mornings. Demand picks up around 09:00 AM (Breakfast) and peaks between 12:00 PM – 03:30 PM (Lunch).";
+    } else if (istHours >= 9 && istHours < 12) {
+      timeContext = "Morning / Breakfast Window. Customer search volume is building up towards lunch.";
+    } else if (istHours >= 12 && istHours < 16) {
+      timeContext = "Lunch Peak Window. High customer order activity.";
+    } else if (istHours >= 16 && istHours < 19) {
+      timeContext = "Afternoon Snacks Window. Moderate customer order activity.";
+    } else if (istHours >= 19 && istHours < 23) {
+      timeContext = "Dinner Peak Window. Maximum evening ordering activity.";
+    } else {
+      timeContext = "Late Night Window. Order volume gradually tapers down.";
+    }
+
+    if (isBengaliOrAssamese) {
+      return (
+        `🏪 ${snap.restaurantName} এর স্টোরফ্রন্ট স্থিতি নিরীক্ষা:\n` +
+        `• স্টোর অবস্থা: ${snap.emergencyClosed ? "🔴 সাময়িক বন্ধ (পজ করা)" : "🟢 অনলাইন (লাইভ অর্ডার গ্রহণের জন্য প্রস্তুত)"}\n` +
+        `• বর্তমান সময়: ${istFormatted} (${istHours < 9 ? "ভোরবেলা / শান্ত সময়। রেস্তোরাঁ ডেলিভারি সাধারণত সকাল ৯টা থেকে এবং দুপুর ১২টা–৩টায় সর্বোচ্চ থাকে।" : "সক্রিয় ডেলিভারি সময়।"})\n` +
+        `• মেনু স্টক: ${snap.catalogStats.totalItems} টি সক্রিয় খাবার (${snap.unavailableItems.length > 0 ? `${snap.unavailableItems.length} টি স্টক আউট` : "সব খাবার স্টকে আছে"})\n` +
+        `• FSSAI ও ভেরিফিকেশন: ${snap.fssaiNumber ? `ভেরিফাইড (${snap.fssaiNumber})` : "অপেক্ষমাণ"}\n\n` +
+        (snap.emergencyClosed
+          ? "পরামর্শ: আপনার স্টোর বর্তমানে পজ করা আছে। লাইভ অর্ডার পেতে স্টোর চালু (Online) করুন।"
+          : "আপনার কিচেন অনলাইন ও সম্পূর্ণ প্রস্তুত। আশেপাশের গ্রাহকদের অর্ডার আসতেই স্ক্রিনে ভেসে উঠবে।")
+      );
+    }
+
+    if (isHindiOrDevanagari) {
+      return (
+        `🏪 ${snap.restaurantName} की स्टोर स्थिति जांच:\n` +
+        `• स्टोर स्थिति: ${snap.emergencyClosed ? "🔴 पॉज्ड (दुकान रुकी हुई है)" : "🟢 ऑनलाइन (ऑर्डर स्वीकार करने के लिए तैयार)"}\n` +
+        `• वर्तमान समय: ${istFormatted} (${istHours < 9 ? "प्रातःकाल / शांत समय। ग्राहकों के ऑर्डर सुबह 9 बजे से और दोपहर 12 से 3 बजे के बीच तेजी पकड़ते हैं।" : "सक्रिय समय।"})\n` +
+        `• मेनू सूची: ${snap.catalogStats.totalItems} सक्रिय व्यंजन (${snap.unavailableItems.length > 0 ? `${snap.unavailableItems.length} आउट ऑफ स्टॉक` : "सभी उपलब्ध हैं"})\n` +
+        `• FSSAI एवं सत्यापन: ${snap.fssaiNumber ? `सत्यापित (${snap.fssaiNumber})` : "लंबित"}\n\n` +
+        (snap.emergencyClosed
+          ? "सुझाव: आपकी दुकान वर्तमान में पॉज है। ऑर्डर प्राप्त करने के लिए कृपया स्टोर चालू (Online) करें।"
+          : "आपकी दुकान पूरी तरह तैयार और ऑनलाइन है। जैसे ही आपके क्षेत्र के ग्राहक ऑर्डर करेंगे, वे आपकी स्क्रीन पर लाइव प्राप्त होंगे।")
+      );
+    }
+
+    return (
+      `Storefront Status Check for ${snap.restaurantName}:\n` +
+      `• Outlet State: ${snap.emergencyClosed ? "🔴 PAUSED (Emergency Closed)" : "🟢 ONLINE & ACCEPTING ORDERS"}\n` +
+      `• Current Time: ${istFormatted} (${timeContext})\n` +
+      `• Menu Catalog: ${snap.catalogStats.totalItems} active dish(es) (${snap.unavailableItems.length > 0 ? `${snap.unavailableItems.length} marked Out of Stock` : "all items in stock"})\n` +
+      `• Compliance: FSSAI ${snap.fssaiNumber ? `Verified (${snap.fssaiNumber})` : "Pending Registration"} · KYC: ${snap.verificationStatus}\n\n` +
+      (snap.emergencyClosed
+        ? "Action: Your store is currently paused. Please resume outlet in the top controls to start receiving live orders."
+        : "Action: Your kitchen is online and ready. Orders from nearby customers within your delivery radius will be dispatched directly to your live kitchen screen.")
+    );
+  }
+
   // Sales & Orders
   if (q.includes("sales") || q.includes("revenue") || q.includes("order") || q.includes("আজকের বিক্রি") || q.includes("আজকে কত") || q.includes("बिक्री") || q.includes("कमाई") || q.includes("ऑर्डर")) {
     if (isBengaliOrAssamese) {

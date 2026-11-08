@@ -55,7 +55,8 @@ export interface PartnerAiExecutionResult {
     | "THROTTLE_KITCHEN"
     | "CREATE_PROMOTION"
     | "DIGITIZE_MENU"
-    | "CREATE_SUPPORT_TICKET";
+    | "CREATE_SUPPORT_TICKET"
+    | "STOREFRONT_STATUS";
   replyText: string;
   digitizedMenu?: DigitizedMenuCatalog;
   createdTicketId?: string;
@@ -440,6 +441,88 @@ export async function tryExecutePartnerAiCommand(
     }
   }
 
+  // -------------------------------------------------------------------------
+  // 3b. ACTION: STOREFRONT STATUS & "WHY NO ORDERS" DIAGNOSIS
+  // -------------------------------------------------------------------------
+  const isStorefrontIntent =
+    qLower.includes("why am i not receiving orders") ||
+    qLower.includes("why no orders") ||
+    qLower.includes("storefront status") ||
+    qLower.includes("not receiving orders") ||
+    qLower.includes("check my storefront") ||
+    qLower.includes("store status") ||
+    qLower.includes("outlet status") ||
+    qLower.includes("order kyu nahi") ||
+    qLower.includes("order kyu nhi") ||
+    qLower.includes("order nahi aa raha") ||
+    qLower.includes("অর্ডার আসছে না") ||
+    qLower.includes("অর্ডার পাচ্ছি না") ||
+    qLower.includes("অর্ডার কেন আসছে না");
+
+  if (isStorefrontIntent) {
+    const now = new Date();
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    const istTime = new Date(utc + 3600000 * 5.5);
+    const istHours = istTime.getHours();
+    const istMinutes = istTime.getMinutes();
+    const istFormatted = `${String(istHours % 12 || 12).padStart(2, "0")}:${String(istMinutes).padStart(2, "0")} ${istHours >= 12 ? "PM" : "AM"} IST`;
+
+    let timeContext = "";
+    if (istHours >= 0 && istHours < 9) {
+      timeContext = "Early Morning / Quiet Hours. Customer food ordering in residential zones is minimal during late night and early mornings. Demand picks up around 09:00 AM (Breakfast) and peaks between 12:00 PM – 03:30 PM (Lunch).";
+    } else if (istHours >= 9 && istHours < 12) {
+      timeContext = "Morning / Breakfast Window. Customer search volume is building up towards lunch.";
+    } else if (istHours >= 12 && istHours < 16) {
+      timeContext = "Lunch Peak Window. High customer order activity.";
+    } else if (istHours >= 16 && istHours < 19) {
+      timeContext = "Afternoon Snacks Window. Moderate customer order activity.";
+    } else if (istHours >= 19 && istHours < 23) {
+      timeContext = "Dinner Peak Window. Maximum evening ordering activity.";
+    } else {
+      timeContext = "Late Night Window. Order volume gradually tapers down.";
+    }
+
+    const isOpen = ctx.dashboard?.isOpen ?? true;
+    const totalItems = ctx.items.length;
+
+    let reply = [
+      `🏪 Storefront Status Check:`,
+      `• Outlet State: ${isOpen ? "🟢 ONLINE & ACCEPTING ORDERS" : "🔴 PAUSED (Emergency Closed)"}`,
+      `• Current Time: ${istFormatted} (${timeContext})`,
+      `• Menu Catalog: ${totalItems} active dish(es) listed`,
+      isOpen
+        ? `Your kitchen is online and ready. Orders from nearby customers within your delivery radius will be dispatched directly to your live kitchen screen.`
+        : `Your kitchen is currently paused. Please resume outlet in the top controls to start receiving live orders.`,
+    ].join("\n");
+
+    if (ctx.languageCode === "hi") {
+      reply = [
+        `🏪 स्टोर स्थिति जांच:`,
+        `• स्टोर स्थिति: ${isOpen ? "🟢 ऑनलाइन (ऑर्डर स्वीकार करने के लिए तैयार)" : "🔴 पॉज्ड (दुकान रुकी हुई है)"}`,
+        `• वर्तमान समय: ${istFormatted} (${istHours < 9 ? "प्रातःकाल / शांत समय। ग्राहकों के ऑर्डर सुबह 9 बजे के बाद और दोपहर 12 से 3 बजे के बीच तेजी पकड़ते हैं।" : "सक्रिय समय।"})`,
+        `• मेनू सूची: ${totalItems} सक्रिय व्यंजन`,
+        isOpen
+          ? `आपकी दुकान पूरी तरह तैयार और ऑनलाइन है। जैसे ही आपके क्षेत्र के ग्राहक ऑर्डर करेंगे, वे आपकी स्क्रीन पर लाइव प्राप्त होंगे।`
+          : `आपकी दुकान वर्तमान में पॉज है। ऑर्डर पाने के लिए कृपया स्टोर चालू (Online) करें।`,
+      ].join("\n");
+    } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
+      reply = [
+        `🏪 স্টোরফ্রন্ট স্থিতি নিরীক্ষা:`,
+        `• স্টোর অবস্থা: ${isOpen ? "🟢 অনলাইন (লাইভ অর্ডার গ্রহণের জন্য প্রস্তুত)" : "🔴 সাময়িক বন্ধ (পজ করা)"}`,
+        `• বর্তমান সময়: ${istFormatted} (${istHours < 9 ? "ভোরবেলা / শান্ত সময়। রেস্তোরাঁ ডেলিভারি সাধারণত সকাল ৯টা থেকে এবং দুপুর ১২টা–৩টায় সর্বোচ্চ থাকে।" : "সক্রিয় ডেলিভারি সময়।"})`,
+        `• মেনু তালিকা: ${totalItems} টি সক্রিয় খাবার`,
+        isOpen
+          ? `আপনার কিচেন অনলাইন ও সম্পূর্ণ প্রস্তুত। আশেপাশের গ্রাহকদের অর্ডার আসতেই স্ক্রিনে ভেসে উঠবে।`
+          : `আপনার স্টোর বর্তমানে পজ করা আছে। লাইভ অর্ডার পেতে স্টোর চালু করুন।`,
+      ].join("\n");
+    }
+
+    return {
+      handled: true,
+      action: "STOREFRONT_STATUS",
+      replyText: reply,
+    };
+  }
 
   // -------------------------------------------------------------------------
   // 4. ACTION: SALES & DAILY ORDERS RECONCILIATION

@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
+import { TravelQuotationModal } from "@/components/fintech/travel-quotation-modal";
 import {
   type SovereignETicket,
   type Passenger,
@@ -669,6 +670,7 @@ export function TravelPage() {
   const [tripNotes, setTripNotes] = useState("");
   const [tripFilter, setTripFilter] = useState<"ALL" | SavedTripReference["bookingType"]>("ALL");
   const [activeTicketModal, setActiveTicketModal] = useState<SovereignETicket | null>(null);
+  const [quotationModal, setQuotationModal] = useState<{ isOpen: boolean; category?: "UMRAH" | "TRAIN" | "FLIGHT" | "PILGRIMAGE" | "HOLIDAY"; destination?: string; origin?: string } | null>(null);
 
   // In-App Seamless Booking Flow State (Eliminating external popups)
   const [inAppBookingModal, setInAppBookingModal] = useState<{
@@ -990,9 +992,18 @@ export function TravelPage() {
               Search and book domestic and international flights, IRCTC train tickets, verified hotels, and curated holiday packages.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setActiveTab("trips")}
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setQuotationModal({ isOpen: true, category: "UMRAH" })}
+              className="shrink-0 rounded-2xl px-3.5 py-2.5 text-xs font-black transition flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-md cursor-pointer"
+            >
+              <Compass className="size-3.5" />
+              <span>Direct Quotation Desk (Umrah / Trains)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("trips")}
             className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-black transition flex items-center gap-2 border self-start sm:self-auto ${
               activeTab === "trips"
                 ? "bg-sky-500 text-slate-950 border-sky-400 shadow-md"
@@ -1007,6 +1018,7 @@ export function TravelPage() {
             )}
             <ChevronRight className="size-3.5" />
           </button>
+          </div>
         </div>
 
         {/* AUTHORITATIVE SINGLE TRAVEL DESK */}
@@ -2510,7 +2522,10 @@ export function TravelPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        toast.success("Travel Concierge activated: Our bespoke specialist will curate your custom itinerary!");
+                        setQuotationModal({
+                          isOpen: true,
+                          category: "HOLIDAY",
+                        });
                       }}
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold transition active:scale-95 shadow-sm cursor-pointer shrink-0"
                     >
@@ -3678,6 +3693,16 @@ export function TravelPage() {
           <SovereignETicketModal
             ticket={activeTicketModal}
             onClose={() => setActiveTicketModal(null)}
+          />
+        )}
+
+        {quotationModal?.isOpen && (
+          <TravelQuotationModal
+            isOpen={quotationModal.isOpen}
+            initialCategory={quotationModal.category}
+            initialDestination={quotationModal.destination}
+            initialOrigin={quotationModal.origin}
+            onClose={() => setQuotationModal(null)}
           />
         )}
 
