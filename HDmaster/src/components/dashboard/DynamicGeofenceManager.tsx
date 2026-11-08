@@ -65,7 +65,7 @@ const TEST_PRESETS: TestLocationPreset[] = [
     lat: 24.869,
     lng: 92.35,
     expectedTier: "SAFE_HAVEN",
-    description: "24x7 Sovereign emergency health and medical supply perimeter",
+    description: "24x7 emergency health and medical supply perimeter",
   },
   {
     name: "Greater Metro Ring (Banga Bazar)",
@@ -306,7 +306,7 @@ export function DynamicGeofenceManager() {
               <Compass className="w-5 h-5 animate-spin-slow" />
             </span>
             <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              Sovereign Geofence & Serviceability Dispatch Engine
+              Geofence &amp; Dispatch Management Engine
               <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                 UMAR OS v4.2
               </span>

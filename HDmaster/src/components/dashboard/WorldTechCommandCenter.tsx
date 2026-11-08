@@ -171,7 +171,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
                   World Technology Registry & AI Command Hub
                 </h2>
                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px] font-mono">
-                  UMAR OS SOVEREIGN
+                  UMAR OS KERNEL
                 </Badge>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -420,7 +420,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
           <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-3">
             <ShieldAlert className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
             <div>
-              <h4 className="font-bold text-amber-900 text-sm">Founder Sovereign Execution Authority</h4>
+              <h4 className="font-bold text-amber-900 text-sm">Founder System Execution Authority</h4>
               <p className="mt-0.5 leading-relaxed">
                 The four founder command actions below possess kernel authority across all OrderKing financial, dispatch, and compliance subsystems. High-risk actions require explicit two-step confirmation. Every execution generates an immutable cryptographic audit signature.
               </p>
@@ -597,7 +597,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
                 <AlertTriangle className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 text-base">Confirm Sovereign Founder Action</h3>
+                <h3 className="font-bold text-slate-900 text-base">Confirm Founder Action</h3>
                 <p className="text-xs text-rose-600 font-mono font-bold uppercase">{confirmModalAction.riskLevel}</p>
               </div>
             </div>
