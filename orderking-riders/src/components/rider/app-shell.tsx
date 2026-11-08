@@ -150,7 +150,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   OrderKing Delivery Partner
                 </p>
                 <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
-                  {riderProfile?.fullName || "Fleet Operations"}
+                  {riderProfile?.fullName || "Delivery Partner"}
                 </p>
               </div>
             </Link>
@@ -161,8 +161,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               <button
                 type="button"
                 onClick={() => setSosModalOpen(true)}
-                aria-label="OrderKing Emergency SOS 112 Safety Shield"
-                title="Emergency SOS 112 - Direct Police, Medical & Fleet Safety Command"
+                aria-label="Emergency SOS 112"
+                title="Emergency SOS 112"
                 className="group relative flex items-center gap-1 rounded-full border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 px-2 py-1 text-white shadow-xs transition-all duration-200 active:scale-95 shrink-0"
               >
                 <ShieldAlert className="size-3.5 stroke-[2.5] text-white shrink-0 drop-shadow-xs" />
