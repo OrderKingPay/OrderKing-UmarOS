@@ -55,7 +55,7 @@ export class StandaloneSectionExporter {
     },
     {
       id: "kingpay",
-      title: "King Pay Direct UPI Gateway & Sovereign Soundbox",
+      title: "King Pay Direct UPI Gateway & Smart Soundbox",
       category: "Fintech & Payments",
       description: "Separate the zero-fee UPI collection engine, QR code matrices, and audio soundbox into a standalone payment portal.",
       icon: "QrCode",
@@ -69,16 +69,16 @@ export class StandaloneSectionExporter {
       description: "Standalone production studio for photorealistic 8K imagery, cinematic motion videos, and long commercial stitching.",
       icon: "Sparkles",
       suggestedDomain: "studio.orderking.in",
-      features: ["Unlimited 8K Images", "9:16 & 16:9 Videos", "Multi-Scene Stitcher", "Sovereign Media Vault"],
+      features: ["High-Res Images", "9:16 & 16:9 Videos", "Multi-Scene Stitcher", "Media Vault"],
     },
     {
       id: "revenue_os",
-      title: "Planetary Revenue Operating System (30 Directives)",
+      title: "Revenue Operating System (30 Directives)",
       category: "Executive Governance",
       description: "Independent executive dashboard monitoring double-entry ledgers, opportunity radar, and legal revenue harvesting.",
       icon: "DollarSign",
       suggestedDomain: "revenue.orderking.in",
-      features: ["30 Sovereign Directives", "Hash-Chained Audit Ledger", "MeitY Subsidies", "Zero-Fabrication QA"],
+      features: ["30 Directives", "Audit Ledger", "MeitY Subsidies", "Zero-Fabrication QA"],
     },
     {
       id: "chat",

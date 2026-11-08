@@ -853,7 +853,7 @@ export function FounderAiOsShell() {
                 <Input
                   value={aiSettingsCommand}
                   onChange={(e) => setAiSettingsCommand(e.target.value)}
-                  placeholder="e.g. Set commission to 15%, base delivery ₹30, max radius 20km, or Theme: Sovereign Gold..."
+                  placeholder="e.g. Set commission to 15%, base delivery ₹30, max radius 20km, or Theme: Heritage Gold..."
                   className="flex-1 bg-surface-2/80 border-border text-xs text-white"
                 />
                 <Button
@@ -874,7 +874,7 @@ export function FounderAiOsShell() {
                   "Base Delivery ₹30",
                   "Max Radius 20km",
                   "Theme: Royal Emerald",
-                  "Theme: Sovereign Gold",
+                  "Theme: Heritage Gold",
                   "Reset Branding",
                 ].map((chip) => (
                   <button
@@ -975,11 +975,11 @@ export function FounderAiOsShell() {
                           primary_brand_color: "#F59E0B",
                           accent_brand_color: "#10B981",
                         },
-                        "Sovereign Gold Theme",
+                        "Heritage Gold Theme",
                       )
                     }
                   >
-                    Sovereign Gold
+                    Heritage Gold
                   </Button>
                   <Button
                     size="sm"

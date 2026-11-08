@@ -38,19 +38,11 @@ const FEATURED_OFFERS = [
   },
   {
     id: "feat_freedel",
-    name: "fast delivery Above ₹199",
+    name: "Free Delivery Above ₹199",
     code: "FREEDEL",
-    description: "100% fast delivery across all Karimganj & Silchar restaurants.",
+    description: "Free delivery on orders above ₹199 from nearby partner restaurants.",
     minOrderPaise: 19900,
-    badge: "🚀 Zero Delivery Fee",
-  },
-  {
-    id: "feat_goldvip",
-    name: "Gold VIP Extra 15% OFF",
-    code: "GOLDVIP",
-    description: "Exclusive member privilege with unlimited fast delivery.",
-    minOrderPaise: 24900,
-    badge: "⭐ VIP Only",
+    badge: "Free Delivery",
   },
 ];
 

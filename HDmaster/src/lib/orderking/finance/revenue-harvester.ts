@@ -1,5 +1,5 @@
 /**
- * OrderKing Planetary AdvancedPower Revenue Harvester & Direct Money Generator Core
+ * OrderKing Revenue Optimization & Statutory Subsidy Engine
  * Confidential & Proprietary - Restricted Solely to Platform Owner / CEO
  * 
  * Non-Negotiable Invariants:

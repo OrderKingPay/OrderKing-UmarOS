@@ -92,11 +92,11 @@ export const ROYAL_THEME_PRESETS = [
     surface: "#FFFFFF",
     foreground: "#0B241D",
     accent: "#D97706",
-    desc: "Signature sovereign heritage green with warm royal gold accents",
+    desc: "Signature heritage green with warm gold accents",
   },
   {
     id: "midnight_sovereign",
-    name: "Midnight Sovereign Dark",
+    name: "Midnight Dark",
     primary: "#4F46E5",
     primaryForeground: "#FFFFFF",
     background: "#090D16",
@@ -3047,7 +3047,7 @@ export function UmarOsVisualCustomizationStudio({
                       onChange={(e) => setExplicitFounderApproval(e.target.checked)}
                       className="rounded border-slate-300 text-rose-600 focus:ring-rose-500"
                     />
-                    <span>Grant Founder Sovereign Approval Gate (Required for execution)</span>
+                    <span>Grant Founder Approval Gate (Required for execution)</span>
                   </label>
 
                   <div className="flex items-center gap-2">

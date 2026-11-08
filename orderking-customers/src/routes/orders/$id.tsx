@@ -10,7 +10,6 @@ import { ResilientLiveMap } from "@/components/tracking/resilient-live-map";
 import { DishReviewModal } from "@/components/market/dish-review-modal";
 import { LiveOrderVoiceAlerts } from "@/components/market/live-order-voice-alerts";
 import { Button } from "@/components/ui/button";
-import { RetentionRoulette } from "@/components/RetentionRoulette";
 import { useT } from "@/components/providers";
 import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -380,14 +379,7 @@ function OrderDetailPage() {
           </div>
         )}
 
-        {/* POST-ORDER RETENTION ROULETTE GAMIFICATION WHEEL */}
-        {order.status === "DELIVERED" && (
-          <RetentionRoulette
-            orderId={order.summary.publicId || id}
-            orderTotalPaise={order.summary.totalPaise}
-            className="mt-6"
-          />
-        )}
+        
 
         {/* Dish Review Modal with 3-Photo Upload & ₹25 Gold Reward */}
         {order.status === "DELIVERED" && (

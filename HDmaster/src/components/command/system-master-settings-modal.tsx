@@ -58,7 +58,7 @@ export function SystemMasterSettingsModal({
   const [autoClean, setAutoClean] = useState<boolean>(systemMasterController.isAutoCleanEnabled());
 
   // Voice Settings State
-  const [selectedPersona, setSelectedPersona] = useState("Aria Sovereign (Warm, Executive)");
+  const [selectedPersona, setSelectedPersona] = useState("Aria (Warm, Executive)");
   const [speechRate, setSpeechRate] = useState(1.05);
 
   // Real Model Registry & API Keys State
@@ -468,7 +468,7 @@ export function SystemMasterSettingsModal({
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {[
-                    "Aria Sovereign (Warm, Executive, Realistic)",
+                    "Aria (Warm, Executive, Realistic)",
                     "Zephyr Kinetic (Dynamic, Fast, Startup)",
                     "Eos Ultra (Smooth, Empathetic, Melodic)",
                     "Nova Founder (Authoritative, Clear, Global)",

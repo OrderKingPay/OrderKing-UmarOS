@@ -426,7 +426,7 @@ export function AiMediaStudioModal({
                     />
                     {watermarkBrand && (
                       <div className="absolute bottom-3 right-3 rounded-lg bg-black/75 px-2.5 py-1 border border-amber-500/50 backdrop-blur text-[10px] font-bold text-amber-300">
-                        ⚡ OrderKing Founder Sovereign Edition
+                        ⚡ OrderKing Founder Studio Edition
                       </div>
                     )}
                   </div>

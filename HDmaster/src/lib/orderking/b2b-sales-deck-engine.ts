@@ -236,7 +236,7 @@ export async function getB2BPitchDeckTelemetryCore(): Promise<RealDeckTelemetry>
       targetSla: "Sub-8 Min Auto-Assignment SLA",
       p95LatencyMs: 24,
       activeFleetRiders: activeRiders,
-      algorithmMode: "Starlink-Grade Proximity & Haversine Matrix",
+      algorithmMode: "PostGIS Spatial Proximity & Haversine Matrix",
       isBenchmarked: hasLive,
     },
     profitMargins: {
@@ -384,7 +384,7 @@ We engineered OrderKing (UmarOS) specifically for multi-unit QSR franchisees to 
 2. DISPATCH SPEED:
    - Target SLA: Sub-8 minute driver assignment
    - Current System Status: ${telemetry.dispatchSpeed.stat}
-   - P95 Platform Latency: 24ms Starlink-grade routing with POS bridge (Toast/NCR Aloha/Brink).
+   - P95 Platform Latency: 24ms edge routing with POS bridge (Toast/NCR Aloha/Brink).
 
 3. AI ANTI-FRAUD & LOSS PROTECTION:
    - HMAC-SHA256 cryptographically sealed tickets

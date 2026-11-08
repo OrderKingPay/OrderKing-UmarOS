@@ -124,15 +124,15 @@ export function CommercialCommandDials() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="font-display text-2xl font-black tracking-tight text-white sm:text-3xl">
-                  UMAR OS COMMERCIAL COMMAND DIALS
+                <h1 className="font-display text-xl font-bold tracking-tight text-white sm:text-2xl">
+                  Commercial Pricing &amp; Dials
                 </h1>
-                <Badge className="border-amber-500/40 bg-amber-500/20 text-amber-300 font-mono text-[10px]">
-                  LIVE OP-DECK
+                <Badge className="border-emerald-500/40 bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">
+                  ACTIVE
                 </Badge>
               </div>
               <p className="text-xs text-slate-400">
-                Founder Operational Levers • Section 9(5) CGST Compliant • 100% SafeInteger Paise Engine
+                Platform fee, outlet commissions, surge rates, and payout batches.
               </p>
             </div>
           </div>

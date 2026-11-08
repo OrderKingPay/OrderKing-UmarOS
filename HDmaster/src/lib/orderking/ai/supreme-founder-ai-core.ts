@@ -17,7 +17,6 @@ export type AiModelId =
   | "claude-4-6-opus"
   | "gpt-5-6-omni"
   | "grok-4-6-super"
-  | "spacex-orbital"
   | "codex-supreme"
   | "gemini-3-8-ultra"
   | "deepseek-r1-sovereign"

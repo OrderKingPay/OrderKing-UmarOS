@@ -1149,7 +1149,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
     });
     setIsSavedToVault(true);
     playAudioTone("ping");
-    toast.success("🎬 Saved to Sovereign Media Vault with 100% immutable backup!");
+    toast.success("🎬 Saved to Media Storage!");
   };
 
   const handleTurboRender = () => {
@@ -1444,7 +1444,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
   const handleSave = () => {
     setHasSaved(true);
     playAudioTone("ping");
-    toast.success("⚙️ System configuration saved to Sovereign Storage!");
+    toast.success("⚙️ System configuration saved!");
     setTimeout(() => setHasSaved(false), 2000);
   };
 
@@ -1464,7 +1464,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
               </Badge>
             </div>
             <span className="text-[10px] text-slate-400">
-              Zero Disconnection Architecture · Sovereign State Protection Active
+              Zero Disconnection Architecture · State Protection Active
             </span>
           </div>
         </div>
@@ -3125,7 +3125,7 @@ function FounderWorkHub({
               <span className="text-[10px] text-slate-400 uppercase font-semibold block">AI Model &amp; Reasoning</span>
               <div className="flex items-center justify-between text-slate-200">
                 <span>Model Engine:</span>
-                <span className="font-bold text-amber-400 font-mono">Sovereign Ultra</span>
+                <span className="font-bold text-amber-400 font-mono">Core Ultra</span>
               </div>
               <div className="flex items-center justify-between text-slate-200">
                 <span>Reasoning Depth:</span>
@@ -3274,7 +3274,7 @@ export function PremiumFounderAiChat({
     const res = systemMasterController.performSystemRestart();
     setTimeout(() => {
       playAudioTone("chime");
-      toast.success(`✅ System Restart Complete: ${res.componentsRebooted.length} sovereign engines rebooted with 100% preserved state in ${res.bootDurationMs}ms!`);
+      toast.success(`✅ System Restart Complete: ${res.componentsRebooted.length} core engines rebooted with 100% preserved state in ${res.bootDurationMs}ms!`);
     }, 500);
   };
 
@@ -3965,7 +3965,7 @@ export function PremiumFounderAiChat({
                 US
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[13px] font-bold text-white truncate">Umar Sovereign Master</div>
+                <div className="text-[13px] font-bold text-white truncate">Umar Master Operations</div>
                 <div className="text-[10px] text-amber-400 font-semibold flex items-center gap-1">
                   <ShieldCheck className="size-3 text-emerald-400" />
                   <span>100% Privacy Shield Active</span>
@@ -4139,7 +4139,7 @@ export function PremiumFounderAiChat({
               size="sm"
               onClick={() => setIsOrderKingSuiteOpen(true)}
               className="h-8 px-3 rounded-full text-[12px] font-black bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black shadow-lg shadow-amber-500/25 border border-amber-400/50 flex items-center gap-1.5 transition active:scale-95 animate-pulse"
-              title="👑 Order King Sovereign Command Suite (All Reports, Riders, Payments, Algorithm, Weak Restaurants, Growth Actions, Autonomous Telephony)"
+              title="Order King Operations Command Suite (Reports, Riders, Payments, Dispatch, Restaurants, Growth)"
             >
               <Crown className="size-3.5 fill-black" />
               <span>Order King</span>
@@ -5076,7 +5076,7 @@ export function PremiumFounderAiChat({
         onClose={() => setIsExporterModalOpen(false)}
       />
 
-      {/* 👑 Order King Sovereign Command Suite Modal */}
+      {/* Order King Operations Command Suite Modal */}
       <OrderKingCommandSuiteModal
         isOpen={isOrderKingSuiteOpen}
         onClose={() => setIsOrderKingSuiteOpen(false)}

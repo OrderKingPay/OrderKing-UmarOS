@@ -214,7 +214,7 @@ export function CommercialBypassDialsSection() {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner: Sovereign Commercial Bypass Dials */}
+      {/* Top Banner: Commercial Operational Dials */}
       <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-black to-zinc-950/60 p-5 shadow-[0_0_35px_rgba(245,158,11,0.12)]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">

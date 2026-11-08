@@ -49,7 +49,7 @@ export function FounderIncomeProducts() {
     },
     {
       id: "prod-02",
-      title: "Sovereign Quick-Commerce Fleet Blueprint & Codebase",
+      title: "Quick-Commerce Fleet Blueprint & Architecture",
       priceInr: 19999,
       category: "digital_asset",
       salesCount: 28,

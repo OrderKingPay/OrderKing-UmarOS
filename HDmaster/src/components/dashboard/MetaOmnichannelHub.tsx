@@ -347,7 +347,7 @@ export function MetaOmnichannelHub({
 
   return (
     <div className="space-y-6 text-slate-900 bg-white">
-      {/* 1. TOP MILITARY-GRADE CONTROL CENTER HEADER */}
+      {/* 1. META OMNICHANNEL CONTROL CENTER HEADER */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">

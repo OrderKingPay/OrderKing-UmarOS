@@ -269,17 +269,17 @@ function CartPage() {
                 </ul>
               </div>
 
-              {/* APPLY COUPON SECTION WITH GRADIENT INPUT */}
-              <div className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-white to-yellow-500/5 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3">
+              {/* APPLY COUPON SECTION */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs space-y-3">
                 <div className="flex items-center gap-2">
-                  <Tag className="size-4 text-amber-600" />
-                  <h3 className="font-display text-sm font-extrabold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
-                    Apply Gourmet Coupon &amp; VIP Perks
+                  <Tag className="size-4 text-emerald-600" />
+                  <h3 className="font-display text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    Apply Coupon
                   </h3>
                 </div>
 
                 <form
-                  className="relative flex items-center rounded-2xl border-2 border-amber-400/50 focus-within:border-amber-500 bg-white dark:bg-zinc-900 shadow-xs p-1"
+                  className="relative flex items-center rounded-xl border border-slate-300 focus-within:border-emerald-500 bg-white shadow-xs p-1"
                   onSubmit={(e) => {
                     e.preventDefault();
                     applyPromoCode(code);
@@ -288,36 +288,27 @@ function CartPage() {
                   <input
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    placeholder="Enter coupon code (e.g. VIPGOLD)"
+                    placeholder="Enter coupon code (e.g. LOCAL40)"
                     aria-label={t("cart.coupon")}
-                    className="h-10 w-full rounded-xl bg-transparent px-3 text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none"
+                    className="h-9 w-full rounded-lg bg-transparent px-3 text-xs font-mono font-bold uppercase tracking-wider text-slate-900 placeholder:text-slate-400 focus:outline-none"
                   />
                   <button
                     type="submit"
-                    className="h-10 px-5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-xs uppercase tracking-wider shadow-sm active:scale-95 transition-all cursor-pointer shrink-0"
+                    className="h-9 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider shadow-xs active:scale-95 transition-all cursor-pointer shrink-0"
                   >
                     {t("cart.apply") || "APPLY"}
                   </button>
                 </form>
 
-                {/* Quick Tap Coupons Carousel */}
+                {/* Quick Tap Coupon */}
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
                   <button
                     type="button"
-                    onClick={() => applyPromoCode("VIPGOLD")}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl bg-amber-500/15 border border-amber-400/40 px-3 py-1.5 text-xs font-bold text-amber-900 dark:text-amber-200 hover:bg-amber-500/25 transition cursor-pointer"
+                    onClick={() => applyPromoCode("LOCAL40")}
+                    className="shrink-0 flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition cursor-pointer"
                   >
-                    <Crown className="size-3 text-amber-600" />
-                    <span>VIPGOLD • Extra 15% OFF</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => applyPromoCode("FESTIVE50")}
-                    className="shrink-0 flex items-center gap-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/40 px-3 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-500/25 transition cursor-pointer"
-                  >
-                    <Sparkles className="size-3 text-emerald-600" />
-                    <span>FESTIVE50 • Flat ₹50 OFF</span>
+                    <Tag className="size-3 text-emerald-600" />
+                    <span>LOCAL40 • Flat ₹40 OFF</span>
                   </button>
                 </div>
 

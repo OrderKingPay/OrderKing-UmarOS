@@ -95,7 +95,7 @@ import {
 } from "./widgets";
 import { useEmployee } from "./shell";
 import { GrowthVaultView } from "./growth-vault";
-import { FounderSovereignDeck } from "./founder-sovereign-deck";
+
 import { FounderEconomics } from "../dashboard/FounderEconomics";
 import { UmarOS_AI_Terminal } from "../dashboard/UmarOS_AI_Terminal";
 import { LiveFounderProfitDashboard } from "../dashboard/LiveFounderProfitDashboard";
@@ -372,14 +372,57 @@ export function DashboardPage() {
 }
 
 function CeoPage() {
+  const [tab, setTab] = useState<"dials" | "profit" | "economics" | "terminal">("dials");
+
   return (
     <div className="space-y-4">
-      {/* UMAR OS: FOUNDER CONTROL DECK */}
-      <UmarOS_AI_Terminal />
-      <CommercialCommandDials />
-      <LiveFounderProfitDashboard />
-      <FounderEconomics />
-      <FounderSovereignDeck />
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-white">Executive Command Center</h1>
+          <p className="text-xs text-muted">
+            Commercial pricing dials, P&amp;L margin calculations, and unit economics.
+          </p>
+        </div>
+        <div className="flex gap-1.5 bg-black/40 p-1 rounded-xl border border-border/60 text-xs">
+          <Button
+            size="sm"
+            variant={tab === "dials" ? "primary" : "ghost"}
+            onClick={() => setTab("dials")}
+            className="text-xs font-semibold"
+          >
+            Commercial Dials
+          </Button>
+          <Button
+            size="sm"
+            variant={tab === "profit" ? "primary" : "ghost"}
+            onClick={() => setTab("profit")}
+            className="text-xs font-semibold"
+          >
+            Profit &amp; Margins
+          </Button>
+          <Button
+            size="sm"
+            variant={tab === "economics" ? "primary" : "ghost"}
+            onClick={() => setTab("economics")}
+            className="text-xs font-semibold"
+          >
+            Unit Economics
+          </Button>
+          <Button
+            size="sm"
+            variant={tab === "terminal" ? "primary" : "ghost"}
+            onClick={() => setTab("terminal")}
+            className="text-xs font-semibold"
+          >
+            AI Command Terminal
+          </Button>
+        </div>
+      </header>
+
+      {tab === "dials" && <CommercialCommandDials />}
+      {tab === "profit" && <LiveFounderProfitDashboard />}
+      {tab === "economics" && <FounderEconomics />}
+      {tab === "terminal" && <UmarOS_AI_Terminal />}
     </div>
   );
 }
@@ -3195,10 +3238,10 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                   onChange={(e) => setProvider(e.target.value)}
                 >
                   <option value="antigravity">Antigravity Multi-Agent Core (10x Autonomous Capacity)</option>
-                  <option value="anthropic">Claude 4.6 Sonnet (Anthropic Deep Engineering)</option>
-                  <option value="openai">GPT-5.6 LUNA (OpenAI Advanced Reasoning)</option>
-                  <option value="xai">SUPERGROK 4.6 (xAI Real-time Planetary Ops)</option>
-                  <option value="gemini">Gemini 2.5 Pro Ultra (Google Multi-modal)</option>
+                  <option value="anthropic">Claude 3.7 Sonnet (Anthropic Deep Engineering)</option>
+                  <option value="openai">GPT-4o (OpenAI Reasoning)</option>
+                  <option value="xai">Grok 3 (xAI Real-time Search)</option>
+                  <option value="gemini">Gemini 2.5 Pro (Google Multimodal)</option>
                   <option value="local_deterministic">Local Deterministic Engine (Always Ready)</option>
                 </select>
               </div>
@@ -3560,12 +3603,12 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-indigo-500/20 hover:opacity-90 border-2 border-violet-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_planetary_multi_repo_watchdog_and_self_healing_core: Autonomous Multi-Repo Self-Healing Watchdog: Scan all 5 physical repositories, verify schema parity, enforce canonical contracts, and maintain 100% planetary uptime", "engineers")}
+                  onClick={() => runPreset("autonomous_planetary_multi_repo_watchdog_and_self_healing_core: Ecosystem Multi-Repo Watchdog: Scan all 5 physical repositories, verify schema parity, enforce canonical contracts, and maintain 100% ecosystem uptime", "engineers")}
                 >
                   <span className="font-bold text-violet-900 dark:text-violet-200 flex items-center gap-1.5">
-                    <span>🪐</span> 1-Click Planetary Multi-Repo Watchdog &amp; Self-Healing Core
+                    <span>🪐</span> 1-Click Ecosystem Multi-Repo Watchdog &amp; Contract Audit
                   </span>
-                  <p className="text-[11px] text-muted">Scans all 5 ecosystem repositories (HDmaster, orderking-customers, orderking-riders, OrderKing-partners, Apps-integration), self-heals contract drifts, and guarantees planetary-grade stability.</p>
+                  <p className="text-[11px] text-muted">Scans all 5 ecosystem repositories (HDmaster, orderking-customers, orderking-riders, orderking-partners, packages), verifies schema parity, and prevents contract drifts.</p>
                 </button>
               </div>
             </Panel>
