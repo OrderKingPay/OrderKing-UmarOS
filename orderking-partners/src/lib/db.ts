@@ -168,7 +168,7 @@ function createNeonSql(): Promise<Sql> {
           let client;
           try {
             client = await pool.connect();
-            await client.query("BEGIN");
+            await client.query("BEGIN ISOLATION LEVEL READ COMMITTED");
             const result = await fn(makeClientSql(client));
             await client.query("COMMIT");
             return result;

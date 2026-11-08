@@ -326,7 +326,7 @@ export class CanonicalLedger {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         await sql.transaction(async (tx: Sql) => {
-          await tx.query("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+          await tx.query("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
           const lockedExisting = await tx.query<any>(
             "SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 FOR UPDATE",
             [params.idempotencyKey],

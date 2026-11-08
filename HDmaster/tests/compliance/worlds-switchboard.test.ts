@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 test('UmarOS 10-Worlds Switchboard - All 10 Worlds & Sub-Category Tabs Integrity', () => {
-  const indexPath = path.resolve('src/routes/index.tsx');
+  const indexPath = fs.existsSync(path.resolve('src/routes/index.tsx'))
+    ? path.resolve('src/routes/index.tsx')
+    : path.resolve('HDmaster/src/routes/index.tsx');
   assert.ok(fs.existsSync(indexPath), 'HDmaster/src/routes/index.tsx must exist');
 
   const content = fs.readFileSync(indexPath, 'utf8');

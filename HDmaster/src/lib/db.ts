@@ -154,7 +154,7 @@ function createNeonSql(): Promise<Sql> {
           } catch (err) {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock/i.test(msg);
             if (isTransient && attempt < 4) {
               await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
               continue;
@@ -170,7 +170,7 @@ function createNeonSql(): Promise<Sql> {
           let client;
           try {
             client = await pool.connect();
-            await client.query("BEGIN");
+            await client.query("BEGIN ISOLATION LEVEL READ COMMITTED");
             const result = await fn(makeClientSql(client));
             await client.query("COMMIT");
             return result;
