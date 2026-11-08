@@ -68,7 +68,7 @@ export const VIP_TRAVEL_CATEGORIES: readonly VIPCharterCategoryConfig[] = [
   {
     id: "heritage_stay",
     title: "Luxury Heritage Stays at Taj & Oberoi",
-    subtitle: "Royal suites, palace hotels, and ultra-luxury retreats with private butler service",
+    subtitle: "Suites, heritage hotels, and verified private retreats with full service",
     badge: "Wholesale Net Rate",
     iconName: "Building2",
     leadTime: "Instant VIP Desk Hold",
@@ -164,7 +164,7 @@ export function generateWhatsAppConciergeUrl(inquiry: {
 }): string {
   const reqId = inquiry.requestId || `VIP-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
   const text =
-    `*OrderKing Sovereign VIP Travel & Air Concierge Inquiry*\n` +
+    `*OrderKing Travel & Aviation Concierge Inquiry*\n` +
     `• *Request ID:* ${reqId}\n` +
     `• *Service:* ${inquiry.categoryTitle}\n` +
     `• *Route:* ${inquiry.origin} ➔ ${inquiry.destination}\n` +
@@ -221,7 +221,7 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     id: "fl-pvt-citation-xls",
     mode: "flight",
     carrierCode: "VIP-AIR",
-    carrierName: "OrderKing Sovereign Aviation",
+    carrierName: "OrderKing Aviation Network",
     serviceNumber: "CITATION-XLS",
     routeDisplay: "New Delhi (DEL) ➔ Mumbai (BOM)",
     originCode: "DEL",
@@ -286,7 +286,7 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     departureTime: "14:00 (Check-In)",
     arrivalTime: "12:00 (Check-Out)",
     duration: "1 Night",
-    classOrTier: "5-Star Ultra-Luxury Heritage Stays",
+    classOrTier: "5-Star Heritage Stays",
     seatsAvailable: 2,
     baseFarePaise: 3_850_000,         // ₹38,500.00
     carrierTaxesPaise: 693_000,        // ₹6,930.00 (18% GST)

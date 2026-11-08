@@ -81,7 +81,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
         
         const summaryText = `VIP Request ${requestId}: ${selectedCategory} for ${pax} guest(s) on ${travelDateStr} (${originCity} to ${destCity})`;
         const waEncoded = encodeURIComponent(
-          `*OrderKing Sovereign VIP Travel & Air Concierge Inquiry*\n` +
+          `*OrderKing Travel Concierge Inquiry*\n` +
           `• *Request ID:* ${requestId}\n` +
           `• *Guest Name:* ${guestName}\n` +
           `• *Service:* ${selectedCategory}\n` +
@@ -97,7 +97,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
           success: true,
           status: "RECEIVED",
           requestId,
-          desk: "OrderKing Sovereign VIP Travel & Air Concierge",
+          desk: "OrderKing Travel Concierge",
           summary: summaryText,
           inquiry: {
             guestName,
@@ -135,7 +135,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
             JSON.stringify({
               success: false,
               code: "FLIGHT_SUPPLIER_NOT_CONNECTED",
-              error: "Direct GDS flight aggregator not connected. Please connect via OrderKing Sovereign VIP Air Concierge.",
+              error: "Direct GDS flight aggregator not connected. Please connect via OrderKing Travel Desk.",
               disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
             }),
             { status: 503, headers: { "Content-Type": "application/json" } }
