@@ -66,7 +66,7 @@ export const STATUTORY_SAFETY_HELPLINES = {
   },
   FLEET_SAFETY_HELPLINE: {
     number: "18001000",
-    label: "1800-100-ORDER · OrderKing 24x7 Fleet Command Desk",
+    label: "1800-100-ORDER · OrderKing 24x7 Safety Helpline",
     telUri: "tel:18001000",
     service: "FLEET_OPERATIONS",
   },

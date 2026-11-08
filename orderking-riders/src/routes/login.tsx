@@ -539,14 +539,24 @@ function Login() {
                   <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>Didn't receive the OTP?</span>
                     {canResend ? (
-                      <button
-                        type="button"
-                        onClick={() => void handleSendOtp("sms")}
-                        className="font-bold text-[#E23744] hover:underline flex items-center gap-1"
-                      >
-                        <RefreshCw className="size-3" />
-                        Resend via SMS
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => void handleSendOtp("sms")}
+                          className="font-bold text-[#E23744] hover:underline flex items-center gap-1"
+                        >
+                          <RefreshCw className="size-3" />
+                          Resend via SMS
+                        </button>
+                        <span className="text-gray-300">|</span>
+                        <button
+                          type="button"
+                          onClick={() => void handleSendOtp("whatsapp")}
+                          className="font-bold text-emerald-600 hover:underline flex items-center gap-1"
+                        >
+                          Resend via WhatsApp
+                        </button>
+                      </div>
                     ) : (
                       <span className="text-gray-400">Resend in {countdown}s</span>
                     )}

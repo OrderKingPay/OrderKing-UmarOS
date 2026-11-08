@@ -280,7 +280,7 @@ describe("OrderKing Fleet Safety & Doorstep Handover Engine", () => {
 
       expect(res.targetNumber).toBe("18001000");
       expect(res.telUri).toBe("tel:18001000");
-      expect(res.distressSummary).toContain("OrderKing 24x7 Fleet Command Desk");
+      expect(res.distressSummary).toContain("OrderKing 24x7 Safety Helpline");
     });
 
     it("logs triggered SOS emergencies in the FleetSafetyEngine singleton audit ledger", () => {

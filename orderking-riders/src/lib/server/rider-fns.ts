@@ -707,7 +707,7 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
     const dispatchResult = await dispatchOtpSms({
       phone: cleanPhone,
       otp,
-      channel: "sms",
+      channel,
       appName: "OrderKing Rider",
     });
     if (!dispatchResult.success) {
@@ -727,6 +727,7 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
       messageId: dispatchResult.messageId,
       pendingConfig: false,
       providerNotice: dispatchResult.providerNotice,
+      whatsAppOtpUrl: channel === "whatsapp" ? dispatchResult.whatsAppOtpUrl : undefined,
     };
   });
 
