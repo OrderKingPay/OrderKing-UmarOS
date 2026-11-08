@@ -903,7 +903,7 @@ export function DeliveryActions({
               <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 space-y-1.5 text-xs">
                 <div className="flex items-center gap-2 text-emerald-950 dark:text-emerald-300 font-bold">
                   <ShieldCheck className="size-4 shrink-0 text-emerald-500" />
-                  <span>Justified Operational Reassignment (Zero Penalty)</span>
+                  <span>Trip Reassignment</span>
                 </div>
                 <p className="text-emerald-900/90 dark:text-emerald-200/90 leading-relaxed">
                   OrderKing respects delivery partner contingencies. Choosing a justified operational reason reassigns this trip immediately to the nearest available fleet partner without harsh penalty or score reduction.
@@ -1008,7 +1008,7 @@ export function DeliveryActions({
                     ? "Confirm Cancellation (Full Penalty)"
                     : "Confirm Cancellation (Audit Pending)"
                   : isJustifiedOperationalReason(reason)
-                    ? "Reassign Trip (Zero Penalty)"
+                    ? "Reassign Trip"
                     : "Confirm Cancellation"}
               </Button>
               <Button

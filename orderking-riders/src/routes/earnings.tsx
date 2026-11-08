@@ -203,7 +203,7 @@ function Page() {
           <div>
             <h1 className="font-display text-3xl">{t("earnings")}</h1>
             <p className="text-xs text-muted-foreground">
-              Verified partner earnings ledger · 100% transparent per-order payouts
+              Delivery partner earnings &amp; payouts
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -241,7 +241,7 @@ function Page() {
               </p>
             </div>
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-              100% Tips Pass-Through (₹0 Platform Cut)
+              100% Tips Passed to Partner
             </span>
           </div>
 

@@ -145,7 +145,7 @@ export function PeriodLeaveModal({
             🌸 Welfare Protection Policy
           </p>
           <p className="text-[11px] text-rose-200/90">
-            Take time off during your cycle without any penalty. Zero impact on your acceptance rate, streak multipliers, or tier ranking.
+            Take time off during your cycle without any penalty. No impact on your acceptance rate, streak multipliers, or tier ranking.
           </p>
         </div>
 
@@ -345,7 +345,7 @@ export function TpaHealthCardModal({
           <p className="text-[11px] leading-relaxed">
             1. Present this QR code or Member ID at the hospital TPA / Insurance desk.<br />
             2. Hospital desk scans policy details and submits pre-authorization.<br />
-            3. Medi Assist approves cashless sanction within 30 minutes. Zero out-of-pocket cash required.
+            3. Medi Assist approves cashless sanction within 30 minutes. No out-of-pocket cash required.
           </p>
         </div>
 
@@ -737,7 +737,7 @@ export function RiderBenefitsHub({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] pt-1 border-t border-border/50 text-muted-foreground">
               <span>🌸 2 Days / Calendar Month</span>
-              <span>🛡️ Zero rating or streak penalty</span>
+              <span>🛡️ No rating or streak penalty</span>
               <span>💰 ₹350/day wallet rest stipend</span>
             </div>
           </div>

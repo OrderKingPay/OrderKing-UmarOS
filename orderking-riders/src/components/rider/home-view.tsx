@@ -791,12 +791,12 @@ export function HomeView() {
               <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
                 <span className="flex items-center gap-1.5 text-rose-500 font-semibold">
                   <span className="size-2 rounded-full bg-rose-500" />
-                  Duty Offline
+                  Offline
                 </span>
                 <span>
                   {allReady
-                    ? "Safety verified ✓ Swipe to go online"
-                    : "Swipe to verify helmet & go online"}
+                    ? "Swipe to go online"
+                    : "Verify helmet to go online"}
                 </span>
               </div>
             </div>
@@ -812,17 +812,17 @@ export function HomeView() {
               <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
                 <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Duty Online · Live Dispatch Radar Active
+                  Online · Ready for orders
                 </span>
-                <span>Swipe to end shift</span>
+                <span>Swipe to go offline</span>
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex items-center justify-between">
+            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="size-2.5 rounded-full bg-amber-500 animate-ping" />
+                <span className="size-2 rounded-full bg-amber-500 animate-ping" />
                 <span className="text-xs font-bold text-amber-400">
-                  On Trip · Delivery in Progress
+                  On Trip
                 </span>
               </div>
               <Badge tone="busy">{home.active?.state.replaceAll("_", " ")}</Badge>
@@ -908,10 +908,7 @@ export function HomeView() {
               </span>
               <div>
                 <p className="text-xs font-bold text-foreground">
-                  Searching for Nearby Orders in {home.rider.preferredZones[0] || "Operating Service Zone"}
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Reposition closer to active surge hotspots on the heatmap below for higher frequency offers
+                  Looking for orders in {home.rider.preferredZones[0] || "your zone"}
                 </p>
               </div>
             </div>
@@ -1213,8 +1210,8 @@ function OfferCard({
       <div className="rounded-2xl border border-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 p-4 rounded-2xl shadow-xs">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E23744]">
-              ★ Total Order Earnings
+            <p className="text-[11px] uppercase tracking-wider font-extrabold text-foreground">
+              Order Payout
             </p>
             <p className="mt-0.5 font-display text-3xl font-black tracking-tight text-emerald-800 dark:text-emerald-300">
               {formatPaise(offer.expectedPayoutPaise)}
@@ -1222,7 +1219,7 @@ function OfferCard({
           </div>
           <div className="text-right">
             <span className="inline-block rounded-full bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
-              100% Tips + Base Floor
+              Guaranteed
             </span>
           </div>
         </div>
@@ -1247,26 +1244,26 @@ function OfferCard({
       {/* Exact Dispatch Metrics: Pickup Distance, Delivery Distance, Estimated Prep, Guaranteed Payout */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
         <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Pickup Dist</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Pickup</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{offer.approxDistanceKm.toFixed(1)} km</p>
           <p className="text-[9px] text-muted-foreground">To Restaurant</p>
         </div>
         <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Delivery Dist</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Drop</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{(offer.estimatedTravelKm || Math.max(0, offer.estimatedTotalRouteKm - offer.approxDistanceKm)).toFixed(1)} km</p>
-          <p className="text-[9px] text-muted-foreground">Customer Drop</p>
+          <p className="text-[9px] text-muted-foreground">To Customer</p>
         </div>
         <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Est. Prep</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Prep Time</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-amber-400">
-            {offer.restaurant.preparationStatus === "READY" ? "Ready Now" : "~8-10m"}
+            {offer.restaurant.preparationStatus === "READY" ? "Ready" : "~8-10m"}
           </p>
-          <p className="text-[9px] text-muted-foreground">Kitchen SLA</p>
+          <p className="text-[9px] text-muted-foreground">Kitchen</p>
         </div>
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
-          <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Floor Fare</p>
+          <p className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">Fare</p>
           <p className="mt-0.5 font-mono text-sm font-extrabold text-emerald-500 dark:text-emerald-300">{formatPaise(offer.expectedPayoutPaise)}</p>
-          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">Base + Distance</p>
+          <p className="text-[9px] text-emerald-600/80 dark:text-emerald-400/80">Guaranteed</p>
         </div>
       </div>
 
@@ -1278,7 +1275,7 @@ function OfferCard({
               <Store className="size-4" />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Pickup Merchant</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Pickup</p>
               <h3 className="font-display text-base font-bold text-foreground leading-tight">{offer.restaurant.name}</h3>
             </div>
           </div>
@@ -1306,7 +1303,7 @@ function OfferCard({
               <MapPin className="size-4" />
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Delivery Destination</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Drop</p>
               <h3 className="font-display text-base font-bold text-foreground leading-tight">{offer.dropArea}</h3>
             </div>
           </div>

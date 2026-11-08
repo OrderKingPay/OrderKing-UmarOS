@@ -250,14 +250,14 @@ export function SettlementsDesk() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
                     <ShieldCheck className="size-3.5 text-emerald-700" />
-                    Order King Autonomous Treasury &amp; Tax Desk
+                    Order King Payout Desk
                   </span>
                   <span className="text-[11px] font-semibold text-slate-500">
-                    Zero-Commission Partner Ledger
+                    Partner Ledger
                   </span>
                 </div>
                 <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-slate-900">
-                  Daily &amp; Weekly Payouts, Bank Mandate &amp; Tax Statements
+                  Payouts &amp; Bank Details
                 </h1>
               </div>
             </div>
