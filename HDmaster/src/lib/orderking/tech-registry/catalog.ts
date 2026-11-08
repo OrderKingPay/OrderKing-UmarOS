@@ -262,7 +262,7 @@ export const PAYMENTS_BANKING: readonly TechRegistryItem[] = [
     name: "Setu UPI QR",
     category: "payments_banking",
     provider: "Setu / Pine Labs (NPCI Switch)",
-    tier: "Sovereign UPI Direct Switch & BharatQR Network",
+    tier: "Direct NPCI UPI Switch & BharatQR Network",
     status: "ACTIVE",
     version: "Setu UPI DeepLink API v2",
     latencyMs: 78,
@@ -435,7 +435,7 @@ export const MAPS_LOGISTICS: readonly TechRegistryItem[] = [
     name: "OpenStreetMap",
     category: "maps_logistics",
     provider: "OpenStreetMap Foundation / CartoDB",
-    tier: "Sovereign Community Map Tiles & Failover Basemap",
+    tier: "Community Map Tiles & Failover Basemap",
     status: "ONLINE",
     version: "OSM Slippy Map Tiles 2026",
     latencyMs: 38,
@@ -444,7 +444,7 @@ export const MAPS_LOGISTICS: readonly TechRegistryItem[] = [
       "Zero per-query cost vector and raster map tiles",
       "Offline-capable caching within Service Worker storage",
       "Local landmark granularity and rural pathway cartography",
-      "Independent sovereign infrastructure immune to commercial API quotas",
+      "Independent open infrastructure with zero commercial API quotas",
       "High-contrast light and dark tactical tile rendering"
     ],
     endpoints: [
@@ -455,7 +455,7 @@ export const MAPS_LOGISTICS: readonly TechRegistryItem[] = [
     isProductionReady: true,
     tags: ["osm", "tiles", "cartography", "open-source", "fallback"],
     description:
-      "Open cartographic tile network providing unlimited, sovereign map rendering across all dashboard panels, live operations maps, and customer tracking views."
+      "Open cartographic tile network providing fast map rendering across all dashboard panels, live operations maps, and customer tracking views."
   },
   {
     id: "osrm_routing",
@@ -674,7 +674,7 @@ export const FOUNDER_COMMAND_ACTIONS: readonly FounderActionItem[] = [
     execute: async (options?: FounderActionExecutionOptions): Promise<FounderActionResult> => {
       const startTime = performance.now();
       const executionId = `freeze_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      const operator = options?.operatorId ?? "FOUNDER_UMAR_SOVEREIGN";
+      const operator = options?.operatorId ?? "FOUNDER_ADMIN";
       const reason = options?.reason ?? "Manual Emergency Freeze invoked from World Tech Command Center";
 
       // Simulation / execution hooks: In actual runtime, flags.ts and umaros-supreme.server are toggled
@@ -726,7 +726,7 @@ export const FOUNDER_COMMAND_ACTIONS: readonly FounderActionItem[] = [
     execute: async (options?: FounderActionExecutionOptions): Promise<FounderActionResult> => {
       const startTime = performance.now();
       const executionId = `rebalance_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      const operator = options?.operatorId ?? "FOUNDER_UMAR_SOVEREIGN";
+      const operator = options?.operatorId ?? "FOUNDER_ADMIN";
 
       const details = {
         action: "DOUBLE_ENTRY_REBALANCE",
@@ -773,7 +773,7 @@ export const FOUNDER_COMMAND_ACTIONS: readonly FounderActionItem[] = [
     execute: async (options?: FounderActionExecutionOptions): Promise<FounderActionResult> => {
       const startTime = performance.now();
       const executionId = `fleet_ping_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      const operator = options?.operatorId ?? "FOUNDER_UMAR_SOVEREIGN";
+      const operator = options?.operatorId ?? "FOUNDER_ADMIN";
 
       const details = {
         action: "REALTIME_FLEET_PING",
@@ -819,7 +819,7 @@ export const FOUNDER_COMMAND_ACTIONS: readonly FounderActionItem[] = [
     execute: async (options?: FounderActionExecutionOptions): Promise<FounderActionResult> => {
       const startTime = performance.now();
       const executionId = `compliance_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      const operator = options?.operatorId ?? "FOUNDER_UMAR_SOVEREIGN";
+      const operator = options?.operatorId ?? "FOUNDER_ADMIN";
 
       const details = {
         action: "STATUTORY_GST_FSSAI_AUDIT",

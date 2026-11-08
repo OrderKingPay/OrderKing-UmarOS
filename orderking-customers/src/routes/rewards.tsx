@@ -9,8 +9,6 @@ import { useLocationStore } from "@/lib/stores/location";
 import { getLoyalty } from "@/lib/server/account";
 import { toast } from "sonner";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
-import { CompetitorBounty } from "@/components/CompetitorBounty";
-import { RetentionRoulette } from "@/components/RetentionRoulette";
 
 export const Route = createFileRoute("/rewards")({ component: RewardsPage });
 
@@ -40,7 +38,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "KINGFOOD50",
     coinsRequired: 250,
     valueLabel: "Save ₹50",
-    badge: "👑 Authentic Reward",
+    badge: "Food Reward",
     icon: "🍔",
     terms: "Valid on min order of ₹249 on OrderKing app. Applied directly at checkout.",
     affiliateUrl: "/",
@@ -55,7 +53,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "KINGFREEDEL",
     coinsRequired: 150,
     valueLabel: "fast delivery",
-    badge: "🛵 Fast Delivery",
+    badge: "Free Delivery",
     icon: "🚀",
     terms: "Valid on orders above ₹199 across active delivery zones.",
     affiliateUrl: "/",
@@ -297,14 +295,8 @@ function RewardsPage() {
           </Button>
         </div>
 
-        {/* WhatsApp Viral Bounties Acquisition Engine */}
+        {/* Referral Program */}
         <WhatsAppViralBountiesWidget source="rewards_vault" />
-
-        {/* Welcome Offers & Promo Coupons */}
-        <CompetitorBounty className="mt-4" />
-
-        {/* Member Dining Perks */}
-        <RetentionRoulette orderId="rewards_vault_spin" className="mt-4" />
 
         {/* Category Filters */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">

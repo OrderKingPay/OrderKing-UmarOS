@@ -3292,323 +3292,55 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
               </div>
             </Panel>
 
-            <Panel title="1-Click Founder Actions">
+            <Panel title="Administrative Actions">
               <div className="space-y-1.5 text-xs">
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
                   onClick={() => runPreset("onboard_restaurant: Onboard 'Royal Biryani House' in Karimganj Central with North Indian & Biryani cuisine, 10% commission, 10:00-23:00 hours, phone 9876543210, address Main Road", "restaurant_ops")}
                 >
-                  <span className="font-semibold">🏪 1-Click Onboard Restaurant</span>
-                  <p className="text-[11px] text-muted">Instantly activate new kitchen with commission & hours.</p>
+                  <span className="font-semibold">🏪 Onboard Restaurant Partner</span>
+                  <p className="text-[11px] text-muted">Activate new kitchen partner with commission & hours.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-800 dark:text-blue-300 transition-all"
                   onClick={() => runPreset("onboard_rider: Onboard and KYC-verify delivery partner 'Kabir Ahmed', motorcycle, Karimganj Central, phone 9876501234, upi kabir@okaxis", "rider_ops")}
                 >
-                  <span className="font-semibold">🛵 1-Click Onboard & Verify Rider</span>
-                  <p className="text-[11px] text-muted">Approve KYC, vehicle, and weekly Wednesday payouts.</p>
+                  <span className="font-semibold">🛵 Onboard & Verify Delivery Partner</span>
+                  <p className="text-[11px] text-muted">Verify rider KYC, vehicle details, and bank account.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-800 dark:text-purple-300 transition-all"
                   onClick={() => runPreset("generate_menu: Generate full menu for Royal Biryani House with authentic culinary dish images, FSSAI diet tags, and realistic market pricing", "product")}
                 >
-                  <span className="font-semibold">📋 1-Click Generate AI Menu (Realistic Dish Images)</span>
-                  <p className="text-[11px] text-muted">Categorized dishes, authentic dish photos, and diet tags.</p>
+                  <span className="font-semibold">📋 Generate Menu from Catalog</span>
+                  <p className="text-[11px] text-muted">Categorized dishes, prices, and FSSAI diet tags.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-800 dark:text-rose-300 transition-all"
                   onClick={() => runPreset("auto_diagnose_and_prepare_fix: Scan delayed orders and dispatch bottlenecks, and prepare remedial fixes with owner turn-on/off approval controls", "debugger")}
                 >
-                  <span className="font-semibold">🛠️ 1-Click Auto-Diagnose & Prepare Fixes</span>
-                  <p className="text-[11px] text-muted">Self-healing diagnosis with owner turn-on/off approval.</p>
+                  <span className="font-semibold">🛠️ Diagnose Delayed Orders</span>
+                  <p className="text-[11px] text-muted">Inspect active bottlenecks and rider delivery SLA.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-800 dark:text-amber-300 transition-all"
                   onClick={() => runPreset("generate_scheduled_report: Generate Wednesday weekly settlement statement with statutory GST, TCS, TDS, and strict tenant data isolation", "payments")}
                 >
-                  <span className="font-semibold">📊 1-Click Wednesday Settlement Report</span>
-                  <p className="text-[11px] text-muted">Statutory GST/TCS/TDS reconciliation & payout statement.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("launch_viral_referral_engine: Launch High_Performance viral referral booster with ₹100 friend discount (min ₹299 cart) and ₹50 referrer wallet reward with zero platform loss", "growth")}
-                >
-                  <span className="font-semibold">🎁 1-Click Viral Referral Engine</span>
-                  <p className="text-[11px] text-muted">Zero-loss customer acquisition loop with ₹299 cart guardrail.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-800 dark:text-blue-300 transition-all"
-                  onClick={() => runPreset("boost_fast_prep_kitchens: Reward kitchens preparing orders in <12 minutes with +35% organic ranking boost and fair 10% commission spotlight", "restaurant_ops")}
-                >
-                  <span className="font-semibold">⚡ 1-Click Fast-Track Kitchen Boost</span>
-                  <p className="text-[11px] text-muted">Drive kitchens to cook OrderKing orders first before Dominant Legacy Aggregators.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("reconcile_wallet_ledger: Autonomously audit double-entry ledger invariant, escrow float, and UPI deposits without human accountants", "payments")}
-                >
-                  <span className="font-semibold">🤖 1-Click Autonomous CFO: Audit Wallet Ledger</span>
-                  <p className="text-[11px] text-muted">Verify 1:1 escrow match and zero float leakage across all wallets.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-800 dark:text-rose-300 transition-all"
-                  onClick={() => runPreset("analyze_fintech_risk: Autonomously evaluate user velocity, multi-accounting, and referral loop abuse to shield platform capital", "security")}
-                >
-                  <span className="font-semibold">🛡️ 1-Click Autonomous Risk: Fraud Velocity Scan</span>
-                  <p className="text-[11px] text-muted">Shield platform capital from referral abusers and velocity attacks.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-800 dark:text-amber-300 transition-all"
-                  onClick={() => runPreset("optimize_affiliate_alliances: Autonomously evaluate click-through rates and commission yields across Amazon, Flipkart, Meesho, HPCL, and IndianOil", "growth")}
-                >
-                  <span className="font-semibold">📈 1-Click Autonomous Growth: Optimize Affiliate Yields</span>
-                  <p className="text-[11px] text-muted">Maximize passive commission from Amazon, Flipkart, Meesho, and fuel partners.</p>
+                  <span className="font-semibold">📊 Weekly Settlement Statement</span>
+                  <p className="text-[11px] text-muted">Statutory GST/TCS/TDS reconciliation & payout report.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-800 dark:text-indigo-300 transition-all"
-                  onClick={() => runPreset("audit_customer_grievance_compliance: Autonomously audit customer complaints, SLA breaches, and statutory ombudsman escalations", "support")}
+                  onClick={() => runPreset("Audit client identity binding: ensure riderId and customerId cannot be forged, and check HMAC-SHA256 signatures.", "security")}
                 >
-                  <span className="font-semibold">⚖️ 1-Click Autonomous Support: Customer Grievance Audit</span>
-                  <p className="text-[11px] text-muted">Auto-audit 30-min SLA breaches, disburse late compensation, and monitor statutory portals.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("audit_merchant_and_rider_grievance_compliance: Autonomously audit restaurant and rider statutory grievances, insurance claims, and ombudsman escalations", "support")}
-                >
-                  <span className="font-semibold">🤝 1-Click Merchant &amp; Rider Grievance Audit</span>
-                  <p className="text-[11px] text-muted">Monitor FSSAI, MSME Samadhaan, MoLE e-Shram, and TPA accident insurance claims.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-800 dark:text-blue-300 transition-all"
-                  onClick={() => runPreset("audit_offline_2g_settlement_sync: Autonomously verify offline 2G transaction queue, cryptographic tokens, and batch settlement integrity", "finance")}
-                >
-                  <span className="font-semibold">📶 1-Click 2G &amp; Offline Batch Settlement Sync</span>
-                  <p className="text-[11px] text-muted">Verify cryptographic token queue, collision avoidance, and zero double-spend clearing.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-800 dark:text-purple-300 transition-all"
-                  onClick={() => runPreset("audit_loan_and_card_affiliate_commissions: Autonomously audit pre-approved loan and credit card lead conversions, tracking IDs, and partner commission payouts", "finance")}
-                >
-                  <span className="font-semibold">💰 1-Click Autonomous Loan &amp; Card Commission Audit</span>
-                  <p className="text-[11px] text-muted">Reconcile Navi, Lendingkart, Hero FinCorp, and bank card lead payouts with zero leakage.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-800 dark:text-indigo-300 transition-all"
-                  onClick={() => runPreset("audit_bajaj_finance_affiliate_and_emi_leads: Autonomously audit Bajaj Finserv Insta EMI card conversions, personal loans, and commercial equipment financing leads with zero commission leakage", "finance")}
-                >
-                  <span className="font-semibold">💳 1-Click Bajaj Finserv Affiliate &amp; No-Cost EMI Audit</span>
-                  <p className="text-[11px] text-muted">Reconcile 284 Bajaj leads, Insta EMI cards, equipment loans &amp; zero-leakage commission.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("orchestrate_universal_pos_printer_sync: Autonomously audit and orchestrate universal POS/KOT connectors (Petpooja, UrbanPiper, POSist) and thermal printer hardware health across all restaurants", "operations")}
-                >
-                  <span className="font-semibold">🖨️ 1-Click Universal POS &amp; Thermal Printer Health Audit</span>
-                  <p className="text-[11px] text-muted">Monitor 48 kitchen POS nodes (Petpooja, UrbanPiper, POSist) &amp; ESC/POS thermal printers.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-800 dark:text-blue-300 transition-all"
-                  onClick={() => runPreset("run_hyper_cognitive_diagnostic_and_healing: Execute world-class autonomous self-healing, anomaly detection, real-time load balancing, and multi-model neural orchestration across all 5 OrderKing applications", "engineering")}
-                >
-                  <span className="font-semibold">🧠 1-Click Hyper-Cognitive Autonomous Diagnostic &amp; Self-Healing Loop</span>
-                  <p className="text-[11px] text-muted">16-thread quantum parallel orchestration, neural fraud telemetry &amp; self-healing runtime.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-800 dark:text-amber-300 transition-all"
-                  onClick={() => runPreset("autonomous_workforce_replacement_orchestrator: Orchestrate 100% autonomous replacement of human operations staff across CFO, COO, Support, Kitchens, Menu Engineering, and Marketing", "engineering")}
-                >
-                  <span className="font-semibold">🤖 1-Click Autonomous Workforce Replacement Audit</span>
-                  <p className="text-[11px] text-muted">Verify 87 replaced human staff, ₹43.5L/mo saved payroll, and 100% autonomous operations.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/20 text-pink-800 dark:text-pink-300 transition-all"
-                  onClick={() => runPreset("autonomous_mind_reader_telemetry: Real-time telemetry monitoring of customer order preference accuracy, conversion uplift, and click-through rates", "operations")}
-                >
-                  <span className="font-semibold">🎯 1-Click Mind-Reader Craving Telemetry &amp; Accuracy Audit</span>
-                  <p className="text-[11px] text-muted">Monitor 99.1% craving accuracy, +28.4% quick-add conversion uplift &amp; cart drop-off reduction.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("autonomous_revenue_and_affiliate_maximizer: Autonomously audit and tune all affiliate funnels (loans, fuel cards, insurance, bill payments) to maximize owner revenue with zero liability", "finance")}
-                >
-                  <span className="font-semibold">💸 1-Click Affiliate Revenue Maximization Audit</span>
-                  <p className="text-[11px] text-muted">Audit ₹4.41L/mo projected yield, Bajaj + HPCL/IOCL/BPCL alliances, and 100% zero-liability LSP compliance.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-800 dark:text-amber-300 transition-all"
-                  onClick={() => runPreset("autonomous_revenue_and_affiliate_maximizer: Autonomously audit HPCL DriveTrack Plus, IndianOil XTRAPOWER fleet volume rebates, and co-branded fuel card CPAs", "finance")}
-                >
-                  <span className="font-semibold">⛽ 1-Click Fuel &amp; Petro Alliances Telemetry Audit</span>
-                  <p className="text-[11px] text-muted">Track ₹95K/mo fuel yield, 380 active rider fleet cards, ₹7.6 Cr insurance cover, and fuel card CPAs.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-800 dark:text-purple-300 transition-all"
-                  onClick={() => runPreset("autonomous_customer_addiction_and_gamification_director: Control King Coins burn rates, jackpot prize distributions, streak incentives, and user retention loops", "operations")}
-                >
-                  <span className="font-semibold">🎰 1-Click Customer Addiction &amp; Gamification Telemetry</span>
-                  <p className="text-[11px] text-muted">Monitor 3,840 daily streaks, jackpot spins, King Coins food burns, and VIP tier lifts.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 text-cyan-800 dark:text-cyan-300 transition-all"
-                  onClick={() => runPreset("autonomous_universal_hardware_and_pos_director: Orchestrate cross-restaurant printer connectivity, POS health, and automated self-healing across all partner kitchens", "operations")}
-                >
-                  <span className="font-semibold">🖨️ 1-Click Universal Hardware &amp; POS Auto-Orchestrator</span>
-                  <p className="text-[11px] text-muted">Verify 48 kitchens, Petpooja/UrbanPiper sync, and auto-reconnecting socket self-healing.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-800 dark:text-indigo-300 transition-all"
-                  onClick={() => runPreset("founder_private_cash_vault_telemetry: Audit gross customer bank inflows, restaurant and rider payouts, statutory tax reserves, and net retained cash float", "finance")}
-                >
-                  <span className="font-semibold">🔒 1-Click Founder Private Cash Vault &amp; Retained Float Audit</span>
-                  <p className="text-[11px] text-muted">Confidential: Audit ₹24.25L gross bank inflow, partner disbursements, tax reserves, and net owner cash float.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("founder_profit_maximizer_and_tax_arbitrage: Optimize GST Input Tax Credit (ITC) offsetting, retain 100% of breakage and glitch float, and benchmark Tier-1-beating partner take-rates", "finance")}
-                >
-                  <span className="font-semibold">💎 1-Click AI Profit Maximizer &amp; GST Working Capital Arbitrage</span>
-                  <p className="text-[11px] text-muted">Confidential: Audit breakage float retention, zero net cash GST via Section 16 &amp; 17 ITC, and +13.3% Dominant Legacy Aggregator partner profit moat.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-800 dark:text-amber-300 transition-all"
-                  onClick={() => runPreset("autonomous_legal_income_discovery_engine: Screen and model 12-stream legal revenue architecture, autonomous income discovery, and mutual participant financial advantage", "finance")}
-                >
-                  <span className="font-semibold">⚡ 1-Click Autonomous Legal Income Discovery &amp; Profit Maximizer</span>
-                  <p className="text-[11px] text-muted">Confidential: Audit 12-stream revenue engine, EV swapping, APMC spice procurement, and free cash flow models.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/15 via-primary/15 to-amber-500/15 hover:opacity-90 border-2 border-primary/30 text-foreground transition-all"
-                  onClick={() => runPreset("autonomous_revenue_and_resilience_orchestrator: Execute legal profit generation, 14 revenue streams synchronization, 2G resilience verification, and mutual participant advantage auditing", "finance")}
-                >
-                  <span className="font-semibold text-primary">🚀 1-Click Revenue Optimization &amp; 2G Network Resilience Orchestrator</span>
-                  <p className="text-[11px] text-muted">Confidential: 14 synchronized revenue streams, high-efficiency free cash flow, 2G cache resilience, and zero legal liability.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-primary/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_revenue_and_retention_director: Master director orchestrating legal profit generation across 18 revenue streams, viral bill-splits, Soundbox SaaS, 2G resilience, and user engagement loops", "finance")}
-                >
-                  <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                    <span>👑</span> 1-Click Autonomous Revenue &amp; Customer Retention Director
-                  </span>
-                  <p className="text-[11px] text-muted">Confidential: 18 synchronized revenue streams, bill-split integration, Soundbox SaaS, and operating free cash flow moat.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-primary/20 hover:opacity-90 border-2 border-emerald-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_go_live_production_director: Master director evaluating 0-100% Go-Live readiness, auditing Cloud DB, Payment Gateway, SMS OTP DLT, Google Maps, Legal/Banking/GST/FSSAI, and enforcing capacity controls", "settings")}
-                >
-                  <span className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-                    <span>🎯</span> 1-Click Autonomous Go-Live Production Director
-                  </span>
-                  <p className="text-[11px] text-muted">Evaluate 0-100% Go-Live Readiness, audit Cloud DB, PG, SMS, Maps, GST/FSSAI, and manage Pilot vs Pan-India capacity.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-indigo-500/20 via-blue-500/20 to-primary/20 hover:opacity-90 border-2 border-indigo-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_night_safety_and_long_distance_director: Master director managing 5-18 km long-distance delivery tiers, night safety curfew (11 PM - 6 AM), town center locking, and rider incentive protection", "settings")}
-                >
-                  <span className="font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
-                    <span>🌙</span> 1-Click Autonomous Night Safety &amp; Long-Distance Director
-                  </span>
-                  <p className="text-[11px] text-muted">Govern 5-18 km long-distance tiers, enforce 11 PM - 6 AM night curfew (3.5 km lock), and verify rider safety &amp; payout gates.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-rose-500/20 via-pink-500/20 to-primary/20 hover:opacity-90 border-2 border-rose-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_prestige_subsidies_and_viral_growth_director: Master director orchestrating Assam/Govt of India startup subsidies, cloud grants ($350K), national founder awards, and High_Performance referral loops", "promotions")}
-                >
-                  <span className="font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
-                    <span>🏆</span> 1-Click Autonomous Prestige, Subsidies &amp; Referral Growth Director
-                  </span>
-                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr in cloud/Govt subsidies, apply for National/Assam awards, and trigger high-efficiency location referral programs.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_grant_and_growth_director: Master director orchestrating ₹3.74 Cr+ government grants, university keynote invitations (IIT/NIT), national awards, and local geofenced reach", "promotions")}
-                >
-                  <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                    <span>👑</span> 1-Click Government Grants &amp; Enterprise Growth Director
-                  </span>
-                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr+ in non-dilutive government &amp; cloud cash, university keynote invitations (IIT Guwahati, NIT Silchar), and targeted local advertising.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-primary/20 hover:opacity-90 border-2 border-teal-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_opportunity_radar_and_auto_booking_director: Master AI Opportunity Radar scanning 25+ real Indian Government, University, NGO, Trust grants & awards, auto-generating application dossiers and early-bird reservations", "promotions")}
-                >
-                  <span className="font-bold text-teal-900 dark:text-teal-200 flex items-center gap-1.5">
-                    <span>🛰️</span> 1-Click Master AI Opportunity Radar &amp; Auto-Booking Director
-                  </span>
-                  <p className="text-[11px] text-muted">Scan 25+ real schemes (DST NIDHI, MSME Idea, MeitY TIDE, Tata Trusts), auto-reserve early slots, and generate ready-to-disburse application dossiers.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 hover:opacity-90 border-2 border-blue-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_meta_and_google_ad_orchestrator: Master AI Ad Engine orchestrating Meta Marketing API v21.0 campaigns, Google Local PMax, WhatsApp status loops, and hyper-local geofenced reach", "promotions")}
-                >
-                  <span className="font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
-                    <span>🚀</span> 1-Click Meta &amp; Google Ad Campaign Orchestrator
-                  </span>
-                  <p className="text-[11px] text-muted">Direct Meta v21.0 &amp; Google PMax API payloads, 5 km geofencing @ ₹150/day, video creative scripts, and local WhatsApp communications.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-green-500/20 hover:opacity-90 border-2 border-emerald-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_strategic_nearest_rider_and_fleet_orchestrator: Strategic Nearest-Rider Proximity Engine: Calibrate GPS proximity matrix, execute sequential cascading dispatch with escalated bounty (+₹10, +₹20), and optimize fleet load balancing", "dispatch")}
-                >
-                  <span className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-                    <span>🎯</span> 1-Click Intelligent Nearest-Rider & Fleet Dispatch Engine
-                  </span>
-                  <p className="text-[11px] text-muted">Dispatches exclusively to the single closest online rider via GPS distance. Cascades decline fallbacks with dynamic bounty surge, eliminating random allocation.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-yellow-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_off_peak_demand_stimulator_and_revenue_multiplier: Dynamic Off-Peak Demand Stimulator: Activate 2-5:30 PM and late-night low-sales stimulator, prioritize under ₹99/₹149 high-demand items, and maximize kitchen order volume", "pricing")}
-                >
-                  <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                    <span>⚡</span> 1-Click Dynamic Off-Peak Demand & Revenue Multiplier
-                  </span>
-                  <p className="text-[11px] text-muted">Analyzes hourly order velocity in Karimganj, dynamically promotes dishes under ₹99/₹149 during low-sales hours, and doubles kitchen conversion.</p>
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-indigo-500/20 hover:opacity-90 border-2 border-violet-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_planetary_multi_repo_watchdog_and_self_healing_core: Ecosystem Multi-Repo Watchdog: Scan all 5 physical repositories, verify schema parity, enforce canonical contracts, and maintain 100% ecosystem uptime", "engineers")}
-                >
-                  <span className="font-bold text-violet-900 dark:text-violet-200 flex items-center gap-1.5">
-                    <span>🪐</span> 1-Click Ecosystem Multi-Repo Watchdog &amp; Contract Audit
-                  </span>
-                  <p className="text-[11px] text-muted">Scans all 5 ecosystem repositories (HDmaster, orderking-customers, orderking-riders, orderking-partners, packages), verifies schema parity, and prevents contract drifts.</p>
+                  <span className="font-semibold">🔒 Security & Webhook Audit</span>
+                  <p className="text-[11px] text-muted">Verify HMAC webhook signatures, API tokens, and role permissions.</p>
                 </button>
               </div>
             </Panel>

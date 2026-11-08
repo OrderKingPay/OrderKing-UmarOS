@@ -313,7 +313,7 @@ function SettingsPage() {
     DEFAULT_RIDER_DISCIPLINE_SETTINGS,
   );
 
-  // Sub-Category 2-Core State: UmarOS Master Sovereign Controls
+  // Sub-Category 2-Core State: UmarOS Master Controls
   const [masterControlsState, setMasterControlsState] = useState<UmarOsMasterControlsState>(
     DEFAULT_UMAR_OS_CONTROLS,
   );

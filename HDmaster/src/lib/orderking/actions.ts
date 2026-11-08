@@ -1359,7 +1359,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
         const dltStatus = payload.traiDltPrincipalEntityId ? "TRAI DLT Whitelisted" : "Default DLT Pipeline";
         const monetizationStatus = payload.thirdPartyAdvertiserMonetization
           ? `Ad Network Mode Active (Retail CPM: ₹${payload.thirdPartyRetailCpmRateInr || 110})`
-          : "Sovereign Mode";
+          : "Direct Mode";
 
         return {
           ok: true as const,
@@ -1503,7 +1503,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
 
         const resellingStatus = payload.resellingEnabled
           ? `Ad-Network Reselling Active (Wholesale: ₹${wholesaleCpm.toFixed(2)}/CPM → Retail: ₹${retailCpm.toFixed(2)}/CPM • Net Founder Spread: +₹${marginSpread.toFixed(2)}/CPM [${marginPercent}% Margin])`
-          : "Sovereign Mode (Self-Acquisition Only)";
+          : "Direct Mode (Internal Placement Only)";
 
         return {
           ok: true as const,
@@ -1524,7 +1524,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
 
         return {
           ok: true as const,
-          message: `OrderKing Sovereign Global Ad Syndicate Hub operational. 4 Revenue Streams Active: [1. Promoted Restaurants @ ₹${pPlacementFee}/day] [2. Rider App Financial Ads @ ₹${rSponsorFee}/mo] [3. JioAds Media Network: Wholesale ₹${gWholesale} → Retail ₹${gRetail}/CPM (${gMargin}% margin)] [4. Glance/InMobi OEM Media: Wholesale ₹${oWholesale} → Retail ₹${oRetail}/CPM (${oMargin}% margin)]. Syndicate clearing rail online.`,
+          message: `OrderKing Direct Global Ad Syndicate Hub operational. 4 Revenue Streams Active: [1. Promoted Restaurants @ ₹${pPlacementFee}/day] [2. Rider App Financial Ads @ ₹${rSponsorFee}/mo] [3. JioAds Media Network: Wholesale ₹${gWholesale} → Retail ₹${gRetail}/CPM (${gMargin}% margin)] [4. Glance/InMobi OEM Media: Wholesale ₹${oWholesale} → Retail ₹${oRetail}/CPM (${oMargin}% margin)]. Syndicate clearing rail online.`,
         };
       }
 
@@ -1742,7 +1742,7 @@ export const dispatchCarpetBombingCampaignFn = createServerFn({ method: "POST" }
         body,
         ctaDeepLink,
         channels,
-        advertiserName = "OrderKing Sovereign Network",
+        advertiserName = "OrderKing Direct Network",
         retailCpmRateInr = 110,
       } = data;
 

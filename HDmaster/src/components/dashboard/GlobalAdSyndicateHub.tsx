@@ -107,7 +107,7 @@ export function GlobalAdSyndicateHub({
 
     const netTelecomProfit = gStream.netFounderProfitInr || 0;
     const netOemProfit = oStream.netFounderProfitInr || 0;
-    // Promoted and Rider ads have ~100% gross-to-net margin as sovereign software surfaces
+    // Promoted and Rider ads have ~100% gross-to-net margin as owned direct software surfaces
     const totalNetFounderProfit = grossPromoted + grossRider + netTelecomProfit + netOemProfit;
 
     return {

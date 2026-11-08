@@ -81,8 +81,8 @@ export {
   AcademicSolutionCard,
 } from "@/components/tutor/academic-solution-card";
 
-const ROUTING_SOVEREIGN_VPA = "9395065587@ybl";
-const DISPLAY_SOVEREIGN_VPA = "orderking@ybl";
+const ROUTING_NPCI_VPA = "9395065587@ybl";
+const DISPLAY_NPCI_VPA = "orderking@ybl";
 
 export interface VehicleExpiryStatus {
   hasAlert: boolean;
@@ -281,11 +281,11 @@ export function SupremeKingPayExperience() {
   const activePayeeVpa =
     useCustomVpa && customPayeeVpa.trim()
       ? customPayeeVpa.trim()
-      : ROUTING_SOVEREIGN_VPA;
+      : ROUTING_NPCI_VPA;
   const activeDisplayVpa =
     useCustomVpa && customPayeeVpa.trim()
       ? customPayeeVpa.trim()
-      : DISPLAY_SOVEREIGN_VPA;
+      : DISPLAY_NPCI_VPA;
 
   // Group Bill Splitter state (SafeInteger Paise precision)
   const [splitBillAmount, setSplitBillAmount] = useState<number>(1200);

@@ -111,7 +111,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
 
     try {
       const res = await executeFounderAction(action.id, {
-        operatorId: "FOUNDER_UMAR_SOVEREIGN",
+        operatorId: "FOUNDER_ADMIN",
         reason: "Executed from World Technology Command Center"
       });
 

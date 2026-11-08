@@ -1,11 +1,12 @@
 import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 
-// ORDERKING SOVEREIGN VIP TRAVEL & AIR CONCIERGE INTEGRATION
-// Handles IATA GDS inquiries, IRCTC gateway checks, and VIP Custom Concierge Itinerary Consultations:
-// Private Aviation, Helicopter Charters, Luxury Heritage Stays at Taj/Oberoi, Executive Chauffeurs, Superfast Rail.
+// ORDERKING TRAVEL & FLIGHT CONCIERGE INTEGRATION
+// Handles IATA GDS inquiries, IRCTC gateway checks, and Travel Itinerary Consultations:
+// Flights, Hotels, Cabs, Trains, and Stays.
 
-export const SOVEREIGN_TRAVEL_DISCLAIMER =
-  "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon charter confirmation.";
+export const TRAVEL_CONCIERGE_DISCLAIMER =
+  "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon booking confirmation.";
+export const SOVEREIGN_TRAVEL_DISCLAIMER = TRAVEL_CONCIERGE_DISCLAIMER;
 
 export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
   GET: async () => {

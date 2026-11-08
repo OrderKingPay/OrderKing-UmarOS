@@ -136,8 +136,8 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
   });
 
   // Monetization / Ad Network Placement state
-  const [advertiserMode, setAdvertiserMode] = useState<"sovereign" | "commercial">(
-    activeConfig.thirdPartyAdvertiserMonetization ? "commercial" : "sovereign"
+  const [advertiserMode, setAdvertiserMode] = useState<"internal" | "commercial">(
+    activeConfig.thirdPartyAdvertiserMonetization ? "commercial" : "internal"
   );
   const [whitelistedAdvertiser, setWhitelistedAdvertiser] = useState<string>("OrderKing Internal Network");
   const [clientRetailCpmRateInr, setClientRetailCpmRateInr] = useState<number>(
@@ -791,7 +791,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
           )}
         </div>
 
-        {/* Right Column: Carrier API Connectors & Sovereign Ad-Network Monetization (5 cols) */}
+        {/* Right Column: Carrier API Connectors & Direct Ad-Network Monetization (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           {/* Ad Network Monetization Switchboard ("Charge Others for Placement") */}
           <div className="rounded-xl border border-primary/30 bg-card p-6 shadow-sm space-y-5">
@@ -819,11 +819,11 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      setAdvertiserMode("sovereign");
+                      setAdvertiserMode("internal");
                       updateConfig({ thirdPartyAdvertiserMonetization: false });
                     }}
                     className={`rounded px-2.5 py-1 text-[11px] font-semibold transition-colors ${
-                      advertiserMode === "sovereign"
+                      advertiserMode === "internal"
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:text-foreground"
                     }`}

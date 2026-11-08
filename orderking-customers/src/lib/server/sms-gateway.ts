@@ -597,7 +597,7 @@ export async function dispatchOtpSms(
         console.warn(`[SMS Gateway] WhatsApp API failed: ${waErr?.message}`);
       }
     } else {
-      console.log(`[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to sovereign direct channel.`);
+      console.log(`[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to direct SMS gateway channel.`);
     }
 
     return {

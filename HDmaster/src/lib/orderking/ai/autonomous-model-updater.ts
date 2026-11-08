@@ -64,7 +64,7 @@ export const INITIAL_MODEL_REGISTRY: UpgradableModelInfo[] = [
     id: "codex-supreme",
     name: "Codex Premium Architect",
     generation: "codex-local-v1",
-    provider: "Codex Sovereign",
+    provider: "Codex Local Core",
     releaseDate: "Always Active",
     status: "ACTIVE_PRODUCTION",
     improvements: ["Deterministic code synthesis", "Zero-defect typechecking", "Instant edge bundling"],
@@ -73,9 +73,9 @@ export const INITIAL_MODEL_REGISTRY: UpgradableModelInfo[] = [
   },
   {
     id: "deepseek-r1-sovereign",
-    name: "DeepSeek R1 Sovereign Reasoner",
+    name: "DeepSeek R1 Reasoner",
     generation: "deepseek-r1-local",
-    provider: "DeepSeek Sovereign",
+    provider: "DeepSeek",
     releaseDate: "Always Active",
     status: "ACTIVE_PRODUCTION",
     improvements: ["Mathematical verification", "Zero-fee ledger arbitration", "Extreme algorithmic efficiency"],
@@ -200,7 +200,7 @@ export class AutonomousModelUpdater {
     this.pendingNotifications = nextGenReleases;
 
     const connectedCount = [hasOpenAI, hasAnthropic, hasGoogle, hasXAI].filter(Boolean).length;
-    const summary = `Model Registry Verified: 2 Sovereign local cores always active. ${connectedCount}/4 cloud API providers configured. 2 production upgrades ready for routing.`;
+    const summary = `Model Registry Verified: 2 local cores always active. ${connectedCount}/4 cloud API providers configured. 2 production upgrades ready for routing.`;
 
     return {
       updatesFound: true,
