@@ -334,7 +334,7 @@ export function serializeTboPassengers(passengers: TboPassenger[]): any[] {
       Gender: pax.gender,
       PassportNo: pax.passportNo || "",
       PassportExpiry: pax.passportExpiry || "",
-      AddressLine1: pax.addressLine1 || "Orderkingpay Sovereign Travel Desk",
+      AddressLine1: pax.addressLine1 || "Orderkingpay Travel Operations Desk",
       AddressLine2: "",
       City: pax.city || "Silchar",
       CountryCode: pax.countryCode || "IN",
