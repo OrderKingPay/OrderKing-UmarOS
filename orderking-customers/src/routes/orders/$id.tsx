@@ -139,7 +139,6 @@ function OrderDetailPage() {
   });
 
   const cancel = useMutation({ mutationFn: () => cancelMyOrder({ data: { orderId: id } }), onSuccess: () => void detail.refetch() });
-  const advance = useMutation({ mutationFn: () => advanceSimulatedOrder({ data: { orderId: id } }), onSuccess: () => void detail.refetch() });
 
   const reviewQuery = useQuery({
     queryKey: ["order-review", id],
@@ -925,19 +924,6 @@ function OrderDetailPage() {
           </ul>
           <QuoteLines lines={order.lines} locale={locale} />
         </div>
-
-        {order.restaurantSimulated && !["DELIVERED", "CANCELLED", "CANCELLED_BY_CUSTOMER", "REJECTED"].includes(order.status) ? (
-          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
-            <p className="text-xs text-amber-950 font-medium">{t("orders.simulateHint")}</p>
-            <Button
-              className="mt-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-xs"
-              disabled={advance.isPending}
-              onClick={() => advance.mutate()}
-            >
-              {t("orders.simulate")} ⚡
-            </Button>
-          </div>
-        ) : null}
 
         <div className="mt-6 flex flex-wrap gap-2.5">
           {order.canCancel ? (
