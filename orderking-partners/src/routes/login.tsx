@@ -181,7 +181,9 @@ function Login() {
       const res = await sendPartnerOtpFn({
         data: { phone: cleanPhone, channel },
       });
-      setWhatsAppUrl(res.whatsAppOtpUrl || null);
+      if (!res?.success && res?.success !== undefined) {
+        throw new Error("SMS was not delivered.");
+      }
       if (res.providerNotice) setProviderNotice(res.providerNotice);
 
       setOtpStep("code");
@@ -466,18 +468,7 @@ function Login() {
                       ) : (
                         <Phone className="size-4" />
                       )}
-                      <span>Send OTP (SMS)</span>
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={working || !isPhoneValid}
-                      onClick={() => void handleSendOtp("whatsapp")}
-                      className="h-11 w-full border-gray-200 bg-white text-gray-700 hover:bg-gray-50 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
-                    >
-                      <MessageCircle className="size-4 text-emerald-600" />
-                      <span>Send OTP via WhatsApp</span>
+                      <span>Send code by SMS</span>
                     </Button>
                   </div>
                 </>
@@ -560,16 +551,6 @@ function Login() {
                         <span className="font-mono text-gray-400">Resend in {countdown}s</span>
                       )}
                     </div>
-
-                    <button
-                      type="button"
-                      disabled={working || !canResend}
-                      onClick={() => void handleSendOtp("whatsapp")}
-                      className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 text-xs font-semibold transition"
-                    >
-                      <MessageCircle className="size-3.5 text-emerald-600" />
-                      <span>{canResend ? "Deliver OTP to WhatsApp" : `Resend WhatsApp in ${countdown}s`}</span>
-                    </button>
                   </div>
                 </div>
               )}

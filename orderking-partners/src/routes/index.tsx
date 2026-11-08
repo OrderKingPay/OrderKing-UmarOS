@@ -15,7 +15,6 @@ import {
   Clock,
   HelpCircle,
   ChevronDown,
-  Sparkles,
   Check,
   Building2,
   Receipt,
@@ -137,19 +136,11 @@ function Home() {
       <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24 bg-gradient-to-b from-red-50/40 via-white to-[#F8F9FA]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           {/* Eyebrow Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-1.5 text-xs font-bold text-[#E23744] shadow-xs">
-            <Sparkles className="size-3.5 text-[#E23744]" />
-            <span>0% commission for the 1st month for new restaurant partners!</span>
-          </div>
-
-          {/* Benchmark Headline */}
           <h1 className="mt-6 font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-gray-900 max-w-4xl mx-auto leading-[1.1]">
-            Partner with OrderKing and grow your business
+            Register your restaurant
           </h1>
-
-          {/* Subtitle */}
           <p className="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-gray-600 font-normal leading-relaxed">
-            Connect with thousands of customers across your city, boost your kitchen revenue, and take your restaurant to new heights.
+            Add the kitchen, menu, and bank account. Orders show here after approval.
           </p>
 
           {/* Instant 1-Tap Mobile Quick-Start Onboarding */}

@@ -911,10 +911,10 @@ export const sendKingAiTestNotification = createServerFn({ method: "POST" })
           restaurantName: ctx.restaurantName,
           destinationPhone: destination,
           date: new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" }),
-          orderCount: s.delivered > 0 ? s.delivered : 14,
-          grossSalesPaise: s.sales_paise > 0 ? s.sales_paise : 845000,
-          netPayoutPaise: s.payable_paise > 0 ? s.payable_paise : 802750,
-          gst95Paise: Math.round((s.sales_paise > 0 ? s.sales_paise : 845000) * 0.05),
+          orderCount: s.delivered,
+          grossSalesPaise: s.sales_paise,
+          netPayoutPaise: s.payable_paise,
+          gst95Paise: Math.round(s.sales_paise * 0.05),
           commissionPaise: s.commission_paise,
         };
         const res = await dispatchKingAiWhatsappShiftReport(payload);

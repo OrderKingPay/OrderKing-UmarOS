@@ -62,7 +62,7 @@ export function buildWhatsAppOtpUrl(
   appName = "OrderKing",
 ): string {
   const text = `*${appName} Verification Code*\nYour one-time login OTP is: *${otp}*\n\nValid for 10 minutes. Do not share this code with anyone.`;
-  return `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(String(text ?? ""))}`;
+  return "";
 }
 
 /**
@@ -521,144 +521,77 @@ export async function dispatchOtpSms(
   const cleanPhone = sanitizeIndianPhone(params.phone);
   const otp = params.otp.trim();
   const appName = params.appName || "OrderKing";
-  const timeoutMs = params.timeoutMs || 5000;
-  const whatsAppOtpUrl = buildWhatsAppOtpUrl(cleanPhone, otp, appName);
+  const timeoutMs = params.timeoutMs || 8000;
 
   if (!isValidIndianPhone(cleanPhone)) {
     throw new Error(
       "Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.",
     );
   }
-
-  // If user requested WhatsApp channel directly
-  if (params.channel === "whatsapp") {
-    let waMessageId = `WA-${Date.now()}`;
-    let waNotice: string | undefined;
-
-    if (process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
-      try {
-        const waRes = await sendViaWhatsAppCloudApi(cleanPhone, otp, appName, timeoutMs);
-        waMessageId = waRes.messageId;
-        waNotice = `Verification code dispatched directly to your WhatsApp inbox (+91-${cleanPhone}).`;
-      } catch (waErr: any) {
-        console.warn(
-          `[SMS Gateway] ⚠️ Outbound WhatsApp API failed: ${waErr.message}. Falling back to zero-lockout direct channel.`,
-        );
-        waNotice = `WhatsApp delivery pending network gate. Zero-lockout code active.`;
-      }
-    } else {
-      waNotice = `WhatsApp Cloud API credentials pending. Verification code generated and logged for +91-${cleanPhone}.`;
-      console.log(
-        `[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to direct verification channel.`,
-      );
-    }
-
-    return {
-      success: true,
-      provider: "whatsapp",
-      messageId: waMessageId,
-      debugOtp: otp,
-      providerNotice: waNotice,
-      whatsAppOtpUrl,
-      deliveryLatencyMs: Date.now() - startTime,
-    };
+  if (!/^\d{6}$/.test(otp)) {
+    throw new Error("OTP code must be exactly 6 digits.");
   }
+
+  const fail = (error: string): DispatchOtpResult => ({
+    success: false,
+    provider: "fast2sms",
+    pendingConfig: true,
+    providerNotice: error,
+    debugOtp: "",
+    whatsAppOtpUrl: "",
+    error,
+    deliveryLatencyMs: Date.now() - startTime,
+  });
 
   const availableProviders = getAvailableSmsProviders();
-
-  // No active API key found in Cloudflare / environment
   if (availableProviders.length === 0) {
-    const notice = "SMS gateway key not yet provided in Cloudflare environment (Pending API Key configuration). Zero-lockout direct OTP verification active.";
-    console.warn(
-      `[SMS Gateway] ⚠️ ${notice} (Recipient: +91-${cleanPhone}, OTP: [${otp}])`,
-    );
-
-    return {
-      success: true,
-      provider: "direct_channel",
-      pendingConfig: true,
-      providerNotice: notice,
-      debugOtp: otp,
-      whatsAppOtpUrl,
-      messageId: `DIRECT-${Date.now()}`,
-      deliveryLatencyMs: Date.now() - startTime,
-    };
+    return fail("SMS is not set up on this app. Save FAST2SMS_API_KEY in Cloudflare, then try again.");
   }
 
-  // Try configured providers in order of priority with automatic failover
   const errors: string[] = [];
-
   for (const provider of availableProviders) {
     try {
-      console.log(
-        `[SMS Gateway] 🚀 Dispatching OTP [${otp}] to +91-${cleanPhone} via ${provider.toUpperCase()}...`,
-      );
-
       let result: { success: boolean; messageId: string };
-
       if (provider === "fast2sms") {
-        const apiKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY)!;
+        const apiKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
         result = await sendViaFast2SMS(cleanPhone, otp, apiKey, appName, timeoutMs);
       } else if (provider === "2factor") {
-        const apiKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY)!;
+        const apiKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY || "").trim();
         result = await sendVia2Factor(cleanPhone, otp, apiKey, timeoutMs);
       } else if (provider === "msg91") {
-        const apiKey = process.env.MSG91_AUTH_KEY!;
+        const apiKey = (process.env.MSG91_AUTH_KEY || "").trim();
         result = await sendViaMsg91(cleanPhone, otp, apiKey, timeoutMs);
       } else if (provider === "twilio") {
-        const accountSid = process.env.TWILIO_ACCOUNT_SID!;
-        const authToken = process.env.TWILIO_AUTH_TOKEN!;
         result = await sendViaTwilio(
           cleanPhone,
           otp,
-          accountSid,
-          authToken,
+          process.env.TWILIO_ACCOUNT_SID || "",
+          process.env.TWILIO_AUTH_TOKEN || "",
           appName,
           timeoutMs,
         );
       } else {
         continue;
       }
-
-      const latency = Date.now() - startTime;
-      console.log(
-        `[SMS Gateway] ✅ Successfully delivered OTP to +91-${cleanPhone} via ${provider.toUpperCase()} (MessageId: ${result.messageId}, ${latency}ms)`,
-      );
-
+      if (!result?.success) {
+        errors.push(`${provider}: rejected`);
+        continue;
+      }
       return {
         success: true,
         provider,
         messageId: result.messageId,
-        debugOtp: otp,
-        whatsAppOtpUrl,
-        deliveryLatencyMs: latency,
+        providerNotice: `Code sent by SMS to +91-${cleanPhone}.`,
+        debugOtp: "",
+        whatsAppOtpUrl: "",
+        deliveryLatencyMs: Date.now() - startTime,
       };
     } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      console.error(
-        `[SMS Gateway] ❌ Provider ${provider.toUpperCase()} failed: ${errMsg}`,
-      );
-      errors.push(`${provider}: ${errMsg}`);
+      errors.push(`${provider}: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
-  // All configured providers encountered an error (e.g. rate limit / network issue)
-  // Ensure the rider is NEVER locked out by providing resilient fallback
-  const combinedError = errors.join(" | ");
-  console.warn(
-    `[SMS Gateway] ⚠️ All configured gateways failed (${combinedError}). Falling back to debug verification to prevent lockout.`,
-  );
-
-  return {
-    success: true,
-    provider: "direct_channel",
-    pendingConfig: false,
-    providerNotice: `Gateway delivery issue (${errors[0] || "Network timeout"}). Emergency fallback OTP active.`,
-    debugOtp: otp,
-    whatsAppOtpUrl,
-    error: combinedError,
-    deliveryLatencyMs: Date.now() - startTime,
-  };
+  return fail(errors[0] || "SMS was not delivered.");
 }
 
 export interface TravelBookingNotificationPayload {

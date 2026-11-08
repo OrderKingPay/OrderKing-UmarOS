@@ -73,42 +73,21 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
     } catch (dbErr) {
       console.warn("[Phone Auth] DB write skipped (stateless HMAC + memory active):", dbErr);
     }
-    let dispatchResult: DispatchOtpResult;
-    try {
-      dispatchResult = await dispatchOtpSms({
-        phone: cleanPhone,
-        otp,
-        channel: data.channel === "whatsapp" ? "whatsapp" : "sms",
-        appName: "OrderKing",
-      });
-    } catch (err: unknown) {
-// @ts-ignore
-      const msg = err instanceof Error ? err.message : String(err);
-// @ts-ignore
-      const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(String("OrderKing OTP: " + otp ?? ""))}`;
-      dispatchResult = {
-        success: true,
-        provider: "resilient_fallback",
-        messageId: `FALLBACK-${Date.now()}`,
-        debugOtp: otp,
-        whatsAppOtpUrl: waUrl,
-        whatsappOtpUrl: waUrl,
-        providerNotice: `Carrier SMS delayed (${msg}). Instant verified OTP ready below.`,
-      };
+    const dispatchResult = await dispatchOtpSms({
+      phone: cleanPhone,
+      otp,
+      channel: "sms",
+      appName: "OrderKing",
+    });
+    if (!dispatchResult.success) {
+      throw new Error(dispatchResult.error || dispatchResult.providerNotice || "SMS was not delivered. Try again.");
     }
     return {
       success: true,
       phone: cleanPhone,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
-      whatsAppOtpUrl: dispatchResult.whatsAppOtpUrl,
-      whatsappOtpUrl: dispatchResult.whatsAppOtpUrl,
-      providerNotice:
-        dispatchResult.providerNotice ||
-        (dispatchResult.provider === "2factor"
-          ? `OTP dispatched via 2Factor SMS to +91-${cleanPhone}.`
-          : `OTP sent to +91-${cleanPhone}.`),
-      debugOtp: otp,
+      providerNotice: dispatchResult.providerNotice || `Code sent by SMS to +91-${cleanPhone}.`,
     };
   });
 export const verifyPhoneOtpFn = createServerFn({ method: "POST" })

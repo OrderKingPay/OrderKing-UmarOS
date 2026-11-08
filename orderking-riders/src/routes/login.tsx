@@ -142,10 +142,7 @@ function Login() {
       });
 
       if (!res.ok) {
-        throw new Error(res.message || "Failed to dispatch OTP. Please try again.");
-      }
-      if (channel === "whatsapp" && res.whatsAppOtpUrl && typeof window !== "undefined") {
-        window.open(res.whatsAppOtpUrl, "_blank");
+        throw new Error(res.message || "SMS was not delivered. Try again.");
       }
       setStep("otp");
       setCountdown(30);
@@ -415,16 +412,6 @@ function Login() {
                     "Send OTP →"
                   )}
                 </Button>
-
-                <button
-                  type="button"
-                  disabled={pending || !isPhoneValid}
-                  onClick={() => void handleSendOtp("whatsapp")}
-                  className="w-full rounded-2xl border border-emerald-500/30 bg-emerald-50 hover:bg-emerald-100 py-3 text-sm font-bold text-emerald-700 transition flex items-center justify-center gap-2 h-12 disabled:opacity-45 disabled:pointer-events-none"
-                >
-                  <MessageCircle className="size-4 text-emerald-600" />
-                  <span>Get OTP on WhatsApp</span>
-                </button>
               </form>
 
               <p className="text-center text-[11px] leading-relaxed text-gray-500">
@@ -564,15 +551,6 @@ function Login() {
                       <span className="text-gray-400">Resend in {countdown}s</span>
                     )}
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => void handleSendOtp("whatsapp")}
-                    className="w-full rounded-xl border border-gray-200 bg-white py-2 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 transition flex items-center justify-center gap-1.5 shadow-xs"
-                  >
-                    <MessageCircle className="size-3.5 text-emerald-600" />
-                    Resend via WhatsApp
-                  </button>
                 </div>
               </form>
             </div>

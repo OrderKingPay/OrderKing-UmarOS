@@ -110,8 +110,6 @@ export function buildFast2SmsOTPPayload(mobile: string, otp: string, apiKey: str
     flash: 0,
   };
 }
-export function buildWhatsAppFailoverLink(mobile: string, otp: string): string {
-  const cleanMobile = mobile.replace(/\D/g, "").slice(-10);
-  const encodedText = encodeURIComponent(`Your OrderKing Partner verification OTP is ${otp}. Valid for 10 minutes.`);
-  return `https://wa.me/91${cleanMobile}?text=${encodedText}`;
+export function buildWhatsAppFailoverLink(_mobile: string, _otp: string): string {
+  return "";
 }

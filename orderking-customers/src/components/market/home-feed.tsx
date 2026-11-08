@@ -414,7 +414,7 @@ export function HomeFeed({
         <section aria-label="Food Categories" className="pt-0.5">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
-              Eat what makes you happy
+              Categories
             </h2>
             <Link
               to="/search"

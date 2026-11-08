@@ -99,11 +99,7 @@ function Login() {
       setOtpSent(true);
       setCountdown(30);
       setCanResend(false);
-      setSuccessMsg(
-        channel === "whatsapp"
-          ? `Verification code dispatched to WhatsApp (+91-${cleanPhone}).`
-          : `Cellular SMS OTP dispatched to +91-${cleanPhone}.`
-      );
+      setSuccessMsg(`Code sent by SMS to +91-${cleanPhone}.`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to dispatch SMS OTP.");
     } finally {
@@ -220,11 +216,9 @@ function Login() {
           <OrderKingMark className="size-11" />
           <div>
             <h1 className="font-display text-xl font-black tracking-tight text-white">
-              Umar OS Command Center
+              Umar OS
             </h1>
-            <p className="text-xs text-slate-400">
-              Autonomous Governance &amp; Administration
-            </p>
+            <p className="text-xs text-slate-400">Admin</p>
           </div>
         </div>
 

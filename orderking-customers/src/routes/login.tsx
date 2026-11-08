@@ -4,7 +4,7 @@ import { authClient, setPhoneSession } from "@/lib/auth/client";
 import { Wordmark } from "@/components/brand/wordmark";
 import { useBrand } from "@/components/providers";
 import { requestPhoneOtpFn, verifyPhoneOtpFn } from "@/lib/server/phone-auth";
-import { Phone, ShieldCheck, PhoneCall, MessageSquare, Sparkles, ArrowRight, UserPlus, LogIn, CheckCircle2 } from "lucide-react";
+import { Phone, ShieldCheck, ArrowRight, UserPlus, LogIn, CheckCircle2 } from "lucide-react";
 export const Route = createFileRoute("/login")({ component: Login });
 function Login() {
   const { brand } = useBrand();
@@ -16,10 +16,7 @@ function Login() {
   const [phoneName, setPhoneName] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [channel, setChannel] = useState<"sms" | "whatsapp">("sms");
   const [providerNotice, setProviderNotice] = useState<string | null>(null);
-  const [instantOtp, setInstantOtp] = useState<string | null>(null);
-  const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
   // Email Fallback State
   const [email, setEmail] = useState("");
@@ -60,7 +57,7 @@ function Login() {
   }, [otp, otpSent]);
   const cleanIndianNumber = (raw: string) =>
     raw.replace(/\D/g, "").replace(/^(?:91|0)(?=\d{10}$)/, "").slice(0, 10);
-  const handleSendOtp = async (selectedChannel: "sms" | "whatsapp" = channel) => {
+  const handleSendOtp = async () => {
     const cleanNumber = cleanIndianNumber(phone);
     if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
       setError("Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).");
@@ -73,31 +70,21 @@ function Login() {
     setBusy(true);
     setError(null);
     setSuccessMsg(null);
-    setChannel(selectedChannel);
     try {
       const res = (await requestPhoneOtpFn({
         data: {
           phone: cleanNumber,
-          channel: selectedChannel,
+          channel: "sms",
           name: phoneName.trim() || undefined,
         },
       })) as any;
+      if (res?.success === false) {
+        throw new Error(res?.providerNotice || "SMS was not delivered.");
+      }
       setOtpSent(true);
       setResendTimer(25);
       if (res?.providerNotice) setProviderNotice(res.providerNotice);
-      if (res?.debugOtp) setInstantOtp(String(res.debugOtp));
-      if (res?.whatsAppOtpUrl || res?.whatsappOtpUrl) {
-        const wa = res.whatsAppOtpUrl || res.whatsappOtpUrl;
-        setWhatsAppUrl(wa);
-        if (selectedChannel === "whatsapp" && typeof window !== "undefined") {
-          window.open(wa, "_blank", "noopener,noreferrer");
-        }
-      }
-      const modeLabel =
-        selectedChannel === "whatsapp"
-          ? "WhatsApp verification ready for"
-          : "6-digit OTP dispatched to";
-      setSuccessMsg(`${modeLabel} +91 ${cleanNumber}`);
+      setSuccessMsg(`Code sent by SMS to +91 ${cleanNumber}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to send OTP right now. Please try again.");
     } finally {
@@ -237,8 +224,8 @@ function Login() {
           </h1>
           <p className="mt-1 text-xs text-stone-500 font-medium">
             {accountMode === "signup"
-              ? "Instant 1-step registration with ₹0 KingPay Wallet activation"
-              : "Sign in with your 10-digit mobile number for instant access"}
+              ? "Enter your name and mobile number. We send a code by SMS."
+              : "Enter your mobile number. We send a code by SMS."}
           </p>
         </div>
         {error && (
@@ -287,7 +274,7 @@ function Login() {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
-                          void handleSendOtp("sms");
+                          void handleSendOtp();
                         }
                       }}
                       placeholder="9876543210"
@@ -312,29 +299,12 @@ function Login() {
                 <button
                   type="button"
                   disabled={busy}
-                  onClick={() => void handleSendOtp("sms")}
+                  onClick={() => void handleSendOtp()}
                   className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 py-3.5 px-5 text-sm font-black uppercase tracking-wider text-stone-950 shadow-lg shadow-amber-500/25 hover:brightness-105 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                   <span>{busy ? "Sending OTP..." : accountMode === "signup" ? "Create Account & Get OTP" : "Continue with Mobile OTP"}</span>
                   <ArrowRight className="size-4" />
                 </button>
-                {/* Direct Voice Call & WhatsApp Instant Options */}
-                <div className="pt-1">
-                  <p className="text-[11px] font-bold text-center text-stone-500 mb-2">
-                    Or receive your 6-digit code instantly via:
-                  </p>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => void handleSendOtp("whatsapp")}
-                      className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/60 py-2.5 px-3 text-xs font-bold text-emerald-900 hover:bg-emerald-100 cursor-pointer"
-                    >
-                      <MessageSquare className="size-3.5 text-emerald-600" />
-                      <span>WhatsApp OTP</span>
-                    </button>
-                  </div>
-                </div>
               </>
             ) : (
               <div className="space-y-4">
@@ -384,26 +354,14 @@ function Login() {
                   <ShieldCheck className="size-4" />
                   <span>{busy ? "Verifying & Signing In..." : "Verify & Continue"}</span>
                 </button>
-                {/* Multi-channel Resend Bar */}
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-stone-200">
+                <div className="pt-2 border-t border-stone-200">
                   <button
                     type="button"
                     disabled={busy || resendTimer > 0}
-                    onClick={() => void handleSendOtp("sms")}
-                    className="rounded-xl border border-stone-200 bg-stone-50 py-2 px-2 text-[11px] font-bold text-stone-700 hover:bg-stone-100 disabled:opacity-50 cursor-pointer"
+                    onClick={() => void handleSendOtp()}
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50 py-2 px-2 text-[11px] font-bold text-stone-700 hover:bg-stone-100 disabled:opacity-50 cursor-pointer"
                   >
-                    {resendTimer > 0 ? `SMS (${resendTimer}s)` : "Resend SMS"}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => {
-                      if (whatsAppUrl) window.open(whatsAppUrl, "_blank", "noopener,noreferrer");
-                      else void handleSendOtp("whatsapp");
-                    }}
-                    className="rounded-xl border border-emerald-200 bg-emerald-50/70 py-2 px-2 text-[11px] font-bold text-emerald-900 hover:bg-emerald-100 cursor-pointer"
-                  >
-                    💬 WhatsApp
+                    {resendTimer > 0 ? `Resend SMS (${resendTimer}s)` : "Resend SMS"}
                   </button>
                 </div>
               </div>

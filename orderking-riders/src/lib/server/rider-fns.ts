@@ -704,31 +704,29 @@ export const sendRiderOtpFn = createServerFn({ method: "POST" })
 
     riderOtpStore.set(cleanPhone, { otp, expiresAt, channel });
 
-    // Execute real telecom gateway dispatch engine
     const dispatchResult = await dispatchOtpSms({
       phone: cleanPhone,
       otp,
-      channel,
+      channel: "sms",
       appName: "OrderKing Rider",
     });
-
-    console.log(
-      `[OrderKing OTP] Dispatched ${channel.toUpperCase()} OTP [${otp}] to +91-${cleanPhone} via ${dispatchResult.provider.toUpperCase()} (MessageId: ${dispatchResult.messageId || "N/A"})`,
-    );
+    if (!dispatchResult.success) {
+      throw new RiderError(
+        "SMS_NOT_DELIVERED",
+        dispatchResult.error || dispatchResult.providerNotice || "SMS was not delivered. Try again.",
+        502,
+      );
+    }
 
     return {
       ok: true,
       phone: cleanPhone,
-      channel,
-      message:
-        channel === "whatsapp"
-          ? `WhatsApp verification deep link ready for +91 ${cleanPhone}`
-          : `OTP sent successfully to +91 ${cleanPhone}`,
+      channel: "sms",
+      message: `Code sent by SMS to +91 ${cleanPhone}`,
       provider: dispatchResult.provider,
       messageId: dispatchResult.messageId,
-      pendingConfig: dispatchResult.pendingConfig,
+      pendingConfig: false,
       providerNotice: dispatchResult.providerNotice,
-      whatsAppOtpUrl: channel === "whatsapp" ? dispatchResult.whatsAppOtpUrl : undefined,
     };
   });
 
