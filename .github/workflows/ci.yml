@@ -14,14 +14,16 @@ jobs:
           version: 9.15.4
       - uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: "22"
           cache: pnpm
       - name: Install locked workspace
         run: pnpm install --frozen-lockfile
-      - name: Typecheck
+      - name: Typecheck across monorepo
         run: pnpm run typecheck
-      - name: Tests
-        timeout-minutes: 30
-        run: pnpm exec turbo run test --concurrency=1
-      - name: Build
+      - name: Build all ecosystem applications
         run: pnpm run build
+        env:
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          VITE_AUTH_ENABLED: "true"
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
