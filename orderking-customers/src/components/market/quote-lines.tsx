@@ -88,7 +88,7 @@ export function QuoteLines({ lines, locale }: { lines: QuoteLine[]; locale: stri
             </p>
           </div>
 
-          {/* 24K Gold Sovereign Amount Pill */}
+          {/* Total Amount Pill */}
           <div className="relative z-10 flex items-center gap-1.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 px-3.5 sm:px-4 py-2 text-stone-950 font-black shadow-[0_4px_14px_rgba(245,158,11,0.45)] border border-amber-200">
             <span className="text-base sm:text-lg tabular-nums tracking-tight">
               {formatPaise(total.amountPaise, { locale })}

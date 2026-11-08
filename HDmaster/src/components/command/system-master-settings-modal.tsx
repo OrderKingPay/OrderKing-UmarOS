@@ -511,7 +511,7 @@ export function SystemMasterSettingsModal({
             </div>
           )}
 
-          {/* TAB 4: SUPREME MODELS & REAL PROVIDER API KEYS */}
+          {/* TAB 4: AI MODELS & REAL PROVIDER API KEYS */}
           {activeTab === "models" && (
             <div className="space-y-4">
               <div>

@@ -25,7 +25,7 @@ export function KingPayMark({ className }: { className?: string }) {
           <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
         </linearGradient>
       </defs>
-      {/* Royal Medallion Shield Base */}
+      {/* Medallion Shield Base */}
       <rect width="32" height="32" rx="8" fill="url(#kp-bg)" />
       <rect
         x="0.75"

@@ -4485,7 +4485,7 @@ function UmarOSDashboard() {
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🤖</span>
                   <h2 className="text-base font-black text-white">
-                    UMAR AI — Supreme Executive Platform Intelligence
+                    UMAR AI — Platform Intelligence & Automation
                   </h2>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     Live Tool Execution Active

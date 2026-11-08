@@ -179,8 +179,8 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
         const dialect = getDialect(detected);
         const res = resolveSovereignResponse(query, dialect);
 
-        // Expect exactly 1 short question comparing Royal Biryani or Homestyle Thali
-        expect(res.reply).toMatch(/Royal Biryani|रॉयल बिरयानी|রয়্যাল বিরিয়ানি|ৰয়েল বিৰিয়ানি/i);
+        // Expect exactly 1 short question comparing Biryani or Homestyle Thali
+        expect(res.reply).toMatch(/Biryani|बिरयानी|বিরিয়ানি|বিৰিয়ানি/i);
         expect(res.reply).toMatch(/Thali|थाली|থালি/i);
         expect(res.reply.endsWith("?")).toBe(true);
 
@@ -339,7 +339,7 @@ describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", ()
       // Action points to alternative in-stock dish
       expect(resBiryani86.action?.type).toBe("CHECKOUT_POPUP");
       if (resBiryani86.action?.type === "CHECKOUT_POPUP") {
-        expect(resBiryani86.action.dishName).toBe("Royal Homestyle Thali");
+        expect(resBiryani86.action.dishName).toMatch(/Homestyle Thali/i);
       }
     });
   });

@@ -177,7 +177,7 @@ export function LaunchPlaybookView() {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 pb-16 font-sans text-slate-900">
-      {/* Supreme Executive Launch Command Header */}
+      {/* Executive Launch Command Header */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white p-6 sm:p-8 shadow-2xl border border-emerald-900/40">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/3 -mb-20 w-96 h-96 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />

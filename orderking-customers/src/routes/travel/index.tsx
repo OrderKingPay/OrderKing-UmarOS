@@ -1024,9 +1024,9 @@ export function TravelPage() {
         {/* AUTHORITATIVE SINGLE TRAVEL DESK */}
         <div className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm space-y-6">
           
-          {/* ─── CORE HUB: 4 CLEAN LUXURY POWER TILES ─── */}
+          {/* ─── CORE HUB: 4 TRAVEL TILES ─── */}
           <div className="space-y-3 pb-3 border-b border-slate-100">
-            {/* Row 1: The 4 Clean Luxury Power Tiles */}
+            {/* Row 1: The 4 Travel Tiles */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3.5">
               {/* Tile 1: Flights */}
               <button
@@ -2902,7 +2902,7 @@ export function TravelPage() {
                         },
                         {
                           id: "pkg-umrah-15d",
-                          title: "Umrah 15-Day Royal Clock Tower Luxury Journey",
+                          title: "Umrah 15-Day Makkah Clock Tower 5-Star Journey",
                           destination: "Makkah & Madinah (Saudi Arabia)",
                           duration: "14 Nights / 15 Days",
                           category: "Islamic Pilgrimage",
@@ -3688,7 +3688,7 @@ export function TravelPage() {
           </div>
         )}
 
-        {/* Digital Sovereign E-Ticket Modal */}
+        {/* Digital E-Ticket Modal */}
         {activeTicketModal && (
           <SovereignETicketModal
             ticket={activeTicketModal}

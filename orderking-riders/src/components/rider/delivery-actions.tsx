@@ -22,12 +22,10 @@ import { verifyDoorstepDelivery, generateDynamicDeliveryQr, evaluateThreatZoneRi
 export function DeliveryActions({
   delivery,
   cash,
-  simulatedOtp: _simulatedOtp,
   onChanged,
 }: {
   delivery: Delivery;
   cash: CashReconciliation | null;
-  simulatedOtp?: string | null;
   onChanged: () => void;
 }) {
   const { t } = useI18n();

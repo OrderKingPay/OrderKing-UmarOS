@@ -14,6 +14,7 @@ import {
   User,
   Package,
   CreditCard,
+  Wallet,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -64,11 +65,13 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
     match: (p: string) => p.startsWith("/tutor-jobs") },
   { id: "travel", name: "Travel", icon: Plane, iconGradient: "from-sky-400 to-sky-700", to: "/travel",
     match: (p: string) => p.startsWith("/travel") },
-  { id: "kingpay", name: "KingPay", icon: Crown, iconGradient: "from-yellow-400 to-amber-700", to: "/kingpay",
+  { id: "kingpay", name: "KingPay", icon: Wallet, iconGradient: "from-amber-400 to-amber-700", to: "/kingpay",
     match: (p: string) => ["/kingpay", "/king-pay", "/news", "/earn"].some((v) => p.startsWith(v)) },
   { id: "orders", name: "Orders & Passes", icon: ShoppingBag, iconGradient: "from-rose-500 to-rose-800", to: "/orders",
     match: (p: string) => p.startsWith("/orders") },
 ];
+
+export const PLATFORM_ECOSYSTEM_TABS = SOVEREIGN_ECOSYSTEM_TABS;
 
 export const POPULAR_INDIAN_DISH_CHIPS = [
   { name: "Biryani", query: "Biryani", emoji: "🍚", hindi: "बिरयानी", bengali: "বিরিয়ানি" },

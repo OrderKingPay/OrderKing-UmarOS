@@ -357,8 +357,8 @@ export function UmarOsVisualCustomizationStudio({
   // Actor context for founder actions
   const actor = useMemo(
     () => ({
-      userId: "founder_supreme_01",
-      role: "SUPREME_FOUNDER",
+      userId: "founder_admin_01",
+      role: "FOUNDER",
       name: "Founder Command",
       explicitApprovalGranted: true,
     }),
@@ -1917,7 +1917,7 @@ export function UmarOsVisualCustomizationStudio({
                             </div>
                             <div className="p-2.5 rounded-lg border border-slate-100 bg-slate-50/50 flex items-center justify-between">
                               <div>
-                                <h6 className="text-xs font-bold" style={{ color: palette.foreground }}>Empire Restaurant</h6>
+                                <h6 className="text-xs font-bold" style={{ color: palette.foreground }}>Karimganj Biryani House</h6>
                                 <p className="text-[10px] text-slate-500">North Indian, Mughlai · 25 mins</p>
                               </div>
                               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">

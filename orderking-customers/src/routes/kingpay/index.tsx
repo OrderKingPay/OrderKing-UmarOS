@@ -7,7 +7,7 @@ if (typeof window !== "undefined" && !(window as any).Buffer) {
 }
 import { createFileRoute } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
-import { SupremeKingPayExperience } from "@/components/fintech/supreme-kingpay-experience";
+import { KingPayExperience } from "@/components/fintech/supreme-kingpay-experience";
 import { AppErrorComponent } from "@/lib/error-component";
 
 export const Route = createFileRoute("/kingpay/")({
@@ -25,7 +25,7 @@ function KingPayHub() {
   return (
     <CustomerShell>
       <div className="min-h-dvh bg-gradient-to-b from-[#080a10] via-[#0d1017] to-[#080a10] pb-24 text-slate-100">
-        <SupremeKingPayExperience />
+        <KingPayExperience />
       </div>
     </CustomerShell>
   );

@@ -320,8 +320,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Forcefully and legally reach every smartphone in a hyper-local geographic radius via JioAds Cell-Tower
-                  triangulation, Airtel Xstream Geofences, and InMobi OpenRTB DSP bidding.
+                  Target local customer delivery corridors via JioAds, Airtel Xstream Geofences, and InMobi OpenRTB DSP bidding.
                 </p>
               </div>
             </div>

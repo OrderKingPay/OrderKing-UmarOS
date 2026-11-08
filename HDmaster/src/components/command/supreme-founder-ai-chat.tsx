@@ -4662,7 +4662,7 @@ export function PremiumFounderAiChat({
                                     </button>
                                     <a
                                       href={m.mediaCard.url}
-                                      download={`supreme-${m.mediaCard.type}-${Date.now()}.${m.mediaCard.type === "image" ? "jpg" : "mp4"}`}
+                                      download={`umar-ai-${m.mediaCard.type}-${Date.now()}.${m.mediaCard.type === "image" ? "jpg" : "mp4"}`}
                                       target="_blank"
                                       rel="noreferrer"
                                       className="p-1.5 rounded-full bg-black/60 hover:bg-black text-white transition"
@@ -5111,7 +5111,7 @@ export function PremiumFounderAiChat({
               <div className="flex items-center gap-2 shrink-0">
                 <a
                   href={lightboxMedia.url}
-                  download={`supreme-${lightboxMedia.type}-${Date.now()}.${lightboxMedia.type === "image" ? "jpg" : "mp4"}`}
+                  download={`umar-ai-${lightboxMedia.type}-${Date.now()}.${lightboxMedia.type === "image" ? "jpg" : "mp4"}`}
                   target="_blank"
                   rel="noreferrer"
                   className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 transition"

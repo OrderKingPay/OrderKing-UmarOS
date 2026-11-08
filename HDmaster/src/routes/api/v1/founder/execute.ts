@@ -33,7 +33,7 @@ export const executeConversationalCommand = createServerFn({ method: 'POST' })
         userId = 'dev-founder';
         userRole = 'FOUNDER';
       } else {
-        throw new Error('UNAUTHORIZED: Founder authentication required to execute sovereign commands.');
+        throw new Error('UNAUTHORIZED: Founder authentication required to execute platform administration commands.');
       }
     }
 

@@ -422,3 +422,5 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
     </div>
   );
 }
+
+export { SovereignETicketModal as CarrierETicketModal };

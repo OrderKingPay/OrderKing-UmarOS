@@ -199,20 +199,20 @@ export function resolveSovereignResponse(
     q.includes("kiba kham");
 
   if (isAmbiguous) {
-    let reply = "Would you prefer our Royal Biryani or Homestyle Thali today?";
+    let reply = "Would you prefer our Chicken Dum Biryani or Homestyle Thali today?";
     if (dialect.code === "hi") {
-      reply = "क्या आप आज हमारी रॉयल बिरयानी पसंद करेंगे या होमस्टाइल थाली?";
+      reply = "क्या आप आज हमारी चिकन दम बिरयानी पसंद करेंगे या होमस्टाइल थाली?";
     } else if (dialect.code === "bn") {
-      reply = "আপনি কি আজ আমাদের রয়্যাল বিরিয়ানি নাকি হোমস্টাইল থালি পছন্দ করবেন?";
+      reply = "আপনি কি আজ আমাদের চিকেন দম বিরিয়ানি নাকি হোমস্টাইল থালি পছন্দ করবেন?";
     } else if (dialect.code === "as") {
-      reply = "আপুনি আজি আমাৰ ৰয়েল বিৰিয়ানি নে ঘৰুৱা থালি বাছি লব বিচাৰিব?";
+      reply = "আপুনি আজি আমাৰ চিকেন দম বিৰিয়ানি নে ঘৰুৱা থালি বাছি লব বিচাৰিব?";
     }
     return {
       reply,
       action: {
         type: "CHECKOUT_POPUP",
-        label: "🍗 Royal Dum Biryani",
-        dishName: "Royal Chicken Dum Biryani",
+        label: "🍗 Chicken Dum Biryani",
+        dishName: "Chicken Dum Biryani",
         pricePaise: 28000,
         deliveryEta: "24-28 mins",
       },
@@ -536,8 +536,8 @@ export function resolveSovereignResponse(
     q.includes("বিৰিয়ানি")
   ) {
     // Check if Biryani itself is marked 86'd (out of stock) in kitchen live POS inventory
-    if (isItem86("biryani") || isItem86("Chicken Dum Biryani") || isItem86("Royal Chicken Dum Biryani")) {
-      let soldOutReply = "Royal Chicken Dum Biryani is currently sold out (86'd) at the kitchen. Would you prefer our fresh Homestyle Thali or Mutton Dum Biryani?";
+    if (isItem86("biryani") || isItem86("Chicken Dum Biryani")) {
+      let soldOutReply = "Chicken Dum Biryani is currently sold out (86'd) at the kitchen. Would you prefer our fresh Homestyle Thali or Mutton Dum Biryani?";
       if (dialect.code === "hi") {
         soldOutReply = "चिकन दम बिरयानी इस समय किचन में समाप्त (86'd) है। क्या आप ताज़ा होमस्टाइल थाली या मटन दम बिरयानी पसंद करेंगे?";
       } else if (dialect.code === "bn") {
@@ -551,12 +551,12 @@ export function resolveSovereignResponse(
         action: {
           type: "CHECKOUT_POPUP",
           label: "1-Tap Checkout: Fresh Homestyle Thali",
-          dishName: "Royal Homestyle Thali",
-          item: "Royal Homestyle Thali",
+          dishName: "Homestyle Thali",
+          item: "Homestyle Thali",
           quantity: 1,
           pricePaise: 26000,
           estimatedPaise: 26000,
-          restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
+          restaurantName: "Behrouz Biryani Kitchens (Assam - 788710)",
           deliveryEta: "20-25 mins",
         },
       };
@@ -610,12 +610,12 @@ export function resolveSovereignResponse(
       action: {
         type: "CHECKOUT_POPUP",
         label: `1-Tap Checkout: Chicken Dum Biryani (${quantity}x)`,
-        dishName: "Royal Chicken Dum Biryani (Handi)",
-        item: "Royal Chicken Dum Biryani",
+        dishName: "Chicken Dum Biryani (Handi)",
+        item: "Chicken Dum Biryani",
         quantity,
         pricePaise: estimatedPaise,
         estimatedPaise,
-        restaurantName: "Behrouz Royal Kitchens (Assam - 788710)",
+        restaurantName: "Behrouz Biryani Kitchens (Assam - 788710)",
         deliveryEta: "24-28 mins",
         suggestedAddons: availableBiryaniAddons.length > 0 ? availableBiryaniAddons : undefined,
       },
@@ -865,8 +865,8 @@ export function resolveSovereignResponse(
     reply: defaultReply,
     action: {
       type: "CHECKOUT_POPUP",
-      label: "🍗 1-Tap Checkout: Royal Dum Biryani",
-      dishName: "Royal Chicken Dum Biryani",
+      label: "🍗 1-Tap Checkout: Chicken Dum Biryani",
+      dishName: "Chicken Dum Biryani",
       pricePaise: 28000,
       deliveryEta: "24-28 mins",
       suggestedAddons: [

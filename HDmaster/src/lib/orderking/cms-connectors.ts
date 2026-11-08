@@ -279,7 +279,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   connectorMetaOmnichannelWebhookNotice: "Meta Graph API Webhook (/api/v1/meta/webhook): Listens for incoming Direct Messages, story mentions, WhatsApp status callbacks, and quick-reply payload handshakes.",
 
   // 14. AI Deepfake Media Engine (Synthesia / HeyGen API)
-  connectorAiMediaEngineTitle: "AI Deepfake Media Engine (Synthesia / HeyGen API)",
+  connectorAiMediaEngineTitle: "AI Video Media Engine (Synthesia / HeyGen API)",
   connectorAiMediaEngineSubtitle: "Media production generator. Scripts, voices, and renders video presentations for social channels, announcements, and partner onboarding.",
   connectorAiMediaEngineToggleLabel: "AI Media Engine Active",
   connectorAiMediaEngineTestBtnText: "Verify Synthesia / HeyGen Handshake",
@@ -551,7 +551,7 @@ export interface RenderedVideoItem {
   blastCount: number;
 }
 
-export interface AiDeepfakeMediaConnector {
+export interface AiVideoMediaConnector {
   enabled: boolean;
   mode: "live" | "sandbox";
   provider: "heygen" | "synthesia" | "d_id";
@@ -880,7 +880,7 @@ export interface PluginConnectorsConfig {
   telemarketing: AiTelemarketingConnector;
   geospatialAdExchange: GeospatialAdExchangeConnector;
   metaOmnichannel: MetaOmnichannelConnector;
-  aiMediaEngine: AiDeepfakeMediaConnector;
+  aiMediaEngine: AiVideoMediaConnector;
   globalAdSyndicate: GlobalAdSyndicateConnector;
   oemLockScreen: OemLockScreenConnector;
   wifiCaptivePortal: WifiCaptivePortalConnector;
@@ -1500,7 +1500,7 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     ? (metaOmnichannel.enabled ? "CONNECTED" : "DEGRADED")
     : "NOT_CONFIGURED";
 
-  const aiMediaEngine: AiDeepfakeMediaConnector = {
+  const aiMediaEngine: AiVideoMediaConnector = {
     ...DEFAULT_PLUGIN_CONNECTORS.aiMediaEngine,
     ...(raw.aiMediaEngine || {}),
   };

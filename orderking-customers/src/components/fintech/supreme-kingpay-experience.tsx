@@ -171,11 +171,11 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
 
   // Sacred Pilgrimages
   { id: "s-sc-1", category: "Sacred", title: "Umrah 15-Day Economy Saver Pilgrimage", sub: "Makkah & Madinah Verified Quota · ₹78,500", icon: "🕋", url: "/travel?tab=pilgrimage", keywords: "umrah makkah madinah saudi arabia islamic muslim pilgrimage ziyarat" },
-  { id: "s-sc-2", category: "Sacred", title: "Umrah Royal Clock Tower 5-Star Luxury", sub: "Haram Facing 5-Star Hotel Stay · ₹1,18,000", icon: "🕋", url: "/travel?tab=pilgrimage", keywords: "umrah clock tower haram luxury islamic muslim pilgrimage" },
-  { id: "s-sc-3", category: "Sacred", title: "Kashi Vishwanath & Ayodhya Ram Mandir VIP", sub: "Corridor Aarti Pass & Satvik Haveli · ₹18,500", icon: "🕉️", url: "/travel?tab=pilgrimage", keywords: "kashi vishwanath ayodhya ram mandir varanasi darshan hindu sanatan yatra" },
-  { id: "s-sc-4", category: "Sacred", title: "Maa Kamakhya Devi Temple VIP Yatra", sub: "Nilachal Hills VIP Entry & River Cruise · ₹12,500", icon: "🕉️", url: "/travel?tab=pilgrimage", keywords: "kamakhya devi temple guwahati assam nilachal darshan hindu" },
+  { id: "s-sc-2", category: "Sacred", title: "Umrah Makkah Clock Tower 5-Star Hotel", sub: "Haram Facing 5-Star Hotel Stay · ₹1,18,000", icon: "🕋", url: "/travel?tab=pilgrimage", keywords: "umrah clock tower haram hotel stay islamic muslim pilgrimage" },
+  { id: "s-sc-3", category: "Sacred", title: "Kashi Vishwanath & Ayodhya Ram Mandir Yatra", sub: "Corridor Aarti Pass & Satvik Haveli · ₹18,500", icon: "🕉️", url: "/travel?tab=pilgrimage", keywords: "kashi vishwanath ayodhya ram mandir varanasi darshan hindu sanatan yatra" },
+  { id: "s-sc-4", category: "Sacred", title: "Maa Kamakhya Devi Temple Yatra", sub: "Nilachal Hills Priority Entry & River Cruise · ₹12,500", icon: "🕉️", url: "/travel?tab=pilgrimage", keywords: "kamakhya devi temple guwahati assam nilachal darshan hindu" },
   { id: "s-sc-5", category: "Sacred", title: "Maha Char Dham Yatra (Kedarnath & Badrinath)", sub: "Himalayan Sacred Circuit with Helicopter · ₹32,500", icon: "🕉️", url: "/travel?tab=pilgrimage", keywords: "char dham kedarnath badrinath gangotri yamunotri uttarakhand hindu" },
-  { id: "s-sc-6", category: "Sacred", title: "Amritsar Golden Temple & Wagah Border Yatra", sub: "Sri Harmandir Sahib VIP Palki Seva · ₹11,500", icon: "☬", url: "/travel?tab=pilgrimage", keywords: "amritsar golden temple harmandir sahib wagah sikh gurdwara" },
+  { id: "s-sc-6", category: "Sacred", title: "Amritsar Golden Temple & Wagah Border Yatra", sub: "Sri Harmandir Sahib Palki Seva · ₹11,500", icon: "☬", url: "/travel?tab=pilgrimage", keywords: "amritsar golden temple harmandir sahib wagah sikh gurdwara" },
   { id: "s-sc-7", category: "Sacred", title: "Old Goa Basilica of Bom Jesus Heritage Shrines", sub: "St. Francis Xavier Relics Sacred Viewing · ₹13,500", icon: "✝️", url: "/travel?tab=pilgrimage", keywords: "old goa basilica bom jesus christian church heritage shrines" },
 
   // Utility Bills & BBPS
@@ -472,11 +472,11 @@ export function SupremeKingPayExperience() {
           </div>
         </div>
 
-        {/* Right Half: Compact VIP Quick Bar (Vault Balance + Scan QR + Passbook) */}
+        {/* Right Half: Compact Quick Bar (Wallet Balance + Scan QR + Passbook) */}
         <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto shrink-0 bg-[#0d111a]/95 border border-amber-500/30 rounded-2xl p-1 px-2.5 sm:px-3 shadow-md backdrop-blur-md">
           <div className="flex items-center gap-2 pr-2 border-r border-slate-800">
             <div className="size-7 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-black shadow-xs">
-              <Crown className="size-3.5" />
+              <Wallet className="size-3.5" />
             </div>
             <div>
               <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block leading-none">UPI Ready</span>
@@ -1577,3 +1577,6 @@ export function SupremeKingPayExperience() {
     </div>
   );
 }
+
+export { SupremeKingPayExperience as KingPayExperience };
+

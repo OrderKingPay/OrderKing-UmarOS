@@ -185,7 +185,7 @@ export function DashboardPage() {
   const t = data?.today;
   return (
     <div className="space-y-6">
-      {/* UMAR OS SUPREME AI COMMAND CENTER */}
+      {/* UMAR OS AI COMMAND CENTER */}
       <UmarOS_AI_Terminal />
 
       <header className="flex flex-wrap items-end justify-between gap-3">

@@ -250,8 +250,7 @@ export function OemLockScreenHub({
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-              Turn 100M+ Indian smartphone lock-screens into a proprietary hyper-local billboard network.
-              Buy wholesale Glance inventory from InMobi, apply retail markup pricing, and charge local restaurants and businesses to display full-bleed lock-screen stories.
+              Display local restaurant specials on Glance lock-screen inventory with targeted delivery geofences.
             </p>
           </div>
         </div>

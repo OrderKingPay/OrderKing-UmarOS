@@ -119,7 +119,7 @@ export function KingPayShell({
               <span>Scan QR</span>
             </button>
 
-            {/* Sovereign KingPay Wallet Balance & Add Money Button */}
+            {/* KingPay Wallet Balance & Add Money Button */}
             <button
               type="button"
               onClick={onAddMoneyClick}

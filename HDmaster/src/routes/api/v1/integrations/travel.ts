@@ -27,7 +27,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
             "Superfast Rail (Palace on Wheels, Vande Bharat Executive)"
           ]
         },
-        disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
+        disclaimer: TRAVEL_CONCIERGE_DISCLAIMER,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
@@ -119,7 +119,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
           estimatedResponseTime: "Within 15 minutes by Senior Flight & Charter Specialist",
           whatsappDeskUrl: `https://wa.me/919876543210?text=${waEncoded}`,
           directPhone: "+91 98765 43210",
-          disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
+          disclaimer: TRAVEL_CONCIERGE_DISCLAIMER,
         };
 
         return new Response(JSON.stringify(responsePayload), {
@@ -137,7 +137,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
               success: false,
               code: "FLIGHT_SUPPLIER_NOT_CONNECTED",
               error: "Direct GDS flight aggregator not connected. Please connect via OrderKing Travel Desk.",
-              disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
+              disclaimer: TRAVEL_CONCIERGE_DISCLAIMER,
             }),
             { status: 503, headers: { "Content-Type": "application/json" } }
           );
@@ -148,7 +148,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
             success: false,
             code: "FLIGHT_SUPPLIER_NOT_CONNECTED",
             error: "No live flight quotes or ticket confirmation are available from an authorized supplier.",
-            disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
+            disclaimer: TRAVEL_CONCIERGE_DISCLAIMER,
           }),
           { status: 503, headers: { "Content-Type": "application/json" } }
         );
@@ -163,7 +163,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
               success: false,
               code: "RAILWAY_SUPPLIER_NOT_CONNECTED",
               error: "Authorized railway booking is not connected; no ticket or PNR has been issued.",
-              disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
+              disclaimer: TRAVEL_CONCIERGE_DISCLAIMER,
             }),
             { status: 503, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } }
           );
@@ -173,7 +173,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
             success: false,
             code: "RAILWAY_SUPPLIER_NOT_CONNECTED",
             error: "Authorized railway booking is not connected; no ticket or PNR has been issued.",
-            disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
+            disclaimer: TRAVEL_CONCIERGE_DISCLAIMER,
           }),
           { status: 503, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } }
         );
@@ -182,7 +182,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
       return new Response(
         JSON.stringify({
           error: "Invalid travel type. Supported: CONCIERGE, VIP_CHARTER, FLIGHT, TRAIN",
-          disclaimer: SOVEREIGN_TRAVEL_DISCLAIMER,
+          disclaimer: TRAVEL_CONCIERGE_DISCLAIMER,
         }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );

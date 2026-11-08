@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  type AiDeepfakeMediaConnector,
+  type AiVideoMediaConnector,
   type RenderedVideoItem,
   DEFAULT_PLUGIN_CONNECTORS,
   type EcosystemCmsConfig,
@@ -53,8 +53,8 @@ import {
 } from "lucide-react";
 
 export interface AiMediaEngineHubProps {
-  config?: AiDeepfakeMediaConnector;
-  onUpdate?: (updates: Partial<AiDeepfakeMediaConnector>) => void;
+  config?: AiVideoMediaConnector;
+  onUpdate?: (updates: Partial<AiVideoMediaConnector>) => void;
   cmsConfig?: EcosystemCmsConfig;
   onSave?: () => void;
   isSaving?: boolean;
@@ -185,7 +185,7 @@ export function AiMediaEngineHub({
   isSaving: externalSaving = false,
 }: AiMediaEngineHubProps) {
   // Local state
-  const [form, setForm] = useState<AiDeepfakeMediaConnector>(
+  const [form, setForm] = useState<AiVideoMediaConnector>(
     initialConfig || DEFAULT_PLUGIN_CONNECTORS.aiMediaEngine
   );
 
@@ -239,9 +239,9 @@ export function AiMediaEngineHub({
 
   const isSaving = externalSaving || internalSaving;
 
-  const handleFieldChange = <K extends keyof AiDeepfakeMediaConnector>(
+  const handleFieldChange = <K extends keyof AiVideoMediaConnector>(
     key: K,
-    value: AiDeepfakeMediaConnector[K]
+    value: AiVideoMediaConnector[K]
   ) => {
     const updated = { ...form, [key]: value };
     setForm(updated);
@@ -487,7 +487,7 @@ export function AiMediaEngineHub({
                 <div className="flex items-center gap-2.5">
                   <h3 className="text-lg font-bold tracking-tight text-foreground">
                     {cmsConfig.connectorAiMediaEngineTitle ||
-                      "AI Deepfake Media Engine (Synthesia / HeyGen API)"}
+                      "AI Video Media Engine (Synthesia / HeyGen API)"}
                   </h3>
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-xs font-semibold border ${

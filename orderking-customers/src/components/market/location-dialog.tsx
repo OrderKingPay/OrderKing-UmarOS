@@ -79,7 +79,7 @@ export const POPULAR_METRO_HUBS: MetroHub[] = [
   {
     city: "Kolkata",
     cityId: "kolkata",
-    badge: "City of Joy & Royal Feast",
+    badge: "City of Joy & Cuisine",
     gradient: "from-rose-500 to-pink-600",
     areas: [
       { name: "Park Street", zoneId: "kol-park", tag: "Awadhi Biryani & Kathi Rolls", lat: 22.5510, lng: 88.3533 },

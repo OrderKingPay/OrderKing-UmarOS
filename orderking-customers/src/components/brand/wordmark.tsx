@@ -27,7 +27,7 @@ export function OrderKingMark({ className }: { className?: string }) {
           <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
         </linearGradient>
       </defs>
-      {/* Royal Shield / Squircle Base */}
+      {/* Shield Base */}
       <rect width="32" height="32" rx="8" fill="url(#ok-bg)" />
       <rect
         x="0.75"
@@ -41,13 +41,13 @@ export function OrderKingMark({ className }: { className?: string }) {
       />
       <rect x="1" y="1" width="30" height="15" rx="7" fill="url(#ok-sheen)" />
 
-      {/* Royal Spire Jewels */}
+      {/* Spire Jewels */}
       <circle cx="7.5" cy="11.5" r="1.2" fill="url(#ok-gold)" />
       <circle cx="16" cy="8" r="1.5" fill="#FFFBEB" />
       <circle cx="16" cy="8" r="1.5" fill="url(#ok-gold)" fillOpacity="0.7" />
       <circle cx="24.5" cy="11.5" r="1.2" fill="url(#ok-gold)" />
 
-      {/* Majestic Royal Crown Body */}
+      {/* Brand Crown Mark */}
       <path
         d="M6.5 13.5L8.5 20.5C8.6 21 9 21.5 9.5 21.5H22.5C23 21.5 23.4 21 23.5 20.5L25.5 13.5L20.5 16.5L16 10L11.5 16.5L6.5 13.5Z"
         fill="url(#ok-gold)"

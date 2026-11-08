@@ -23,7 +23,7 @@ import {
   type SupportedUPIApp,
   FOUNDER_UPI_VPAS,
 } from "@/lib/payments/npci-upi-intent";
-import { FOUNDER_UPI_VPA, FOUNDER_MERCHANT_NAME, SOVEREIGN_NPCI_UPI_VPA } from "@/lib/dispatch/whatsapp-gps-bridge";
+import { FOUNDER_UPI_VPA, FOUNDER_MERCHANT_NAME, OFFICIAL_NPCI_UPI_VPA } from "@/lib/dispatch/whatsapp-gps-bridge";
 
 export interface DirectUpiIntentModalProps {
   isOpen: boolean;
@@ -316,9 +316,9 @@ export function DirectUpiIntentModal({
               </button>
               <button
                 type="button"
-                onClick={() => setActiveVpa(SOVEREIGN_NPCI_UPI_VPA || "orderking@ybl")}
+                onClick={() => setActiveVpa(OFFICIAL_NPCI_UPI_VPA || "orderking@ybl")}
                 className={`py-1 px-2 rounded-lg text-[10px] font-bold font-mono transition cursor-pointer ${
-                  activeVpa === (SOVEREIGN_NPCI_UPI_VPA || "orderking@ybl")
+                  activeVpa === (OFFICIAL_NPCI_UPI_VPA || "orderking@ybl")
                     ? "bg-amber-400 text-zinc-950 shadow-xs"
                     : "text-zinc-400 hover:text-white"
                 }`}
