@@ -165,26 +165,25 @@ function SupportPage() {
   }
 
   return (
-    <VendorShell title="Help Center & Support Desk" dataLabel={vendor.dataLabel}>
+    <VendorShell title="Help Desk &amp; Issue Escalations" dataLabel={vendor.dataLabel}>
       {/* Metrics Header */}
-      <Card className="border-line bg-surface p-4">
+      <Card className="border-gray-200 bg-white p-4 shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <LifeBuoy className="size-5 text-amber-500" />
-              <h1 className="text-base font-bold text-ink">
-                Partner Help Center &amp; Support Tickets
+              <LifeBuoy className="size-5 text-[#E23744]" />
+              <h1 className="text-base font-bold text-gray-900">
+                Partner Help Desk &amp; Escalations
               </h1>
             </div>
-            <p className="mt-0.5 text-xs text-muted">
-              Official dispute arbitration, payout reconciliations, and autonomous AI first-response for {ticketsQuery.data?.restaurantName || "your restaurant"}.
+            <p className="mt-0.5 text-xs text-gray-500">
+              Submit tickets for payouts, order transit disputes, rider delays, or hardware support for {ticketsQuery.data?.restaurantName || "your restaurant"}.
             </p>
           </div>
           <Button
             size="sm"
-            variant="primary"
             onClick={() => setCreateModalOpen(true)}
-            className="bg-amber-500 hover:bg-amber-400 text-black font-bold flex items-center gap-1.5"
+            className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold flex items-center gap-1.5 rounded-xl h-9 px-4 cursor-pointer"
           >
             <Plus className="size-4" />
             Raise Support Ticket
@@ -192,29 +191,29 @@ function SupportPage() {
         </div>
 
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs font-mono">
-          <div className="rounded-lg border border-line bg-surface-2/40 p-2.5">
-            <div className="text-[10px] uppercase text-muted">Total Tickets</div>
-            <div className="text-sm font-bold text-ink mt-0.5">{tickets.length}</div>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+            <div className="text-[10px] uppercase text-gray-400 font-bold">Total Tickets</div>
+            <div className="text-sm font-bold text-gray-900 mt-0.5">{tickets.length}</div>
           </div>
-          <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-2.5">
-            <div className="text-[10px] uppercase text-amber-400">Open / Under Review</div>
-            <div className="text-sm font-bold text-amber-400 mt-0.5">{openCount}</div>
+          <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-2.5">
+            <div className="text-[10px] uppercase text-amber-700 font-bold">Open / In Progress</div>
+            <div className="text-sm font-bold text-amber-700 mt-0.5">{openCount}</div>
           </div>
-          <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-2.5">
-            <div className="text-[10px] uppercase text-emerald-400">AI Resolved</div>
-            <div className="text-sm font-bold text-emerald-400 mt-0.5">{resolvedCount}</div>
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-2.5">
+            <div className="text-[10px] uppercase text-emerald-700 font-bold">Resolved</div>
+            <div className="text-sm font-bold text-emerald-700 mt-0.5">{resolvedCount}</div>
           </div>
-          <div className="rounded-lg border border-chili/30 bg-chili/5 p-2.5">
-            <div className="text-[10px] uppercase text-chili">Admin Escalations</div>
-            <div className="text-sm font-bold text-chili mt-0.5">{escalatedCount}</div>
+          <div className="rounded-xl border border-red-200 bg-red-50/50 p-2.5">
+            <div className="text-[10px] uppercase text-red-700 font-bold">Admin Escalated</div>
+            <div className="text-sm font-bold text-red-700 mt-0.5">{escalatedCount}</div>
           </div>
         </div>
       </Card>
 
       {banner ? (
-        <div className="flex items-center justify-between rounded-lg border border-leaf/40 bg-leaf-soft px-3 py-2 text-xs font-semibold text-leaf">
+        <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-semibold text-emerald-900">
           <span>{banner}</span>
-          <button type="button" onClick={() => setBanner(null)} className="underline text-[11px]">
+          <button type="button" onClick={() => setBanner(null)} className="underline text-[11px] cursor-pointer">
             Dismiss
           </button>
         </div>
@@ -228,10 +227,10 @@ function SupportPage() {
             <button
               type="button"
               onClick={() => setActiveCategoryFilter("ALL")}
-              className={`rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition ${
+              className={`rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition cursor-pointer ${
                 activeCategoryFilter === "ALL"
-                  ? "border-amber-500 bg-amber-500/15 text-amber-300 font-bold"
-                  : "border-line bg-surface text-muted hover:text-ink"
+                  ? "border-[#E23744] bg-red-50 text-[#E23744] font-bold"
+                  : "border-gray-200 bg-white text-gray-600 hover:text-gray-900"
               }`}
             >
               All ({tickets.length})
@@ -243,10 +242,10 @@ function SupportPage() {
                   key={c.id}
                   type="button"
                   onClick={() => setActiveCategoryFilter(c.id)}
-                  className={`rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition ${
+                  className={`rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition cursor-pointer ${
                     activeCategoryFilter === c.id
-                      ? "border-amber-500 bg-amber-500/15 text-amber-300 font-bold"
-                      : "border-line bg-surface text-muted hover:text-ink"
+                      ? "border-[#E23744] bg-red-50 text-[#E23744] font-bold"
+                      : "border-gray-200 bg-white text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   {c.icon} {c.label} ({count})
@@ -257,10 +256,10 @@ function SupportPage() {
 
           <div className="space-y-2 max-h-[600px] overflow-y-auto">
             {filteredTickets.length === 0 ? (
-              <Card className="p-8 text-center border-line bg-surface">
-                <CheckCircle2 className="size-8 mx-auto text-emerald-400 opacity-60" />
-                <h3 className="mt-2 text-xs font-bold text-ink">Zero Active Disputes</h3>
-                <p className="mt-0.5 text-[11px] text-muted">
+              <Card className="p-8 text-center border-gray-200 bg-white rounded-2xl shadow-xs">
+                <CheckCircle2 className="size-8 mx-auto text-emerald-500 opacity-80" />
+                <h3 className="mt-2 text-xs font-bold text-gray-900">No Tickets</h3>
+                <p className="mt-0.5 text-[11px] text-gray-500">
                   No tickets found in this category. All systems operating normally.
                 </p>
               </Card>
@@ -272,38 +271,38 @@ function SupportPage() {
                     key={t.id}
                     type="button"
                     onClick={() => setSelectedTicketId(t.id)}
-                    className={`w-full text-left rounded-xl border p-3 transition ${
+                    className={`w-full text-left rounded-2xl border p-3.5 transition cursor-pointer ${
                       isSelected
-                        ? "border-amber-500 bg-amber-500/10 shadow-sm"
-                        : "border-line bg-surface hover:bg-surface-2"
+                        ? "border-[#E23744] bg-red-50/40 shadow-xs"
+                        : "border-gray-200 bg-white hover:bg-gray-50"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1">
-                      <span className="font-mono text-[10px] font-bold text-muted">
+                      <span className="font-mono text-[10px] font-bold text-gray-400">
                         #{t.ticketNumber}
                       </span>
                       <span
                         className={`rounded px-1.5 py-0.5 text-[9px] font-bold font-mono ${
                           t.status === "RESOLVED"
-                            ? "bg-emerald-500/20 text-emerald-400"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                             : t.status === "ESCALATED_TO_ADMIN"
-                              ? "bg-chili-soft text-chili font-extrabold animate-pulse"
-                              : "bg-amber-500/20 text-amber-400"
+                              ? "bg-red-50 text-[#E23744] border border-red-200 font-bold"
+                              : "bg-amber-50 text-amber-700 border border-amber-200"
                         }`}
                       >
                         {t.status}
                       </span>
                     </div>
 
-                    <div className="mt-1 font-semibold text-xs text-ink truncate">
+                    <div className="mt-1 font-bold text-xs text-gray-900 truncate">
                       {t.subject}
                     </div>
 
-                    <p className="mt-0.5 text-[11px] text-muted line-clamp-2">
+                    <p className="mt-0.5 text-[11px] text-gray-500 line-clamp-2">
                       {t.description}
                     </p>
 
-                    <div className="mt-2 flex items-center justify-between text-[10px] text-muted font-mono pt-1 border-t border-line/40">
+                    <div className="mt-2 flex items-center justify-between text-[10px] text-gray-400 font-mono pt-1.5 border-t border-gray-100">
                       <span>{t.category.replace(/_/g, " ")}</span>
                       <span>{new Date(t.createdAt).toLocaleDateString([], { month: "short", day: "numeric" })}</span>
                     </div>
@@ -317,31 +316,31 @@ function SupportPage() {
         {/* Right Column: Ticket Conversation Thread */}
         <div className="lg:col-span-7">
           {selectedTicket ? (
-            <Card className="border-line bg-surface p-4 flex flex-col h-full min-h-[500px]">
-              <div className="flex flex-wrap items-start justify-between gap-2 border-b border-line pb-3">
+            <Card className="border-gray-200 bg-white p-4.5 rounded-2xl shadow-xs flex flex-col h-full min-h-[500px]">
+              <div className="flex flex-wrap items-start justify-between gap-2 border-b border-gray-100 pb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-amber-400">
+                    <span className="font-mono text-xs font-bold text-[#E23744]">
                       #{selectedTicket.ticketNumber}
                     </span>
-                    <span className="rounded bg-surface-2 px-2 py-0.5 text-[10px] font-mono text-muted">
+                    <span className="rounded bg-gray-100 px-2 py-0.5 text-[10px] font-mono text-gray-600 font-medium">
                       {selectedTicket.category.replace(/_/g, " ")}
                     </span>
                     <span
                       className={`rounded px-2 py-0.5 text-[10px] font-bold font-mono ${
                         selectedTicket.status === "RESOLVED"
-                          ? "bg-emerald-500/20 text-emerald-400"
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                           : selectedTicket.status === "ESCALATED_TO_ADMIN"
-                            ? "bg-chili-soft text-chili"
-                            : "bg-amber-500/20 text-amber-400"
+                            ? "bg-red-50 text-[#E23744] border border-red-200"
+                            : "bg-amber-50 text-amber-700 border border-amber-200"
                       }`}
                     >
                       {selectedTicket.status}
                     </span>
                   </div>
-                  <h2 className="mt-1 text-sm font-bold text-ink">{selectedTicket.subject}</h2>
+                  <h2 className="mt-1 text-sm font-bold text-gray-900">{selectedTicket.subject}</h2>
                   {selectedTicket.orderId && (
-                    <span className="text-[11px] font-mono text-muted">
+                    <span className="text-[11px] font-mono text-gray-500">
                       Related Order: #{selectedTicket.orderId}
                     </span>
                   )}
@@ -350,9 +349,9 @@ function SupportPage() {
                 {selectedTicket.status !== "RESOLVED" && (
                   <Button
                     size="sm"
-                    variant="secondary"
+                    variant="outline"
                     onClick={() => void handleResolve(selectedTicket.id)}
-                    className="text-xs"
+                    className="text-xs rounded-xl border-gray-300"
                   >
                     Mark Resolved
                   </Button>
@@ -361,18 +360,18 @@ function SupportPage() {
 
               {/* Status Banner */}
               {selectedTicket.status === "ESCALATED_TO_ADMIN" && (
-                <div className="mt-3 rounded-lg border border-chili/40 bg-chili-soft p-2.5 text-xs text-chili flex items-start gap-2">
-                  <ShieldAlert className="size-4 shrink-0 mt-0.5" />
+                <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs text-red-900 flex items-start gap-2">
+                  <ShieldAlert className="size-4 shrink-0 mt-0.5 text-[#E23744]" />
                   <div>
-                    <span className="font-bold">Escalated to Human Platform Administration: </span>
-                    Assigned to Hasan (Founder &amp; Platform Admin) at merchant.care@orderking.in. Priority SLA SLA active.
+                    <span className="font-bold">Platform Merchant Care Escalation: </span>
+                    Assigned with high-priority SLA (care@orderkingpay.com). Merchant care team reviewing logs.
                   </div>
                 </div>
               )}
 
               {selectedTicket.status === "RESOLVED" && (
-                <div className="mt-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-2.5 text-xs text-emerald-300 flex items-center gap-2">
-                  <ShieldCheck className="size-4 shrink-0" />
+                <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-900 flex items-center gap-2">
+                  <ShieldCheck className="size-4 shrink-0 text-emerald-600" />
                   <span>
                     Resolved under code <strong>{selectedTicket.resolutionCode || "MERCHANT_RESOLVED"}</strong> on{" "}
                     {selectedTicket.resolvedAt ? new Date(selectedTicket.resolvedAt).toLocaleString() : "today"}.
@@ -393,15 +392,15 @@ function SupportPage() {
                       <div
                         className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
                           isMerchant
-                            ? "bg-amber-500 font-medium text-black"
+                            ? "bg-[#E23744] font-medium text-white shadow-xs"
                             : isAi
-                              ? "border border-sky-500/30 bg-sky-950/20 text-slate-200"
-                              : "border border-purple-500/30 bg-purple-950/20 text-slate-200"
+                              ? "border border-gray-200 bg-gray-50 text-gray-900"
+                              : "border border-purple-200 bg-purple-50 text-purple-900"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3 text-[10px] opacity-75 mb-1 pb-1 border-b border-black/10 dark:border-white/10 font-mono">
                           <span className="font-bold">
-                            {isAi ? "🤖 King AI First-Responder" : m.authorName}
+                            {isAi ? "Platform Support Assistant" : m.authorName}
                           </span>
                           <span>{new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                         </div>
@@ -413,7 +412,7 @@ function SupportPage() {
               </div>
 
               {/* Reply Input */}
-              <div className="border-t border-line pt-3 flex gap-2">
+              <div className="border-t border-gray-100 pt-3 flex gap-2">
                 <Input
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
@@ -423,15 +422,14 @@ function SupportPage() {
                       void handleSendReply(selectedTicket.id);
                     }
                   }}
-                  placeholder="Type your response to support..."
-                  className="text-xs flex-1"
+                  placeholder="Type your message to merchant support..."
+                  className="text-xs flex-1 rounded-xl border-gray-300"
                 />
                 <Button
                   size="sm"
-                  variant="primary"
                   disabled={!replyText.trim() || replying}
                   onClick={() => void handleSendReply(selectedTicket.id)}
-                  className="bg-amber-500 text-black font-bold"
+                  className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl px-4 cursor-pointer"
                 >
                   <Send className="size-3.5 mr-1" />
                   {replying ? "Sending..." : "Reply"}
@@ -439,11 +437,11 @@ function SupportPage() {
               </div>
             </Card>
           ) : (
-            <Card className="p-12 text-center border-line bg-surface flex flex-col items-center justify-center min-h-[500px]">
-              <LifeBuoy className="size-10 text-muted opacity-40 mb-2" />
-              <h3 className="text-sm font-bold text-ink">Select a Ticket to View Thread</h3>
-              <p className="text-xs text-muted max-w-sm mt-1">
-                Choose an active ticket on the left or raise a new ticket to resolve payouts, transit spills, or menu adjustments.
+            <Card className="p-12 text-center border-gray-200 bg-white rounded-2xl shadow-xs flex flex-col items-center justify-center min-h-[500px]">
+              <LifeBuoy className="size-10 text-gray-300 mb-2" />
+              <h3 className="text-sm font-bold text-gray-900">Select a Ticket</h3>
+              <p className="text-xs text-gray-500 max-w-sm mt-1">
+                Choose a ticket from the left or raise a new ticket for payout disputes, transit spills, or menu adjustments.
               </p>
             </Card>
           )}
@@ -452,17 +450,17 @@ function SupportPage() {
 
       {/* Create Ticket Modal */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <Card className="w-full max-w-lg border-line bg-surface p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-line pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <Card className="w-full max-w-lg border-gray-200 bg-white p-5 rounded-2xl shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <div className="flex items-center gap-2">
-                <LifeBuoy className="size-5 text-amber-500" />
-                <h2 className="text-sm font-bold text-ink">Raise New Support Ticket</h2>
+                <LifeBuoy className="size-5 text-[#E23744]" />
+                <h2 className="text-sm font-bold text-gray-900">Raise Support Ticket</h2>
               </div>
               <button
                 type="button"
                 onClick={() => setCreateModalOpen(false)}
-                className="text-muted hover:text-ink text-sm font-bold"
+                className="text-gray-400 hover:text-gray-900 text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -470,17 +468,17 @@ function SupportPage() {
 
             <form onSubmit={handleCreateTicket} className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold text-ink block mb-1">Issue Category</label>
+                <label className="font-bold text-gray-700 block mb-1">Issue Category</label>
                 <div className="grid grid-cols-2 gap-1.5">
                   {CATEGORIES.map((c) => (
                     <button
                       key={c.id}
                       type="button"
                       onClick={() => setNewCategory(c.id)}
-                      className={`rounded-lg border p-2 text-left transition ${
+                      className={`rounded-xl border p-2 text-left transition cursor-pointer ${
                         newCategory === c.id
-                          ? "border-amber-500 bg-amber-500/15 font-bold text-amber-300"
-                          : "border-line bg-surface-2 text-muted hover:text-ink"
+                          ? "border-[#E23744] bg-red-50 font-bold text-[#E23744]"
+                          : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       <span className="mr-1.5">{c.icon}</span>
@@ -492,11 +490,11 @@ function SupportPage() {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="font-semibold text-ink block mb-1">Priority</label>
+                  <label className="font-bold text-gray-700 block mb-1">Priority</label>
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value as TicketPriority)}
-                    className="w-full rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs text-ink"
+                    className="w-full rounded-xl border border-gray-300 bg-white px-2.5 py-1.5 text-xs text-gray-900 font-medium"
                   >
                     {PRIORITIES.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -506,56 +504,56 @@ function SupportPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="font-semibold text-ink block mb-1">Related Order ID (Optional)</label>
+                  <label className="font-bold text-gray-700 block mb-1">Related Order ID (Optional)</label>
                   <Input
                     value={newOrderId}
                     onChange={(e) => setNewOrderId(e.target.value)}
                     placeholder="e.g. ord_live_101"
-                    className="text-xs"
+                    className="text-xs rounded-xl border-gray-300"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-ink block mb-1">Subject</label>
+                <label className="font-bold text-gray-700 block mb-1">Subject</label>
                 <Input
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
-                  placeholder="Summary of the issue (e.g. Food container spilled in transit)"
+                  placeholder="Summary of the issue (e.g. Transit spillage on order #1042)"
                   required
-                  className="text-xs"
+                  className="text-xs rounded-xl border-gray-300"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-ink block mb-1">Description &amp; Details</label>
+                <label className="font-bold text-gray-700 block mb-1">Description &amp; Details</label>
                 <Textarea
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="Describe the issue in detail. OrderKing Autonomous AI will immediately analyze database logs."
+                  placeholder="Describe the issue in detail..."
                   required
                   rows={4}
-                  className="text-xs"
+                  className="text-xs rounded-xl border-gray-300"
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-line">
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-gray-100">
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={() => setCreateModalOpen(false)}
+                  className="rounded-xl border-gray-300"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   size="sm"
-                  variant="primary"
                   disabled={creating}
-                  className="bg-amber-500 text-black font-bold"
+                  className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl px-5"
                 >
-                  {creating ? "Logging Ticket..." : "Submit Ticket"}
+                  {creating ? "Submitting..." : "Submit Ticket"}
                 </Button>
               </div>
             </form>

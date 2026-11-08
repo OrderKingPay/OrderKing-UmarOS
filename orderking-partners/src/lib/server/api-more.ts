@@ -35,6 +35,187 @@ export const respondToReview = createServerFn({ method: "POST" }).middleware([au
   });
 });
 
+export type CustomerComplaintRecord = {
+  id: string;
+  orderId: string;
+  orderNumber: string;
+  category: "TRANSIT_DAMAGE" | "MISSING_ITEM" | "FOOD_QUALITY" | "RIDER_DELAY";
+  title: string;
+  description: string;
+  itemsSummary: string;
+  claimedAmountPaise: number;
+  deductedPaise: number;
+  liability: "PLATFORM_LOGISTICS" | "RESTAURANT" | "UNDER_REVIEW";
+  status: "RESOLVED_ZERO_DEDUCTION" | "ACTION_REQUIRED" | "DISPUTED" | "SETTLED";
+  riderName?: string;
+  createdAt: string;
+};
+
+export const getCustomerComplaints = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "reviews.view", async (sql, ctx) => {
+      // 1. Fetch disputes from merchant_penalty_disputes
+      const penaltyRows = await sql<{
+        id: string;
+        order_id: string | null;
+        penalty_type: string;
+        penalty_paise: number;
+        merchant_notes: string;
+        status: string;
+        created_at: string;
+      }>`
+        select id, order_id, penalty_type, penalty_paise, merchant_notes, status, created_at::text as created_at
+        from merchant_penalty_disputes
+        where restaurant_id = ${ctx.restaurantId}
+        order by created_at desc
+        limit 50
+      `.catch(() => []);
+
+      // 2. Fetch order refund disputes from orders
+      const orderRows = await sql<{
+        id: string;
+        order_number: string;
+        customer_area: string | null;
+        food_value_paise: number;
+        refund_adjustment_paise: number;
+        other_deductions_paise: number;
+        other_deductions_code: string | null;
+        created_at: string;
+      }>`
+        select id, order_number, customer_area, food_value_paise, refund_adjustment_paise,
+               other_deductions_paise, other_deductions_code, created_at::text as created_at
+        from orders
+        where restaurant_id = ${ctx.restaurantId}
+          and (refund_adjustment_paise != 0 or other_deductions_paise > 0)
+        order by created_at desc
+        limit 50
+      `.catch(() => []);
+
+      const complaints: CustomerComplaintRecord[] = [];
+
+      for (const p of penaltyRows) {
+        const isTransit = p.penalty_type.includes("TRANSIT") || p.penalty_type.includes("SPILL");
+        complaints.push({
+          id: p.id,
+          orderId: p.order_id || p.id,
+          orderNumber: p.order_id ? `#OK-${p.order_id.slice(-6)}` : `#DISP-${p.id.slice(-4)}`,
+          category: isTransit ? "TRANSIT_DAMAGE" : "MISSING_ITEM",
+          title: isTransit ? "Transit Damage / Food Spill" : "Order Penalty Dispute",
+          description: p.merchant_notes || "Merchant dispute submitted for administrative review.",
+          itemsSummary: "Order items under dispute verification",
+          claimedAmountPaise: p.penalty_paise,
+          deductedPaise: p.status === "WAIVED" ? 0 : p.penalty_paise,
+          liability: isTransit ? "PLATFORM_LOGISTICS" : "UNDER_REVIEW",
+          status: p.status === "WAIVED" ? "RESOLVED_ZERO_DEDUCTION" : p.status === "PENDING" ? "DISPUTED" : "SETTLED",
+          createdAt: asIso(p.created_at),
+        });
+      }
+
+      for (const o of orderRows) {
+        if (complaints.some((c) => c.orderId === o.id)) continue;
+        const isSpill = (o.other_deductions_code || "").includes("SPILL");
+        const deducted = Math.abs(o.refund_adjustment_paise || o.other_deductions_paise);
+        complaints.push({
+          id: `comp-${o.id}`,
+          orderId: o.id,
+          orderNumber: `#${o.order_number}`,
+          category: isSpill ? "TRANSIT_DAMAGE" : "MISSING_ITEM",
+          title: isSpill ? "Transit Spillage & Container Damage" : "Customer Missing Item Claim",
+          description: isSpill
+            ? "Customer reported packaging spillage during bike transit. Verified seal was intact upon kitchen dispatch."
+            : "Customer reported an item was missing from delivered order package.",
+          itemsSummary: o.customer_area ? `Customer Locality: ${o.customer_area}` : "Order Items",
+          claimedAmountPaise: deducted || o.food_value_paise,
+          deductedPaise: isSpill ? 0 : deducted,
+          liability: isSpill ? "PLATFORM_LOGISTICS" : "RESTAURANT",
+          status: isSpill ? "RESOLVED_ZERO_DEDUCTION" : "ACTION_REQUIRED",
+          createdAt: asIso(o.created_at),
+        });
+      }
+
+      return {
+        complaints,
+        totalCount: complaints.length,
+        zeroDeductionCount: complaints.filter((c) => c.deductedPaise === 0).length,
+        disputedCount: complaints.filter((c) => c.status === "DISPUTED").length,
+        actionRequiredCount: complaints.filter((c) => c.status === "ACTION_REQUIRED").length,
+      };
+    });
+  });
+
+export const disputeCustomerComplaint = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    complaintId: string;
+    orderId: string;
+    reason: string;
+    notes: string;
+  }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "reviews.respond", async (sql, ctx) => {
+      const ticketNum = `TKT-${Math.floor(100000 + Math.random() * 900000)}`;
+      const disputeId = newId("dsp");
+
+      const restRow = await sql<{ org_id: string }>`
+        select org_id from restaurants where id = ${ctx.restaurantId} limit 1
+      `.catch(() => []);
+      const orgId = restRow[0]?.org_id || ctx.restaurantId;
+
+      await sql`
+        insert into partner_support_tickets (
+          id, restaurant_id, user_id, ticket_number, category, priority, status,
+          subject, description, order_id, created_at, updated_at
+        ) values (
+          ${disputeId},
+          ${ctx.restaurantId},
+          ${context.userId},
+          ${ticketNum},
+          'ORDER_DISPUTE',
+          'HIGH',
+          'OPEN',
+          ${`Dispute Rebuttal: Order #${data.orderId.slice(-6)} (${data.reason})`},
+          ${data.notes.trim() || "Merchant submitted verification confirming intact packaging and correct dispatch."},
+          ${data.orderId},
+          now(),
+          now()
+        )
+      `.catch(() => {});
+
+      await sql`
+        insert into merchant_penalty_disputes (
+          id, org_id, restaurant_id, restaurant_name, order_id, penalty_type,
+          penalty_paise, delay_minutes, merchant_notes, status, created_at
+        ) values (
+          ${disputeId},
+          ${orgId},
+          ${ctx.restaurantId},
+          ${ctx.restaurantName},
+          ${data.orderId},
+          ${data.reason},
+          0,
+          0,
+          ${data.notes.trim()},
+          'PENDING',
+          now()
+        )
+      `.catch(() => {});
+
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: "CUSTOMER_COMPLAINT_DISPUTED",
+        entityType: "complaint",
+        entityId: data.complaintId,
+        detail: `Disputed order #${data.orderId.slice(-6)} under ${data.reason}. Ticket #${ticketNum} created.`,
+      });
+
+      return { ok: true as const, ticketNumber: ticketNum };
+    });
+  });
+
 export const getNotifications = createServerFn({ method: "GET" }).middleware([authMiddleware]).validator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "notifications.view", async (sql, ctx) => {
     const rows = await sql<{ id: string; type: string; title: string; body: string; is_read: boolean; created_at: string }>`select id, type, title, body, is_read, created_at::text as created_at from notifications where restaurant_id = ${ctx.restaurantId} order by created_at desc limit 50`;

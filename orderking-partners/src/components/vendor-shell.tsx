@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Bell,
   ChefHat,
+  ChevronDown,
   ClipboardList,
   Clock3,
   Home,
@@ -23,6 +24,7 @@ import {
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { RedirectToSignIn } from "@/lib/auth/gates";
+import { signOut } from "@/lib/auth/client";
 import { useClientState } from "@/lib/client-state";
 import { can, type Permission } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
@@ -32,7 +34,7 @@ import { OfflineBanner } from "./offline-banner";
 import { OrderKingMark } from "./mark";
 import { useT } from "./use-t";
 import { useVendor } from "./use-vendor";
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { listOrders } from "@/lib/server/api-orders";
 import { supabaseCloud } from "@/lib/db-cloud";
@@ -184,27 +186,14 @@ export function VendorShell({
 
         {/* Main Content Viewport */}
         <div className="flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
-          <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-gray-200 bg-white/95 backdrop-blur-md px-4 py-3 md:px-6 shadow-xs">
-            <div className="flex items-center gap-3 min-w-[200px] max-w-[420px] shrink-0">
+          <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-gray-200 bg-white/95 backdrop-blur-md px-4 py-2.5 md:px-6 shadow-xs">
+            {/* Left: Outlet Title & Switcher */}
+            <div className="flex items-center gap-3 min-w-0">
               <div className="flex items-center gap-2 md:hidden">
                 <OrderKingMark className="size-7 shrink-0 text-[#E23744]" />
-                <span className="truncate font-display text-base font-bold text-gray-900">
-                  {restaurantName || "Restaurant Partner"}
-                </span>
-              </div>
-              <div className="hidden md:flex flex-col min-w-0">
-                <h1 className="font-display text-lg lg:text-xl font-black whitespace-nowrap truncate text-gray-900">
-                  {title || restaurantName || "Restaurant Partner Console"}
-                </h1>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink min-w-0 overflow-x-auto scrollbar-none">
-              {/* Restaurant Outlet Location Switcher */}
-              {vendor.memberships.length > 0 && (
-                <div className="relative">
+                {vendor.memberships.length > 1 ? (
                   <select
-                    className="h-11 appearance-none rounded-xl border border-gray-200 bg-gray-50 pl-8 pr-7 text-xs font-semibold text-gray-800 outline-none transition-colors hover:bg-gray-100 focus:border-[#E23744] focus:ring-1 focus:ring-[#E23744] max-w-[140px] sm:max-w-[200px] truncate cursor-pointer"
+                    className="h-8 appearance-none bg-transparent font-display text-sm font-bold text-gray-900 border-none outline-none cursor-pointer max-w-[150px] truncate"
                     value={vendor.restaurantId ?? ""}
                     onChange={(e) => {
                       const newId = e.target.value;
@@ -213,63 +202,75 @@ export function VendorShell({
                         void qc.invalidateQueries();
                       }
                     }}
-                    title="Switch Restaurant Location"
-                    aria-label="Switch Restaurant Location"
+                    title="Switch Outlet"
                   >
                     {vendor.memberships.map((m: any) => (
-                      <option key={m.restaurantId} value={m.restaurantId} className="bg-white text-gray-900">
-                        {m.restaurantName || "Outlet"} ({m.role})
+                      <option key={m.restaurantId} value={m.restaurantId}>
+                        {m.restaurantName || "Outlet"}
                       </option>
                     ))}
                   </select>
-                  <Store className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-gray-500" />
-                </div>
-              )}
-
-              {/* Language Switcher */}
-              <div className="relative">
-                <select
-                  className="h-11 appearance-none rounded-xl border border-gray-200 bg-gray-50 pl-9 pr-8 text-xs sm:text-sm text-gray-800 outline-none transition-colors hover:bg-gray-100 focus:border-[#E23744] focus:ring-1 focus:ring-[#E23744]"
-                  value={lang}
-                  onChange={(e) => setLang(e.target.value as AppLanguage)}
-                  aria-label={t("settings.language")}
-                  title={t("settings.language") || "Select Language"}
-                >
-                  {INDIAN_LANGUAGE_CATALOG.map((item) => (
-                    <option key={item.code} value={item.code}>
-                      {item.native} ({item.label})
-                    </option>
-                  ))}
-                </select>
-                <Languages className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-500" />
+                ) : (
+                  <span className="truncate font-display text-sm font-bold text-gray-900">
+                    {restaurantName || vendor.selected?.restaurantName || "Restaurant Partner"}
+                  </span>
+                )}
               </div>
 
-              {/* Assistant Button */}
-              <button
-                type="button"
-                className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-gray-200 bg-gray-50 px-3 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition shadow-xs cursor-pointer active:scale-95 shrink-0"
-                onClick={() => setSparkOpen(true)}
-                title="Restaurant Partner Assistant"
-                aria-label="Open Partner Assistant"
-              >
-                <Sparkles className="size-4 text-gray-500" />
-                <span className="tracking-tight">Assistant</span>
-              </button>
+              <div className="hidden md:flex items-center gap-3 min-w-0">
+                <h1 className="font-display text-lg lg:text-xl font-black whitespace-nowrap text-gray-900">
+                  {title || restaurantName || "Restaurant Partner"}
+                </h1>
+                {vendor.memberships.length > 1 && (
+                  <div className="relative">
+                    <select
+                      className="h-9 appearance-none rounded-xl border border-gray-200 bg-gray-50 pl-3 pr-7 text-xs font-semibold text-gray-800 outline-none transition-colors hover:bg-gray-100 cursor-pointer max-w-[200px] truncate"
+                      value={vendor.restaurantId ?? ""}
+                      onChange={(e) => {
+                        const newId = e.target.value;
+                        if (newId && newId !== vendor.restaurantId) {
+                          setRestaurantId(newId);
+                          void qc.invalidateQueries();
+                        }
+                      }}
+                      title="Switch Outlet"
+                      aria-label="Switch Outlet"
+                    >
+                      {vendor.memberships.map((m: any) => (
+                        <option key={m.restaurantId} value={m.restaurantId}>
+                          {m.restaurantName || "Outlet"} ({m.role})
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 size-3.5 text-gray-400" />
+                  </div>
+                )}
+              </div>
+            </div>
 
+            {/* Right: Operational Status, Support, Notifications, Profile */}
+            <div className="flex items-center gap-2 shrink-0">
               {/* Outlet Online / Offline / Paused Toggle Pill */}
               <OutletStatusPill
                 restaurantId={vendor.restaurantId}
                 restaurantName={restaurantName ?? vendor.selected?.restaurantName}
               />
 
-              {/* Kitchen Rush Mode Toggle */}
-              <MerchantHeaderRushToggle />
+              {/* Help & Support Desk */}
+              <Link
+                to="/support"
+                className="grid size-10 place-items-center rounded-xl border border-gray-200 bg-gray-50 transition-colors hover:bg-gray-100 text-gray-700 shrink-0"
+                aria-label="Help & Support Desk"
+                title="Help & Support Desk"
+              >
+                <LifeBuoy className="size-4" />
+              </Link>
 
               {/* Notifications */}
               {(!role || can(role, "notifications.view")) && (
                 <Link
                   to="/notifications"
-                  className="grid size-11 place-items-center rounded-xl border border-gray-200 bg-gray-50 transition-colors hover:bg-gray-100 shrink-0 text-gray-700"
+                  className="grid size-10 place-items-center rounded-xl border border-gray-200 bg-gray-50 transition-colors hover:bg-gray-100 text-gray-700 shrink-0"
                   aria-label={t("nav.notifications")}
                   title={t("nav.notifications") || "Alerts & Notifications"}
                 >
@@ -277,9 +278,8 @@ export function VendorShell({
                 </Link>
               )}
 
-              <div className="hidden md:block">
-                <UserButton />
-              </div>
+              {/* User / Merchant Profile Menu with Language Selector */}
+              <MerchantHeaderProfileMenu restaurantName={restaurantName ?? vendor.selected?.restaurantName} />
             </div>
           </header>
 
@@ -330,6 +330,110 @@ function NavLink({
       <Icon className="size-4.5 shrink-0" />
       <span className="truncate">{children}</span>
     </Link>
+  );
+}
+
+function MerchantHeaderProfileMenu({ restaurantName }: { restaurantName?: string }) {
+  const { user } = useCurrentUserState();
+  const lang = useClientState((s) => s.lang);
+  const setLang = useClientState((s) => s.setLang);
+  const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [open]);
+
+  if (!user) return null;
+  const label = user.displayName ?? user.primaryEmail ?? "Merchant";
+  const initial = label.charAt(0).toUpperCase();
+
+  return (
+    <div className="relative font-sans" ref={menuRef}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex size-10 items-center justify-center rounded-xl border border-gray-200 bg-red-50 text-[#E23744] font-bold text-sm hover:bg-red-100 transition cursor-pointer select-none"
+        aria-label="Merchant Account Menu"
+        title={label}
+      >
+        {user.profileImageUrl ? (
+          <img src={user.profileImageUrl} alt="" className="size-10 rounded-xl object-cover" />
+        ) : (
+          <span>{initial}</span>
+        )}
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-12 z-50 w-72 rounded-2xl border border-gray-200 bg-white p-3 shadow-2xl text-gray-900 font-sans space-y-3 animate-in fade-in duration-100">
+          <div className="border-b border-gray-100 pb-2.5">
+            <div className="font-bold text-sm text-gray-900 truncate">{label}</div>
+            <div className="text-xs text-gray-500 truncate">{user.primaryEmail || restaurantName || "OrderKing Partner"}</div>
+          </div>
+
+          {/* Language Selector */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              <Languages className="size-3.5" />
+              <span>Language / ভাষা / भाषा</span>
+            </div>
+            <select
+              className="w-full h-9 appearance-none rounded-xl border border-gray-200 bg-gray-50 px-3 text-xs font-semibold text-gray-800 outline-none transition-colors hover:bg-gray-100 focus:border-[#E23744] cursor-pointer"
+              value={lang}
+              onChange={(e) => setLang(e.target.value as AppLanguage)}
+            >
+              {INDIAN_LANGUAGE_CATALOG.map((item) => (
+                <option key={item.code} value={item.code}>
+                  {item.native} ({item.label})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="border-t border-gray-100 pt-2 space-y-1">
+            <Link
+              to="/settings"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 transition"
+            >
+              <Settings className="size-4 text-gray-400" />
+              <span>Settings &amp; Hardware</span>
+            </Link>
+            <Link
+              to="/support"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 transition"
+            >
+              <LifeBuoy className="size-4 text-gray-400" />
+              <span>Help &amp; Tickets</span>
+            </Link>
+          </div>
+
+          <div className="border-t border-gray-100 pt-2">
+            <button
+              type="button"
+              disabled={signingOut}
+              onClick={() => {
+                setSigningOut(true);
+                void signOut().catch(() => setSigningOut(false));
+              }}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition cursor-pointer disabled:opacity-50"
+            >
+              {signingOut ? "Signing out..." : "Sign Out"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

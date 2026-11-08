@@ -570,11 +570,11 @@ function OrderDetailPage() {
                   <div className="flex flex-wrap gap-1.5">
                     {[
                       "Fresh & piping hot ♨️",
-                      "Advanced fast delivery ⚡",
-                      "Polite & helpful rider 🛵",
+                      "Fast delivery ⚡",
+                      "Polite rider 🛵",
                       "Leak-proof packaging 📦",
-                      "Authentic royal taste 🍗",
-                      "Direct kitchen savings 💰",
+                      "Delicious taste 🍗",
+                      "Great value 💰",
                     ].map((tag) => {
                       const isSelected = selectedTags.includes(tag);
                       return (

@@ -98,10 +98,10 @@ export function PartnerOperationsAcademy({
                 Standard Kitchen Operating Procedures (SOP)
               </span>
             </div>
-            <h1 className="text-xl font-bold font-display text-white tracking-tight">
+            <h1 className="text-xl font-bold font-display text-gray-900 tracking-tight">
               Restaurant Partner Operations &amp; Excellence Academy
             </h1>
-            <p className="text-xs text-gray-700 max-w-2xl leading-relaxed">
+            <p className="text-xs text-gray-600 max-w-2xl leading-relaxed">
               Standard operating procedures for commercial Indian kitchens. Eliminate staff training
               friction, protect your restaurant from spurious deductions, and master 120s order SLAs.
             </p>
@@ -111,23 +111,23 @@ export function PartnerOperationsAcademy({
             <Link to="/assistant">
               <Button
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs shadow-md"
+                className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs rounded-xl"
               >
-                <Sparkles className="mr-1.5 size-3.5 text-emerald-200" /> Partner Help Assistant
+                <Sparkles className="mr-1.5 size-3.5" /> Partner Help Assistant
               </Button>
             </Link>
           </div>
         </div>
 
         {/* Search Bar */}
-        <div className="mt-4 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2">
-          <Search className="size-4 text-gray-500 shrink-0" />
+        <div className="mt-4 flex items-center gap-2 bg-white border border-gray-300 rounded-xl px-3 py-2">
+          <Search className="size-4 text-gray-400 shrink-0" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search SOPs: 'how to pack soup', 'handover OTP', 'FSSAI temperature', 'Section 9(5) GST'..."
-            className="w-full bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none"
+            className="w-full bg-transparent text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none"
           />
           {searchQuery && (
             <button
@@ -150,8 +150,8 @@ export function PartnerOperationsAcademy({
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                   active
-                    ? "bg-emerald-600 text-white shadow-sm"
-                    : "border border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300 hover:text-white"
+                    ? "bg-[#E23744] text-white shadow-xs"
+                    : "border border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:text-gray-900"
                 }`}
               >
                 <Icon className="size-3.5" />
@@ -185,8 +185,8 @@ export function PartnerOperationsAcademy({
                     onClick={() => setSelectedModuleId(module.id)}
                     className={`cursor-pointer rounded-xl border p-3.5 transition group ${
                       isSelected
-                        ? "border-emerald-300 bg-emerald-50/40 shadow-xs"
-                        : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-white"
+                        ? "border-[#E23744] bg-red-50/40 shadow-xs"
+                        : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -202,7 +202,7 @@ export function PartnerOperationsAcademy({
                         </div>
                         <h3
                           className={`text-xs font-semibold ${
-                            isSelected ? "text-emerald-300" : "text-gray-800 group-hover:text-white"
+                            isSelected ? "text-gray-900 font-bold" : "text-gray-800 group-hover:text-gray-900"
                           }`}
                         >
                           {module.title}
@@ -214,15 +214,15 @@ export function PartnerOperationsAcademy({
                       <ChevronRight
                         className={`size-4 shrink-0 transition ${
                           isSelected
-                            ? "text-emerald-400 translate-x-0.5"
-                            : "text-slate-500 group-hover:text-gray-700"
+                            ? "text-[#E23744] translate-x-0.5"
+                            : "text-gray-400 group-hover:text-gray-700"
                         }`}
                       />
                     </div>
 
-                    <div className="mt-2.5 pt-2 border-t border-gray-200 flex items-center justify-between text-[10px] text-gray-500 font-mono">
+                    <div className="mt-2.5 pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500 font-mono">
                       <span>SLA: {module.slaTarget}</span>
-                      <span className="text-emerald-400">{module.keyMetric}</span>
+                      <span className="text-emerald-700 font-bold">{module.keyMetric}</span>
                     </div>
                   </div>
                 );
@@ -234,9 +234,9 @@ export function PartnerOperationsAcademy({
         {/* Module Detail Content */}
         <div className="lg:col-span-8">
           {activeModule ? (
-            <Card className="border-gray-200 bg-white p-5 space-y-5">
+            <Card className="border-gray-200 bg-white p-5 space-y-5 shadow-xs">
               {/* Active Header */}
-              <div className="space-y-2 border-b border-gray-200 pb-4">
+              <div className="space-y-2 border-b border-gray-100 pb-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${getCategoryColor(
@@ -249,17 +249,17 @@ export function PartnerOperationsAcademy({
                     <span className="text-gray-500">
                       Target: <strong className="text-gray-800">{activeModule.slaTarget}</strong>
                     </span>
-                    <span className="text-slate-600">·</span>
-                    <span className="text-emerald-400">
+                    <span className="text-gray-300">·</span>
+                    <span className="text-emerald-700 font-bold">
                       Standard: <strong>{activeModule.keyMetric}</strong>
                     </span>
                   </div>
                 </div>
 
-                <h2 className="text-lg font-bold font-display text-white">
+                <h2 className="text-lg font-bold font-display text-gray-900">
                   {activeModule.title}
                 </h2>
-                <p className="text-xs text-gray-700 leading-relaxed">
+                <p className="text-xs text-gray-600 leading-relaxed">
                   {activeModule.summary}
                 </p>
               </div>
@@ -267,7 +267,7 @@ export function PartnerOperationsAcademy({
               {/* Step-by-Step SOP Instructions */}
               <div className="space-y-3">
                 <h3 className="text-xs font-mono uppercase tracking-wider text-gray-500 font-bold flex items-center gap-1.5">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  <CheckCircle2 className="size-4 text-emerald-600" />
                   <span>Mandatory Execution Steps ({activeModule.steps.length})</span>
                 </h3>
 
@@ -278,22 +278,22 @@ export function PartnerOperationsAcademy({
                       className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-2"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold font-mono">
+                        <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold font-mono">
                           {step.stepNumber}
                         </div>
                         <div className="space-y-1">
                           <h4 className="text-xs font-bold text-gray-900">
                             {step.title}
                           </h4>
-                          <p className="text-xs text-gray-700 leading-relaxed">
+                          <p className="text-xs text-gray-600 leading-relaxed">
                             {step.instruction}
                           </p>
                         </div>
                       </div>
 
                       {step.criticalInvariant && (
-                        <div className="ml-9 rounded-lg border border-rose-500/30 bg-rose-950/20 px-3 py-1.5 text-[11px] text-rose-300 flex items-start gap-2">
-                          <AlertTriangle className="size-3.5 shrink-0 text-rose-400 mt-0.5" />
+                        <div className="ml-9 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-[11px] text-rose-900 flex items-start gap-2">
+                          <AlertTriangle className="size-3.5 shrink-0 text-rose-600 mt-0.5" />
                           <span>
                             <strong>Critical Rule:</strong> {step.criticalInvariant}
                           </span>
@@ -301,8 +301,8 @@ export function PartnerOperationsAcademy({
                       )}
 
                       {step.proTip && (
-                        <div className="ml-9 rounded-lg border border-emerald-500/20 bg-emerald-950/20 px-3 py-1.5 text-[11px] text-emerald-300 flex items-start gap-2">
-                          <Award className="size-3.5 shrink-0 text-emerald-400 mt-0.5" />
+                        <div className="ml-9 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] text-emerald-900 flex items-start gap-2">
+                          <Award className="size-3.5 shrink-0 text-emerald-600 mt-0.5" />
                           <span>
                             <strong>Kitchen Pro-Tip:</strong> {step.proTip}
                           </span>
@@ -314,10 +314,10 @@ export function PartnerOperationsAcademy({
               </div>
 
               {/* Common Mistakes Checklist */}
-              <div className="rounded-xl border border-amber-500/30 bg-amber-950/15 p-4 space-y-2.5">
+              <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 space-y-2.5">
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="size-4 text-amber-400" />
-                  <h4 className="text-xs font-bold text-amber-300">
+                  <AlertTriangle className="size-4 text-amber-600" />
+                  <h4 className="text-xs font-bold text-amber-900">
                     Avoid Common Operations Pitfalls
                   </h4>
                 </div>
@@ -331,10 +331,10 @@ export function PartnerOperationsAcademy({
               </div>
 
               {/* Arbitration & Legal Sense Protection */}
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-4 space-y-1.5">
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-emerald-400" />
-                  <h4 className="text-xs font-bold text-emerald-300">
+                  <ShieldCheck className="size-4 text-emerald-600" />
+                  <h4 className="text-xs font-bold text-emerald-900">
                     OrderKing Arbitration &amp; Payout Protection
                   </h4>
                 </div>
@@ -344,9 +344,9 @@ export function PartnerOperationsAcademy({
               </div>
 
               {/* Action Bar */}
-              <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 text-xs">
+              <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 text-xs">
                 <div className="flex items-center gap-2 text-gray-500">
-                  <Timer className="size-3.5 text-gray-500" />
+                  <Timer className="size-3.5 text-gray-400" />
                   <span>Always in effect across OrderKing merchant network</span>
                 </div>
 
@@ -359,9 +359,9 @@ export function PartnerOperationsAcademy({
                         onAskSpark(`Explain the SOP for: ${activeModule.title}`);
                       }
                     }}
-                    className="border-gray-300 hover:border-emerald-500 text-xs"
+                    className="border-gray-300 hover:border-[#E23744] text-xs rounded-xl"
                   >
-                    <Sparkles className="mr-1.5 size-3.5 text-emerald-400" /> Partner Help Assistant
+                    <Sparkles className="mr-1.5 size-3.5 text-gray-500" /> Ask Support
                   </Button>
                 </div>
               </div>

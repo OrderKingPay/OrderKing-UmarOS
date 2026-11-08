@@ -415,10 +415,10 @@ function CheckoutPage() {
               <span className="text-zinc-400">Cart ✓</span>
               <span className="text-amber-500">──</span>
               <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 px-2.5 py-0.5 shadow-xs">
-                2. Royal Checkout
+                2. Checkout
               </span>
               <span className="text-zinc-300">──</span>
-              <span className="text-zinc-400">3. Feast</span>
+              <span className="text-zinc-400">3. Delivery</span>
             </div>
           </div>
 
@@ -431,7 +431,7 @@ function CheckoutPage() {
                 </div>
                 <div>
                   <h1 className="font-display text-xl sm:text-2xl font-black text-zinc-950 dark:text-amber-100 tracking-tight">
-                    {t("checkout.title") || "Secure Royal Checkout"}
+                    {t("checkout.title") || "Secure Checkout"}
                   </h1>
                   <p className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                     Delivering fresh from <span className="text-amber-800 dark:text-amber-300 font-extrabold">{restaurantName || "Kitchen"}</span>
@@ -1051,7 +1051,7 @@ function CheckoutPage() {
                             👑
                           </span>
                           <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
-                            KingPay Royal Wallet
+                            KingPay Wallet
                           </span>
                           <span className="rounded-full bg-amber-500/30 border border-amber-500/40 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
                             Instant 1-Click
@@ -1168,7 +1168,7 @@ function CheckoutPage() {
                       <Moon className="size-4 text-amber-500 shrink-0 mt-0.5" />
                       <div>
                         <strong className="font-bold block">🌙 Late-Night Rider Safety Lockout Active (11:00 PM – 04:00 AM IST)</strong>
-                        <span>Cash on Delivery is locked at night to ensure delivery partner physical safety. Direct NPCI UPI (<strong className="font-mono font-bold text-amber-800 dark:text-amber-300">orderking@ybl</strong>) and KingPay Royal Wallet are 100% active.</span>
+                        <span>Cash on Delivery is locked at night to ensure delivery partner physical safety. Direct NPCI UPI (<strong className="font-mono font-bold text-amber-800 dark:text-amber-300">orderking@ybl</strong>) and KingPay Wallet are 100% active.</span>
                       </div>
                     </div>
                   )}
@@ -1222,7 +1222,7 @@ function CheckoutPage() {
                     </div>
                     <div>
                       <h3 className="font-display text-base font-black text-zinc-950 dark:text-amber-100">
-                        Royal Bill Breakdown
+                        Bill Details
                       </h3>
                       <p className="text-[11px] text-zinc-500">100% Transparent · Zero Hidden Charges</p>
                     </div>
@@ -1261,7 +1261,7 @@ function CheckoutPage() {
                     {quote.data.quote.platformDiscountPaise > 0 && (
                       <div className="flex items-center justify-between text-xs font-bold text-amber-600 dark:text-amber-400 py-0.5">
                         <div className="flex items-center gap-1.5">
-                          <span>👑 Platform Royal Discount</span>
+                          <span>🎁 Platform Discount</span>
                         </div>
                         <span className="tabular-nums">-{formatPaise(quote.data.quote.platformDiscountPaise, { locale })}</span>
                       </div>
@@ -1488,7 +1488,7 @@ function CheckoutPage() {
                           storeType: "kitchen",
                           orderId: `OK-${Date.now().toString().slice(-6)}`,
                           storeName: restaurantName || "OrderKing Kitchen",
-                          customerName: (user as any)?.name || "Royal Customer",
+                          customerName: (user as any)?.name || "Customer",
                           customerPhone: (user as any)?.phone || "",
                           items:
                             quote.data?.pricedLines && quote.data.pricedLines.length > 0
@@ -1559,7 +1559,7 @@ function CheckoutPage() {
                   {busy ? (
                     <span className="flex items-center gap-2">
                       <span className="size-5 border-3 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
-                      <span>Processing Royal Order...</span>
+                      <span>Processing Order...</span>
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">

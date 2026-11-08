@@ -331,13 +331,13 @@ function Home() {
               </p>
             </div>
 
-            {/* Card 3: Unmatched delivery reach */}
+            {/* Card 3: City delivery reach */}
             <div className="rounded-2xl border border-gray-200 bg-white p-7 transition-all duration-200 hover:border-red-300 hover:shadow-lg shadow-sm">
               <div className="flex size-14 items-center justify-center rounded-2xl bg-red-50 text-[#E23744] border border-red-100">
                 <Store className="size-7" />
               </div>
               <h3 className="mt-6 font-display text-xl font-bold text-gray-900">
-                Unmatched delivery reach
+                City delivery reach
               </h3>
               <p className="mt-2 text-sm text-gray-600 leading-relaxed">
                 Expand your kitchen capacity beyond physical seating with high-volume online orders, table dining, and scheduled catering.

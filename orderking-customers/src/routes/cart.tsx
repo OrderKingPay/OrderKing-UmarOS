@@ -117,7 +117,7 @@ function CartPage() {
                 </div>
                 <div>
                   <h1 className="font-display text-xl sm:text-2xl font-black text-zinc-950 dark:text-amber-100 tracking-tight">
-                    {t("cart.title") || "Your Royal Cart"}
+                    {t("cart.title") || "Your Cart"}
                   </h1>
                   {restaurantName && (
                     <p className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300">
