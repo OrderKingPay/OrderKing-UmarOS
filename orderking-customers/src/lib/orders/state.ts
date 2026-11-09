@@ -93,15 +93,3 @@ export function trackIndex(status: OrderStatus): number {
   return i;
 }
 
-/** Dev-only: advance sample kitchens without partner/rider apps. */
-export const SIMULATED_ADVANCE: Partial<Record<OrderStatus, OrderStatus>> = {
-  CREATED: "ACCEPTED",
-  PLACED: "ACCEPTED",
-  ACCEPTED: "PREPARING",
-  AUTO_ACCEPTED: "PREPARING",
-  PREPARING: "READY",
-  READY: "RIDER_ASSIGNED",
-  RIDER_ASSIGNED: "PICKED_UP",
-  PICKED_UP: "ON_THE_WAY",
-  ON_THE_WAY: "DELIVERED",
-};

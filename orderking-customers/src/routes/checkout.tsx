@@ -650,7 +650,7 @@ function CheckoutPage() {
                         Don&apos;t send plastic cutlery
                       </span>
                       <span className="block text-xs text-zinc-500">
-                        Help reduce single-use plastic waste. Thank you for protecting nature! 🌱
+                        Help reduce single-use plastic waste. Thank you for protecting nature.
                       </span>
                     </div>
                   </div>
@@ -708,7 +708,7 @@ function CheckoutPage() {
                 <label className="flex cursor-pointer items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 font-bold text-lg">
-                      🍲
+                      
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
@@ -746,7 +746,7 @@ function CheckoutPage() {
                       Dispatched directly to your assigned delivery partner.
                     </p>
                   </div>
-                  <span className="text-2xl">🛵</span>
+                  
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -799,7 +799,7 @@ function CheckoutPage() {
                         : "Custom"}
                     </span>
                     <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400">
-                      Enter Amount ✍️
+                      Enter Amount
                     </span>
                   </button>
                 </div>
@@ -847,7 +847,7 @@ function CheckoutPage() {
                 {safeTipPaise > 0 && (
                   <div className="flex items-center justify-between rounded-xl bg-amber-500/15 border border-amber-500/30 px-3 py-1.5 text-xs">
                     <span className="font-bold text-amber-900 dark:text-amber-200">
-                      🎉 Added {formatPaise(safeTipPaise, { locale })} tip for your delivery partner! Thank you!
+                      Added {formatPaise(safeTipPaise, { locale })} tip for your delivery partner. Thank you.
                     </span>
                     <button
                       type="button"
@@ -908,7 +908,7 @@ function CheckoutPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                         <div className="flex items-center gap-2">
                           <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs">
-                            ⚡
+                            
                           </span>
                           <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
                             Direct NPCI UPI Intent &amp; Live QR
@@ -979,7 +979,7 @@ function CheckoutPage() {
                           }).replace(/^upi:\/\/pay/, "tez://upi/pay")}
                           className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
                         >
-                          <span className="text-base">⚡</span>
+                          
                           <span className="text-[10px] font-bold mt-0.5">GPay</span>
                         </a>
 
@@ -1011,7 +1011,7 @@ function CheckoutPage() {
                           }).replace(/^upi:\/\/pay/, "paytmmp://pay")}
                           className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
                         >
-                          <span className="text-base">🔵</span>
+                          
                           <span className="text-[10px] font-bold mt-0.5">Paytm</span>
                         </a>
 
@@ -1048,7 +1048,7 @@ function CheckoutPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                         <div className="flex items-center gap-2">
                           <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold shadow-xs">
-                            💳
+                            
                           </span>
                           <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
                             KingPay Wallet
@@ -1135,7 +1135,7 @@ function CheckoutPage() {
                         {(["UPI QR", "Fast UPI", "NetBanking", "Cards"] as const).map((appLabel) => {
                           const isSelected = preferredUpiApp === appLabel;
                           const icon =
-                            appLabel === "UPI QR" ? "📱" : appLabel === "Fast UPI" ? "⚡" : appLabel === "NetBanking" ? "🏛️" : "💳";
+                            appLabel === "UPI QR" ? "📱" : appLabel === "Fast UPI" ? "" : appLabel === "NetBanking" ? "🏛️" : "";
                           return (
                             <button
                               key={appLabel}
@@ -1167,7 +1167,7 @@ function CheckoutPage() {
                     <div className="flex items-start gap-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 p-3.5 text-xs text-amber-900 dark:text-amber-200">
                       <Moon className="size-4 text-amber-500 shrink-0 mt-0.5" />
                       <div>
-                        <strong className="font-bold block">🌙 Late-Night Rider Safety Lockout Active (11:00 PM – 04:00 AM IST)</strong>
+                        <strong className="font-bold block">Late-Night Rider Safety Lockout Active (11:00 PM – 04:00 AM IST)</strong>
                         <span>Cash on Delivery is locked at night to ensure delivery partner physical safety. Direct NPCI UPI (<strong className="font-mono font-bold text-amber-800 dark:text-amber-300">orderking@ybl</strong>) and KingPay Wallet are 100% active.</span>
                       </div>
                     </div>
@@ -1253,7 +1253,7 @@ function CheckoutPage() {
                     {quote.data.quote.restaurantDiscountPaise > 0 && (
                       <div className="flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 py-0.5">
                         <div className="flex items-center gap-1.5">
-                          <span>🎁 {quote.data.promoName || "Kitchen Discount"}</span>
+                          <span>{quote.data.promoName || "Kitchen Discount"}</span>
                         </div>
                         <span className="tabular-nums">-{formatPaise(quote.data.quote.restaurantDiscountPaise, { locale })}</span>
                       </div>
@@ -1261,7 +1261,7 @@ function CheckoutPage() {
                     {quote.data.quote.platformDiscountPaise > 0 && (
                       <div className="flex items-center justify-between text-xs font-bold text-amber-600 dark:text-amber-400 py-0.5">
                         <div className="flex items-center gap-1.5">
-                          <span>🎁 Platform Discount</span>
+                          <span>Platform Discount</span>
                         </div>
                         <span className="tabular-nums">-{formatPaise(quote.data.quote.platformDiscountPaise, { locale })}</span>
                       </div>
@@ -1425,7 +1425,7 @@ function CheckoutPage() {
                     {donateFeedingIndia && (
                       <div className="flex items-center justify-between text-sm font-bold border-t border-zinc-200 dark:border-zinc-800 pt-2">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-base">🍲</span>
+                          
                           <span className="text-zinc-800 dark:text-zinc-200">Feeding India Donation</span>
                           <span className="text-[10px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full">
                             Feed a person in need
@@ -1460,7 +1460,7 @@ function CheckoutPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 font-bold text-lg">
-                      📲
+                      
                     </div>
                     <div>
                       <h3 className="font-display text-sm sm:text-base font-extrabold text-emerald-950 dark:text-emerald-100 flex items-center gap-1.5">

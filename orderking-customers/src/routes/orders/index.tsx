@@ -277,7 +277,7 @@ function OrdersPage() {
             {past.length ? (
               <section className="mt-7">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-stone-400 text-sm">📜</span>
+                  
                   <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600">
                     {t("orders.past")} ({past.length})
                   </h2>
@@ -337,7 +337,7 @@ function OrdersPage() {
                                   }}
                                   className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-xs px-2.5 py-1 shadow-xs transition active:scale-95 cursor-pointer"
                                 >
-                                  <span>🔁</span>
+                                  
                                   <span>Reorder</span>
                                 </button>
                               )}

@@ -4,7 +4,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import { isOpenNow, type HourWindow } from "@/lib/hours";
 import { newId, publicOrderCode } from "@/lib/ids";
-import { canTransition, customerMayCancel, SIMULATED_ADVANCE, type OrderStatus } from "@/lib/orders/state";
+import { canTransition, customerMayCancel, type OrderStatus } from "@/lib/orders/state";
 import type { CartLineInput, OrderDetail, OrderSummary } from "@/lib/market-types";
 import { loadConfig } from "./load-config";
 import { buildQuote } from "./quote";
@@ -845,26 +845,6 @@ export const cancelMyOrder = createServerFn({ method: "POST" })
     return { ok: true, orderId: order.id, status: nextStatus, refundPaise: totalRefundPaise, authoritative: "customer-app" as const };
   });
 
-export const advanceSimulatedOrder = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((input: { orderId: string }) => input)
-  .handler(async ({ context, data }: any) => {
-    const order = await getOwnedOrder(context.userId, data.orderId);
-    if (!order) throw new Error("Order not found");
-    const sql = await getSql();
-    const rst = await sql<{ data_label: string }>`select data_label from restaurants where id = ${order.restaurant_id}`;
-    if (rst[0]?.data_label !== "SIMULATED") throw new Error("Only sample kitchens can be advanced in development.");
-    const next = SIMULATED_ADVANCE[order.status];
-    if (!next) return { status: order.status };
-    if (!canTransition(order.status, next)) throw new Error("Illegal transition");
-    await sql`update orders set status = ${next}, updated_at = now() where id = ${order.id} and user_id = ${context.userId}`;
-    await writeEvent(order.id, order.status, next, context.userId, "system", "Sample kitchen status advanced");
-    if (next === "DELIVERED") {
-      await sql`update payments set status = ${"collected"} where order_id = ${order.id} and provider = ${"COD"}`;
-      await sql`update orders set payment_status = ${"collected"} where id = ${order.id} and payment_method = ${"COD"}`;
-    }
-    return { status: next };
-  });
 
 export const reorderItems = createServerFn({ method: "POST" })
   .middleware([authMiddleware])

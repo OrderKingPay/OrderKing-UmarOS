@@ -5,7 +5,7 @@ import {
   canTransition,
   customerMayCancel,
   isTerminal,
-  SIMULATED_ADVANCE,
+
   trackIndex,
   CUSTOMER_TRACK_STEPS,
 } from "./state.ts";
@@ -37,9 +37,9 @@ describe("order state machine", () => {
     assert.equal(customerMayCancel("PREPARING"), false);
   });
 
-  it("simulated advance follows the kitchen path", () => {
-    assert.equal(SIMULATED_ADVANCE.PLACED, "ACCEPTED");
-    assert.equal(SIMULATED_ADVANCE.ON_THE_WAY, "DELIVERED");
+  it("kitchen path transitions correctly", () => {
+    assert.equal(canTransition("PLACED", "ACCEPTED"), true);
+    assert.equal(canTransition("ON_THE_WAY", "DELIVERED"), true);
   });
 
   it("marks terminal statuses", () => {
@@ -95,6 +95,6 @@ describe("order state machine", () => {
     }
 
     assert.equal(customerMayCancel("AUTO_ACCEPTED"), true);
-    assert.equal(SIMULATED_ADVANCE.AUTO_ACCEPTED, "PREPARING");
+
   });
 });

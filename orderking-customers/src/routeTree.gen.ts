@@ -21,7 +21,6 @@ import { Route as KingPayRouteImport } from './routes/king-pay'
 import { Route as KingpayBbpsRouteImport } from './routes/kingpay-bbps'
 import { Route as KingpayWalletRouteImport } from './routes/kingpay-wallet'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as NewsRouteImport } from './routes/news'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as ParcelRouteImport } from './routes/parcel'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -39,9 +38,7 @@ import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as ApiSitemapRouteImport } from './routes/api/sitemap'
 import { Route as ApiVcardRouteImport } from './routes/api/vcard'
 import { Route as ApiWhatsappRouteImport } from './routes/api/whatsapp'
-import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
 import { Route as DeliveryIndexRouteImport } from './routes/delivery/index'
-import { Route as DevBrandRouteImport } from './routes/dev/brand'
 import { Route as KingPayAssistRouteImport } from './routes/king-pay/assist'
 import { Route as KingpayIndexRouteImport } from './routes/kingpay/index'
 import { Route as KingpayPassbookRouteImport } from './routes/kingpay/passbook'
@@ -138,11 +135,6 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OffersRoute = OffersRouteImport.update({
   id: '/offers',
   path: '/offers',
@@ -228,19 +220,9 @@ const ApiWhatsappRoute = ApiWhatsappRouteImport.update({
   path: '/api/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppFounderCommandRoute = AppFounderCommandRouteImport.update({
-  id: '/app/founder-command',
-  path: '/app/founder-command',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DeliveryIndexRoute = DeliveryIndexRouteImport.update({
   id: '/delivery/',
   path: '/delivery/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevBrandRoute = DevBrandRouteImport.update({
-  id: '/dev/brand',
-  path: '/dev/brand',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KingPayAssistRoute = KingPayAssistRouteImport.update({
@@ -436,7 +418,6 @@ export interface FileRoutesByFullPath {
   '/kingpay-bbps': typeof KingpayBbpsRoute
   '/kingpay-wallet': typeof KingpayWalletRoute
   '/login': typeof LoginRoute
-  '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
   '/parcel': typeof ParcelRoute
   '/profile': typeof ProfileRoute
@@ -453,8 +434,6 @@ export interface FileRoutesByFullPath {
   '/api/sitemap': typeof ApiSitemapRoute
   '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
-  '/app/founder-command': typeof AppFounderCommandRoute
-  '/dev/brand': typeof DevBrandRoute
   '/king-pay/assist': typeof KingPayAssistRoute
   '/kingpay/passbook': typeof KingpayPassbookRoute
   '/kingpay/remittance': typeof KingpayRemittanceRoute
@@ -506,7 +485,6 @@ export interface FileRoutesByTo {
   '/kingpay-bbps': typeof KingpayBbpsRoute
   '/kingpay-wallet': typeof KingpayWalletRoute
   '/login': typeof LoginRoute
-  '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
   '/parcel': typeof ParcelRoute
   '/profile': typeof ProfileRoute
@@ -523,8 +501,6 @@ export interface FileRoutesByTo {
   '/api/sitemap': typeof ApiSitemapRoute
   '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
-  '/app/founder-command': typeof AppFounderCommandRoute
-  '/dev/brand': typeof DevBrandRoute
   '/king-pay/assist': typeof KingPayAssistRoute
   '/kingpay/passbook': typeof KingpayPassbookRoute
   '/kingpay/remittance': typeof KingpayRemittanceRoute
@@ -577,7 +553,6 @@ export interface FileRoutesById {
   '/kingpay-bbps': typeof KingpayBbpsRoute
   '/kingpay-wallet': typeof KingpayWalletRoute
   '/login': typeof LoginRoute
-  '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
   '/parcel': typeof ParcelRoute
   '/profile': typeof ProfileRoute
@@ -594,8 +569,6 @@ export interface FileRoutesById {
   '/api/sitemap': typeof ApiSitemapRoute
   '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
-  '/app/founder-command': typeof AppFounderCommandRoute
-  '/dev/brand': typeof DevBrandRoute
   '/king-pay/assist': typeof KingPayAssistRoute
   '/kingpay/passbook': typeof KingpayPassbookRoute
   '/kingpay/remittance': typeof KingpayRemittanceRoute
@@ -649,7 +622,6 @@ export interface FileRouteTypes {
     | '/kingpay-bbps'
     | '/kingpay-wallet'
     | '/login'
-    | '/news'
     | '/offers'
     | '/parcel'
     | '/profile'
@@ -666,8 +638,6 @@ export interface FileRouteTypes {
     | '/api/sitemap'
     | '/api/vcard'
     | '/api/whatsapp'
-    | '/app/founder-command'
-    | '/dev/brand'
     | '/king-pay/assist'
     | '/kingpay/passbook'
     | '/kingpay/remittance'
@@ -719,7 +689,6 @@ export interface FileRouteTypes {
     | '/kingpay-bbps'
     | '/kingpay-wallet'
     | '/login'
-    | '/news'
     | '/offers'
     | '/parcel'
     | '/profile'
@@ -736,8 +705,6 @@ export interface FileRouteTypes {
     | '/api/sitemap'
     | '/api/vcard'
     | '/api/whatsapp'
-    | '/app/founder-command'
-    | '/dev/brand'
     | '/king-pay/assist'
     | '/kingpay/passbook'
     | '/kingpay/remittance'
@@ -789,7 +756,6 @@ export interface FileRouteTypes {
     | '/kingpay-bbps'
     | '/kingpay-wallet'
     | '/login'
-    | '/news'
     | '/offers'
     | '/parcel'
     | '/profile'
@@ -806,8 +772,6 @@ export interface FileRouteTypes {
     | '/api/sitemap'
     | '/api/vcard'
     | '/api/whatsapp'
-    | '/app/founder-command'
-    | '/dev/brand'
     | '/king-pay/assist'
     | '/kingpay/passbook'
     | '/kingpay/remittance'
@@ -860,7 +824,6 @@ export interface RootRouteChildren {
   KingpayBbpsRoute: typeof KingpayBbpsRoute
   KingpayWalletRoute: typeof KingpayWalletRoute
   LoginRoute: typeof LoginRoute
-  NewsRoute: typeof NewsRoute
   OffersRoute: typeof OffersRoute
   ParcelRoute: typeof ParcelRoute
   ProfileRoute: typeof ProfileRoute
@@ -877,8 +840,6 @@ export interface RootRouteChildren {
   ApiSitemapRoute: typeof ApiSitemapRoute
   ApiVcardRoute: typeof ApiVcardRoute
   ApiWhatsappRoute: typeof ApiWhatsappRoute
-  AppFounderCommandRoute: typeof AppFounderCommandRoute
-  DevBrandRoute: typeof DevBrandRoute
   KingpayPassbookRoute: typeof KingpayPassbookRoute
   KingpayRemittanceRoute: typeof KingpayRemittanceRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
@@ -1002,13 +963,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/offers': {
       id: '/offers'
       path: '/offers'
@@ -1128,25 +1082,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/founder-command': {
-      id: '/app/founder-command'
-      path: '/app/founder-command'
-      fullPath: '/app/founder-command'
-      preLoaderRoute: typeof AppFounderCommandRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/delivery/': {
       id: '/delivery/'
       path: '/delivery'
       fullPath: '/delivery/'
       preLoaderRoute: typeof DeliveryIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/brand': {
-      id: '/dev/brand'
-      path: '/dev/brand'
-      fullPath: '/dev/brand'
-      preLoaderRoute: typeof DevBrandRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/king-pay/assist': {
@@ -1434,7 +1374,6 @@ const rootRouteChildren: RootRouteChildren = {
   KingpayBbpsRoute: KingpayBbpsRoute,
   KingpayWalletRoute: KingpayWalletRoute,
   LoginRoute: LoginRoute,
-  NewsRoute: NewsRoute,
   OffersRoute: OffersRoute,
   ParcelRoute: ParcelRoute,
   ProfileRoute: ProfileRoute,
@@ -1451,8 +1390,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSitemapRoute: ApiSitemapRoute,
   ApiVcardRoute: ApiVcardRoute,
   ApiWhatsappRoute: ApiWhatsappRoute,
-  AppFounderCommandRoute: AppFounderCommandRoute,
-  DevBrandRoute: DevBrandRoute,
   KingpayPassbookRoute: KingpayPassbookRoute,
   KingpayRemittanceRoute: KingpayRemittanceRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,

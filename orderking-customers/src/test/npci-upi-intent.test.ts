@@ -383,7 +383,7 @@ describe("NPCI UPI Intent & Dynamic BharatQR Engine", () => {
         coordinates: { lat: 28.6315, lng: 77.2167 },
       });
 
-      expect(msg).toContain("ORDERKING AUTONOMOUS DISPATCH AUTO-BRIDGE");
+      expect(msg).toContain("ORDERKING DISPATCH NOTIFICATION");
       expect(msg).toContain("KITCHEN LIVE ORDER");
       expect(msg).toContain("Order ID:* #OK-KITCHEN-8841");
       expect(msg).toContain("Store / Kitchen:* Royal Awadh Cloud Kitchen");

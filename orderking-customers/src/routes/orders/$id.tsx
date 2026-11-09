@@ -422,7 +422,7 @@ function OrderDetailPage() {
                   If everything was wonderful, a quick 5★ rating means the world to our local chefs, delivery riders, and small team. No pressure at all—honest feedback helps us serve you better every time!
                 </p>
               </div>
-              <span className="text-3xl animate-bounce">🌟</span>
+              
             </div>
 
             {reviewQuery.data?.review ? (
@@ -453,7 +453,7 @@ function OrderDetailPage() {
                   {/* Category 1: Food Quality & Taste */}
                   <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-surface">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">🍽️</span>
+                      
                       <div>
                         <span className="text-xs font-bold text-foreground block">Food Quality &amp; Taste</span>
                         <span className="text-[10px] text-muted">Freshness, spices &amp; flavor</span>
@@ -478,7 +478,7 @@ function OrderDetailPage() {
                   {/* Category 2: Restaurant & Packaging */}
                   <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-surface">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">🏪</span>
+                      
                       <div>
                         <span className="text-xs font-bold text-foreground block">Restaurant &amp; Packaging</span>
                         <span className="text-[10px] text-muted">Seal, hygiene &amp; portion</span>
@@ -528,7 +528,7 @@ function OrderDetailPage() {
                   {/* Category 4: Order King App Experience */}
                   <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-surface">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">📱</span>
+                      
                       <div>
                         <span className="text-xs font-bold text-foreground block">Order King App</span>
                         <span className="text-[10px] text-muted">Ease &amp; speed</span>
@@ -558,12 +558,12 @@ function OrderDetailPage() {
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {[
-                      "Fresh & piping hot ♨️",
-                      "Fast delivery ⚡",
+                      "Fresh & piping hot ",
+                      "Fast delivery ",
                       "Polite rider ",
-                      "Leak-proof packaging 📦",
-                      "Delicious taste 🍗",
-                      "Great value 💰",
+                      "Leak-proof packaging ",
+                      "Delicious taste ",
+                      "Great value ",
                     ].map((tag) => {
                       const isSelected = selectedTags.includes(tag);
                       return (
@@ -608,7 +608,7 @@ function OrderDetailPage() {
                   }}
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-fg font-bold py-2 rounded-xl shadow-md transition"
                 >
-                  {submitReview.isPending ? "Submitting..." : "Submit Verified Review (Supports Local Kitchens & Riders) 🌟"}
+                  {submitReview.isPending ? "Submitting..." : "Submit Verified Review (Supports Local Kitchens & Riders) "}
                 </Button>
               </div>
             )}
@@ -623,7 +623,7 @@ function OrderDetailPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <span className="flex size-10 items-center justify-center rounded-xl bg-rose-500/20 text-xl">
-                  🚨
+                  
                 </span>
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -667,7 +667,7 @@ function OrderDetailPage() {
                     href={`/support?ticket=${encodeURIComponent(String(submittedComplaint.ticketId || ""))}&orderId=${encodeURIComponent(String(id ?? ""))}`}
                     className="text-primary font-bold text-[11px] hover:underline"
                   >
-                    💬 Chat with Support →
+                    Chat with Support →
                   </a>
                 </div>
               </div>
@@ -683,12 +683,12 @@ function OrderDetailPage() {
                   </label>
                   <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
                     {[
-                      { id: "MISSING_ITEMS", label: "🍱 Missing / Wrong Dish" },
-                      { id: "SPILLED_FOOD", label: "🍲 Spilled / Damaged Box" },
-                      { id: "COLD_FOOD", label: "❄️ Cold / Quality Issue" },
+                      { id: "MISSING_ITEMS", label: "Missing / Wrong Dish" },
+                      { id: "SPILLED_FOOD", label: "Spilled / Damaged Box" },
+                      { id: "COLD_FOOD", label: "Cold / Quality Issue" },
                       { id: "DELAYED_DELIVERY", label: "⏱️ Excessive Delay" },
                       { id: "RIDER_CONDUCT", label: " Rider Misbehavior" },
-                      { id: "BILLING_ISSUE", label: "💳 Billing Discrepancy" },
+                      { id: "BILLING_ISSUE", label: "Billing Discrepancy" },
                     ].map((cat) => (
                       <button
                         key={cat.id}
@@ -758,7 +758,7 @@ function OrderDetailPage() {
                   </label>
                   <div className="grid grid-cols-3 gap-1.5">
                     {[
-                      { id: "REFUND", label: "⚡ Instant Wallet Refund", desc: "Credited to KingPay Wallet" },
+                      { id: "REFUND", label: "Instant Wallet Refund", desc: "Credited to KingPay Wallet" },
                       { id: "REDELIVERY", label: " Priority Redelivery", desc: "Fresh hot dish priority dispatch" },
                       { id: "OPERATIONS", label: "Operations Escalation", desc: "Senior Support Review" },
                     ].map((res) => (
@@ -802,7 +802,7 @@ function OrderDetailPage() {
         <div className="mt-4 rounded-[var(--radius-xl)] border border-primary/20 bg-primary/5 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="text-xl">👥</span>
+              
               <div>
                 <h3 className="font-semibold text-sm text-foreground">Split Bill with Friends via UPI</h3>
                 <p className="text-xs text-muted">Generate instant UPI payment links for your friends in 1-tap</p>
@@ -843,7 +843,7 @@ function OrderDetailPage() {
               }
             }}
           >
-            📲 Share UPI Split Link (WhatsApp / SMS)
+            Share UPI Split Link (WhatsApp / SMS)
           </Button>
         </div>
 
@@ -852,8 +852,7 @@ function OrderDetailPage() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 text-sm">
-                📲
-              </span>
+                </span>
               <div>
                 <h3 className="font-semibold text-sm text-emerald-950 dark:text-emerald-100">
                   WhatsApp Kitchen &amp; Dispatch GPS Auto-Bridge
@@ -896,7 +895,7 @@ function OrderDetailPage() {
               }
             }}
           >
-            🚀 Launch WhatsApp Kitchen GPS Auto-Bridge
+            Launch WhatsApp Kitchen GPS Auto-Bridge
           </Button>
         </div>
 
@@ -910,8 +909,7 @@ function OrderDetailPage() {
         <div className="mt-6 rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-2 mb-3 pb-3 border-b border-amber-900/10">
             <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs shadow-xs">
-              🧾
-            </span>
+              </span>
             <h2 className="font-display font-extrabold text-stone-900 text-base">{t("orders.invoice")}</h2>
           </div>
           <ul className="mb-3 space-y-1.5 text-sm">
@@ -955,7 +953,7 @@ function OrderDetailPage() {
               }
             }}
           >
-            <span>🔁</span>
+            
             <span>Reorder</span>
           </Button>
           <Button
@@ -963,7 +961,7 @@ function OrderDetailPage() {
             className="rounded-2xl border border-amber-200 bg-white hover:bg-amber-50 text-amber-950 font-bold px-4 py-2.5"
             asChild
           >
-            <Link to="/support">💬 {t("orders.help")}</Link>
+            <Link to="/support">{t("orders.help")}</Link>
           </Button>
         </div>
 
