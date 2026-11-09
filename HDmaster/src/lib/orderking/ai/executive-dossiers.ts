@@ -344,7 +344,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
       instagram_positions: ["stream", "story", "reels"],
     },
     ad_creative: {
-      title: "OrderKing — Karimganj's Food Advanced-App 👑",
+      title: "OrderKing — Karimganj's Food Advanced-App ",
       body: "🔥 Authentic Food at Direct Kitchen Rates! Enjoy delicious Mutton Biryani, Fish Thali & Momos at exact restaurant prices + Win Real 24K Digital Gold on every order! Tap to Order Now.",
       call_to_action_type: "ORDER_NOW",
       link: "https://orderking.in",
@@ -453,9 +453,9 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     },
   ],
   whatsAppStatusViralCopy: {
-    headline: "👑 Just won 10mg Real 24K Gold on OrderKing! 🪙",
+    headline: "Just won 10mg Real 24K Gold on OrderKing! 🪙",
     body: "I just ordered hot Dum Biryani from Karimganj Kitchen at exact restaurant price (no Dominant Legacy Aggregator markups) and scratched my King Reward to win 24K Gold! Order yours now: https://orderking.in",
-    statusText: "Ordered on OrderKing 👑 Got exact restaurant price + won 24K Gold! Check it out: https://orderking.in",
+    statusText: "Ordered on OrderKing Got exact restaurant price + won 24K Gold! Check it out: https://orderking.in",
   },
 };
 

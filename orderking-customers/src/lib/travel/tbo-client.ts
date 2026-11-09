@@ -1,5 +1,5 @@
 /**
- * 👑 OrderKing & KingPay — TBO (Travel Boutique Online / TBO Tek Ltd) Enterprise Client
+ * OrderKing & KingPay — TBO (Travel Boutique Online / TBO Tek Ltd) Enterprise Client
  *
  * Official Aggregator Agency Application: #187051
  * Trade Name: Orderkingpay

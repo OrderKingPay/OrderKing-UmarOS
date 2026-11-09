@@ -1,5 +1,5 @@
 /**
- * 👑 ORDERKING / KINGPAY AUTOMATED DISPUTE DEDUCTION QUEUE & ESCROW ENGINE
+ * ORDERKING / KINGPAY AUTOMATED DISPUTE DEDUCTION QUEUE & ESCROW ENGINE
  *
  * Implements automated dispute deduction queue and escrow protection:
  * 1. If an order is flagged with an active chargeback, customer complaint, or fraud review,

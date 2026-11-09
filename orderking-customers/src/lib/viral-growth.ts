@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { walletEngine } from "./kingpay/wallet.ts";
 
 /**
- * 👑 ORDERKING ELITE VIRAL GROWTH ENGINE
+ * ORDERKING VIRAL GROWTH ENGINE
  * 
  * ZERO-COST AUTONOMOUS SPREAD ARCHITECTURE
  * - Cryptographically secure unique referral codes (Collision-resistant)

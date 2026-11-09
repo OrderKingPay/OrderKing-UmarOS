@@ -1,5 +1,5 @@
 /**
- * 👑 Sovereign Dual-Engine Travel Architecture
+ * Sovereign Dual-Engine Travel Architecture
  *
  * Implements the Founder-mandated dual-engine distribution system:
  *
@@ -219,7 +219,7 @@ export function getActiveTravelpayoutsMarker(customMarker?: string): string {
 }
 
 /**
- * 👑 Sovereign White Label search link on custom domain www.orderkingpay.com
+ * Sovereign White Label search link on custom domain www.orderkingpay.com
  * Bound to Travelpayouts WL ID 23797 and Marker 794122.
  */
 export function generateWhiteLabelSearchLink(params?: {

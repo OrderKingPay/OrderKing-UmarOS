@@ -494,11 +494,11 @@ export function PassengerDrawer({
                   <div className="flex items-center gap-1.5">
                     <Coins className="size-4 text-amber-600" />
                     <span className="text-xs font-black text-slate-900">
-                      24K Digital Gold ({fareCalc.rebateGoldMilligrams} mg)
+                      Gold Reward ({fareCalc.rebateGoldMilligrams} mg)
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                    Pure 99.9% 24K gold stored securely in your KingPay Wealth Vault with live price appreciation.
+                    Gold savings credited to your KingPay rewards.
                   </p>
                 </div>
               </label>

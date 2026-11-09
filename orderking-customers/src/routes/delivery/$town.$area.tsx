@@ -582,7 +582,7 @@ function DeliveryTownAreaPage() {
             Looking for authentic food delivery in {area.name}, {town.name}? OrderKing connects you directly with top local restaurants and cloud kitchens across {town.name}. Enjoy hot Biryani, fast food, traditional North-Eastern dishes, and sweets delivered to your doorstep in 25-30 minutes. Unlike legacy delivery aggregators charging inflated prices, OrderKing operates on strict 0% menu markups — guaranteeing you pay the exact dine-in price.
           </p>
           <p>
-            Payment options in {area.name} include Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), Net Banking, and King Pay with instant 24K Digital Gold rewards on qualifying orders.
+            Payment options in {area.name} include Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), Net Banking, and King Pay with instant rewards on qualifying orders.
           </p>
         </article>
       </main>

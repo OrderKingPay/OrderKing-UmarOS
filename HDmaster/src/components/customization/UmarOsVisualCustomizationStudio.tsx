@@ -1680,10 +1680,10 @@ export function UmarOsVisualCustomizationStudio({
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-bold text-slate-900">
-                  Server-Driven UI (SDUI) Layout Studio &amp; Multi-Device Simulator
+                  Server-Driven UI (SDUI) Layout Studio &amp; Multi-Device Preview
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Reorder app sections live, toggle dynamic component visibility, and simulate responsive viewports for Mobile, Tablet, and Desktop.
+                  Reorder app sections live, toggle dynamic component visibility, and preview responsive viewports for Mobile, Tablet, and Desktop.
                 </p>
               </div>
 
@@ -2711,7 +2711,7 @@ export function UmarOsVisualCustomizationStudio({
                 {/* Real-Time Condition Simulator Pills */}
                 <div className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 space-y-2">
                   <span className="text-[11px] font-bold text-slate-900 block">
-                    Telemetry Simulator Environment (Live Dials Testing)
+                    Telemetry Environment (Live Dials Testing)
                   </span>
                   <div className="flex flex-wrap items-center gap-2">
                     {(["clear", "drizzle", "heavy_rain", "waterlogged"] as const).map((cond) => (

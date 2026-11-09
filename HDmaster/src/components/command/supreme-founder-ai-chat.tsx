@@ -3573,7 +3573,7 @@ export function PremiumFounderAiChat({
           const liveCustom = await systemMasterController.executeFounderLiveCustomization(text);
           if (liveCustom.matched) {
             liveCustomizationNote = `\n\n---\n✅ **UMAR AI Live Platform Customization Executed**:\n${liveCustom.summary}`;
-            toast.success(`👑 UMAR AI Applied Setting: ${liveCustom.summary}`);
+            toast.success(`UMAR AI Applied Setting: ${liveCustom.summary}`);
           }
         } catch (customErr) {
           console.warn("[ai-chat] Live customization check warning:", customErr);

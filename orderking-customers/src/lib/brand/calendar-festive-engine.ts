@@ -121,7 +121,7 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       id: "sunday_family_feast",
       festivalName: "Sunday Grand Family Feast",
       greeting: "Happy Sunday! Family Feast Day is Here 🍲",
-      badge: "👑 Sunday Special",
+      badge: "Sunday Special",
       icon: "🍗",
       theme: "amber",
       orderKingHeadline: "Order King",
@@ -179,10 +179,10 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
   // Standard Evergreen Luxury Default
   return {
     id: "evergreen_luxury",
-    festivalName: "Sovereign Daily Savings",
-    greeting: "Welcome! India's Most Rewarding Platform 👑",
+    festivalName: "Daily Savings",
+    greeting: "Welcome to OrderKing & KingPay",
     badge: "✨ Daily Savings",
-    icon: "👑",
+    icon: "✨",
     theme: "gold",
     orderKingHeadline: "Order King",
     orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",

@@ -2,7 +2,7 @@ import { getSql, type Sql } from '../../../lib/db';
 import { ethers } from 'ethers';
 
 /**
- * 👑 ORDERKING GLOBAL CRYPTO TREASURY
+ * ORDERKING GLOBAL CRYPTO TREASURY
  * 
  * Strategic Advantage: 
  * Allows international users to order food in India using USDC/USDT.

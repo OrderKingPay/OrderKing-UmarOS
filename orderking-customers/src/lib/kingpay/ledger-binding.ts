@@ -1,5 +1,5 @@
 /**
- * 👑 ORDERKING FINTECH ARCHITECTURE - COUNCIL DOMAIN 3
+ * ORDERKING FINTECH ARCHITECTURE
  * Authentic Supabase & Double-Entry Ledger Binding for KingPay
  *
  * MANDATE:

@@ -305,7 +305,7 @@ export function ReceiveMoneyQrStudio({
 
               {/* Center Logo Overlay inside QR */}
               <div className="absolute size-10 rounded-full bg-white p-1 shadow-md border-2 border-amber-400 flex items-center justify-center pointer-events-none">
-                <span className="text-lg">👑</span>
+                <span className="text-xs font-black text-zinc-900">UPI</span>
               </div>
             </div>
 

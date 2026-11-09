@@ -1,5 +1,5 @@
 /**
- * 👑 ORDERKING / KINGPAY ENTERPRISE BANKING PAYOUT SCHEDULER
+ * ORDERKING / KINGPAY ENTERPRISE BANKING PAYOUT SCHEDULER
  * 
  * Autonomous Settlement Batch Generation & RazorpayX Nodal Payout Dispatcher.
  * 

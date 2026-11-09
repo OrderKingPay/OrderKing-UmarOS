@@ -41,7 +41,7 @@ export function generateScratchCard(
     return {
       id,
       type: "BUMPER_GOLD",
-      title: "👑 1 Gram 24K Pure Gold Coin!",
+      title: "1 Gram 24K Pure Gold Coin",
       description: "Congratulations! You won a physical 1g 99.9% 24K Gold Coin from OrderKing.",
       amountPaise: 750000, // ~₹7,500
       goldGrams: 1.0,

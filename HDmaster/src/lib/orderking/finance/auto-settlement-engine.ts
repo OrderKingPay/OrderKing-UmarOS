@@ -11,7 +11,7 @@ import { canonicalLedger } from "./canonical-ledger";
 import { validateIndianBankIFSC } from "../compliance/india-marketplace-engine";
 
 /**
- * 👑 ORDERKING AUTONOMOUS TIER-1 LEGACY COMPATIBLE SETTLEMENT ENGINE
+ * ORDERKING AUTONOMOUS TIER-1 LEGACY COMPATIBLE SETTLEMENT ENGINE
  * 
  * 100% Autonomous, Zero-Human-Touch Dual Financial Reconciliation System.
  * - Standard Cycle: Auto-aggregates all previous week's orders (Mon-Sun), disbursed Wednesday.

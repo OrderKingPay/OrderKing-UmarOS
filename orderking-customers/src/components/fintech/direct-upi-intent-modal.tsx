@@ -161,10 +161,10 @@ export function DirectUpiIntentModal({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs text-xs">
-                👑
+                UPI
               </span>
               <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2.5 py-0.5 rounded-full">
-                standard fee Direct NPCI UPI Link &amp; Live QR
+                Direct NPCI UPI Link &amp; Live QR
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
@@ -339,7 +339,7 @@ export function DirectUpiIntentModal({
               />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <span className="size-9 rounded-full bg-white shadow-md border-2 border-amber-400 flex items-center justify-center text-sm font-bold">
-                  👑
+                  UPI
                 </span>
               </div>
             </div>

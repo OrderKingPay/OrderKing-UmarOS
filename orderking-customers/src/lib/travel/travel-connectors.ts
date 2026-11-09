@@ -1,5 +1,5 @@
 /**
- * 👑 OrderKing B2B Travel Partner Connectors
+ * OrderKing B2B Travel Partner Connectors
  * Real-world aggregation engines for Flights (Kiwi Tequila / Travelpayouts),
  * Trains (IRCTC / ConfirmTkt / CRIS), Buses (RedBus B2B), and Hotels (Agoda / Booking.com).
  * Live supplier inventory only; unavailable suppliers return empty results.

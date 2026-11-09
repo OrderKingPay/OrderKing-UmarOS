@@ -2519,7 +2519,7 @@ export async function executeTool(
           targetRadiusKm: 5.0,
           estimatedDailyReach: "3,200 active local mobile users",
           placements: ["instagram_reels", "instagram_feed", "facebook_feed", "facebook_stories"],
-          adCreativeHeadline: "Karimganj's Own Food App: Direct Kitchen Prices + 24K Gold 👑",
+          adCreativeHeadline: "Karimganj's Own Food App: Direct Kitchen Prices + 24K Gold ",
         },
         googleAdsPMaxPayload: {
           advertisingChannelType: "PERFORMANCE_MAX",

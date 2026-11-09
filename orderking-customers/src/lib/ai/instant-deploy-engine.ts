@@ -59,7 +59,7 @@ export class InstantDeployEngine {
 <body class="min-h-screen flex flex-col justify-between p-6">
   <header class="max-w-4xl mx-auto w-full flex justify-between items-center py-4 border-b border-white/10">
     <div class="flex items-center gap-2">
-      <span class="text-2xl">👑</span>
+      <span class="text-sm font-black text-amber-400">OK</span>
       <span class="font-bold text-lg text-amber-400">Order King Engine</span>
     </div>
     <span class="px-3 py-1 rounded-full bg-[#D4AF37]/10 text-emerald-400 text-xs font-mono font-semibold">Interactive Sandbox Ready</span>

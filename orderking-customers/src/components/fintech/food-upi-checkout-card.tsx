@@ -77,11 +77,11 @@ export function FoodUpiCheckoutCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs text-sm">
-              👑
+              UPI
             </span>
             <div>
               <h3 className="font-display font-black text-base sm:text-lg tracking-tight">
-                standard fee Direct NPCI UPI Intent
+                Direct NPCI UPI Intent
               </h3>
               <p className="text-[11px] text-muted-foreground flex items-center gap-1 font-medium">
                 <ShieldCheck className="size-3 text-emerald-500" />

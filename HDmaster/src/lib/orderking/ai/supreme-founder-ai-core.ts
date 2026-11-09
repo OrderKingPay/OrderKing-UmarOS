@@ -623,7 +623,7 @@ The video is ready for playback below with full audio-visual motion capabilities
 - **Client ROI Impact**: ${lead.potentialGmvGrowth}
 
 ---
-#### 👑 Automated Client Pitch & Zero-Aggregator Guarantee:
+#### Automated Client Pitch & Zero-Aggregator Guarantee:
 > *"Respected Management at ${lead.businessName}, you are currently losing over ₹5,00,000 every single month to 28% aggregator commissions. With our OrderKing Turnkey White-Label Deployment, you retain 100% of your earnings, get instant direct UPI bank settlements, and eliminate middlemen entirely. We can have your custom branded app live in 48 hours."*
 
 Ready to lock this contract and receive the advance payment immediately into your founder account.`;

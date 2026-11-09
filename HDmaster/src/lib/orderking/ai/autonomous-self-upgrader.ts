@@ -1,5 +1,5 @@
 /**
- * 👑 HD MASTER AUTONOMOUS SELF-CODING & SELF-UPGRADING ENGINE
+ * HD MASTER AUTONOMOUS SELF-CODING & SELF-UPGRADING ENGINE
  * 
  * Final Premium Work Order Specification:
  * - Continuous automatic self-coding, self-data collection and self-upgrading.

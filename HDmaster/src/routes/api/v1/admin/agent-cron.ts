@@ -4,7 +4,7 @@ import { getSessionUser } from "@/lib/auth/verify.server";
 import { getSql } from "@/lib/db";
 
 /**
- * 👑 AI Workforce Cron Endpoint
+ * AI Workforce Cron Endpoint
  * Authorizes strictly via process.env.CRON_SECRET Bearer token or verified Founder/Admin session.
  */
 export const APIRoute = createAPIFileRoute('/api/v1/admin/agent-cron')({

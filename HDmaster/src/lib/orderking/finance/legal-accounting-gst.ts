@@ -1,5 +1,5 @@
 /**
- * 👑 HD MASTER AUTOMATED LEGAL ACCOUNTING, PAYOUTS & GST ENGINE
+ * HD MASTER AUTOMATED LEGAL ACCOUNTING, PAYOUTS & GST ENGINE
  * 
  * Final Premium Work Order Specification:
  * - Full automatic legal accounting, payouts, GST and income tracking.

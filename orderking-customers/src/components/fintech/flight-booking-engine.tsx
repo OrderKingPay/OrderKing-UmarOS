@@ -399,7 +399,7 @@ export function FlightBookingEngine({
                       <CheckCircle2 className="size-3.5" /> Official Carrier Fare
                     </span>
                     <span className="flex items-center gap-1 text-amber-600 font-bold">
-                      <Coins className="size-3.5" /> Earn 24K Gold or Food Cashback
+                      <Coins className="size-3.5" /> Earn Cashback & Discounts
                     </span>
                   </div>
                 </div>

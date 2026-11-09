@@ -1,6 +1,6 @@
 
 /**
- * 👑 OrderKing Real-Time Dynamic Menu & Demand Optimization Engine
+ * OrderKing Real-Time Dynamic Menu & Demand Optimization Engine
  * (HD Master + Growth Officers + Strategists Co-Engineered)
  *
  * Strict Work Order Specification:

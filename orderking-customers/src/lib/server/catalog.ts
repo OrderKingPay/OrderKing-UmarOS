@@ -196,7 +196,7 @@ export const listRestaurants = createServerFn({ method: "POST" })
     const term = `%${q}%`;
     
     // Construct dynamic query
-    let query = `${RESTAURANT_SELECT} where r.active = true`;
+    let query = `${RESTAURANT_SELECT} where r.active = true and r.data_label in ('REAL', 'LIVE', 'VERIFIED') and r.name not ilike 'Test%'`;
     const params: any[] = [];
     
     if (data.veg) {
@@ -283,7 +283,7 @@ export const getRestaurant = createServerFn({ method: "GET" })
     const sql = await getSql();
     const lang = data.lang === "bn" ? "bn" : "en";
     const rows = await sql.query<RestaurantRow>(
-      `${RESTAURANT_SELECT} where r.slug = $1 and r.active = true limit 1`,
+      `${RESTAURANT_SELECT} where r.slug = $1 and r.active = true and r.data_label in ('REAL', 'LIVE', 'VERIFIED') and r.name not ilike 'Test%' limit 1`,
       [data.slug],
     );
     const row = rows[0];
@@ -455,7 +455,7 @@ export const searchDishes = createServerFn({ method: "POST" })
              o.lat as outlet_lat, o.lng as outlet_lng,
              z.delivery_base_paise, z.delivery_per_km_paise
       from menu_items m
-      join restaurants r on r.id = m.restaurant_id and r.active = true
+      join restaurants r on r.id = m.restaurant_id and r.active = true and r.data_label in ('REAL', 'LIVE', 'VERIFIED') and r.name not ilike 'Test%'
       join menu_categories mc on mc.id = m.category_id
       join restaurant_outlets o on o.restaurant_id = r.id and o.active = true
       join service_zones z on z.id = o.zone_id

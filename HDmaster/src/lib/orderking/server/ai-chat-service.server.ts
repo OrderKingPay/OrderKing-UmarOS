@@ -692,7 +692,7 @@ export async function executeFounderAiChat(
            });
            
            if (result.status === 'SUCCESS') {
-               const responseText = '### 👑 Universal Tool Executed: ' + result.toolExecuted + '\n\n`json\n' + JSON.stringify(result.data, null, 2) + '\n`';
+               const responseText = '### Universal Tool Executed: ' + result.toolExecuted + '\n\n`json\n' + JSON.stringify(result.data, null, 2) + '\n`';
                onStreamEvent?.({ type: 'delta', data: responseText });
                onStreamEvent?.({ type: 'done', data: { text: responseText } });
                

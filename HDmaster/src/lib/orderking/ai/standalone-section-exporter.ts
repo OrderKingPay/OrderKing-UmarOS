@@ -261,7 +261,7 @@ export class StandaloneSectionExporter {
 <body>
   <header>
     <div class="logo">
-      <span>👑</span>
+      <span></span>
       <span>HDmaster Sovereign Section</span>
     </div>
     <span class="badge">STANDALONE EDITION</span>

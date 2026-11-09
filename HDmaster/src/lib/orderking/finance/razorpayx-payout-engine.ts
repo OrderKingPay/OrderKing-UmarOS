@@ -1,5 +1,5 @@
 /**
- * 👑 ORDERKING & KINGPAY ENTERPRISE BANKING PAYOUTS & RAZORPAYX ENGINE
+ * ORDERKING & KINGPAY ENTERPRISE BANKING PAYOUTS & RAZORPAYX ENGINE
  *
  * Implements real-world, production-grade automated banking payouts, IMPS/NEFT/UPI disbursements,
  * Fund Account Validation (Penny Drop), OTP 2FA verification, and webhook event handling.

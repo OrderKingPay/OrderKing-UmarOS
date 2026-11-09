@@ -1,5 +1,5 @@
 /**
- * 👑 ORDERKING & KINGPAY MERCHANT CONTRACTS & STATUTORY FINANCIAL ENGINE
+ * ORDERKING & KINGPAY MERCHANT CONTRACTS & STATUTORY FINANCIAL ENGINE
  * 
  * Principal Financial Architecture for Indian E-Commerce Commerce:
  * - Negotiated restaurant commission agreements (custom rates from 8% to 35% / 800 to 3500 bps).

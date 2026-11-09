@@ -1,5 +1,5 @@
 /**
- * 👑 OrderKing & KingPay — Cloudflare KV Edge Caching for Domestic Corridors
+ * OrderKing & KingPay — Cloudflare KV Edge Caching for Domestic Corridors
  *
  * Specialist: Supreme Engineer OMEGA (183f728c)
  * Monorepo Directive: KV Edge Caching for Top 50 Domestic Corridors

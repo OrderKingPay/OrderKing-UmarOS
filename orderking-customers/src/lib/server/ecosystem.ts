@@ -89,7 +89,7 @@ export async function customerCreateOrder(params: {
     `;
 
     // 2. Insert order items
-    const itemName = params.itemName || "Royal Mutton Dum Biryani (Full)";
+    const itemName = params.itemName || "Mutton Dum Biryani (Full)";
     await tx`
       INSERT INTO order_items (
         id, order_id, item_id, variant_id, name_snapshot, quantity,

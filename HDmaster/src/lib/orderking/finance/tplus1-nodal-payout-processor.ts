@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * 👑 ORDERKING / KINGPAY PRODUCTION T+1 NODAL PAYOUT ENGINE
+ * ORDERKING / KINGPAY PRODUCTION T+1 NODAL PAYOUT ENGINE
  *
  * Automated T+1 Nodal Payout Engine, Dispute Escrow Hold Queue & Statutory Withholdings
  *

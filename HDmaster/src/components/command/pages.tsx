@@ -1337,7 +1337,7 @@ export function EconomicsPage() {
   const data = q.data && q.data.ok ? q.data.data : null;
   return (
     <div className="space-y-4">
-      <h1 className="font-display text-3xl">Economics & profit simulator</h1>
+      <h1 className="font-display text-3xl">Economics & profit calculator</h1>
       <p className="text-sm text-muted">All outputs are MODEL / ESTIMATE. 10% commission is not assumed profitable.</p>
       <div className="flex flex-wrap items-center gap-3">
         <label className="text-sm">Commission {bps / 100}%</label>
@@ -1454,7 +1454,7 @@ function PromosPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
         <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">
-          Promotions & Unit Economics Simulator
+          Promotions & Unit Economics Calculator
         </h1>
         <p className="text-sm text-muted">
           Mandatory unit margin guardrails active. Calculates Net Contribution Margin per transaction before publishing.
@@ -1462,7 +1462,7 @@ function PromosPage() {
       </div>
 
       {/* P&L UNIT ECONOMICS SIMULATOR & MANDATORY LOSS WARNING */}
-      <Panel title="P&L Unit Economics Simulator & Mandatory Loss Warning">
+      <Panel title="P&L Unit Economics Calculator & Mandatory Loss Warning">
         <div className="space-y-5">
           {/* Quick Presets Toolbar */}
           <div className="flex flex-wrap items-center gap-2 border-b border-border/40 pb-3">
@@ -1498,7 +1498,7 @@ function PromosPage() {
                 setIsPostBookingCashback(false);
               }}
             >
-              Simulate Loss Maker (-₹56 Warning)
+              Calculate Loss Maker (-₹56 Warning)
             </Button>
             <Button
               type="button"

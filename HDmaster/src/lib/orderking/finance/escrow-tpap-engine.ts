@@ -1,5 +1,5 @@
 /**
- * 👑 ORDERKING FINTECH ARCHITECTURE - COUNCIL DOMAINS 3 & 7
+ * ORDERKING FINTECH ARCHITECTURE - COUNCIL DOMAINS 3 & 7
  * Regulated Banking Partner Escrow Bridge (TPAP) & Hyperlocal Jobs Milestone Escrow Engine
  *
  * =========================================================================================
@@ -336,7 +336,7 @@ export class RazorpayXRouteDriver implements BankingEscrowDriver {
 }
 
 /**
- * 👑 PRIMARY ESCROW & TPAP BRIDGE ENGINE
+ * PRIMARY ESCROW & TPAP BRIDGE ENGINE
  * Coordinates banking partner calls with double-entry canonical ledger recording.
  */
 export class EscrowTpapEngine {

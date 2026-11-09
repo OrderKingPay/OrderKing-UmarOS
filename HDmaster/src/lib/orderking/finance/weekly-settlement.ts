@@ -415,7 +415,7 @@ export async function persistWeeklySettlementTransaction(
 }
 
 /**
- * 👑 Merchant Net Payable (NRP) Pure Formula Engine:
+ * Merchant Net Payable (NRP) Pure Formula Engine:
  * NRP = Gross Food Sales + Packaging - Discounts - Commission + Promos - Taxes - Deductions
  * SafeInteger paise arithmetic guaranteed.
  */
@@ -475,7 +475,7 @@ export function calculateMerchantNetPayable(params: {
 }
 
 /**
- * 👑 Rider Net Earnings Pure Formula Engine:
+ * Rider Net Earnings Pure Formula Engine:
  * Rider Net Earnings = Base Floor (₹35 min) + Distance Pay + Surge Incentives + 100% Tips
  * SafeInteger paise arithmetic with 100% tip pass-through and statutory floor enforcement.
  */

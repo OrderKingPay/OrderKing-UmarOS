@@ -85,7 +85,7 @@ export class DynamicGenerationRegistry {
     // Generation 4 / Sovereign: 100% In-Memory Offline Resilient
     this.registerModel({
       modelId: "sovereign-local-core",
-      name: "👑 Sovereign Local Core",
+      name: "Sovereign Local Core",
       generation: "GEN_5_SOVEREIGN_SUPERINTELLIGENCE",
       providerId: "sovereign-local",
       supportsExtendedThinking: true,

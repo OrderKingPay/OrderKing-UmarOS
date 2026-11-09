@@ -63,7 +63,7 @@ async function handleRunSettlement(request: Request) {
 }
 
 /**
- * 👑 AUTOMATED T+1 DAILY SETTLEMENT & DISBURSEMENT CRON ENDPOINT
+ * AUTOMATED T+1 DAILY SETTLEMENT & DISBURSEMENT CRON ENDPOINT
  * Triggered automatically by Umar OS scheduler every morning (0 10 * * *)
  * or 1-tap by authenticated Founder/Admin.
  */

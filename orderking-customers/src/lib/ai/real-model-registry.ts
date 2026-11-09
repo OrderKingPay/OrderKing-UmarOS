@@ -83,7 +83,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
   return [
     {
       id: "sovereign-ultra",
-      displayName: "👑 King AI Sovereign Local Engine",
+      displayName: "King AI Local Engine",
       provider: "Local Sovereign",
       realApiId: "sovereign-local-core",
       connectionStatus: "UNAVAILABLE",

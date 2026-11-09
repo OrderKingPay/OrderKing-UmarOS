@@ -592,7 +592,7 @@ export const CUSTOMER_LAUNCH_PLAN: CustomerLaunchPlan = {
     budgetCapPaise: 400000, // ₹4,000 maximum discount envelope
   },
   whatsAppBroadcastCopy: {
-    customerDirectHinglish: `🍔 *OrderKing ab aapke area mein live hai!* 👑
+    customerDirectHinglish: `🍔 *OrderKing ab aapke area mein live hai!* 
 
 Ab apne pasandida local restaurants se direct order kijiye fast delivery ke saath!
 
@@ -608,7 +608,7 @@ Ab apne pasandida local restaurants se direct order kijiye fast delivery ke saat
 
 Apne friends aur family ke saath zaroor share karein! ❤️
 — Team OrderKing`,
-    customerDirectEnglish: `🍔 *OrderKing is now LIVE in your neighborhood!* 👑
+    customerDirectEnglish: `🍔 *OrderKing is now LIVE in your neighborhood!* 
 
 Order fresh, hot food directly from your favorite local kitchens with rapid delivery!
 

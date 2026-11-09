@@ -617,14 +617,14 @@ export function LaunchPlaybookView() {
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                       <Bike className="w-4 h-4 text-amber-600" />
-                      8-Hour Rider Shift Floor Guarantee Simulator
+                      8-Hour Rider Shift Floor Guarantee Calculator
                     </h4>
                     <p className="text-xs text-slate-500">
                       Calculates order earnings vs ₹500 floor guarantee & Day 4+ kit recovery
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500 font-mono">Simulate Day:</span>
+                    <span className="text-xs text-slate-500 font-mono">Shift Day:</span>
                     <select
                       value={simDayNumber}
                       onChange={(e) => setSimDayNumber(Number(e.target.value))}

@@ -309,7 +309,7 @@ export class LiveOrchestrationEngine {
     const consensusAgreementScore = parseFloat(avgConfidence.toFixed(1));
 
     // Synthesize concise executive result
-    const unifiedExecutiveSummary = `### 👑 Live Multi-Model Consensus (${validVerdicts.length}/${targetAdapters.length} Providers Aligned)
+    const unifiedExecutiveSummary = `### Live Multi-Model Consensus (${validVerdicts.length}/${targetAdapters.length} Providers Aligned)
 - **Primary Model**: **${strongest.providerName} (${strongest.model})**
 - **Consensus Agreement**: **${consensusAgreementScore}%** (Zero hallucinations detected)
 - **Cost & Quota**: **₹${totalCost.toFixed(3)}** (~${totalTokens} tokens across models)

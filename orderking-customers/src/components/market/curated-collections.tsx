@@ -19,7 +19,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
     tagline: "Most ordered flavors loved across the city",
     placesCount: 24,
     coverImage: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80",
-    badge: "🔥 Hot & Viral",
+    badge: "Popular",
     searchFilter: { category: "Biryani" },
   },
   {
@@ -34,7 +34,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
   {
     id: "pure-veg-gems",
     title: "Pure Veg Wonders",
-    tagline: "100% vegetarian culinary sanctuaries & sweets",
+    tagline: "100% vegetarian restaurants & sweets",
     placesCount: 16,
     coverImage: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=500&q=80",
     badge: "🌱 100% Veg",
@@ -61,7 +61,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
   {
     id: "authentic-biryani",
     title: "Biryani Central",
-    tagline: "Kachchi, Dum & Awadhi fragrant rice masters",
+    tagline: "Kolkata, Dum & Awadhi style biryani",
     placesCount: 20,
     coverImage: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=500&q=80",
     badge: "🍗 Authentic",

@@ -1,5 +1,5 @@
 /**
- * 👑 OrderKing Travel Engine - Core B2B Aggregation & Affiliate Domain Types
+ * OrderKing Travel Engine - Core B2B Aggregation & Affiliate Domain Types
  * Strict SafeInteger Paise, Zero Placeholders, Full Production Types.
  */
 

@@ -1,5 +1,5 @@
 /**
- * 👑 ORDERKING AUTONOMOUS DISPATCH ENGINE
+ * ORDERKING AUTONOMOUS DISPATCH ENGINE
  * WhatsApp Kitchen, Pharmacy, & Dispatch GPS Auto-Bridge (wa.me)
  *
  * Automatically captures customer GPS coordinates via `navigator.geolocation`
@@ -103,7 +103,7 @@ export function formatWhatsAppDispatchMessage(params: WhatsAppDispatchParams): s
     .join("\n");
 
   const lines: string[] = [
-    `👑 *ORDERKING AUTONOMOUS DISPATCH AUTO-BRIDGE*`,
+    `*ORDERKING DISPATCH NOTIFICATION*`,
     `----------------------------------------`,
     `⚡ *${storeLabel}*`,
     `📦 *Order ID:* #${code}`,

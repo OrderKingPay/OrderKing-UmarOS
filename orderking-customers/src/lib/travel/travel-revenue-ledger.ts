@@ -1,5 +1,5 @@
 /**
- * 👑 OrderKing Travel Revenue Ledger
+ * OrderKing Travel Revenue Ledger
  * Immutable Double-Entry Ledger Recording for Dynamic Partner Commissions
  * and Mandatory Platform Convenience Fees in Supabase & Local Database.
  *

@@ -1028,7 +1028,7 @@ export function OrderCard({
                 </div>
               </div>
 
-              {/* Barcode Scanner Viewfinder Simulator */}
+              {/* Barcode Scanner Viewfinder */}
               <div className="rounded-xl border border-line bg-surface-2 p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-foreground">

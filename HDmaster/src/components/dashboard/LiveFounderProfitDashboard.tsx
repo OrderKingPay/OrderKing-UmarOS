@@ -285,7 +285,7 @@ export function LiveFounderProfitDashboard() {
   const [deliveryFeeInr, setDeliveryFeeInr] = useState<number>(40);
   const [riderPayoutInr, setRiderPayoutInr] = useState<number>(30);
   const [pgFeePct, setPgFeePct] = useState<number>(1.95);
-  const [isSimulatorOpen, setIsSimulatorOpen] = useState<boolean>(true);
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState<boolean>(true);
 
   // Load saved custom settings on mount
   useEffect(() => {
@@ -831,14 +831,14 @@ export function LiveFounderProfitDashboard() {
           </div>
 
           <button
-            onClick={() => setIsSimulatorOpen(!isSimulatorOpen)}
+            onClick={() => setIsCalculatorOpen(!isCalculatorOpen)}
             className="text-xs font-semibold text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition-colors"
           >
-            {isSimulatorOpen ? "Hide Calculator" : "Open Calculator"}
+            {isCalculatorOpen ? "Hide Calculator" : "Open Calculator"}
           </button>
         </div>
 
-        {isSimulatorOpen && (
+        {isCalculatorOpen && (
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Slider 1: Restaurant Commission % */}

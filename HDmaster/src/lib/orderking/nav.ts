@@ -178,7 +178,7 @@ export const UMAR_OS_BOTTOM_HUBS: BottomNavHub[] = [
   {
     id: "orderking_core",
     label: "OrderKing Core",
-    emoji: "👑",
+    emoji: "",
     badge: "8 Platforms",
     isPrimary: true,
     tagline:
@@ -1319,7 +1319,7 @@ export const UMAR_OS_10_WORLDS: BottomNavWorld[] = [
     worldNumber: 2,
     label: "2. OrderKing",
     shortTitle: "Orders, Restaurants, Riders & Customers",
-    emoji: "👑",
+    emoji: "",
     badge: "Core Ops",
     defaultTo: "/app/orders",
     settingsTo: "/app/settings",

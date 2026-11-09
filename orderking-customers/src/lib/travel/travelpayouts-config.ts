@@ -1,5 +1,5 @@
 /**
- * 👑 OrderKing & KingPay Travelpayouts Sovereign Configuration
+ * OrderKing & KingPay Travelpayouts Sovereign Configuration
  *
  * Travelpayouts Affiliate Marker: 794122 (affiliate marker for tracking commissions)
  * Travelpayouts Project ID: 589554 (Orderkingpay project)

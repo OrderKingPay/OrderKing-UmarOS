@@ -164,7 +164,6 @@ export function CustomizeDialog({
               <fieldset className="rounded-2xl border border-amber-300/40 bg-bg/50 p-4 shadow-2xs">
                 <div className="flex items-center justify-between pb-2 mb-3 border-b border-border/50">
                   <legend className="text-sm font-black text-fg flex items-center gap-1.5">
-                    <span>👑</span>
                     <span>{t("customize.size")}</span>
                   </legend>
                   <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-800">

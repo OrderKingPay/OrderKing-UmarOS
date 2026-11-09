@@ -1,5 +1,5 @@
 /**
- * 👑 OrderKing Expiring Referral Gift & Viral Share Engine
+ * OrderKing Expiring Referral Gift & Viral Share Engine
  * 
  * Strict 7-Day Expiry Architecture:
  * - Gift bonuses have a strict 7-day (168-hour) validity window.

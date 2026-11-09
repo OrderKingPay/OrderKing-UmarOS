@@ -82,7 +82,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
   return [
     {
       id: "sovereign-ultra",
-      displayName: "👑 Umar Sovereign Local Engine",
+      displayName: "Umar Sovereign Local Engine",
       provider: "Local Sovereign",
       realApiId: "sovereign-local-core",
       connectionStatus: "UNAVAILABLE",

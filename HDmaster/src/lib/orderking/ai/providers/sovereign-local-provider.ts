@@ -12,7 +12,7 @@ import type {
 } from "./provider-interface.ts";
 
 /**
- * 👑 Sovereign Local Core Intelligence Provider
+ * Sovereign Local Core Intelligence Provider
  * 
  * In-memory deterministic heuristics and semantic reasoning engine.
  * - Zero external API dependency (100% sovereign)
@@ -23,7 +23,7 @@ import type {
  */
 export class SovereignLocalProvider implements AIProvider {
   readonly id = "sovereign-local";
-  readonly name = "👑 Sovereign Local Core (In-Memory Engine)";
+  readonly name = "Sovereign Local Core (In-Memory Engine)";
   readonly supportedModels = ["sovereign-local-core", "sovereign-foodtech-v1", "sovereign-nlp-edge"];
 
   get isConfigured(): boolean {
