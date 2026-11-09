@@ -3562,7 +3562,6 @@ export function TravelPage() {
 
                   <div className="flex items-center justify-between text-xs text-slate-700 bg-slate-100/80 px-2.5 py-1.5 rounded-lg border border-slate-200">
                     <span className="font-bold flex items-center gap-1.5">
-                      <span>👑</span>
                       <span>Platform Convenience &amp; Processing</span>
                     </span>
                     <span className="font-mono font-black text-slate-950">

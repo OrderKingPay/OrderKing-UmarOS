@@ -3986,11 +3986,11 @@ function SettingsPage() {
         </div>
       </div>
 
-      {/* 👑 Verified Live Kitchens & Brand Launch Switchboard */}
+      {/* Verified Live Kitchens & Brand Launch Switchboard */}
       <div className="rounded-xl border border-primary/30 bg-primary/10 p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-primary flex items-center gap-2">
-            <span>👑</span> Verified Live Kitchens &amp; Brand Launch Switchboard
+            Verified Live Kitchens &amp; Brand Launch Switchboard
           </h3>
           <span className="text-[11px] rounded bg-primary/20 px-2 py-0.5 text-primary font-mono">
             OrderKing Live Mode

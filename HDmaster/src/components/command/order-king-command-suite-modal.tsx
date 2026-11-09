@@ -69,7 +69,7 @@ export function OrderKingCommandSuiteModal({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-display text-lg font-black tracking-tight text-white">
-                  👑 Order King Command Suite
+                  Order King Command Suite
                 </h2>
                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px] font-mono">
                   EXECUTIVE OS

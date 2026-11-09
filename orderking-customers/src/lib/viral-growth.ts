@@ -645,7 +645,7 @@ export function generateViralShareUrl(payload: ViralSharePayload, platform: Vira
     ? ` Saved ₹${(payload.savingsPaise / 100).toFixed(0)} with Fair Pricing!`
     : "";
 
-  const fullText = `${rewardSnippet}${savingsSnippet}\n\n👑 Order from your favorite ${town} restaurants with 24/7 fast delivery & win guaranteed 24K Gold scratch cards on every order:\n👉 ${link}`;
+  const fullText = `${rewardSnippet}${savingsSnippet}\n\nOrder from your favorite ${town} restaurants with 24/7 fast delivery & win guaranteed 24K Gold scratch cards on every order:\n👉 ${link}`;
 
   switch (platform) {
     case "WHATSAPP_STATUS":
@@ -698,7 +698,7 @@ export function generateMetaAdCampaignSpec(
     dailyBudgetInr,
     adCreatives: [
       {
-        headline: `${townName}'s Own Food App: direct menu pricing + 24K Gold 👑`,
+        headline: `${townName}'s Own Food App: direct menu pricing + 24K Gold`,
         primaryText: `Why pay extra on every food order? Order from ${townName}'s top restaurants with transparent restaurant menu rates and sub-25 min delivery. Win pure 24K Digital Gold on every order above ₹299!`,
         callToAction: "ORDER_NOW",
         targetUrl: `https://orderking.in?utm_source=meta_ads&utm_medium=instagram_feed&utm_campaign=${townName.toLowerCase()}_launch`,
@@ -1281,7 +1281,7 @@ export function generateMetaMarketingApiPayload(
     },
     creative: {
       name: `${townName}_Food_King_Creative_V1`,
-      title: `${townName}'s Own Food App: Fair Pricing + 24K Gold 👑`,
+      title: `${townName}'s Own Food App: Fair Pricing + 24K Gold`,
       body: `Why pay extra on every food order? Order from ${townName}'s top restaurants with real prices and sub-25 min delivery. Win pure 24K Digital Gold on every order above ₹299!`,
       call_to_action: {
         type: "ORDER_NOW",
@@ -1390,7 +1390,7 @@ export function generateLocalInfluencerBarterPitch(
 ): InfluencerBarterPitch {
   return {
     influencerHandle,
-    dmMessage: `Hey ${influencerHandle}! 👋 We love your content representing ${townName}!\n\nWe are OrderKing—${townName}'s very own food delivery app bringing fair pricing with transparent restaurant menu rates, 25-minute delivery, and pure 24K gold scratch cards for foodies.\n\nWe'd love to treat you and your friends to a complimentary banquet feast worth ₹750 from your favorite restaurant in town! All we ask is 2 honest Instagram Stories showing the food and your 24K gold scratch card win.\n\nAre you up for a complimentary tasting experience? Reply YES and we'll credit your OrderKing wallet immediately! 🍗👑`,
+    dmMessage: `Hey ${influencerHandle}! 👋 We love your content representing ${townName}!\n\nWe are OrderKing—${townName}'s very own food delivery app bringing fair pricing with transparent restaurant menu rates, 25-minute delivery, and pure 24K gold scratch cards for foodies.\n\nWe'd love to treat you and your friends to a complimentary banquet feast worth ₹750 from your favorite restaurant in town! All we ask is 2 honest Instagram Stories showing the food and your 24K gold scratch card win.\n\nAre you up for a complimentary tasting experience? Reply YES and we'll credit your OrderKing wallet immediately! 🍗`,
     perksOffered: "₹750 Tasting Experience Wallet Credit + Custom Referral Code earning ₹50 cash per follower order",
   };
 }

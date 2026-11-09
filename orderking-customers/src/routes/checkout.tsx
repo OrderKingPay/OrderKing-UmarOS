@@ -256,7 +256,7 @@ function CheckoutPage() {
         orderNotes = `${orderNotes} ${deliveryVoiceNoteText}`.trim();
       }
       if (noCutlery) {
-        orderNotes = `[🌱 No Cutlery Needed] ${orderNotes}`.trim();
+        orderNotes = `[No Cutlery Needed] ${orderNotes}`.trim();
       }
       if (forSomeoneElse && recipientName.trim()) {
         orderNotes = `[Deliver to: ${recipientName.trim()}${recipientPhone.trim() ? ` (${recipientPhone.trim()})` : ""}] ${orderNotes}`.trim();
@@ -507,15 +507,15 @@ function CheckoutPage() {
                         <span>Live Delivery Route Preview</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
-                        <span>🍳 {restaurantName || "Kitchen"}</span>
-                        <span className="text-amber-400">┈┈┈ 🛵 ┈┈┈</span>
-                        <span>📍 {location.label || "Your Location"}</span>
+                        <span>{restaurantName || "Kitchen"}</span>
+                        <span className="text-amber-400">┈┈┈┈┈┈</span>
+                        <span>{location.label || "Your Location"}</span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <span className="rounded-xl bg-amber-400/20 border border-amber-400/40 px-2.5 py-1 text-xs font-black text-amber-300">
-                        ⚡ ~25-30 Mins
+                        25-30 Mins
                       </span>
                       <span className="text-[11px] font-mono text-zinc-400">
                         [{location.lat.toFixed(2)}, {location.lng.toFixed(2)}]
@@ -557,7 +557,7 @@ function CheckoutPage() {
               {!restaurantOpen ? (
                 <div className="flex items-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 shadow-sm">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 text-xl font-bold">
-                    ⛔
+                    
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-rose-700 dark:text-rose-400">
@@ -1522,13 +1522,13 @@ function CheckoutPage() {
                     {isDispatchingWhatsApp ? (
                       <span className="flex items-center gap-2">
                         <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        <span>Acquiring GPS Satellite Pin...</span>
+                        <span>Getting location...</span>
                       </span>
                     ) : (
                       <>
                         <Share2 className="size-4" />
                         <span>
-                          {whatsappDispatched ? "✓ WhatsApp Dispatch Sent (Resend)" : "Trigger WhatsApp Kitchen GPS Auto-Bridge"}
+                          {whatsappDispatched ? "✓ WhatsApp Sent (Resend)" : "Share Location via WhatsApp"}
                         </span>
                       </>
                     )}

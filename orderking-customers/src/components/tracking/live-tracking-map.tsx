@@ -162,7 +162,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
           <div className="mb-3 size-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl shadow-lg animate-pulse">
             📍
           </div>
-          <h4 className="text-base font-bold text-white">Live GPS Satellite Telemetry Active</h4>
+          <h4 className="text-base font-bold text-white">Live GPS Tracking Active</h4>
           <p className="mt-1 text-xs text-zinc-400 max-w-sm">
             Delivery partner position is streaming live with real-time latitude and longitude updates.
           </p>
@@ -172,7 +172,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
       {/* HUD Overlay */}
       <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none">
         <div className="bg-white/80 backdrop-blur border border-white/10 rounded-lg p-3">
-          <div className="text-xs text-muted/80 font-semibold uppercase tracking-wider mb-1">Live Telemetry</div>
+          <div className="text-xs text-muted/80 font-semibold uppercase tracking-wider mb-1">Live Location</div>
           <div className="flex gap-4">
             <div>
               <div className="text-[10px] text-muted">LATITUDE</div>

@@ -210,8 +210,6 @@ function CrownOpportunitiesPage() {
                 <span>Explore food menus</span>
                 <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              
-              
             </div>
             <p className="mt-4 flex items-start gap-2 text-xs text-stone-500">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" />

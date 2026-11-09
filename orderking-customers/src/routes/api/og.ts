@@ -49,7 +49,7 @@ export const Route = createFileRoute("/api/og")({
   <!-- Brand Header -->
   <g transform="translate(80, 80)">
     <rect width="48" height="48" rx="12" fill="#EA580C" />
-    <text x="24" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="900" fill="#FFFFFF" text-anchor="middle">👑</text>
+    <text x="24" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="900" fill="#FFFFFF" text-anchor="middle">OK</text>
     <text x="64" y="34" font-family="system-ui, -apple-system, sans-serif" font-size="30" font-weight="800" fill="#FFFFFF">OrderKing</text>
     <text x="220" y="34" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#10B981" letter-spacing="1">HYPERLOCAL FOOD</text>
   </g>
@@ -89,7 +89,7 @@ export const Route = createFileRoute("/api/og")({
   <!-- Footer Banner: 24K Gold & direct menu pricing Guarantee -->
   <g transform="translate(80, 500)">
     <rect width="1040" height="60" rx="16" fill="#18181B" stroke="#3F3F46" />
-    <text x="30" y="37" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#FBBF24">👑 AUTHENTIC FOOD · VERIFIED KITCHENS</text>
+    <text x="30" y="37" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#FBBF24">AUTHENTIC FOOD · VERIFIED KITCHENS</text>
     <text x="1010" y="37" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#71717A" text-anchor="end">OrderKing ${safeArea}</text>
   </g>
 </svg>`.trim();

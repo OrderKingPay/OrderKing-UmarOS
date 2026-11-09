@@ -143,7 +143,7 @@ function CartPage() {
             <div className="flex items-center gap-2">
               <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               <span>
-                {currentShift.type === "DAY" ? "☀️ Day Shift" : currentShift.type === "EVENING" ? "🌆 Evening Shift" : "🌙 Late-Night Shift"}: Dynamic Radius &le; {currentShift.maxRadiusKm} km
+                {currentShift.type === "DAY" ? "Day Shift" : currentShift.type === "EVENING" ? "Evening Shift" : "Late-Night Shift"}: Dynamic Radius &le; {currentShift.maxRadiusKm} km
               </span>
             </div>
             <span className="text-[11px] font-medium text-amber-800 dark:text-amber-300">
@@ -155,7 +155,7 @@ function CartPage() {
             /* EMPTY CART STATE */
             <div className="rounded-3xl border border-amber-400/30 bg-gradient-to-b from-white via-zinc-50/60 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-8 sm:p-12 text-center shadow-md space-y-5">
               <div className="size-20 rounded-3xl bg-gradient-to-br from-amber-400/20 via-yellow-400/15 to-amber-500/10 border border-amber-400/40 flex items-center justify-center text-4xl shadow-sm mx-auto">
-                🍽️
+                
               </div>
               <div className="space-y-1.5">
                 <h2 className="font-display text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-50">
@@ -211,7 +211,7 @@ function CartPage() {
 
                           {item.instructions && (
                             <p className="mt-1 text-xs text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-400/20 px-2 py-0.5 rounded-lg inline-block">
-                              📝 {item.instructions}
+                              {item.instructions}
                             </p>
                           )}
 
@@ -331,7 +331,7 @@ function CartPage() {
 
                 {coupon && quote.data && !quote.data.promoName && (
                   <p className="text-xs font-bold text-rose-600 dark:text-rose-400">
-                    ⚠️ {t("cart.invalidCoupon") || "Invalid coupon code for this order."}
+                    {t("cart.invalidCoupon") || "Invalid coupon code for this order."}
                   </p>
                 )}
               </div>
@@ -390,13 +390,13 @@ function CartPage() {
 
               {isRadiusBlocked && (
                 <div className="rounded-2xl bg-rose-500/15 border border-rose-400/50 p-4 text-xs font-bold text-rose-900 dark:text-rose-200">
-                  🚫 Outside Active Shift Delivery Radius: Currently in {currentShift.name} with delivery radius capped at {currentShift.maxRadiusKm} km. Please select a closer address or schedule for Day Shift (up to 12.0 km).
+                  Outside Active Shift Delivery Radius: Currently in {currentShift.name} with delivery radius capped at {currentShift.maxRadiusKm} km. Please select a closer address or schedule for Day Shift (up to 12.0 km).
                 </div>
               )}
 
               {isMinOrderBlocked && (
                 <div className="rounded-2xl bg-amber-500/15 border border-amber-400/50 p-4 text-xs font-bold text-amber-900 dark:text-amber-200">
-                  ⚠️ {t("cart.minOrder", { amount: formatPaise(quote.data?.quote.minOrderPaise ?? 0, { locale }) })}
+                  {t("cart.minOrder", { amount: formatPaise(quote.data?.quote.minOrderPaise ?? 0, { locale }) })}
                 </div>
               )}
 

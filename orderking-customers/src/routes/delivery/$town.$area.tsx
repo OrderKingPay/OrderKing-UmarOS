@@ -521,7 +521,7 @@ function DeliveryTownAreaPage() {
               filterVeg ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""
             }`}
           >
-            🥦 Pure Veg Only
+            Pure Veg Only
           </Button>
 
           {cuisines.map((c) => (
@@ -545,7 +545,7 @@ function DeliveryTownAreaPage() {
             <h2 className="text-lg font-bold text-gray-900">
               {filtered.length} Active Kitchens Serving {area.name}
             </h2>
-            <span className="text-xs text-gray-500 font-medium">⚡ Average ETA: 25 mins</span>
+            <span className="text-xs text-gray-500 font-medium">Average ETA: 25 mins</span>
           </div>
 
           {filtered.length === 0 ? (

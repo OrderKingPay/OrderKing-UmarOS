@@ -515,7 +515,7 @@ export function SystemMasterSettingsModal({
           {activeTab === "models" && (
             <div className="space-y-4">
               <div>
-                <h4 className="text-xs font-bold text-white mb-1">👑 Production AI Models:</h4>
+                <h4 className="text-xs font-bold text-white mb-1">Production AI Models:</h4>
                 <p className="text-[11px] text-slate-400 mb-3">
                   Every model maps to a verified API model ID. Pinging runs a real API handshake with measured round-trip latency.
                 </p>

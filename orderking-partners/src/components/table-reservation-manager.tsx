@@ -1142,7 +1142,7 @@ export function TableReservationManager({
                     ? "🌆 Rooftop"
                     : zone === "Outdoor Patio"
                     ? "🌿 Patio"
-                    : "👑 Cabana / VIP";
+                    : "Cabana / VIP";
                 return (
                   <button
                     key={zone}

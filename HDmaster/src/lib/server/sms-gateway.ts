@@ -706,7 +706,7 @@ export async function dispatchBookingConfirmationTelecom(
   }
 
   const whatsAppText =
-    `👑 *ORDERKING TRAVEL CONFIRMATION*\n` +
+    `*ORDERKING TRAVEL CONFIRMATION*\n` +
     `Hello *${params.customerName}*,\n` +
     `Your ${params.serviceType} booking *#${params.bookingId}* is CONFIRMED!\n\n` +
     `🎫 PNR / Ticket: *${params.pnr}*\n` +

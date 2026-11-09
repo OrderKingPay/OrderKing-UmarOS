@@ -130,7 +130,7 @@ export function LiveDeliveryMap({
                 fallback={
                   <div className="flex h-full w-full flex-col items-center justify-center bg-zinc-950 text-white/70 animate-pulse">
                     <div className="size-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-2" />
-                    <p className="text-xs font-mono uppercase tracking-widest text-emerald-400">Loading Satellite Mapbox 3D…</p>
+                    <p className="text-xs font-mono uppercase tracking-widest text-emerald-400">Loading live map…</p>
                   </div>
                 }
               >

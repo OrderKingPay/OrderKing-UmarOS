@@ -946,13 +946,13 @@ export function FounderCommandPage() {
                     Message Preview:
                   </span>
                   <p className="font-mono text-[11px] text-slate-200 whitespace-pre-line leading-relaxed bg-white/40 p-2.5 rounded-lg border border-border/50">
-                    {`👑 OrderKing is available in ${launchTown}!
+                    {`OrderKing is now live in ${launchTown}!
 🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!
 
 🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!
 ⚡ Local neighborhood delivery to your door.
 
-👉 Order now: ${typeof window !== "undefined" ? window.location.origin : "https://orderking.in"}`}
+👉 Order now: ${typeof window !== "undefined" ? window.location.origin : "https://orderkingpay.com"}`}
                   </p>
                 </div>
 
@@ -961,7 +961,7 @@ export function FounderCommandPage() {
                     size="sm"
                     className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-fg shadow-md"
                     onClick={() => {
-                      const msg = `👑 OrderKing is available in ${launchTown}!\n🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ Local neighborhood delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
+                      const msg = `OrderKing is now live in ${launchTown}!\n🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ Local neighborhood delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
                       void navigator.clipboard?.writeText(msg);
                       toast.success("WhatsApp launch message copied to clipboard!");
                     }}
@@ -974,7 +974,7 @@ export function FounderCommandPage() {
                     size="sm"
                     className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md"
                     onClick={() => {
-                      const msg = `👑 OrderKing is available in ${launchTown}!\n🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ Local neighborhood delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
+                      const msg = `OrderKing is now live in ${launchTown}!\n🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ Local neighborhood delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(String(msg ?? ""))}`, "_blank");
                     }}
                   >

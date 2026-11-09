@@ -60,8 +60,8 @@ function SettingsPage() {
               <h1 className="font-display text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
                 Settings &amp; Preferences
               </h1>
-              <p className="text-xs font-bold text-amber-800">
-                10 Benchmark Indian Languages, Sensory Feedback &amp; GPS Security
+              <p className="text-xs text-stone-500">
+                Language, notifications, and app preferences
               </p>
             </div>
           </div>
@@ -74,7 +74,7 @@ function SettingsPage() {
               </div>
               <div>
                 <h2 className="text-sm font-black text-stone-900">System Language / भाषा / ভাষা</h2>
-                <p className="text-xs text-stone-500">Instant translation across all 10 benchmark regional languages</p>
+                <p className="text-xs text-stone-500">Choose your preferred language</p>
               </div>
             </div>
 
@@ -117,27 +117,27 @@ function SettingsPage() {
                 <Smartphone className="size-4" />
               </div>
               <div>
-                <h2 className="text-sm font-black text-stone-900">GPS &amp; Vicinity Verification</h2>
-                <p className="text-xs text-stone-500">Real-time GPS geofencing prevents wrong kitchen dispatch</p>
+                <h2 className="text-sm font-black text-stone-900">Location Settings</h2>
+                <p className="text-xs text-stone-500">Shows restaurants and delivery services for your location</p>
               </div>
             </div>
 
             <div className="rounded-2xl border border-emerald-500/30 bg-emerald-50/50 p-4 flex items-center justify-between">
               <div>
-                <span className="text-xs font-black text-stone-900 block">Active Verified Coordinates</span>
+                <span className="text-xs font-black text-stone-900 block">Current Coordinates</span>
                 <p className="font-mono text-xs font-bold text-amber-900 mt-0.5">
                   {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
                 </p>
                 <p className="text-[11px] text-emerald-700 font-extrabold mt-1 flex items-center gap-1">
                   <span className="size-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-                  Live GPS Active
+                  Location Active
                 </p>
               </div>
               <Link
                 to="/"
                 className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black px-4 py-2 text-xs shadow-md shadow-orange-500/20 hover:from-amber-600 hover:to-orange-600 transition"
               >
-                Update GPS
+                Update Location
               </Link>
             </div>
           </section>
@@ -149,8 +149,8 @@ function SettingsPage() {
                 <Sparkles className="size-4" />
               </div>
               <div>
-                <h2 className="text-sm font-black text-stone-900">Sensory &amp; Haptic Experience</h2>
-                <p className="text-xs text-stone-500">Ultra-luxurious tactile vibrations and audio synthesis</p>
+                <h2 className="text-sm font-black text-stone-900">Sound &amp; Vibrations</h2>
+                <p className="text-xs text-stone-500">Notification sounds and haptic touch feedback</p>
               </div>
             </div>
 
@@ -183,8 +183,8 @@ function SettingsPage() {
               {/* Toggle 2: Voice AI */}
               <div className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-amber-50/30 p-3.5">
                 <div>
-                  <span className="text-xs font-black text-stone-900 block">Young Native Voice AI</span>
-                  <span className="text-[11px] text-stone-500">Instant regional female speech synthesis</span>
+                  <span className="text-xs font-black text-stone-900 block">Voice Assistant Audio</span>
+                  <span className="text-[11px] text-stone-500">Spoken responses for voice search and help</span>
                 </div>
                 <button
                   type="button"
@@ -236,7 +236,7 @@ function SettingsPage() {
           <section className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-2.5 mb-2">
               <ShieldCheck className="size-5 text-amber-600" />
-              <h2 className="text-xs font-black text-stone-900 uppercase tracking-wider">Privacy &amp; Data Shield</h2>
+              <h2 className="text-xs font-black text-stone-900 uppercase tracking-wider">Privacy &amp; Terms</h2>
             </div>
             <p className="text-xs text-stone-600 leading-relaxed font-medium">
               OrderKing &amp; KingPay operate under strict Section 79 IT Act privacy protocols. Zero user contact book data, zero unencrypted storage, and complete end-to-end data security and compliance.

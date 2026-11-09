@@ -513,7 +513,7 @@ export function RiderEmergencySafetySheet({
                     </span>
                   </div>
                   <p className="text-[10px] text-muted-foreground font-sans">
-                    Auto-refreshed via device satellite telemetry
+                    Auto-refreshed via device GPS
                   </p>
                 </div>
 

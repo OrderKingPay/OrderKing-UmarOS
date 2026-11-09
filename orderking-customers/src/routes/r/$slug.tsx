@@ -378,7 +378,7 @@ function RestaurantPage() {
                     onClick={() => {
                       setIsFav(!isFav);
                       void toggleFavourite({ data: { restaurantId: restaurant.card.id } });
-                      toast.success(isFav ? "Removed from favourites" : "Saved to favourites! ❤️");
+                      toast.success(isFav ? "Removed from favourites" : "Saved to favourites");
                     }}
                   >
                     <Heart className={`size-5 ${isFav ? "fill-white" : ""}`} />
@@ -458,7 +458,7 @@ function RestaurantPage() {
                   <div>
                     <span className="block text-[10px] uppercase font-bold text-zinc-400">Estimated Delivery</span>
                     <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">
-                      ⚡ {restaurant.card.etaMinutes} mins
+                      {restaurant.card.etaMinutes} mins
                     </span>
                   </div>
                 </div>
@@ -470,7 +470,7 @@ function RestaurantPage() {
                   <div>
                     <span className="block text-[10px] uppercase font-bold text-zinc-400">Distance</span>
                     <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">
-                      📍 {restaurant.card.distanceKm != null
+                      {restaurant.card.distanceKm != null
                         ? `${(typeof restaurant.card.distanceKm === "number"
                             ? restaurant.card.distanceKm
                             : Number(restaurant.card.distanceKm || 0)
@@ -509,7 +509,7 @@ function RestaurantPage() {
 
               {!restaurant.card.open && (
                 <div className="mt-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 p-3 text-xs font-semibold text-rose-600">
-                  ⛔ {t("restaurant.closedNotice")}
+                  {t("restaurant.closedNotice")}
                 </div>
               )}
 
@@ -543,9 +543,9 @@ function RestaurantPage() {
                     FSSAI Verified Kitchen
                   </span>
                   <span>•</span>
-                  <span className="text-emerald-600 font-bold">⭐ 4.8/5 Clean Kitchen Audit</span>
+                  <span className="text-emerald-600 font-bold">4.8/5 Clean Kitchen Audit</span>
                 </div>
-                <span className="text-[11px] text-zinc-500 font-medium">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
+
               </div>
 
               {/* Action Ribbon */}
@@ -794,18 +794,14 @@ function RestaurantPage() {
 
                             {/* Nutritional & Trust Badges */}
                             <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
-                              <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 font-semibold text-zinc-600 dark:text-zinc-300">
-                                🔥 {it.veg ? "320-380 kcal" : "420-520 kcal"}
-                              </span>
-                              <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 font-semibold text-zinc-600 dark:text-zinc-300">
-                                💪 {it.veg ? "12g Protein" : "26g Protein"}
-                              </span>
+                              
+                              
                               <span
                                 className={`font-bold ${
                                   it.veg ? "text-emerald-600 dark:text-emerald-400" : "text-amber-700 dark:text-amber-400"
                                 }`}
                               >
-                                {it.veg ? "🌱 100% Pure Veg" : "🍗 Halal Certified"}
+                                {it.veg ? "Pure Veg" : "Non-Veg"}
                               </span>
                               <button
                                 type="button"
@@ -833,7 +829,7 @@ function RestaurantPage() {
                                 />
                               ) : (
                                 <div className="h-full w-full bg-gradient-to-br from-amber-500/10 via-zinc-100 to-amber-500/5 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center text-3xl">
-                                  🍽️
+                                  <span className="text-sm font-semibold text-zinc-400">OrderKing</span>
                                 </div>
                               )}
                             </div>

@@ -63,7 +63,7 @@ export class Tier1ScaleOperationsEngine {
       return "I sincerely apologize for the missing item. I am the HDmaster AI. I have already verified your order and instantly credited the missing amount to your KingPay wallet. You do not need to wait for a human agent.";
     }
     
-    return "I am tracking your rider via satellite coordinates. They are exactly 2 minutes away. I have prioritized your delivery route.";
+    return "I am tracking your delivery partner via live GPS. They are on their way to your address.";
   }
 
   /**

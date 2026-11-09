@@ -134,7 +134,7 @@ export interface EcosystemCmsConfig {
   connectorMetaOmnichannelPolicyNotice: string;
   connectorMetaOmnichannelWebhookNotice: string;
 
-  // 14. AI Deepfake Media Engine (Synthesia / HeyGen API)
+  // 14. AI Video Generation Engine (Synthesia / HeyGen API)
   connectorAiMediaEngineTitle: string;
   connectorAiMediaEngineSubtitle: string;
   connectorAiMediaEngineToggleLabel: string;
@@ -278,7 +278,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   connectorMetaOmnichannelPolicyNotice: "Complies with Meta Business Policy, Instagram Messaging API Policies, and WhatsApp Business Messaging rate tiers. Dynamic 24-hour customer window management with verified template fallbacks.",
   connectorMetaOmnichannelWebhookNotice: "Meta Graph API Webhook (/api/v1/meta/webhook): Listens for incoming Direct Messages, story mentions, WhatsApp status callbacks, and quick-reply payload handshakes.",
 
-  // 14. AI Deepfake Media Engine (Synthesia / HeyGen API)
+  // 14. AI Video Generation Engine (Synthesia / HeyGen API)
   connectorAiMediaEngineTitle: "AI Video Media Engine (Synthesia / HeyGen API)",
   connectorAiMediaEngineSubtitle: "Media production generator. Scripts, voices, and renders video presentations for social channels, announcements, and partner onboarding.",
   connectorAiMediaEngineToggleLabel: "AI Media Engine Active",

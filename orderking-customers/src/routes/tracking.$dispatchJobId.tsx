@@ -48,8 +48,8 @@ function TrackingMapSkeleton() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-zinc-950 text-white/70 animate-pulse">
       <div className="h-10 w-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4" />
-      <p className="text-xs font-mono uppercase tracking-widest text-emerald-400">Connecting Satellite Telemetry…</p>
-      <p className="text-[11px] text-zinc-500 mt-1">Streaming dispatch vector over 3G network</p>
+      <p className="text-xs font-mono uppercase tracking-widest text-emerald-400">Connecting Live GPS…</p>
+      <p className="text-[11px] text-zinc-500 mt-1">Locating your delivery partner</p>
     </div>
   );
 }
@@ -288,7 +288,7 @@ function TrackingRoute() {
             <h1 className="text-white font-bold text-base tracking-wide flex items-center gap-2">
               Order #{order?.publicId || dispatchJobId.slice(0, 8).toUpperCase()}
             </h1>
-            <p className="text-[11px] text-emerald-400 font-medium">Live Satellite Telemetry</p>
+            <p className="text-[11px] text-emerald-400 font-medium">Live GPS Tracking</p>
           </div>
         </div>
 

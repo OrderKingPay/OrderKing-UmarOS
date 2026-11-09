@@ -342,7 +342,7 @@ function RadialOrbVisualizer({
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Orbiting Satellite Nodes
+        // Orbiting Ring Nodes
         const numNodes = 3 + r;
         for (let n = 0; n < numNodes; n++) {
           const angle = (Math.PI * 2 / numNodes) * n;
@@ -2038,7 +2038,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
             <span className="text-[11px] text-zinc-400 font-mono block">Zero surge · 15-min delivery</span>
           </div>
           <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-1">
-            <span className="font-bold text-amber-400 block">👑 Pan-India Outside Zone</span>
+            <span className="font-bold text-amber-400 block">Pan-India Outside Zone</span>
             <p className="text-zinc-300">Food delivery is 100% invisible. Users see ONLY King Pay UPI & soundbox.</p>
             <span className="text-[11px] text-zinc-400 font-mono block">Section 79 IT Act Compliant</span>
           </div>
@@ -3855,7 +3855,7 @@ export function PremiumFounderAiChat({
               onClick={() => setIsOrderKingSuiteOpen(true)}
               className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-amber-300 h-9 font-bold bg-amber-500/10 border border-amber-500/20 shadow-sm"
             >
-              <Crown className="size-4 mr-3 text-amber-400 fill-amber-400/20" /> 👑 Order King Suite
+              <Crown className="size-4 mr-3 text-amber-400 fill-amber-400/20" /> Order King Suite
             </Button>
             <Button
               variant="ghost"

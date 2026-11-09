@@ -226,7 +226,7 @@ function OrderDetailPage() {
           <div className="flex items-center justify-between pb-3 mb-4 border-b border-amber-900/10">
             <div className="flex items-center gap-2">
               <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs shadow-xs">
-                🛵
+                
               </span>
               <h2 className="font-display font-extrabold text-stone-900 text-base">
                 Live Order Journey
@@ -290,7 +290,7 @@ function OrderDetailPage() {
           <div className="mt-4 rounded-2xl border-2 border-amber-400/90 bg-gradient-to-r from-amber-500/15 via-yellow-400/20 to-amber-500/10 p-4 shadow-[0_8px_25px_rgba(245,158,11,0.18)] flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs text-xl">
-                🛡️
+                
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-wider text-amber-900">
@@ -313,7 +313,7 @@ function OrderDetailPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-xl">
-                  🛵
+                  
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-fg">
@@ -329,7 +329,7 @@ function OrderDetailPage() {
                 </div>
               </div>
               <span className="flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-muted">
-                <span>📞</span>
+                <span></span>
                 <span>Call Support</span>
               </span>
             </div>
@@ -357,7 +357,7 @@ function OrderDetailPage() {
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <span className="flex size-6 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 text-xs shadow-2xs">
-                  🛵
+                  
                 </span>
                 <span className="text-sm font-black text-stone-900">
                   Live Map Tracking
@@ -388,7 +388,7 @@ function OrderDetailPage() {
               onClick={() => setDishReviewOpen(true)}
               className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black py-3 rounded-2xl shadow-md shadow-amber-500/25 flex items-center justify-center gap-2 border border-amber-300 transition-all active:scale-98 cursor-pointer"
             >
-              <span className="text-base">📸</span>
+              <span className="text-base"></span>
               <span>Review Dishes &amp; Earn ₹25 Gold Reward</span>
               <span className="rounded-full bg-stone-950 text-amber-300 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider">
                 ₹25 Discount
@@ -413,7 +413,7 @@ function OrderDetailPage() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="font-display font-black text-base text-foreground">Loved your meal today? ❤️</h2>
+                  <h2 className="font-display font-black text-base text-foreground">Rate your food experience</h2>
                   <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
                     ✓ Verified Delivery
                   </span>
@@ -503,7 +503,7 @@ function OrderDetailPage() {
                   {/* Category 3: Rider & Delivery Speed */}
                   <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-surface">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">🛵</span>
+                      <span className="text-lg"></span>
                       <div>
                         <span className="text-xs font-bold text-foreground block">Rider &amp; Delivery</span>
                         <span className="text-[10px] text-muted">Speed, politeness &amp; care</span>
@@ -560,7 +560,7 @@ function OrderDetailPage() {
                     {[
                       "Fresh & piping hot ♨️",
                       "Fast delivery ⚡",
-                      "Polite rider 🛵",
+                      "Polite rider ",
                       "Leak-proof packaging 📦",
                       "Delicious taste 🍗",
                       "Great value 💰",
@@ -687,7 +687,7 @@ function OrderDetailPage() {
                       { id: "SPILLED_FOOD", label: "🍲 Spilled / Damaged Box" },
                       { id: "COLD_FOOD", label: "❄️ Cold / Quality Issue" },
                       { id: "DELAYED_DELIVERY", label: "⏱️ Excessive Delay" },
-                      { id: "RIDER_CONDUCT", label: "🛵 Rider Misbehavior" },
+                      { id: "RIDER_CONDUCT", label: " Rider Misbehavior" },
                       { id: "BILLING_ISSUE", label: "💳 Billing Discrepancy" },
                     ].map((cat) => (
                       <button
@@ -713,7 +713,7 @@ function OrderDetailPage() {
                   </label>
                   <div className="flex items-center gap-3">
                     <label className="flex items-center gap-1.5 rounded-lg border border-dashed border-rose-500/60 bg-surface px-3 py-2 text-xs font-medium text-foreground hover:bg-surface-2 cursor-pointer">
-                      <span>📸 Snap Photo / Upload</span>
+                      <span> Snap Photo / Upload</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -759,7 +759,7 @@ function OrderDetailPage() {
                   <div className="grid grid-cols-3 gap-1.5">
                     {[
                       { id: "REFUND", label: "⚡ Instant Wallet Refund", desc: "Credited to KingPay Wallet" },
-                      { id: "REDELIVERY", label: "🛵 Priority Redelivery", desc: "Fresh hot dish priority dispatch" },
+                      { id: "REDELIVERY", label: " Priority Redelivery", desc: "Fresh hot dish priority dispatch" },
                       { id: "OPERATIONS", label: "Operations Escalation", desc: "Senior Support Review" },
                     ].map((res) => (
                       <button
@@ -782,7 +782,7 @@ function OrderDetailPage() {
                 {/* 5. Submit Button */}
                 <div className="pt-2 flex items-center justify-between">
                   <p className="text-[11px] text-muted">
-                    🛡️ Protected under Section 79 IT Act & Consumer Protection Rules
+                     Protected under Section 79 IT Act & Consumer Protection Rules
                   </p>
                   <Button
                     variant="danger"
