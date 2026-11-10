@@ -446,7 +446,7 @@ export function resolveSovereignResponse(
       action: {
         type: "KINGPAY_POPUP",
         action: "BILL",
-        label: "⚡ Pay Utility Bill with KingPay",
+        label: "Pay Utility Bill",
         vpa: "orderking@ybl",
         amountPaise: 25000,
       },
@@ -820,10 +820,10 @@ export function resolveSovereignResponse(
         action: actionType,
         label:
           actionType === "SCAN"
-            ? "📸 Open KingPay BharatQR Scanner"
+            ? "Open BharatQR Scanner"
             : actionType === "BILL"
-            ? "⚡ Pay Utility Bill with KingPay"
-            : "⚡ Launch KingPay UPI / QR",
+            ? "Pay Utility Bill"
+            : "Open KingPay UPI / QR",
         vpa: "orderking@ybl",
         amountPaise: 25000,
       },
@@ -845,7 +845,7 @@ export function resolveSovereignResponse(
       action: {
         type: "KINGPAY_POPUP",
         action: "TRANSFER",
-        label: "⚡ Launch KingPay UPI / QR",
+        label: "Open KingPay UPI / QR",
         vpa: "orderking@ybl",
         amountPaise: 25000,
       },
@@ -999,7 +999,7 @@ export function CustomerConciergeDrawer({
           action: isKingPay
             ? {
                 type: "KINGPAY_POPUP",
-                label: "⚡ Launch KingPay UPI / QR",
+                label: "Open KingPay UPI / QR",
                 vpa: "orderking@ybl",
                 amountPaise: 25000,
               }
@@ -1380,7 +1380,7 @@ export function CustomerConciergeDrawer({
             ? [
                 { label: "🚆 Train Tickets", text: "Book train tickets and check live PNR." },
                 { label: "✈️ Flight Bookings", text: "Search and book airline flight tickets." },
-                { label: "⚡ Pay Utility Bills", text: "Pay electricity or water bill with KingPay." },
+                { label: "Pay Utility Bills", text: "Pay electricity or water bill with KingPay." },
                 { label: "🚖 City Cabs & Auto", text: "Book a city cab or taxi transit with direct KingPay." },
                 { label: "📸 Scan BharatQR", text: "Open KingPay camera to scan BharatQR." },
                 { label: "🍔 Browse Burgers", text: "Can I order a burger?" },
@@ -1554,7 +1554,7 @@ export function CustomerConciergeDrawer({
                           {activePopup.restaurantName || "Verified Kitchen"}
                         </p>
                         <div className="mt-1.5 inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
-                          <span>⚡ Delivery ETA:</span>
+                          <span>Delivery ETA:</span>
                           <span className="font-mono">{activePopup.deliveryEta}</span>
                         </div>
                       </div>
@@ -1736,7 +1736,7 @@ export function CustomerConciergeDrawer({
                     type="button"
                     onClick={() => {
                       toast.success(
-                        `🎉 Order Placed! Paid ${formatPaise(grandTotalPaise)} (${grandTotalPaise} paise) via KingPay UPI.`
+                        `Order Placed. Paid ${formatPaise(grandTotalPaise)} via KingPay UPI.`
                       );
                       setActivePopup(null);
                       onClose();

@@ -1905,7 +1905,7 @@ export class RiderEngine {
       await this.store.insertNotification({
         id: nid(),
         userId,
-        title: "⚡ Instant UPI Withdrawal Dispatched",
+        title: "Instant UPI Withdrawal Dispatched",
         body: `₹${(netPayable / 100).toFixed(2)} transferred to ${rider.payoutUpi} via NPCI Instant IMPS/UPI (Ref: ${effectiveRef}).`,
         kind: "PAYOUT",
         read: false,

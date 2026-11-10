@@ -726,11 +726,11 @@ export async function tryExecutePartnerAiCommand(
         },
       });
 
-      let confirmation = `🎉 Promotion "${promoName}" Created & Live! Customers get ${percent}% off on orders above ₹299 (capped at ₹100). Live across OrderKing storefront!`;
+      let confirmation = `Promotion "${promoName}" Created & Live! Customers get ${percent}% off on orders above ₹299 (capped at ₹100). Live across OrderKing storefront!`;
       if (ctx.languageCode === "hi") {
-        confirmation = `🎉 प्रमोशन "${promoName}" सफलतापूर्वक लाइव कर दिया गया है! ग्राहकों को ₹299 से अधिक के ऑर्डर पर ${percent}% छूट मिलेगी (अधिकतम ₹100)।`;
+        confirmation = `प्रमोशन "${promoName}" सफलतापूर्वक लाइव कर दिया गया है! ग्राहकों को ₹299 से अधिक के ऑर्डर पर ${percent}% छूट मिलेगी (अधिकतम ₹100)।`;
       } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
-        confirmation = `🎉 অফার "${promoName}" সফলভাবে লাইভ করা হয়েছে! ₹২৯৯ এর উপরের অর্ডারে ${percent}% ছাড় (সর্বোচ্চ ₹১০০ পর্যন্ত)।`;
+        confirmation = `অফার "${promoName}" সফলভাবে লাইভ করা হয়েছে! ₹২৯৯ এর উপরের অর্ডারে ${percent}% ছাড় (সর্বোচ্চ ₹১০০ পর্যন্ত)।`;
       }
 
       return {
