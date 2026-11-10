@@ -326,7 +326,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
 
       if (res?.success) {
         toast.success(
-          `🎉 Session Booked! ₹${bookingTutor.hourlyRateInr} held in KingPay Escrow. Classroom link generated.`
+          `Session Booked. ₹${bookingTutor.hourlyRateInr} in escrow. Classroom link generated.`
         );
       } else {
         toast.error(res?.error || "Booking could not be finalized. Please check KingPay balance.");
@@ -1237,7 +1237,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                 <span className="block text-[10px] text-slate-400">
                   {walletBalance >= bookingTutor.hourlyRateInr
                     ? "✓ Sufficient balance for escrow"
-                    : "⚡ Top-up available"}
+                    : "Top-up required"}
                 </span>
               </div>
             </div>

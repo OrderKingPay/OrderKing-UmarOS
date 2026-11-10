@@ -421,7 +421,7 @@ export class MilitaryAntiFraudShield {
       return {
         valid: false,
         code: "MOCK_GPS_DETECTED",
-        reason: "Rider device reported mock/emulated location provider. Discarded."
+        reason: "Rider device reported simulated location provider. Discarded."
       };
     }
 

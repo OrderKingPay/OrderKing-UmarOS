@@ -676,7 +676,7 @@ export function SupremeKingPayExperience() {
               </div>
               <div className="min-w-0 mt-2">
                 <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-yellow-300 transition truncate flex items-center gap-1">
-                  <span>⚡</span> <span>Daily Bills</span>
+                  <span>Daily Bills</span>
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   APDCL, Mobile, FASTag, DTH
@@ -929,7 +929,7 @@ export function SupremeKingPayExperience() {
           <span>← Back to KingPay</span>
         </button>
         <span className="text-xs font-black uppercase tracking-wider text-yellow-400">
-          ⚡ BBPS APDCL Assam, Mobile &amp; FASTag Desk
+          BBPS APDCL Assam, Mobile &amp; FASTag Desk
         </span>
       </div>
 
@@ -1110,7 +1110,7 @@ export function SupremeKingPayExperience() {
           <span>← Back to KingPay</span>
         </button>
         <span className="text-xs font-black uppercase tracking-wider text-amber-400">
-          ⚡ Direct UPI &amp; Dynamic BharatQR Desk
+          Direct UPI &amp; Dynamic BharatQR Desk
         </span>
       </div>
 
@@ -1507,7 +1507,7 @@ export function SupremeKingPayExperience() {
                         if (typeof window !== "undefined") {
                           localStorage.setItem("kingpay_kyc_status", "VERIFIED");
                         }
-                        toast.success("🎉 DigiLocker KYC Verified! ₹1,00,000 Wallet Cap Activated");
+                        toast.success("DigiLocker KYC Verified. ₹1,00,000 wallet limit activated.");
                       }, 1000);
                     }}
                     className="flex-1 h-12 rounded-xl bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-white font-black text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md"

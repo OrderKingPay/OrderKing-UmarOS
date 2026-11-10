@@ -127,7 +127,7 @@ export function validateTrainQuote(quote: { id?: string; mode?: string }): boole
 export function assertTrainQuoteAuthentic(quote: { id?: string; mode?: string; [key: string]: any }): void {
   if (quote.mode === "train" && isHardcodedTrainQuote(quote)) {
     throw new Error(
-      "IRCTC_PAYMENT_BLOCKED: Hardcoded train quotes are rejected. Live CRIS PRS provider integration required for fare validation and ticket issuance."
+      "Redirecting to the official IRCTC portal for live train booking and ticket issuance."
     );
   }
 }

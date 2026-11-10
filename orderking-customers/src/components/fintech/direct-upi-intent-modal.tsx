@@ -223,7 +223,7 @@ export function DirectUpiIntentModal({
                 onClick={() => handleOpenApp("phonepe")}
                 className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
               >
-                <span className="text-xl">🟣</span>
+                <Smartphone className="size-5 text-purple-400" />
                 <span className="text-xs font-bold text-white mt-1">PhonePe</span>
                 <span className="text-[9px] text-zinc-400 font-mono">9395065587@ybl</span>
               </button>
@@ -233,7 +233,7 @@ export function DirectUpiIntentModal({
                 onClick={() => handleOpenApp("paytm")}
                 className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
               >
-                <span className="text-xl">🔵</span>
+                <Smartphone className="size-5 text-sky-400" />
                 <span className="text-xs font-bold text-white mt-1">Paytm</span>
                 <span className="text-[9px] text-zinc-400 font-mono">9395065587@pthdfc</span>
               </button>
@@ -243,7 +243,7 @@ export function DirectUpiIntentModal({
                 onClick={() => handleOpenApp("cred")}
                 className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
               >
-                <span className="text-xl">💎</span>
+                <ShieldCheck className="size-5 text-emerald-400" />
                 <span className="text-xs font-bold text-white mt-1">CRED</span>
                 <span className="text-[9px] text-zinc-400 font-mono">9395065587@yescred</span>
               </button>
@@ -253,7 +253,7 @@ export function DirectUpiIntentModal({
                 onClick={() => handleOpenApp("bhim")}
                 className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
               >
-                <span className="text-xl">🇮🇳</span>
+                <QrCode className="size-5 text-orange-400" />
                 <span className="text-xs font-bold text-white mt-1">BHIM</span>
                 <span className="text-[9px] text-zinc-400 font-mono">9395065587@upi</span>
               </button>
@@ -263,7 +263,7 @@ export function DirectUpiIntentModal({
                 onClick={() => handleOpenApp("amazonpay")}
                 className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
               >
-                <span className="text-xl">📦</span>
+                <Smartphone className="size-5 text-amber-400" />
                 <span className="text-xs font-bold text-white mt-1">Amazon Pay</span>
                 <span className="text-[9px] text-zinc-400 font-mono">9395065587@apl</span>
               </button>
@@ -273,7 +273,7 @@ export function DirectUpiIntentModal({
                 onClick={() => handleOpenApp("gpay")}
                 className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/90 hover:border-amber-400 p-2.5 transition active:scale-95 cursor-pointer shadow-sm group"
               >
-                <span className="text-xl">⚡</span>
+                <Zap className="size-5 text-blue-400" />
                 <span className="text-xs font-bold text-white mt-1">Google Pay</span>
                 <span className="text-[9px] text-zinc-400 font-mono">9395065587@ybl</span>
               </button>

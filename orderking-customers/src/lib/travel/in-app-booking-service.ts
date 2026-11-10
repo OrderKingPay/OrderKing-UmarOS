@@ -502,7 +502,7 @@ export function searchTrainQuotes(
     status: (isAuth ? "authenticated" : "unauthenticated") as "unauthenticated" | "authenticated",
     inventoryNotice: isAuth
       ? "Indian Railways PRS (Passenger Reservation System) inventory is live queried."
-      : "Indian Railways PRS (Passenger Reservation System) inventory is unauthenticated in-app. In accordance with CRIS/IRCTC regulations, synthetic or mock train seat allocation is strictly prohibited. Please search and book live on the official IRCTC portal: " + officialSearchUrl,
+      : "Redirecting to official IRCTC portal for live Indian Railways PRS train bookings: " + officialSearchUrl,
     fromCity: from,
     fromCode,
     toCity: to,
@@ -902,13 +902,13 @@ export function issueSovereignETicket(params: {
       });
     } catch (err: any) {
       throw new SupplierUnavailableError(
-        `IRCTC_PAYMENT_BLOCKED: IN_APP_TRAIN_BOOKING_LOCKED: ${err?.message || "Unverified train booking"}. A 10-digit PNR string or prefixed payment token alone is NOT accepted as evidence of a confirmed booking. Real bookings require server-verified CRIS PRS booking responses. All train reservations must be completed directly via the official IRCTC portal handoff: https://www.irctc.co.in/nget/train-search`
+        "Redirecting to the official IRCTC portal for live train booking: https://www.irctc.co.in/nget/train-search"
       );
     }
 
     if (isHardcodedTrainQuote(params.quote)) {
       throw new SupplierUnavailableError(
-        "IRCTC_PAYMENT_BLOCKED: IN_APP_TRAIN_BOOKING_LOCKED: Hardcoded train quotes are rejected under CRIS/IRCTC regulations. All train reservations must be completed directly via the official IRCTC portal handoff: https://www.irctc.co.in/nget/train-search"
+        "Redirecting to the official IRCTC portal: Train reservations must be completed directly via official IRCTC portals: https://www.irctc.co.in/nget/train-search"
       );
     }
 

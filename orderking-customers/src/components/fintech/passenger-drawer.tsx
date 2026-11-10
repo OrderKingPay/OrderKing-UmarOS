@@ -193,7 +193,7 @@ export function PassengerDrawer({
       });
 
       toast.success(
-        `🎉 Booking Confirmed! PNR ${ticket.pnr} issued successfully!`
+        `Booking Confirmed. PNR ${ticket.pnr} issued.`
       );
 
       onBookingSuccess(ticket);

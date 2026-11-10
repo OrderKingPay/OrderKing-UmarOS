@@ -142,7 +142,7 @@ export function CheckoutUpsellEngine({
         {freeDeliveryUnlocked && (
           <div className="flex items-center gap-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/40 px-3 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
             <Sparkles className="size-3.5 text-emerald-600" />
-            <span>🎉 Priority Delivery Unlocked!</span>
+            <span>Priority delivery applied</span>
           </div>
         )}
       </div>
@@ -152,7 +152,7 @@ export function CheckoutUpsellEngine({
         <div className="mt-3 flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500/15 to-teal-500/10 border border-emerald-400/40 px-4 py-2.5 text-xs font-bold text-emerald-900 dark:text-emerald-200 animate-in fade-in slide-in-from-top-1 duration-200">
           <Check className="size-4 text-emerald-600 shrink-0 stroke-[3]" />
           <span>
-            Added <strong>{lastAddedName}</strong> to your order • Live bill updated!
+            Added <strong>{lastAddedName}</strong> to your order • Bill updated.
           </span>
         </div>
       )}

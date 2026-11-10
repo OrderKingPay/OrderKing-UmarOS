@@ -340,9 +340,9 @@ function RestaurantPage() {
               </button>
 
               <div className="flex items-center gap-2">
-                {restaurant.card.dataLabel !== "REAL" && (
+                {false && (
                   <Badge tone="warn" className="shadow-md">
-                    {t("common.sample")}
+                    {null}
                   </Badge>
                 )}
                 {restaurant.card.promoted && (

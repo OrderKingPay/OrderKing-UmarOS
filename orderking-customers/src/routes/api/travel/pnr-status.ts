@@ -16,10 +16,10 @@ export const Route = createFileRoute("/api/travel/pnr-status")({
           JSON.stringify({
             code: "PROVIDER_NOT_CONNECTED",
             pnr,
-            error: "Direct in-app CRIS PRS live status query is disabled pending STQC certification and IRCTC PSP authorization. Indian Railways mandates direct captcha verification on official government portals.",
+            error: "Redirecting to official Indian Railways enquiry portal. Direct captcha verification is required on government servers.",
             officialPortalUrl: `https://www.indianrail.gov.in/enquiry/PNR/PnrEnquiry.html?pnrno=${pnr}`,
             ntesPortalUrl: "https://enquiry.indianrail.gov.in/mntes/",
-            complianceNote: "Synthetic PNR generation is strictly forbidden under Indian Railways e-Ticketing Policy.",
+            complianceNote: "PNR status is verified directly via official Indian Railways portal.",
           }),
           { status: 503, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } }
         );

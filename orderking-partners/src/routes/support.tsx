@@ -388,7 +388,7 @@ function SupportPage() {
                   <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-2.5">
                     <div className="text-[10px] uppercase font-bold text-gray-400">FSSAI / KYC</div>
                     <div className="mt-0.5 font-bold text-gray-800 truncate">
-                      {diag.fssaiNumber ? `Verified (${diag.fssaiNumber})` : "Pending Registration"}
+                      {diag.fssaiNumber ? `Verified (${diag.fssaiNumber})` : "Not Registered"}
                     </div>
                   </div>
                 </div>

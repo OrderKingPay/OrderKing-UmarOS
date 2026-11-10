@@ -29,7 +29,7 @@ export function WhatsAppShare({
     if (variant === "restaurant") {
       const restName = restaurantName || "OrderKing Partner Kitchen";
       const restUrl = restaurantSlug ? `${origin}/r/${restaurantSlug}?ref=${referralCode}` : `${origin}?ref=${referralCode}`;
-      const message = `🔥 Check out *${restName}*${cuisine ? ` (${cuisine})` : ""} on OrderKing!\n\nOrder with my link to get 50% OFF (up to ₹100) on your first order: ${restUrl}\n\nFast direct delivery from top kitchens! 🚀`;
+      const message = `Order from *${restName}*${cuisine ? ` (${cuisine})` : ""} on OrderKing:\n${restUrl}`;
       return {
         title: `Order from ${restName} on OrderKing`,
         text: message,
@@ -40,7 +40,7 @@ export function WhatsAppShare({
     if (variant === "checkout") {
       const totalRupees = orderTotalPaise ? (orderTotalPaise / 100).toFixed(0) : "250";
       const checkoutUrl = `${origin}/earn?ref=${referralCode}`;
-      const message = `I just placed an order worth ₹${totalRupees} on OrderKing!\n\nUse my invite link to get 50% OFF (up to ₹100) on your first meal: ${checkoutUrl}\n\nDelivered fresh and hot in 20 mins! 🍔🍕`;
+      const message = `Order on OrderKing using my invite link:\n${checkoutUrl}`;
       return {
         title: "OrderKing 50% OFF Welcome Offer",
         text: message,

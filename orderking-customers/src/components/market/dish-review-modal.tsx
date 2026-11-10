@@ -38,13 +38,13 @@ export function DishReviewModal({
   const [submitting, setSubmitting] = useState(false);
 
   const TAGS = [
-    "🔥 Served Piping Hot",
-    "✨ Exquisite Flavor",
-    "📦 Spill-Proof Packaging",
-    "🍗 Tender & Juicy Meat",
-    "🌾 Authentic Aromatic Rice",
-    "⚡ Lightning Quick Delivery",
-    "💰 Great Value for Money",
+    "Served hot",
+    "Great taste",
+    "Spill-proof packaging",
+    "Fresh portion",
+    "Good quality",
+    "Fast delivery",
+    "Value for money",
   ];
 
   const toggleTag = (tag: string) => {

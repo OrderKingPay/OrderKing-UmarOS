@@ -55,7 +55,7 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
       },
       {
         heading: "2. Transparent Per-Order Rate Card",
-        body: "Every delivery offer displays the guaranteed expected payout before acceptance. Payouts enforce a statutory base floor of ₹35.00 (3,500 paise) for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time compensation after 10 minutes past arrival.",
+        body: "Every delivery offer displays the confirmed expected payout before acceptance. Payouts enforce a statutory base floor of ₹35.00 (3,500 paise) for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time compensation after 10 minutes past arrival.",
       },
       {
         heading: "3. 100% Customer Tip Retention & Zero Arbitrary Penalties",
@@ -224,7 +224,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Active</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.licenceNumber || "Pending upload"}
+                {rider?.licenceNumber || "Upload required"}
               </p>
               <p className="text-[10px] text-muted-foreground">Motorcycle with Gear (MCWG)</p>
             </div>
@@ -236,7 +236,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">{rider?.vehicleType ?? "MOTORCYCLE"}</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.vehicleRegistration || "Pending registration"}
+                {rider?.vehicleRegistration || "Registration required"}
               </p>
               <p className="text-[10px] text-muted-foreground">Commercial Transport Permit</p>
             </div>
@@ -263,7 +263,7 @@ function Page() {
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">DigiLocker</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
-                {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "Pending verification"}
+                {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "Verification required"}
               </p>
               <p className="text-[10px] text-muted-foreground">UIDAI Masked Aadhaar / PAN</p>
             </div>

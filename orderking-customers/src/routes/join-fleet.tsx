@@ -83,7 +83,7 @@ export function JoinFleetPage() {
           ? "Motorized 2-Wheeler (Motorcycle/Scooter)"
           : "Bicycle / Eco-Delivery";
 
-      const note = `City: ${city} | Vehicle: ${vehicleDesc} | ID/DL: ${idNumber.trim() || "Provided at Hub"} | UPI: ${upiId.trim() || "Pending Verification"} | EmergencyContact: ${emergencyContactName.trim() || "Next of Kin"} (${emergencyContactPhone.trim() || "On File"})`;
+      const note = `City: ${city} | Vehicle: ${vehicleDesc} | ID/DL: ${idNumber.trim() || "Provided at Hub"} | UPI: ${upiId.trim() || "To be verified at hub"} | EmergencyContact: ${emergencyContactName.trim() || "Next of Kin"} (${emergencyContactPhone.trim() || "On File"})`;
 
       const res = await submitRiderApplicationFn({
         data: {

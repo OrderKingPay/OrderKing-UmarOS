@@ -178,7 +178,7 @@ export function AcademicSolutionCard({
                 <>
                   <span className="inline-block size-1.5 rounded-full bg-emerald-400" />
                   <span className="font-semibold text-emerald-400">
-                    ⚡ KingPay Micro-Transaction Settled (₹{(billingStatus.amountPaise ?? 100) / 100})
+                    KingPay Micro-Transaction Settled (₹{(billingStatus.amountPaise ?? 100) / 100})
                   </span>
                   {typeof billingStatus.remainingBalancePaise === "number" && (
                     <span className="text-zinc-500 font-mono">

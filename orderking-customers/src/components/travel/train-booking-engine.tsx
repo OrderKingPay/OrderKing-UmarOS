@@ -269,18 +269,18 @@ export function TrainBookingEngine({
               <span>IRCTC / CRIS Authorization Audit Checklist (Mandatory for In-App Direct PRS Issuance)</span>
             </div>
             <p className="text-slate-300 text-[11px] leading-relaxed">
-              Under Indian Railways e-Ticketing Policy and CRIS (Centre for Railway Information Systems) Guidelines, no third-party platform may issue live Indian Railways tickets or simulate synthetic PNRs without the following five legal &amp; technical authorizations:
+              Under Indian Railways e-Ticketing Policy and CRIS (Centre for Railway Information Systems) Guidelines, no third-party platform may issue live Indian Railways tickets without the following five regulatory authorizations:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">1. IRCTC PSP / B2C Agreement</span>
                 <span className="text-slate-400">Formal agreement executed with IRCTC (Indian Railway Catering and Tourism Corp.) under Principal Service Provider B2C scheme.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Corporate Filing Pending</span>
+                <span className="text-[10px] text-amber-400 font-bold block">Status: In Progress</span>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">2. CRIS Security Architecture Audit</span>
                 <span className="text-slate-400">CRIS cybersecurity audit clearance for API handoffs, bot prevention, and anti-scraping CAPTCHA integration.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Awaiting Partnership Review</span>
+                <span className="text-[10px] text-amber-400 font-bold block">Status: Under Review</span>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">3. STQC Application Certification</span>
@@ -290,7 +290,7 @@ export function TrainBookingEngine({
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">4. Dedicated MPLS VPN &amp; DSC Signing</span>
                 <span className="text-slate-400">Dedicated leased line peering directly with CRIS PRS servers with Class 3 Digital Signature Certificate (DSC) request signing.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Pending Leased Line Provision</span>
+                <span className="text-[10px] text-amber-400 font-bold block">Status: Provisioning</span>
               </div>
             </div>
             <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 text-[11px] text-slate-300">
