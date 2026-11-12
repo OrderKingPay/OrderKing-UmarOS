@@ -155,7 +155,7 @@ export function SelfServeLandingModule() {
       cuisine: cuisine.trim() || "North Indian, Biryani",
       diet,
       fssaiNumber: cleanFssai,
-      fssaiExpiryDate: "2028-12-31",
+      fssaiExpiryDate: "",
       pan: cleanPan,
       gstin: cleanGst,
       exemptFromGst: !hasGst,
@@ -234,11 +234,8 @@ export function SelfServeLandingModule() {
           name: (ownerName || name).trim(),
         } as any,
       });
-    } catch {
-      const targetUrl = user
-        ? "/dashboard"
-        : `/login?mode=up&phone=${encodeURIComponent(cleanPhone)}&name=${encodeURIComponent((ownerName || name).trim())}`;
-      window.location.assign(targetUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Restaurant profile was not saved.");
     } finally {
       setBusy(false);
     }

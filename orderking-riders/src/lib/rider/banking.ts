@@ -56,7 +56,7 @@ export async function executeRiderRazorpayXPayout(
     getEnv("RAZORPAYX_ACCOUNT_NUMBER") ||
     getEnv("RAZORPAY_MERCHANT_ACCOUNT_ID") ||
     getEnv("RAZORPAY_ACCOUNT_NUMBER") ||
-    "2323230000000000"
+    ""
   ).trim();
 
   const isUpi = Boolean(req.vpa?.trim());
@@ -67,7 +67,7 @@ export async function executeRiderRazorpayXPayout(
     : "NEFT";
 
   // Strict Fail-Closed Zero-Simulation Gate
-  if (!keyId || !keySecret) {
+  if (!keyId || !keySecret || !accountNumber) {
     throw new RiderError(
       "GATEWAY_NOT_CONFIGURED",
       "RazorpayX banking payout gateway credentials are not configured on the server",

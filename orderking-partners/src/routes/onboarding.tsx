@@ -354,11 +354,8 @@ function OnboardingPage() {
       setTimeout(() => {
         window.location.assign("/dashboard");
       }, 600);
-    } catch {
-      setSuccessMsg("Restaurant profile saved & verified! Launching Partner Dashboard...");
-      setTimeout(() => {
-        window.location.assign("/dashboard");
-      }, 600);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Restaurant profile was not saved. Nothing was verified.");
     } finally {
       setBusy(false);
     }

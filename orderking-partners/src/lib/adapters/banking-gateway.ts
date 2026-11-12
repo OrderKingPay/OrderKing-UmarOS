@@ -58,7 +58,7 @@ export function getBankingGatewayStatus(): BankingGatewayStatus {
     process.env.RAZORPAYX_ACCOUNT_NUMBER ||
     process.env.RAZORPAY_MERCHANT_ACCOUNT_ID ||
     process.env.RAZORPAY_ACCOUNT_NUMBER ||
-    "2323230000000000"
+    ""
   ).trim();
 
   if (!keyId) missingRzp.push("RAZORPAYX_KEY_ID / RAZORPAY_KEY_ID");
@@ -128,7 +128,7 @@ async function executeRazorpayXPennyDrop(
     process.env.RAZORPAYX_ACCOUNT_NUMBER ||
     process.env.RAZORPAY_MERCHANT_ACCOUNT_ID ||
     process.env.RAZORPAY_ACCOUNT_NUMBER ||
-    "2323230000000000"
+    ""
   ).trim();
 
   if (!keyId || !keySecret) {
@@ -440,7 +440,7 @@ export async function executePartnerBankingPayout(params: {
     process.env.RAZORPAYX_ACCOUNT_NUMBER ||
     process.env.RAZORPAY_MERCHANT_ACCOUNT_ID ||
     process.env.RAZORPAY_ACCOUNT_NUMBER ||
-    "2323230000000000"
+    ""
   ).trim();
 
   if (!keyId || !keySecret) {

@@ -58,7 +58,7 @@ export function DiningOutReservationModal({
     const code = `TB-${100000 + (tbBuf[0] % 900000)}`;
     setBookingRef(code);
     setIsConfirmed(true);
-    toast.success("Table reservation confirmed! SMS sent.");
+    toast.message("Request noted on this screen only. No SMS was sent, and the restaurant has not confirmed a table.");
   };
 
   const handleClose = () => {
@@ -99,9 +99,9 @@ export function DiningOutReservationModal({
               <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="size-8 stroke-[2.5]" />
               </div>
-              <h4 className="font-display text-lg font-bold text-fg">Table Reserved Successfully!</h4>
+              <h4 className="font-display text-lg font-bold text-fg">Not booked</h4>
               <p className="text-xs text-muted">
-                Your reservation at <strong className="text-fg">{restaurantName}</strong> is confirmed.
+                {restaurantName} has not confirmed this table. No SMS was sent.
               </p>
               <div className="mx-auto max-w-xs rounded-xl border border-dashed border-primary/50 bg-primary/5 p-3 text-xs space-y-1">
                 <p className="text-muted">Booking Reference:</p>
@@ -112,9 +112,8 @@ export function DiningOutReservationModal({
                 <p className="text-[10px] text-muted capitalize">Area: {seatingArea.toLowerCase()} Seating</p>
               </div>
               <div className="rounded-lg bg-surface-2 p-3 text-[11px] text-muted text-left">
-                <p className="font-semibold text-fg">Dining Reservation Guarantee:</p>
                 <p className="mt-1">
-                  Table is held for up to 15 minutes past reservation time. Simply show your booking SMS or reference at the reception.
+                  This note stays on this screen only. The restaurant does not have this booking.
                 </p>
               </div>
               <Button onClick={handleClose} className="w-full">

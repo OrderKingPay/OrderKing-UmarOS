@@ -1086,12 +1086,8 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
   };
 
   const handleConfirmPaid = () => {
-    const utr = `6305${Math.floor(10000000 + Math.random() * 90000000)}`;
-    const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-    setConfirmedUtr(utr);
-    setCompletedTimestamp(now);
     setPaymentCompleted(true);
-    toast.success("Payment recorded. Official GST Tax Invoice generated!");
+    toast.message("Marked on this screen only. No bill was paid and no GST invoice was issued.");
   };
 
   const handleCopyUpi = () => {

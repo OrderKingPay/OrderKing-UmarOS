@@ -38,7 +38,7 @@ export function getRazorpayXCredentials(): RazorpayXCredentials {
     process.env.RAZORPAYX_ACCOUNT_NUMBER ||
     process.env.RAZORPAY_MERCHANT_ACCOUNT_ID ||
     process.env.RAZORPAY_ACCOUNT_NUMBER ||
-    "2323230000000000"
+    ""
   ).trim();
   const webhookSecret = (process.env.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAYX_WEBHOOK_SECRET || "").trim();
 
@@ -46,7 +46,7 @@ export function getRazorpayXCredentials(): RazorpayXCredentials {
     keyId,
     keySecret,
     accountNumber,
-    isLiveReady: Boolean(keyId && keySecret),
+    isLiveReady: Boolean(keyId && keySecret && accountNumber),
     webhookSecret,
   };
 }

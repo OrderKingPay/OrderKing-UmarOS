@@ -188,8 +188,8 @@ export function RiderOnboardingPage() {
           dlNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : dlNumber.trim().toUpperCase(),
           rcNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : rcNumber.trim().toUpperCase(),
           vehicleNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : rcNumber.trim().toUpperCase(),
-          aadhaarLast4: aadhaarNumber.replace(/\D/g, "").slice(-4) || "4829",
-          governmentIdLast4: aadhaarNumber.replace(/\D/g, "").slice(-4) || "4829",
+          aadhaarLast4: aadhaarNumber.replace(/\D/g, "").slice(-4),
+          governmentIdLast4: aadhaarNumber.replace(/\D/g, "").slice(-4),
           governmentIdType: `PAN:${panNumber.trim().toUpperCase()}`,
           pan: panNumber.trim().toUpperCase(),
           bankAccountHolder: (bankAccountHolder || fullName).trim(),
@@ -206,11 +206,10 @@ export function RiderOnboardingPage() {
       });
 
       await submitKycFn().catch(() => {});
-      toast.success("Account verified! Redirecting to orders...");
+      toast.success("Account saved. Redirecting to orders...");
       window.location.assign("/");
-    } catch {
-      toast.success("Profile saved! Redirecting to orders...");
-      window.location.assign("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Profile was not saved.");
     } finally {
       setPending(false);
     }
