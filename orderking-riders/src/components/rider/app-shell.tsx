@@ -130,7 +130,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to="/onboarding"
                 className="rounded-lg bg-rose-800 px-2.5 py-1 text-xs font-bold text-white hover:bg-rose-900 transition"
               >
-                Update KYC →
+                Update KYC
               </Link>
             </div>
           </div>

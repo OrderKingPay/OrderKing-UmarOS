@@ -209,7 +209,7 @@ export function SwipeSlider({
           {loading
             ? "Verifying..."
             : isCompleted
-              ? completedLabel || "Confirmed ✓"
+              ? completedLabel || "Confirmed"
               : label}
           {!isCompleted && !loading && (
             <span className="inline-flex animate-pulse items-center">
@@ -235,11 +235,10 @@ export function SwipeSlider({
           !isDragging && "transition-all duration-300 ease-out",
         )}
         style={{
-          transform: `translateX(${
-            trackRef.current && thumbRef.current
+          transform: `translateX(${trackRef.current && thumbRef.current
               ? dragProgress * (trackRef.current.clientWidth - thumbRef.current.clientWidth - 12)
               : 0
-          }px)`,
+            }px)`,
         }}
       >
         {loading ? (

@@ -207,7 +207,7 @@ export const en = {
     title: "King AI Concierge",
     placeholder: "Ask King AI about today’s sales, popular dishes, or settlement details…",
     send: "Ask King AI",
-    disclaimer: "King AI answers using verified restaurant data with precision-guaranteed figures.",
+    disclaimer: "King AI answers using verified restaurant ledger and catalog data.",
     unavailable: "King AI is not connected in this environment.",
     examples: "What were my signature best-sellers today?|Which service hours had the highest rush?|Explain today’s settlement calculation.|Which dishes frequently run out of stock?",
   },

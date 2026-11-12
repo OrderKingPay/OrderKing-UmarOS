@@ -710,10 +710,10 @@ function CommissionOverridesSection() {
                   </div>
                   <div className="flex items-center gap-3 text-[11px] text-muted">
                     <span>{outlet.cuisine}</span>
-                    <span>•</span>
+                    <span>|</span>
                     <span>{outlet.address}</span>
-                    <span>•</span>
-                    <span className="text-amber-400 font-mono">★ {outlet.rating.toFixed(1)}</span>
+                    <span>|</span>
+                    <span className="text-amber-400 font-mono">{outlet.rating.toFixed(1)} Rating</span>
                   </div>
                   <div className="text-[11px] font-mono text-slate-400">
                     Weekly GMV: <span className="text-white font-bold">{formatInrExact(outlet.weeklyGmvPaise)}</span>
@@ -924,7 +924,7 @@ function SurgeControlsSection({
                 : "bg-surface-2 text-slate-300 border border-border/80 hover:bg-surface-2/80",
             )}
           >
-            {rainSurgeActive ? "⚡ Turn Rain Surge OFF" : "🌧️ 1-Tap Activate Rain Surge"}
+            {rainSurgeActive ? "Turn Rain Surge OFF" : "Activate Rain Surge"}
           </Button>
         </div>
 
@@ -1054,7 +1054,7 @@ function SurgeControlsSection({
                 : "bg-surface-2 text-slate-300 border border-border/80 hover:bg-surface-2/80",
             )}
           >
-            {nightSurchargeActive ? "🌙 Deactivate Night Surcharge" : "🌙 1-Tap Toggle Night Mode"}
+            {nightSurchargeActive ? "Deactivate Night Surcharge" : "Toggle Night Mode"}
           </Button>
         </div>
       </div>
@@ -1245,7 +1245,7 @@ function PenaltyDisputeDeskSection() {
                   </div>
                 ) : (
                   <div className="text-[11px] font-mono text-muted text-right">
-                    Resolved: {disp.status} • {disp.waiverReason || "Processed by Founder Desk"}
+                    Resolved: {disp.status} | {disp.waiverReason || "Processed by Founder Desk"}
                   </div>
                 )}
               </div>
@@ -1411,7 +1411,7 @@ function WednesdayPayoutReleaseSection() {
           {batch?.batchStatus === "DISBURSED" ? (
             <span className="flex items-center gap-2">
               <CheckCircle2 className="size-5 text-emerald-400" />
-              T+1 Daily Batch Disbursed • Batch Ref: {batch.externalBatchReference}
+              T+1 Daily Batch Disbursed | Batch Ref: {batch.externalBatchReference}
             </span>
           ) : isReleasing ? (
             "Executing Bulk Bank Disbursement Gateway via RazorpayX..."
@@ -1573,7 +1573,7 @@ function FeaturedAdAuctionStudioSection() {
               <div>
                 <span className="font-bold text-sm text-white block">{win.restaurantName}</span>
                 <span className="text-[11px] text-muted font-mono">
-                  Quality Score: {win.qualityScore.toFixed(2)} • Ad Rank: {win.adRankScore}
+                  Quality Score: {win.qualityScore.toFixed(2)} | Ad Rank: {win.adRankScore}
                 </span>
               </div>
 
@@ -1818,7 +1818,7 @@ function TravelPartnerGovernanceSection() {
         </div>
         <div className="flex items-center gap-2">
           <Badge className="border-emerald-500/40 bg-emerald-950/60 text-emerald-300 font-mono text-xs px-3 py-1">
-            🔒 ₹0 Platform Markup Guarantee
+            ₹0 Platform Markup Policy
           </Badge>
         </div>
       </div>
@@ -2048,7 +2048,7 @@ function TravelPartnerGovernanceSection() {
               <span className="text-xs font-mono font-bold text-emerald-400">₹0.00 (0 bps)</span>
             </div>
             <div className="rounded-lg bg-emerald-950/40 p-2.5 border border-emerald-500/30 text-[11px] text-emerald-200">
-              🔒 Immutable Founder Guarantee: OrderKing never marks up carrier fares or inflates tickets with convenience surcharges.
+              Zero Markup Policy: OrderKing never marks up carrier fares or inflates tickets with convenience surcharges.
             </div>
           </div>
         </div>
@@ -2321,7 +2321,7 @@ function TravelPartnerGovernanceSection() {
               type="password"
               value={tboPassDraft}
               onChange={(e) => setTboPassDraft(e.target.value)}
-              placeholder="••••••••••••"
+              placeholder="Enter secret key"
               className="bg-black/60 border-border/60 text-xs font-mono h-9"
             />
           </div>
@@ -2601,7 +2601,7 @@ export function CustomerSupportDisputeQueueSection() {
                             ? "bg-emerald-950/80 border-emerald-500/60 text-emerald-300"
                             : "bg-rose-950/80 border-rose-500/60 text-rose-300"
                         )}>
-                          {isApproved ? "✓ REFUND APPROVED & SETTLED" : "✕ CLAIM REJECTED"}
+                          {isApproved ? "REFUND APPROVED & SETTLED" : "CLAIM REJECTED"}
                         </Badge>
                       </div>
                     )}

@@ -142,7 +142,7 @@ export function PeriodLeaveModal({
 
         <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-200 leading-relaxed space-y-1">
           <p className="font-semibold text-rose-300">
-            🌸 Welfare Protection Policy
+            Welfare Protection Policy
           </p>
           <p className="text-[11px] text-rose-200/90">
             Take time off during your cycle without any penalty. No impact on your acceptance rate, streak multipliers, or tier ranking.
@@ -158,11 +158,10 @@ export function PeriodLeaveModal({
             <button
               type="button"
               onClick={() => setSelectedOption("2days")}
-              className={`w-full flex items-center justify-between rounded-xl border p-3 text-left transition ${
-                selectedOption === "2days"
+              className={`w-full flex items-center justify-between rounded-xl border p-3 text-left transition ${selectedOption === "2days"
                   ? "border-rose-500 bg-rose-500/15 text-foreground font-semibold"
                   : "border-border bg-card text-muted-foreground hover:bg-muted/40"
-              }`}
+                }`}
             >
               <div className="space-y-0.5">
                 <span className="text-xs font-bold block text-foreground">
@@ -178,11 +177,10 @@ export function PeriodLeaveModal({
             <button
               type="button"
               onClick={() => setSelectedOption("today")}
-              className={`w-full flex items-center justify-between rounded-xl border p-3 text-left transition ${
-                selectedOption === "today"
+              className={`w-full flex items-center justify-between rounded-xl border p-3 text-left transition ${selectedOption === "today"
                   ? "border-rose-500 bg-rose-500/15 text-foreground font-semibold"
                   : "border-border bg-card text-muted-foreground hover:bg-muted/40"
-              }`}
+                }`}
             >
               <div className="space-y-0.5">
                 <span className="text-xs font-bold block text-foreground">Today Only</span>
@@ -455,22 +453,21 @@ export function RiderBenefitsHub({
         <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border/60 pt-3">
           {[
             { id: "ALL", label: "All Benefits" },
-            { id: "EV", label: "⚡ EV Rental & Swap" },
-            { id: "FUEL", label: "⛽ Fuel Cashback" },
-            { id: "INSURANCE", label: "🛡️ TPA Cashless & Health" },
-            { id: "FEMALE_WELFARE", label: "🌸 Female Partner Welfare" },
-            { id: "CASHOUT", label: "💸 Instant Cashout" },
-            { id: "REST_POINTS", label: "☕ Rest Points" },
+            { id: "EV", label: "EV Rental & Swap" },
+            { id: "FUEL", label: "Fuel Cashback" },
+            { id: "INSURANCE", label: "TPA Cashless & Health" },
+            { id: "FEMALE_WELFARE", label: "Female Partner Welfare" },
+            { id: "CASHOUT", label: "Instant Cashout" },
+            { id: "REST_POINTS", label: "Rest Points" },
           ].map((cat) => (
             <button
               key={cat.id}
               type="button"
               onClick={() => setFilter(cat.id as CategoryFilter)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-                filter === cat.id
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${filter === cat.id
                   ? "bg-primary text-primary-foreground shadow-xs"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted"
-              }`}
+                }`}
             >
               {cat.label}
             </button>
@@ -736,9 +733,9 @@ export function RiderBenefitsHub({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] pt-1 border-t border-border/50 text-muted-foreground">
-              <span>🌸 2 Days / Calendar Month</span>
-              <span>🛡️ No rating or streak penalty</span>
-              <span>💰 ₹350/day wallet rest stipend</span>
+              <span>2 Days / Calendar Month</span>
+              <span>No rating or streak penalty</span>
+              <span>₹350/day wallet rest stipend</span>
             </div>
           </div>
 
@@ -768,7 +765,7 @@ export function RiderBenefitsHub({
                 1. Scheduled Weekly Payout
               </span>
               <p className="text-muted-foreground">
-                {RIDER_AFFILIATE_PARTNERS.instantCashout.scheduledSettlement}. standard fees or commissions deducted.
+                {RIDER_AFFILIATE_PARTNERS.instantCashout.scheduledSettlement}. Zero fees or commissions deducted.
               </p>
             </div>
 

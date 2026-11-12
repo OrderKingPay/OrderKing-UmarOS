@@ -10,7 +10,7 @@ import { deliveryActionFn, triggerMaskedCallFn } from "@/lib/server/rider-fns";
 import { TERMINAL_DELIVERY_STATES, type CashReconciliation, type Delivery } from "@/lib/rider/types";
 import { enqueueRiderOfflineAction, getRiderNetworkSpeed } from "@/lib/rider/rider-low-network";
 import { getTwoWheelerNavigationUris } from "@/lib/rider/maps";
-import { AlertTriangle, Camera, CheckCircle2, Clock3, Compass, QrCode, RotateCcw, ShieldAlert, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Camera, Check, CheckCircle2, Clock3, Compass, Hash, MessageSquare, Phone, QrCode, RotateCcw, ShieldAlert, ShieldCheck, Siren, Store, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "./confirm-dialog";
@@ -238,7 +238,7 @@ export function DeliveryActions({
           <ShieldAlert className="size-4 shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
           <div className="space-y-0.5">
             <p className="font-bold">
-              {threatEvaluation.orderBlocked ? "⚠️ Restricted Delivery Area" : "ℹ️ Delivery Caution Advisory"}
+              {threatEvaluation.orderBlocked ? "Restricted Delivery Area" : "Delivery Caution Advisory"}
             </p>
             <p className="text-[11px] leading-relaxed opacity-90">
               {threatEvaluation.rationale}
@@ -305,7 +305,9 @@ export function DeliveryActions({
             className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70 disabled:opacity-50"
             title="Call Customer"
           >
-            <span className="text-base">{isCalling ? "⏳" : "📞"}</span>
+            <span className="mb-0.5 flex size-5 items-center justify-center">
+              {isCalling ? <Clock3 className="size-4 animate-spin" /> : <Phone className="size-4" />}
+            </span>
             <span>{isCalling ? "Calling..." : "Call"}</span>
             <span className="text-[10px] text-muted-foreground font-mono">
               •••• {d.customer.contactMasked ? d.customer.contactMasked.replace(/\D/g, "").slice(-4) : "1234"}
@@ -317,7 +319,9 @@ export function DeliveryActions({
             disabled
             className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-muted/10 p-2 text-center text-xs font-medium text-muted-foreground opacity-50"
           >
-            <span className="text-base">📞</span>
+            <span className="mb-0.5 flex size-5 items-center justify-center">
+              <Phone className="size-4" />
+            </span>
             <span>Call</span>
             <span className="text-[10px]">Restricted</span>
           </button>
@@ -329,7 +333,9 @@ export function DeliveryActions({
           rel="noopener noreferrer"
           className="flex flex-col items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-center text-xs font-medium text-emerald-700 dark:text-emerald-400 transition hover:bg-emerald-500/20"
         >
-          <span className="text-base">💬</span>
+          <span className="mb-0.5 flex size-5 items-center justify-center">
+            <MessageSquare className="size-4" />
+          </span>
           <span>WhatsApp</span>
           <span className="text-[10px]">Chat</span>
         </a>
@@ -338,7 +344,9 @@ export function DeliveryActions({
           href="tel:18001000"
           className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
         >
-          <span className="text-base">🏬</span>
+          <span className="mb-0.5 flex size-5 items-center justify-center">
+            <Store className="size-4" />
+          </span>
           <span>Restaurant</span>
           <span className="text-[10px] text-muted-foreground">Call</span>
         </a>
@@ -349,7 +357,9 @@ export function DeliveryActions({
           className="flex flex-col items-center justify-center rounded-lg border border-red-500/50 bg-red-600/10 p-2 text-center text-xs font-bold text-red-500 transition hover:bg-red-600/20 active:scale-95"
           title="Emergency SOS"
         >
-          <span className="text-base animate-pulse">🚨</span>
+          <span className="mb-0.5 flex size-5 items-center justify-center animate-pulse">
+            <Siren className="size-4" />
+          </span>
           <span>SOS</span>
           <span className="text-[10px] text-red-400">112</span>
         </button>
@@ -537,7 +547,7 @@ export function DeliveryActions({
             disabled={pending}
             loading={pending}
             onComplete={() => {
-              
+
               const finalCode = code.trim() || d.pickupCode;
               return act("PICKUP", {
                 pickupCode: finalCode,
@@ -637,24 +647,22 @@ export function DeliveryActions({
             <button
               type="button"
               onClick={() => setHandoverTab("OTP")}
-              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${
-                handoverTab === "OTP"
+              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${handoverTab === "OTP"
                   ? "bg-card text-foreground shadow-2xs"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
-              🔢 4-Digit Customer OTP
+              4-Digit Customer OTP
             </button>
             <button
               type="button"
               onClick={() => setHandoverTab("QR")}
-              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${
-                handoverTab === "QR"
+              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${handoverTab === "QR"
                   ? "bg-card text-foreground shadow-2xs"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
-              📷 Scan Dynamic QR Code
+              Scan Dynamic QR Code
             </button>
           </div>
 
@@ -686,7 +694,7 @@ export function DeliveryActions({
                 </span>
                 {qrVerified && (
                   <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
-                    ✓ Verified
+                    Verified
                   </span>
                 )}
               </div>
@@ -708,7 +716,7 @@ export function DeliveryActions({
 
                     if (result.success) {
                       setQrVerified(true);
-                      toast.success("✅ Customer Delivery Handover QR Verified.");
+                      toast.success("Customer Delivery Handover QR Verified.");
                     } else {
                       toast.error(result.error || "QR verification failed");
                     }
@@ -797,7 +805,7 @@ export function DeliveryActions({
                 onClick={() => setCancelOpen(false)}
                 className="rounded-lg p-1 text-muted-foreground hover:bg-muted"
               >
-                ✕
+                <X className="size-4" />
               </button>
             </div>
 
@@ -830,7 +838,7 @@ export function DeliveryActions({
                   Select a reason to reassign this order to the nearest available delivery partner.
                 </p>
               </div>
-                
+
             )}
 
             <div className="space-y-2">
@@ -848,16 +856,15 @@ export function DeliveryActions({
                           key={justifiedReason}
                           type="button"
                           onClick={() => setReason(justifiedReason)}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-semibold text-left transition ${
-                            isSelected
+                          className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-semibold text-left transition ${isSelected
                               ? "border-emerald-500 bg-emerald-500/15 text-emerald-300 shadow-sm font-bold"
                               : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                          }`}
+                            }`}
                         >
                           <span>{justifiedReason}</span>
                           {isSelected && (
                             <span className="flex size-4 items-center justify-center rounded-full bg-emerald-500 text-black text-[10px] font-black shrink-0">
-                              ✓
+                              <Check className="size-2.5 stroke-[3]" />
                             </span>
                           )}
                         </button>
@@ -928,7 +935,7 @@ export function DeliveryActions({
                 {isPostPickup
                   ? !hasVerifiedProof
                     ? "Confirm Cancellation (Full Penalty)"
-                    : "Confirm Cancellation (Audit Pending)"
+                    : "Confirm Cancellation (Under Review)"
                   : isJustifiedOperationalReason(reason)
                     ? "Reassign Trip"
                     : "Confirm Cancellation"}

@@ -173,11 +173,10 @@ function ReviewsPage() {
           <button
             type="button"
             onClick={() => setActiveTab("COMPLAINTS")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
-              activeTab === "COMPLAINTS"
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${activeTab === "COMPLAINTS"
                 ? "bg-[#E23744] text-white shadow-xs"
                 : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+              }`}
           >
             <ShieldAlert className="size-4" />
             <span>Order Complaints &amp; Deductions</span>
@@ -191,11 +190,10 @@ function ReviewsPage() {
           <button
             type="button"
             onClick={() => setActiveTab("RATINGS")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
-              activeTab === "RATINGS"
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${activeTab === "RATINGS"
                 ? "bg-[#E23744] text-white shadow-xs"
                 : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+              }`}
           >
             <Star className="size-4" />
             <span>Ratings &amp; Reviews</span>
@@ -209,7 +207,10 @@ function ReviewsPage() {
 
         {disputeSuccessBanner && (
           <div className="flex items-center justify-between rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-900">
-            <span>✅ {disputeSuccessBanner}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+              {disputeSuccessBanner}
+            </span>
             <button
               type="button"
               onClick={() => setDisputeSuccessBanner(null)}
@@ -259,11 +260,10 @@ function ReviewsPage() {
                   key={pill.id}
                   type="button"
                   onClick={() => setComplaintFilter(pill.id as ComplaintFilter)}
-                  className={`rounded-full px-3.5 py-1 text-xs font-bold transition cursor-pointer ${
-                    complaintFilter === pill.id
+                  className={`rounded-full px-3.5 py-1 text-xs font-bold transition cursor-pointer ${complaintFilter === pill.id
                       ? "bg-[#E23744] text-white shadow-xs"
                       : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   {pill.label}
                 </button>
@@ -401,26 +401,27 @@ function ReviewsPage() {
                           : `${unansweredReviewsCount} awaiting reply`}
                       </span>
                       <span className="text-gray-400">·</span>
-                      <span className="text-gray-600">4–5★: {positiveCount}</span>
+                      <span className="text-gray-600">4–5 Stars: {positiveCount}</span>
                       <span className="text-gray-400">·</span>
-                      <span className="text-gray-600">1–2★: {criticalCount}</span>
+                      <span className="text-gray-600">1–2 Stars: {criticalCount}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* 5★ to 1★ Progress Bars */}
+                {/* 5-Star to 1-Star Progress Bars */}
                 <div className="w-full md:w-60 space-y-1 text-xs">
                   {[5, 4, 3, 2, 1].map((star) => {
                     const count = allReviews.filter((r) => r.rating === star).length;
                     const pct = totalReviewsCount > 0 ? Math.round((count * 100) / totalReviewsCount) : 0;
                     return (
                       <div key={star} className="flex items-center gap-2">
-                        <span className="w-8 text-gray-600 font-semibold">{star} ★</span>
+                        <span className="w-10 text-gray-600 font-semibold inline-flex items-center gap-1">
+                          {star} <Star className="size-3 fill-amber-500 text-amber-500" />
+                        </span>
                         <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
                           <div
-                            className={`h-full rounded-full ${
-                              star >= 4 ? "bg-emerald-500" : star === 3 ? "bg-amber-400" : "bg-rose-500"
-                            }`}
+                            className={`h-full rounded-full ${star >= 4 ? "bg-emerald-500" : star === 3 ? "bg-amber-400" : "bg-rose-500"
+                              }`}
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -438,18 +439,17 @@ function ReviewsPage() {
                 {[
                   { id: "ALL", label: `All Reviews (${totalReviewsCount})` },
                   { id: "NEEDS_REPLY", label: `Needs Reply (${unansweredReviewsCount})` },
-                  { id: "CRITICAL", label: `Critical 1–2★ (${criticalCount})` },
-                  { id: "POSITIVE", label: `Positive 4–5★ (${positiveCount})` },
+                  { id: "CRITICAL", label: `Critical 1–2 Stars (${criticalCount})` },
+                  { id: "POSITIVE", label: `Positive 4–5 Stars (${positiveCount})` },
                 ].map((pill) => (
                   <button
                     key={pill.id}
                     type="button"
                     onClick={() => setReviewFilter(pill.id as ReviewFilter)}
-                    className={`rounded-full px-3.5 py-1 text-xs font-bold transition cursor-pointer ${
-                      reviewFilter === pill.id
+                    className={`rounded-full px-3.5 py-1 text-xs font-bold transition cursor-pointer ${reviewFilter === pill.id
                         ? "bg-[#E23744] text-white shadow-xs"
                         : "border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {pill.label}
                   </button>
@@ -606,15 +606,14 @@ function ReviewCard({
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-2.5">
         <div className="flex items-center gap-2">
           <span
-            className={`rounded-md px-2 py-0.5 font-bold ${
-              review.rating >= 4
+            className={`rounded-md px-2 py-0.5 font-bold ${review.rating >= 4
                 ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                 : review.rating === 3
                   ? "bg-amber-50 text-amber-700 border border-amber-200"
                   : "bg-rose-50 text-rose-700 border border-rose-200"
-            }`}
+              }`}
           >
-            {review.rating} ★ / 5
+            {review.rating} / 5
           </span>
           {review.orderId && (
             <span className="text-gray-500 font-mono">Order #{review.orderId.slice(-6)}</span>

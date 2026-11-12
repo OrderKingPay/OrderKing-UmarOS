@@ -143,7 +143,7 @@ describe("Sovereign Telecom Care & Zero-Employee Dispatch Suite", () => {
 
       assert.match(messages.whatsAppDeepLink, /https:\/\/wa\.me\/919395065587\?text=/);
       assert.match(decodeURIComponent(messages.whatsAppDeepLink), /Sayed Umar/);
-      assert.match(decodeURIComponent(messages.whatsAppDeepLink), /Silchar \(IXS\) ➔ Kolkata \(CCU\)/);
+      assert.match(decodeURIComponent(messages.whatsAppDeepLink), /Silchar \(IXS\) to Kolkata \(CCU\)/);
       assert.match(decodeURIComponent(messages.whatsAppDeepLink), /₹4250\.00/);
     });
   });

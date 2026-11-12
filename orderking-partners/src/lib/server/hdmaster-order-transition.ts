@@ -131,13 +131,13 @@ export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
         action: `order_${data.action}_via_hdmaster`,
         entityType: "order",
         entityId: order.id,
-        detail: `${order.state}→${next}${prepMins ? ` (Prep: ${prepMins}m)` : ""}; canonical ${from}→${payload.data.state}`,
+        detail: `${order.state} -> ${next}${prepMins ? ` (Prep: ${prepMins}m)` : ""}; canonical ${from} -> ${payload.data.state}`,
       });
       await notifyInApp(sql, {
         restaurantId: ctx.restaurantId,
         type: "order_status",
         title: next === "ACCEPTED" ? `Order #${order.id.slice(-6)} Accepted (${prepMins ?? 20}m)` : next === "READY" ? `Order #${order.id.slice(-6)} Ready for Rider Dispatch` : next,
-        body: next === "READY" ? `Food packed. Rider dispatch notified for pickup.` : `${order.state} → ${next}`,
+        body: next === "READY" ? `Food packed. Rider dispatch notified for pickup.` : `${order.state} to ${next}`,
       });
 
       const result = {

@@ -116,7 +116,7 @@ export function canTransition(from: DeliveryState, to: DeliveryState): boolean {
 
 export function assertTransition(from: DeliveryState, to: DeliveryState): void {
   if (!canTransition(from, to)) {
-    throw new RiderError("INVALID_STATE", `Invalid delivery transition ${from} → ${to}`, 409);
+    throw new RiderError("INVALID_STATE", `Invalid delivery transition ${from} to ${to}`, 409);
   }
 }
 

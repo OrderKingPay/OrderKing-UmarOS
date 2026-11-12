@@ -128,9 +128,9 @@ export class RiderRadarAiEngine {
 
     const advice =
       codHeadroomRemainingPaise < 30_000
-        ? "⚠️ Warning: You have collected ₹" +
-          (pendingCodPaise / 100).toFixed(2) +
-          " in COD cash. Deposit via UPI to avoid dispatch lock."
+        ? "Warning: You have collected ₹" +
+        (pendingCodPaise / 100).toFixed(2) +
+        " in COD cash. Deposit via UPI to avoid dispatch lock."
         : `You are ${nextMilestoneRemainingTrips} trips away from an extra ₹${(nextMilestoneBonusPaise / 100).toFixed(2)} milestone bonus!`;
 
     return {

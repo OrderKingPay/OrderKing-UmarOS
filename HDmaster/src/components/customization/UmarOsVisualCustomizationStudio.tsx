@@ -2941,7 +2941,7 @@ export function UmarOsVisualCustomizationStudio({
 
               {/* Quick Prompt Presets */}
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                <span className="text-[10px] font-bold text-slate-400">Sample Commands:</span>
+                <span className="text-[10px] font-bold text-slate-400">Preset Commands:</span>
                 {[
                   "Change primary color to emerald green (#006A4E)",
                   "Change text of checkout button to 'Pay & Confirm Order'",

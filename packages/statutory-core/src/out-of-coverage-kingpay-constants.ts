@@ -86,7 +86,7 @@ export const PLACEMENT_EDTECH_OFFERS: EdTechCourseOffer[] = [
     courseId: 'ED-FS-101',
     title: 'Full-Stack Cloud & FinTech Engineering Bootcamp',
     partnerInstitute: 'KingPay Career Academy',
-    placementGuaranteeLabel: '100% Job Placement Guarantee (Min ₹6.5 LPA CTC)',
+    placementGuaranteeLabel: 'Placement Assistance Track (Target ₹6.5 LPA CTC)',
     courseFeePaise: 3499900,
     affiliateCommissionPaise: 550000, // ₹5,500.00
     affiliateTrackingId: 'OK-AFF-FS101-PLCMT',
@@ -98,7 +98,7 @@ export const PLACEMENT_EDTECH_OFFERS: EdTechCourseOffer[] = [
     courseId: 'ED-DA-202',
     title: 'Applied Data Analytics & GST FinOps Certification',
     partnerInstitute: 'Assam Digital Skills Mission Partner',
-    placementGuaranteeLabel: 'Guaranteed Placement or 100% Tuition Refund',
+    placementGuaranteeLabel: 'Placement Assistance Track (Target ₹4.8 LPA CTC)',
     courseFeePaise: 1999900,
     affiliateCommissionPaise: 325000, // ₹3,250.00
     affiliateTrackingId: 'OK-AFF-DA202-FINOPS',
@@ -110,7 +110,7 @@ export const PLACEMENT_EDTECH_OFFERS: EdTechCourseOffer[] = [
     courseId: 'ED-AI-303',
     title: 'Cloud Native AI & Systems Architecture Accelerator',
     partnerInstitute: 'National Tech Career Alliance',
-    placementGuaranteeLabel: 'Guaranteed Placement (Min ₹10 LPA CTC)',
+    placementGuaranteeLabel: 'Executive Placement Track (Target ₹10 LPA CTC)',
     courseFeePaise: 4999900,
     affiliateCommissionPaise: 750000, // ₹7,500.00 (Upper Bound)
     affiliateTrackingId: 'OK-AFF-AI303-EXEC',

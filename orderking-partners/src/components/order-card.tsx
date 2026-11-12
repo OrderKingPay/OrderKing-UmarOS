@@ -14,7 +14,18 @@ import { enqueueMutation } from "@/lib/offline/durable-queue";
 import { StructuredRejectionModal } from "@/components/orders/structured-rejection-modal";
 import { CourierRadarMap } from "@/components/orders/courier-radar-map";
 import { toast } from "sonner";
-import { Clock } from "lucide-react";
+import {
+  AlertTriangle,
+  Bell,
+  Check,
+  Clock,
+  Printer,
+  QrCode,
+  Receipt,
+  UserCheck,
+  X,
+  Zap,
+} from "lucide-react";
 
 export type OrderView = {
   id: string;
@@ -168,7 +179,7 @@ export function OrderCard({
       const formattedEta = arrivalEta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
       toast.warning(
-        `⏳ Kitchen Prep Delay (+${extraMinutes}m): Order #${order.orderNumber} prep extended to ${newPrep}m. Rider arrival window & delivery ETA updated to ${formattedEta}.`
+        `Kitchen Prep Delay (+${extraMinutes}m): Order #${order.orderNumber} prep extended to ${newPrep}m. Rider arrival window & delivery ETA updated to ${formattedEta}.`
       );
       onChanged?.();
     } catch (err) {
@@ -245,7 +256,7 @@ export function OrderCard({
         };
       });
 
-      toast.success(`✅ Rider Handover Verified! Food handed over for Order #${order.orderNumber}.`);
+      toast.success(`Rider Handover Verified. Food handed over for Order #${order.orderNumber}.`);
       setHandoverModalOpen(false);
       onChanged?.();
     } catch {
@@ -339,9 +350,9 @@ export function OrderCard({
       });
 
       if (action === "accept") {
-        toast.success(`✅ Order #${order.orderNumber} Accepted! KOT timer started (${effectivePrep}m SLA).`);
+        toast.success(`Order #${order.orderNumber} Accepted. KOT timer started (${effectivePrep}m SLA).`);
       } else if (action === "ready") {
-        toast.success(`🔔 Order #${order.orderNumber} Ready! Delivery rider dispatch notified for pickup.`);
+        toast.success(`Order #${order.orderNumber} Ready. Delivery rider dispatch notified for pickup.`);
       }
 
       clearActionKey(order.id, action);
@@ -457,7 +468,7 @@ export function OrderCard({
           ${
             order.specialInstructions
               ? `<div class="section" style="border:2px solid #000;padding:6px;font-weight:bold">
-                  ⚠️ SPECIAL COOKING INSTRUCTIONS:<br/>${order.specialInstructions}
+                  SPECIAL COOKING INSTRUCTIONS:<br/>${order.specialInstructions}
                 </div>`
               : ""
           }
@@ -517,10 +528,10 @@ export function OrderCard({
               <button
                 type="button"
                 onClick={() => setKotModalOpen(true)}
-                className="rounded-md border border-line bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-ink hover:bg-surface"
+                className="inline-flex items-center gap-1 rounded-md border border-line bg-surface-2 px-2 py-0.5 text-[11px] font-semibold text-ink hover:bg-surface"
                 title="Open 80mm Thermal KOT & Itemized GST §9(5) Tax Receipt"
               >
-                🖨️ Print KOT / Bill
+                <Printer className="size-3" /> Print KOT / Bill
               </button>
             </div>
             <div className="text-xs text-muted">
@@ -546,8 +557,8 @@ export function OrderCard({
               <span className="tabular text-muted">{formatINR(line.unitPricePaise * line.quantity)}</span>
             </div>
             {line.specialInstructions ? (
-              <p className="rounded bg-warn-soft px-2 py-0.5 text-xs font-bold text-warn">
-                ⚠️ Dish Instruction: {line.specialInstructions}
+              <p className="rounded bg-warn-soft px-2 py-0.5 text-xs font-bold text-warn inline-flex items-center gap-1">
+                <AlertTriangle className="size-3 shrink-0" /> Dish Instruction: {line.specialInstructions}
               </p>
             ) : null}
           </li>
@@ -555,8 +566,9 @@ export function OrderCard({
       </ul>
 
       {order.specialInstructions ? (
-        <p className="rounded-[12px] border border-warn/40 bg-warn-soft px-3 py-2 text-sm font-bold text-warn">
-          ⚠️ {t("orders.special")}: {order.specialInstructions}
+        <p className="rounded-[12px] border border-warn/40 bg-warn-soft px-3 py-2 text-sm font-bold text-warn flex items-center gap-1.5">
+          <AlertTriangle className="size-4 shrink-0" />
+          <span>{t("orders.special")}: {order.specialInstructions}</span>
         </p>
       ) : null}
 
@@ -597,7 +609,7 @@ export function OrderCard({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-base">{acceptanceRemainingSec <= 30 ? "🚨" : "⏱️"}</span>
+              <Clock className={cn("size-4", acceptanceRemainingSec <= 30 ? "text-rose-500 animate-pulse" : "text-amber-500")} />
               <span className="font-bold text-xs uppercase tracking-wider">
                 {acceptanceRemainingSec === 0
                   ? "120s Acceptance SLA Expired!"
@@ -624,8 +636,8 @@ export function OrderCard({
           </div>
 
           {acceptanceRemainingSec <= 45 ? (
-            <div className="text-[11px] font-semibold text-rose-700 dark:text-rose-300 flex items-start gap-1">
-              <span>⚠️</span>
+            <div className="text-[11px] font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-1">
+              <AlertTriangle className="size-3.5 shrink-0" />
               <span>
                 Please accept the order promptly to prevent auto-cancellation.</span>
             </div>
@@ -695,7 +707,7 @@ export function OrderCard({
                   onClick={() => void act("accept", undefined, selectedPrepMinutes)}
                   className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold shadow-md active:scale-95 cursor-pointer"
                 >
-                  ✓ Accept ({selectedPrepMinutes}m KOT)
+                  <Check className="size-4 mr-1" /> Accept ({selectedPrepMinutes}m KOT)
                 </Button>
                 <Button
                   size={large ? "lg" : "md"}
@@ -704,7 +716,7 @@ export function OrderCard({
                   onClick={() => setRejectOpen(true)}
                   className="border-gray-300 bg-white text-gray-700 hover:bg-red-50 hover:text-red-700 hover:border-red-300 font-bold cursor-pointer"
                 >
-                  ✕ {t("orders.reject")}
+                  <X className="size-4 mr-1" /> {t("orders.reject")}
                 </Button>
               </div>
             </div>
@@ -723,7 +735,7 @@ export function OrderCard({
                 onClick={() => void act("ready")}
                 className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold active:scale-95 shadow-md cursor-pointer"
               >
-                🔔 {t("orders.ready")} &amp; Dispatch Rider
+                <Bell className="size-4 mr-1.5" /> {t("orders.ready")} &amp; Dispatch Rider
               </Button>
               <div className="flex items-center gap-1.5">
                 <Button
@@ -761,7 +773,7 @@ export function OrderCard({
               onClick={() => setHandoverModalOpen(true)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
             >
-              🤝 Handover to Rider (Verify OTP / Barcode)
+              <UserCheck className="size-4 mr-1.5" /> Handover to Rider (Verify OTP / Barcode)
             </Button>
           ) : null}
           {order.state === "READY" && (
@@ -774,7 +786,7 @@ export function OrderCard({
               className="border-sky-500/40 bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 text-xs font-bold"
               title="Trigger immediate algorithmic auto-dispatch ping to closest online delivery partner"
             >
-              ⚡ {requestingRider ? "Broadcasting..." : "Ping Nearby Couriers"}
+              <Zap className="size-3.5 mr-1" /> {requestingRider ? "Broadcasting..." : "Ping Nearby Couriers"}
             </Button>
           )}
         </div>
@@ -790,8 +802,8 @@ export function OrderCard({
           <div className="w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface text-ink shadow-2xl">
             <div className="flex items-center justify-between border-b border-line bg-surface-2 px-4 py-3">
               <div>
-                <h3 className="text-sm font-bold">
-                  🧾 80mm Thermal KOT &amp; Itemized GST §9(5) Bill
+                <h3 className="text-sm font-bold flex items-center gap-1.5">
+                  <Receipt className="size-4 text-primary" /> 80mm Thermal KOT &amp; Itemized GST §9(5) Bill
                 </h3>
                 <p className="text-[11px] text-muted">
                   ESC/POS 80mm Standard · Integer-Paise Verified Breakdown
@@ -800,9 +812,9 @@ export function OrderCard({
               <button
                 type="button"
                 onClick={() => setKotModalOpen(false)}
-                className="rounded-lg px-2 py-1 text-xs font-semibold text-muted hover:bg-surface hover:text-ink"
+                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-muted hover:bg-surface hover:text-ink"
               >
-                ✕ Close
+                <X className="size-3.5" /> Close
               </button>
             </div>
 
@@ -853,8 +865,8 @@ export function OrderCard({
                       </div>
                     ) : null}
                     {line.specialInstructions ? (
-                      <div className="mt-0.5 rounded border border-warn/40 bg-warn-soft px-2 py-1 font-sans text-[11px] font-bold text-warn">
-                        ⚠️ CHEF INSTRUCTION: {line.specialInstructions}
+                      <div className="mt-0.5 rounded border border-warn/40 bg-warn-soft px-2 py-1 font-sans text-[11px] font-bold text-warn inline-flex items-center gap-1">
+                        <AlertTriangle className="size-3 shrink-0" /> CHEF INSTRUCTION: {line.specialInstructions}
                       </div>
                     ) : null}
                   </div>
@@ -864,7 +876,10 @@ export function OrderCard({
               {/* Order-Wide Special Cooking Instructions */}
               {order.specialInstructions ? (
                 <div className="rounded-lg border-2 border-warn bg-warn-soft p-2.5 font-sans text-xs font-bold text-warn">
-                  ⚠️ ORDER SPECIAL COOKING INSTRUCTIONS:
+                  <div className="flex items-center gap-1.5">
+                    <AlertTriangle className="size-3.5 shrink-0" />
+                    <span>ORDER SPECIAL COOKING INSTRUCTIONS:</span>
+                  </div>
                   <div className="mt-0.5 text-ink">{order.specialInstructions}</div>
                 </div>
               ) : null}
@@ -930,10 +945,10 @@ export function OrderCard({
 
             <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line bg-surface-2 px-4 py-3">
               <Button variant="secondary" size="sm" onClick={() => window.print()}>
-                🖨️ Print Current View
+                <Printer className="size-3.5 mr-1.5" /> Print Current View
               </Button>
               <Button variant="primary" size="sm" onClick={triggerThermalWindowPrint}>
-                🧾 Print 80mm Thermal KOT &amp; Bill
+                <Receipt className="size-3.5 mr-1.5" /> Print 80mm Thermal KOT &amp; Bill
               </Button>
             </div>
           </div>
@@ -951,7 +966,9 @@ export function OrderCard({
           <div className="w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface text-ink shadow-2xl space-y-4 p-5">
             <div className="flex items-center justify-between border-b border-line pb-3">
               <div className="flex items-center gap-2.5">
-                <span className="text-2xl">🤝</span>
+                <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
+                  <UserCheck className="size-5" />
+                </div>
                 <div>
                   <h3 className="text-sm font-bold text-foreground">
                     Delivery Rider Handover Verification
@@ -965,8 +982,9 @@ export function OrderCard({
                 type="button"
                 onClick={() => setHandoverModalOpen(false)}
                 className="text-muted hover:text-foreground text-sm font-bold"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="size-4" />
               </button>
             </div>
 
@@ -1035,8 +1053,8 @@ export function OrderCard({
                     2. Or Scan Delivery Bag Barcode:
                   </span>
                   {barcodeScanned && (
-                    <span className="text-[10px] text-leaf font-bold font-mono">
-                      ✅ BAG SCANNED
+                    <span className="text-[10px] text-leaf font-bold font-mono inline-flex items-center gap-1">
+                      <Check className="size-3" /> BAG SCANNED
                     </span>
                   )}
                 </div>
@@ -1060,7 +1078,7 @@ export function OrderCard({
                         }}
                         className="text-xs font-bold"
                       >
-                        📷 Scan Bag Barcode (Hardware / Emulated)
+                        <QrCode className="size-3.5 mr-1.5" /> Scan Bag Barcode
                       </Button>
                     </div>
                   )}
@@ -1107,7 +1125,7 @@ export function OrderCard({
                 onClick={confirmHandover}
                 className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {handoverSubmitting ? "Verifying..." : "✅ Confirm Handover & Release"}
+                {handoverSubmitting ? "Verifying..." : "Confirm Handover & Release"}
               </Button>
             </div>
           </div>

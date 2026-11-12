@@ -147,7 +147,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
       expect(res.targetBonusRupees).toBe(150);
       expect(res.remainingOrders).toBe(10);
       expect(res.progressPct).toBe(0);
-      expect(res.headline).toBe("Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus 🎯");
+      expect(res.headline).toBe("Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus");
       expect(res.slabs.every((s) => !s.isUnlocked)).toBe(true);
     });
 
@@ -159,7 +159,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
       expect(res.targetOrders).toBe(10);
       expect(res.remainingOrders).toBe(5);
       expect(res.progressPct).toBe(50); // 5/10 orders
-      expect(res.headline).toBe("Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus 🎯");
+      expect(res.headline).toBe("Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus");
       expect(res.slabs[0].isUnlocked).toBe(true); // 5 orders unlocked
       expect(res.slabs[1].isUnlocked).toBe(false);
       expect(res.slabs[2].isUnlocked).toBe(false);
@@ -173,7 +173,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
       expect(res.remainingOrders).toBe(4);
       expect(res.bonusPaise).toBe(5000);
       expect(res.bonusRupees).toBe(50);
-      expect(res.headline).toBe("Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus 🎯");
+      expect(res.headline).toBe("Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus");
     });
 
     it("advances target to 15 orders (+₹275) upon completing 10 orders (Slab 2 boundary)", () => {
@@ -185,7 +185,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
       expect(res.targetBonusRupees).toBe(275);
       expect(res.remainingOrders).toBe(5); // 15 - 10
       expect(res.progressPct).toBe(67); // 10/15 ~ 67%
-      expect(res.headline).toBe("Today's Target: Complete 15 orders to earn ₹275 Milestone Bonus 🎯");
+      expect(res.headline).toBe("Today's Target: Complete 15 orders to earn ₹275 Milestone Bonus");
       expect(res.slabs[0].isUnlocked).toBe(true);
       expect(res.slabs[1].isUnlocked).toBe(true);
       expect(res.slabs[2].isUnlocked).toBe(false);
@@ -199,7 +199,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
       expect(res.targetOrders).toBe(15);
       expect(res.remainingOrders).toBe(0);
       expect(res.progressPct).toBe(100);
-      expect(res.headline).toBe("All Daily Milestone Targets Completed! 🏆");
+      expect(res.headline).toBe("All Daily Milestone Targets Completed!");
       expect(res.slabs.every((s) => s.isUnlocked)).toBe(true);
     });
 
@@ -241,27 +241,27 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
   // =========================================================================
   describe("3. Order Rejection / Reassignment with Justified Operational Reasons", () => {
     it("contains all 4 dignified, realistic operational reasons", () => {
-      expect(JUSTIFIED_OPERATIONAL_REASONS).toContain("Bike Breakdown / Tyre Puncture 🛵");
-      expect(JUSTIFIED_OPERATIONAL_REASONS).toContain("Personal Emergency / Unwell 🏥");
-      expect(JUSTIFIED_OPERATIONAL_REASONS).toContain("Restaurant Distance Excessive (>5 km) 📍");
-      expect(JUSTIFIED_OPERATIONAL_REASONS).toContain("Heavy Rain / Waterlogging on Route 🌧️");
+      expect(JUSTIFIED_OPERATIONAL_REASONS).toContain("Bike Breakdown / Tyre Puncture");
+      expect(JUSTIFIED_OPERATIONAL_REASONS).toContain("Personal Emergency / Unwell");
+      expect(JUSTIFIED_OPERATIONAL_REASONS).toContain("Restaurant Distance Excessive (>5 km)");
+      expect(JUSTIFIED_OPERATIONAL_REASONS).toContain("Heavy Rain / Waterlogging on Route");
       expect(JUSTIFIED_OPERATIONAL_REASONS).toHaveLength(4);
     });
 
     it("validates justified operational reasons with emojis, lowercase, and variations", () => {
-      expect(isJustifiedOperationalReason("Bike Breakdown / Tyre Puncture 🛵")).toBe(true);
+      expect(isJustifiedOperationalReason("Bike Breakdown / Tyre Puncture")).toBe(true);
       expect(isJustifiedOperationalReason("bike breakdown / tyre puncture")).toBe(true);
       expect(isJustifiedOperationalReason("bike breakdown")).toBe(true);
       expect(isJustifiedOperationalReason("tyre puncture")).toBe(true);
 
-      expect(isJustifiedOperationalReason("Personal Emergency / Unwell 🏥")).toBe(true);
+      expect(isJustifiedOperationalReason("Personal Emergency / Unwell")).toBe(true);
       expect(isJustifiedOperationalReason("personal emergency")).toBe(true);
       expect(isJustifiedOperationalReason("unwell")).toBe(true);
 
-      expect(isJustifiedOperationalReason("Restaurant Distance Excessive (>5 km) 📍")).toBe(true);
+      expect(isJustifiedOperationalReason("Restaurant Distance Excessive (>5 km)")).toBe(true);
       expect(isJustifiedOperationalReason("restaurant distance excessive")).toBe(true);
 
-      expect(isJustifiedOperationalReason("Heavy Rain / Waterlogging on Route 🌧️")).toBe(true);
+      expect(isJustifiedOperationalReason("Heavy Rain / Waterlogging on Route")).toBe(true);
       expect(isJustifiedOperationalReason("heavy rain")).toBe(true);
       expect(isJustifiedOperationalReason("waterlogging on route")).toBe(true);
     });
@@ -290,7 +290,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
           5000,
           defaultDisciplineConfig,
           false,
-          "Bike Breakdown / Tyre Puncture 🛵",
+          "Bike Breakdown / Tyre Puncture",
         );
         expect(res1.penaltyPaise).toBe(0);
         expect(res1.isJustifiedReassignment).toBe(true);
@@ -303,7 +303,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
           5000,
           defaultDisciplineConfig,
           false,
-          "Personal Emergency / Unwell 🏥",
+          "Personal Emergency / Unwell",
         );
         expect(res2.penaltyPaise).toBe(0);
         expect(res2.isJustifiedReassignment).toBe(true);
@@ -315,7 +315,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
           5000,
           defaultDisciplineConfig,
           false,
-          "Restaurant Distance Excessive (>5 km) 📍",
+          "Restaurant Distance Excessive (>5 km)",
         );
         expect(res3.penaltyPaise).toBe(0);
         expect(res3.isJustifiedReassignment).toBe(true);
@@ -327,7 +327,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
           5000,
           defaultDisciplineConfig,
           false,
-          "Heavy Rain / Waterlogging on Route 🌧️",
+          "Heavy Rain / Waterlogging on Route",
         );
         expect(res4.penaltyPaise).toBe(0);
         expect(res4.isJustifiedReassignment).toBe(true);
@@ -355,7 +355,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
         6000,  // ₹60 payout
         defaultDisciplineConfig,
         false, // no proof
-        "Bike Breakdown / Tyre Puncture 🛵", // reason alone cannot excuse post-pickup food loss without audit proof
+        "Bike Breakdown / Tyre Puncture", // reason alone cannot excuse post-pickup food loss without audit proof
       );
       expect(res.penaltyPaise).toBe(41000); // 35000 + 6000
       expect(res.isPostPickup).toBe(true);
@@ -369,7 +369,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
         6000,
         defaultDisciplineConfig,
         true, // hasVerifiedProof
-        "Bike Breakdown / Tyre Puncture 🛵",
+        "Bike Breakdown / Tyre Puncture",
       );
       expect(res.penaltyPaise).toBe(0);
       expect(res.requiresAuditHold).toBe(true);
@@ -498,14 +498,14 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
       const cancelled = await engine.cancelDelivery(
         userId,
         deliveryId,
-        "Bike Breakdown / Tyre Puncture 🛵",
+        "Bike Breakdown / Tyre Puncture",
         true,
         "idem_cancel_breakdown",
       );
 
       // Verify clean transition to RIDER_CANCELLED
       expect(cancelled.state).toBe("RIDER_CANCELLED");
-      expect(cancelled.cancelReason).toBe("bike breakdown / tyre puncture 🛵");
+      expect(cancelled.cancelReason).toBe("bike breakdown / tyre puncture");
 
       // Verify ZERO penalty deduction was inserted into earnings
       const earnings = await store.listEarnings(userId);

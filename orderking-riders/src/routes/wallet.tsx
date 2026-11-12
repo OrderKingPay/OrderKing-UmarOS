@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   Copy,
   QrCode,
+  X,
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -123,7 +124,7 @@ export function WalletPage() {
             to="/earnings"
             className="rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold hover:bg-muted transition"
           >
-            Earnings →
+            Earnings
           </Link>
         </div>
 
@@ -176,11 +177,10 @@ export function WalletPage() {
                   key={idx}
                   type="button"
                   onClick={() => setQuickAmountRupees(amt)}
-                  className={`rounded-xl border py-2 text-xs font-mono font-bold transition ${
-                    quickAmountRupees === amt
+                  className={`rounded-xl border py-2 text-xs font-mono font-bold transition ${quickAmountRupees === amt
                       ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 shadow-xs"
                       : "border-border bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   ₹{amt}
                   {idx === 3 && unreconciledPaise > 0 ? " (Full)" : ""}
@@ -250,7 +250,7 @@ export function WalletPage() {
                   onClick={() => setShowQrModal(false)}
                   className="rounded-lg p-1 text-muted-foreground hover:bg-muted"
                 >
-                  ✕
+                  <X className="size-4" />
                 </button>
               </div>
 

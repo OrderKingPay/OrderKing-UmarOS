@@ -438,11 +438,10 @@ function MerchantHeaderRushToggle() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-xs font-bold transition shadow-xs cursor-pointer select-none ${
-          rush.isActive
+        className={`inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-xs font-bold transition shadow-xs cursor-pointer select-none ${rush.isActive
             ? "border border-rose-300 bg-rose-50 text-rose-800 ring-2 ring-rose-400/30"
             : "border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
-        }`}
+          }`}
         title={
           rush.isActive
             ? `Kitchen Rush Mode Active (+${rush.bufferMinutes}m Prep Buffer)`
@@ -476,15 +475,16 @@ function MerchantHeaderRushToggle() {
               rush.activate(10);
               setOpen(false);
             }}
-            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${
-              rush.isActive && rush.bufferMinutes === 10
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${rush.isActive && rush.bufferMinutes === 10
                 ? "bg-amber-50 text-amber-900 border border-amber-300 font-bold"
                 : "hover:bg-gray-50 text-gray-700"
-            }`}
+              }`}
           >
             <span>+10 Mins Prep Buffer</span>
             {rush.isActive && rush.bufferMinutes === 10 && (
-              <span className="text-[10px] text-amber-600 font-bold">● Active</span>
+              <span className="inline-flex items-center gap-1 text-[10px] text-amber-600 font-bold">
+                <span className="size-1.5 rounded-full bg-amber-600 inline-block" /> Active
+              </span>
             )}
           </button>
 
@@ -494,15 +494,16 @@ function MerchantHeaderRushToggle() {
               rush.activate(15);
               setOpen(false);
             }}
-            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${
-              rush.isActive && rush.bufferMinutes === 15
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${rush.isActive && rush.bufferMinutes === 15
                 ? "bg-rose-50 text-rose-900 border border-rose-300 font-bold"
                 : "hover:bg-gray-50 text-gray-700"
-            }`}
+              }`}
           >
             <span>+15 Mins Prep Buffer</span>
             {rush.isActive && rush.bufferMinutes === 15 && (
-              <span className="text-[10px] text-rose-600 font-bold">● Active</span>
+              <span className="inline-flex items-center gap-1 text-[10px] text-rose-600 font-bold">
+                <span className="size-1.5 rounded-full bg-rose-600 inline-block" /> Active
+              </span>
             )}
           </button>
 

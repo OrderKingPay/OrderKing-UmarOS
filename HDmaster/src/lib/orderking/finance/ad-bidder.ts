@@ -11,12 +11,11 @@ export async function requestHighestAdBid(customerId: string): Promise<AdPayload
   const rows = await getSql('SELECT SUM(total_amount) as ltv FROM orders WHERE customer_id = ?', [customerId]);
   const ltv = rows[0]?.ltv || 0;
 
-  // Prepare ad network endpoints
-  const networks = [
-    'https://adnetwork1.example.com/bid',
-    'https://adnetwork2.example.com/bid',
-    'https://adnetwork3.example.com/bid'
-  ];
+  // Read configured ad network bid endpoints from environment
+  const raw = (process.env.AD_NETWORK_BID_URLS || '').trim();
+  if (!raw) return null;
+  const networks = raw.split(',').map((u) => u.trim()).filter(Boolean);
+  if (networks.length === 0) return null;
 
   // Setup timeout to drop bids taking > 200ms
   const controller = new AbortController();

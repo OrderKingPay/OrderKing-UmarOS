@@ -695,13 +695,13 @@ export async function dispatchBookingConfirmationTelecom(
     `*ORDERKING TRAVEL CONFIRMATION*\n` +
     `Hello *${params.customerName}*,\n` +
     `Your ${params.serviceType} booking *#${params.bookingId}* is CONFIRMED!\n\n` +
-    `🎫 PNR / Ticket: *${params.pnr}*\n` +
-    `✈️ Carrier: ${params.carrierName} ${params.serviceNumber ? `(${params.serviceNumber})` : ""}\n` +
-    `📍 Route: ${params.origin} ➔ ${params.destination}\n` +
-    `🕒 Departure: ${params.departureTime}, ${params.travelDate}\n` +
-    `💳 Amount Paid: ₹${totalInr} (KingPay Verified)\n` +
-    `📄 e-Ticket / PDF Voucher: ${pdfVoucherUrl}\n\n` +
-    `📲 Live Trip Tracking: https://orderkingpay.com/travel/trips?id=${params.bookingId}\n` +
+    `PNR / Ticket: *${params.pnr}*\n` +
+    `Carrier: ${params.carrierName} ${params.serviceNumber ? `(${params.serviceNumber})` : ""}\n` +
+    `Route: ${params.origin} to ${params.destination}\n` +
+    `Departure: ${params.departureTime}, ${params.travelDate}\n` +
+    `Amount Paid: ₹${totalInr} (KingPay Verified)\n` +
+    `e-Ticket / PDF Voucher: ${pdfVoucherUrl}\n\n` +
+    `Live Trip Tracking: https://orderkingpay.com/travel/trips?id=${params.bookingId}\n` +
     `GSTIN: 18AFXPH9838M1Z9 · Orderkingpay`;
 
   const smsText =

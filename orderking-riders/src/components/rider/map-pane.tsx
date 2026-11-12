@@ -164,11 +164,10 @@ export function MapPane({
           <button
             type="button"
             onClick={() => setHeatmapEnabled((v) => !v)}
-            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
-              heatmapEnabled
+            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${heatmapEnabled
                 ? "bg-amber-500/20 text-[#E23744] border border-amber-500/40"
                 : "bg-muted/40 text-muted-foreground border border-border/50 hover:bg-muted"
-            }`}
+              }`}
           >
             <Flame className={`size-3.5 ${heatmapEnabled ? "text-[#E23744]" : "text-muted-foreground"}`} />
             <span>{heatmapEnabled ? "Heatmap ON" : "Heatmap OFF"}</span>
@@ -372,7 +371,7 @@ export function MapPane({
             <p className="flex items-center gap-1.5 text-xs text-foreground font-semibold truncate">
               <MapPin className="size-3.5 text-[#E23744] shrink-0" />
               <span className="truncate">{pickupLabel || "Restaurant"}</span>
-              <span className="text-muted-foreground">→</span>
+              <span className="text-muted-foreground">-</span>
               <span className="truncate">{dropLabel || "Customer"}</span>
             </p>
             <p className="text-[10px] text-muted-foreground">
@@ -426,7 +425,7 @@ export function MapPane({
                 <div className="flex items-center justify-between text-[10px] text-slate-300">
                   <span>{spot.activeRestaurants} Outlets</span>
                   <span className="text-[#E23744] font-semibold">
-                    {spot.demandLevel === "VERY_HIGH" ? "🔥 Surge" : "⚡ High"}
+                    {spot.demandLevel === "VERY_HIGH" ? "Surge" : "High"}
                   </span>
                 </div>
               </div>

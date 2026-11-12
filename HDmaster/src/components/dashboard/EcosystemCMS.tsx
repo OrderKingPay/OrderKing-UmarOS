@@ -83,7 +83,7 @@ const DEFAULT_CUSTOM_BANNERS: CustomAppBanner[] = [
   {
     id: "banner-3",
     title: "Pay with KingPay Wallet",
-    subtitle: "Enjoy 1-tap instant checkout and instant cashback on every meal.",
+    subtitle: "Pay directly via UPI or KingPay Wallet with transparent order totals.",
     buttonText: "Open Wallet",
     linkUrl: "/wallet/kingpay",
     bgColor: "#2563EB",

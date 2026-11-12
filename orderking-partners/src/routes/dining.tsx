@@ -25,6 +25,7 @@ import {
   UserPlus,
   Users,
   UtensilsCrossed,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCommissionTokens } from "@orderking/ui";
@@ -283,8 +284,9 @@ function DiningPage() {
                   type="button"
                   onClick={() => setWalkInModalOpen(false)}
                   className="text-gray-500 hover:text-gray-800"
+                  aria-label="Close modal"
                 >
-                  ✕
+                  <X className="size-4" />
                 </button>
               </div>
 
@@ -342,10 +344,10 @@ function DiningPage() {
                     onChange={(e) => {
                       setZone(
                         e.target.value as
-                          | "AC Indoor Main Hall"
-                          | "Rooftop Open Air"
-                          | "Outdoor Patio"
-                          | "Private Cabana / VIP Lounge"
+                        | "AC Indoor Main Hall"
+                        | "Rooftop Open Air"
+                        | "Outdoor Patio"
+                        | "Private Cabana / VIP Lounge"
                       );
                       setTableNo("");
                     }}
@@ -429,8 +431,9 @@ function DiningPage() {
                   type="button"
                   onClick={() => setFloorSettingsModalOpen(false)}
                   className="text-gray-500 hover:text-gray-800"
+                  aria-label="Close floor settings"
                 >
-                  ✕
+                  <X className="size-4" />
                 </button>
               </div>
 

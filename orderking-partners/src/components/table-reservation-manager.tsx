@@ -147,92 +147,7 @@ export const INITIAL_TABLES: DiningTable[] = [
   { id: "tbl-14", tableNumber: "V-02", zone: "Private Cabana / VIP Lounge", capacityTag: "10-Seater Banquet", maxGuests: 10, status: "AVAILABLE" },
 ];
 
-export const INITIAL_RESERVATIONS: ReservationBooking[] = [
-  {
-    id: "res-sample-1",
-    createdAgo: "Just now",
-    bookingRef: "TB-1001",
-    guestName: "Guest Booking",
-    phone: "+91 98000 00000",
-    guestsCount: 4,
-    timeSlot: "8:00 PM",
-    date: "Today",
-    areaPreference: "AC Indoor Main Hall",
-    status: "PENDING",
-    depositAmount: 500,
-    platformFeePercent: 5,
-    platformFeeAmount: 25,
-    netRestaurantPayable: 475,
-  },
-  {
-    id: "res-sample-2",
-    createdAgo: "Just now",
-    bookingRef: "TB-1002",
-    guestName: "Guest Booking",
-    phone: "+91 98000 00001",
-    guestsCount: 2,
-    timeSlot: "8:30 PM",
-    date: "Today",
-    areaPreference: "AC Indoor Main Hall",
-    status: "CONFIRMED",
-    assignedTable: "T-02",
-    depositAmount: 500,
-    platformFeePercent: 5,
-    platformFeeAmount: 25,
-    netRestaurantPayable: 475,
-  },
-  {
-    id: "res-sample-3",
-    createdAgo: "Just now",
-    bookingRef: "TB-1003",
-    guestName: "Guest Booking",
-    phone: "+91 98000 00002",
-    guestsCount: 6,
-    timeSlot: "7:30 PM",
-    date: "Today",
-    areaPreference: "Private Cabana / VIP Lounge",
-    status: "SEATED",
-    assignedTable: "V-01",
-    depositAmount: 1000,
-    platformFeePercent: 5,
-    platformFeeAmount: 50,
-    netRestaurantPayable: 950,
-  },
-  {
-    id: "res-sample-4",
-    createdAgo: "Just now",
-    bookingRef: "TB-1004",
-    guestName: "Guest Booking",
-    phone: "+91 98000 00003",
-    guestsCount: 8,
-    timeSlot: "6:00 PM",
-    date: "Today",
-    areaPreference: "Private Cabana / VIP Lounge",
-    status: "COMPLETED",
-    assignedTable: "V-02",
-    depositAmount: 1000,
-    platformFeePercent: 5,
-    platformFeeAmount: 50,
-    netRestaurantPayable: 950,
-    billAmount: 8450,
-  },
-  {
-    id: "res-sample-5",
-    createdAgo: "Just now",
-    bookingRef: "TB-1005",
-    guestName: "Guest Booking",
-    phone: "+91 98000 00004",
-    guestsCount: 2,
-    timeSlot: "6:30 PM",
-    date: "Today",
-    areaPreference: "Outdoor Patio",
-    status: "CANCELLED",
-    depositAmount: 500,
-    platformFeePercent: 5,
-    platformFeeAmount: 25,
-    netRestaurantPayable: 475,
-  },
-];
+export const INITIAL_RESERVATIONS: ReservationBooking[] = [];
 
 export interface TableReservationHookState {
   reservations: ReservationBooking[];
@@ -846,7 +761,7 @@ export function TableReservationManager({
             )}
           >
             <Receipt className="size-4" />
-            <span>Dining Settlement Ledger (custom commission)</span>
+            <span>Dining Settlement Ledger (0% commission)</span>
             <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-black">
               ₹{totalDeposits.toLocaleString("en-IN")}
             </span>
@@ -884,11 +799,11 @@ export function TableReservationManager({
           <div className="flex flex-wrap items-center gap-2 border-b border-gray-200/70 pb-3">
             {(
               [
-                { id: "PENDING", label: "Pending Reservations", emoji: "⏳", color: "text-amber-400" },
-                { id: "CONFIRMED", label: "Confirmed Tables", emoji: "✅", color: "text-emerald-400" },
-                { id: "SEATED", label: "Seated Diners", emoji: "🍽️", color: "text-indigo-400" },
-                { id: "COMPLETED", label: "Completed & Billed", emoji: "🧾", color: "text-blue-400" },
-                { id: "CANCELLED", label: "Released / No-Show", emoji: "❌", color: "text-rose-400" },
+                { id: "PENDING", label: "Pending Reservations", color: "text-amber-400" },
+                { id: "CONFIRMED", label: "Confirmed Tables", color: "text-emerald-400" },
+                { id: "SEATED", label: "Seated Diners", color: "text-indigo-400" },
+                { id: "COMPLETED", label: "Completed & Billed", color: "text-blue-400" },
+                { id: "CANCELLED", label: "Released / No-Show", color: "text-rose-400" },
               ] as const
             ).map((tab) => {
               const count = reservations.filter((r) => r.status === tab.id).length;
@@ -905,7 +820,6 @@ export function TableReservationManager({
                       : "bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200"
                   )}
                 >
-                  <span>{tab.emoji}</span>
                   <span>{tab.label}</span>
                   <span
                     className={cn(
@@ -967,7 +881,7 @@ export function TableReservationManager({
                       </span>
 
                       <span className="rounded-xl bg-indigo-500/15 border border-indigo-500/30 px-2.5 py-1 font-semibold text-indigo-300">
-                        📍 {res.areaPreference}
+                        {res.areaPreference}
                       </span>
 
                       {res.assignedTable && (
@@ -984,7 +898,7 @@ export function TableReservationManager({
                     <div className="flex flex-wrap items-center gap-2">
                       {res.occasion && (
                         <span className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-xs font-semibold text-amber-400 flex items-center gap-1">
-                          🎉 {res.occasion}
+                          {res.occasion}
                         </span>
                       )}
                       {res.notes && (
@@ -1146,11 +1060,11 @@ export function TableReservationManager({
                 const count = tables.filter((t) => t.zone === zone).length;
                 const zoneBadge =
                   zone === "AC Indoor Main Hall"
-                    ? "❄️ AC Indoor"
+                    ? "AC Indoor"
                     : zone === "Rooftop Open Air"
-                    ? "🌆 Rooftop"
+                    ? "Rooftop"
                     : zone === "Outdoor Patio"
-                    ? "🌿 Patio"
+                    ? "Patio"
                     : "Cabana / VIP";
                 return (
                   <button

@@ -1,13 +1,99 @@
 import { describe, it, expect } from "vitest";
 import {
   INITIAL_TABLES,
-  INITIAL_RESERVATIONS,
   type DiningAreaZone,
   type TableCapacity,
   type ReservationStatus,
   type DiningTable,
   type ReservationBooking,
 } from "../components/table-reservation-manager";
+
+const TEST_LIFECYCLE_FIXTURES: ReservationBooking[] = [
+  {
+    id: "test-res-1",
+    createdAgo: "Just now",
+    bookingRef: "TB-1001",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00000",
+    guestsCount: 4,
+    timeSlot: "8:00 PM",
+    date: "Today",
+    areaPreference: "AC Indoor Main Hall",
+    status: "PENDING",
+    depositAmount: 500,
+    platformFeePercent: 5,
+    platformFeeAmount: 25,
+    netRestaurantPayable: 475,
+  },
+  {
+    id: "test-res-2",
+    createdAgo: "Just now",
+    bookingRef: "TB-1002",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00001",
+    guestsCount: 2,
+    timeSlot: "8:30 PM",
+    date: "Today",
+    areaPreference: "AC Indoor Main Hall",
+    status: "CONFIRMED",
+    assignedTable: "T-02",
+    depositAmount: 500,
+    platformFeePercent: 5,
+    platformFeeAmount: 25,
+    netRestaurantPayable: 475,
+  },
+  {
+    id: "test-res-3",
+    createdAgo: "Just now",
+    bookingRef: "TB-1003",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00002",
+    guestsCount: 6,
+    timeSlot: "7:30 PM",
+    date: "Today",
+    areaPreference: "Private Cabana / VIP Lounge",
+    status: "SEATED",
+    assignedTable: "V-01",
+    depositAmount: 1000,
+    platformFeePercent: 5,
+    platformFeeAmount: 50,
+    netRestaurantPayable: 950,
+  },
+  {
+    id: "test-res-4",
+    createdAgo: "Just now",
+    bookingRef: "TB-1004",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00003",
+    guestsCount: 8,
+    timeSlot: "6:00 PM",
+    date: "Today",
+    areaPreference: "Private Cabana / VIP Lounge",
+    status: "COMPLETED",
+    assignedTable: "V-02",
+    depositAmount: 1000,
+    platformFeePercent: 5,
+    platformFeeAmount: 50,
+    netRestaurantPayable: 950,
+    billAmount: 8450,
+  },
+  {
+    id: "test-res-5",
+    createdAgo: "Just now",
+    bookingRef: "TB-1005",
+    guestName: "Guest Booking",
+    phone: "+91 98000 00004",
+    guestsCount: 2,
+    timeSlot: "6:30 PM",
+    date: "Today",
+    areaPreference: "Outdoor Patio",
+    status: "CANCELLED",
+    depositAmount: 500,
+    platformFeePercent: 5,
+    platformFeeAmount: 25,
+    netRestaurantPayable: 475,
+  },
+];
 
 describe("Dining & Table Reservation Architecture Suite", () => {
   describe("Area Zones & Capacity Invariants", () => {
@@ -73,7 +159,7 @@ describe("Dining & Table Reservation Architecture Suite", () => {
     });
 
     it("verifies all initial reservations have accurate 5% platform fee and net payable calculations", () => {
-      INITIAL_RESERVATIONS.forEach((res) => {
+      TEST_LIFECYCLE_FIXTURES.forEach((res) => {
         const expectedFee = Math.round(res.depositAmount * 0.05);
         expect(res.platformFeePercent).toBe(5);
         expect(res.platformFeeAmount).toBe(expectedFee);
@@ -94,7 +180,7 @@ describe("Dining & Table Reservation Architecture Suite", () => {
 
     it("supports all 5 reservation lifecycle statuses", () => {
       MANDATORY_STATUSES.forEach((status) => {
-        const matching = INITIAL_RESERVATIONS.filter((r) => r.status === status);
+        const matching = TEST_LIFECYCLE_FIXTURES.filter((r) => r.status === status);
         expect(matching.length).toBeGreaterThanOrEqual(1);
       });
     });

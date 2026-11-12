@@ -18,6 +18,7 @@ import {
 } from "@/lib/server/rider-fns";
 import { askAssistantFn } from "@/lib/server/assistant";
 import type { TicketTopic } from "@/lib/rider/types";
+import { Banknote, BarChart3, HeartPulse, MapPin, PhoneOff, Siren, Store, type LucideIcon } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/support")({ component: Page });
@@ -44,7 +45,7 @@ type WorkflowId =
 interface GuidedWorkflowSpec {
   id: WorkflowId;
   title: string;
-  icon: string;
+  icon: LucideIcon;
   topic: TicketTopic;
   shortDesc: string;
   presets: string[];
@@ -54,7 +55,7 @@ const GUIDED_WORKFLOWS: GuidedWorkflowSpec[] = [
   {
     id: "KITCHEN_WAIT_DELAY",
     title: "Kitchen Delay",
-    icon: "🏬",
+    icon: Store,
     topic: "RESTAURANT_ISSUE",
     shortDesc: "Wait pay starts after 6 minutes at restaurant",
     presets: [
@@ -66,7 +67,7 @@ const GUIDED_WORKFLOWS: GuidedWorkflowSpec[] = [
   {
     id: "CUSTOMER_UNREACHABLE",
     title: "Customer Unreachable",
-    icon: "📵",
+    icon: PhoneOff,
     topic: "CUSTOMER_UNAVAILABLE",
     shortDesc: "3-call attempts and doorstep wait protection",
     presets: [
@@ -78,7 +79,7 @@ const GUIDED_WORKFLOWS: GuidedWorkflowSpec[] = [
   {
     id: "COD_CASH_MISMATCH",
     title: "Cash / COD Issue",
-    icon: "💵",
+    icon: Banknote,
     topic: "CASH_DISPUTE",
     shortDesc: "Reconcile cash collected or customer payment dispute",
     presets: [
@@ -90,7 +91,7 @@ const GUIDED_WORKFLOWS: GuidedWorkflowSpec[] = [
   {
     id: "PAYOUT_AUDIT",
     title: "Payout & Earnings",
-    icon: "📊",
+    icon: BarChart3,
     topic: "PAYMENT_ISSUE",
     shortDesc: "Check trip distance, tips, or bank transfer",
     presets: [
@@ -102,7 +103,7 @@ const GUIDED_WORKFLOWS: GuidedWorkflowSpec[] = [
   {
     id: "APP_GPS_ISSUE",
     title: "GPS & Location",
-    icon: "📍",
+    icon: MapPin,
     topic: "APP_ISSUE",
     shortDesc: "Geofence pin offset or network issues",
     presets: [
@@ -308,18 +309,18 @@ function Page() {
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             {GUIDED_WORKFLOWS.map((wf) => {
               const active = wf.id === activeWorkflow.id;
+              const WfIcon = wf.icon;
               return (
                 <button
                   key={wf.id}
                   type="button"
                   onClick={() => selectWorkflow(wf)}
-                  className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition ${
-                    active
+                  className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition ${active
                       ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary"
                       : "border-border bg-card hover:bg-muted"
-                  }`}
+                    }`}
                 >
-                  <span className="text-base">{wf.icon}</span>
+                  <WfIcon className="size-4 text-primary" />
                   <span className="text-xs font-semibold leading-tight text-foreground">{wf.title}</span>
                 </button>
               );
@@ -334,11 +335,10 @@ function Page() {
                   key={idx}
                   type="button"
                   onClick={() => setWorkflowNote(preset)}
-                  className={`rounded-lg border px-2.5 py-1 text-xs text-left transition ${
-                    workflowNote === preset
+                  className={`rounded-lg border px-2.5 py-1 text-xs text-left transition ${workflowNote === preset
                       ? "border-primary bg-primary/10 font-medium text-primary"
                       : "border-border bg-muted/40 text-muted-foreground hover:bg-muted"
-                  }`}
+                    }`}
                 >
                   {preset}
                 </button>
@@ -372,7 +372,7 @@ function Page() {
               href="tel:112"
               className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-2 text-xs font-bold text-red-700 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
             >
-              <span>🚨</span>
+              <Siren className="size-4 shrink-0" />
               <div>
                 <div>112 Emergency</div>
                 <div className="text-[10px] font-normal text-muted-foreground">Police &amp; SOS</div>
@@ -382,7 +382,7 @@ function Page() {
               href="tel:108"
               className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 p-2 text-xs font-bold text-blue-700 hover:bg-blue-100 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300"
             >
-              <span>🚑</span>
+              <HeartPulse className="size-4 shrink-0" />
               <div>
                 <div>108 Ambulance</div>
                 <div className="text-[10px] font-normal text-muted-foreground">Medical Response</div>

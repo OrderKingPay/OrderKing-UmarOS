@@ -94,16 +94,16 @@ export function buildWhatsappShiftReportMessage(data: WhatsappShiftReportPayload
   const comm = formatINR(data.commissionPaise);
 
   return [
-    `📊 *[King AI Shift Report]* ${data.restaurantName}`,
-    `📅 Shift Date: ${data.date}`,
+    `*[King AI Shift Report]* ${data.restaurantName}`,
+    `Shift Date: ${data.date}`,
     `────────────────────`,
-    `📦 Orders Delivered: ${data.orderCount} orders`,
-    `💰 Daily Gross Sales: ${gross}`,
-    `🏛️ Food GST Remitted (Sec 9(5)): ${gst} (5%)`,
-    `🤝 Order King Commission: ${comm}`,
-    `💵 Accrued Net Payout: ${net}`,
+    `Orders Delivered: ${data.orderCount} orders`,
+    `Daily Gross Sales: ${gross}`,
+    `Food GST Remitted (Sec 9(5)): ${gst} (5%)`,
+    `Order King Commission: ${comm}`,
+    `Accrued Net Payout: ${net}`,
     `────────────────────`,
-    `✅ Shift closed smoothly. Net payout scheduled for direct NEFT/IMPS bank transfer.`,
+    `Shift closed. Net payout scheduled for direct NEFT/IMPS bank transfer.`,
   ].join("\n");
 }
 

@@ -168,7 +168,7 @@ export function FssaiExpiryBanner({
             rel="noopener noreferrer"
             className="text-[10px] underline hover:text-amber-300 flex items-center gap-0.5"
           >
-            FoSCoS ↗
+            FoSCoS Portal
           </a>
           <button 
             onClick={() => setSnoozed(false)} 

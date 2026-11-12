@@ -341,7 +341,7 @@ export const COMMUNICATION: readonly TechRegistryItem[] = [
     isProductionReady: true,
     tags: ["sms", "otp", "dlt", "carrier", "notifications"],
     description:
-      "Carrier SMS conduit ensuring guaranteed delivery of verification codes, critical dispatch alerts, and emergency founder messages."
+      "Carrier SMS conduit for delivery of verification codes, dispatch alerts, and emergency founder messages."
   },
   {
     id: "gupshup_whatsapp",

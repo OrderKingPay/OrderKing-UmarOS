@@ -72,7 +72,7 @@ export function createEmergencyDistressPayload(
   const helplineTarget = "18001000";
 
   const googleMapsUrl = `https://www.google.com/maps?q=${lat.toFixed(5)},${lng.toFixed(5)}`;
-  const distressMessage = `🚨 EMERGENCY DISTRESS ALERT (${incidentId}): I am OrderKing Rider ${riderName} (${riderPhone}) and need immediate assistance. Live Location: ${googleMapsUrl}${audioBeaconActive ? " [Audio Beacon ACTIVE]" : ""}${deliveryId ? ` (Trip #${deliveryId})` : ""}`;
+  const distressMessage = `EMERGENCY DISTRESS ALERT (${incidentId}): I am OrderKing Rider ${riderName} (${riderPhone}) and need immediate assistance. Live Location: ${googleMapsUrl}${audioBeaconActive ? " [Audio Beacon ACTIVE]" : ""}${deliveryId ? ` (Trip #${deliveryId})` : ""}`;
   const whatsappDistressUrl = `https://wa.me/?text=${encodeURIComponent(String(distressMessage ?? ""))}`;
   const smsDistressUrl = `sms:?body=${encodeURIComponent(String(distressMessage ?? ""))}`;
   const safetyDeskNote = `EMERGENCY SOS 112 DISPATCH TRIGGERED (${incidentId}) - Priority 1 Distress Beacon. Lat: ${lat}, Lng: ${lng}, Audio: ${audioBeaconActive ? "RECORDING" : "OFF"}${deliveryId ? `, Order: ${deliveryId}` : ""}`;
@@ -126,13 +126,12 @@ export function EmergencySosButton({
       onClick={onClick}
       disabled={disabled}
       aria-label="OrderKing SOS Safety Emergency Panic Shield"
-      className={`group relative flex items-center justify-center gap-1.5 rounded-xl border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 font-black text-white shadow-md shadow-red-600/35 transition-all duration-200 hover:from-red-500 hover:to-rose-600 active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${
-        isSm
+      className={`group relative flex items-center justify-center gap-1.5 rounded-xl border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 font-black text-white shadow-md shadow-red-600/35 transition-all duration-200 hover:from-red-500 hover:to-rose-600 active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${isSm
           ? "px-2.5 py-1 text-xs"
           : isLg
             ? "px-4 py-3 text-sm"
             : "px-3 py-1.5 text-xs"
-      } ${className}`}
+        } ${className}`}
     >
       {/* Pulsing Alert Radar Beacon Ring */}
       <span className="absolute -inset-0.5 rounded-xl bg-red-500/30 opacity-70 blur-xs animate-ping group-hover:opacity-100 pointer-events-none" />
@@ -280,7 +279,7 @@ export function RiderEmergencySafetySheet({
           lng: payload.lng,
         },
       });
-      toast.error("🚨 Emergency helpline notified. Direct lines are open.");
+      toast.error("Emergency helpline notified. Direct lines are open.");
     } catch {
       // Telemetry continues offline via native dialers
     }
@@ -299,7 +298,7 @@ export function RiderEmergencySafetySheet({
       toast.info("Audio recording safety beacon stopped.");
     } else {
       setAudioBeaconActive(true);
-      toast.success("⏺ Audio recording safety beacon ACTIVE. Streaming ambient safety telemetry.");
+      toast.success("Audio recording safety beacon ACTIVE. Streaming ambient safety telemetry.");
 
       // Attempt to access microphone if available in current browser environment
       if (typeof navigator !== "undefined" && navigator.mediaDevices?.getUserMedia) {
@@ -326,7 +325,7 @@ export function RiderEmergencySafetySheet({
         setCopied(true);
         toast.success("GPS Coordinates copied to clipboard!");
         setTimeout(() => setCopied(false), 2500);
-      }).catch(() => {});
+      }).catch(() => { });
     }
   };
 
@@ -540,14 +539,14 @@ export function RiderEmergencySafetySheet({
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[11px] font-semibold h-8 hover:bg-emerald-500/20 transition"
                   >
-                    <span>💬 WhatsApp</span>
+                    <span>WhatsApp</span>
                   </a>
 
                   <a
                     href={currentPayload.smsDistressUrl}
                     className="inline-flex items-center justify-center gap-1 rounded-md border border-blue-500/40 bg-blue-500/10 text-blue-400 text-[11px] font-semibold h-8 hover:bg-blue-500/20 transition"
                   >
-                    <span>📱 SMS SOS</span>
+                    <span>SMS SOS</span>
                   </a>
                 </div>
               </div>
@@ -557,11 +556,10 @@ export function RiderEmergencySafetySheet({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`flex size-7 items-center justify-center rounded-lg ${
-                        audioBeaconActive
+                      className={`flex size-7 items-center justify-center rounded-lg ${audioBeaconActive
                           ? "bg-red-600 text-white animate-pulse"
                           : "bg-muted/40 text-muted-foreground"
-                      }`}
+                        }`}
                     >
                       {audioBeaconActive ? <Mic className="size-4" /> : <MicOff className="size-4" />}
                     </span>
@@ -580,11 +578,10 @@ export function RiderEmergencySafetySheet({
                   <button
                     type="button"
                     onClick={toggleAudioRecording}
-                    className={`rounded-full px-3 py-1 text-xs font-bold transition ${
-                      audioBeaconActive
+                    className={`rounded-full px-3 py-1 text-xs font-bold transition ${audioBeaconActive
                         ? "bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)]"
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
+                      }`}
                   >
                     {audioBeaconActive ? "STOP REC" : "START REC"}
                   </button>

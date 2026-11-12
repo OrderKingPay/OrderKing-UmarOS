@@ -742,7 +742,7 @@ function OnboardingPage() {
                   className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold px-8 h-12 rounded-xl flex items-center gap-2 shadow-lg shadow-red-500/25"
                 >
                   {busy ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
-                  <span>{busy ? "Activating Restaurant..." : "Complete Registration & Go Live →"}</span>
+                  <span>{busy ? "Activating Restaurant..." : "Complete Registration & Go Live"}</span>
                 </Button>
               </div>
             </div>

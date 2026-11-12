@@ -36,6 +36,7 @@ import {
   Store,
   Activity,
   CheckCircle,
+  X,
   XCircle,
   ArrowRight,
   MessageCircle,
@@ -43,13 +44,13 @@ import {
 
 export const Route = createFileRoute("/support")({ component: SupportPage });
 
-const CATEGORIES: { id: TicketCategory; label: string; icon: string }[] = [
-  { id: "PAYOUT_ISSUE", label: "Payout & Settlements", icon: "💳" },
-  { id: "ORDER_DISPUTE", label: "Order & Transit Disputes", icon: "⚖️" },
-  { id: "MENU_UPDATE_REQUEST", label: "Menu & Pricing Update", icon: "🍲" },
-  { id: "HARDWARE_POS_SYNC", label: "Printers, KOT & POS Sync", icon: "🖨️" },
-  { id: "FSSAI_COMPLIANCE", label: "FSSAI & Tax Compliance", icon: "📜" },
-  { id: "OTHER", label: "General Support", icon: "❓" },
+const CATEGORIES: { id: TicketCategory; label: string }[] = [
+  { id: "PAYOUT_ISSUE", label: "Payout & Settlements" },
+  { id: "ORDER_DISPUTE", label: "Order & Transit Disputes" },
+  { id: "MENU_UPDATE_REQUEST", label: "Menu & Pricing Update" },
+  { id: "HARDWARE_POS_SYNC", label: "Printers, KOT & POS Sync" },
+  { id: "FSSAI_COMPLIANCE", label: "FSSAI & Tax Compliance" },
+  { id: "OTHER", label: "General Support" },
 ];
 
 const PRIORITIES: { id: TicketPriority; label: string }[] = [
@@ -188,7 +189,7 @@ function SupportPage() {
       setReplyText("");
       await qc.invalidateQueries({ queryKey: ["partner_tickets", vendor.restaurantId] });
     } catch (err) {
-      setBanner(`❌ Failed to send reply: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setBanner(`Failed to send reply: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setReplying(false);
     }
@@ -206,7 +207,7 @@ function SupportPage() {
       setBanner("Ticket marked as resolved.");
       await qc.invalidateQueries({ queryKey: ["partner_tickets", vendor.restaurantId] });
     } catch (err) {
-      setBanner(`❌ Failed to resolve ticket: ${err instanceof Error ? err.message : "Unknown error"}`);
+      setBanner(`Failed to resolve ticket: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
   }
 
@@ -273,9 +274,8 @@ function SupportPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div
-              className={`flex size-8 items-center justify-center rounded-lg ${
-                diag?.isOnline ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-[#E23744]"
-              }`}
+              className={`flex size-8 items-center justify-center rounded-lg ${diag?.isOnline ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-[#E23744]"
+                }`}
             >
               <Store className="size-4" />
             </div>
@@ -286,11 +286,10 @@ function SupportPage() {
                 </span>
                 {diag && (
                   <span
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                      diag.isOnline
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${diag.isOnline
                         ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                         : "bg-rose-50 text-rose-700 border border-rose-200"
-                    }`}
+                      }`}
                   >
                     <span
                       className={`size-1.5 rounded-full ${diag.isOnline ? "bg-emerald-500" : "bg-rose-500"}`}
@@ -406,21 +405,21 @@ function SupportPage() {
           to="/reviews"
           className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:border-[#E23744] hover:text-[#E23744] transition shadow-xs"
         >
-          <span>⚖️ Order Complaints &amp; Spillage Deductions</span>
+          <span>Order Complaints &amp; Spillage Deductions</span>
           <ArrowRight className="size-3 text-gray-400" />
         </Link>
         <Link
           to="/settlements"
           className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:border-[#E23744] hover:text-[#E23744] transition shadow-xs"
         >
-          <span>💳 Bank Settlements &amp; Daily Payout Ledger</span>
+          <span>Bank Settlements &amp; Daily Payout Ledger</span>
           <ArrowRight className="size-3 text-gray-400" />
         </Link>
         <Link
           to="/hours"
           className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:border-[#E23744] hover:text-[#E23744] transition shadow-xs"
         >
-          <span>🕒 Kitchen Hours &amp; Shift Timings</span>
+          <span>Kitchen Hours &amp; Shift Timings</span>
           <ArrowRight className="size-3 text-gray-400" />
         </Link>
       </div>
@@ -442,11 +441,10 @@ function SupportPage() {
             <button
               type="button"
               onClick={() => setActiveCategoryFilter("ALL")}
-              className={`rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition cursor-pointer ${
-                activeCategoryFilter === "ALL"
+              className={`rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition cursor-pointer ${activeCategoryFilter === "ALL"
                   ? "border-[#E23744] bg-red-50 text-[#E23744] font-bold"
                   : "border-gray-200 bg-white text-gray-600 hover:text-gray-900"
-              }`}
+                }`}
             >
               All ({tickets.length})
             </button>
@@ -457,13 +455,12 @@ function SupportPage() {
                   key={c.id}
                   type="button"
                   onClick={() => setActiveCategoryFilter(c.id)}
-                  className={`rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition cursor-pointer ${
-                    activeCategoryFilter === c.id
+                  className={`rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition cursor-pointer ${activeCategoryFilter === c.id
                       ? "border-[#E23744] bg-red-50 text-[#E23744] font-bold"
                       : "border-gray-200 bg-white text-gray-600 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
-                  {c.icon} {c.label} ({count})
+                  {c.label} ({count})
                 </button>
               );
             })}
@@ -486,24 +483,22 @@ function SupportPage() {
                     key={t.id}
                     type="button"
                     onClick={() => setSelectedTicketId(t.id)}
-                    className={`w-full text-left rounded-2xl border p-3.5 transition cursor-pointer ${
-                      isSelected
+                    className={`w-full text-left rounded-2xl border p-3.5 transition cursor-pointer ${isSelected
                         ? "border-[#E23744] bg-red-50/40 shadow-xs"
                         : "border-gray-200 bg-white hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span className="font-mono text-[10px] font-bold text-gray-400">
                         #{t.ticketNumber}
                       </span>
                       <span
-                        className={`rounded px-1.5 py-0.5 text-[9px] font-bold font-mono ${
-                          t.status === "RESOLVED"
+                        className={`rounded px-1.5 py-0.5 text-[9px] font-bold font-mono ${t.status === "RESOLVED"
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                             : t.status === "ESCALATED_TO_ADMIN"
                               ? "bg-red-50 text-[#E23744] border border-red-200 font-bold"
                               : "bg-amber-50 text-amber-700 border border-amber-200"
-                        }`}
+                          }`}
                       >
                         {t.status}
                       </span>
@@ -542,13 +537,12 @@ function SupportPage() {
                       {selectedTicket.category.replace(/_/g, " ")}
                     </span>
                     <span
-                      className={`rounded px-2 py-0.5 text-[10px] font-bold font-mono ${
-                        selectedTicket.status === "RESOLVED"
+                      className={`rounded px-2 py-0.5 text-[10px] font-bold font-mono ${selectedTicket.status === "RESOLVED"
                           ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                           : selectedTicket.status === "ESCALATED_TO_ADMIN"
                             ? "bg-red-50 text-[#E23744] border border-red-200"
                             : "bg-amber-50 text-amber-700 border border-amber-200"
-                      }`}
+                        }`}
                     >
                       {selectedTicket.status}
                     </span>
@@ -605,13 +599,12 @@ function SupportPage() {
                       className={`flex flex-col ${isMerchant ? "items-end" : "items-start"}`}
                     >
                       <div
-                        className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
-                          isMerchant
+                        className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${isMerchant
                             ? "bg-[#E23744] font-medium text-white shadow-xs"
                             : isAi
                               ? "border border-gray-200 bg-gray-50 text-gray-900"
                               : "border border-purple-200 bg-purple-50 text-purple-900"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between gap-3 text-[10px] opacity-75 mb-1 pb-1 border-b border-black/10 dark:border-white/10 font-mono">
                           <span className="font-bold">
@@ -676,8 +669,9 @@ function SupportPage() {
                 type="button"
                 onClick={() => setCreateModalOpen(false)}
                 className="text-gray-400 hover:text-gray-900 text-sm font-bold cursor-pointer"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="size-4" />
               </button>
             </div>
 
@@ -690,13 +684,11 @@ function SupportPage() {
                       key={c.id}
                       type="button"
                       onClick={() => setNewCategory(c.id)}
-                      className={`rounded-xl border p-2 text-left transition cursor-pointer ${
-                        newCategory === c.id
+                      className={`rounded-xl border p-2 text-left transition cursor-pointer ${newCategory === c.id
                           ? "border-[#E23744] bg-red-50 font-bold text-[#E23744]"
                           : "border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
-                      }`}
+                        }`}
                     >
-                      <span className="mr-1.5">{c.icon}</span>
                       <span>{c.label}</span>
                     </button>
                   ))}

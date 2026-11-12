@@ -1,5 +1,5 @@
-export type DataMode = "executeD" | "PRODUCTION";
-export type MetricLabel = "ACTUAL" | "ESTIMATE" | "FORECAST" | "MODEL" | "executeD";
+export type DataMode = "SANDBOX" | "PRODUCTION";
+export type MetricLabel = "ACTUAL" | "ESTIMATE" | "FORECAST" | "MODEL" | "LIVE";
 
 export type Metric<T = number> = {
   value: T;
@@ -94,7 +94,7 @@ export type PlatformSettings = {
   demandSurgeMultiplier?: number;
   modules?: PlatformModulesConfig;
   pricingDeliveryRules?: PricingDeliveryRulesConfig;
-    dynamicBranding?: DynamicBrandingConfig;
+  dynamicBranding?: DynamicBrandingConfig;
   lateNightCodSafetyLockout?: boolean;
   lateNightCodCutoffTime?: string;
   threatZones?: ThreatZonePolygon[];
@@ -256,7 +256,7 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   demandSurgeMultiplier: 1.0,
   modules: DEFAULT_PLATFORM_MODULES,
   pricingDeliveryRules: DEFAULT_PRICING_DELIVERY_RULES,
-    dynamicBranding: DEFAULT_DYNAMIC_BRANDING,
+  dynamicBranding: DEFAULT_DYNAMIC_BRANDING,
   lateNightCodSafetyLockout: true,
   lateNightCodCutoffTime: "22:30",
   threatZones: DEFAULT_THREAT_ZONES,

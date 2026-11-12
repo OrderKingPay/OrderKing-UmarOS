@@ -165,7 +165,7 @@ export function StandaloneExporterModal({
               <div className="grid grid-cols-2 gap-2">
                 {selectedSection.features.map((f, i) => (
                   <div key={i} className="text-xs text-slate-300 bg-white/5 p-2 rounded-lg flex items-center gap-1.5">
-                    <span className="text-emerald-400 font-bold">✓</span>
+                    <span className="text-emerald-400 font-bold">Done</span>
                     <span>{f}</span>
                   </div>
                 ))}

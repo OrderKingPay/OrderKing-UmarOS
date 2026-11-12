@@ -121,7 +121,7 @@ export function Page() {
     const slot = OPERATIONAL_SHIFT_SLOTS.find((s) => s.id === slotId);
     if (!exists) {
       toast.success(
-        `✓ Gig Booked: ${slot?.label || slotId} (${slot?.window || activeShiftDateIso}).`,
+        `Gig Booked: ${slot?.label || slotId} (${slot?.window || activeShiftDateIso}).`,
       );
     } else {
       toast.info(`Gig Cancelled: ${slot?.label || slotId} slot released.`);
@@ -312,10 +312,9 @@ export function Page() {
         data: {
           topic: "PAYMENT_ISSUE",
           deliveryId: d.id,
-          message: `[Order #${d.orderCode}] ${
-            queryNote.trim() ||
+          message: `[Order #${d.orderCode}] ${queryNote.trim() ||
             "Please verify the base, distance, and wait-time payout for this trip."
-          }`,
+            }`,
           idempotencyKey: newIdempotencyKey(),
         },
       });
@@ -403,11 +402,10 @@ export function Page() {
                 return (
                   <div
                     key={slot.id}
-                    className={`rounded-xl border p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${
-                      isBooked
+                    className={`rounded-xl border p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${isBooked
                         ? "border-emerald-500/40 bg-emerald-500/5 shadow-xs"
                         : "border-border bg-muted/20"
-                    }`}
+                      }`}
                   >
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
@@ -427,13 +425,12 @@ export function Page() {
                       size="sm"
                       variant={isBooked ? "outline" : "default"}
                       onClick={() => toggleSlotBooking(slot.id)}
-                      className={`shrink-0 font-bold ${
-                        isBooked
+                      className={`shrink-0 font-bold ${isBooked
                           ? "border-emerald-500 text-emerald-600 hover:bg-emerald-50"
                           : "bg-emerald-600 hover:bg-emerald-500 text-white"
-                      }`}
+                        }`}
                     >
-                      {isBooked ? "✓ Booked" : "Book Slot"}
+                      {isBooked ? "Booked" : "Book Slot"}
                     </Button>
                   </div>
                 );
@@ -547,19 +544,17 @@ export function Page() {
                       key={tab.id}
                       type="button"
                       onClick={() => setStatusFilter(tab.id)}
-                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition ${
-                        statusFilter === tab.id
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition ${statusFilter === tab.id
                           ? "border-primary bg-primary text-primary-foreground"
                           : "border-border bg-muted/40 text-muted-foreground hover:bg-muted"
-                      }`}
+                        }`}
                     >
                       <span>{tab.label}</span>
                       <span
-                        className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono ${
-                          statusFilter === tab.id
+                        className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono ${statusFilter === tab.id
                             ? "bg-primary-foreground/20 text-primary-foreground"
                             : "bg-background text-foreground"
-                        }`}
+                          }`}
                       >
                         {tab.count}
                       </span>
@@ -610,13 +605,13 @@ export function Page() {
                 const waitMins =
                   d.arrivedRestaurantAt && d.pickedUpAt
                     ? Math.max(
-                        0,
-                        Math.floor(
-                          (new Date(d.pickedUpAt).getTime() -
-                            new Date(d.arrivedRestaurantAt).getTime()) /
-                            60_000,
-                        ),
-                      )
+                      0,
+                      Math.floor(
+                        (new Date(d.pickedUpAt).getTime() -
+                          new Date(d.arrivedRestaurantAt).getTime()) /
+                        60_000,
+                      ),
+                    )
                     : 0;
 
                 return (
@@ -637,8 +632,8 @@ export function Page() {
                                 d.state === "DELIVERED"
                                   ? "online"
                                   : d.state === "RIDER_CANCELLED" ||
-                                      d.state === "ORDER_CANCELLED" ||
-                                      d.state === "DELIVERY_FAILED"
+                                    d.state === "ORDER_CANCELLED" ||
+                                    d.state === "DELIVERY_FAILED"
                                     ? "offline"
                                     : "busy"
                               }
@@ -655,7 +650,7 @@ export function Page() {
                           <p className="text-sm font-medium text-foreground">
                             {d.restaurant.name}{" "}
                             <span className="font-normal text-muted-foreground">
-                              ({d.restaurant.area || "Pickup"}) → {d.customer.area || "Customer Drop"}
+                              ({d.restaurant.area || "Pickup"}) to {d.customer.area || "Customer Drop"}
                             </span>
                           </p>
 
@@ -728,7 +723,7 @@ export function Page() {
                           <dl className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
                             <div className="flex justify-between">
                               <dt className="text-muted-foreground">
-                                Pickup → Drop Distance &amp; Duration
+                                Pickup to Drop Distance &amp; Duration
                               </dt>
                               <dd className="font-mono">
                                 {tripDistanceKm.toFixed(1)} km · {tripDurationMins} mins

@@ -91,7 +91,7 @@ export const TIER_CONFIGS: Record<
     recommendedTakeRatePct: 16.5,
     deliverables: [
       "Everything in Standard Priority Merchant Tier",
-      "Top-3 Zone Grid Boost: Guaranteed High-Visibility Geofence Placement on Consumer App Launch",
+      "Top-3 Zone Grid Boost: Priority Geofence Placement on Consumer App Launch",
       "Dedicated Merchant UPI/Card Gateway Instance with T+1 Automated Escrow Sweep Settlements",
       "AI Predictive Demand Tuning: Menu Dynamic Pricing Engine & Inventory Stockout Protection",
       "3x Featured In-App Carousel Placements during Platform Grand Opening Week",
@@ -105,7 +105,7 @@ export const TIER_CONFIGS: Record<
     recommendedTakeRatePct: 15.0,
     deliverables: [
       "Everything in Growth Franchise Partner Tier",
-      "Sub-8 Minute Priority Courier Dispatch SLA with Guaranteed Fleet Routing Allocation",
+      "Sub-8 Minute Priority Courier Dispatch SLA with Priority Fleet Routing Allocation",
       "Multi-Outlet Cloud Routing Matrix for Central Production Kitchens & Cloud Brands",
       "Direct Custom ERP & POS Webhook Bridge (Petpooja, UrbanPiper, POSist, POS-Bridge)",
       "Exclusive Co-Branded Marketing Push Notification Blitz to 10,000+ Verified Area Foodies",

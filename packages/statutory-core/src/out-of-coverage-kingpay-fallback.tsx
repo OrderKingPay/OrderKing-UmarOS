@@ -95,7 +95,7 @@ export const OutOfCoverageKingPayFallback: React.FC<OutOfCoverageProps> = ({
             >
               {TOP_CACHED_FLIGHT_CORRIDORS.map((c) => (
                 <option key={c.corridorCode} value={c.corridorCode}>
-                  {c.originCity} ({c.originIata}) → {c.destinationCity} ({c.destinationIata})
+                  {c.originCity} ({c.originIata}) to {c.destinationCity} ({c.destinationIata})
                 </option>
               ))}
             </select>
@@ -151,9 +151,8 @@ export const OutOfCoverageKingPayFallback: React.FC<OutOfCoverageProps> = ({
                   key={cat}
                   type="button"
                   onClick={() => setBillerCategory(cat)}
-                  className={`px-2.5 py-1 rounded text-xs font-medium ${
-                    billerCategory === cat ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
-                  }`}
+                  className={`px-2.5 py-1 rounded text-xs font-medium ${billerCategory === cat ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                    }`}
                 >
                   {cat}
                 </button>
@@ -183,11 +182,11 @@ export const OutOfCoverageKingPayFallback: React.FC<OutOfCoverageProps> = ({
           </button>
         </div>
 
-        {/* 3. Placement-Guaranteed EdTech Courses */}
+        {/* 3. Placement-Linked EdTech Courses */}
         <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-purple-400 block mb-2">
-              Career Accelerator · Guaranteed Placement
+              Career Accelerator | Placement Support
             </span>
             <h3 className="text-lg font-bold text-white mb-1">Skill & Placement Programs</h3>
             <p className="text-xs text-slate-400 mb-4">
@@ -239,11 +238,11 @@ export const OutOfCoverageKingPayFallback: React.FC<OutOfCoverageProps> = ({
             <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-1 mb-4">
               <div className="flex justify-between">
                 <span className="text-slate-400">Day Shift (06:00–18:00 IST):</span>
-                <span className="text-white font-semibold">₹650 Guaranteed + Incentives</span>
+                <span className="text-white font-semibold">₹650 Base Payout + Incentives</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Evening Shift (18:00–23:00 IST):</span>
-                <span className="text-white font-semibold">₹500 Guaranteed + Rain Surge</span>
+                <span className="text-white font-semibold">₹500 Base Payout + Rain Surge</span>
               </div>
             </div>
           </div>

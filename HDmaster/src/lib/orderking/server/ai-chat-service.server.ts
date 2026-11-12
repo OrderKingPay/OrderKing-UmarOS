@@ -760,7 +760,7 @@ export async function executeFounderAiChat(
         orgId: "system",
         owner: request.userId || request.userContext?.userId || "founder",
         instruction: currentQuery,
-        onProgress: (msg) => {
+        onProgress: (msg: string) => {
           onStreamEvent?.({ type: "step", data: { stepNumber: 2, totalSteps: 4, label: "Universal Engine", status: "RUNNING", detail: msg } });
         },
       });

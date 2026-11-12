@@ -217,7 +217,7 @@ export function KitchenPage({
     }
     if (buffer > 0) {
       useKitchenRushStore.getState().activate(buffer === 10 ? 10 : 15);
-      toast.warning(`🔥 Kitchen Rush Buffer: +${buffer} mins prep buffer applied! Riders and customers notified.`);
+      toast.warning(`Kitchen Rush Buffer: +${buffer} mins prep buffer applied! Riders and customers notified.`);
     } else {
       useKitchenRushStore.getState().deactivate();
       toast.success("Standard Kitchen SLA Restored (+0 mins).");
@@ -231,9 +231,9 @@ export function KitchenPage({
       localStorage.setItem("ok_kitchen_paused", nextPaused.toString());
     }
     if (nextPaused) {
-      toast.error("🛑 Kitchen Paused: New orders on hold for 15 min rush relief.");
+      toast.error("Kitchen Paused: New orders on hold for 15 min rush relief.");
     } else {
-      toast.success("✅ Kitchen Resumed: Ready for new incoming orders!");
+      toast.success("Kitchen Resumed: Ready for new incoming orders!");
     }
   };
 
@@ -307,11 +307,10 @@ export function KitchenPage({
           <button
             type="button"
             onClick={() => setActiveTab("BOARD")}
-            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-              activeTab === "BOARD"
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${activeTab === "BOARD"
                 ? "bg-primary text-primary-foreground shadow-xs"
                 : "bg-surface text-muted hover:text-foreground"
-            }`}
+              }`}
           >
             <LayoutGrid className="size-3.5" />
             <span>5-Stage Live Board</span>
@@ -319,16 +318,15 @@ export function KitchenPage({
           <button
             type="button"
             onClick={() => setActiveTab("KDS")}
-            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-              activeTab === "KDS"
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${activeTab === "KDS"
                 ? "bg-primary text-primary-foreground shadow-xs"
                 : "bg-surface text-muted hover:text-foreground"
-            }`}
+              }`}
           >
             <Monitor className="size-3.5" />
             <span>Station Cook Tickets (KDS)</span>
           </button>
-          </div>
+        </div>
 
         {/* Kitchen Throttling Quick Toggles */}
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -338,55 +336,50 @@ export function KitchenPage({
           <button
             type="button"
             onClick={() => handleSetThrottle(0)}
-            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
-              throttleBuffer === 0 && !kitchenPaused
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 0 && !kitchenPaused
                 ? "bg-[#E23744] text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
-            }`}
+              }`}
           >
             Normal (+0m)
           </button>
           <button
             type="button"
             onClick={() => handleSetThrottle(10)}
-            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
-              throttleBuffer === 10 && !kitchenPaused
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 10 && !kitchenPaused
                 ? "bg-amber-600 text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
-            }`}
+              }`}
           >
             Rush (+10m)
           </button>
           <button
             type="button"
             onClick={() => handleSetThrottle(15)}
-            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
-              throttleBuffer === 15 && !kitchenPaused
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 15 && !kitchenPaused
                 ? "bg-orange-600 text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
-            }`}
+              }`}
           >
             Surge (+15m)
           </button>
           <button
             type="button"
             onClick={() => handleSetThrottle(30)}
-            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
-              throttleBuffer === 30 && !kitchenPaused
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 30 && !kitchenPaused
                 ? "bg-rose-600 text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
-            }`}
+              }`}
           >
             Peak (+30m)
           </button>
           <button
             type="button"
             onClick={handleToggleKitchenPause}
-            className={`rounded-lg px-2.5 py-1 text-xs font-bold transition flex items-center gap-1 ${
-              kitchenPaused
+            className={`rounded-lg px-2.5 py-1 text-xs font-bold transition flex items-center gap-1 ${kitchenPaused
                 ? "bg-rose-700 text-gray-900 shadow-xs animate-pulse"
                 : "bg-surface border border-line text-muted hover:text-rose-500"
-            }`}
+              }`}
           >
             {kitchenPaused ? <PlayCircle className="size-3" /> : <PauseCircle className="size-3" />}
             <span>{kitchenPaused ? "Resume Kitchen" : "Pause Kitchen"}</span>
@@ -397,14 +390,17 @@ export function KitchenPage({
       {/* Throttle Alert Banner */}
       {(throttleBuffer > 0 || kitchenPaused) && (
         <div
-          className={`rounded-xl border p-3 flex items-center justify-between gap-3 text-xs font-bold ${
-            kitchenPaused
+          className={`rounded-xl border p-3 flex items-center justify-between gap-3 text-xs font-bold ${kitchenPaused
               ? "border-rose-500 bg-rose-500/10 text-rose-800 dark:text-rose-200"
               : "border-amber-500 bg-amber-500/10 text-amber-800 dark:text-amber-200"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2">
-            <span className="text-lg">{kitchenPaused ? "🛑" : "🔥"}</span>
+            {kitchenPaused ? (
+              <PauseCircle className="size-5 text-rose-600 shrink-0" />
+            ) : (
+              <Flame className="size-5 text-amber-600 shrink-0" />
+            )}
             <div>
               <div>
                 {kitchenPaused
@@ -440,7 +436,7 @@ export function KitchenPage({
                 <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
                   {q.data ? `SYNCED ${new Date(q.data.serverTime).toLocaleTimeString()}` : "SYNCING"}
                 </span>
-                
+
               </div>
               <p className="text-xs text-gray-500 mt-0.5">
                 Manage order preparation stages and coordinate food handover with delivery partners.
@@ -513,11 +509,10 @@ export function KitchenPage({
             return (
               <div
                 key={col.state}
-                className={`rounded-lg border px-3 py-2 flex items-center justify-between ${
-                  isUrgent
+                className={`rounded-lg border px-3 py-2 flex items-center justify-between ${isUrgent
                     ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
                     : "border-gray-200 bg-gray-50 text-gray-700"
-                }`}
+                  }`}
               >
                 <span className="text-xs font-medium">{col.label}</span>
                 <span className="font-mono text-sm font-bold tabular">{count}</span>
@@ -526,7 +521,7 @@ export function KitchenPage({
           })}
         </div>
 
-        </Card>
+      </Card>
 
       {/* MAIN CONTENT BASED ON SELECTED TAB */}
       {activeTab === "BOARD" && (
@@ -569,6 +564,6 @@ export function KitchenPage({
         </div>
       )}
 
-      </VendorShell>
+    </VendorShell>
   );
 }

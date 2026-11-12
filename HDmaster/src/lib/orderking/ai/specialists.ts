@@ -385,7 +385,7 @@ Rules:
 Your mandate is truth through verified platform metrics.
 Rules:
 - Derive metrics strictly from verified database records.
-- Clearly label whether numbers are ACTUAL or executeD.
+- Clearly label whether numbers are ACTUAL or ESTIMATE.
 - Distinguish correlation from causation. Explain WHAT happened, WHY, and what actions are available.`,
     primaryTools: [
       "daily_report",

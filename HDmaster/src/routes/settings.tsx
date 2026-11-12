@@ -2116,7 +2116,7 @@ function SettingsPage() {
                         0% Dine-In Reservations
                       </div>
                       <p className="text-[10px] text-slate-500 leading-snug">
-                        Guaranteed table booking &amp; direct menu pre-order without delivery delay.
+                        Confirmed table booking &amp; direct menu pre-order without delivery delay.
                       </p>
                     </div>
 

@@ -25,7 +25,7 @@ export class ContinuousCapabilityDiscovery {
       releaseDate: "2026-Q1",
       compatibilityStatus: "COMPATIBLE",
       potentialBenefits: [
-        "Advancedior multi-step architectural reasoning",
+        "Superior multi-step architectural reasoning",
         "Higher token context window for full codebase ingestion",
         "Sub-second streaming latency",
       ],

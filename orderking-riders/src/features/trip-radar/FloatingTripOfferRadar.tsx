@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from "react";
+import { Flag, MapPin } from "lucide-react";
 export interface TripOffer {
   tripId: string;
   orderNumber: string;
@@ -75,7 +76,9 @@ export const FloatingTripOfferRadar: React.FC<FloatingTripOfferRadarProps> = ({
           {/* Pickup & Drop Points */}
           <div style={{ marginBottom: "16px" }}>
             <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginBottom: "12px" }}>
-              <div style={{ color: "#D97706", fontSize: "18px", lineHeight: 1 }}>📍</div>
+              <div style={{ color: "#D97706", lineHeight: 1, marginTop: "2px" }}>
+                <MapPin className="size-4" />
+              </div>
               <div>
                 <div style={{ fontSize: "12px", color: "#9CA3AF" }}>PICKUP ({offer.pickupDistanceKm} km away)</div>
                 <div style={{ fontSize: "15px", fontWeight: 700 }}>{offer.restaurantName}</div>
@@ -83,7 +86,9 @@ export const FloatingTripOfferRadar: React.FC<FloatingTripOfferRadarProps> = ({
               </div>
             </div>
             <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-              <div style={{ color: "#10B981", fontSize: "18px", lineHeight: 1 }}>🏁</div>
+              <div style={{ color: "#10B981", lineHeight: 1, marginTop: "2px" }}>
+                <Flag className="size-4" />
+              </div>
               <div>
                 <div style={{ fontSize: "12px", color: "#9CA3AF" }}>DROP ({offer.dropDistanceKm} km from pickup)</div>
                 <div style={{ fontSize: "13px", color: "#D1D5DB" }}>{offer.customerDropAddress}</div>

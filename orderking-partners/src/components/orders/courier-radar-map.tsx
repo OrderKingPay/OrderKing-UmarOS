@@ -10,6 +10,8 @@ import {
   ExternalLink,
   ShieldCheck,
   CheckCircle2,
+  Star,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -37,11 +39,11 @@ export function CourierRadarMap({
   orderNumber,
   orderState,
   customerArea = "Customer Delivery",
-  riderName = "Rajesh Kumar",
-  riderPhone = "+91 98765 43210",
-  riderVehicle = "Hero Electric DL-01-EQ-3841",
-  riderRating = 4.92,
-  riderTrips = 1420,
+  riderName = "Assigned Delivery Partner",
+  riderPhone,
+  riderVehicle = "Dispatch Vehicle",
+  riderRating,
+  riderTrips,
   outletName = "Restaurant Outlet",
   outletCoords = { lat: 28.6329, lng: 77.2195 },
   initialRiderDistanceMeters,
@@ -122,6 +124,10 @@ export function CourierRadarMap({
   }, [outletCoords, progressFraction, isArrived, isPickedUp]);
 
   function handleCallRider() {
+    if (!riderPhone) {
+      toast.info("Delivery partner contact will appear once rider accepts dispatch.");
+      return;
+    }
     toast.info(`Calling delivery partner ${riderName} (${riderPhone})...`);
     if (typeof window !== "undefined") {
       window.open(`tel:${riderPhone.replace(/\s+/g, "")}`, "_self");
@@ -242,12 +248,16 @@ export function CourierRadarMap({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-gray-900 text-sm">{riderName}</span>
-              <span className="flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
-                ★ {riderRating}
-              </span>
-              <span className="text-[11px] text-gray-500">
-                {riderTrips}+ deliveries
-              </span>
+              {riderRating != null && (
+                <span className="flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
+                  <Star className="size-3 fill-amber-500 text-amber-500" /> {riderRating}
+                </span>
+              )}
+              {riderTrips != null && (
+                <span className="text-[11px] text-gray-500">
+                  {riderTrips}+ deliveries
+                </span>
+              )}
             </div>
             <div className="text-[11px] text-gray-500 flex items-center gap-2 mt-0.5">
               <span>{riderVehicle}</span>
@@ -311,8 +321,9 @@ export function CourierRadarMap({
                 type="button"
                 onClick={() => setLiveModalOpen(false)}
                 className="rounded-lg p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
+                aria-label="Close live tracking map"
               >
-                ✕
+                <X className="size-4" />
               </button>
             </div>
 

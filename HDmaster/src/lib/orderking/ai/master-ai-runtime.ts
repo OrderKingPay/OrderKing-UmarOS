@@ -1409,7 +1409,7 @@ export async function executeTool(
           { offer: "Commercial Kitchen Equipment", disbursed: 11, totalVolumePaise: 880000000, commissionYieldPaise: 30800000, status: "RECONCILED" },
           { offer: "Two-Wheeler / EV Bike Financing", disbursed: 37, totalVolumePaise: 370000000, commissionYieldPaise: 7400000, status: "RECONCILED" },
           { offer: "Smartphones & Electronics 0% EMI", devicesFinanced: 68, commissionYieldPaise: 11250000, status: "RECONCILED" },
-          { offer: "Bajaj RBL AdvancedCards", cardsIssued: 31, cpaRatePaise: 150000, commissionYieldPaise: 4650000, status: "RECONCILED" },
+          { offer: "Bajaj RBL SuperCards", cardsIssued: 31, cpaRatePaise: 150000, commissionYieldPaise: 4650000, status: "RECONCILED" },
         ],
         totalBajajCommissionPaise: 80500000,
         leakageCheck: "ZERO_LEAKAGE_CONFIRMED",
@@ -2704,7 +2704,7 @@ export async function executeTool(
         dispatchedContractsCount: contracts.length,
         totalMonthlyContractVolumeInr: `₹${(totalContractVolumePaise / 100).toLocaleString("en-IN")}`,
         totalMonthlyPlatformProfitInr: `₹${(totalPlatformProfitPaise / 100).toLocaleString("en-IN")}`,
-        platformMargin: "15.0% Guaranteed Locked Margin",
+        platformMargin: "15.0% Target Contract Margin",
         contracts: contracts.map((c) => ({
           id: c.id,
           institution: c.institutionName,
@@ -2714,7 +2714,7 @@ export async function executeTool(
           monthlyProfitInr: `₹${(c.monthlyPlatformProfitPaise / 100).toLocaleString("en-IN")}`,
           rfpLetterPreview: c.rfpProposalLetter.slice(0, 300) + "...",
         })),
-        verdict: "Institutional corporate catering RFP proposals dispatched to NIT Silchar, Assam University, DC Office, Karimganj Civil Hospital, and Banking Hubs with 15% guaranteed platform margin.",
+        verdict: "Institutional corporate catering RFP drafts prepared for NIT Silchar, Assam University, DC Office, Karimganj Civil Hospital, and Banking Hubs with 15% target platform margin.",
       };
     }
 

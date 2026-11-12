@@ -37,14 +37,14 @@ describe("Rider Fleet & OTP Parity Suite (https://rider.orderkingpay.com/login)"
       expect(isPhoneValid("")).toBe(false);
     });
 
-    it("includes exact 🇮🇳 +91 prefix in login.tsx", () => {
-      expect(loginSource).toContain("🇮🇳");
+    it("includes exact IN +91 prefix in login.tsx", () => {
+      expect(loginSource).toContain('aria-label="India">IN</span>');
       expect(loginSource).toContain("+91");
-      expect(loginSource).toMatch(/<span[^>]*role="img"[^>]*>🇮🇳<\/span>\s*<span>\+91<\/span>/);
+      expect(loginSource).toMatch(/<span[^>]*aria-label="India"[^>]*>IN<\/span>\s*<span>\+91<\/span>/);
     });
 
-    it("renders the exact 'Send OTP →' button in Step 1", () => {
-      expect(loginSource).toContain('"Send OTP →"');
+    it("renders the exact 'Send OTP' button in Step 1", () => {
+      expect(loginSource).toContain('"Send OTP"');
       expect(loginSource).toContain("Sending OTP...");
     });
 

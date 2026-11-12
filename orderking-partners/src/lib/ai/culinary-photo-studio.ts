@@ -68,7 +68,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (6 pcs · 300g)",
     description:
       "Charcoal-grilled cottage cheese cubes marinated in spiced mustard oil, hung curd, and roasted tandoori spices. Served with mint chutney and charred bell peppers.",
-    tags: ["🌱 Pure Veg", "Charcoal Smoked", "Clay Oven Grilled", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "Charcoal Smoked", "Clay Oven Grilled", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -94,7 +94,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (500g Handi)",
     description:
       "Aged long-grain Basmati rice layered with tender marinated chicken, slow-cooked on dum in a sealed handi with saffron, pure ghee, and crisp fried onions. Accompanied by burani raita.",
-    tags: ["🌙 Halal Certified", "Slow Dum Cooked", "Aged Basmati", "Serves 1-2 (500g)"],
+    tags: ["Halal Certified", "Slow Dum Cooked", "Aged Basmati", "Serves 1-2 (500g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -113,7 +113,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (550g Royal Handi)",
     description:
       "Slow-cooked tender cuts of prime bone-in mutton infused with royal Awadhi spices, saffron milk, and aromatic aged basmati rice. Served with cooling cucumber raita and spicy salan.",
-    tags: ["🌙 Halal Certified", "Royal Awadhi Recipe", "Pure Ghee", "Serves 1-2 (500g)"],
+    tags: ["Halal Certified", "Royal Awadhi Recipe", "Pure Ghee", "Serves 1-2 (500g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -131,7 +131,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (450g Handi)",
     description:
       "Fragrant Basmati rice dum-cooked with garden-fresh cauliflower, beans, carrots, and soft paneer in aromatic whole spices and saffron ghee.",
-    tags: ["🌱 Pure Veg", "Slow Dum Cooked", "Garden Vegetables", "Serves 1-2 (500g)"],
+    tags: ["Pure Veg", "Slow Dum Cooked", "Garden Vegetables", "Serves 1-2 (500g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -149,7 +149,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 2 (450ml)",
     description:
       "Tender tandoori chicken simmered in a velvety tomato makhani gravy enriched with slow-churned butter, fresh cream, and fragrant kasuri methi.",
-    tags: ["🌙 Halal Certified", "Clay Oven Charcoal Smoked", "Rich Cashew Makhani", "Serves 1-2 (350g)"],
+    tags: ["Halal Certified", "Clay Oven Charcoal Smoked", "Rich Cashew Makhani", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -167,7 +167,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 2 (400ml Handi)",
     description:
       "Whole black urad lentils slow-simmered overnight over charcoal embers, blended with vine-ripened tomatoes, pure butter, and fresh cream.",
-    tags: ["🌱 Pure Veg", "Overnight Charcoal Simmer", "Slow Churned Butter", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "Overnight Charcoal Simmer", "Slow Churned Butter", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -185,7 +185,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 2 (400ml Handi)",
     description:
       "Fresh malai paneer cubes simmered in a rich, buttery cashew-tomato gravy, finished with fresh ginger juliennes and crushed fenugreek leaves.",
-    tags: ["🌱 Pure Veg", "Velvety Cashew Gravy", "Farm Fresh Malai Paneer", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "Velvety Cashew Gravy", "Farm Fresh Malai Paneer", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -203,7 +203,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 2 (400ml)",
     description:
       "Paneer cubes tossed with crunchy bell peppers, onions, and freshly pounded kadhai coriander-chilli spices in an aromatic semi-dry gravy.",
-    tags: ["🌱 Pure Veg", "Freshly Pounded Spices", "Crunchy Bell Peppers", "🌶️🌶️ Medium Spicy"],
+    tags: ["Pure Veg", "Freshly Pounded Spices", "Crunchy Bell Peppers", "Medium Spicy"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -221,7 +221,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 2 (400ml)",
     description:
       "Soft paneer cubes cooked in a vibrant green pureed spinach gravy tempered with garlic, cumin, and topped with a splash of cream.",
-    tags: ["🌱 Pure Veg", "Farm Fresh Spinach", "Garlic Cumin Tadka", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "Farm Fresh Spinach", "Garlic Cumin Tadka", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -249,7 +249,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "1 Pc (Artisan Cut)",
     description:
       "Traditional artisan flatbread slapped onto the clay walls of our tandoor, baked blistered and golden, then generously brushed with melted butter.",
-    tags: ["🌱 Pure Veg", "Clay Tandoor Baked", "Melted Amul Butter", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Clay Tandoor Baked", "Melted Amul Butter", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -267,7 +267,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "1 Large Crepe with Sambar & 2 Chutneys",
     description:
       "Crisp, golden fermented rice and lentil crepe stuffed with spiced tempered potato masala. Served with hot vegetable sambar and fresh coconut chutney.",
-    tags: ["🌱 Pure Veg", "Stone Ground Batter", "Fresh Coconut Chutney", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Stone Ground Batter", "Fresh Coconut Chutney", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -285,7 +285,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "2 Pcs with Hot Sambar & Chutney",
     description:
       "Steamed feather-light fermented rice cakes served piping hot with lentil vegetable sambar and stone-ground coconut chutney.",
-    tags: ["🌱 Pure Veg", "Steamed & Healthy", "Stone Ground Chutney", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Steamed & Healthy", "Stone Ground Chutney", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -303,7 +303,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "2 Fluffy Bhaturas + Chole Bowl",
     description:
       "Spicy dark Amritsari chickpeas cooked with dried pomegranate and house spices, paired with twin fluffy puffed golden bhaturas, pickled carrots, and green chillies.",
-    tags: ["🌱 Pure Veg", "Amritsari Spiced", "Fluffy Puffed Bhaturas", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "Amritsari Spiced", "Fluffy Puffed Bhaturas", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -321,7 +321,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "2 Pcs with Sweet & Mint Chutneys",
     description:
       "Crispy, golden pastry crust stuffed with spiced potatoes, green peas, and whole coriander seeds. Served with sweet tamarind and spicy mint chutneys.",
-    tags: ["🌱 Pure Veg", "Crisp Ajwain Crust", "Sweet & Tangy Chutneys", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Crisp Ajwain Crust", "Sweet & Tangy Chutneys", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -339,7 +339,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (400g Wok Box)",
     description:
       "Wok-tossed noodles with shredded cabbage, crunchy carrots, bell peppers, spring onions, and garlic-soy sauce with an appetizing wok hei aroma.",
-    tags: ["🌱 Pure Veg", "High Heat Wok Tossed", "Crunchy Veggies", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "High Heat Wok Tossed", "Crunchy Veggies", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -357,7 +357,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (420g Wok Box)",
     description:
       "Fluffy rice tossed on high heat with crisp diced vegetables, garlic, scallions, and signature spicy Schezwan sauce.",
-    tags: ["🌱 Pure Veg", "Spicy Schezwan", "Wok Tossed", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "Spicy Schezwan", "Wok Tossed", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -375,7 +375,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "6 Pcs with Fiery Red Garlic Dip",
     description:
       "Delicate handcrafted dumplings stuffed with finely minced vegetables and Himalayan herbs, steamed to perfection and served with spicy red chilli garlic chutney.",
-    tags: ["🌱 Pure Veg", "Handmade Thin Skin", "Fiery Garlic Chilli Dip", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Handmade Thin Skin", "Fiery Garlic Chilli Dip", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -393,7 +393,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (6 Slices · 10 Inch)",
     description:
       "Hand-stretched crust topped with herb-infused Italian tomato sauce, 100% mozzarella cheese, and fresh aromatic basil leaves baked stone-crisp.",
-    tags: ["🌱 Pure Veg", "100% Mozzarella", "Stone Baked Crust", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "100% Mozzarella", "Stone Baked Crust", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -411,7 +411,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "1 Large Burger with Dip",
     description:
       "Crispy seasoned vegetable patty tucked in a toasted sesame brioche bun with crunchy iceberg lettuce, ripe tomatoes, melted cheese, and our secret house dressing.",
-    tags: ["🌱 Pure Veg", "Toasted Brioche Bun", "Crunchy Herb Patty", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Toasted Brioche Bun", "Crunchy Herb Patty", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -429,7 +429,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (380g)",
     description:
       "Al dente penne pasta tossed in a rich garlic parmesan cream sauce with sautéed mushrooms, sweet corn, and black olives. Finished with Italian herbs.",
-    tags: ["🌱 Pure Veg", "Real Parmesan & Cream", "Al Dente Penne", "Serves 1-2 (350g)"],
+    tags: ["Pure Veg", "Real Parmesan & Cream", "Al Dente Penne", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1621996346565-e3d5d6281057?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -447,7 +447,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "2 Pcs with Saffron Sugar Syrup",
     description:
       "Soft, melt-in-the-mouth golden khoya dumplings fried in pure desi ghee and soaked in warm rose and cardamom-scented sugar syrup, garnished with slivered pistachios.",
-    tags: ["🌱 Pure Veg", "Pure Desi Ghee", "Saffron Cardamom Syrup", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Pure Desi Ghee", "Saffron Cardamom Syrup", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1667792601704-5175cfc2c431?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -465,7 +465,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "1 Glass (350ml)",
     description:
       "Thick, creamy churned yoghurt drink blended with sweet Alphonso mango pulp and a pinch of fragrant cardamom, topped with almond flakes.",
-    tags: ["🌱 Pure Veg", "Thick Curd Blend", "Alphonso Mango", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Thick Curd Blend", "Alphonso Mango", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -483,7 +483,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "1 Kullad / Cup (150ml)",
     description:
       "Freshly brewed with premium Assam tea leaves, slow-simmered with crushed ginger, green cardamom, cloves, and rich dairy milk.",
-    tags: ["🌱 Pure Veg", "Hand Pounded Spices", "Fresh Assam Tea", "Serves 1 (250g)"],
+    tags: ["Pure Veg", "Hand Pounded Spices", "Fresh Assam Tea", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -501,7 +501,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     servingSize: "Serves 1-2 (2 Eggs + Gravy · 350ml)",
     description:
       "Golden fried hard-boiled eggs simmered in a spiced onion-tomato gravy with aromatic garam masala and fresh coriander.",
-    tags: ["🥚 Contains Egg", "Dhaba Style Recipe", "Fresh Coriander", "Serves 1-2 (350g)"],
+    tags: ["Contains Egg", "Dhaba Style Recipe", "Fresh Coriander", "Serves 1-2 (350g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1545247181-516773cae754?auto=format&fit=crop&w=800&q=80",
     alternatePhotoUrls: [
@@ -636,7 +636,7 @@ export function matchDishCulinaryTaxonomy(dishName: string): {
     servingSize: "Serves 1-2 (350g)",
     description: `Chef's special ${dishName}, prepared with hand-selected authentic ingredients, house aromatic spices, and traditional culinary finesse.`,
     tags: [
-      diet === "VEG" ? "🌱 Pure Veg" : diet === "EGG" ? "🥚 Contains Egg" : "🌙 Halal Certified",
+      diet === "VEG" ? "Pure Veg" : diet === "EGG" ? "Contains Egg" : "Halal Certified",
       "Freshly Cooked",
       "Serves 1-2 (350g)",
     ],
@@ -673,7 +673,7 @@ export function generateProceduralCulinaryCanvas(
       <circle cx="400" cy="300" r="220" fill="url(#plateGlow)"/>
       <circle cx="400" cy="300" r="180" fill="#2d1e18" stroke="#78350f" stroke-width="6"/>
       <text x="400" y="290" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">${dishName}</text>
-      <text x="400" y="325" font-family="system-ui, sans-serif" font-size="16" fill="${baseColor}" text-anchor="middle font-weight="600"">${diet === "VEG" ? "● Pure Vegetarian" : diet === "EGG" ? "● Contains Egg" : "● Non-Vegetarian"}</text>
+      <text x="400" y="325" font-family="system-ui, sans-serif" font-size="16" fill="${baseColor}" text-anchor="middle" font-weight="600">${diet === "VEG" ? "Pure Vegetarian" : diet === "EGG" ? "Contains Egg" : "Non-Vegetarian"}</text>
       <text x="400" y="355" font-family="system-ui, sans-serif" font-size="13" fill="#94a3b8" text-anchor="middle">Order King AI Culinary Studio · 4:3 Certified</text>
     </svg>`;
     return `data:image/svg+xml;utf8,${encodeURIComponent(String(svg ?? ""))}`;
@@ -794,7 +794,7 @@ export function generateProceduralCulinaryCanvas(
   ctx.font = "bold 13px system-ui, -apple-system, sans-serif";
   ctx.fillStyle = diet === "VEG" ? "#34d399" : diet === "EGG" ? "#fbbf24" : "#fb7185";
   const dietBadgeText =
-    diet === "VEG" ? "● Pure Veg" : diet === "EGG" ? "● Contains Egg" : "● Non-Veg";
+    diet === "VEG" ? "Pure Veg" : diet === "EGG" ? "Contains Egg" : "Non-Veg";
   ctx.fillText(dietBadgeText, 30 + ctx.measureText(dishName).width + 16, 564);
 
   ctx.font = "12px monospace";

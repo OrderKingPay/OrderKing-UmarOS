@@ -108,7 +108,7 @@ export const SparkAIWorkspace: React.FC<SparkAIWorkspaceProps> = ({
           >
             {msg.attachmentName && (
               <div style={{ fontSize: "11px", backgroundColor: "rgba(0,0,0,0.2)", padding: "4px 8px", borderRadius: "4px", marginBottom: "6px" }}>
-                📎 {msg.attachmentName}
+                Attachment: {msg.attachmentName}
               </div>
             )}
             <div style={{ fontSize: "14px", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{msg.text}</div>
@@ -126,8 +126,8 @@ export const SparkAIWorkspace: React.FC<SparkAIWorkspaceProps> = ({
       <footer style={{ padding: "12px 16px", backgroundColor: "#1E293B", borderTop: "1px solid #334155" }}>
         {selectedFile && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", backgroundColor: "#0F172A", padding: "6px 12px", borderRadius: "6px", marginBottom: "8px", fontSize: "12px" }}>
-            <span>📄 {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)</span>
-            <button onClick={() => setSelectedFile(null)} style={{ background: "none", border: "none", color: "#EF4444", cursor: "pointer" }}>✕</button>
+            <span>File: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)</span>
+            <button onClick={() => setSelectedFile(null)} style={{ background: "none", border: "none", color: "#EF4444", cursor: "pointer" }} aria-label="Remove file">Remove</button>
           </div>
         )}
         <div style={{ display: "flex", gap: "8px" }}>
@@ -147,7 +147,7 @@ export const SparkAIWorkspace: React.FC<SparkAIWorkspaceProps> = ({
             style={{ padding: "10px 14px", backgroundColor: "#334155", color: "#FFF", border: "none", borderRadius: "6px", cursor: "pointer" }}
             title="Upload Menu/CSV"
           >
-            📎
+            Attach
           </button>
           <input
             type="text"

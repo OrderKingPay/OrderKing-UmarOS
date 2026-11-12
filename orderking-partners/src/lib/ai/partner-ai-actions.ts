@@ -82,13 +82,13 @@ export async function tryExecutePartnerAiCommand(
   if (lines.length >= 2 && priceLineCount >= 2 && ctx.canEditMenu) {
     const catalog = digitizeMenuFromOcr(query);
     if (catalog.totalDishesCount > 0) {
-      let preview = `📋 Digitized ${catalog.totalDishesCount} Dish(es) from your input:\n`;
+      let preview = `Digitized ${catalog.totalDishesCount} Dish(es) from your input:\n`;
       for (const cat of catalog.categories) {
         if (cat.items.length === 0) continue;
         preview += `\n• [${cat.name}]\n`;
         for (const item of cat.items) {
-          const dietEmoji = item.diet === "VEG" ? "🌱" : item.diet === "EGG" ? "🥚" : "🍗";
-          preview += `  - ${item.name} (${dietEmoji}): ₹${Math.round(item.pricePaise / 100)}\n`;
+          const dietLabel = item.diet === "VEG" ? "Veg" : item.diet === "EGG" ? "Egg" : "Non-Veg";
+          preview += `  - ${item.name} (${dietLabel}): ₹${Math.round(item.pricePaise / 100)}\n`;
         }
       }
       preview += `\nReady for 1-tap import to live store menu.`;
@@ -155,13 +155,13 @@ export async function tryExecutePartnerAiCommand(
         },
       });
 
-      const dietTag = diet === "VEG" ? "Pure Veg 🌱" : diet === "EGG" ? "Egg 🥚" : "Non-Veg 🍗";
-      let confirmation = `✅ Dish "${cleanDishName}" added successfully at ₹${priceRupees} (${dietTag}). It is now In-Stock and live for customer orders!`;
+      const dietTag = diet === "VEG" ? "Pure Veg" : diet === "EGG" ? "Egg" : "Non-Veg";
+      let confirmation = `Dish "${cleanDishName}" added successfully at ₹${priceRupees} (${dietTag}). It is now In-Stock and live for customer orders.`;
 
       if (ctx.languageCode === "hi") {
-        confirmation = `✅ डिश "${cleanDishName}" को ₹${priceRupees} (${dietTag}) में मेनू में जोड़ दिया गया है। ग्राहक अब इसे ऑर्डर कर सकते हैं!`;
+        confirmation = `डिश "${cleanDishName}" को ₹${priceRupees} (${dietTag}) में मेनू में जोड़ दिया गया है। ग्राहक अब इसे ऑर्डर कर सकते हैं।`;
       } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
-        confirmation = `✅ "${cleanDishName}" ডিশটি ₹${priceRupees} (${dietTag}) মূল্যে মেনুতে যুক্ত করা হয়েছে। এখন লাইভ অর্ডারের জন্য প্রস্তুত!`;
+        confirmation = `"${cleanDishName}" ডিশটি ₹${priceRupees} (${dietTag}) মূল্যে মেনুতে যুক্ত করা হয়েছে। এখন লাইভ অর্ডারের জন্য প্রস্তুত।`;
       }
 
       return {
@@ -222,12 +222,12 @@ export async function tryExecutePartnerAiCommand(
         },
       });
 
-      let confirmation = `✅ Price for "${matchedItem.name}" updated to ₹${newPriceRupees}. Instant live sync to customer storefront complete!`;
+      let confirmation = `Price for "${matchedItem.name}" updated to ₹${newPriceRupees}. Live sync to customer storefront complete.`;
 
       if (ctx.languageCode === "hi") {
-        confirmation = `✅ "${matchedItem.name}" का मूल्य बदलकर ₹${newPriceRupees} कर दिया गया है। नया मूल्य ग्राहकों को तुरंत दिख रहा है!`;
+        confirmation = `"${matchedItem.name}" का मूल्य बदलकर ₹${newPriceRupees} कर दिया गया है। नया मूल्य ग्राहकों को दिख रहा है।`;
       } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
-        confirmation = `✅ "${matchedItem.name}" এর নতুন মূল্য ₹${newPriceRupees} নির্ধারণ করা হয়েছে। গ্রাহকদের জন্য সরাসরি আপডেট সম্পন্ন!`;
+        confirmation = `"${matchedItem.name}" এর নতুন মূল্য ₹${newPriceRupees} নির্ধারণ করা হয়েছে। গ্রাহকদের জন্য সরাসরি আপডেট সম্পন্ন।`;
       }
 
       return {
@@ -288,12 +288,12 @@ export async function tryExecutePartnerAiCommand(
       });
 
       const label = targetStatus === "sold_out" ? "Out of Stock (Sold Out)" : "In-Stock (Available)";
-      let confirmation = `✅ "${matchedItem.name}" is now marked ${label}. Propagated to customer app and ecosystem catalog instantly!`;
+      let confirmation = `"${matchedItem.name}" is now marked ${label}. Propagated to customer app and ecosystem catalog.`;
 
       if (ctx.languageCode === "hi") {
-        confirmation = `✅ "${matchedItem.name}" को ${targetStatus === "sold_out" ? "आउट ऑफ स्टॉक (समाप्त)" : "इन-स्टॉक (उपलब्ध)"} मार्क कर दिया गया है। तुरंत लाइव लागू!`;
+        confirmation = `"${matchedItem.name}" को ${targetStatus === "sold_out" ? "आउट ऑफ स्टॉक (समाप्त)" : "इन-स्टॉक (उपलब्ध)"} मार्क कर दिया गया है।`;
       } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
-        confirmation = `✅ "${matchedItem.name}" এখন ${targetStatus === "sold_out" ? "স্টক শেষ (Sold Out)" : "উপলব্ধ (In-Stock)"} হিসেবে চিহ্নিত করা হয়েছে।`;
+        confirmation = `"${matchedItem.name}" এখন ${targetStatus === "sold_out" ? "স্টক শেষ (Sold Out)" : "উপলব্ধ (In-Stock)"} হিসেবে চিহ্নিত করা হয়েছে।`;
       }
 
       return {
@@ -410,22 +410,22 @@ export async function tryExecutePartnerAiCommand(
         },
       });
 
-      let confirmation = `🎫 Support Ticket Created: #${ticketRes.ticketNumber}\n• Category: ${category}\n• Subject: "${subject}"\n• Status: ${ticketRes.status}\n\n`;
+      let confirmation = `Support Ticket Created: #${ticketRes.ticketNumber}\n• Category: ${category}\n• Subject: "${subject}"\n• Status: ${ticketRes.status}\n\n`;
       if (ticketRes.aiResolutionSummary) {
-        confirmation += `🤖 Instant AI Resolution:\n${ticketRes.aiResolutionSummary}\n\n`;
+        confirmation += `AI Resolution:\n${ticketRes.aiResolutionSummary}\n\n`;
       }
       confirmation += `Track this ticket or message partner care anytime under Help Center & Support (/support).`;
 
       if (ctx.languageCode === "hi") {
-        confirmation = `🎫 सपोर्ट टिकट दर्ज किया गया: #${ticketRes.ticketNumber}\n• श्रेणी: ${category}\n• विषय: "${subject}"\n• स्थिति: ${ticketRes.status}\n\n`;
+        confirmation = `सपोर्ट टिकट दर्ज किया गया: #${ticketRes.ticketNumber}\n• श्रेणी: ${category}\n• विषय: "${subject}"\n• स्थिति: ${ticketRes.status}\n\n`;
         if (ticketRes.aiResolutionSummary) {
-          confirmation += `🤖 त्वरित समाधान:\n${ticketRes.aiResolutionSummary}\n\n`;
+          confirmation += `त्वरित समाधान:\n${ticketRes.aiResolutionSummary}\n\n`;
         }
         confirmation += `आप हेल्प सेंटर (/support) पर इस टिकट की स्थिति देख सकते हैं।`;
       } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
-        confirmation = `🎫 সাপোর্ট টিকিট খোলা হয়েছে: #${ticketRes.ticketNumber}\n• বিভাগ: ${category}\n• বিষয়: "${subject}"\n• অবস্থা: ${ticketRes.status}\n\n`;
+        confirmation = `সাপোর্ট টিকিট খোলা হয়েছে: #${ticketRes.ticketNumber}\n• বিভাগ: ${category}\n• বিষয়: "${subject}"\n• অবস্থা: ${ticketRes.status}\n\n`;
         if (ticketRes.aiResolutionSummary) {
-          confirmation += `🤖 তাৎক্ষণিক সমাধান:\n${ticketRes.aiResolutionSummary}\n\n`;
+          confirmation += `তাৎক্ষণিক সমাধান:\n${ticketRes.aiResolutionSummary}\n\n`;
         }
         confirmation += `আপনি হেল্প সেন্টার ও সাপোর্ট ডেস্কে (/support) এই টিকিটের ট্র্যাক ও উত্তর দিতে পারবেন।`;
       }
@@ -486,8 +486,8 @@ export async function tryExecutePartnerAiCommand(
     const totalItems = ctx.items.length;
 
     let reply = [
-      `🏪 Storefront Status Check:`,
-      `• Outlet State: ${isOpen ? "🟢 ONLINE & ACCEPTING ORDERS" : "🔴 PAUSED (Emergency Closed)"}`,
+      `Storefront Status Check:`,
+      `• Outlet State: ${isOpen ? "ONLINE & ACCEPTING ORDERS" : "PAUSED (Emergency Closed)"}`,
       `• Current Time: ${istFormatted} (${timeContext})`,
       `• Menu Catalog: ${totalItems} active dish(es) listed`,
       isOpen
@@ -497,8 +497,8 @@ export async function tryExecutePartnerAiCommand(
 
     if (ctx.languageCode === "hi") {
       reply = [
-        `🏪 स्टोर स्थिति जांच:`,
-        `• स्टोर स्थिति: ${isOpen ? "🟢 ऑनलाइन (ऑर्डर स्वीकार करने के लिए तैयार)" : "🔴 पॉज्ड (दुकान रुकी हुई है)"}`,
+        `स्टोर स्थिति जांच:`,
+        `• स्टोर स्थिति: ${isOpen ? "ऑनलाइन (ऑर्डर स्वीकार करने के लिए तैयार)" : "पॉज्ड (दुकान रुकी हुई है)"}`,
         `• वर्तमान समय: ${istFormatted} (${istHours < 9 ? "प्रातःकाल / शांत समय। ग्राहकों के ऑर्डर सुबह 9 बजे के बाद और दोपहर 12 से 3 बजे के बीच तेजी पकड़ते हैं।" : "सक्रिय समय।"})`,
         `• मेनू सूची: ${totalItems} सक्रिय व्यंजन`,
         isOpen
@@ -507,8 +507,8 @@ export async function tryExecutePartnerAiCommand(
       ].join("\n");
     } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
       reply = [
-        `🏪 স্টোরফ্রন্ট স্থিতি নিরীক্ষা:`,
-        `• স্টোর অবস্থা: ${isOpen ? "🟢 অনলাইন (লাইভ অর্ডার গ্রহণের জন্য প্রস্তুত)" : "🔴 সাময়িক বন্ধ (পজ করা)"}`,
+        `স্টোরফ্রন্ট স্থিতি নিরীক্ষা:`,
+        `• স্টোর অবস্থা: ${isOpen ? "অনলাইন (লাইভ অর্ডার গ্রহণের জন্য প্রস্তুত)" : "সাময়িক বন্ধ (পজ করা)"}`,
         `• বর্তমান সময়: ${istFormatted} (${istHours < 9 ? "ভোরবেলা / শান্ত সময়। রেস্তোরাঁ ডেলিভারি সাধারণত সকাল ৯টা থেকে এবং দুপুর ১২টা–৩টায় সর্বোচ্চ থাকে।" : "সক্রিয় ডেলিভারি সময়।"})`,
         `• মেনু তালিকা: ${totalItems} টি সক্রিয় খাবার`,
         isOpen
@@ -551,31 +551,31 @@ export async function tryExecutePartnerAiCommand(
     const netPayoutPaise = t.settlementPaise ?? Math.round(grossSalesPaise * 0.72);
 
     let report = [
-      `📊 Today's Real-Time Kitchen Performance:`,
+      `Today's Real-Time Kitchen Performance:`,
       `• Gross Sales GMV: ${formatINR(grossSalesPaise)}`,
       `• Delivered Orders: ${delivered} orders fulfilled`,
       `• Pending Orders: ${pending} order(s) awaiting kitchen action`,
       `• Estimated Net T+1 Payout: ${formatINR(netPayoutPaise)} (Direct Bank Transfer)`,
-      `• Storefront Status: ${ctx.dashboard.isOpen ? "🟢 OPEN (Accepting Live Orders)" : "🔴 PAUSED"}`,
+      `• Storefront Status: ${ctx.dashboard.isOpen ? "OPEN (Accepting Live Orders)" : "PAUSED"}`,
     ].join("\n");
 
     if (ctx.languageCode === "hi") {
       report = [
-        `📊 आज का लाइव किचन प्रदर्शन रिपोर्ट:`,
+        `आज का लाइव किचन प्रदर्शन रिपोर्ट:`,
         `• कुल बिक्री (GMV): ${formatINR(grossSalesPaise)}`,
         `• डिलीवर हुए ऑर्डर्स: ${delivered} ऑर्डर्स पूरे हुए`,
         `• पेंडिंग ऑर्डर्स: ${pending} ऑर्डर्स किचन में प्रक्रियाधीन`,
         `• अनुमानित नेट T+1 पेआउट: ${formatINR(netPayoutPaise)} (सीधे बैंक खाते में)`,
-        `• किचन स्थिति: ${ctx.dashboard.isOpen ? "🟢 खुला (ऑर्डर आ रहे हैं)" : "🔴 रुका हुआ"}`,
+        `• किचन स्थिति: ${ctx.dashboard.isOpen ? "खुला (ऑर्डर आ रहे हैं)" : "रुका हुआ"}`,
       ].join("\n");
     } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
       report = [
-        `📊 আজকের লাইভ কিচেন পারফরম্যান্স রিপোর্ট:`,
+        `আজকের লাইভ কিচেন পারফরম্যান্স রিপোর্ট:`,
         `• মোট বিক্রয় (GMV): ${formatINR(grossSalesPaise)}`,
         `• সফল ডেলিভারি: ${delivered} টি অর্ডার সম্পন্ন`,
         `• অপেক্ষমাণ অর্ডার: ${pending} টি`,
         `• আনুমানিক নেট T+1 পেআউট: ${formatINR(netPayoutPaise)} (সরাসরি ব্যাংক ডিপোজিট)`,
-        `• স্টোরের স্থিতি: ${ctx.dashboard.isOpen ? "🟢 খোলা" : "🔴 সাময়িক বন্ধ"}`,
+        `• স্টোরের স্থিতি: ${ctx.dashboard.isOpen ? "খোলা" : "সাময়িক বন্ধ"}`,
       ].join("\n");
     }
 
@@ -627,13 +627,13 @@ export async function tryExecutePartnerAiCommand(
       data: { restaurantId: ctx.restaurantId, mode: "RUSH" },
     });
     let confirmation =
-      "🚨 Kitchen Rush Mode Activated (+15 mins buffer added). All incoming orders buffered to 35m prep SLA. Rider dispatch pacing dynamically delayed to prevent kitchen crowding!";
+      "Kitchen Rush Mode Activated (+15 mins buffer added). All incoming orders buffered to 35m prep SLA. Rider dispatch pacing dynamically delayed to prevent kitchen crowding.";
     if (ctx.languageCode === "hi") {
       confirmation =
-        "🚨 किचन रश मोड सक्रिय (+15 मिनट बफर जोड़ा गया)। नए ऑर्डर्स के लिए तैयारी समय 35 मिनट निर्धारित किया गया है और राइडर्स को देर से भेजा जाएगा ताकि भीड़ न लगे!";
+        "किचन रश मोड सक्रिय (+15 मिनट बफर जोड़ा गया)। नए ऑर्डर्स के लिए तैयारी समय 35 मिनट निर्धारित किया गया है और राइडर्स को देर से भेजा जाएगा ताकि भीड़ न लगे।";
     } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
       confirmation =
-        "🚨 কিচেন রাশ মোড সক্রিয় (+১৫ মিনিট বাফার যোগ করা হয়েছে)। নতুন অর্ডারের প্রস্তুতির সময় ৩৫ মিনিট নির্ধারণ করা হয়েছে!";
+        "কিচেন রাশ মোড সক্রিয় (+১৫ মিনিট বাফার যোগ করা হয়েছে)। নতুন অর্ডারের প্রস্তুতির সময় ৩৫ মিনিট নির্ধারণ করা হয়েছে।";
     }
     return {
       handled: true,
@@ -647,13 +647,13 @@ export async function tryExecutePartnerAiCommand(
       data: { restaurantId: ctx.restaurantId, mode: "NORMAL" },
     });
     let confirmation =
-      "✅ Kitchen Normal Mode Restored (20 mins baseline SLA). Rider dispatch pacing reset to standard timing.";
+      "Kitchen Normal Mode Restored (20 mins baseline SLA). Rider dispatch pacing reset to standard timing.";
     if (ctx.languageCode === "hi") {
       confirmation =
-        "✅ सामान्य किचन मोड बहाल (20 मिनट मानक SLA)। राइडर डिस्पैच सामान्य समय पर पुनः सेट कर दिया गया है।";
+        "सामान्य किचन मोड बहाल (20 मिनट मानक SLA)। राइडर डिस्पैच सामान्य समय पर पुनः सेट कर दिया गया है।";
     } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
       confirmation =
-        "✅ স্বাভাবিক কিচেন মোড পুনর্বহাল (২০ মিনিট মানদণ্ড SLA)।";
+        "স্বাভাবিক কিচেন মোড পুনর্বহাল (২০ মিনিট মানদণ্ড SLA)।";
     }
     return {
       handled: true,
@@ -667,13 +667,13 @@ export async function tryExecutePartnerAiCommand(
       data: { restaurantId: ctx.restaurantId, mode: "PAUSE" },
     });
     let confirmation =
-      "⏸️ Kitchen Emergency Pause Activated. Storefront paused from accepting new incoming orders. Active in-progress orders can still be prepared and handed over.";
+      "Kitchen Emergency Pause Activated. Storefront paused from accepting new incoming orders. Active in-progress orders can still be prepared and handed over.";
     if (ctx.languageCode === "hi") {
       confirmation =
-        "⏸️ इमरजेंसी किचन पॉज सक्रिय। नए ऑर्डर आना रोक दिया गया है। चालू ऑर्डर्स को तैयार करके राइडर को सौंपा जा सकता है।";
+        "इमरजेंसी किचन पॉज सक्रिय। नए ऑर्डर आना रोक दिया गया है। चालू ऑर्डर्स को तैयार करके राइडर को सौंपा जा सकता है।";
     } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
       confirmation =
-        "⏸️ জরুরি কিচেন পজ সক্রিয়। নতুন অর্ডার গ্রহণ সাময়িক স্থগিত করা হয়েছে।";
+        "জরুরি কিচেন পজ সক্রিয়। নতুন অর্ডার গ্রহণ সাময়িক স্থগিত করা হয়েছে।";
     }
     return {
       handled: true,
@@ -687,13 +687,13 @@ export async function tryExecutePartnerAiCommand(
       data: { restaurantId: ctx.restaurantId, mode: "RESUME" },
     });
     let confirmation =
-      "🟢 Kitchen Resumed & Storefront Live. Your restaurant is actively accepting new customer orders!";
+      "Kitchen Resumed & Storefront Live. Your restaurant is actively accepting new customer orders.";
     if (ctx.languageCode === "hi") {
       confirmation =
-        "🟢 किचन पुनः चालू हो गया है और लाइव है। आपकी रसोई अब नए ग्राहक ऑर्डर स्वीकार कर रही है!";
+        "किचन पुनः चालू हो गया है और लाइव है। आपकी रसोई अब नए ग्राहक ऑर्डर स्वीकार कर रही है।";
     } else if (ctx.languageCode === "bn" || ctx.languageCode === "as") {
       confirmation =
-        "🟢 কিচেন পুনরায় চালু এবং স্টোর লাইভ। আপনার রেস্তোরাঁ এখন সক্রিয়ভাবে নতুন অর্ডার গ্রহণ করছে!";
+        "কিচেন পুনরায় চালু এবং স্টোর লাইভ। আপনার রেস্তোরাঁ এখন সক্রিয়ভাবে নতুন অর্ডার গ্রহণ করছে।";
     }
     return {
       handled: true,

@@ -198,7 +198,7 @@ export function CommercialBypassDialsSection() {
         },
       });
       if (res && res.ok) {
-        toast.success(`🔊 Soundbox Alert Triggered: "${res.message}"`);
+        toast.success(`Soundbox Alert Triggered: "${res.message}"`);
         void qc.invalidateQueries({ queryKey: ["commercial-bypass-dials"] });
       } else {
         toast.error("Soundbox trigger failed");
@@ -543,7 +543,7 @@ export function CommercialBypassDialsSection() {
 
               <div className="flex items-center justify-between text-xs pt-1">
                 <span className="text-zinc-300">Shared Inventory Auto-Sync:</span>
-                <span className="text-emerald-400 font-mono text-[11px] font-bold">✓ ACTIVE</span>
+                <span className="text-emerald-400 font-mono text-[11px] font-bold">ACTIVE</span>
               </div>
             </div>
           </div>
@@ -610,7 +610,7 @@ export function CommercialBypassDialsSection() {
 
               <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-800">
                 <span className="text-zinc-300">KingPay 0% Gateway Surcharge:</span>
-                <span className="text-emerald-400 font-mono text-[11px] font-bold">✓ 0% SURCHARGE</span>
+                <span className="text-emerald-400 font-mono text-[11px] font-bold">0% SURCHARGE</span>
               </div>
             </div>
           </div>
@@ -923,7 +923,7 @@ export function CommercialBypassDialsSection() {
 
               <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-800">
                 <span className="text-zinc-300">Code on Social Security 2020:</span>
-                <span className="text-emerald-400 font-mono text-[11px] font-bold">✓ MANDATORY</span>
+                <span className="text-emerald-400 font-mono text-[11px] font-bold">MANDATORY</span>
               </div>
             </div>
           </div>

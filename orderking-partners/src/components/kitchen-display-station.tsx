@@ -174,7 +174,7 @@ export function KitchenDisplayStation({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
         <div>
           <h2 className="text-base font-bold text-fg flex items-center gap-2">
-            <span>🧑‍🍳</span> Kitchen Display System (KDS Station)
+            <ChefHat className="size-4 text-primary" /> Kitchen Display System (KDS Station)
           </h2>
           <p className="text-xs text-muted">
             Live digital kitchen tickets with prep timers and station strike-offs.
@@ -202,7 +202,7 @@ export function KitchenDisplayStation({
       {/* Ticket Columns */}
       {tickets.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center space-y-2 col-span-full bg-surface-2/40">
-          <div className="text-3xl">🧑‍🍳</div>
+          <ChefHat className="size-8 mx-auto text-muted" />
           <h3 className="text-sm font-bold text-fg">No Active Station Cook Tickets</h3>
           <p className="text-xs text-muted max-w-sm mx-auto">
             Live customer orders in Placed, Accepted, or Preparing state will automatically materialize on this station screen.
@@ -290,8 +290,8 @@ export function KitchenDisplayStation({
                             {item.station}
                           </span>
                           {item.instructions && (
-                            <span className="text-amber-700 dark:text-amber-400 font-medium truncate">
-                              ⚠️ {item.instructions}
+                            <span className="text-amber-700 dark:text-amber-400 font-medium truncate inline-flex items-center gap-1">
+                              <AlertTriangle className="size-3 shrink-0" /> {item.instructions}
                             </span>
                           )}
                         </div>
@@ -314,9 +314,9 @@ export function KitchenDisplayStation({
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                         <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
                       </span>
-                      <span>🛵 Courier Approaching: ~350m (2m ETA)</span>
+                      <span>Order Ready · Rider Dispatch Notified</span>
                     </span>
-                    <span className="text-[10px] text-emerald-400/80">GPS LOCK ±2m</span>
+                    <span className="text-[10px] text-emerald-400/80">DISPATCH ACTIVE</span>
                   </div>
                 )}
 

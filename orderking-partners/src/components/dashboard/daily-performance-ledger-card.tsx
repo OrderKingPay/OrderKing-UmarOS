@@ -97,8 +97,9 @@ export function DailyPerformanceLedgerCard({
           <div className="font-display text-2xl font-black text-gray-900 tabular">
             {summary.deliveredOrdersCount} <span className="text-xs font-normal text-gray-500">orders</span>
           </div>
-          <div className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-            <span>● Verified Fulfillment</span>
+          <div className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-emerald-600 inline-block" />
+            <span>Verified Fulfillment</span>
           </div>
         </div>
 

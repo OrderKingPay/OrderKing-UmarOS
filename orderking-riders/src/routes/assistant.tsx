@@ -135,7 +135,7 @@ function Page() {
         setLines([
           {
             role: "assistant",
-            text: `Hello ${h.rider.fullName?.split(" ")[0] || "Partner"}! You have active Order #${h.active.orderCode} (${h.active.restaurant.name} → ${h.active.customer.area}). I can verify kitchen wait pay, resolve unreachable customer SOP, or guide navigation.`,
+            text: `Hello ${h.rider.fullName?.split(" ")[0] || "Partner"}! You have active Order #${h.active.orderCode} (${h.active.restaurant.name} to ${h.active.customer.area}). I can verify kitchen wait pay, resolve unreachable customer SOP, or guide navigation.`,
             at: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           },
         ]);
@@ -164,7 +164,7 @@ function Page() {
       return;
     }
     window.speechSynthesis.cancel();
-    const cleanText = text.replace(/[•⚠️🚨🔊💵🗓️⏱️🏬⚡🧭💰📍]/g, "").trim();
+    const cleanText = text.replace(/[\u2022\u2600-\u27BF\u{1F300}-\u{1FAFF}]/gu, "").trim();
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = SPEECH_LANG_MAP[locale] || "en-IN";
     utterance.rate = 0.96;
@@ -226,11 +226,11 @@ function Page() {
           coords,
           attachment: currentAttachment
             ? {
-                name: currentAttachment.name,
-                type: currentAttachment.type,
-                size: currentAttachment.size,
-                dataUrl: currentAttachment.dataUrl,
-              }
+              name: currentAttachment.name,
+              type: currentAttachment.type,
+              size: currentAttachment.size,
+              dataUrl: currentAttachment.dataUrl,
+            }
             : undefined,
         },
       });
@@ -319,7 +319,7 @@ function Page() {
             <div>
               <p className="font-bold text-foreground">Order #{activeOrder.orderCode}</p>
               <p className="text-[11px] text-muted-foreground truncate">
-                {activeOrder.restaurant.name} → {activeOrder.customer.area}
+                {activeOrder.restaurant.name} to {activeOrder.customer.area}
               </p>
             </div>
             <Badge tone="busy">{activeOrder.state.replaceAll("_", " ")}</Badge>
@@ -338,7 +338,7 @@ function Page() {
               onClick={() => setAutoCreditNotice(null)}
               className="text-xs font-bold hover:opacity-75"
             >
-              ✕
+              <X className="size-3.5" />
             </button>
           </div>
         ) : null}

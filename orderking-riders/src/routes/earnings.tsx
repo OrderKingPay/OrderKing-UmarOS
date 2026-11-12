@@ -75,10 +75,10 @@ function Page() {
         data: { idempotencyKey: newIdempotencyKey() },
       });
       toast.success(
-        `✓ Dispatched ₹${(res.amountPaise / 100).toFixed(2)} to ${res.payoutUpi}! Ref: ${res.reference}`
+        `Dispatched ₹${(res.amountPaise / 100).toFixed(2)} to ${res.payoutUpi}! Ref: ${res.reference}`
       );
       setInstantPayoutNotice(
-        `✓ Dispatched ₹${(res.amountPaise / 100).toFixed(2)} instantly to ${res.payoutUpi} via NPCI IMPS/UPI (Ref: ${res.reference}).`
+        `Dispatched ₹${(res.amountPaise / 100).toFixed(2)} instantly to ${res.payoutUpi} via NPCI IMPS/UPI (Ref: ${res.reference}).`
       );
       await loadEarnings();
       const s = await getSettlementsFn();
@@ -99,10 +99,10 @@ function Page() {
         const payload =
           useCustom && customFrom && customTo
             ? {
-                preset,
-                from: new Date(`${customFrom}T00:00:00.000Z`).toISOString(),
-                to: new Date(`${customTo}T23:59:59.999Z`).toISOString(),
-              }
+              preset,
+              from: new Date(`${customFrom}T00:00:00.000Z`).toISOString(),
+              to: new Date(`${customTo}T23:59:59.999Z`).toISOString(),
+            }
             : { preset };
         const res = await getEarningsFn({ data: payload });
         setData(res);
@@ -278,9 +278,8 @@ function Page() {
                 <CardTitle>Daily Target Incentives</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {nextMilestone
-                    ? `Complete ${nextMilestone.orders - completedTrips} more trip${
-                        nextMilestone.orders - completedTrips > 1 ? "s" : ""
-                      } to unlock ${nextMilestone.label} bonus`
+                    ? `Complete ${nextMilestone.orders - completedTrips} more trip${nextMilestone.orders - completedTrips > 1 ? "s" : ""
+                    } to unlock ${nextMilestone.label} bonus`
                     : "All daily milestone bonuses unlocked (₹400 total slab)"}
                 </p>
               </div>
@@ -301,7 +300,7 @@ function Page() {
                         (nextMilestone
                           ? nextMilestone.orders
                           : MILESTONES[MILESTONES.length - 1]?.orders || 16)) *
-                        100,
+                      100,
                     ),
                   )}%`,
                 }}
@@ -316,18 +315,14 @@ function Page() {
                 return (
                   <div
                     key={m.orders}
-                    className={`rounded-lg border p-2 text-center transition ${
-                      isCompleted
+                    className={`rounded-lg border p-2 text-center transition ${isCompleted
                         ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-900 dark:text-emerald-200"
                         : isCurrent
                           ? "border-primary bg-primary/10 text-primary font-semibold"
                           : "border-border bg-surface-2 text-muted-foreground"
-                    }`}
+                      }`}
                   >
-                    <p className="text-xs font-medium">
-                      {isCompleted ? "✓ " : ""}
-                      {m.orders} Trips
-                    </p>
+                    <p className="text-xs font-medium">{m.orders} Trips</p>
                     <p className="text-sm font-bold tabular-nums">{m.label}</p>
                   </div>
                 );
@@ -336,7 +331,7 @@ function Page() {
           </Card>
         ) : null}
 
-        
+
 
         {/* Period Presets & Custom Date Range Filter */}
         <Card className="space-y-3">
@@ -364,7 +359,7 @@ function Page() {
             </div>
             <span className="text-xs text-muted-foreground">
               {usingCustomRange && customFrom && customTo
-                ? `Custom: ${customFrom} → ${customTo}`
+                ? `Custom: ${customFrom} to ${customTo}`
                 : `Active View: ${preset.toUpperCase()}`}
             </span>
           </div>
@@ -483,11 +478,10 @@ function Page() {
                     key={kind}
                     type="button"
                     onClick={() => setLineFilter(kind)}
-                    className={`rounded-md border px-2 py-1 text-[11px] font-medium transition ${
-                      lineFilter === kind
+                    className={`rounded-md border px-2 py-1 text-[11px] font-medium transition ${lineFilter === kind
                         ? "border-primary bg-primary/15 text-primary"
                         : "border-border bg-muted/30 text-muted-foreground"
-                    }`}
+                      }`}
                   >
                     {kind === "REFERRAL_COMMISSION" ? "Referrals" : kind.replaceAll("_", " ")}
                   </button>
@@ -549,11 +543,10 @@ function Page() {
                       {l.orderCode ? `Order #${l.orderCode}` : l.kind.replaceAll("_", " ")}
                     </span>
                     <span
-                      className={`rounded px-1.5 py-0.5 text-[10px] font-mono ${
-                        l.kind === "REFERRAL_COMMISSION"
+                      className={`rounded px-1.5 py-0.5 text-[10px] font-mono ${l.kind === "REFERRAL_COMMISSION"
                           ? "border border-amber-500/40 bg-amber-500/15 font-semibold text-amber-500"
                           : "bg-muted text-muted-foreground"
-                      }`}
+                        }`}
                     >
                       {l.kind === "REFERRAL_COMMISSION" ? "Referral" : l.kind}
                     </span>
@@ -592,7 +585,7 @@ function Page() {
             {settlements.map((s) => (
               <li key={s.id} className="flex items-center justify-between text-sm">
                 <span>
-                  {s.periodStart} → {s.periodEnd}
+                  {s.periodStart} to {s.periodEnd}
                 </span>
                 <span className="tabular-nums">
                   {formatPaise(s.amountPaise)} · {s.status}

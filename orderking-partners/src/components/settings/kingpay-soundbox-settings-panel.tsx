@@ -294,7 +294,7 @@ export function KingpaySoundboxSettingsPanel({
               className="flex-1 bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold h-10 rounded-xl"
             >
               <Volume2 className="mr-1.5 size-4" />
-              Play Sample Voice Alert (₹{testAmount})
+              Play Test Voice Alert (₹{testAmount})
             </Button>
             {isSpeaking && (
               <Button
@@ -317,7 +317,7 @@ export function KingpaySoundboxSettingsPanel({
           <CheckCircle2 className="size-4 shrink-0 text-emerald-600 mt-0.5" />
           <div className="space-y-0.5">
             <div className="font-bold text-emerald-800">
-              Sample Voice Announcement Played
+              Test Voice Announcement Played
             </div>
             <div className="text-gray-700">
               &quot;{liveAudioConfirm.text}&quot;

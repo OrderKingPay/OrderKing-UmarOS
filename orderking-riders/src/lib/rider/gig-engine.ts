@@ -207,7 +207,7 @@ export function calculateTier1MilestoneBonus(
   // Find next slab that has not yet been unlocked
   const nextSlab = slabs.find((s) => safeCompleted < s.orders) || null;
 
-  // The primary anchor target is 10 orders to earn ₹150 Milestone Bonus 🎯
+  // The primary anchor target is 10 orders to earn ₹150 Milestone Bonus
   // If safeCompleted < 10, the daily target is 10 orders (₹150).
   // Once 10 is reached, the target advances to 15 orders (₹275).
   // Once 15 is reached, all slabs are unlocked (100%).
@@ -228,11 +228,11 @@ export function calculateTier1MilestoneBonus(
   const remainingOrders = Math.max(0, targetOrders - safeCompleted);
   const progressPct = Math.min(100, Math.max(0, Math.round((safeCompleted / targetOrders) * 100)));
 
-  let headline = `Today's Target: Complete ${targetOrders} orders to earn ₹${targetBonusRupees} Milestone Bonus 🎯`;
+  let headline = `Today's Target: Complete ${targetOrders} orders to earn ₹${targetBonusRupees} Milestone Bonus`;
   if (safeCompleted < 10) {
-    headline = "Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus 🎯";
+    headline = "Today's Target: Complete 10 orders to earn ₹150 Milestone Bonus";
   } else if (safeCompleted >= 15) {
-    headline = "All Daily Milestone Targets Completed! 🏆";
+    headline = "All Daily Milestone Targets Completed!";
   }
 
   let subtext = "";

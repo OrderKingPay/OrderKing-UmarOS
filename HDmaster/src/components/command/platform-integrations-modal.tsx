@@ -65,7 +65,7 @@ export function PlatformIntegrationsModal({
     const res = await universalPlatformManager.syncAllPlatforms();
     setPlatforms(universalPlatformManager.listPlatforms());
     setIsSyncing(false);
-    toast.success(`⚡ Synced ${res.onlineCount}/${res.totalCount} platforms! Latency: ${res.averageLatencyMs}ms`);
+    toast.success(`Synced ${res.onlineCount}/${res.totalCount} platforms (${res.averageLatencyMs}ms).`);
   };
 
   const handleExecuteAction = async (action: string) => {
@@ -89,7 +89,7 @@ export function PlatformIntegrationsModal({
       setHistory(universalPlatformManager.getHistory());
       setIsExecuting(false);
       if (result.success) {
-        toast.success(`✅ ${selectedPlatform.name}: ${result.summary}`);
+        toast.success(`${selectedPlatform.name}: ${result.summary}`);
       } else {
         toast.info(`ℹ️ ${selectedPlatform.name}: ${result.summary}`);
       }
@@ -288,7 +288,7 @@ export function PlatformIntegrationsModal({
                     <Button
                       size="sm"
                       onClick={() => {
-                        toast.success(`⚡ 1-Click Connected to ${app.name}! Safe execution bridge armed.`);
+                        toast.success(`Connected to ${app.name}. Execution bridge active.`);
                         if (onExecuteInChat) {
                           onExecuteInChat(`Execute ${app.name} action: ${app.actions[0] || "enforce"}`);
                         }
@@ -350,7 +350,7 @@ export function PlatformIntegrationsModal({
                   </div>
                 </div>
                 <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-[10px] font-mono">
-                  ⚡ 100% READY
+                  READY
                 </Badge>
               </div>
 

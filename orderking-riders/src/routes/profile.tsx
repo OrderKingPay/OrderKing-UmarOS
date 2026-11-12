@@ -99,7 +99,7 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
       },
       {
         heading: "3. Statutory TDS & Grievance Redressal Officer",
-        body: "Where applicable under Section 194-O of the Income Tax Act, 1961, statutory TDS at 1% is accounted for on gross credits. For payout or ledger disputes, raise a ticket under Support → Cash / Payment Issue or contact the Partner Grievance Officer at grievance.rider@orderking.in.",
+        body: "Where applicable under Section 194-O of the Income Tax Act, 1961, statutory TDS at 1% is accounted for on gross credits. For payout or ledger disputes, raise a ticket under Support - Cash / Payment Issue or contact the Partner Grievance Officer at grievance.rider@orderking.in.",
       },
     ],
   },

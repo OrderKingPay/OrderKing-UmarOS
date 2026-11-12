@@ -43,52 +43,8 @@ export interface StorageInspectionResult {
 
 const VAULT_STORAGE_KEY = "hdmaster_media_vault_v1";
 
-// Default initial cache entries representing realistic media generated in HD Master
-const INITIAL_MEDIA_ITEMS: VaultMediaItem[] = [
-  {
-    id: "media-img-01",
-    type: "image",
-    title: "OrderKing Autonomous Delivery Fleet Drone",
-    prompt: "Futuristic autonomous food delivery drone in cyberpunk Indian metro at night, golden lights, 8k octane render",
-    url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
-    sizeBytes: 2450000,
-    mimeType: "image/jpeg",
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-    isProtected: false,
-  },
-  {
-    id: "media-img-02",
-    type: "image",
-    title: "KingPay 3D Holographic UPI Soundbox",
-    prompt: "3D golden holographic UPI soundbox device on marble counter with emerald glowing status lights, product photography",
-    url: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80",
-    sizeBytes: 1980000,
-    mimeType: "image/jpeg",
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-    isProtected: false,
-  },
-  {
-    id: "media-vid-01",
-    type: "video",
-    title: "OrderKing Advancedfast 15-Min Delivery Animation",
-    prompt: "High speed cinematic time-lapse of delivery rider riding through city streets into glowing restaurant hub",
-    url: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
-    sizeBytes: 8540000,
-    mimeType: "video/mp4",
-    createdAt: new Date(Date.now() - 14400000).toISOString(),
-    isProtected: false,
-  },
-  {
-    id: "media-attach-01",
-    type: "attachment",
-    title: "Client-Pitch-Decks-Q3.pdf",
-    url: "#",
-    sizeBytes: 4200000,
-    mimeType: "application/pdf",
-    createdAt: new Date(Date.now() - 28800000).toISOString(),
-    isProtected: false,
-  },
-];
+// Real media items are populated strictly from actual workspace generation & uploads
+const INITIAL_MEDIA_ITEMS: VaultMediaItem[] = [];
 
 class MediaStorageVaultService {
   private items: VaultMediaItem[] = [];
@@ -158,9 +114,17 @@ class MediaStorageVaultService {
       else attachBytes += item.sizeBytes;
     }
 
-    // Ephemeral chat session cache & stale network cache
-    const chatCacheBytes = 1850000;
-    const staleApiBytes = 940000;
+    // Measure actual ephemeral browser cache size if available
+    let chatCacheBytes = 0;
+    let staleApiBytes = 0;
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      try {
+        const chatRaw = sessionStorage.getItem("hdmaster_chat_ephemeral_cache");
+        const apiRaw = sessionStorage.getItem("hdmaster_api_stale_cache");
+        if (chatRaw) chatCacheBytes = chatRaw.length * 2;
+        if (apiRaw) staleApiBytes = apiRaw.length * 2;
+      } catch {}
+    }
 
     const totalSizeBytes = imagesBytes + videosBytes + attachBytes + chatCacheBytes + staleApiBytes;
 
@@ -177,10 +141,10 @@ class MediaStorageVaultService {
         staleApiCacheBytes: staleApiBytes,
       },
       immutableCoreProtection: {
-        clientLeadsCount: 15,
-        clientInvoicesCount: 8,
-        enterpriseBlueprintsCount: 3,
-        activeContractsCount: 4,
+        clientLeadsCount: 0,
+        clientInvoicesCount: 0,
+        enterpriseBlueprintsCount: 0,
+        activeContractsCount: 0,
         founderVaultKeysSafe: true,
         isProtectedGuarantee: true,
       },

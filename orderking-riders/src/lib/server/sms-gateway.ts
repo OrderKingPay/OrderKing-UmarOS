@@ -417,36 +417,36 @@ export async function sendViaWhatsAppCloudApi(
     const templateName = process.env.WHATSAPP_OTP_TEMPLATE;
     const bodyPayload = templateName
       ? {
-          messaging_product: "whatsapp",
-          recipient_type: "individual",
-          to: `91${cleanPhone}`,
-          type: "template",
-          template: {
-            name: templateName,
-            language: { code: "en" },
-            components: [
-              {
-                type: "body",
-                parameters: [{ type: "text", text: otp }],
-              },
-              {
-                type: "button",
-                sub_type: "url",
-                index: "0",
-                parameters: [{ type: "text", text: otp }],
-              },
-            ],
-          },
-        }
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: `91${cleanPhone}`,
+        type: "template",
+        template: {
+          name: templateName,
+          language: { code: "en" },
+          components: [
+            {
+              type: "body",
+              parameters: [{ type: "text", text: otp }],
+            },
+            {
+              type: "button",
+              sub_type: "url",
+              index: "0",
+              parameters: [{ type: "text", text: otp }],
+            },
+          ],
+        },
+      }
       : {
-          messaging_product: "whatsapp",
-          recipient_type: "individual",
-          to: `91${cleanPhone}`,
-          type: "text",
-          text: {
-            body: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Zero-lockout enabled. Do not share this code.`,
-          },
-        };
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: `91${cleanPhone}`,
+        type: "text",
+        text: {
+          body: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Zero-lockout enabled. Do not share this code.`,
+        },
+      };
 
     const res = await fetch(
       `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`,
@@ -542,14 +542,14 @@ export async function dispatchOtpSms(
         waNotice = `Verification code dispatched directly to your WhatsApp inbox (+91-${cleanPhone}).`;
       } catch (waErr: any) {
         console.warn(
-          `[SMS Gateway] ⚠️ Outbound WhatsApp API failed: ${waErr.message}. Falling back to zero-lockout direct channel.`,
+          `[SMS Gateway] Outbound WhatsApp API failed: ${waErr.message}. Falling back to direct verification channel.`,
         );
-        waNotice = `WhatsApp delivery pending network gate. Zero-lockout code active.`;
+        waNotice = `WhatsApp gateway unreachable. Direct OTP verification active.`;
       }
     } else {
-      waNotice = `WhatsApp Cloud API credentials pending. Verification code generated and logged for +91-${cleanPhone}.`;
+      waNotice = `WhatsApp Cloud API credentials unconfigured. Direct OTP verification active for +91-${cleanPhone}.`;
       console.log(
-        `[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to direct verification channel.`,
+        `[SMS Gateway] WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to direct verification channel.`,
       );
     }
 
@@ -568,9 +568,9 @@ export async function dispatchOtpSms(
 
   // No active API key found in Cloudflare / environment
   if (availableProviders.length === 0) {
-    const notice = "SMS gateway key not yet provided in Cloudflare environment (Pending API Key configuration). Zero-lockout direct OTP verification active.";
+    const notice = "SMS gateway API key is not configured in environment. Direct OTP verification active.";
     console.warn(
-      `[SMS Gateway] ⚠️ ${notice} (Recipient: +91-${cleanPhone}, OTP: [${otp}])`,
+      `[SMS Gateway] ${notice} (Recipient: +91-${cleanPhone}, OTP: [${otp}])`,
     );
 
     return {
@@ -591,7 +591,7 @@ export async function dispatchOtpSms(
   for (const provider of availableProviders) {
     try {
       console.log(
-        `[SMS Gateway] 🚀 Dispatching OTP [${otp}] to +91-${cleanPhone} via ${provider.toUpperCase()}...`,
+        `[SMS Gateway] Dispatching OTP [${otp}] to +91-${cleanPhone} via ${provider.toUpperCase()}...`,
       );
 
       let result: { success: boolean; messageId: string };
@@ -622,7 +622,7 @@ export async function dispatchOtpSms(
 
       const latency = Date.now() - startTime;
       console.log(
-        `[SMS Gateway] ✅ Successfully delivered OTP to +91-${cleanPhone} via ${provider.toUpperCase()} (MessageId: ${result.messageId}, ${latency}ms)`,
+        `[SMS Gateway] Successfully delivered OTP to +91-${cleanPhone} via ${provider.toUpperCase()} (MessageId: ${result.messageId}, ${latency}ms)`,
       );
 
       return {
@@ -636,7 +636,7 @@ export async function dispatchOtpSms(
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : String(err);
       console.error(
-        `[SMS Gateway] ❌ Provider ${provider.toUpperCase()} failed: ${errMsg}`,
+        `[SMS Gateway] Provider ${provider.toUpperCase()} failed: ${errMsg}`,
       );
       errors.push(`${provider}: ${errMsg}`);
     }
@@ -646,7 +646,7 @@ export async function dispatchOtpSms(
   // Ensure the rider is NEVER locked out by providing resilient fallback
   const combinedError = errors.join(" | ");
   console.warn(
-    `[SMS Gateway] ⚠️ All configured gateways failed (${combinedError}). Falling back to debug verification to prevent lockout.`,
+    `[SMS Gateway] All configured gateways failed (${combinedError}). Falling back to debug verification to prevent lockout.`,
   );
 
   return {
@@ -723,14 +723,14 @@ export async function dispatchBookingConfirmationTelecom(
   const whatsAppText =
     `*ORDERKING TRAVEL CONFIRMATION*\n` +
     `Hello *${params.customerName}*,\n` +
-    `Your ${params.serviceType} booking *#${params.bookingId}* is CONFIRMED!\n\n` +
-    `🎫 PNR / Ticket: *${params.pnr}*\n` +
-    `✈️ Carrier: ${params.carrierName} ${params.serviceNumber ? `(${params.serviceNumber})` : ""}\n` +
-    `📍 Route: ${params.origin} ➔ ${params.destination}\n` +
-    `🕒 Departure: ${params.departureTime}, ${params.travelDate}\n` +
-    `💳 Amount Paid: ₹${totalInr} (KingPay Verified)\n` +
-    `📄 e-Ticket / PDF Voucher: ${pdfVoucherUrl}\n\n` +
-    `📲 Live Trip Tracking: https://orderkingpay.com/travel/trips?id=${params.bookingId}\n` +
+    `Your ${params.serviceType} booking *#${params.bookingId}* is CONFIRMED.\n\n` +
+    `PNR / Ticket: *${params.pnr}*\n` +
+    `Carrier: ${params.carrierName} ${params.serviceNumber ? `(${params.serviceNumber})` : ""}\n` +
+    `Route: ${params.origin} to ${params.destination}\n` +
+    `Departure: ${params.departureTime}, ${params.travelDate}\n` +
+    `Amount Paid: ₹${totalInr} (KingPay Verified)\n` +
+    `e-Ticket / PDF Voucher: ${pdfVoucherUrl}\n\n` +
+    `Live Trip Tracking: https://orderkingpay.com/travel/trips?id=${params.bookingId}\n` +
     `GSTIN: 18AFXPH9838M1Z9 · Orderkingpay`;
 
   const smsText =
@@ -785,11 +785,11 @@ export async function dispatchBookingConfirmationTelecom(
         };
       }
       console.warn(
-        `[Telecom Gateway] ⚠️ WhatsApp Cloud API returned non-OK status: ${waRes.status}. Triggering fail-closed fallback to Fast2SMS DLT/SMS corridor.`,
+        `[Telecom Gateway] WhatsApp Cloud API returned non-OK status: ${waRes.status}. Triggering fail-closed fallback to Fast2SMS DLT/SMS corridor.`,
       );
     } catch (waErr: any) {
       console.warn(
-        `[Telecom Gateway] ⚠️ WhatsApp dispatch transient failure: ${waErr?.message || waErr}. Fallback to Fast2SMS SMS corridor.`,
+        `[Telecom Gateway] WhatsApp dispatch transient failure: ${waErr?.message || waErr}. Fallback to Fast2SMS SMS corridor.`,
       );
     }
   }
@@ -846,7 +846,7 @@ export async function dispatchBookingConfirmationTelecom(
           };
         }
       } catch (dltErr: any) {
-        console.warn(`[Telecom Gateway] ⚠️ Fast2SMS DLT route failed: ${dltErr?.message || dltErr}`);
+        console.warn(`[Telecom Gateway] Fast2SMS DLT route failed: ${dltErr?.message || dltErr}`);
       }
     }
 
@@ -891,7 +891,7 @@ export async function dispatchBookingConfirmationTelecom(
           };
         }
       } catch (smartErr: any) {
-        console.warn(`[Telecom Gateway] ⚠️ Fast2SMS Smart OTP failed: ${smartErr?.message || smartErr}`);
+        console.warn(`[Telecom Gateway] Fast2SMS Smart OTP failed: ${smartErr?.message || smartErr}`);
       }
     }
 
@@ -936,7 +936,7 @@ export async function dispatchBookingConfirmationTelecom(
         };
       }
     } catch (qErr: any) {
-      console.warn(`[Telecom Gateway] ⚠️ Fast2SMS Quick Route failed: ${qErr?.message || qErr}`);
+      console.warn(`[Telecom Gateway] Fast2SMS Quick Route failed: ${qErr?.message || qErr}`);
     }
   }
 

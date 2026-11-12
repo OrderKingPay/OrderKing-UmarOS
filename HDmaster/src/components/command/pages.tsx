@@ -314,8 +314,8 @@ export function DashboardPage() {
             <MetricCard label="Online riders" value={formatNumber(t!.onlineRiders.value)} source={t!.onlineRiders.label} />
             <MetricCard label="Active deliveries" value={formatNumber(t!.activeDeliveries.value)} source={t!.activeDeliveries.label} />
             <MetricCard label="Support load" value={formatNumber(t!.supportLoad.value)} source={t!.supportLoad.label} />
-            <MetricCard label="Delayed now" value={formatNumber(data.live.delayedOrders)} tone="danger" source="executeD" />
-            <MetricCard label="Unassigned" value={formatNumber(data.live.unassignedOrders)} tone="warning" source="executeD" />
+            <MetricCard label="Delayed now" value={formatNumber(data.live.delayedOrders)} tone="danger" source="LIVE" />
+            <MetricCard label="Unassigned" value={formatNumber(data.live.unassignedOrders)} tone="warning" source="LIVE" />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
@@ -450,7 +450,7 @@ function LivePage() {
           </div>
         ))}
       </div>
-      <Panel title={data?.trackingEnabled ? "Rider positions (executeD)" : "Live tracking flag is OFF"}>
+      <Panel title={data?.trackingEnabled ? "Rider positions (LIVE)" : "Live tracking flag is OFF"}>
         <div className="relative h-64 overflow-hidden rounded-[16px] border border-border bg-elevated">
           {riders.filter((r) => r.lat != null && r.lng != null).map((r) => {
             const x = ((r.lng! - minLng) / (maxLng - minLng)) * 100;
@@ -465,7 +465,7 @@ function LivePage() {
             );
           })}
           <p className="absolute bottom-2 left-3 text-[10px] uppercase tracking-wider text-muted">
-            GPS last-fix · executeD · not a street map
+            GPS last-fix - LIVE telemetry - coordinate view
           </p>
         </div>
         <ul className="mt-3 grid gap-1 text-xs sm:grid-cols-2">
@@ -744,10 +744,10 @@ function RestaurantDetail({ id }: { id: string }) {
       </div>
       <p className="text-sm text-muted">{String(r.address)} · {String(r.phoneMasked)}</p>
       <div className="grid gap-3 sm:grid-cols-4">
-        <MetricCard label="Orders" value={formatNumber(r.performance.orders)} source="executeD" />
-        <MetricCard label="GMV" value={money(r.performance.gmv)} source="executeD" />
-        <MetricCard label="AOV" value={money(r.performance.aov)} source="executeD" />
-        <MetricCard label="Cancel rate" value={`${(r.performance.cancellationRate * 100).toFixed(1)}%`} source="executeD" />
+        <MetricCard label="Orders" value={formatNumber(r.performance.orders)} source="ACTUAL" />
+        <MetricCard label="GMV" value={money(r.performance.gmv)} source="ACTUAL" />
+        <MetricCard label="AOV" value={money(r.performance.aov)} source="ACTUAL" />
+        <MetricCard label="Cancel rate" value={`${(r.performance.cancellationRate * 100).toFixed(1)}%`} source="ACTUAL" />
       </div>
       {r.contributionEstimate ? (
         <MetricCard label="Estimated contribution" value={money(r.contributionEstimate.value)} source="ESTIMATE" />
@@ -818,7 +818,7 @@ function RiderDetail({ id }: { id: string }) {
       <h1 className="font-display text-3xl">{r.name}</h1>
       <StatusBadge value={r.status} />
       <p className="text-sm text-muted">{r.vehicle} · {r.phoneMasked} · rating {r.rating.toFixed(1)}</p>
-      {r.lat != null ? <p className="text-xs text-muted">Last operational fix {r.lat.toFixed(3)}, {r.lng?.toFixed(3)} (executeD)</p> : null}
+      {r.lat != null ? <p className="text-xs text-muted">Last operational fix {r.lat.toFixed(3)}, {r.lng?.toFixed(3)} (LIVE)</p> : null}
       <Panel title="Recent deliveries">
         <ul className="text-sm">
           {r.deliveries.map((d) => (
@@ -2683,7 +2683,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
           <div className="flex flex-wrap items-center gap-2">
             <div className="rounded-[14px] border border-border bg-elevated px-3 py-1.5 text-xs">
               <span className="text-muted">Data Mode: </span>
-              <span className="font-semibold text-primary">{ecosystem?.dataMode ?? "executeD"}</span>
+              <span className="font-semibold text-primary">{ecosystem?.dataMode ?? "PRODUCTION"}</span>
             </div>
             <div className="rounded-[14px] border border-border bg-elevated px-3 py-1.5 text-xs">
               <span className="text-muted">Active Engine: </span>

@@ -343,8 +343,8 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
 
     if (isBengaliOrAssamese) {
       return (
-        `🏪 ${snap.restaurantName} এর স্টোরফ্রন্ট স্থিতি নিরীক্ষা:\n` +
-        `• স্টোর অবস্থা: ${snap.emergencyClosed ? "🔴 সাময়িক বন্ধ (পজ করা)" : "🟢 অনলাইন (লাইভ অর্ডার গ্রহণের জন্য প্রস্তুত)"}\n` +
+        `${snap.restaurantName} এর স্টোরফ্রন্ট স্থিতি নিরীক্ষা:\n` +
+        `• স্টোর অবস্থা: ${snap.emergencyClosed ? "সাময়িক বন্ধ (পজ করা)" : "অনলাইন (লাইভ অর্ডার গ্রহণের জন্য প্রস্তুত)"}\n` +
         `• বর্তমান সময়: ${istFormatted} (${istHours < 9 ? "ভোরবেলা / শান্ত সময়। রেস্তোরাঁ ডেলিভারি সাধারণত সকাল ৯টা থেকে এবং দুপুর ১২টা–৩টায় সর্বোচ্চ থাকে।" : "সক্রিয় ডেলিভারি সময়।"})\n` +
         `• মেনু স্টক: ${snap.catalogStats.totalItems} টি সক্রিয় খাবার (${snap.unavailableItems.length > 0 ? `${snap.unavailableItems.length} টি স্টক আউট` : "সব খাবার স্টকে আছে"})\n` +
         `• FSSAI ও ভেরিফিকেশন: ${snap.fssaiNumber ? `ভেরিফাইড (${snap.fssaiNumber})` : "অপেক্ষমাণ"}\n\n` +
@@ -356,8 +356,8 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
 
     if (isHindiOrDevanagari) {
       return (
-        `🏪 ${snap.restaurantName} की स्टोर स्थिति जांच:\n` +
-        `• स्टोर स्थिति: ${snap.emergencyClosed ? "🔴 पॉज्ड (दुकान रुकी हुई है)" : "🟢 ऑनलाइन (ऑर्डर स्वीकार करने के लिए तैयार)"}\n` +
+        `${snap.restaurantName} की स्टोर स्थिति जांच:\n` +
+        `• स्टोर स्थिति: ${snap.emergencyClosed ? "पॉज्ड (दुकान रुकी हुई है)" : "ऑनलाइन (ऑर्डर स्वीकार करने के लिए तैयार)"}\n` +
         `• वर्तमान समय: ${istFormatted} (${istHours < 9 ? "प्रातःकाल / शांत समय। ग्राहकों के ऑर्डर सुबह 9 बजे से और दोपहर 12 से 3 बजे के बीच तेजी पकड़ते हैं।" : "सक्रिय समय।"})\n` +
         `• मेनू सूची: ${snap.catalogStats.totalItems} सक्रिय व्यंजन (${snap.unavailableItems.length > 0 ? `${snap.unavailableItems.length} आउट ऑफ स्टॉक` : "सभी उपलब्ध हैं"})\n` +
         `• FSSAI एवं सत्यापन: ${snap.fssaiNumber ? `सत्यापित (${snap.fssaiNumber})` : "लंबित"}\n\n` +
@@ -369,7 +369,7 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
 
     return (
       `Storefront Status Check for ${snap.restaurantName}:\n` +
-      `• Outlet State: ${snap.emergencyClosed ? "🔴 PAUSED (Emergency Closed)" : "🟢 ONLINE & ACCEPTING ORDERS"}\n` +
+      `• Outlet State: ${snap.emergencyClosed ? "PAUSED (Emergency Closed)" : "ONLINE & ACCEPTING ORDERS"}\n` +
       `• Current Time: ${istFormatted} (${timeContext})\n` +
       `• Menu Catalog: ${snap.catalogStats.totalItems} active dish(es) (${snap.unavailableItems.length > 0 ? `${snap.unavailableItems.length} marked Out of Stock` : "all items in stock"})\n` +
       `• Compliance: FSSAI ${snap.fssaiNumber ? `Verified (${snap.fssaiNumber})` : "Pending Registration"} · KYC: ${snap.verificationStatus}\n\n` +
@@ -382,10 +382,10 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
   // Sales & Orders
   if (q.includes("sales") || q.includes("revenue") || q.includes("order") || q.includes("আজকের বিক্রি") || q.includes("আজকে কত") || q.includes("बिक्री") || q.includes("कमाई") || q.includes("ऑर्डर")) {
     if (isBengaliOrAssamese) {
-      return `📊 ${snap.restaurantName} এর আজকের লাইভ সারাংশ:\n• মোট অর্ডার: ${snap.today.orders} টি (${snap.today.delivered} ডেলিভার্ড, ${snap.today.pending} অপেক্ষমাণ)\n• গ্রস সেলস: ${formatINR(snap.today.sales_paise)}\n• নেট পেআউট (জমা হবে): ${formatINR(snap.today.payable_paise)}\n• সেরা বিক্রিত খাবার: ${topSummary}\n• স্টোরফ্রন্ট স্ট্যাটাস: ${snap.emergencyClosed ? "🔴 সাময়িক বন্ধ" : "🟢 লাইভ অর্ডার গ্রহণ করছে"}`;
+      return `${snap.restaurantName} এর আজকের লাইভ সারাংশ:\n• মোট অর্ডার: ${snap.today.orders} টি (${snap.today.delivered} ডেলিভার্ড, ${snap.today.pending} অপেক্ষমাণ)\n• গ্রস সেলস: ${formatINR(snap.today.sales_paise)}\n• নেট পেআউট (জমা হবে): ${formatINR(snap.today.payable_paise)}\n• সেরা বিক্রিত খাবার: ${topSummary}\n• স্টোরফ্রন্ট স্ট্যাটাস: ${snap.emergencyClosed ? "সাময়িক বন্ধ" : "লাইভ অর্ডার গ্রহণ করছে"}`;
     }
     if (isHindiOrDevanagari) {
-      return `📊 ${snap.restaurantName} की आज की लाइव रिपोर्ट:\n• कुल ऑर्डर्स: ${snap.today.orders} प्राप्त (${snap.today.delivered} डिलीवर, ${snap.today.pending} पेंडिंग)\n• कुल बिक्री (GMV): ${formatINR(snap.today.sales_paise)}\n• शुद्ध पेआउट (T+1 बैंक ट्रांसफर): ${formatINR(snap.today.payable_paise)}\n• टॉप सेलिंग डिशेस: ${topSummary}\n• स्टोर स्थिति: ${snap.emergencyClosed ? "🔴 पॉज्ड" : "🟢 ऑनलाइन और लाइव"}`;
+      return `${snap.restaurantName} की आज की लाइव रिपोर्ट:\n• कुल ऑर्डर्स: ${snap.today.orders} प्राप्त (${snap.today.delivered} डिलीवर, ${snap.today.pending} पेंडिंग)\n• कुल बिक्री (GMV): ${formatINR(snap.today.sales_paise)}\n• शुद्ध पेआउट (T+1 बैंक ट्रांसफर): ${formatINR(snap.today.payable_paise)}\n• टॉप सेलिंग डिशेस: ${topSummary}\n• स्टोर स्थिति: ${snap.emergencyClosed ? "पॉज्ड" : "ऑनलाइन और लाइव"}`;
     }
     return `Today's Summary for ${snap.restaurantName}:\n• Orders: ${snap.today.orders} placed (${snap.today.delivered} delivered, ${snap.today.pending} pending acceptance)\n• Gross Sales: ${formatINR(snap.today.sales_paise)}\n• Net Payout Accrued: ${formatINR(snap.today.payable_paise)}\n• Top Sellers: ${topSummary}\n• Storefront: ${snap.emergencyClosed ? "PAUSED" : "ONLINE & RECEIVING ORDERS"}`;
   }
@@ -393,10 +393,10 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
   // Payout, Settlement & Bank Transfers
   if (q.includes("payout") || q.includes("settlement") || q.includes("bank") || q.includes("payment") || q.includes("টাকা") || q.includes("পেমেন্ট") || q.includes("पेआउट") || q.includes("खाता") || q.includes("बैंक") || q.includes("टैक्स") || q.includes("gst")) {
     if (isBengaliOrAssamese) {
-      return `💳 ${snap.restaurantName} এর দৈনিক ব্যাংক সেটেলমেন্ট:\n• পেআউট শিডিউল: স্বয়ংক্রিয় T+1 দৈনিক সেটেলমেন্ট সরাসরি আপনার ভেরিফাইড ব্যাংক অ্যাকাউন্টে জমা হবে।\n• নেট প্রাপ্য ব্যালেন্স: ${formatINR(snap.today.payable_paise)} (${snap.today.delivered} টি সম্পন্ন অর্ডারের জন্য)।\n• কর ও আইনি সুবিধা: সেকশন ৯(৫) CGST (৫% ফুড জিএসটি) প্ল্যাটফর্মের মাধ্যমে স্বয়ংক্রিয়ভাবে জমা হয়। ০% ডাইন-ইন এবং স্বচ্ছ ডেলিভারি কমিশন। বিস্তারিত লেজার Settlement ট্যাবে দেখুন।`;
+      return `${snap.restaurantName} এর দৈনিক ব্যাংক সেটেলমেন্ট:\n• পেআউট শিডিউল: স্বয়ংক্রিয় T+1 দৈনিক সেটেলমেন্ট সরাসরি আপনার ভেরিফাইড ব্যাংক অ্যাকাউন্টে জমা হবে।\n• নেট প্রাপ্য ব্যালেন্স: ${formatINR(snap.today.payable_paise)} (${snap.today.delivered} টি সম্পন্ন অর্ডারের জন্য)।\n• কর ও আইনি সুবিধা: সেকশন ৯(৫) CGST (৫% ফুড জিএসটি) প্ল্যাটফর্মের মাধ্যমে স্বয়ংক্রিয়ভাবে জমা হয়। ০% ডাইন-ইন এবং স্বচ্ছ ডেলিভারি কমিশন। বিস্তারিত লেজার Settlement ট্যাবে দেখুন।`;
     }
     if (isHindiOrDevanagari) {
-      return `💳 ${snap.restaurantName} का दैनिक बैंक सेटलमेंट:\n• पेआउट शेड्यूल: स्वचालित T+1 दैनिक बैंक सेटलमेंट सीधे आपके सत्यापित बैंक खाते में क्रेडिट किया जाता है।\n• शुद्ध देय राशि: ${formatINR(snap.today.payable_paise)} (${snap.today.delivered} डिलीवर ऑर्डर्स के लिए)।\n• वैधानिक कटौती एवं कर: धारा 9(5) CGST के तहत 5% रेस्टोरेंट GST प्लेटफॉर्म द्वारा सीधे जमा किया जाता है। 0% डाइन-इन कमीशन। पूर्ण खाता Settlement टैब में उपलब्ध है।`;
+      return `${snap.restaurantName} का दैनिक बैंक सेटलमेंट:\n• पेआउट शेड्यूल: स्वचालित T+1 दैनिक बैंक सेटलमेंट सीधे आपके सत्यापित बैंक खाते में क्रेडिट किया जाता है।\n• शुद्ध देय राशि: ${formatINR(snap.today.payable_paise)} (${snap.today.delivered} डिलीवर ऑर्डर्स के लिए)।\n• वैधानिक कटौती एवं कर: धारा 9(5) CGST के तहत 5% रेस्टोरेंट GST प्लेटफॉर्म द्वारा सीधे जमा किया जाता है। 0% डाइन-इन कमीशन। पूर्ण खाता Settlement टैब में उपलब्ध है।`;
     }
     return `Daily Settlement for ${snap.restaurantName}:\n• Payout Schedule: Automatic T+1 daily settlement deposited directly into your verified bank account.\n• Accrued Net Payable: ${formatINR(snap.today.payable_paise)} for ${snap.today.delivered} delivered order(s).\n• Statutory Deductions: Accounted under Section 9(5) CGST (5% restaurant GST remitted by OrderKing) and Section 194-O TDS. Full itemized ledgers are available in the Settlement tab.`;
   }
@@ -404,10 +404,10 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
   // Menu, Stock & Items
   if (q.includes("menu") || q.includes("stock") || q.includes("item") || q.includes("dish") || q.includes("খাবার") || q.includes("মেনু") || q.includes("मेनू") || q.includes("आइटम") || q.includes("स्टॉक") || q.includes("खत्म")) {
     if (isBengaliOrAssamese) {
-      return `🍲 ${snap.restaurantName} এর মেনু ও স্টক বিশদ:\n• সক্রিয় খাবার সংখ্যা: ${snap.catalogStats.totalItems} টি\n• স্টক শেষ (Out of Stock): ${snap.unavailableItems.length > 0 ? unavailSummary : "কোনোটিই নয় (সব খাবার স্টকে আছে)"}\n• ছবি ছাড়া ডিশ: ${snap.catalogStats.missingPhotos} টি\n• বিবরণ ছাড়া ডিশ: ${snap.catalogStats.missingDescriptions} টি\nআপনি যেকোনো সময় মেনু ট্যাবে নতুন ডিশ যুক্ত করতে বা দাম ও স্টক পরিবর্তন করতে পারেন।`;
+      return `${snap.restaurantName} এর মেনু ও স্টক বিশদ:\n• সক্রিয় খাবার সংখ্যা: ${snap.catalogStats.totalItems} টি\n• স্টক শেষ (Out of Stock): ${snap.unavailableItems.length > 0 ? unavailSummary : "কোনোটিই নয় (সব খাবার স্টকে আছে)"}\n• ছবি ছাড়া ডিশ: ${snap.catalogStats.missingPhotos} টি\n• বিবরণ ছাড়া ডিশ: ${snap.catalogStats.missingDescriptions} টি\nআপনি যেকোনো সময় মেনু ট্যাবে নতুন ডিশ যুক্ত করতে বা দাম ও স্টক পরিবর্তন করতে পারেন।`;
     }
     if (isHindiOrDevanagari) {
-      return `🍲 ${snap.restaurantName} का मेनू और स्टॉक ओवरव्यू:\n• सक्रिय डिशेस: ${snap.catalogStats.totalItems}\n• आउट ऑफ स्टॉक: ${snap.unavailableItems.length > 0 ? unavailSummary : "कोई नहीं (सभी डिशेस उपलब्ध हैं)"}\n• बिना फोटो वाली डिशेस: ${snap.catalogStats.missingPhotos}\n• विवरण के बिना डिशेस: ${snap.catalogStats.missingDescriptions}\nआप मेनू टैब में कभी भी फोटो, मूल्य या स्टॉक टॉगल अपडेट कर सकते हैं।`;
+      return `${snap.restaurantName} का मेनू और स्टॉक ओवरव्यू:\n• सक्रिय डिशेस: ${snap.catalogStats.totalItems}\n• आउट ऑफ स्टॉक: ${snap.unavailableItems.length > 0 ? unavailSummary : "कोई नहीं (सभी डिशेस उपलब्ध हैं)"}\n• बिना फोटो वाली डिशेस: ${snap.catalogStats.missingPhotos}\n• विवरण के बिना डिशेस: ${snap.catalogStats.missingDescriptions}\nआप मेनू टैब में कभी भी फोटो, मूल्य या स्टॉक टॉगल अपडेट कर सकते हैं।`;
     }
     return `Menu Overview for ${snap.restaurantName}:\n• Active Dishes: ${snap.catalogStats.totalItems}\n• Out of Stock: ${snap.unavailableItems.length > 0 ? unavailSummary : "None (all active dishes are available)"}\n• Photos & Details: ${snap.catalogStats.missingPhotos} dish(es) without photos, ${snap.catalogStats.missingDescriptions} without descriptions. You can update photos, prices, and stock toggles anytime in the Menu tab.`;
   }
@@ -415,7 +415,7 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
   // Storefront & Prep Time SLA
   if (q.includes("open") || q.includes("close") || q.includes("pause") || q.includes("resume") || q.includes("prep") || q.includes("rush") || q.includes("समय") || q.includes("टाइम") || q.includes("রশ") || q.includes("পাউজ")) {
     const statusText = snap.emergencyClosed ? "PAUSED / CLOSED" : "OPEN & ACCEPTING LIVE ORDERS";
-    return `⏱️ Kitchen Readiness & Timing for ${snap.restaurantName}:\n• Storefront: ${statusText}\n• Baseline Prep Buffer: ${snap.prepMinutes} minutes\n• Peak Rush Buffer: ${snap.peakPrepMinutes} minutes\n• FSSAI License: ${snap.fssaiNumber ? `Verified (${snap.fssaiNumber})` : "Pending Registration"}\nYou can toggle rush mode or pause orders anytime using the fast throttle controls.`;
+    return `Kitchen Readiness & Timing for ${snap.restaurantName}:\n• Storefront: ${statusText}\n• Baseline Prep Buffer: ${snap.prepMinutes} minutes\n• Peak Rush Buffer: ${snap.peakPrepMinutes} minutes\n• FSSAI License: ${snap.fssaiNumber ? `Verified (${snap.fssaiNumber})` : "Pending Registration"}\nYou can toggle rush mode or pause orders anytime using the fast throttle controls.`;
   }
 
   // Disputes & Cancellations

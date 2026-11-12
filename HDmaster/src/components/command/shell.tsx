@@ -656,7 +656,7 @@ export function CommandShell() {
               title="Customize this page's settings, rules, and layout"
             >
               <Settings className="size-4 text-amber-400 shrink-0" />
-              <span className="hidden sm:inline">⚙️ Page Settings &amp; Customize</span>
+              <span className="hidden sm:inline">Page Settings &amp; Customize</span>
               <span className="sm:hidden">⚙️ Settings</span>
             </button>
 
@@ -750,7 +750,7 @@ export function CommandShell() {
               onClick={() => scrollMainViewport("up")}
               className="flex size-9 items-center justify-center rounded-full border border-border bg-surface/90 text-fg shadow-lg backdrop-blur hover:bg-elevated transition"
               aria-label="Scroll Up"
-              title="Scroll Up (↑)"
+              title="Scroll Up"
             >
               <ArrowUp className="size-4" />
             </button>
@@ -759,7 +759,7 @@ export function CommandShell() {
               onClick={() => scrollMainViewport("down")}
               className="flex size-9 items-center justify-center rounded-full border border-border bg-surface/90 text-fg shadow-lg backdrop-blur hover:bg-elevated transition"
               aria-label="Scroll Down"
-              title="Scroll Down (↓)"
+              title="Scroll Down"
             >
               <ArrowDown className="size-4" />
             </button>
@@ -782,7 +782,7 @@ export function CommandShell() {
                 <div className="flex items-center gap-2">
                   <Settings className="size-5 text-amber-400" />
                   <h2 className="text-base font-bold">
-                    ⚙️ Page Settings &amp; Customize
+                    Page Settings &amp; Customize
                   </h2>
                 </div>
                 <p className="mt-0.5 text-xs text-muted">
@@ -911,7 +911,7 @@ export function CommandShell() {
                     }}
                     className="rounded-xl border border-amber-400/50 bg-amber-500/15 px-3 py-1.5 font-bold text-amber-300 hover:bg-amber-500/25 transition"
                   >
-                    Open Drawer →
+                    Open Drawer
                   </button>
                 </div>
                 <div className="grid grid-cols-1 gap-2">
@@ -952,7 +952,7 @@ export function CommandShell() {
                     }}
                     className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
                   >
-                    <p className="font-bold text-fg">⚙️ Fees &amp; SLA Rules</p>
+                    <p className="font-bold text-fg">Fees &amp; SLA Rules</p>
                     <p className="mt-0.5 text-[11px] text-muted">
                       Delivery fees, commission bps &amp; prep timers
                     </p>
@@ -965,7 +965,7 @@ export function CommandShell() {
                     }}
                     className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
                   >
-                    <p className="font-bold text-fg">🚩 Feature Switches</p>
+                    <p className="font-bold text-fg">Feature Switches</p>
                     <p className="mt-0.5 text-[11px] text-muted">
                       Turn modules on or off in 1 click
                     </p>
@@ -978,7 +978,7 @@ export function CommandShell() {
                     }}
                     className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
                   >
-                    <p className="font-bold text-fg">🎨 App Colors &amp; Brand</p>
+                    <p className="font-bold text-fg">App Colors &amp; Brand</p>
                     <p className="mt-0.5 text-[11px] text-muted">
                       Theme colors, logo &amp; white-label name
                     </p>
@@ -991,7 +991,7 @@ export function CommandShell() {
                     }}
                     className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
                   >
-                    <p className="font-bold text-fg">🔌 API Keys &amp; Go-Live</p>
+                    <p className="font-bold text-fg">API Keys &amp; Go-Live</p>
                     <p className="mt-0.5 text-[11px] text-muted">
                       Razorpay, SMS OTP, Maps &amp; DB keys
                     </p>
@@ -1113,11 +1113,11 @@ export function CommandShell() {
                           className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-black hover:bg-amber-400 transition"
                         >
                           <Zap className="size-3.5" />
-                          <span>⚡ Auto-Fix: {item.autoFixActionLabel}</span>
+                          <span>Auto-Fix: {item.autoFixActionLabel}</span>
                         </button>
                       ) : (
                         <span className="text-[11px] font-medium text-emerald-400">
-                          ✓ Autonomous remediation verified
+                          Autonomous remediation verified
                         </span>
                       )}
                       <button
@@ -1128,7 +1128,7 @@ export function CommandShell() {
                         }}
                         className="rounded-lg border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-fg hover:bg-elevated transition"
                       >
-                        Open Module →
+                        Open Module
                       </button>
                     </div>
                   </div>
@@ -1225,7 +1225,7 @@ export function CommandShell() {
                   onClick={() => handleOpenWorldSettings(activeWorld)}
                   className="rounded-xl border border-amber-400/50 bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-300 hover:bg-amber-500/25 transition"
                 >
-                  ⚙️ World Settings
+                  World Settings
                 </button>
                 <div className="w-full sm:w-64">
                   <Input
@@ -1374,7 +1374,7 @@ export function CommandShell() {
                               {option.hash ? `#${option.hash}` : ""}
                             </span>
                             <span className="font-semibold text-fg group-hover:translate-x-0.5 transition">
-                              Open Option →
+                              Open Option
                             </span>
                           </div>
                         </button>

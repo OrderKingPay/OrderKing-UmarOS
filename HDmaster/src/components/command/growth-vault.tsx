@@ -38,7 +38,8 @@ export function GrowthVaultView() {
   };
 
   const testDns = () => {
-    throw new Error("NO live CLAIMS: Real DNS testing API is not connected.");
+    setDnsStatus("IDLE");
+    toast.error("DNS diagnostic API is not connected. Verify records in Cloudflare DNS.");
   };
 
   return (
@@ -47,7 +48,6 @@ export function GrowthVaultView() {
       <div className="rounded-[24px] border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-purple-950/30 to-background p-6 space-y-3 shadow-lg">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🏛️</span>
             <div>
               <h2 className="text-xl font-bold font-display text-amber-300">
                 Platform Growth, Institutional Dossiers &amp; Marketing Toolkits
@@ -77,7 +77,7 @@ export function GrowthVaultView() {
               subTab === "revenue" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
-            <span>⚡</span> Revenue & Cashflow Optimizer
+            Revenue & Cashflow Optimizer
           </button>
           <button
             type="button"
@@ -87,7 +87,7 @@ export function GrowthVaultView() {
               subTab === "grants" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
-            <span>💰</span> Government Grants (₹1.88 Cr Cash)
+            Government Grants (₹1.88 Cr Cash)
           </button>
           <button
             type="button"
@@ -97,7 +97,7 @@ export function GrowthVaultView() {
               subTab === "keynotes" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
-            <span>🎓</span> Academic Keynotes (IIT/NIT/Assam Univ)
+            Academic Keynotes (IIT/NIT/Assam Univ)
           </button>
           <button
             type="button"
@@ -107,7 +107,7 @@ export function GrowthVaultView() {
               subTab === "ads" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
-            <span>📢</span> Meta &amp; Google Ad Kits
+            Meta &amp; Google Ad Kits
           </button>
           <button
             type="button"
@@ -117,7 +117,7 @@ export function GrowthVaultView() {
               subTab === "domain" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
-            <span>🌐</span> Website orderking.in Go-Live
+            Website orderking.in Go-Live
           </button>
         </div>
       </div>
@@ -164,7 +164,7 @@ export function GrowthVaultView() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                  <span>⚡</span> 1-Command Autonomous Revenue Execution Switchboard
+                  1-Command Autonomous Revenue Execution Switchboard
                 </h3>
                 <p className="text-xs text-muted">
                   Execute legal revenue harvesting, generate MeitY 0.40% UPI claims, and dispatch corporate catering proposals.
@@ -188,11 +188,10 @@ export function GrowthVaultView() {
                 variant="primary"
                 className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-2 shadow-md"
                 onClick={() => {
-                  throw new Error("NO live CLAIMS: Real revenue harvest API is not connected.");
+                  toast.error("Autonomous revenue harvest endpoint is not connected in this view.");
                 }}
                 disabled={harvestState === "HARVESTING"}
               >
-                <span>⚡</span>
                 {harvestState === "HARVESTING" ? "Executing Harvest..." : "Execute Immediate Revenue Harvest"}
               </Button>
 
@@ -201,7 +200,7 @@ export function GrowthVaultView() {
                 className="text-xs flex items-center gap-1.5"
                 onClick={() => copyToClipboard(harvestData.meityClaim.claimSubmissionXmlPayload, "MeitY 0.40% Claim XML")}
               >
-                <span>📄</span> Export MeitY 0.40% Claim Schedule
+                Export MeitY 0.40% Claim Schedule
               </Button>
 
               <Button
@@ -209,7 +208,7 @@ export function GrowthVaultView() {
                 className="text-xs flex items-center gap-1.5"
                 onClick={() => copyToClipboard(currentCorp.rfpProposalLetter, `${currentCorp.institutionName} RFP Proposal`)}
               >
-                <span>🏢</span> Dispatch {currentCorp.institutionName.split(" ")[0]} RFP
+                Dispatch {currentCorp.institutionName.split(" ")[0]} RFP
               </Button>
 
               <Button
@@ -217,7 +216,7 @@ export function GrowthVaultView() {
                 className="text-xs flex items-center gap-1.5"
                 onClick={() => copyToClipboard(JSON.stringify(harvestData, null, 2), "Full Revenue Harvest JSON")}
               >
-                <span>📥</span> Export Financial Audit JSON
+                Export Financial Audit JSON
               </Button>
             </div>
 
@@ -225,7 +224,7 @@ export function GrowthVaultView() {
             {harvestState === "COMPLETED" && harvestOutput && (
               <div className="rounded-xl border border-emerald-500/50 bg-emerald-950/20 p-4 space-y-2 text-xs">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold">
-                  <span>✅</span> Harvest Execution Confirmed &amp; Balanced
+                  Harvest Execution Confirmed &amp; Balanced
                 </div>
                 <p className="text-muted leading-relaxed">{harvestOutput}</p>
                 <div className="flex flex-wrap gap-2 pt-1 font-mono text-[11px] text-emerald-300">
@@ -423,7 +422,7 @@ export function GrowthVaultView() {
                       rel="noopener noreferrer"
                       className="rounded bg-primary px-2.5 py-1 text-xs font-semibold text-primary-fg hover:opacity-90 transition-opacity"
                     >
-                      🚀 Open Official Portal ↗
+                      Open Official Portal
                     </a>
                     <Button
                       size="sm"
@@ -435,14 +434,14 @@ export function GrowthVaultView() {
                         )
                       }
                     >
-                      📋 Copy Full Dossier
+                      Copy Full Dossier
                     </Button>
                   </div>
                 </div>
 
                 {/* Direct Payout Method */}
                 <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3">
-                  <span className="font-semibold text-emerald-300">🏦 Direct Bank Account Disbursal: </span>
+                  <span className="font-semibold text-emerald-300">Direct Bank Account Disbursal: </span>
                   <span className="text-muted">{currentGrant.payoutMethod}</span>
                 </div>
 
@@ -555,14 +554,14 @@ export function GrowthVaultView() {
                         href={`mailto:${currentKeynote.recipientEmail}?subject=${encodeURIComponent(String(currentKeynote.subjectLine ?? ""))}&body=${encodeURIComponent(String(currentKeynote.emailBody ?? ""))}`}
                         className="rounded bg-primary px-2.5 py-1 text-xs font-semibold text-primary-fg hover:opacity-90"
                       >
-                        ✉️ Open in Mail Client
+                        Open in Mail Client
                       </a>
                       <Button
                         size="sm"
                         variant="secondary"
                         onClick={() => copyToClipboard(currentKeynote.emailBody, "Email Body")}
                       >
-                        📋 Copy Body
+                        Copy Body
                       </Button>
                     </div>
                   </div>
@@ -599,7 +598,7 @@ export function GrowthVaultView() {
                       )
                     }
                   >
-                    📋 Copy Meta JSON Payload
+                    Copy Meta JSON Payload
                   </Button>
                 </div>
                 <pre className="p-3 rounded bg-surface-raised font-mono text-[10px] text-emerald-400 overflow-x-auto max-h-60 border border-border">
@@ -625,7 +624,7 @@ export function GrowthVaultView() {
                       )
                     }
                   >
-                    📋 Copy Google PMax Config
+                    Copy Google PMax Config
                   </Button>
                 </div>
                 <pre className="p-3 rounded bg-surface-raised font-mono text-[10px] text-teal-400 overflow-x-auto max-h-60 border border-border">
@@ -636,7 +635,7 @@ export function GrowthVaultView() {
           </div>
 
           {/* Viral Reels Scripts */}
-          <Panel title="🎬 3 Viral Instagram Reels Scripts (Bengali & English)">
+          <Panel title="3 Instagram Reels Scripts (Bengali & English)">
             <div className="grid gap-4 sm:grid-cols-3 text-xs">
               {META_GOOGLE_CAMPAIGN_KITS.viralReelsScripts.map((reel, idx) => (
                 <div key={idx} className="rounded-xl border border-border bg-surface p-3 space-y-2">
@@ -666,7 +665,7 @@ export function GrowthVaultView() {
                         )
                       }
                     >
-                      📋 Copy Script
+                      Copy Script
                     </Button>
                   </div>
                 </div>
@@ -693,7 +692,7 @@ export function GrowthVaultView() {
                   onClick={testDns}
                   disabled={dnsStatus === "TESTING"}
                 >
-                  {dnsStatus === "TESTING" ? "Testing Propagation…" : dnsStatus === "VERIFIED" ? "✓ DNS Verified & Active" : "🔍 Test DNS Propagation"}
+                  {dnsStatus === "TESTING" ? "Testing Propagation..." : dnsStatus === "VERIFIED" ? "DNS Verified & Active" : "Test DNS Propagation"}
                 </Button>
               </div>
 

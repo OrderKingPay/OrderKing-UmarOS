@@ -258,7 +258,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition shadow-xs"
             >
               <Sparkles className="size-3.5" />
-              <span>Generate Sample Partner Agreement</span>
+              <span>Draft New Partner Agreement</span>
             </button>
           </div>
 

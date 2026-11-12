@@ -126,7 +126,7 @@ export function RevenueOperatingSystemDashboard() {
               </Badge>
             </div>
             <p className="text-xs text-slate-400">
-              Find Opportunities → Acquire → Execute → Deliver → Collect Payment → Verify → Repeat
+              Find Opportunities | Acquire | Execute | Deliver | Collect Payment | Verify | Repeat
             </p>
           </div>
         </div>
@@ -379,7 +379,7 @@ export function RevenueOperatingSystemDashboard() {
                   >
                     <div className="flex items-center gap-3">
                       <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
-                        {tr.fromStage} → {tr.toStage}
+                        {tr.fromStage} to {tr.toStage}
                       </Badge>
                       <span className="font-medium text-slate-200">
                         Actor: <span className="text-emerald-400">{tr.actor}</span>
@@ -609,7 +609,7 @@ export function RevenueOperatingSystemDashboard() {
               <div>
                 <h2 className="text-lg font-bold text-white">Self-QA Pre-Delivery Verification Suite (14 Checks)</h2>
                 <p className="text-xs text-slate-400">
-                  Strict Rule: Never send a generated product without verification. FAIL → DIAGNOSE → FIX → TEST loop.
+                  Strict Rule: Never send a generated product without verification. FAIL - DIAGNOSE - FIX - TEST loop.
                 </p>
               </div>
               <Button

@@ -80,13 +80,9 @@ const CANCEL_REASONS = [
   "customer issue",
   "other",
   "bike breakdown / tyre puncture",
-  "bike breakdown / tyre puncture 🛵",
   "personal emergency / unwell",
-  "personal emergency / unwell 🏥",
   "restaurant distance excessive (>5 km)",
-  "restaurant distance excessive (>5 km) 📍",
   "heavy rain / waterlogging on route",
-  "heavy rain / waterlogging on route 🌧️",
 ] as const;
 
 const FAIL_REASONS = [
@@ -1040,7 +1036,7 @@ export class RiderEngine {
         orderCode: d.orderCode,
         kind: "TIP",
         amountPaise: tipPaise,
-        note: "Customer tip ❤️ (100% pass-through)",
+        note: "Customer tip (100% pass-through)",
         at: this.now(),
         dataMode: cfg.dataMode,
       });
@@ -1195,7 +1191,7 @@ export class RiderEngine {
         await this.store.insertNotification({
           id: nid(),
           userId,
-          title: "🛵 Trip Reassigned Gracefully",
+          title: "Trip Reassigned Gracefully",
           body: `Order #${d.orderCode} was reassigned to the nearest fleet partner (${reason}). No penalty was deducted. Take care!`,
           kind: "OPS",
           read: false,
@@ -1233,7 +1229,7 @@ export class RiderEngine {
           await this.store.insertNotification({
             id: nid(),
             userId,
-            title: "🚨 High-Severity Cancellation Penalty",
+            title: "High-Severity Cancellation Penalty",
             body: `Post-pickup cancellation of Order #${d.orderCode} resulted in a full liability deduction of ₹${(penalty.penaltyPaise / 100).toFixed(2)} and account audit hold.`,
             kind: "OPS",
             read: false,
@@ -1255,7 +1251,7 @@ export class RiderEngine {
           await this.store.insertNotification({
             id: nid(),
             userId,
-            title: "⚠️ Cancellation Penalty Deducted",
+            title: "Cancellation Penalty Deducted",
             body: `Pre-pickup cancellation of Order #${d.orderCode} incurred a ₹${(penalty.penaltyPaise / 100).toFixed(2)} deduction on your payout ledger.`,
             kind: "OPS",
             read: false,
@@ -1501,7 +1497,7 @@ export class RiderEngine {
       await this.store.insertNotification({
         id: nid(),
         userId,
-        title: "✅ Floating Cash Deposit Verified",
+        title: "Floating Cash Deposit Verified",
         body: `Your deposit of ₹${(amountPaise / 100).toFixed(2)} via ${method} (Ref: ${ref}) has been verified. COD orders are active!`,
         kind: "PAYOUT",
         read: false,
@@ -1796,7 +1792,7 @@ export class RiderEngine {
     return this.saveProfile(userId, { locale });
   }
 
-  
+
 
   async snapshotForAssistant(userId: string) {
     const home = await this.home(userId);
@@ -1812,11 +1808,11 @@ export class RiderEngine {
       completedToday: home.completedToday,
       currentDelivery: home.active
         ? {
-            orderCode: home.active.orderCode,
-            state: home.active.state,
-            restaurant: home.active.restaurant.name,
-            dropArea: home.active.customer.area,
-          }
+          orderCode: home.active.orderCode,
+          state: home.active.state,
+          restaurant: home.active.restaurant.name,
+          dropArea: home.active.customer.area,
+        }
         : null,
       history: history.map((h) => ({
         orderCode: h.delivery.orderCode,

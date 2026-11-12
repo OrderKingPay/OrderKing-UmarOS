@@ -107,7 +107,7 @@ export function MultimodelBenchmarkDashboard() {
 
   const handleTestResponse = () => {
     if (!testPrompt.trim()) {
-      toast.error("Please enter a sample question to test.");
+      toast.error("Please enter a prompt to test.");
       return;
     }
 
@@ -206,7 +206,7 @@ export function MultimodelBenchmarkDashboard() {
             Next Action
           </span>
           <p className="text-xs font-semibold text-emerald-950 mt-1">
-            Pick your models below, test a sample reply, and click Save Settings.
+            Pick your models below, run a test reply, and click Save Settings.
           </p>
           <p className="text-[11px] text-emerald-800 mt-1">
             Paste your live OpenAI or Gemini API key in the API Keys tab when ready.

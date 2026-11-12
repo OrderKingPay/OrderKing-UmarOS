@@ -42,7 +42,7 @@ export function UmarAiJumpCard({ card, onExecuted, className = "" }: UmarAiJumpC
       const res = await executeUmarAiExecutiveAction(card.actionId, card.suggestedPayload);
       if (res.success) {
         setExecutedSuccess(res.message);
-        toast.success(`⚡ Action Executed: ${res.message}`);
+        toast.success(`Action Executed: ${res.message}`);
         onExecuted?.(res.message);
       } else {
         toast.error(`Execution blocked: ${res.message}`);

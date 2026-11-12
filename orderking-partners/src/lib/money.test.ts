@@ -40,7 +40,7 @@ describe("money & Indian statutory settlement", () => {
   });
 
   it("computes standard statutory settlement with 18% GST on commission, 1% TCS, and 1% TDS", () => {
-    // ₹500 food value, ₹50 restaurant discount, 1custom commission
+    // ₹500 food value, ₹50 restaurant discount, 0% commission
     const s = computeRestaurantPayable({
       foodValuePaise: 50000,
       packingPaise: 0,
@@ -568,7 +568,7 @@ describe("money & Indian statutory settlement", () => {
       orderType: "TABLE_QR",
     });
 
-    // custom commission and zero GST on commission
+    // 0% commission and zero GST on commission
     assert.equal(sTableQr.commissionPaise, 0);
     assert.equal(sTableQr.commissionGstPaise, 0);
     assert.equal(sTableQr.commissionCgstPaise, 0);

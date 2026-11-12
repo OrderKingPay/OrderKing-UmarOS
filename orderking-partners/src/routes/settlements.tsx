@@ -287,11 +287,10 @@ function SettlementsPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedCycle("STANDARD_WEEKLY")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-1.5 ${
-                    selectedCycle === "STANDARD_WEEKLY"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-1.5 ${selectedCycle === "STANDARD_WEEKLY"
                       ? "bg-white text-gray-900 shadow-xs"
                       : "text-gray-500 hover:text-gray-800"
-                  }`}
+                    }`}
                 >
                   <Clock className="size-3.5" />
                   Standard Weekly (Wed)
@@ -299,11 +298,10 @@ function SettlementsPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedCycle("EXPRESS_DAILY")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-1.5 ${
-                    selectedCycle === "EXPRESS_DAILY"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-1.5 ${selectedCycle === "EXPRESS_DAILY"
                       ? "bg-[#E23744] text-white shadow-xs"
                       : "text-gray-500 hover:text-gray-800"
-                  }`}
+                    }`}
                 >
                   <Zap className="size-3.5" />
                   Express Daily (T+1)
@@ -616,7 +614,7 @@ function SettlementsPage() {
                     </span>
                   </div>
                   <div className="font-semibold text-gray-900 text-sm mt-1">
-                    Settlement Period: {b.period_start} → {b.period_end} ({b.lines.length} orders)
+                    Settlement Period: {b.period_start} to {b.period_end} ({b.lines.length} orders)
                   </div>
                 </div>
 

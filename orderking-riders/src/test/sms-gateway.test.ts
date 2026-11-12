@@ -80,7 +80,7 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
     });
   });
 
-  describe("3. Unconfigured Environment (Cloudflare Pending Config)", () => {
+  describe("3. Unconfigured Environment", () => {
     it("returns pendingConfig with debugOtp when no gateway API keys are set", async () => {
       expect(getAvailableSmsProviders()).toEqual([]);
 
@@ -93,7 +93,7 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
       expect(res.pendingConfig).toBe(true);
       expect(res.provider).toBe("direct_channel");
       expect(res.debugOtp).toBe("654321");
-      expect(res.providerNotice).toContain("SMS gateway key not yet provided in Cloudflare environment");
+      expect(res.providerNotice).toContain("SMS gateway API key is not configured in environment");
       expect(res.whatsAppOtpUrl).toContain("9876543210");
     });
   });

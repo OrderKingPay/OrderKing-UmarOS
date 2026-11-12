@@ -124,20 +124,20 @@ const PORTION_PORTFOLIO_TAG_PILLS = [
   "Serves 1-2 (350g)",
   "Serves 2-3 (500g)",
   "Family Pack (Serves 4)",
-  "🌱 Pure Veg",
-  "🥑 Vegan",
-  "🕉️ Jain Friendly",
-  "🌙 Halal Certified",
-  "🌾 Gluten-Free",
-  "🥛 Contains Dairy / Ghee",
-  "🥜 Contains Peanuts",
-  "🌰 Contains Cashew / Tree Nuts",
-  "🥚 Contains Egg",
-  "🟡 Contains Mustard",
-  "🌱 Contains Soy",
-  "🌶️ Mild Spicy",
-  "🌶️🌶️ Medium Spicy",
-  "🌶️🌶️🌶️ Extra Spicy",
+  "Pure Veg",
+  "Vegan",
+  "Jain Friendly",
+  "Halal Certified",
+  "Gluten-Free",
+  "Contains Dairy / Ghee",
+  "Contains Peanuts",
+  "Contains Cashew / Tree Nuts",
+  "Contains Egg",
+  "Contains Mustard",
+  "Contains Soy",
+  "Mild Spicy",
+  "Medium Spicy",
+  "Extra Spicy",
 ] as const;
 
 /**
@@ -151,13 +151,13 @@ function FssaiDietBadge({ diet, showLabel = false }: { diet: string; showLabel?:
   const borderColor = isVeg
     ? "border-emerald-500"
     : isEgg
-    ? "border-amber-500"
-    : "border-rose-500";
+      ? "border-amber-500"
+      : "border-rose-500";
   const dotColor = isVeg
     ? "bg-emerald-500"
     : isEgg
-    ? "bg-amber-500"
-    : "bg-rose-500";
+      ? "bg-amber-500"
+      : "bg-rose-500";
   const labelText = isVeg ? "Veg" : isEgg ? "Egg" : "Non-Veg";
 
   return (
@@ -169,9 +169,8 @@ function FssaiDietBadge({ diet, showLabel = false }: { diet: string; showLabel?:
       </span>
       {showLabel && (
         <span
-          className={`text-xs font-semibold ${
-            isVeg ? "text-emerald-700" : isEgg ? "text-amber-400" : "text-rose-600"
-          }`}
+          className={`text-xs font-semibold ${isVeg ? "text-emerald-700" : isEgg ? "text-amber-400" : "text-rose-600"
+            }`}
         >
           {labelText}
         </span>
@@ -195,11 +194,11 @@ async function processDishPhotoWithCanvas(
     typeof sourceFileOrDataUrl === "string"
       ? sourceFileOrDataUrl
       : await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(String(reader.result));
-          reader.onerror = () => reject(new Error("Failed to read image file"));
-          reader.readAsDataURL(sourceFileOrDataUrl);
-        });
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Failed to read image file"));
+        reader.readAsDataURL(sourceFileOrDataUrl);
+      });
 
   const img = await new Promise<HTMLImageElement>((resolve, reject) => {
     const el = new Image();
@@ -689,7 +688,7 @@ function MenuPage() {
         },
       });
 
-      toast.success(`✨ Added ${combo.name} to menu at ₹${(combo.bundlePricePaise / 100).toFixed(2)}!`);
+      toast.success(`Added ${combo.name} to menu at ₹${(combo.bundlePricePaise / 100).toFixed(2)}!`);
       void qc.invalidateQueries({ queryKey: ["menu"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to add combo");
@@ -754,10 +753,10 @@ function MenuPage() {
       variants:
         item.variants.length > 0
           ? item.variants.map((v) => ({
-              id: v.id,
-              name: v.name,
-              price: String(v.pricePaise / 100),
-            }))
+            id: v.id,
+            name: v.name,
+            price: String(v.pricePaise / 100),
+          }))
           : [{ name: "Regular", price: "" }],
       modifierGroups: (item as any).modifierGroups ?? [],
     });
@@ -795,15 +794,15 @@ function MenuPage() {
       setEditor((cur) =>
         cur
           ? {
-              ...cur,
-              originalImageUrl: processed.originalDataUrl,
-              enhancedImageUrl: processed.enhancedDataUrl,
-              imageUrl: uploadedPublicUrl ?? processed.enhancedDataUrl,
-              activePhotoMode: "enhanced",
-              photoModified: true,
-              photoAttested: false,
-              aiGenerated: false,
-            }
+            ...cur,
+            originalImageUrl: processed.originalDataUrl,
+            enhancedImageUrl: processed.enhancedDataUrl,
+            imageUrl: uploadedPublicUrl ?? processed.enhancedDataUrl,
+            activePhotoMode: "enhanced",
+            photoModified: true,
+            photoAttested: false,
+            aiGenerated: false,
+          }
           : null
       );
     } catch (err) {
@@ -823,14 +822,14 @@ function MenuPage() {
       setEditor((cur) =>
         cur
           ? {
-              ...cur,
-              originalImageUrl: processed.originalDataUrl,
-              enhancedImageUrl: processed.enhancedDataUrl,
-              imageUrl: processed.enhancedDataUrl,
-              activePhotoMode: "enhanced",
-              photoModified: true,
-              photoAttested: cur.aiGenerated ? true : false,
-            }
+            ...cur,
+            originalImageUrl: processed.originalDataUrl,
+            enhancedImageUrl: processed.enhancedDataUrl,
+            imageUrl: processed.enhancedDataUrl,
+            activePhotoMode: "enhanced",
+            photoModified: true,
+            photoAttested: cur.aiGenerated ? true : false,
+          }
           : null
       );
     } catch (err) {
@@ -1009,7 +1008,7 @@ function MenuPage() {
 
       setQuickDishInput("");
       setQuickFeedback(
-        `✨ "${rawName}" added to "${tax.category}" with AI Studio photo & FSSAI ${tax.diet} badge!`
+        `"${rawName}" added to "${tax.category}" with Studio photo & FSSAI ${tax.diet} badge.`
       );
       setTimeout(() => setQuickFeedback(null), 5000);
       void qc.invalidateQueries({ queryKey: ["menu"] });
@@ -1290,13 +1289,13 @@ function MenuPage() {
   );
   const canSaveDish = Boolean(
     editor &&
-      editor.name.trim().length > 0 &&
-      editor.categoryId &&
-      validVariants.length > 0 &&
-      (!editor.photoModified || editor.photoAttested || editor.aiGenerated) &&
-      !savingDish &&
-      !uploadingImage &&
-      !generatingAiPhoto
+    editor.name.trim().length > 0 &&
+    editor.categoryId &&
+    validVariants.length > 0 &&
+    (!editor.photoModified || editor.photoAttested || editor.aiGenerated) &&
+    !savingDish &&
+    !uploadingImage &&
+    !generatingAiPhoto
   );
 
   return (
@@ -1360,7 +1359,7 @@ function MenuPage() {
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-foreground text-xs"
                 aria-label="Clear search"
               >
-                ✕
+                <X className="size-3.5" />
               </button>
             )}
           </div>
@@ -1384,11 +1383,10 @@ function MenuPage() {
                 type="button"
                 onClick={() => setKitchenRushMode(!kitchenRushMode)}
                 title="Toggle large tactile hit-targets for kitchen rush hours"
-                className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold transition flex items-center gap-1 font-mono ${
-                  kitchenRushMode
+                className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold transition flex items-center gap-1 font-mono ${kitchenRushMode
                     ? "bg-amber-500 text-black border-amber-400 shadow-md font-extrabold"
                     : "border-border bg-surface-2 text-muted hover:text-foreground"
-                }`}
+                  }`}
               >
                 <Flame className="size-3.5" />
                 {kitchenRushMode ? "Rush Mode ON" : "Rush Mode"}
@@ -1444,11 +1442,10 @@ function MenuPage() {
           <button
             type="button"
             onClick={() => setMenuFilter("ALL")}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition ${
-              menuFilter === "ALL"
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition ${menuFilter === "ALL"
                 ? "bg-gray-900 text-white shadow-xs"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
-            }`}
+              }`}
           >
             All Items ({allItems.length})
           </button>
@@ -1456,11 +1453,10 @@ function MenuPage() {
           <button
             type="button"
             onClick={() => setMenuFilter("IN_STOCK")}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
-              menuFilter === "IN_STOCK"
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${menuFilter === "IN_STOCK"
                 ? "bg-emerald-600 text-white shadow-xs"
                 : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
-            }`}
+              }`}
           >
             <CheckCircle2 className="size-3.5" />
             In Stock ({inStockCount})
@@ -1469,13 +1465,12 @@ function MenuPage() {
           <button
             type="button"
             onClick={() => setMenuFilter("OUT_OF_STOCK")}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
-              menuFilter === "OUT_OF_STOCK"
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${menuFilter === "OUT_OF_STOCK"
                 ? "bg-rose-600 text-white shadow-xs"
                 : outOfStockCount > 0
-                ? "text-rose-600 bg-rose-500/10 border border-rose-500/30"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
-            }`}
+                  ? "text-rose-600 bg-rose-500/10 border border-rose-500/30"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
+              }`}
           >
             <XCircle className="size-3.5" />
             Out of Stock ({outOfStockCount})
@@ -1484,11 +1479,10 @@ function MenuPage() {
           <button
             type="button"
             onClick={() => setMenuFilter("VEG_ONLY")}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
-              menuFilter === "VEG_ONLY"
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${menuFilter === "VEG_ONLY"
                 ? "bg-emerald-600 text-white shadow-xs"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
-            }`}
+              }`}
           >
             <FssaiDietBadge diet="VEG" />
             Veg Only ({vegCount})
@@ -1497,11 +1491,10 @@ function MenuPage() {
           <button
             type="button"
             onClick={() => setMenuFilter("NONVEG_EGG")}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
-              menuFilter === "NONVEG_EGG"
+            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${menuFilter === "NONVEG_EGG"
                 ? "bg-rose-600 text-white shadow-xs"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent"
-            }`}
+              }`}
           >
             <FssaiDietBadge diet="NONVEG" />
             Non-Veg / Egg ({nonVegEggCount})
@@ -1535,22 +1528,20 @@ function MenuPage() {
               <button
                 type="button"
                 onClick={() => kitchenRush.setBuffer(10)}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
-                  kitchenRush.bufferMinutes === 10
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${kitchenRush.bufferMinutes === 10
                     ? "bg-amber-500 text-black shadow-xs"
                     : "text-amber-300 hover:text-white"
-                }`}
+                  }`}
               >
                 +10 Mins
               </button>
               <button
                 type="button"
                 onClick={() => kitchenRush.setBuffer(15)}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
-                  kitchenRush.bufferMinutes === 15
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${kitchenRush.bufferMinutes === 15
                     ? "bg-amber-500 text-black shadow-xs"
                     : "text-amber-300 hover:text-white"
-                }`}
+                  }`}
               >
                 +15 Mins
               </button>
@@ -1647,13 +1638,18 @@ function MenuPage() {
                     });
                     void qc.invalidateQueries({ queryKey: ["menu"] });
                   }}
-                  className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition ${
-                    exists
+                  className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition ${exists
                       ? "border-emerald-500/30 bg-emerald-950/30 text-emerald-700 cursor-default"
                       : "border-border bg-surface-2 text-gray-700 hover:border-amber-500/50 hover:text-white"
-                  }`}
+                    }`}
                 >
-                  {exists ? `✓ ${tpl}` : `+ ${tpl}`}
+                  {exists ? (
+                    <span className="inline-flex items-center gap-1">
+                      <Check className="size-3" /> {tpl}
+                    </span>
+                  ) : (
+                    `+ ${tpl}`
+                  )}
                 </button>
               );
             })}
@@ -1721,7 +1717,7 @@ function MenuPage() {
                         size="sm"
                         onClick={() => setEditingCatId(null)}
                       >
-                        ✕
+                        <X className="size-3.5" />
                       </Button>
                     </form>
                   ) : (
@@ -1840,11 +1836,10 @@ function MenuPage() {
                                 return (
                                   <span
                                     key={idx}
-                                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                                      isAllergen
+                                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${isAllergen
                                         ? "bg-amber-950/40 border border-amber-500/30 text-amber-300 font-mono"
                                         : "bg-surface-2 border border-border/50 text-muted"
-                                    }`}
+                                      }`}
                                   >
                                     {cleanTag}
                                   </span>
@@ -2237,11 +2232,10 @@ function MenuPage() {
                         type="button"
                         data-diet-code={opt.code}
                         onClick={() => setEditor({ ...editor, diet: opt.value })}
-                        className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition ${
-                          active
+                        className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition ${active
                             ? `${opt.activeClass} font-bold shadow-sm`
                             : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           <FssaiDietBadge diet={opt.value} />
@@ -2315,11 +2309,10 @@ function MenuPage() {
                           key={mins}
                           type="button"
                           onClick={() => setEditor({ ...editor, prepMinutes: mins })}
-                          className={`rounded-lg border py-2 text-xs font-mono font-bold transition ${
-                            editor.prepMinutes === mins
+                          className={`rounded-lg border py-2 text-xs font-mono font-bold transition ${editor.prepMinutes === mins
                               ? "border-amber-500 bg-amber-500/20 text-amber-300"
                               : "border-gray-200 bg-white text-gray-500 hover:text-white"
-                          }`}
+                            }`}
                         >
                           {mins} mins
                         </button>
@@ -2387,13 +2380,18 @@ function MenuPage() {
                             : [...current, tag];
                           setEditor({ ...editor, servingSize: updated.join(" · ") });
                         }}
-                        className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
-                          active
+                        className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${active
                             ? "border-amber-500/60 bg-amber-500/15 text-amber-300"
                             : "border-gray-200 bg-white text-gray-500 hover:text-white"
-                        }`}
+                          }`}
                       >
-                        {active ? `✓ ${tag}` : `+ ${tag}`}
+                        {active ? (
+                          <span className="inline-flex items-center gap-0.5">
+                            <Check className="size-3" /> {tag}
+                          </span>
+                        ) : (
+                          `+ ${tag}`
+                        )}
                       </button>
                     );
                   })}
@@ -2507,11 +2505,10 @@ function MenuPage() {
                               void handleGenerateAiDishPhoto(editor.name, styleOpt.id);
                             }
                           }}
-                          className={`rounded-lg border p-2 text-left transition ${
-                            isSelected
+                          className={`rounded-lg border p-2 text-left transition ${isSelected
                               ? "border-amber-500 bg-amber-500/20 text-white font-bold shadow-xs"
                               : "border-gray-200 bg-white text-gray-500 hover:text-gray-800 hover:border-gray-300"
-                          }`}
+                            }`}
                         >
                           <div className="text-xs font-semibold">{styleOpt.label}</div>
                           <div className="text-[10px] text-amber-300/80">{styleOpt.sub}</div>
@@ -2533,11 +2530,10 @@ function MenuPage() {
                           key={idx}
                           type="button"
                           onClick={() => void handleGenerateAiDishPhoto(editor.name, undefined, angleUrl)}
-                          className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border transition ${
-                            editor.originalImageUrl === angleUrl || editor.imageUrl === angleUrl
+                          className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border transition ${editor.originalImageUrl === angleUrl || editor.imageUrl === angleUrl
                               ? "border-amber-400 ring-2 ring-amber-400/30"
                               : "border-gray-300 hover:border-gray-400 opacity-80 hover:opacity-100"
-                          }`}
+                            }`}
                         >
                           <img
                             src={angleUrl}
@@ -2676,11 +2672,10 @@ function MenuPage() {
                               imageUrl: editor.originalImageUrl,
                             })
                           }
-                          className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
-                            editor.activePhotoMode === "original"
+                          className={`rounded-lg px-3 py-1 text-xs font-bold transition ${editor.activePhotoMode === "original"
                               ? "bg-gray-900 text-white border border-gray-700"
                               : "bg-white text-gray-500 hover:text-white"
-                          }`}
+                            }`}
                         >
                           Original Shot
                         </button>
@@ -2693,11 +2688,10 @@ function MenuPage() {
                               imageUrl: editor.enhancedImageUrl,
                             })
                           }
-                          className={`rounded-lg px-3 py-1 text-xs font-bold transition flex items-center gap-1 ${
-                            editor.activePhotoMode === "enhanced"
+                          className={`rounded-lg px-3 py-1 text-xs font-bold transition flex items-center gap-1 ${editor.activePhotoMode === "enhanced"
                               ? "bg-amber-500/20 text-amber-300 border border-amber-500/50"
                               : "bg-white text-gray-500 hover:text-white"
-                          }`}
+                            }`}
                         >
                           <Sparkles className="size-3" />
                           Studio Enhanced (4:3)
@@ -2731,7 +2725,7 @@ function MenuPage() {
                         className="absolute right-2 top-2 rounded-full bg-black/85 border border-gray-300 px-2 py-0.5 text-xs text-white hover:bg-rose-600 transition"
                         title="Remove photo"
                       >
-                        ✕
+                        <X className="size-3.5" />
                       </button>
                     </div>
                   </div>
@@ -2805,7 +2799,7 @@ function MenuPage() {
                     onClick={() => setShowAllergenEditor(!showAllergenEditor)}
                     className="border-gray-300 bg-white text-xs font-semibold text-gray-800 hover:text-white"
                   >
-                    <span>🥗</span> {showAllergenEditor ? "Hide Dietary & Allergen Details" : "Configure Dietary Flags & Allergens"}
+                    {showAllergenEditor ? "Hide Dietary & Allergen Details" : "Configure Dietary Flags & Allergens"}
                   </Button>
                   {showAllergenEditor && (
                     <div className="mt-2.5">
@@ -2819,8 +2813,8 @@ function MenuPage() {
                             cfg.dietaryClassification === "VEG" || cfg.dietaryClassification === "VEGAN" || cfg.dietaryClassification === "JAIN"
                               ? "VEG"
                               : cfg.dietaryClassification === "EGG"
-                              ? "EGG"
-                              : "NONVEG";
+                                ? "EGG"
+                                : "NONVEG";
                           const allergenTags = cfg.allergens.length > 0 ? `Allergens: ${cfg.allergens.join(", ")}` : "";
                           const featureTags = [
                             cfg.isGlutenFree ? "Gluten-Free" : null,
@@ -3143,11 +3137,10 @@ function MenuPage() {
                                   updated[grpIdx] = { ...group, type: "RADIO", maxSelect: 1 };
                                   setEditor({ ...editor, modifierGroups: updated });
                                 }}
-                                className={`rounded px-2 py-0.5 font-medium transition ${
-                                  group.type === "RADIO"
+                                className={`rounded px-2 py-0.5 font-medium transition ${group.type === "RADIO"
                                     ? "bg-amber-500 text-white font-bold"
                                     : "text-gray-500 hover:text-white"
-                                }`}
+                                  }`}
                               >
                                 Radio (Single)
                               </button>
@@ -3158,11 +3151,10 @@ function MenuPage() {
                                   updated[grpIdx] = { ...group, type: "CHECKBOX" };
                                   setEditor({ ...editor, modifierGroups: updated });
                                 }}
-                                className={`rounded px-2 py-0.5 font-medium transition ${
-                                  group.type === "CHECKBOX"
+                                className={`rounded px-2 py-0.5 font-medium transition ${group.type === "CHECKBOX"
                                     ? "bg-amber-500 text-white font-bold"
                                     : "text-gray-500 hover:text-white"
-                                }`}
+                                  }`}
                               >
                                 Checkbox (Multi)
                               </button>
@@ -3558,8 +3550,8 @@ Butter Naan - ₹50"
                     {digitizedCatalog.categories.length} Categories
                   </span>
                   <span className="text-[11px] font-mono">
-                    🌱 {digitizedCatalog.vegDishesCount} Veg · 🍗{" "}
-                    {digitizedCatalog.nonVegDishesCount} Non-Veg · 🥚{" "}
+                    {digitizedCatalog.vegDishesCount} Veg ·{" "}
+                    {digitizedCatalog.nonVegDishesCount} Non-Veg ·{" "}
                     {digitizedCatalog.eggDishesCount} Egg
                   </span>
                 </div>
@@ -3576,13 +3568,7 @@ Butter Naan - ₹50"
                             className="flex items-center justify-between text-gray-700 bg-white px-2.5 py-1.5 rounded-lg border border-gray-100"
                           >
                             <span className="flex items-center gap-1.5">
-                              <span>
-                                {it.diet === "VEG"
-                                  ? "🌱"
-                                  : it.diet === "EGG"
-                                  ? "🥚"
-                                  : "🍗"}
-                              </span>
+                              <FssaiDietBadge diet={it.diet} />
                               <span className="font-medium text-gray-900">{it.name}</span>
                               {it.description && (
                                 <span className="text-[11px] text-gray-500 italic max-w-xs truncate">
@@ -3604,7 +3590,7 @@ Butter Naan - ₹50"
           </div>
         </div>
       )}
-    
+
     </VendorShell>
   );
 }

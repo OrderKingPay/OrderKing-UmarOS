@@ -147,10 +147,10 @@ export function getCoolingOffInfo(
  * without harsh financial or disciplinary penalty (Tier-1 Fleet standard).
  */
 export const JUSTIFIED_OPERATIONAL_REASONS = [
-  "Bike Breakdown / Tyre Puncture 🛵",
-  "Personal Emergency / Unwell 🏥",
-  "Restaurant Distance Excessive (>5 km) 📍",
-  "Heavy Rain / Waterlogging on Route 🌧️",
+  "Bike Breakdown / Tyre Puncture",
+  "Personal Emergency / Unwell",
+  "Restaurant Distance Excessive (>5 km)",
+  "Heavy Rain / Waterlogging on Route",
 ] as const;
 
 export type JustifiedOperationalReason = (typeof JUSTIFIED_OPERATIONAL_REASONS)[number];
@@ -256,7 +256,7 @@ export function calculateCancellationPenalty(
         penaltyPaise: 0,
         isPostPickup: true,
         requiresAuditHold: true,
-        label: "Post-pickup cancellation with verified emergency proof (Penalty Waived, Audit Pending)",
+        label: "Post-pickup cancellation with verified emergency proof (Penalty Waived, Under Review)",
         isJustifiedReassignment: false,
       };
     }

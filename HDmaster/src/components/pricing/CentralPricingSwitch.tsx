@@ -1208,7 +1208,7 @@ export function CentralPricingSwitch() {
                   persistAllSettings(
                     pricingState,
                     customRates,
-                    "Saved custom commission and delivery fees"
+                    "Saved custom rate and delivery fee configuration"
                   )
                 }
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
@@ -1307,7 +1307,7 @@ export function CentralPricingSwitch() {
 
           <div className="bg-slate-950/60 p-3.5 rounded-lg border border-slate-800">
             <div className="flex justify-between text-xs font-mono mb-1.5">
-              <span className="text-slate-300">Sample Food Basket Value:</span>
+              <span className="text-slate-300">Test Food Basket Value:</span>
               <span className="text-emerald-400 font-bold">
                 ₹{testOrderFoodInr}
               </span>

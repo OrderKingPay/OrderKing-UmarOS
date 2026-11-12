@@ -260,7 +260,7 @@ export class SystemDiagnosticsEngine {
 
     return {
       componentId: 'ai_workforce',
-      name: 'Autonomous AI Workforce Advancedgraph',
+      name: 'Autonomous AI Workforce Supergraph',
       category: 'AI_WORKFORCE',
       status,
       latencyMs: Math.max(1, latencyMs),

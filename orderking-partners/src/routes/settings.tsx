@@ -380,409 +380,406 @@ function SettingsPage() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as SettingsTab)}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition whitespace-nowrap ${
-                activeTab === tab.id
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition whitespace-nowrap ${activeTab === tab.id
                   ? "bg-[#E23744] text-white shadow-sm"
                   : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
-        
+
         {/* TAB 1: OUTLET PROFILE */}
         {activeTab === "PROFILE" && (
           <div className="space-y-4">
             {/* Multi-Outlet Locations & Switcher */}
-        <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
-            <div className="flex items-center gap-2.5">
-              <Building2 className="size-5 text-emerald-700" />
-              <div>
-                <h2 className="font-display text-base font-bold text-gray-900">
-                  Multi-Outlet Locations &amp; Switcher
-                </h2>
-                <p className="text-xs text-gray-500">
-                  Seamlessly switch between your dining rooms, bistros, and cloud kitchens across India without logging out.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 self-start sm:self-center">
-              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
-                {memberships.length} {memberships.length === 1 ? "OUTLET" : "OUTLETS"}
-              </span>
-            </div>
-          </div>
-
-          {outletSwitchMsg ? (
-            <div className="rounded-lg border border-emerald-500/30 bg-emerald-50 p-3 text-xs text-emerald-800 flex items-center gap-2">
-              <CheckCircle2 className="size-4 shrink-0 text-emerald-700" />
-              <span>{outletSwitchMsg}</span>
-            </div>
-          ) : null}
-
-          {/* Quick Select Router Bar */}
-          {memberships.length > 1 ? (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50">
-              <div className="flex items-center gap-2">
-                <Store className="size-4 text-emerald-700" />
-                <span className="text-xs font-semibold text-gray-800">Quick Location Switcher:</span>
-              </div>
-              <select
-                className="h-9 rounded-lg border border-gray-200 bg-white shadow-xs px-3 text-xs font-semibold text-emerald-800 outline-none focus:border-emerald-500"
-                value={vendor.restaurantId ?? ""}
-                onChange={(e) => {
-                  const m = memberships.find((x: any) => x.restaurantId === e.target.value);
-                  if (m) handleSwitchOutlet(m.restaurantId, m.restaurantName);
-                }}
-              >
-                {memberships.map((m: any) => (
-                  <option key={m.restaurantId} value={m.restaurantId}>
-                    {m.restaurantName} ({m.role}) — {m.restaurantId}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : null}
-
-          {/* Detailed Branch Matrix */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {memberships.map((m: any) => {
-              const isActive = m.restaurantId === vendor.restaurantId;
-              return (
-                <div
-                  key={m.restaurantId}
-                  className={`rounded-xl border p-4 space-y-3 transition ${
-                    isActive
-                      ? "border-emerald-500/50 bg-emerald-50 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-                      : "border-gray-200 bg-gray-50 hover:border-gray-300"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="font-bold text-sm text-gray-900 flex items-center gap-1.5">
-                        <Store className="size-4 text-gray-500" />
-                        <span>{m.restaurantName}</span>
-                      </div>
-                      <div className="text-[11px] font-mono text-gray-500 mt-0.5">
-                        ID: {m.restaurantId}
-                        {m.outletId ? ` · Outlet: ${m.outletId}` : ""}
-                      </div>
-                    </div>
-                    {isActive ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                        <CheckCircle2 className="size-3" /> ACTIVE
-                      </span>
-                    ) : (
-                      <span className="rounded bg-gray-100 px-2 py-0.5 text-[10px] font-mono text-gray-500">
-                        {m.role}
-                      </span>
-                    )}
+            <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <Building2 className="size-5 text-emerald-700" />
+                  <div>
+                    <h2 className="font-display text-base font-bold text-gray-900">
+                      Multi-Outlet Locations &amp; Switcher
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      Seamlessly switch between your dining rooms, bistros, and cloud kitchens across India without logging out.
+                    </p>
                   </div>
+                </div>
+                <div className="flex items-center gap-2 self-start sm:self-center">
+                  <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
+                    {memberships.length} {memberships.length === 1 ? "OUTLET" : "OUTLETS"}
+                  </span>
+                </div>
+              </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-[11px] border-t border-gray-200/80 pt-2">
-                    <div>
-                      <span className="text-gray-500">Role: </span>
-                      <span className="font-mono text-gray-800">{m.role}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Status: </span>
-                      <span className="font-mono text-emerald-700">{m.verificationStatus}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Delivery Commission: </span>
-                      <span className="font-mono text-gray-800">{m.commissionBps / 100}%</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Ledger: </span>
-                      <span className="font-mono text-emerald-700">{m.dataLabel}</span>
-                    </div>
+              {outletSwitchMsg ? (
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-50 p-3 text-xs text-emerald-800 flex items-center gap-2">
+                  <CheckCircle2 className="size-4 shrink-0 text-emerald-700" />
+                  <span>{outletSwitchMsg}</span>
+                </div>
+              ) : null}
+
+              {/* Quick Select Router Bar */}
+              {memberships.length > 1 ? (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50">
+                  <div className="flex items-center gap-2">
+                    <Store className="size-4 text-emerald-700" />
+                    <span className="text-xs font-semibold text-gray-800">Quick Location Switcher:</span>
                   </div>
-
-                  {!isActive ? (
-                    <Button
-                      size="sm"
-                      onClick={() => handleSwitchOutlet(m.restaurantId, m.restaurantName)}
-                      className="w-full h-8 text-xs bg-gray-100 hover:bg-[#E23744] hover:text-gray-900 text-gray-800 transition"
-                    >
-                      <ArrowRightLeft className="mr-1.5 size-3.5" />
-                      Switch to This Location
-                    </Button>
-                  ) : (
-                    <div className="text-[11px] text-center font-medium text-emerald-700 py-1 bg-emerald-500/10 rounded-lg">
-                      Currently Managing This Location
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-
-        {/* Restaurant Health & Operational Readiness */}
-        {vendor.restaurantId ? (
-          <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
-              <div className="flex items-center gap-2.5">
-                <Cpu className="size-5 text-emerald-700" />
-                <div>
-                  <h2 className="font-display text-base font-bold text-gray-900">
-                    Restaurant Health &amp; Operational Readiness
-                  </h2>
-                  <p className="text-xs text-gray-500">
-                    Real-time readiness checks for your food safety license, payout bank account, and kitchen status. Reset order flow and restore kitchen bells with a single tap.
-                  </p>
-                </div>
-              </div>
-              <Button
-                size="sm"
-                onClick={() => void handleSelfHealOutlet()}
-                className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs shrink-0"
-              >
-                <Wrench className="mr-1.5 size-3.5" />
-                Restore Online &amp; Reset Prep Time
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                <div className="text-[10px] font-mono text-gray-500">14-DIGIT FSSAI LICENSE</div>
-                <div className={`font-bold mt-1 ${fssaiReady ? "text-emerald-700" : "text-amber-700"}`}>
-                  {fssaiReady ? `Verified (${r?.fssai_number})` : "Action Needed in KYC"}
-                </div>
-              </div>
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                <div className="text-[10px] font-mono text-gray-500">PAYOUT BANK ACCOUNT</div>
-                <div className={`font-bold mt-1 ${bankReady ? "text-emerald-700" : "text-amber-700"}`}>
-                  {bankReady ? `Ready (${r?.bank_ifsc})` : "Action Needed in KYC"}
-                </div>
-              </div>
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                <div className="text-[10px] font-mono text-gray-500">PAN (TDS §194-O)</div>
-                <div className={`font-bold mt-1 ${panReady ? "text-emerald-700" : "text-amber-700"}`}>
-                  {panReady ? `Linked (${r?.pan})` : "Action Needed in KYC"}
-                </div>
-              </div>
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                <div className="text-[10px] font-mono text-gray-500">KITCHEN STATUS</div>
-                <div className={`font-bold mt-1 ${r?.emergency_closed ? "text-rose-600" : "text-emerald-700"}`}>
-                  {r?.emergency_closed ? "Paused (Tap to Restore)" : "Active & Accepting Orders"}
-                </div>
-              </div>
-            </div>
-
-            {diagMsg ? (
-              <div className="text-xs text-emerald-700 flex items-center gap-1.5">
-                <CheckCircle2 className="size-4" />
-                <span>{diagMsg}</span>
-              </div>
-            ) : null}
-          </Card>
-        ) : null}
-            {/* Partner Commission & Revenue Rates */}
-        <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
-            <div className="flex items-center gap-2.5">
-              <Scale className="size-5 text-emerald-700" />
-              <div>
-                <h2 className="font-display text-base font-bold text-gray-900">
-                  Partner Commission &amp; Revenue Rates
-                </h2>
-                <p className="text-xs text-gray-500">
-                  Transparent, restaurateur-friendly commission structure. Our standard delivery take-rate is {(standardDeliveryBps / 100).toFixed(0)}%, funding dedicated logistics, rider fleet payouts, and live order tracking. Dine-in and takeaway orders always enjoy {dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} commission. Per-outlet negotiation is supported from 0% to 35%.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 self-start sm:self-center">
-              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
-                STANDARD: {(standardDeliveryBps / 100).toFixed(1)}% ({standardDeliveryBps} BPS) · OUTLET: {(effectiveBps / 100).toFixed(1)}%
-              </span>
-            </div>
-          </div>
-
-          {/* Key Rates Overview */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Standard Delivery Rate</div>
-              <div className="text-2xl font-bold font-display text-emerald-700">
-                {(standardDeliveryBps / 100).toFixed(1)}%
-              </div>
-              <div className="text-[11px] text-gray-500">
-                Standard full-service delivery tier funding rider logistics
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-50 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-800">Active Outlet Rate</div>
-              <div className="text-2xl font-bold font-display text-gray-900 flex items-baseline gap-1.5">
-                <span>{(effectiveBps / 100).toFixed(1)}%</span>
-                <span className="text-xs font-mono text-emerald-700 font-normal">({effectiveBps} bps)</span>
-              </div>
-              <div className="text-[11px] text-gray-700">
-                {effectiveBps === dineInBps
-                  ? `${dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} Dine-In Rate`
-                  : effectiveBps === standardDeliveryBps
-                    ? `${(standardDeliveryBps / 100).toFixed(0)}% Standard Delivery (Default)`
-                    : `${(effectiveBps / 100).toFixed(1)}% Negotiated Tier for this Outlet`}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Dine-In Commission</div>
-              <div className="text-2xl font-bold font-display text-emerald-700">
-                {(dineInBps / 100).toFixed(1)}%
-              </div>
-              <div className="text-[11px] text-gray-500">
-                Always {dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} commission on in-house dining and guest takeaway
-              </div>
-            </div>
-          </div>
-
-          {/* Commercial Payout Schedule & Terms */}
-          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-2">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="size-4 text-emerald-700" />
-              <span className="font-bold text-xs text-gray-900">
-                Commercial Payout Terms &amp; Settlement Schedule:
-              </span>
-            </div>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              Delivery orders are processed with the platform standard 10% logistics commission covering rider delivery, real-time live map tracking, and customer payment gateway costs. Dine-in and takeaway orders have zero commission (0%). All net sales are settled directly into your registered bank account on a daily T+1 schedule (excluding bank holidays).
-            </p>
-          </div>
-
-          {/* Live Itemized Payout Calculation Preview */}
-          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/80 pb-2.5">
-              <div className="flex items-center gap-2">
-                <Calculator className="size-4 text-emerald-700" />
-                <span className="font-bold text-xs text-gray-900">
-                  Live Settlement Breakdown Preview ({(effectiveBps / 100).toFixed(1)}% Commission):
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-gray-500">Benchmark Basket:</span>
-                {[250, 500, 1000, 2000].map((amt) => (
-                  <button
-                    key={amt}
-                    type="button"
-                    onClick={() => setPreviewBasketInr(amt)}
-                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold transition ${
-                      previewBasketInr === amt
-                        ? "bg-emerald-500 text-gray-900"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
+                  <select
+                    className="h-9 rounded-lg border border-gray-200 bg-white shadow-xs px-3 text-xs font-semibold text-emerald-800 outline-none focus:border-emerald-500"
+                    value={vendor.restaurantId ?? ""}
+                    onChange={(e) => {
+                      const m = memberships.find((x: any) => x.restaurantId === e.target.value);
+                      if (m) handleSwitchOutlet(m.restaurantId, m.restaurantName);
+                    }}
                   >
-                    ₹{amt}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-1.5 text-xs">
-              {/* Gross Food */}
-              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                <span className="text-gray-700">Gross Food Value (Customer Order Total)</span>
-                <span className="font-mono font-semibold text-gray-900">
-                  + {formatINR(previewBreakdown.foodValuePaise)}
-                </span>
-              </div>
-
-              {/* Commission */}
-              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-gray-700">
-                    Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
-                  </span>
-                  <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 px-1.5 rounded">
-                    {effectiveBps} BPS
-                  </span>
+                    {memberships.map((m: any) => (
+                      <option key={m.restaurantId} value={m.restaurantId}>
+                        {m.restaurantName} ({m.role}) — {m.restaurantId}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <span className="font-mono font-semibold text-rose-600">
-                  - {formatINR(previewBreakdown.commissionPaise)}
-                </span>
-              </div>
+              ) : null}
 
-              {/* 18% GST on Commission */}
-              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-gray-700">18% GST on Delivery Commission (SAC 9985)</span>
-                  <span className="text-[10px] font-mono text-gray-500">
-                    ({formatINR(previewBreakdown.commissionCgstPaise)} CGST + {formatINR(previewBreakdown.commissionSgstPaise)} SGST)
-                  </span>
-                </div>
-                <span className="font-mono font-semibold text-rose-600">
-                  - {formatINR(previewBreakdown.commissionGstPaise)}
-                </span>
-              </div>
+              {/* Detailed Branch Matrix */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {memberships.map((m: any) => {
+                  const isActive = m.restaurantId === vendor.restaurantId;
+                  return (
+                    <div
+                      key={m.restaurantId}
+                      className={`rounded-xl border p-4 space-y-3 transition ${isActive
+                          ? "border-emerald-500/50 bg-emerald-50 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                          : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                        }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="font-bold text-sm text-gray-900 flex items-center gap-1.5">
+                            <Store className="size-4 text-gray-500" />
+                            <span>{m.restaurantName}</span>
+                          </div>
+                          <div className="text-[11px] font-mono text-gray-500 mt-0.5">
+                            ID: {m.restaurantId}
+                            {m.outletId ? ` · Outlet: ${m.outletId}` : ""}
+                          </div>
+                        </div>
+                        {isActive ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                            <CheckCircle2 className="size-3" /> ACTIVE
+                          </span>
+                        ) : (
+                          <span className="rounded bg-gray-100 px-2 py-0.5 text-[10px] font-mono text-gray-500">
+                            {m.role}
+                          </span>
+                        )}
+                      </div>
 
-              {/* 5% §9(5) Food GST */}
-              <div className="flex items-center justify-between py-1 border-b border-gray-200/60 bg-emerald-50 px-2 rounded">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-emerald-800 font-medium">5% §9(5) Food GST (CGST Act 2017)</span>
-                  <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
-                    REMITTED BY ORDER KING / NOT DEBITED
-                  </span>
-                </div>
-                <span className="font-mono font-semibold text-emerald-700">
-                  {formatINR(previewBreakdown.sec9_5GstPaise)}
-                </span>
-              </div>
+                      <div className="grid grid-cols-2 gap-2 text-[11px] border-t border-gray-200/80 pt-2">
+                        <div>
+                          <span className="text-gray-500">Role: </span>
+                          <span className="font-mono text-gray-800">{m.role}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Status: </span>
+                          <span className="font-mono text-emerald-700">{m.verificationStatus}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Delivery Commission: </span>
+                          <span className="font-mono text-gray-800">{m.commissionBps / 100}%</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Ledger: </span>
+                          <span className="font-mono text-emerald-700">{m.dataLabel}</span>
+                        </div>
+                      </div>
 
-              {/* 1% TCS */}
-              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-gray-700">1% TCS under Section 52 of CGST Act 2017</span>
-                  <span className="text-[10px] font-mono text-gray-500">
-                    ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST credited in GSTR-8)
-                  </span>
-                </div>
-                <span className="font-mono font-semibold text-rose-600">
-                  - {formatINR(previewBreakdown.tcsSec52Paise)}
-                </span>
+                      {!isActive ? (
+                        <Button
+                          size="sm"
+                          onClick={() => handleSwitchOutlet(m.restaurantId, m.restaurantName)}
+                          className="w-full h-8 text-xs bg-gray-100 hover:bg-[#E23744] hover:text-gray-900 text-gray-800 transition"
+                        >
+                          <ArrowRightLeft className="mr-1.5 size-3.5" />
+                          Switch to This Location
+                        </Button>
+                      ) : (
+                        <div className="text-[11px] text-center font-medium text-emerald-700 py-1 bg-emerald-500/10 rounded-lg">
+                          Currently Managing This Location
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
+            </Card>
 
-              {/* 1% TDS */}
-              <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-gray-700">1% TDS under Section 194-O Income Tax Act 1961</span>
-                  <span className="text-[10px] font-mono text-gray-500">(Deposited against your registered PAN)</span>
-                </div>
-                <span className="font-mono font-semibold text-rose-600">
-                  - {formatINR(previewBreakdown.tdsSec194OPaise)}
-                </span>
-              </div>
-
-              {/* Total Deductions */}
-              <div className="flex items-center justify-between py-1.5 border-b border-gray-200 font-semibold text-gray-700">
-                <span>Total Deductions (Excl. 9(5) Remitted by Order King)</span>
-                <span className="font-mono text-rose-600">
-                  - {formatINR(previewBreakdown.totalDeductionsPaise)}
-                </span>
-              </div>
-
-              {/* Net Restaurant Payable */}
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <div className="text-xs uppercase tracking-wider font-bold text-emerald-800">
-                    Net Restaurant Payout (NRP)
+            {/* Restaurant Health & Operational Readiness */}
+            {vendor.restaurantId ? (
+              <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <Cpu className="size-5 text-emerald-700" />
+                    <div>
+                      <h2 className="font-display text-base font-bold text-gray-900">
+                        Restaurant Health &amp; Operational Readiness
+                      </h2>
+                      <p className="text-xs text-gray-500">
+                        Real-time readiness checks for your food safety license, payout bank account, and kitchen status. Reset order flow and restore kitchen bells with a single tap.
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-[10px] font-mono text-gray-500">
-                    Daily bank payout amount after applicable deductions
+                  <Button
+                    size="sm"
+                    onClick={() => void handleSelfHealOutlet()}
+                    className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs shrink-0"
+                  >
+                    <Wrench className="mr-1.5 size-3.5" />
+                    Restore Online &amp; Reset Prep Time
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                    <div className="text-[10px] font-mono text-gray-500">14-DIGIT FSSAI LICENSE</div>
+                    <div className={`font-bold mt-1 ${fssaiReady ? "text-emerald-700" : "text-amber-700"}`}>
+                      {fssaiReady ? `Verified (${r?.fssai_number})` : "Action Needed in KYC"}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                    <div className="text-[10px] font-mono text-gray-500">PAYOUT BANK ACCOUNT</div>
+                    <div className={`font-bold mt-1 ${bankReady ? "text-emerald-700" : "text-amber-700"}`}>
+                      {bankReady ? `Ready (${r?.bank_ifsc})` : "Action Needed in KYC"}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                    <div className="text-[10px] font-mono text-gray-500">PAN (TDS §194-O)</div>
+                    <div className={`font-bold mt-1 ${panReady ? "text-emerald-700" : "text-amber-700"}`}>
+                      {panReady ? `Linked (${r?.pan})` : "Action Needed in KYC"}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                    <div className="text-[10px] font-mono text-gray-500">KITCHEN STATUS</div>
+                    <div className={`font-bold mt-1 ${r?.emergency_closed ? "text-rose-600" : "text-emerald-700"}`}>
+                      {r?.emergency_closed ? "Paused (Tap to Restore)" : "Active & Accepting Orders"}
+                    </div>
                   </div>
                 </div>
-                <div className="text-2xl font-bold font-display text-emerald-700 font-mono">
-                  {formatINR(previewBreakdown.netRestaurantPayablePaise)}
+
+                {diagMsg ? (
+                  <div className="text-xs text-emerald-700 flex items-center gap-1.5">
+                    <CheckCircle2 className="size-4" />
+                    <span>{diagMsg}</span>
+                  </div>
+                ) : null}
+              </Card>
+            ) : null}
+            {/* Partner Commission & Revenue Rates */}
+            <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <Scale className="size-5 text-emerald-700" />
+                  <div>
+                    <h2 className="font-display text-base font-bold text-gray-900">
+                      Partner Commission &amp; Revenue Rates
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      Transparent, restaurateur-friendly commission structure. Our standard delivery take-rate is {(standardDeliveryBps / 100).toFixed(0)}%, funding dedicated logistics, rider fleet payouts, and live order tracking. Dine-in and takeaway orders always enjoy {dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} commission. Per-outlet negotiation is supported from 0% to 35%.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 self-start sm:self-center">
+                  <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
+                    STANDARD: {(standardDeliveryBps / 100).toFixed(1)}% ({standardDeliveryBps} BPS) · OUTLET: {(effectiveBps / 100).toFixed(1)}%
+                  </span>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <p className="text-xs text-gray-500">
-            Applied transparently on net food and packaging order value in integer paise. Every delivery order locks this exact snapshot at order acceptance.
-          </p>
-        </Card>
+              {/* Key Rates Overview */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Standard Delivery Rate</div>
+                  <div className="text-2xl font-bold font-display text-emerald-700">
+                    {(standardDeliveryBps / 100).toFixed(1)}%
+                  </div>
+                  <div className="text-[11px] text-gray-500">
+                    Standard full-service delivery tier funding rider logistics
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-50 p-3.5 space-y-1">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-800">Active Outlet Rate</div>
+                  <div className="text-2xl font-bold font-display text-gray-900 flex items-baseline gap-1.5">
+                    <span>{(effectiveBps / 100).toFixed(1)}%</span>
+                    <span className="text-xs font-mono text-emerald-700 font-normal">({effectiveBps} bps)</span>
+                  </div>
+                  <div className="text-[11px] text-gray-700">
+                    {effectiveBps === dineInBps
+                      ? `${dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} Dine-In Rate`
+                      : effectiveBps === standardDeliveryBps
+                        ? `${(standardDeliveryBps / 100).toFixed(0)}% Standard Delivery (Default)`
+                        : `${(effectiveBps / 100).toFixed(1)}% Negotiated Tier for this Outlet`}
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">Dine-In Commission</div>
+                  <div className="text-2xl font-bold font-display text-emerald-700">
+                    {(dineInBps / 100).toFixed(1)}%
+                  </div>
+                  <div className="text-[11px] text-gray-500">
+                    Always {dineInBps === 0 ? "0%" : `${(dineInBps / 100).toFixed(0)}%`} commission on in-house dining and guest takeaway
+                  </div>
+                </div>
+              </div>
+
+              {/* Commercial Payout Schedule & Terms */}
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-emerald-700" />
+                  <span className="font-bold text-xs text-gray-900">
+                    Commercial Payout Terms &amp; Settlement Schedule:
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Delivery orders are processed with the platform standard 10% logistics commission covering rider delivery, real-time live map tracking, and customer payment gateway costs. Dine-in and takeaway orders have zero commission (0%). All net sales are settled directly into your registered bank account on a daily T+1 schedule (excluding bank holidays).
+                </p>
+              </div>
+
+              {/* Live Itemized Payout Calculation Preview */}
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/80 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Calculator className="size-4 text-emerald-700" />
+                    <span className="font-bold text-xs text-gray-900">
+                      Live Settlement Breakdown Preview ({(effectiveBps / 100).toFixed(1)}% Commission):
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-gray-500">Benchmark Basket:</span>
+                    {[250, 500, 1000, 2000].map((amt) => (
+                      <button
+                        key={amt}
+                        type="button"
+                        onClick={() => setPreviewBasketInr(amt)}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold transition ${previewBasketInr === amt
+                            ? "bg-emerald-500 text-gray-900"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                      >
+                        ₹{amt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 text-xs">
+                  {/* Gross Food */}
+                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
+                    <span className="text-gray-700">Gross Food Value (Customer Order Total)</span>
+                    <span className="font-mono font-semibold text-gray-900">
+                      + {formatINR(previewBreakdown.foodValuePaise)}
+                    </span>
+                  </div>
+
+                  {/* Commission */}
+                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-gray-700">
+                        Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
+                      </span>
+                      <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 px-1.5 rounded">
+                        {effectiveBps} BPS
+                      </span>
+                    </div>
+                    <span className="font-mono font-semibold text-rose-600">
+                      - {formatINR(previewBreakdown.commissionPaise)}
+                    </span>
+                  </div>
+
+                  {/* 18% GST on Commission */}
+                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-gray-700">18% GST on Delivery Commission (SAC 9985)</span>
+                      <span className="text-[10px] font-mono text-gray-500">
+                        ({formatINR(previewBreakdown.commissionCgstPaise)} CGST + {formatINR(previewBreakdown.commissionSgstPaise)} SGST)
+                      </span>
+                    </div>
+                    <span className="font-mono font-semibold text-rose-600">
+                      - {formatINR(previewBreakdown.commissionGstPaise)}
+                    </span>
+                  </div>
+
+                  {/* 5% §9(5) Food GST */}
+                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60 bg-emerald-50 px-2 rounded">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-emerald-800 font-medium">5% §9(5) Food GST (CGST Act 2017)</span>
+                      <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                        REMITTED BY ORDER KING / NOT DEBITED
+                      </span>
+                    </div>
+                    <span className="font-mono font-semibold text-emerald-700">
+                      {formatINR(previewBreakdown.sec9_5GstPaise)}
+                    </span>
+                  </div>
+
+                  {/* 1% TCS */}
+                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-gray-700">1% TCS under Section 52 of CGST Act 2017</span>
+                      <span className="text-[10px] font-mono text-gray-500">
+                        ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST credited in GSTR-8)
+                      </span>
+                    </div>
+                    <span className="font-mono font-semibold text-rose-600">
+                      - {formatINR(previewBreakdown.tcsSec52Paise)}
+                    </span>
+                  </div>
+
+                  {/* 1% TDS */}
+                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-gray-700">1% TDS under Section 194-O Income Tax Act 1961</span>
+                      <span className="text-[10px] font-mono text-gray-500">(Deposited against your registered PAN)</span>
+                    </div>
+                    <span className="font-mono font-semibold text-rose-600">
+                      - {formatINR(previewBreakdown.tdsSec194OPaise)}
+                    </span>
+                  </div>
+
+                  {/* Total Deductions */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-gray-200 font-semibold text-gray-700">
+                    <span>Total Deductions (Excl. 9(5) Remitted by Order King)</span>
+                    <span className="font-mono text-rose-600">
+                      - {formatINR(previewBreakdown.totalDeductionsPaise)}
+                    </span>
+                  </div>
+
+                  {/* Net Restaurant Payable */}
+                  <div className="flex items-center justify-between pt-2.5">
+                    <div>
+                      <div className="text-xs uppercase tracking-wider font-bold text-emerald-800">
+                        Net Restaurant Payout (NRP)
+                      </div>
+                      <div className="text-[10px] font-mono text-gray-500">
+                        Daily bank payout amount after applicable deductions
+                      </div>
+                    </div>
+                    <div className="text-2xl font-bold font-display text-emerald-700 font-mono">
+                      {formatINR(previewBreakdown.netRestaurantPayablePaise)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-500">
+                Applied transparently on net food and packaging order value in integer paise. Every delivery order locks this exact snapshot at order acceptance.
+              </p>
+            </Card>
           </div>
         )}
 
@@ -790,22 +787,22 @@ function SettingsPage() {
         {activeTab === "OPERATIONS" && (
           <div className="space-y-4">
             {/* Kitchen & KDS Operations Customization Panel */}
-        {vendor.restaurantId ? (
-          <KitchenKdsOperationsPanel
-            restaurantId={vendor.restaurantId}
-            initialPrepMinutes={r?.prep_minutes}
-            initialPeakPrepMinutes={r?.peak_prep_minutes}
-            initialPackingPaise={r?.packing_paise}
-            initialMinOrderPaise={r?.min_order_paise}
-          />
-        ) : null}
+            {vendor.restaurantId ? (
+              <KitchenKdsOperationsPanel
+                restaurantId={vendor.restaurantId}
+                initialPrepMinutes={r?.prep_minutes}
+                initialPeakPrepMinutes={r?.peak_prep_minutes}
+                initialPackingPaise={r?.packing_paise}
+                initialMinOrderPaise={r?.min_order_paise}
+              />
+            ) : null}
 
-        {/* Menu Catalogue & Inventory Controls */}
-        {vendor.restaurantId ? (
-          <CatalogueStockControlsPanel
-            restaurantId={vendor.restaurantId}
-          />
-        ) : null}
+            {/* Menu Catalogue & Inventory Controls */}
+            {vendor.restaurantId ? (
+              <CatalogueStockControlsPanel
+                restaurantId={vendor.restaurantId}
+              />
+            ) : null}
           </div>
         )}
 
@@ -823,304 +820,303 @@ function SettingsPage() {
         {activeTab === "ALERTS" && (
           <div className="space-y-4">
             {/* KingPay Soundbox Audio Announcement Engine */}
-        {vendor.restaurantId ? (
-          <KingpaySoundboxSettingsPanel
-            restaurantId={vendor.restaurantId}
-          />
-        ) : null}
-
-        {/* Daily Sales Reports & Kitchen Alerts */}
-        {vendor.restaurantId ? (
-          <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
-              <div className="flex items-center gap-2.5">
-                <MessageSquare className="size-5 text-emerald-700" />
-                <div>
-                  <h2 className="font-display text-base font-bold text-gray-900">
-                    Daily Sales Reports &amp; Kitchen Alerts
-                  </h2>
-                  <p className="text-xs text-gray-500">
-                    Configure evening WhatsApp summaries, critical SMS kitchen alerts, and monthly tax statements with ease.
-                  </p>
-                </div>
-              </div>
-              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
-                REAL-TIME DISPATCH
-              </span>
-            </div>
-
-            {/* Test Dispatch Feedback */}
-            {testDispatchMsg ? (
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-50 p-3 text-xs text-emerald-800 flex items-start gap-2">
-                <CheckCircle2 className="size-4 shrink-0 text-emerald-700 mt-0.5" />
-                <div>
-                  <div className="font-bold uppercase tracking-wider text-[10px] text-emerald-700">
-                    {testDispatchMsg.channel} Test Dispatch Result
-                  </div>
-                  <div className="mt-0.5">{testDispatchMsg.text}</div>
-                </div>
-              </div>
+            {vendor.restaurantId ? (
+              <KingpaySoundboxSettingsPanel
+                restaurantId={vendor.restaurantId}
+              />
             ) : null}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Channel 1: WhatsApp Shift Report */}
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="size-4 text-emerald-700" />
-                      <span className="font-bold text-sm text-gray-900">WhatsApp Shift Summary</span>
+            {/* Daily Sales Reports & Kitchen Alerts */}
+            {vendor.restaurantId ? (
+              <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <MessageSquare className="size-5 text-emerald-700" />
+                    <div>
+                      <h2 className="font-display text-base font-bold text-gray-900">
+                        Daily Sales Reports &amp; Kitchen Alerts
+                      </h2>
+                      <p className="text-xs text-gray-500">
+                        Configure evening WhatsApp summaries, critical SMS kitchen alerts, and monthly tax statements with ease.
+                      </p>
                     </div>
-                    <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 px-2 py-0.5 rounded">
-                      NIGHTLY 23:00 IST
-                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
+                    REAL-TIME DISPATCH
+                  </span>
+                </div>
+
+                {/* Test Dispatch Feedback */}
+                {testDispatchMsg ? (
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-50 p-3 text-xs text-emerald-800 flex items-start gap-2">
+                    <CheckCircle2 className="size-4 shrink-0 text-emerald-700 mt-0.5" />
+                    <div>
+                      <div className="font-bold uppercase tracking-wider text-[10px] text-emerald-700">
+                        {testDispatchMsg.channel} Test Dispatch Result
+                      </div>
+                      <div className="mt-0.5">{testDispatchMsg.text}</div>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {/* Channel 1: WhatsApp Shift Report */}
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="size-4 text-emerald-700" />
+                          <span className="font-bold text-sm text-gray-900">WhatsApp Shift Summary</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 px-2 py-0.5 rounded">
+                          NIGHTLY 23:00 IST
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        Nightly closing summary sent directly to WhatsApp: gross food revenue, 5% food GST remitted by Order King, delivered order count, and estimated net payouts.
+                      </p>
+
+                      <div className="space-y-1.5 pt-1">
+                        <Label className="text-xs text-gray-700">Destination WhatsApp Number</Label>
+                        <Input
+                          type="tel"
+                          value={currentWaPhone}
+                          onChange={(e) => setWaPhone(e.target.value)}
+                          placeholder="+91 98765 43210"
+                          className="h-9 text-xs bg-white border-gray-200 font-mono"
+                        />
+                      </div>
+
+                      {/* Consent Checkbox */}
+                      <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={currentWaConsent}
+                          onChange={(e) => setWaConsent(e.target.checked)}
+                          className="mt-1 size-3.5 rounded border-gray-300 bg-white text-emerald-500 focus:ring-emerald-500"
+                        />
+                        <span className="text-[11px] text-gray-700 leading-tight">
+                          I consent to receive automated evening shift reports via Order King WhatsApp Business API in accordance with the DPDP Act 2023.
+                        </span>
+                      </label>
+
+                      {/* Shift Report Inclusions */}
+                      <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
+                        <div className="text-emerald-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Net Sales &amp; Revenue</div>
+                        <div className="text-emerald-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> 5% Food GST Remitted</div>
+                        <div className="text-emerald-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Estimated Net Payout</div>
+                        <div className="text-emerald-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Delivered Order Count</div>
+                      </div>
+                    </div>
+
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      disabled={testingChannel === "whatsapp"}
+                      onClick={() => void handleTestNotification("whatsapp")}
+                      className="w-full text-xs border-gray-300 hover:border-emerald-500/50 hover:bg-emerald-50"
+                    >
+                      <Send className="mr-1.5 size-3.5 text-emerald-700" />
+                      {testingChannel === "whatsapp" ? "Dispatching WhatsApp..." : "Send Test WhatsApp Report"}
+                    </Button>
                   </div>
 
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    Nightly closing summary sent directly to WhatsApp: gross food revenue, 5% food GST remitted by Order King, delivered order count, and estimated net payouts.
-                  </p>
+                  {/* Channel 2: SMS Kitchen Alerts */}
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="size-4 text-amber-700" />
+                          <span className="font-bold text-sm text-gray-900">SMS Rush &amp; Kitchen Alerts</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 px-2 py-0.5 rounded">
+                          PRIORITY SMS
+                        </span>
+                      </div>
 
-                  <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-gray-700">Destination WhatsApp Number</Label>
-                    <Input
-                      type="tel"
-                      value={currentWaPhone}
-                      onChange={(e) => setWaPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
-                      className="h-9 text-xs bg-white border-gray-200 font-mono"
-                    />
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        Immediate transactional SMS alerts for critical kitchen events: rush surge buffers, emergency pauses, and 86 dish stockouts.
+                      </p>
+
+                      <div className="space-y-1.5 pt-1">
+                        <Label className="text-xs text-gray-700">Destination Mobile Number</Label>
+                        <Input
+                          type="tel"
+                          value={currentSmsPhone}
+                          onChange={(e) => setSmsPhone(e.target.value)}
+                          placeholder="+91 98765 43210"
+                          className="h-9 text-xs bg-white border-gray-200 font-mono"
+                        />
+                      </div>
+
+                      {/* Consent Checkbox */}
+                      <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={currentSmsConsent}
+                          onChange={(e) => setSmsConsent(e.target.checked)}
+                          className="mt-1 size-3.5 rounded border-gray-300 bg-white text-amber-500 focus:ring-amber-500"
+                        />
+                        <span className="text-[11px] text-gray-700 leading-tight">
+                          I consent to receive priority transactional SMS alerts for kitchen throttles and dish stockouts.
+                        </span>
+                      </label>
+
+                      {/* SMS Inclusions */}
+                      <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
+                        <div className="text-amber-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Kitchen Rush Surge Alert</div>
+                        <div className="text-amber-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Sold-Out (86) Dish Alert</div>
+                        <div className="text-amber-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Prep Buffer Adjustments</div>
+                        <div className="text-amber-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Emergency Pause Alert</div>
+                      </div>
+                    </div>
+
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      disabled={testingChannel === "sms"}
+                      onClick={() => void handleTestNotification("sms")}
+                      className="w-full text-xs border-gray-300 hover:border-amber-500/50 hover:bg-amber-950/40"
+                    >
+                      <Send className="mr-1.5 size-3.5 text-amber-700" />
+                      {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
+                    </Button>
                   </div>
 
-                  {/* Consent Checkbox */}
-                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={currentWaConsent}
-                      onChange={(e) => setWaConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-emerald-500 focus:ring-emerald-500"
-                    />
-                    <span className="text-[11px] text-gray-700 leading-tight">
-                      I consent to receive automated evening shift reports via Order King WhatsApp Business API in accordance with the DPDP Act 2023.
-                    </span>
-                  </label>
+                  {/* Channel 3: Email Tax Invoices & Statements */}
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <Mail className="size-4 text-sky-400" />
+                          <span className="font-bold text-sm text-gray-900">Email Tax &amp; Statements</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
+                          MONTHLY STATEMENTS
+                        </span>
+                      </div>
 
-                  {/* Shift Report Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                    <div className="text-emerald-700">✓ Net Sales &amp; Revenue</div>
-                    <div className="text-emerald-700">✓ 5% Food GST Remitted</div>
-                    <div className="text-emerald-700">✓ Estimated Net Payout</div>
-                    <div className="text-emerald-700">✓ Delivered Order Count</div>
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        Automated monthly email delivery of GST Sec 9(5) tax invoices, settlement reconciliation ledgers, and quarterly Form 16A TDS certificates.
+                      </p>
+
+                      <div className="space-y-1.5 pt-1">
+                        <Label className="text-xs text-gray-700">Destination Accounts / Finance Email</Label>
+                        <Input
+                          type="email"
+                          value={currentEmailAddress}
+                          onChange={(e) => setEmailAddress(e.target.value)}
+                          placeholder="accounts@restaurant.in"
+                          className="h-9 text-xs bg-white border-gray-200 font-mono"
+                        />
+                      </div>
+
+                      {/* Consent Checkbox */}
+                      <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={currentEmailConsent}
+                          onChange={(e) => setEmailConsent(e.target.checked)}
+                          className="mt-1 size-3.5 rounded border-gray-300 bg-white text-sky-500 focus:ring-sky-500"
+                        />
+                        <span className="text-[11px] text-gray-700 leading-tight">
+                          I consent to receive monthly tax invoices, GSTR-8 statements, and Form 16A certificates via email.
+                        </span>
+                      </label>
+
+                      {/* Email Inclusions */}
+                      <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
+                        <div className="text-sky-400 flex items-center gap-1"><Check className="size-3 shrink-0" /> Monthly Tax Invoices</div>
+                        <div className="text-sky-400 flex items-center gap-1"><Check className="size-3 shrink-0" /> Form 16A (TDS §194-O)</div>
+                        <div className="text-sky-400 flex items-center gap-1"><Check className="size-3 shrink-0" /> GSTR-8 Credit Ledgers</div>
+                        <div className="text-sky-400 flex items-center gap-1"><Check className="size-3 shrink-0" /> Sec 9(5) GST Statements</div>
+                      </div>
+                    </div>
+
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      disabled={testingChannel === "email"}
+                      onClick={() => void handleTestNotification("email")}
+                      className="w-full text-xs border-gray-300 hover:border-sky-500/50 hover:bg-sky-950/40"
+                    >
+                      <Send className="mr-1.5 size-3.5 text-sky-400" />
+                      {testingChannel === "email" ? "Dispatching Email..." : "Send Test Tax Statement Email"}
+                    </Button>
                   </div>
                 </div>
 
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={testingChannel === "whatsapp"}
-                  onClick={() => void handleTestNotification("whatsapp")}
-                  className="w-full text-xs border-gray-300 hover:border-emerald-500/50 hover:bg-emerald-50"
-                >
-                  <Send className="mr-1.5 size-3.5 text-emerald-700" />
-                  {testingChannel === "whatsapp" ? "Dispatching WhatsApp..." : "Send Test WhatsApp Report"}
-                </Button>
-              </div>
-
-              {/* Channel 2: SMS Kitchen Alerts */}
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="size-4 text-amber-700" />
-                      <span className="font-bold text-sm text-gray-900">SMS Rush &amp; Kitchen Alerts</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 px-2 py-0.5 rounded">
-                      PRIORITY SMS
-                    </span>
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200">
+                  <div className="text-xs text-emerald-700 font-medium">
+                    {notifMsg ?? ""}
                   </div>
-
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    Immediate transactional SMS alerts for critical kitchen events: rush surge buffers, emergency pauses, and 86 dish stockouts.
-                  </p>
-
-                  <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-gray-700">Destination Mobile Number</Label>
-                    <Input
-                      type="tel"
-                      value={currentSmsPhone}
-                      onChange={(e) => setSmsPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
-                      className="h-9 text-xs bg-white border-gray-200 font-mono"
-                    />
-                  </div>
-
-                  {/* Consent Checkbox */}
-                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={currentSmsConsent}
-                      onChange={(e) => setSmsConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-amber-500 focus:ring-amber-500"
-                    />
-                    <span className="text-[11px] text-gray-700 leading-tight">
-                      I consent to receive priority transactional SMS alerts for kitchen throttles and dish stockouts.
-                    </span>
-                  </label>
-
-                  {/* SMS Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                    <div className="text-amber-700">✓ Kitchen Rush Surge Alert</div>
-                    <div className="text-amber-700">✓ Sold-Out (86) Dish Alert</div>
-                    <div className="text-amber-700">✓ Prep Buffer Adjustments</div>
-                    <div className="text-amber-700">✓ Emergency Pause Alert</div>
-                  </div>
+                  <Button
+                    size="sm"
+                    disabled={notifSaving}
+                    onClick={() => void handleSaveKingAiNotifications()}
+                    className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs font-semibold px-4"
+                  >
+                    {notifSaving ? "Saving Notification Preferences..." : "Save Notification Preferences"}
+                  </Button>
                 </div>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={testingChannel === "sms"}
-                  onClick={() => void handleTestNotification("sms")}
-                  className="w-full text-xs border-gray-300 hover:border-amber-500/50 hover:bg-amber-950/40"
-                >
-                  <Send className="mr-1.5 size-3.5 text-amber-700" />
-                  {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
-                </Button>
-              </div>
-
-              {/* Channel 3: Email Tax Invoices & Statements */}
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <Mail className="size-4 text-sky-400" />
-                      <span className="font-bold text-sm text-gray-900">Email Tax &amp; Statements</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
-                      MONTHLY STATEMENTS
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    Automated monthly email delivery of GST Sec 9(5) tax invoices, settlement reconciliation ledgers, and quarterly Form 16A TDS certificates.
-                  </p>
-
-                  <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-gray-700">Destination Accounts / Finance Email</Label>
-                    <Input
-                      type="email"
-                      value={currentEmailAddress}
-                      onChange={(e) => setEmailAddress(e.target.value)}
-                      placeholder="accounts@restaurant.in"
-                      className="h-9 text-xs bg-white border-gray-200 font-mono"
-                    />
-                  </div>
-
-                  {/* Consent Checkbox */}
-                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={currentEmailConsent}
-                      onChange={(e) => setEmailConsent(e.target.checked)}
-                      className="mt-1 size-3.5 rounded border-gray-300 bg-white text-sky-500 focus:ring-sky-500"
-                    />
-                    <span className="text-[11px] text-gray-700 leading-tight">
-                      I consent to receive monthly tax invoices, GSTR-8 statements, and Form 16A certificates via email.
-                    </span>
-                  </label>
-
-                  {/* Email Inclusions */}
-                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                    <div className="text-sky-400">✓ Monthly Tax Invoices</div>
-                    <div className="text-sky-400">✓ Form 16A (TDS §194-O)</div>
-                    <div className="text-sky-400">✓ GSTR-8 Credit Ledgers</div>
-                    <div className="text-sky-400">✓ Sec 9(5) GST Statements</div>
-                  </div>
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={testingChannel === "email"}
-                  onClick={() => void handleTestNotification("email")}
-                  className="w-full text-xs border-gray-300 hover:border-sky-500/50 hover:bg-sky-950/40"
-                >
-                  <Send className="mr-1.5 size-3.5 text-sky-400" />
-                  {testingChannel === "email" ? "Dispatching Email..." : "Send Test Tax Statement Email"}
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200">
-              <div className="text-xs text-emerald-700 font-medium">
-                {notifMsg ?? ""}
-              </div>
-              <Button
-                size="sm"
-                disabled={notifSaving}
-                onClick={() => void handleSaveKingAiNotifications()}
-                className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs font-semibold px-4"
-              >
-                {notifSaving ? "Saving Notification Preferences..." : "Save Notification Preferences"}
-              </Button>
-            </div>
-          </Card>
-        ) : null}
+              </Card>
+            ) : null}
             {/* Pan-India 23-Language Switcher & Kitchen Audio Ring Alerts */}
-        <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
-            <div className="flex items-center gap-2">
-              <Globe className="size-4 text-emerald-700" />
-              <div>
-                <h2 className="font-display text-base font-bold text-gray-900">
-                  All 22 Scheduled Languages of India + English ({ALL_INDIAN_LANGUAGES.length} Languages)
-                </h2>
-                <p className="text-xs text-gray-500">
-                  Switch your partner portal, kitchen voice announcements, and partner assistant into your preferred language:
-                </p>
-              </div>
-            </div>
-            <Button
-              size="sm"
-              variant={soundOn ? "primary" : "secondary"}
-              onClick={() => setSoundOn(!soundOn)}
-              className="text-xs shrink-0"
-            >
-              {soundOn ? (
-                <>
-                  <Volume2 className="mr-1.5 size-4" /> Kitchen Alert Bell Active
-                </>
-              ) : (
-                <>
-                  <VolumeX className="mr-1.5 size-4" /> Kitchen Alert Bell Muted
-                </>
-              )}
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-1">
-            {ALL_INDIAN_LANGUAGES.map((item) => {
-              const active = lang === item.code;
-              return (
-                <button
-                  key={item.code}
-                  type="button"
-                  onClick={() => setLang(item.code)}
-                  className={`rounded-xl border p-2.5 text-left transition ${
-                    active
-                      ? "border-emerald-500 bg-emerald-500/15 text-gray-900"
-                      : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm">{item.native}</span>
-                    <span className="text-[10px] font-mono uppercase text-emerald-700">{item.code}</span>
+            <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+                <div className="flex items-center gap-2">
+                  <Globe className="size-4 text-emerald-700" />
+                  <div>
+                    <h2 className="font-display text-base font-bold text-gray-900">
+                      All 22 Scheduled Languages of India + English ({ALL_INDIAN_LANGUAGES.length} Languages)
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      Switch your partner portal, kitchen voice announcements, and partner assistant into your preferred language:
+                    </p>
                   </div>
-                  <div className="text-[11px] text-gray-500 mt-0.5">{item.label} · {item.region}</div>
-                </button>
-              );
-            })}
-          </div>
-        </Card>
+                </div>
+                <Button
+                  size="sm"
+                  variant={soundOn ? "primary" : "secondary"}
+                  onClick={() => setSoundOn(!soundOn)}
+                  className="text-xs shrink-0"
+                >
+                  {soundOn ? (
+                    <>
+                      <Volume2 className="mr-1.5 size-4" /> Kitchen Alert Bell Active
+                    </>
+                  ) : (
+                    <>
+                      <VolumeX className="mr-1.5 size-4" /> Kitchen Alert Bell Muted
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-1">
+                {ALL_INDIAN_LANGUAGES.map((item) => {
+                  const active = lang === item.code;
+                  return (
+                    <button
+                      key={item.code}
+                      type="button"
+                      onClick={() => setLang(item.code)}
+                      className={`rounded-xl border p-2.5 text-left transition ${active
+                          ? "border-emerald-500 bg-emerald-500/15 text-gray-900"
+                          : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
+                        }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm">{item.native}</span>
+                        <span className="text-[10px] font-mono uppercase text-emerald-700">{item.code}</span>
+                      </div>
+                      <div className="text-[11px] text-gray-500 mt-0.5">{item.label} · {item.region}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </Card>
           </div>
         )}
 
@@ -1128,70 +1124,70 @@ function SettingsPage() {
         {activeTab === "STAFF" && (
           <div className="space-y-4">
             {/* Role-Based Staff Access Management */}
-        {vendor.role && can(vendor.role, "settings.staff") ? (
-          <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="size-4 text-emerald-700" />
-                <h2 className="font-display text-base font-bold text-gray-900">{t("settings.staff")}</h2>
-              </div>
-              <span className="text-[11px] font-mono text-gray-500">STAFF ACCESS CONTROL</span>
-            </div>
-            <ul className="text-xs divide-y divide-gray-200">
-              {staffQ.data?.staff.map((s) => (
-                <li key={s.id} className="flex justify-between py-2.5 text-gray-800">
-                  <span>{s.email ?? s.user_id}</span>
-                  <span className="font-mono text-emerald-700">{s.role}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="grid gap-2.5 md:grid-cols-[1fr_180px_auto] pt-2">
-              <div>
-                <Label className="text-xs text-gray-700">{t("auth.email")}</Label>
-                <Input
-                  value={email}
-                  placeholder="staff@restaurant.in"
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="border-gray-200 bg-white text-xs h-10"
-                />
-              </div>
-              <div>
-                <Label className="text-xs text-gray-700">{t("settings.role")}</Label>
-                <select
-                  className="h-10 w-full rounded-md border border-gray-200 bg-white px-2.5 text-xs text-gray-900"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                >
-                  <option value="STAFF">STAFF</option>
-                  <option value="MANAGER">MANAGER</option>
-                  <option value="ACCOUNTANT">ACCOUNTANT</option>
-                  <option value="MULTI_OUTLET_MANAGER">MULTI_OUTLET_MANAGER</option>
-                </select>
-              </div>
-              <Button
-                className="self-end h-10 bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs"
-                onClick={() =>
-                  void addStaff({
-                    data: {
-                      restaurantId: vendor.restaurantId,
-                      email,
-                      role: role as "STAFF",
-                    },
-                  })
-                    .then(() => {
-                      setMsg("Staff member role updated.");
-                      setEmail("");
-                      void qc.invalidateQueries({ queryKey: ["staff"] });
-                    })
-                    .catch((e) => setMsg(e instanceof Error ? e.message : "Failed"))
-                }
-              >
-                {t("settings.add")}
-              </Button>
-            </div>
-            {msg ? <p className="text-xs text-emerald-700">{msg}</p> : null}
-          </Card>
-        ) : null}
+            {vendor.role && can(vendor.role, "settings.staff") ? (
+              <Card className="space-y-3 border-gray-200 bg-white shadow-xs p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="size-4 text-emerald-700" />
+                    <h2 className="font-display text-base font-bold text-gray-900">{t("settings.staff")}</h2>
+                  </div>
+                  <span className="text-[11px] font-mono text-gray-500">STAFF ACCESS CONTROL</span>
+                </div>
+                <ul className="text-xs divide-y divide-gray-200">
+                  {staffQ.data?.staff.map((s) => (
+                    <li key={s.id} className="flex justify-between py-2.5 text-gray-800">
+                      <span>{s.email ?? s.user_id}</span>
+                      <span className="font-mono text-emerald-700">{s.role}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="grid gap-2.5 md:grid-cols-[1fr_180px_auto] pt-2">
+                  <div>
+                    <Label className="text-xs text-gray-700">{t("auth.email")}</Label>
+                    <Input
+                      value={email}
+                      placeholder="staff@restaurant.in"
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="border-gray-200 bg-white text-xs h-10"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-700">{t("settings.role")}</Label>
+                    <select
+                      className="h-10 w-full rounded-md border border-gray-200 bg-white px-2.5 text-xs text-gray-900"
+                      value={role}
+                      onChange={(e) => setRole(e.target.value)}
+                    >
+                      <option value="STAFF">STAFF</option>
+                      <option value="MANAGER">MANAGER</option>
+                      <option value="ACCOUNTANT">ACCOUNTANT</option>
+                      <option value="MULTI_OUTLET_MANAGER">MULTI_OUTLET_MANAGER</option>
+                    </select>
+                  </div>
+                  <Button
+                    className="self-end h-10 bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs"
+                    onClick={() =>
+                      void addStaff({
+                        data: {
+                          restaurantId: vendor.restaurantId,
+                          email,
+                          role: role as "STAFF",
+                        },
+                      })
+                        .then(() => {
+                          setMsg("Staff member role updated.");
+                          setEmail("");
+                          void qc.invalidateQueries({ queryKey: ["staff"] });
+                        })
+                        .catch((e) => setMsg(e instanceof Error ? e.message : "Failed"))
+                    }
+                  >
+                    {t("settings.add")}
+                  </Button>
+                </div>
+                {msg ? <p className="text-xs text-emerald-700">{msg}</p> : null}
+              </Card>
+            ) : null}
           </div>
         )}
 
@@ -1199,66 +1195,66 @@ function SettingsPage() {
         {activeTab === "LEGAL" && (
           <div className="space-y-4">
             {/* Restaurant Partner Standards & Charter */}
-        <Card id="partner-charter" className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
-            <div className="flex items-center gap-2.5">
-              <ShieldCheck className="size-5 text-emerald-700" />
-              <div>
-                <h2 className="font-display text-base font-bold text-gray-900">
-                  Restaurant Partner Charter &amp; Standards
-                </h2>
-                <p className="text-xs text-gray-500">
-                  Commercial transparency, guest privacy protection, culinary safety guidelines, and dedicated partner care.
-                </p>
-              </div>
-            </div>
-            <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
-              PARTNER CHARTER
-            </span>
-          </div>
-
-          <div className="space-y-2.5">
-            {LEGAL_SECTIONS.map((sec) => {
-              const isOpen = openPolicyId === sec.id;
-              return (
-                <div
-                  key={sec.id}
-                  className="rounded-xl border border-gray-200 bg-gray-50 overflow-hidden"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setOpenPolicyId(isOpen ? null : sec.id)}
-                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-white/60 transition"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <FileText className="size-4 text-emerald-700 shrink-0" />
-                      <span className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
-                        {sec.title}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="hidden sm:inline-block rounded border border-gray-200 bg-white shadow-xs px-2 py-0.5 text-[10px] font-mono text-gray-500">
-                        {sec.badge}
-                      </span>
-                      {isOpen ? (
-                        <ChevronUp className="size-4 text-gray-500" />
-                      ) : (
-                        <ChevronDown className="size-4 text-gray-500" />
-                      )}
-                    </div>
-                  </button>
-                  {isOpen ? (
-                    <div className="px-4 pb-4 pt-1 border-t border-gray-200/80 space-y-2 text-xs text-gray-700 leading-relaxed">
-                      {sec.body.map((paragraph, idx) => (
-                        <p key={idx}>{paragraph}</p>
-                      ))}
-                    </div>
-                  ) : null}
+            <Card id="partner-charter" className="border-gray-200 bg-white shadow-xs p-5 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <ShieldCheck className="size-5 text-emerald-700" />
+                  <div>
+                    <h2 className="font-display text-base font-bold text-gray-900">
+                      Restaurant Partner Charter &amp; Standards
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      Commercial transparency, guest privacy protection, culinary safety guidelines, and dedicated partner care.
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-        </Card>
+                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
+                  PARTNER CHARTER
+                </span>
+              </div>
+
+              <div className="space-y-2.5">
+                {LEGAL_SECTIONS.map((sec) => {
+                  const isOpen = openPolicyId === sec.id;
+                  return (
+                    <div
+                      key={sec.id}
+                      className="rounded-xl border border-gray-200 bg-gray-50 overflow-hidden"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setOpenPolicyId(isOpen ? null : sec.id)}
+                        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-white/60 transition"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <FileText className="size-4 text-emerald-700 shrink-0" />
+                          <span className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                            {sec.title}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="hidden sm:inline-block rounded border border-gray-200 bg-white shadow-xs px-2 py-0.5 text-[10px] font-mono text-gray-500">
+                            {sec.badge}
+                          </span>
+                          {isOpen ? (
+                            <ChevronUp className="size-4 text-gray-500" />
+                          ) : (
+                            <ChevronDown className="size-4 text-gray-500" />
+                          )}
+                        </div>
+                      </button>
+                      {isOpen ? (
+                        <div className="px-4 pb-4 pt-1 border-t border-gray-200/80 space-y-2 text-xs text-gray-700 leading-relaxed">
+                          {sec.body.map((paragraph, idx) => (
+                            <p key={idx}>{paragraph}</p>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
           </div>
         )}
       </div>

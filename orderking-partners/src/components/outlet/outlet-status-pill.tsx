@@ -40,7 +40,7 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
     const timer = setInterval(() => {
       const resumed = checkAutoResume();
       if (resumed) {
-        toast.success("🟢 Kitchen pause expired: Outlet automatically restored to ONLINE.");
+        toast.success("Kitchen pause expired: Outlet automatically restored to ONLINE.");
         if (restaurantId) {
           void quickThrottleKitchen({ data: { restaurantId, mode: "RESUME" } });
           void qc.invalidateQueries({ queryKey: ["hours"] });
@@ -77,17 +77,17 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
       });
 
       if (targetStatus === "ONLINE") {
-        toast.success("🟢 Outlet Online: Now actively accepting customer orders.");
+        toast.success("Outlet Online: Now actively accepting customer orders.");
       } else if (targetStatus === "PAUSED_30") {
         toast.warning(
-          "🟡 Outlet Paused (30m): Kitchen catch-up mode active. Customer app shows 'Back in 30 mins'."
+          "Outlet Paused (30m): Kitchen catch-up mode active. Customer app shows 'Back in 30 mins'."
         );
       } else if (targetStatus === "PAUSED_60") {
         toast.warning(
-          "🟡 Outlet Paused (60m): Surge recovery active. Customer app shows 'Back in 60 mins'."
+          "Outlet Paused (60m): Surge recovery active. Customer app shows 'Back in 60 mins'."
         );
       } else if (targetStatus === "OFFLINE") {
-        toast.error("🔴 Outlet Offline: Closed for the day. No new orders will be accepted.");
+        toast.error("Outlet Offline: Closed for the day. No new orders will be accepted.");
       }
     } catch (err) {
       console.error("Failed to update outlet operational status:", err);
@@ -196,13 +196,15 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
                   }`}
                 >
                   <div className="flex items-start gap-2.5">
-                    <span className="mt-0.5 text-base">
-                      {preset.dotColor === "green"
-                        ? "🟢"
-                        : preset.dotColor === "yellow"
-                        ? "🟡"
-                        : "🔴"}
-                    </span>
+                    <span
+                      className={`mt-1.5 size-2.5 shrink-0 rounded-full ${
+                        preset.dotColor === "green"
+                          ? "bg-emerald-500"
+                          : preset.dotColor === "yellow"
+                          ? "bg-amber-500"
+                          : "bg-rose-500"
+                      }`}
+                    />
                     <div>
                       <div className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                         <span>{preset.label}</span>

@@ -203,7 +203,7 @@ export function SystemMasterSettingsModal({
       const res = await testModelConnectivity(modelId);
       setTestResults((prev) => ({ ...prev, [modelId]: res }));
       if (res.success) {
-        toast.success(`✅ ${res.message}`);
+        toast.success(res.message);
       } else {
         toast.warning(res.message);
       }
@@ -223,7 +223,7 @@ export function SystemMasterSettingsModal({
       const res = systemMasterController.performSoftRefresh();
       setRefreshResult(res);
       setIsRefreshing(false);
-      toast.success("✨ Soft Refresh: Glitches fixed, audio resynced, State reset.");
+      toast.success("Soft Refresh: State reset.");
       if (onRefreshTriggered) onRefreshTriggered();
     }, 600);
   };
@@ -234,7 +234,7 @@ export function SystemMasterSettingsModal({
       const res = systemMasterController.performSystemRestart();
       setRestartResult(res);
       setIsRestarting(false);
-      toast.success("🔄 System Restarted: Clean runtime memory initialized!");
+      toast.success("System Restarted: Clean runtime memory initialized.");
       if (onRestartTriggered) onRestartTriggered();
     }, 1000);
   };
@@ -242,7 +242,7 @@ export function SystemMasterSettingsModal({
   const handlePurgeDuplicates = () => {
     const res = systemMasterController.purgeDuplicatesAndJunk();
     setScanReport(systemMasterController.scanJunkAndDuplicates());
-    toast.success(`🧹 Cleaned ${res.removedDuplicatesCount} duplicates and junk, freed ${res.freedFormatted}!`);
+    toast.success(`Cleaned ${res.removedDuplicatesCount} duplicate entries, freed ${res.freedFormatted}.`);
   };
 
   const handleToggleAutoClean = (enabled: boolean) => {
@@ -343,7 +343,7 @@ export function SystemMasterSettingsModal({
                   </Button>
                   {refreshResult && (
                     <div className="text-[11px] font-mono text-emerald-300 bg-black/40 p-2 rounded-lg border border-emerald-500/30">
-                      ✓ {refreshResult.message} ({refreshResult.latencyMs}ms)
+                      {refreshResult.message} ({refreshResult.latencyMs}ms)
                     </div>
                   )}
                 </div>
@@ -370,7 +370,7 @@ export function SystemMasterSettingsModal({
                   </Button>
                   {restartResult && (
                     <div className="text-[11px] font-mono text-amber-300 bg-black/40 p-2 rounded-lg border border-amber-500/30">
-                      ✓ {restartResult.message} ({restartResult.bootDurationMs}ms)
+                      {restartResult.message} ({restartResult.bootDurationMs}ms)
                     </div>
                   )}
                 </div>
@@ -541,9 +541,9 @@ export function SystemMasterSettingsModal({
                           </div>
                           <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
                             <span>Provider: {m.provider}</span>
-                            <span>•</span>
+                            <span>|</span>
                             <span className="text-amber-400">API ID: {m.realApiId}</span>
-                            <span>•</span>
+                            <span>|</span>
                             <span>Ctx: {m.contextWindow}</span>
                           </div>
                           {testRes && (

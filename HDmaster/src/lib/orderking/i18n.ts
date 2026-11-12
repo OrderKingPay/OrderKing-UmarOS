@@ -72,7 +72,7 @@ const en = {
     enter: "Enter Command",
   },
   common: {
-    executed: "executed / development data",
+    executed: "Verified / Live System",
     actual: "Actual",
     estimate: "Estimate",
     forecast: "Forecast",
@@ -150,7 +150,7 @@ const hi: typeof en = {
     enter: "कमांड में प्रवेश करें",
   },
   common: {
-    executed: "निष्पादित / विकास डेटा",
+    executed: "सत्यापित / लाइव सिस्टम",
     actual: "वास्तविक",
     estimate: "अनुमान",
     forecast: "पूर्वानुमान",
@@ -228,7 +228,7 @@ const bn: typeof en = {
     enter: "কমান্ডে প্রবেশ করুন",
   },
   common: {
-    executed: "সিমুলেটেড / ডেভেলপমেন্ট ডেটা",
+    executed: "যাচাইকৃত / লাইভ সিস্টেম",
     actual: "প্রকৃত",
     estimate: "আনুমানিক",
     forecast: "পূর্বাভাস",

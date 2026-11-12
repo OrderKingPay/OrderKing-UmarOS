@@ -311,7 +311,7 @@ export class OrderKingSpark {
       legacyAggregatorLossAvoidedPaise,
       netSettlementPaise: grossSalesPaise,
       status: "SETTLED",
-      settlementAccount: "HDFC Bank (**** 4821)",
+      settlementAccount: "Verified Settlement Bank Account",
     };
   }
 
@@ -507,7 +507,7 @@ export class OrderKingSpark {
     const grossCustomerSpendPaise = grossFoodSalesPaise + packagingChargesPaise; // ₹25,720.00
     const merchantFundedDiscountsPaise = 180000; // ₹1,800.00
     const platformSponsoredDiscountCreditPaise = 65000; // ₹650.00 reimbursed by OrderKing
-    const orderKingPlatformCommissionPaise = 0; // custom commission!
+    const orderKingPlatformCommissionPaise = 0; // 0% commission!
     const aggregatorCommissionAvoidedPaise = Math.round(grossCustomerSpendPaise * 0.24); // ₹6,173.00
 
     // Statutory Taxes
@@ -532,12 +532,12 @@ export class OrderKingSpark {
     const summary = `Hello Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
 - **Delivered Orders**: **${deliveredOrders} orders** successfully completed (${cancelledOrders} cancelled).
 - **Gross Sales & Packaging**: **₹${(grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (Food: ₹${(grossFoodSalesPaise / 100).toLocaleString("en-IN")} · Packaging: ₹${(packagingChargesPaise / 100).toLocaleString("en-IN")}).
-- **OrderKing Platform Commission**: **₹0.00 (custom commission)**.
+- **OrderKing Platform Commission**: **₹0.00 (0% commission)**.
 - **Net Margin Retained**: Retained **₹${((grossCustomerSpendPaise - orderKingPlatformCommissionPaise) / 100).toLocaleString("en-IN")}** directly in your merchant account.
 - **Statutory GST Sec 9(5) Remitted**: **₹${(gst95RemittedByPlatformPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (5% food GST remitted directly to the government by Order King on your behalf).
 - **Withholding Taxes Deducted**: TCS Sec 52 (0.5%): **₹${(tcsSection52Paise / 100).toFixed(2)}** · TDS Sec 194-O (0.1%): **₹${(tdsSection194OPaise / 100).toFixed(2)}**.
 - **Customer Dispute Adjustments**: **-₹${(customerDisputeDeductionsPaise / 100).toFixed(2)}** (Missing Naan #ORD-8845).
-- **Net Bank Payout Accrued**: **₹${(netPayoutAccruedPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}**, scheduled for automatic IMPS/NEFT transfer to HDFC Bank (**** 4821).`;
+- **Net Bank Payout Accrued**: **₹${(netPayoutAccruedPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}**, scheduled for automatic IMPS/NEFT transfer to Verified Settlement Bank Account.`;
 
     return {
       shiftDate,
@@ -556,7 +556,7 @@ export class OrderKingSpark {
       tdsSection194OPaise,
       customerDisputeDeductionsPaise,
       netPayoutAccruedPaise,
-      bankSettlementAccount: "HDFC Bank (**** 4821)",
+      bankSettlementAccount: "Verified Settlement Bank Account",
       settlementStatus: "PENDING_MIDNIGHT_BATCH",
       conversationalSummary: summary,
     };
@@ -600,23 +600,23 @@ export class OrderKingSpark {
         .map(
           (s) =>
             `${s.stepNumber}. **${s.title}**: ${s.instruction}${
-              s.criticalInvariant ? `\n   ⚠️ *Critical Invariant:* ${s.criticalInvariant}` : ""
-            }${s.proTip ? `\n   💡 *Pro-Tip:* ${s.proTip}` : ""}`
+              s.criticalInvariant ? `\n   *Critical Invariant:* ${s.criticalInvariant}` : ""
+            }${s.proTip ? `\n   *Pro-Tip:* ${s.proTip}` : ""}`
         )
         .join("\n");
 
       return {
         id,
         sender: "spark",
-        text: `### 🎓 Partner Operations Academy: ${mod.title}
+        text: `### Partner Operations Academy: ${mod.title}
 **Category**: ${mod.category} · **SLA Target**: ${mod.slaTarget} · **Key Metric**: ${mod.keyMetric}
 
 ${mod.summary}
 
-#### 📋 Execution Steps:
+#### Execution Steps:
 ${stepsMarkdown}
 
-#### 🛡️ Arbitration & Payout Protection:
+#### Arbitration & Payout Protection:
 ${mod.arbitrationProtection}
 
 *(For full interactive walkthroughs and all operational modules, visit the **Operations Academy** tab in More)*`,
@@ -667,10 +667,10 @@ ${mod.arbitrationProtection}
       return {
         id,
         sender: "spark",
-        text: `### ⚖️ Automated Customer Dispute & Refund Arbitrator
+        text: `### Automated Customer Dispute & Refund Arbitrator
 **Case ${decision.disputeId}** (Order **#${decision.orderId}**)
 - **Customer Complaint**: "${first.complaintText}"
-- **Liability Decision**: 🛡️ **${decision.liability} LIABLE**
+- **Liability Decision**: **${decision.liability} LIABLE**
 - **Merchant Liability**: **₹${(decision.merchantLiabilityPaise / 100).toFixed(2)}** (${
           decision.merchantLiabilityPaise === 0
             ? "Your restaurant payout is 100% protected!"
@@ -705,7 +705,7 @@ ${mod.arbitrationProtection}
       return {
         id,
         sender: "spark",
-        text: `### ✨ Menu Description & Pricing Intelligence
+        text: `### Menu Description & Pricing Intelligence
 **Dish Analysis: ${suggestion.dishName}** (${suggestion.category})
 - **High-Converting Sensory Description**:
   > *"${suggestion.highConvertingDescription}"*
@@ -740,7 +740,7 @@ ${mod.arbitrationProtection}
       return {
         id,
         sender: "spark",
-        text: `### 📊 Daily Shift & Statutory Tax Recon Report
+        text: `### Daily Shift & Statutory Tax Recon Report
 ${recon.conversationalSummary}`,
         timestamp,
         actionCard: {
@@ -758,11 +758,11 @@ ${recon.conversationalSummary}`,
       return {
         id,
         sender: "spark",
-        text: `### 💰 Settlement & Commission Savings Report
+        text: `### Settlement & Commission Savings Report
 - **Trailing 7 Days Gross Sales**: **₹${(summary.grossSalesPaise / 100).toLocaleString("en-IN")}**
-- **OrderKing Platform Commission**: **₹0 (custom commission)**
+- **OrderKing Platform Commission**: **₹0 (0% commission)**
 - **Net Sales Retained**: **₹${((summary.grossSalesPaise - summary.commissionPaidPaise) / 100).toLocaleString("en-IN")}** directly in your merchant account.
-- **Settlement Account**: **${summary.settlementAccount}** (Status: 🟢 **${summary.status}**)`,
+- **Settlement Account**: **${summary.settlementAccount}** (Status: **${summary.status}**)`,
         timestamp,
         actionCard: {
           type: "settlement_breakdown",
@@ -777,7 +777,7 @@ ${recon.conversationalSummary}`,
       return {
         id,
         sender: "spark",
-        text: `### 📋 Menu & Item Availability
+        text: `### Menu & Item Availability
 Live menu items loaded with 1-tap stock control (86) and automated 06:00 AM next-day reset schedule.`,
         timestamp,
         actionCard: {
@@ -793,7 +793,7 @@ Live menu items loaded with 1-tap stock control (86) and automated 06:00 AM next
       return {
         id,
         sender: "spark",
-        text: `### 🍳 Kitchen Operations & SLA Monitor
+        text: `### Kitchen Operations & SLA Monitor
 Live operational metrics calculated from verified restaurant orders and delivery times.`,
         timestamp,
         actionCard: {
@@ -807,7 +807,7 @@ Live operational metrics calculated from verified restaurant orders and delivery
     return {
       id,
       sender: "spark",
-      text: `### 🚀 Order King Spark Active
+      text: `### Order King Spark Active
 I am your restaurant growth, operations & financial partner. I can:
 1. **Automate Customer Dispute & Refund Arbitration**: Assess missing items vs food spills and protect merchant payouts against logistics failures.
 2. **Menu Description & Pricing Intelligence**: Generate sensory descriptions, dietary tags, and portion adjustments for maximum margin.

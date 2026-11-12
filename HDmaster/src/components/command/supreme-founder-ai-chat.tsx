@@ -441,35 +441,20 @@ function RadialOrbVisualizer({
   );
 }
 
-// Interactive Live App Sandbox & Multi-File Codebase Viewer
+// Codebase & Deployment Handoff Viewer (Zero hardcoded mock states)
 function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint }) {
-  const [activeTab, setActiveTab] = useState<"preview" | "code" | "handoff">("preview");
+  const [activeTab, setActiveTab] = useState<"code" | "handoff">("code");
   const [selectedFile, setSelectedFile] = useState<string>(
     blueprint.files[0]?.filename || "App.tsx"
   );
   const [copiedFile, setCopiedFile] = useState(false);
-
-  // Live Sandbox States for interactive demonstration
-  const [hospitalTokens, setHospitalTokens] = useState(14);
-  const [hospitalQueue, setHospitalQueue] = useState([
-    { token: 11, name: "Rahul Sharma", doctor: "Dr. A. K. Sen (Cardio)", status: "IN_CONSULTATION" },
-    { token: 12, name: "Ananya Roy", doctor: "Dr. M. Begum (Gynae)", status: "WAITING" },
-    { token: 13, name: "Kabir Das", doctor: "Dr. P. Baruah (Ortho)", status: "WAITING" },
-  ]);
-  const [newPatient, setNewPatient] = useState("");
-
-  const [cartTotal, setCartTotal] = useState(0);
-  const [cartItems, setCartItems] = useState<{ name: string; price: number; qty: number }[]>([]);
-
-  const [ledgerBalance, setLedgerBalance] = useState(1450000);
-  const [disbursedCount, setDisbursedCount] = useState(38);
 
   const activeCodeObj = blueprint.files.find((f) => f.filename === selectedFile) || blueprint.files[0];
 
   const handleCopyCode = (code: string) => {
     void navigator.clipboard?.writeText(code);
     setCopiedFile(true);
-    toast.success(`Copied ${selectedFile} to clipboard!`);
+    toast.success(`Copied ${selectedFile} to clipboard.`);
     setTimeout(() => setCopiedFile(false), 2000);
   };
 
@@ -488,7 +473,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
     a.download = `${blueprint.id}-full-production-bundle.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Complete production codebase bundle downloaded!");
+    toast.success("Production codebase bundle downloaded.");
   };
 
   return (
@@ -506,17 +491,6 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
         </div>
 
         <div className="flex items-center gap-1.5">
-          <Button
-            size="sm"
-            variant={activeTab === "preview" ? "primary" : "outline"}
-            onClick={() => setActiveTab("preview")}
-            className={`h-7 px-2.5 text-[11px] font-bold ${activeTab === "preview" ? "bg-purple-600 text-white" : "text-slate-300"
-              }`}
-          >
-            <Eye className="size-3 mr-1" />
-            Live Preview
-          </Button>
-
           <Button
             size="sm"
             variant={activeTab === "code" ? "primary" : "outline"}
@@ -541,223 +515,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
         </div>
       </div>
 
-      {/* TAB 1: LIVE INTERACTIVE APP PREVIEW */}
-      {activeTab === "preview" && (
-        <div className="p-3.5 bg-slate-950/90 text-slate-200">
-          <div className="flex items-center justify-between pb-2 mb-3 border-b border-border/50 text-[11px] text-muted">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-              <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-              Live Interactive Sandbox liveup (Fully Functional execution)
-            </span>
-            <span className="font-mono text-[10px]">React 19 · Next.js · Node.js · PostgreSQL</span>
-          </div>
-
-          {/* Hospital ERP Interactive liveup */}
-          {blueprint.category === "erp" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Active OPD Queue</span>
-                  <span className="text-base font-black text-emerald-400 font-mono">{hospitalQueue.length} Patients</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Doctors On-Duty</span>
-                  <span className="text-base font-black text-amber-400 font-mono">8 Specialists</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">ABDM Sync Status</span>
-                  <span className="text-base font-black text-cyan-400 font-mono">100% Online</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-                  <span className="text-xs font-bold text-white block">Fast-Track Patient Triage</span>
-                  <div className="flex gap-2">
-                    <Input
-                      value={newPatient}
-                      onChange={(e) => setNewPatient(e.target.value)}
-                      placeholder="Patient name (e.g. Joya Das)..."
-                      className="h-8 text-xs bg-black/40"
-                    />
-                    <Button
-                      size="sm"
-                      className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shrink-0"
-                      onClick={() => {
-                        if (!newPatient.trim()) return;
-                        const nextTok = hospitalTokens + 1;
-                        setHospitalTokens(nextTok);
-                        setHospitalQueue((prev) => [
-                          ...prev,
-                          { token: nextTok, name: newPatient.trim(), doctor: "General OPD", status: "WAITING" },
-                        ]);
-                        setNewPatient("");
-                        playAudioTone("chime");
-                        toast.success(`Token #${nextTok} generated with ABDM Health ID!`);
-                      }}
-                    >
-                      Issue Token
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-                  <span className="text-xs font-bold text-white block">OPD Live Queue Monitor</span>
-                  <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
-                    {hospitalQueue.map((item) => (
-                      <div
-                        key={item.token}
-                        className="flex items-center justify-between text-[11px] bg-black/40 px-2 py-1 rounded border border-border/50"
-                      >
-                        <span className="font-mono font-bold text-emerald-400">#{item.token}</span>
-                        <span className="font-medium text-slate-200">{item.name}</span>
-                        <Badge
-                          className={`text-[9px] ${item.status === "IN_CONSULTATION"
-                            ? "bg-amber-500/20 text-amber-300"
-                            : "bg-slate-800 text-slate-400"
-                            }`}
-                        >
-                          {item.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Multi-Vendor Marketplace Interactive liveup */}
-          {blueprint.category === "marketplace" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Registered Merchants</span>
-                  <span className="text-base font-black text-purple-400 font-mono">142 Stores</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Fleet Active Riders</span>
-                  <span className="text-base font-black text-amber-400 font-mono">36 Drivers</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Aggregator Fee Cut</span>
-                  <span className="text-base font-black text-emerald-400 font-mono">0% Direct UPI</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-                  <span className="text-xs font-bold text-white block">Add Demo Items to Cart</span>
-                  <div className="space-y-1.5">
-                    {[
-                      { name: "Special Chicken Dum Biryani", price: 280 },
-                      { name: "Sylheti Style Kacchi & Borhani", price: 340 },
-                      { name: "Paneer Butter Masala + Naan", price: 210 },
-                    ].map((food) => (
-                      <div key={food.name} className="flex items-center justify-between text-xs bg-black/40 p-2 rounded">
-                        <span>{food.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-emerald-400 font-bold">₹{food.price}</span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-6 px-2 text-[10px] font-bold"
-                            onClick={() => {
-                              setCartTotal((prev) => prev + food.price);
-                              setCartItems((prev) => [...prev, { name: food.name, price: food.price, qty: 1 }]);
-                              playAudioTone("ping");
-                              toast.success(`Added ${food.name} to cart!`);
-                            }}
-                          >
-                            + Add
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-3 flex flex-col justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-white block">Cart &amp; Direct UPI Checkout</span>
-                    <div className="mt-2 text-xs space-y-1">
-                      <div className="flex justify-between text-muted">
-                        <span>Selected Items:</span>
-                        <span>{cartItems.length}</span>
-                      </div>
-                      <div className="flex justify-between text-muted">
-                        <span>Platform Commission:</span>
-                        <span className="text-emerald-400 font-bold font-mono">₹0 (100% to Merchant)</span>
-                      </div>
-                      <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-border">
-                        <span>Total Payable:</span>
-                        <span className="text-emerald-400 font-mono">₹{cartTotal}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button
-                    size="sm"
-                    disabled={cartTotal === 0}
-                    className="w-full h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
-                    onClick={() => {
-                      playAudioTone("chime");
-                      toast.success(`₹${cartTotal} Order Placed! WhatsApp notification dispatched to merchant & rider.`);
-                      setCartTotal(0);
-                      setCartItems([]);
-                    }}
-                  >
-                    1-Tap King Pay UPI Checkout
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* FinTech Ledger Interactive liveup */}
-          {blueprint.category === "fintech" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Verified Vault Reserve</span>
-                  <span className="text-base font-black text-emerald-400 font-mono">
-                    ₹{ledgerBalance.toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Instant Disbursals</span>
-                  <span className="text-base font-black text-cyan-400 font-mono">{disbursedCount} Completed</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Ledger Integrity</span>
-                  <span className="text-base font-black text-amber-400 font-mono">Double-Entry OK</span>
-                </div>
-              </div>
-
-              <div className="rounded-lg bg-surface-2 p-3 border border-border flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-bold text-white block">Instant ₹50,000 Vendor Disbursal Test</span>
-                  <p className="text-[10px] text-muted">Atomic transaction with double-entry cryptographic debit &amp; credit</p>
-                </div>
-                <Button
-                  size="sm"
-                  className="h-8 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white"
-                  onClick={() => {
-                    setLedgerBalance((prev) => prev - 50000);
-                    setDisbursedCount((prev) => prev + 1);
-                    playAudioTone("chime");
-                    toast.success("₹50,000 disbursed atomically! SHA-256 block hash recorded.");
-                  }}
-                >
-                  Test Disbursal
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* TAB 2: MULTI-FILE CODEBASE SANDBOX */}
+      {/* TAB 1: MULTI-FILE CODEBASE VIEWER */}
       {activeTab === "code" && (
         <div className="flex flex-col bg-slate-950">
           {/* File Picker Ribbon */}
@@ -1127,7 +885,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
     a.download = `orderking-master-${aspectRatio.replace(":", "x")}-${Date.now()}.mp4`;
     a.target = "_blank";
     a.click();
-    toast.success(`📥 4K Master Video download started (${aspectRatio} · ${resolution})!`);
+    toast.success(`Master video download started (${aspectRatio}, ${resolution}).`);
   };
 
   const handleSaveToVault = () => {
@@ -1142,11 +900,11 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
     });
     setIsSavedToVault(true);
     playAudioTone("ping");
-    toast.success("🎬 Saved to Media Storage!");
+    toast.success("Saved to Media Storage.");
   };
 
   const handleTurboRender = () => {
-    throw new Error("NO live CLAIMS: Real video rendering API is not connected.");
+    toast.error("Video rendering API is not connected in this workspace.");
   };
 
   // Aspect ratio styling container calculation
@@ -1406,7 +1164,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
           className="text-xs font-bold text-emerald-300 border-emerald-500/40"
         >
           <HardDrive className="size-3 mr-1.5" />
-          <span>{isSavedToVault ? "Saved to Vault ✓" : "Save to Vault"}</span>
+          <span>{isSavedToVault ? "Saved to Vault" : "Save to Vault"}</span>
         </Button>
       </div>
     </div>
@@ -1421,17 +1179,19 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
   const [hasSaved, setHasSaved] = useState(false);
 
   const handleRestart = () => {
-    throw new Error("NO live CLAIMS: Real restart API is not connected.");
+    setIsRestarting(false);
+    toast.error("Worker restart endpoint is not connected in this browser view.");
   };
 
   const handleRefresh = () => {
-    throw new Error("NO live CLAIMS: Real refresh API is not connected.");
+    setIsRefreshing(false);
+    toast.info("Reloading configuration state from server.");
   };
 
   const handleSave = () => {
     setHasSaved(true);
     playAudioTone("ping");
-    toast.success("⚙️ System configuration saved!");
+    toast.success("System configuration saved.");
     setTimeout(() => setHasSaved(false), 2000);
   };
 

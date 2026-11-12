@@ -771,7 +771,7 @@ export function UmarAiOmnibar({
             <span>
               Trigger: <kbd className="text-zinc-300">Ctrl+K</kbd> / <kbd className="text-zinc-300">Cmd+K</kbd>
             </span>
-            <span>•</span>
+            <span>|</span>
             <span>
               Close: <kbd className="text-zinc-300">Esc</kbd>
             </span>

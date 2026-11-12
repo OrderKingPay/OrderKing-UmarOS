@@ -49,7 +49,7 @@ function Login() {
           if (parsed?.phone) return String(parsed.phone);
         }
       }
-    } catch {}
+    } catch { }
     return "";
   });
   const [otp, setOtp] = useState("");
@@ -75,7 +75,7 @@ function Login() {
           window.location.href = "/";
         }
       }
-    } catch {}
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -97,7 +97,7 @@ function Login() {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     return () => {
       ac.abort();
@@ -187,7 +187,7 @@ function Login() {
           name: name || "Delivery Partner",
           role: "rider",
         });
-      } catch {}
+      } catch { }
       try {
         const sessionPayload = encodeURIComponent(
           JSON.stringify({
@@ -279,11 +279,10 @@ function Login() {
                     key={lang.code}
                     type="button"
                     onClick={() => handleLanguageSwitch(lang.code)}
-                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
-                      isActive
+                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${isActive
                         ? "bg-[#E23744] text-white shadow-xs"
                         : "text-gray-600 hover:text-gray-900"
-                    }`}
+                      }`}
                   >
                     {lang.native}
                   </button>
@@ -313,7 +312,7 @@ function Login() {
                   onClick={() => setShowAllLanguages(false)}
                   className="text-[#E23744] font-bold hover:underline"
                 >
-                  Close ✕
+                  Close
                 </button>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-48 overflow-y-auto pr-1">
@@ -325,11 +324,10 @@ function Login() {
                       handleLanguageSwitch(l.code);
                       setShowAllLanguages(false);
                     }}
-                    className={`rounded-lg px-2.5 py-1.5 text-left text-xs transition truncate ${
-                      locale === l.code
+                    className={`rounded-lg px-2.5 py-1.5 text-left text-xs transition truncate ${locale === l.code
                         ? "bg-[#E23744]/10 text-[#E23744] font-bold border border-[#E23744]/30"
                         : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-                    }`}
+                      }`}
                   >
                     <span className="font-medium">{l.nativeLabel}</span>
                     <span className="block text-[10px] text-gray-500">{l.englishName}</span>
@@ -368,7 +366,7 @@ function Login() {
                   </Label>
                   <div className="relative flex items-center">
                     <div className="absolute left-3 flex items-center gap-1.5 border-r border-gray-200 pr-2.5 text-sm font-bold text-gray-800 select-none">
-                      <span className="text-base" role="img" aria-label="India Flag">🇮🇳</span>
+                      <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-gray-700" aria-label="India">IN</span>
                       <span>+91</span>
                     </div>
                     <Input
@@ -409,7 +407,7 @@ function Login() {
                       Sending OTP...
                     </span>
                   ) : (
-                    "Send OTP →"
+                    "Send OTP"
                   )}
                 </Button>
               </form>
@@ -473,13 +471,12 @@ function Login() {
                         return (
                           <div
                             key={idx}
-                            className={`relative flex h-14 flex-1 items-center justify-center rounded-2xl border-2 text-center font-mono text-2xl font-black transition-all ${
-                              isFocused
+                            className={`relative flex h-14 flex-1 items-center justify-center rounded-2xl border-2 text-center font-mono text-2xl font-black transition-all ${isFocused
                                 ? "border-[#E23744] bg-white ring-2 ring-[#E23744]/20 text-gray-900 scale-[1.02]"
                                 : isFilled
-                                ? "border-gray-400 bg-white text-gray-900"
-                                : "border-gray-200 bg-gray-50 text-gray-400"
-                            }`}
+                                  ? "border-gray-400 bg-white text-gray-900"
+                                  : "border-gray-200 bg-gray-50 text-gray-400"
+                              }`}
                           >
                             {digit}
                             {isFocused && !digit && !pending && (
@@ -531,7 +528,7 @@ function Login() {
                       Verifying Code...
                     </span>
                   ) : (
-                    "Verify & Continue →"
+                    "Verify & Continue"
                   )}
                 </Button>
 

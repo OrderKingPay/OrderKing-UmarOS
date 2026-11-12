@@ -326,7 +326,7 @@ export function triggerSosSafetyDialer(
 
   const telUri = `tel:${targetNumber}`;
   const googleMapsPinUrl = `https://www.google.com/maps?q=${lat.toFixed(5)},${lng.toFixed(5)}`;
-  const distressSummary = `🚨 EMERGENCY BEACON (${incidentId}): Direct dialer bridge initiated to ${targetLabel} (${targetNumber}). GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}${context.deliveryId ? ` · Order #${context.deliveryId}` : ""}`;
+  const distressSummary = `EMERGENCY BEACON (${incidentId}): Direct dialer bridge initiated to ${targetLabel} (${targetNumber}). GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}${context.deliveryId ? ` · Order #${context.deliveryId}` : ""}`;
 
   return {
     incidentId,

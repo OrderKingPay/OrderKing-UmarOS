@@ -586,7 +586,7 @@ export function KingPayMasterSwitch() {
               <div className="mt-2 flex items-center justify-between pt-2 border-t border-slate-200/70">
                 <span className="text-[10px] font-mono text-slate-500 uppercase">
                   {isLocked
-                    ? "STATUS: RBI LICENSE PENDING"
+                    ? "STATUS: RBI LICENSE REQUIRED"
                     : `STATUS: ${isActive ? "ENABLED" : "PAUSED"}`}
                 </span>
 
@@ -598,7 +598,7 @@ export function KingPayMasterSwitch() {
                     className="h-8 text-xs bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-80 font-mono flex items-center gap-1.5"
                   >
                     <Lock className="w-3 h-3" />
-                    Locked (License Pending)
+                    Locked (License Required)
                   </Button>
                 ) : isActive ? (
                   <Button
@@ -658,7 +658,7 @@ export function KingPayMasterSwitch() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-slate-950/60 p-3.5 rounded-lg border border-slate-800">
               <div className="flex justify-between text-xs font-mono mb-1.5">
-                <span className="text-slate-300">Sample Order Amount:</span>
+                <span className="text-slate-300">Test Order Amount:</span>
                 <span className="text-emerald-400 font-bold">
                   ₹{calcOrderInr}
                 </span>

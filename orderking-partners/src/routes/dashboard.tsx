@@ -178,7 +178,7 @@ function DashboardPage() {
             </div>
             <div className="flex flex-wrap gap-3 pt-3">
               <Button asChild size="lg" className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold h-12 px-8 rounded-xl shadow-md shadow-red-500/20">
-                <Link to="/onboarding">Complete Restaurant Registration →</Link>
+                <Link to="/onboarding">Complete Restaurant Registration</Link>
               </Button>
             </div>
           </Card>
@@ -343,7 +343,7 @@ function DashboardPage() {
                 </h3>
               </div>
               <Link to="/orders" className="text-xs font-bold text-[#E23744] hover:underline">
-                Manage All Orders →
+                Manage All Orders
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -436,7 +436,7 @@ function DashboardPage() {
                         to="/orders"
                         className="text-[11px] font-semibold text-gray-500 hover:text-gray-900 px-2"
                       >
-                        Details →
+                        Details
                       </Link>
                     </div>
                   </div>
@@ -451,10 +451,10 @@ function DashboardPage() {
           customSummary={
             d?.today
               ? {
-                  deliveredOrdersCount: (d.today as any).delivered ?? d.today.accepted ?? d.today.orders ?? 0,
-                  grossGmvPaise: d.today.salesPaise ?? 0,
-                  netEstimatedPayoutPaise: d.today.settlementPaise ?? 0,
-                }
+                deliveredOrdersCount: (d.today as any).delivered ?? d.today.accepted ?? d.today.orders ?? 0,
+                grossGmvPaise: d.today.salesPaise ?? 0,
+                netEstimatedPayoutPaise: d.today.settlementPaise ?? 0,
+              }
               : undefined
           }
         />
@@ -578,7 +578,7 @@ function DashboardPage() {
             </div>
             <div className="my-3">
               <div className="font-display text-2xl font-black text-gray-900 tabular">
-                {d?.today.rating ? `${d.today.rating} ★ (${d.today.ratingCount})` : "No ratings yet"}
+                {d?.today.rating ? `${d.today.rating} / 5 (${d.today.ratingCount})` : "No ratings yet"}
               </div>
               <p className="text-xs text-gray-500 mt-1">
                 Repeat customers:{" "}

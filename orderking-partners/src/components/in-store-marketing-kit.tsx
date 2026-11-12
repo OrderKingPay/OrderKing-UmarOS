@@ -23,8 +23,8 @@ export function InStoreMarketingKit({
   const [batchCount, setBatchCount] = useState<number>(10);
   const [tableNumber, setTableNumber] = useState<string>("T-01");
   const [discountPercent, setDiscountPercent] = useState<string>("15");
-  const [cashbackOffer, setCashbackOffer] = useState<string>("10% KingPay Instant Cashback");
-  const [customHeadline, setCustomHeadline] = useState<string>("Scan to Order from Table & Earn Instant Cashbacks");
+  const [cashbackOffer, setCashbackOffer] = useState<string>("10% KingPay Wallet Cashback");
+  const [customHeadline, setCustomHeadline] = useState<string>("Scan to Order from Table & Earn Wallet Rewards");
   const [copied, setCopied] = useState<boolean>(false);
 
   const printAreaRef = useRef<HTMLDivElement>(null);
@@ -94,7 +94,7 @@ export function InStoreMarketingKit({
           <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
             <span className="text-[10px] font-mono text-gray-500 uppercase">Aggregator Cut Avoided</span>
             <div className="font-bold text-emerald-400 mt-0.5 text-sm">Save ~24% per Order</div>
-            <p className="text-[10px] text-gray-500">custom commission on orders placed via table QR</p>
+            <p className="text-[10px] text-gray-500">0% commission on orders placed via table QR</p>
           </div>
           <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
             <span className="text-[10px] font-mono text-gray-500 uppercase">Diner Retention &amp; Cashback</span>
@@ -119,9 +119,9 @@ export function InStoreMarketingKit({
 
           <div className="space-y-2">
             {[
-              { id: "table_tent", label: "🍽️ Branded Table Tent Card (A5 Folding)", desc: "Dual-sided folding card for dining tables with fold guidelines" },
-              { id: "counter_standee", label: "🏷️ Counter Standee (A4 Acrylic Stand)", desc: "Display at billing counter and pickup windows with UPI support" },
-              { id: "bill_insert", label: "🧾 Bill Folder Slip (3×4 Inch)", desc: "Slip inside leather bill folders for next-order cashback" },
+              { id: "table_tent", label: "Branded Table Tent Card (A5 Folding)", desc: "Dual-sided folding card for dining tables with fold guidelines" },
+              { id: "counter_standee", label: "Counter Standee (A4 Acrylic Stand)", desc: "Display at billing counter and pickup windows with UPI support" },
+              { id: "bill_insert", label: "Bill Folder Slip (3x4 Inch)", desc: "Slip inside leather bill folders for next-order cashback" },
             ].map((fmt) => (
               <button
                 key={fmt.id}
@@ -203,7 +203,7 @@ export function InStoreMarketingKit({
               </Label>
               <div className="grid grid-cols-1 gap-1.5 mt-1">
                 {[
-                  "10% KingPay Instant Cashback",
+                  "10% KingPay Wallet Cashback",
                   "Flat ₹50 KingPay Wallet Cashback",
                   "2X Cashback Loyalty Coins",
                 ].map((c) => (
@@ -220,7 +220,7 @@ export function InStoreMarketingKit({
                         : "border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:text-white"
                     }`}
                   >
-                    💰 {c}
+                    {c}
                   </button>
                 ))}
               </div>
@@ -301,7 +301,7 @@ export function InStoreMarketingKit({
                   {/* Table Tent Fold Guideline if Table Tent format */}
                   {selectedFormat === "table_tent" && (
                     <div className="border-b-2 border-dashed border-slate-300 pb-2 text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest">
-                      ✂️ --- FOLD ALONG DASHED LINE FOR TABLE TENT --- ✂️
+                      --- FOLD ALONG DASHED LINE FOR TABLE TENT ---
                     </div>
                   )}
 
@@ -337,14 +337,14 @@ export function InStoreMarketingKit({
                   {/* Promo & Cashback Callout */}
                   <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 space-y-1.5">
                     <div className="font-extrabold text-sm text-emerald-950">
-                      🎉 {customHeadline}
+                      {customHeadline}
                     </div>
                     <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-300 px-3 py-0.5 text-[11px] font-bold text-amber-900">
                       <Gift className="size-3 text-amber-700" />
                       <span>{cashbackOffer}</span>
                     </div>
                     <p className="text-[11px] text-emerald-800">
-                      Order directly from your phone. Order directly from your phone. Table delivery and digital payments enabled.
+                      Order directly from your phone. Table delivery and digital payments enabled.
                     </p>
                   </div>
 
@@ -360,7 +360,7 @@ export function InStoreMarketingKit({
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-gray-500">
-              <span>💡 Tip: Print on 250+ GSM cardstock or place inside transparent acrylic T-stands for durable table presentation.</span>
+              <span>Tip: Print on 250+ GSM cardstock or place inside transparent acrylic T-stands for durable table presentation.</span>
               <Button
                 size="sm"
                 onClick={handlePrint}

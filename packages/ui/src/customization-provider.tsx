@@ -585,10 +585,10 @@ export const DEFAULT_RIDER_CUSTOMIZATION_STATE: DynamicCustomizationState = {
       platform: "rider_app",
       route: "/",
       translations: {
-        en: "★ Guaranteed Partner Earnings",
-        hi: "★ गारंटीकृत पार्टनर कमाई",
-        bn: "★ গ্যারান্টিযুক্ত পার্টনার উপার্জন",
-        as: "★ নিশ্চিত পাৰ্টনাৰ উপাৰ্জন",
+        en: "Verified Partner Earnings",
+        hi: "सत्यापित पार्टनर कमाई",
+        bn: "যাচাইকৃত পার্টনার উপার্জন",
+        as: "প্ৰমাণিত পাৰ্টনাৰ উপাৰ্জন",
       },
     },
     // 2. Surge badges
@@ -1317,8 +1317,8 @@ export function CustomizationProvider({
         targetPageId === "customer_home" && activeState.homeLayout
           ? activeState.homeLayout
           : (activeState.pageLayouts?.[targetPageId] ??
-             activeState.homeLayout ??
-             (Object.values(activeState.pageLayouts ?? {})[0] || null));
+            activeState.homeLayout ??
+            (Object.values(activeState.pageLayouts ?? {})[0] || null));
 
       if (!layout?.sections) return [];
       return [...layout.sections]
@@ -1463,8 +1463,8 @@ const FALLBACK_CONTEXT_VALUE: CustomizationContextValue = {
   state: DEFAULT_CUSTOMIZATION_STATE,
   version: 1,
   locale: "en",
-  setLocale: () => {},
-  updateCustomization: () => {},
+  setLocale: () => { },
+  updateCustomization: () => { },
   getText: (elementId: string, defaultText?: string) => defaultText ?? elementId,
   getTextOverride: () => null,
   getSectionList: () =>
@@ -1480,11 +1480,11 @@ const FALLBACK_CONTEXT_VALUE: CustomizationContextValue = {
   customerPricing: DEFAULT_CUSTOMIZATION_STATE.customerPricing!,
   merchantEconomics: DEFAULT_CUSTOMIZATION_STATE.merchantEconomics!,
   fleetAndCash: DEFAULT_CUSTOMIZATION_STATE.fleetAndCash!,
-  setOperatingMode: () => {},
-  updateLogistics: () => {},
-  updateCustomerPricing: () => {},
-  updateMerchantEconomics: () => {},
-  updateFleetAndCash: () => {},
+  setOperatingMode: () => { },
+  updateLogistics: () => { },
+  updateCustomerPricing: () => { },
+  updateMerchantEconomics: () => { },
+  updateFleetAndCash: () => { },
   cssVariables: {},
 };
 

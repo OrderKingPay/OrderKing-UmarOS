@@ -1119,7 +1119,7 @@ export function B2BFranchiseOnboardingEngine() {
                     </p>
                     <p>
                       OrderKing is our city’s native hyper-dedicated delivery network. We only accept <strong>25 handpicked restaurants</strong> for our official grand launch.
-                      Because we limit spots, our rider fleet is physically stationed outside your outlet with guaranteed sub-8 minute pick-up.
+                      Because we limit launch cohort capacity, rider staging is prioritized near partner outlets with a target sub-8 minute pick-up SLA.
                     </p>
                     <p>
                       Our setup fee is ₹25,000, including menu photography and a 16.5% commission cap.
@@ -1170,7 +1170,7 @@ export function B2BFranchiseOnboardingEngine() {
                   onClick={() => setViewingContract(null)}
                   className="rounded-lg p-1.5 text-slate-400 hover:text-slate-800"
                 >
-                  ✕
+                  Close
                 </button>
               </div>
             </div>
@@ -1428,9 +1428,8 @@ export function B2BFranchiseOnboardingEngine() {
                     Bank / UPI Escrow Settlement Rails:
                   </div>
                   <div className="text-xs font-semibold text-slate-900">OrderKing Technologies Escrow</div>
-                  <div className="text-[11px] text-slate-600">Bank: HDFC Bank Limited (Commercial Branch)</div>
-                  <div className="font-mono text-[11px] text-slate-800">A/C: 50200088912345 | IFSC: HDFC0001234</div>
-                  <div className="font-mono text-[11px] text-emerald-800 font-semibold">UPI VPA: orderking.nodal@hdfcbank</div>
+                  <div className="text-[11px] text-slate-600">Settlement Rail: Configure Bank A/C &amp; IFSC in Finance Settings</div>
+                  <div className="font-mono text-[11px] text-emerald-800 font-semibold">Direct NPCI UPI VPA: 9395065587@ybl</div>
                 </div>
 
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-1 text-right">

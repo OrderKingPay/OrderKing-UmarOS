@@ -2,7 +2,7 @@
 // Governs Multi-Model Ensemble Consensus, 1-Command Live Deploy, 500+ Platforms & Zero Identity Leakage
 
 import { mediaStorageVault } from "./media-storage-vault.ts";
-import { UniversalAdvancedintelligenceEngine } from "./universal-superintelligence-engine.server.ts";
+import { UniversalSuperintelligenceEngine } from "./universal-superintelligence-engine.server.ts";
 import { ensembleConsensusEngine } from "./ensemble-consensus-engine.ts";
 import { instantDeployEngine } from "./instant-deploy-engine.ts";
 import { founderPrivacyShield } from "./founder-privacy-shield.ts";
@@ -37,15 +37,15 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     return { model: "codex-supreme", reason: "Auto-routed to Codex Premium Architect for maximum precision code synthesis." };
   }
   if (q.includes("live") || q.includes("score") || q.includes("news") || q.includes("trending") || q.includes("cricket") || q.includes("match")) {
-    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 AdvancedGrok Ultra for real-time live telemetric intelligence." };
+    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
   }
   if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
-    return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
+    return { model: "sovereign-ultra", reason: "Auto-routed to OrderKing Core for photorealistic multimodal & 4K video generation." };
   }
   if (q.includes("invoice") || q.includes("client") || q.includes("contract") || q.includes("legal") || q.includes("upwork") || q.includes("pitch")) {
     return { model: "claude-4-6-opus", reason: "Auto-routed to Claude 4.6 Opus for enterprise contractual & high-ticket negotiation excellence." };
   }
-  return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra flagship executive reasoning engine." };
+  return { model: "sovereign-ultra", reason: "Auto-routed to OrderKing Core flagship executive reasoning engine." };
 }
 
 export interface ChatAttachment { content?: string;
@@ -407,7 +407,7 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
     const inspection = mediaStorageVault.inspectSystemStorage();
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
-      { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
+      { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Policy", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
       { stepNumber: 3, totalSteps: 4, label: "Arming Cache Purifier Cockpit", status: "COMPLETED", detail: "Browser cache inspection active" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
@@ -418,7 +418,7 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
 - **Current Performance Score**: **${inspection.speedOptimizationScore}%**
 
 > [!IMPORTANT]
-> **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Your verified Client Leads, King Pay UPI Invoices, MSA Contracts, and Founder Vault Keys are **permanently locked & protected**.
+> **100% Core Protection Shield**: Zero danger to critical assets. Your verified Client Leads, King Pay UPI Invoices, MSA Contracts, and Founder Vault Keys are **permanently locked & protected**.
 
 Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to clear cached items and reclaim storage.`;
 
@@ -519,73 +519,29 @@ You can download this image, copy its direct CDN link, or command further edits 
     };
   }
 
-  // 3. Unlimited Free AI Video Generation
+  // 3. Video Generation Configuration Check
   if (
     q.startsWith("/video") ||
     q.includes("generate video") ||
     q.includes("create video") ||
     q.includes("make video") ||
     q.includes("ai video") ||
-    q.includes("motion video")
+    q.includes("motion video") ||
+    q.includes("edit video") ||
+    q.includes("video studio") ||
+    q.includes("fastest video") ||
+    q.includes("long video") ||
+    q.includes("commercial video") ||
+    q.includes("realistic video")
   ) {
-    const rawPrompt = query
-      .replace(/^\/video/i, "")
-      .replace(/generate (a )?video (of )?/i, "")
-      .replace(/create (a )?video (of )?/i, "")
-      .replace(/make (a )?video (of )?/i, "")
-      .trim() || "Cinematic OrderKing 15-minute drone delivery flight through neon city streets";
-
-    const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
-
-    mediaStorageVault.addItem({
-      type: "video",
-      title: rawPrompt.slice(0, 45),
-      prompt: rawPrompt,
-      url: videoUrl,
-      sizeBytes: 8400000,
-      mimeType: "video/mp4",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Compiling Kinetic Motion Script", status: "COMPLETED", detail: rawPrompt },
-      { stepNumber: 2, totalSteps: 4, label: "Simulating 60FPS Video Keyframes", status: "COMPLETED", detail: "Motion interpolation and procedural particles generated" },
-      { stepNumber: 3, totalSteps: 4, label: "Encoding MP4 Stream", status: "COMPLETED", detail: "WebCodecs hardware acceleration active · Unlimited" },
-      { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
-    ];
-
-    const responseMarkdown = `### AI Video Studio Preview
-- **Prompt**: *"${rawPrompt}"*
-- **Format**: **MP4** | **Delivery**: Preview Asset
-- **Vault Status**: Indexed in **HD Master Media Vault** (ready to play, download, and showcase to enterprise clients).
-
-The video is ready for playback below with full audio-visual motion capabilities!`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine aapke liye cinematic AI video clip generate kar diya hai. Yeh playback aur download ke liye ready hai.`
-      : isBengali
-      ? `Ami apnar jonno cinematic AI video clip toiri korechi. Eta playback ebong download korar jonno ready.`
-      : `I have generated your cinematic AI video clip. It is ready for playback, download, and commercial deployment.`;
-
     return {
-      intent: "media_generation",
+      intent: "general_executive",
       detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      mediaCard: {
-        type: "video",
-        prompt: rawPrompt,
-        url: videoUrl,
-        style: "Cinematic 60FPS",
-      },
-      actionCard: {
-        type: "media_generator",
-        data: {
-          type: "video",
-          prompt: rawPrompt,
-          url: videoUrl,
-        },
-      },
+      responseMarkdown: "### Video Generation Provider Not Configured\nConfigure a live video rendering provider key (Gemini Veo / Runway / Luma) in **Integrations** before generating videos. Stock placeholder clips are disabled.",
+      voiceSpokenText: "Video generation provider is not configured in Integrations.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Provider Key Verification", status: "COMPLETED", detail: "Video rendering provider API key is missing in Integrations" },
+      ],
     };
   }
 
@@ -615,7 +571,7 @@ The video is ready for playback below with full audio-visual motion capabilities
       { stepNumber: 5, totalSteps: 5, label: "Deploying Edge Preview", status: "COMPLETED", detail: "Client sandbox ready at https://royal-darbar.orderking.in" },
     ];
 
-    const responseMarkdown = `### 🎯 High-Value Client Prospect Isolated: **${lead.businessName}**
+    const responseMarkdown = `### High-Value Client Prospect Isolated: **${lead.businessName}**
 - **Location**: ${lead.location} | **Estimated Monthly GMV**: ${lead.monthlyRevenueEst}
 - **Client Pain Point**: ${lead.painPoint}
 - **Autonomous Solution**: ${lead.suggestedSolution}
@@ -623,7 +579,7 @@ The video is ready for playback below with full audio-visual motion capabilities
 - **Client ROI Impact**: ${lead.potentialGmvGrowth}
 
 ---
-#### Automated Client Pitch & Zero-Aggregator Guarantee:
+#### Automated Client Pitch & Zero-Aggregator Fee Structure:
 > *"Respected Management at ${lead.businessName}, you are currently losing over ₹5,00,000 every single month to 28% aggregator commissions. With our OrderKing Turnkey White-Label Deployment, you retain 100% of your earnings, get instant direct UPI bank settlements, and eliminate middlemen entirely. We can have your custom branded app live in 48 hours."*
 
 Ready to lock this contract and receive the advance payment immediately into your founder account.`;
@@ -662,21 +618,21 @@ Ready to lock this contract and receive the advance payment immediately into you
       { stepNumber: 1, totalSteps: 4, label: "Scanning Remote Radar", status: "COMPLETED", detail: "Scanned Upwork Enterprise, Toptal, and US direct clients" },
       { stepNumber: 2, totalSteps: 4, label: "Filtering $100+/hr Contracts", status: "COMPLETED", detail: `Isolated ${gig.title} paying $${gig.hourlyRateUsd}/hr` },
       { stepNumber: 3, totalSteps: 4, label: "Tailoring Proof-of-Work", status: "COMPLETED", detail: "Linked live double-entry ledger & sub-50ms PGlite state machine" },
-      { stepNumber: 4, totalSteps: 4, label: "Synthesizing Bid Proposal", status: "COMPLETED", detail: "Ready to submit with 85%+ interview conversion guarantee" },
+      { stepNumber: 4, totalSteps: 4, label: "Synthesizing Bid Proposal", status: "COMPLETED", detail: "Ready to submit tailored to repository proof of work" },
     ];
 
-    const responseMarkdown = `### 💼 High-Paid Remote Contract Match: **${gig.title}**
+    const responseMarkdown = `### High-Paid Remote Contract Match: **${gig.title}**
 - **Client**: ${gig.clientLocation} | **Platform**: ${gig.platform}
 - **Rate**: **$${gig.hourlyRateUsd}/hr** (~₹${(gig.hourlyRateUsd * 86).toLocaleString("en-IN")}/hr) or **$${gig.fixedBudgetUsd?.toLocaleString("en-US")} Fixed Contract** (~₹${((gig.fixedBudgetUsd || 0) * 86).toLocaleString("en-IN")})
 - **Duration**: ${gig.duration} | **Skills Match**: ${gig.matchScore}%
 - **Scope**: ${gig.description}
 
 ---
-#### ⚡ Tailored High-Converting Proposal (Ready to Submit):
+#### Tailored High-Converting Proposal (Ready to Submit):
 \`\`\`markdown
 ${gig.proposalTemplate}
 \`\`\`
-- **Strategy**: Direct proof of work showing OrderKing's live double-entry ledger and sub-50ms PGlite state machine. Guarantees 85%+ interview conversion.`;
+- **Strategy**: Direct proof of work showing OrderKing's live double-entry ledger and sub-50ms PGlite state machine.`;
 
     const voiceSpokenText = isHindi
       ? `Aapke liye ek $${gig.hourlyRateUsd} prati ghanta ka high-paying remote contract match hua hai. Iski fixed value lagbhag $${gig.fixedBudgetUsd} dollar hai. Maine custom proposal generate kar diya hai.`
@@ -722,13 +678,13 @@ ${gig.proposalTemplate}
       { stepNumber: 5, totalSteps: 5, label: "Assembling Client Handoff Bundle", status: "COMPLETED", detail: `Admin credentials & edge preview live at ${bp.livePreviewUrl}` },
     ];
 
-    const responseMarkdown = `### 🚀 Autonomous Enterprise Scaffolding: **${bp.title}**
+    const responseMarkdown = `### Autonomous Enterprise Scaffolding: **${bp.title}**
 - **Target Organization**: ${bp.targetOrganization}
 - **Commercial Valuation**: **₹${bp.commercialValueInr.toLocaleString("en-IN")}** | **Delivery SLA**: ${bp.estimatedBuildTime}
 - **Live Preview Link**: [${bp.livePreviewUrl}](${bp.livePreviewUrl})
 
 ---
-#### 🛠️ Production Architecture & Code Structure:
+#### Production Architecture & Code Structure:
 - **Core Tech Stack**: ${bp.techStack.join(" · ")}
 - **Database Tables Scaffolded**:
 ${bp.databaseSchema.map((t) => `  - \`${t}\``).join("\n")}
@@ -782,7 +738,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
       { stepNumber: 4, totalSteps: 4, label: "Verifying Section 79 Protection", status: "COMPLETED", detail: "Direct founder bank settlement with 0% gateway cut" },
     ];
 
-    const responseMarkdown = `### 💵 Instant Founder Invoice & King Pay UPI Link Generated
+    const responseMarkdown = `### Instant Founder Invoice & King Pay UPI Link Generated
 - **Invoice Number**: \`${inv.invoiceNumber}\`
 - **Total Amount**: **₹${inv.amountInr.toLocaleString("en-IN")}**
 - **50% Advance Required**: **₹${inv.advanceRequiredInr.toLocaleString("en-IN")}**
@@ -846,7 +802,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
       { stepNumber: 5, totalSteps: 5, label: "Founder Safety Protocol Engaged", status: "COMPLETED", detail: "100% data loss prevention active · Results piped directly back to founder" },
     ];
 
-    const responseMarkdown = `### 🌐 Universal Platform & App Connector Active: **${matchedPlatform.name}**
+    const responseMarkdown = `### Universal Platform & App Connector Active: **${matchedPlatform.name}**
 - **Connection Status**: **${matchedPlatform.status}** (Latency: \`${matchedPlatform.apiLatencyMs}ms\` · Auth: \`${matchedPlatform.authMethod}\`)
 - **Safety Guardrail**: **100% Verified** (Zero data leak, automatic rollback snapshot, rate-limit protector active)
 - **Available Actions to Enforce**:
@@ -879,188 +835,37 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
     };
   }
 
-  // 2. Video & Image Creation & Editing Studio
-  if (
-    q.includes("edit video") ||
-    q.includes("create video") ||
-    q.includes("fastest video") ||
-    q.includes("long video") ||
-    q.includes("reel") ||
-    q.includes("9:16") ||
-    q.includes("16:9") ||
-    q.includes("commercial video") ||
-    q.includes("realistic video") ||
-    q.includes("edit image") ||
-    q.includes("photo edit") ||
-    q.includes("video studio") ||
-    q.includes("image studio") ||
-    q.includes("video creator") ||
-    q.includes("aspect ratio") ||
-    q.includes("subtitles")
-  ) {
-    const isLongForm = q.includes("long") || q.includes("documentary") || q.includes("15 min") || q.includes("30 min") || q.includes("10 min");
-    const isReel = q.includes("reel") || q.includes("9:16") || q.includes("tiktok") || q.includes("short");
-    const aspectRatio: VideoAspectRatio = isReel ? "9:16" : q.includes("1:1") ? "1:1" : q.includes("21:9") ? "21:9" : "16:9";
-    const duration: VideoDurationPreset = isLongForm ? "10m" : isReel ? "30s" : "60s";
-
-    const promptText = query
-      .replace(/edit video( of)?/i, "")
-      .replace(/create video( of)?/i, "")
-      .replace(/fastest video( of)?/i, "")
-      .replace(/long video( of)?/i, "")
-      .trim() || "Ultra-realistic cinematic commercial presentation of OrderKing 15-minute delivery ecosystem with 3D CGI HUD graphics";
-
-    const videoConfig: VideoEditorStudioConfig = {
-      id: `vid-studio-${Date.now()}`,
-      title: promptText.slice(0, 50),
-      prompt: promptText,
-      aspectRatio,
-      duration,
-      resolution: "4k_60fps",
-      voiceover: "young_female_aria",
-      voiceoverLanguage: isHindi ? "hi-IN" : isBengali ? "bn-IN" : "en-IN",
-      autoSubtitles: true,
-      colorGrade: "cinematic_hdr",
-      fps: 60,
-      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
-      thumbnailUrl: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1080&auto=format&fit=crop",
-      isLongForm,
-      exportFormat: "MP4_H265",
-      renderSpeedMultiplier: "Realtime WebCodecs 60 FPS Hardware Accelerated",
-      commercialRightsCertified: true,
-    };
-
-    // Auto-save to media vault
-    mediaStorageVault.addItem({
-      type: "video",
-      title: `[${aspectRatio}] ${videoConfig.title}`,
-      prompt: promptText,
-      url: videoConfig.videoUrl,
-      thumbnailUrl: videoConfig.thumbnailUrl,
-      sizeBytes: isLongForm ? 48500000 : 9200000,
-      mimeType: "video/mp4",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Activating Sovereign Neural Video Engine", status: "COMPLETED", detail: "Allocated WebCodecs hardware rendering cluster with 60FPS precision" },
-      { stepNumber: 2, totalSteps: 5, label: `Configuring Frame Canvas [${aspectRatio}]`, status: "COMPLETED", detail: `Target: ${aspectRatio} · Resolution: 4K Ultra HD · Duration: ${duration}` },
-      { stepNumber: 3, totalSteps: 5, label: "Acoustic Voiceover & Subtitles Synthesis", status: "COMPLETED", detail: "Voice: Aria Ultra-Realistic Female · Dynamic animated karaoke subtitles generated" },
-      { stepNumber: 4, totalSteps: 5, label: "Applying 8K Cinematic HDR Color Grade", status: "COMPLETED", detail: "Dynamic range balanced, volumetric motion blur applied" },
-      { stepNumber: 5, totalSteps: 5, label: "Encoding at Realtime Speed", status: "COMPLETED", detail: "Hardware accelerated export · Ready in Media Vault" },
-    ];
-
-    const responseMarkdown = `### 🎬 Video & Image Creation Studio
-- **Project**: **"${promptText}"**
-- **Aspect Ratio**: **${aspectRatio}** (${isReel ? "Vertical Reel / Shorts" : aspectRatio === "16:9" ? "Cinematic Widescreen (YouTube/Commercial)" : aspectRatio})
-- **Duration**: **${duration}** (${isLongForm ? "Long-Form Commercial Presentation" : "High-Impact Commercial Spot"})
-- **Resolution**: **4K Ultra HD (60 FPS)** | **Export Pipeline**: **Hardware Accelerated WebCodecs**
-- **Acoustic Voiceover**: Ultra-realistic Young Female Voice (\`${videoConfig.voiceoverLanguage}\`) with **Auto-Animated Subtitles**.
-- **Commercial Rights**: **100% Verified Commercial License** (Ready for client pitches, TV broadcast, or social ads).
-
-Your studio controls, aspect ratio switcher, timeline duration, and instant 4K preview player are loaded below!`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapka video aur image creation studio ready hai. Maine ${aspectRatio} aspect ratio aur 4K quality me render initiate kar diya hai. Auto-subtitles aur young female voiceover enabled hain.`
-      : isBengali
-      ? `Apnar video ebong image studio ready. Ami ${aspectRatio} aspect ratio ebong 4K quality te render shuru korechi. Auto-subtitles ebong voiceover enabled ache.`
-      : `Your world-class video studio is armed. Rendered in ${aspectRatio} aspect ratio at 4K 60FPS with ultra-realistic young female narration and dynamic animated subtitles. Ready to edit or export.`;
-
+  // 2. Media Studio Check (redirects image prompts cleanly, no fake URLs)
+  if (q.includes("edit image") || q.includes("photo edit") || q.includes("image studio") || q.includes("media studio")) {
     return {
-      intent: "video_editor_studio",
+      intent: "general_executive",
       detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "video_editor_studio",
-        data: videoConfig,
-      },
-    };
-  }
-
-  if (q.includes("image") || q.includes("video") || q.includes("studio") || q.includes("media") || q.includes("generate image") || q.includes("generate video")) {
-    const isVideo = q.includes("video");
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting AI Media Studio", status: "COMPLETED", detail: "Allocated supreme GPU rendering cluster" },
-      { stepNumber: 2, totalSteps: 4, label: "Processing Prompt Parameters", status: "COMPLETED", detail: `Synthesizing ${isVideo ? "high-fidelity video stream" : "hyper-realistic image array"}` },
-      { stepNumber: 3, totalSteps: 4, label: "Applying Unlimited Free Tier", status: "COMPLETED", detail: "Bypassed standard token limits for founder" },
-      { stepNumber: 4, totalSteps: 4, label: "Saving to Media Vault", status: "COMPLETED", detail: "Artifacts securely cached in Sovereign Memory" },
-    ];
-
-    const promptText = query.replace(/generate image of/i, "").replace(/generate video of/i, "").replace(/create image of/i, "").trim() || "A hyper-realistic futuristic cyberpunk cityscape with neon lights and flying cars";
-    const imageUrl = "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop";
-
-    const responseMarkdown = `### 🎨 Premium AI ${isVideo ? "Video" : "Image"} Studio Execution
-- **Asset Type**: ${isVideo ? "Video Generation" : "Image Synthesis"}
-- **Prompt Extracted**: "${promptText}"
-- **Billing**: **Unlimited Free (Founder Tier)**
-- **Status**: Rendered and cached locally to Media Vault.
-
-You can preview and save the generated ${isVideo ? "video" : "image"} directly using the action card below.`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapke command ke anusar, maine AI Studio me ${isVideo ? "video" : "image"} generate kar diya hai. Yeh unlimited free hai aur Media Vault me save karne ke liye ready hai.`
-      : isBengali
-      ? `Apnar command onujayi, ami AI Studio te ${isVideo ? "video" : "image"} generate korechi. Eta unlimited free ebong Media Vault e save korar jonno ready ache.`
-      : `I have generated your requested ${isVideo ? "video" : "image"} using the Premium AI Studio. It is rendered with unlimited free execution and is ready to be saved to the Media Vault.`;
-
-    return {
-      intent: "media_generation",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "image_video_studio",
-        data: {
-          prompt: promptText,
-          type: isVideo ? "video" : "image",
-          generatedUrl: imageUrl
-        }
-      }
+      responseMarkdown: "### Image Studio\nUse `/image <prompt>` to generate a real AI image via the configured image endpoint.",
+      voiceSpokenText: "Use /image followed by your prompt to generate an image.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Media Studio Routing", status: "COMPLETED", detail: "Direct /image prompt routing enabled" },
+      ],
     };
   }
 
   if (q.includes("cache") || q.includes("purify") || q.includes("purifier") || q.includes("scan disk") || q.includes("purge")) {
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting Sovereign Cache Purifier", status: "COMPLETED", detail: "Initializing deep system scan" },
-      { stepNumber: 2, totalSteps: 4, label: "Scanning Temporary Files", status: "COMPLETED", detail: "Analyzing Next.js caches, Vite build artifacts, and local storage" },
-      { stepNumber: 3, totalSteps: 4, label: "Evaluating Protected Core", status: "COMPLETED", detail: "Isolating critical production assets & DB instances (0% Risk)" },
-      { stepNumber: 4, totalSteps: 4, label: "Purge Ready", status: "COMPLETED", detail: "Awaiting final confirmation for 1-click purge" },
-    ];
-
-    const responseMarkdown = `### 🛡️ Sovereign Cache Purifier Scan Complete
-- **Status**: Scan successful. Protected Core guarantee is **ACTIVE**.
-- **Found**: 14,208 redundant temporary files across node_modules and .next cache.
-- **Potential Free Space**: **4.2 GB**
-- **Safety Guarantee**: 100% safe to purge. Critical source code and production databases are strictly isolated.
-
-Use the action card below to execute the 1-click purge.`;
-
-    const voiceSpokenText = isHindi
-      ? `Sovereign Cache Purifier ne disk scan complete kar liya hai. 4 point 2 GB space free kiya ja sakta hai. Protected core guarantee active hai, isliye purge karna bilkul safe hai.`
-      : isBengali
-      ? `Sovereign Cache Purifier disk scan complete koreche. 4 point 2 GB space free kora jabe. Protected core guarantee active ache, tai purge kora completely safe.`
-      : `The Sovereign Cache Purifier has completed its disk scan. We can free up 4.2 Gigabytes of space. The protected core guarantee is active, so you can execute the 1-click purge safely without risking critical assets.`;
-
+    const inspection = mediaStorageVault.inspectSystemStorage();
     return {
       intent: "storage_purifier",
       detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
+      responseMarkdown: `### Storage Purifier Scan\n- **Measured Cache Size**: ${inspection.formattedTotalSize} (${inspection.itemCount} items)`,
+      voiceSpokenText: `Storage scan complete. Measured size is ${inspection.formattedTotalSize}.`,
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Vault Inspection", status: "COMPLETED", detail: `Measured ${inspection.formattedTotalSize} across ${inspection.itemCount} items` },
+      ],
       actionCard: {
-        type: "cache_purifier",
-        data: {
-          scannedFiles: 14208,
-          freedSpace: "4.2 GB",
-          isProtectedCoreIntact: true
-        }
-      }
+        type: "storage_purifier",
+        data: inspection,
+      },
     };
   }
 
-  // 3. System Settings, Restart & Refresh (Glitch-Fix Without Disconnections)
+  // 3. System Settings, Restart & Refresh
   if (
     q.includes("setting") ||
     q.includes("restart") ||
@@ -1072,39 +877,14 @@ Use the action card below to execute the 1-click purge.`;
   ) {
     const isRestart = q.includes("restart") || q.includes("restert") || q.includes("reboot");
     const isRefresh = q.includes("refresh") || q.includes("glitch");
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning System State & Memory", status: "COMPLETED", detail: "Memory clean · Zero data loss guaranteed · State snapshots verified" },
-      { stepNumber: 2, totalSteps: 4, label: isRestart ? "Executing Graceful System Restart" : "Applying Zero-Downtime Refresh", status: "COMPLETED", detail: isRestart ? "Reloading sovereign AI modules without session drop" : "Hot-fixing UI glitches & flushing stale buffers (0 disconnections)" },
-      { stepNumber: 3, totalSteps: 4, label: "Synchronizing Edge Gateways", status: "COMPLETED", detail: "All 8 connected platforms & RPC nodes healthy" },
-      { stepNumber: 4, totalSteps: 4, label: "Optimizer Verification Complete", status: "COMPLETED", detail: "Latency: 12ms · 100% Stable" },
-    ];
-
-    const responseMarkdown = `### ⚙️ HDmaster System Configuration & Optimizer
-- **Operation**: **${isRestart ? "System Restart (Preserved State)" : isRefresh ? "Zero-Downtime Refresh (Glitch Fix)" : "Settings & Manual Customization"}**
-- **Status**: **100% Optimal & Connected** (0 Disconnections · Zero Data Loss)
-- **Engine Tuning**: **Sovereign Ultra (Young Female Aria Acoustic Profile)**
-- **Security**: **HMAC-SHA256 Active · Zero-Leak Sandbox Armed**
-
-> [!NOTE]
-> **Zero Disconnection Guarantee**:
-> - **RESTART**: Gracefully reboots engine instances while permanently maintaining founder chats, invoices, and contracts.
-> - **REFRESH**: Flushes minor render glitches, resets audio contexts, and re-syncs state in **sub-5ms** without any disconnection.
-
-Manual customization controls and 1-click optimization triggers are available below!`;
-
-    const voiceSpokenText = isHindi
-      ? `HDmaster system settings aur optimization ready hain. Refresh bina kisi disconnection ke glitches theek karta hai, aur restart aapke saare data ko surakshit rakhte hue system ko reboot karta hai.`
-      : isBengali
-      ? `HDmaster system settings ebong optimization ready ache. Refresh kono disconnection charai glitches fix kore, ebong restart apnar shob data safe rekhe system reboot kore.`
-      : `HDmaster system settings and optimizer are active. Refresh fixes UI glitches without disconnections, and Restart safely reboots all engines with 100% preserved founder state.`;
-
     return {
       intent: "system_settings",
       detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
+      responseMarkdown: `### HDmaster System Configuration\n- **Operation**: ${isRestart ? "System Restart" : isRefresh ? "Soft Refresh" : "Settings"}`,
+      voiceSpokenText: "HDmaster system settings controls are ready below.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "System Controls Ready", status: "COMPLETED", detail: "Configuration panel loaded" },
+      ],
       actionCard: {
         type: "system_settings",
         data: {
@@ -1115,7 +895,7 @@ Manual customization controls and 1-click optimization triggers are available be
     };
   }
 
-  // 4. Smart Suggest Clean & Auto-Clean Mistakes / Duplicates
+  // 4. Smart Suggest Clean (uses real vault item counts, zero fake 3.84 GB claims)
   if (
     q.includes("suggest clean") ||
     q.includes("auto clean") ||
@@ -1126,40 +906,22 @@ Manual customization controls and 1-click optimization triggers are available be
     q.includes("smart clean") ||
     q.includes("unnecessary")
   ) {
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "AI Deep Heuristic Inspection", status: "COMPLETED", detail: "Scanned duplicate images, orphaned buffers, and temporary keyframes" },
-      { stepNumber: 2, totalSteps: 4, label: "Isolating Problematic Artifacts", status: "COMPLETED", detail: "Found 4 duplicate media items, 2 stale audio nodes, 12 expired temp blobs" },
-      { stepNumber: 3, totalSteps: 4, label: "Validating Protected Business Records", status: "COMPLETED", detail: "Client Leads, Invoices, and Blueprints 100% Safe (0% Risk)" },
-      { stepNumber: 4, totalSteps: 4, label: "Auto-Clean & Suggestions Ready", status: "COMPLETED", detail: "Potential space freed: 3.84 GB · Speed boost: +45%" },
-    ];
-
-    const responseMarkdown = `### 🧹 AI Smart Suggest Clean & Autonomous Error Fixer
-- **Duplicate Media Detected**: **4 items** (Identical generated prompt variations)
-- **Unnecessary Temporary Junk**: **12 expired cache blobs** (~3.84 GB)
-- **Problematic/Glitchy Things Auto-Fixed**: **2 stale audio nodes & orphaned buffers**
-- **Protected Core Guarantee**: **100% SAFE** (Zero risk to invoices, leads, or verified code)
-
-Review the AI suggestions below or click **"1-Click Auto-Clean Everything"** to eliminate all junk and duplicates instantly!`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine storage me 4 duplicates aur 3 point 8 GB unnecessary junk isolate kar liya hai. Sabhi client leads safe hain aur aap 1-click me auto-clean kar sakte hain.`
-      : isBengali
-      ? `Ami storage e 4 duplicates ebong 3 point 8 GB unnecessary junk isolate korechi. Shob client records safe ache ebong apni 1-click e auto-clean korte paren.`
-      : `AI Smart Cleaner has detected 4 duplicate media items and 3.84 Gigabytes of unnecessary cache. Stale buffers are auto-cleared, and your business records are 100% protected.`;
-
+    const inspection = mediaStorageVault.inspectSystemStorage();
     return {
       intent: "smart_cleaner",
       detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
+      responseMarkdown: `### Storage Scan Complete\n- **Vault Items Scanned**: ${inspection.itemCount} (${inspection.formattedTotalSize})`,
+      voiceSpokenText: `Storage scan complete with ${inspection.itemCount} vault items.`,
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Heuristic Inspection", status: "COMPLETED", detail: `Scanned ${inspection.itemCount} vault items (${inspection.formattedTotalSize})` },
+      ],
       actionCard: {
         type: "smart_cleaner",
         data: {
-          suggestedItemsCount: 16,
-          duplicateCount: 4,
-          mistakesFixedCount: 2,
-          freedEstimateBytes: 3840000000,
+          suggestedItemsCount: inspection.itemCount,
+          duplicateCount: 0,
+          mistakesFixedCount: 0,
+          freedEstimateBytes: inspection.totalSizeBytes,
         },
       },
     };
@@ -1184,16 +946,16 @@ Review the AI suggestions below or click **"1-Click Auto-Clean Everything"** to 
       { stepNumber: 5, totalSteps: 5, label: "Handoff Ready for Founder", status: "COMPLETED", detail: "1-Click Download ZIP or 1-Click Deploy to Edge" },
     ];
 
-    const responseMarkdown = `### 📦 Autonomous Section Separator & Standalone App Exporter
+    const responseMarkdown = `### Autonomous Section Separator & Standalone App Exporter
 You can **separate, extract, and deploy ANY part of HDmaster** into an independent website or standalone app with zero technical friction:
 
-1. 🎬 **4K Video & Image Studio**: Standalone video creation & editing web app (\`studio.orderking.in\`)
-2. 🌐 **Universal Platform Enforcer**: Standalone API integration & task enforcement bridge (\`enforcer.orderking.in\`)
-3. 💳 **King Pay UPI Terminal**: Standalone direct UPI billing & escrow web portal (\`pay.orderking.in\`)
-4. 🎯 **Client Acquisition Machine**: Standalone sales radar & proposal app (\`sales.orderking.in\`)
-5. 🏥 **Hospital Management ERP**: Full healthcare patient portal (\`hospital.orderking.in\`)
-6. 🛍️ **Hyperlocal Multi-Vendor Marketplace**: Standalone food/grocery delivery app (\`market.orderking.in\`)
-7. 🧹 **Sovereign Storage Purifier**: Standalone system cleaner cockpit (\`purifier.orderking.in\`)
+1. **4K Video & Image Studio**: Standalone video creation & editing web app (\`studio.orderking.in\`)
+2. **Universal Platform Enforcer**: Standalone API integration & task enforcement bridge (\`enforcer.orderking.in\`)
+3. **King Pay UPI Terminal**: Standalone direct UPI billing & escrow web portal (\`pay.orderking.in\`)
+4. **Client Acquisition Machine**: Standalone sales radar & proposal app (\`sales.orderking.in\`)
+5. **Hospital Management ERP**: Full healthcare patient portal (\`hospital.orderking.in\`)
+6. **Hyperlocal Multi-Vendor Marketplace**: Standalone food/grocery delivery app (\`market.orderking.in\`)
+7. **Sovereign Storage Purifier**: Standalone system cleaner cockpit (\`purifier.orderking.in\`)
 
 Select any module below to **preview standalone source code, download full ZIP package, or deploy to a different website!**`;
 
@@ -1271,7 +1033,7 @@ Select any module below to **preview standalone source code, download full ZIP p
       { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Vercel & Cloudflare 1-click terminal scripts ready" },
     ];
 
-    const responseMarkdown = `### 🚀 1-Command Live Deployment Complete
+    const responseMarkdown = `### 1-Command Live Deployment Complete
 - **Project**: **${deployRes.projectName}**
 - **Live URL**: [\`${deployRes.liveUrl}\`](${deployRes.liveUrl})
 - **Status**: **${deployRes.status}** (SSL Encrypted · CDN Edge: ${deployRes.edgeRegion})
@@ -1316,11 +1078,11 @@ The live standalone preview bundle is compiled and ready for instant preview or 
       { stepNumber: 3, totalSteps: 3, label: "Founder Consent Gate Armed", status: "COMPLETED", detail: "Awaiting 1-click founder authorization" },
     ];
 
-    const responseMarkdown = `### 🔮 Autonomous Model Evolution: Next-Gen Upgrades Detected
+    const responseMarkdown = `### Autonomous Model Evolution: Next-Gen Upgrades Detected
 - **Current Active Generation**: **Gen-5.6 / Gen-4.6 (GPT-5.6, Claude 4.Opus, Grok 4.6)**
 - **Next-Generation Releases Available**: **${updateReport.notifications.length} Hot-Swaps Ready**
 - **Upgrade Policy**: **Autonomous Detection with 1-Click Founder Consent**
-- **Guarantee**: Umar OS will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system auto-configures and upgrades smoothly.
+- **Policy**: Umar OS will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system auto-configures and upgrades smoothly.
 
 Review available model upgrades below and click **"1-Click Hot-Upgrade"** to switch engine generations instantly.`;
 
@@ -1351,10 +1113,10 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 3, label: "Querying Spatial GPS Radar", status: "COMPLETED", detail: "Enforcing 12km strict radius centered at Sribhumi / Karimganj" },
       { stepNumber: 2, totalSteps: 3, label: "Verifying Inactive Zone Quarantine", status: "COMPLETED", detail: "Food ordering masked across inactive regions; King Pay rendered exclusively" },
-      { stepNumber: 3, totalSteps: 3, label: "Compliance & Fee Verification", status: "COMPLETED", detail: "0% Gateway fees guaranteed Pan-India via direct UPI escrow" },
+      { stepNumber: 3, totalSteps: 3, label: "Compliance & Fee Verification", status: "COMPLETED", detail: "0% Gateway fees Pan-India via direct UPI escrow" },
     ];
 
-    const responseMarkdown = `### 🛡️ 1,000x Strict Geofence Enforcement Status
+    const responseMarkdown = `### 1,000x Strict Geofence Enforcement Status
 - **Active Food Delivery Zone**: **${activeZone.name}** (12.0 km strict radius)
 - **Active Coordinates**: \`24.8688° N, 92.3511° E\`
 - **Pan-India Inactive Zone Rule**:
@@ -1645,7 +1407,7 @@ export function synthesizeOpenWorldCognitiveResponse(
       { stepNumber: 5, totalSteps: 5, label: "Emergency Red-Flag Verification", status: "COMPLETED", detail: "Critical warning signs, ER presentation criteria, and safety disclaimers verified" },
     ];
 
-    const responseMarkdown = `### 🩺 Sovereign Clinical Intelligence & Medical Diagnostic Protocol
+    const responseMarkdown = `### Sovereign Clinical Intelligence & Medical Diagnostic Protocol
 
 #### 1. Chief Complaint & Triage Evaluation
 - **Clinical Presentation**: ${symptomSummary}
@@ -1802,7 +1564,7 @@ FOR EACH ROW EXECUTE FUNCTION update_timestamp_column();
       : `\`\`\`typescript
 /**
  * Production-Grade Resilient Implementation
- * Strict Typing, Memory Safety, Defensive Edge Handling, and Zero-Leak Guarantee.
+ * Strict Typing, Memory Safety, Defensive Edge Handling, and Zero-Leak Policy.
  */
 
 export interface SystemResult<T> {
@@ -1871,7 +1633,7 @@ export class FrontierExecutionEngine<TKey extends string, TData> {
 }
 \`\`\``;
 
-    const responseMarkdown = `### 💻 Frontier Software Engineering & Systems Architecture
+    const responseMarkdown = `### Frontier Software Engineering & Systems Architecture
 
 #### 1. Architectural Strategy & Design Principles
 - **Approach**: First-principles decomposition prioritizing type safety, deterministic state management, and bounded resource consumption.
@@ -1925,7 +1687,7 @@ ${codeSnippet}
       { stepNumber: 5, totalSteps: 5, label: "Intuitive & Practical Synthesis", status: "COMPLETED", detail: "Connecting mathematical proof to real-world physical intuition" },
     ];
 
-    const responseMarkdown = `### 🔬 First-Principles Scientific & Mathematical Derivation
+    const responseMarkdown = `### First-Principles Scientific & Mathematical Derivation
 
 #### 1. Problem Formulation & Theoretical Foundations
 - **Objective**: Rigorous analytical decomposition of "${query.slice(0, 80)}"
@@ -1982,7 +1744,7 @@ $$\\mathcal{L}(x, t) = \\nabla \\cdot \\mathbf{F}(x, t) + \\sigma(x, t)$$
       { stepNumber: 5, totalSteps: 5, label: "Executive Advisory Synthesis", status: "COMPLETED", detail: "Delivering clear, actionable, high-leverage guidance" },
     ];
 
-    const responseMarkdown = `### 🧭 Strategic Advisory & Life Decision Matrix
+    const responseMarkdown = `### Strategic Advisory & Life Decision Matrix
 
 #### 1. Core Situation Assessment
 - **Dilemma Analyzed**: "${query}"
@@ -1994,7 +1756,7 @@ $$\\mathcal{L}(x, t) = \\nabla \\cdot \\mathbf{F}(x, t) + \\sigma(x, t)$$
 1. **Regret Minimization Framework**:
    - Project yourself to age 80 looking back on this crossroad. Which path will you genuinely regret NOT attempting? Fear of temporary embarrassment dissolves when viewed through decades.
 2. **Inversion Principle (Charlie Munger)**:
-   - Instead of asking *"How do I guarantee success?"*, ask *"What decisions will guarantee failure, regret, and burnout?"* Ruthlessly eliminate those behaviors first.
+   - Instead of asking *"How do I policy success?"*, ask *"What decisions will policy failure, regret, and burnout?"* Ruthlessly eliminate those behaviors first.
 3. **The 10/10/10 Rule**:
    - How will you feel about this decision in **10 minutes**?
    - How will you feel in **10 months**?
@@ -2039,7 +1801,7 @@ $$\\mathcal{L}(x, t) = \\nabla \\cdot \\mathbf{F}(x, t) + \\sigma(x, t)$$
       { stepNumber: 5, totalSteps: 5, label: "Enduring Insight Distillation", status: "COMPLETED", detail: "Connecting historical patterns to modern real-world dynamics" },
     ];
 
-    const responseMarkdown = `### 🏛️ Deep Historical & Humanistic Synthesis
+    const responseMarkdown = `### Deep Historical & Humanistic Synthesis
 
 #### 1. Historical Epoch & Structural Context
 - **Topic Analyzed**: "${query}"
@@ -2085,7 +1847,7 @@ $$\\mathcal{L}(x, t) = \\nabla \\cdot \\mathbf{F}(x, t) + \\sigma(x, t)$$
     { stepNumber: 5, totalSteps: 5, label: "Master Cognitive Synthesis", status: "COMPLETED", detail: "Delivering articulate, comprehensive, and actionable output" },
   ];
 
-  const responseMarkdown = `### 🌐 Sovereign Frontier Intelligence Synthesis
+  const responseMarkdown = `### Sovereign Frontier Intelligence Synthesis
 
 #### 1. Core Synthesis & Direct Answer
 Regarding: **"${query}"**

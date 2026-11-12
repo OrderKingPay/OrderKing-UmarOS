@@ -78,7 +78,7 @@ export function SelfServeLandingModule() {
         if (d.bankName) setBankName(d.bankName);
         if (d.holder) setHolder(d.holder);
       }
-    } catch {}
+    } catch { }
   }, []);
 
   function validateStep1(): boolean {
@@ -177,7 +177,7 @@ export function SelfServeLandingModule() {
     if (typeof window !== "undefined") {
       try {
         window.localStorage.setItem(ORDERKING_ONBOARDING_DRAFT_KEY, JSON.stringify(draftPayload));
-      } catch {}
+      } catch { }
     }
 
     try {
@@ -242,7 +242,7 @@ export function SelfServeLandingModule() {
         } as any,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Restaurant profile was not saved.");
+      setError(err instanceof Error ? err.message : "Failed to save restaurant onboarding. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -274,13 +274,12 @@ export function SelfServeLandingModule() {
               onClick={() => {
                 if (item.num < activeStep) setActiveStep(item.num as 1 | 2 | 3);
               }}
-              className={`rounded-2xl border p-3.5 text-left transition-all ${
-                active
-                  ? "border-red-500 bg-red-50/70 text-red-900 ring-2 ring-red-500/20"
-                  : done
+              className={`rounded-2xl border p-3.5 text-left transition-all ${active
+                ? "border-red-500 bg-red-50/70 text-red-900 ring-2 ring-red-500/20"
+                : done
                   ? "border-emerald-500 bg-emerald-50 text-emerald-800"
                   : "border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100/70"
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between text-xs sm:text-sm font-bold">
                 <span>{item.title}</span>
@@ -562,7 +561,7 @@ export function SelfServeLandingModule() {
               className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold px-8 h-12 rounded-xl flex items-center gap-2 shadow-lg shadow-red-500/25"
             >
               {busy ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
-              <span>{busy ? "Submitting Application..." : "Submit Application & Go Live →"}</span>
+              <span>{busy ? "Submitting Application..." : "Submit Application & Go Live"}</span>
             </Button>
           </div>
         </div>

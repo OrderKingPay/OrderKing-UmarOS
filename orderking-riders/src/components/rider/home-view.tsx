@@ -638,7 +638,7 @@ export function HomeView() {
             },
           });
           toast.success(
-            `✓ GPS Ping synchronized (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`
+            `GPS Ping synchronized (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`
           );
         } catch {
           toast.error("GPS telemetry sync failed");

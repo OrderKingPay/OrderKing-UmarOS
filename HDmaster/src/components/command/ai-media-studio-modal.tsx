@@ -136,74 +136,31 @@ export function AiMediaStudioModal({
   if (!isOpen) return null;
 
   const handleGenerateImage = () => {
-    const finalPrompt = prompt.trim() || PRESET_IMAGE_PROMPTS[0];
-    setIsGenerating(true);
-    setGenerationProgress(10);
+    void prompt;
+    void selectedStyle;
+    void aspectRatio;
+    void upscale8K;
+    setIsGenerating(false);
+    setGenerationProgress(0);
     setGeneratedItem(null);
-
-    const styleObj = PRESET_IMAGE_STYLES.find((s) => s.id === selectedStyle) || PRESET_IMAGE_STYLES[0];
-    const arObj = ASPECT_RATIOS.find((a) => a.id === aspectRatio) || ASPECT_RATIOS[0];
-    const width = Math.min(arObj.width, 1920);
-    const height = Math.min(arObj.height, 1920);
-    const seed = Math.floor(Math.random() * 9999999);
-
-    const qualityModifiers = upscale8K ? "8k uhd, photorealistic, masterpiece, highly intricate, sharp focus" : "";
-
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(String(
-// @ts-ignore
-      `${finalPrompt}, ${styleObj.modifier}, ${qualityModifiers}`
-     ?? ""))}?width=${width}&height=${height}&nologo=true&seed=${seed}`;
-
-    const progressInterval = setInterval(() => {
-      setGenerationProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return 90;
-        }
-        return prev + 25;
-      });
-    }, 250);
-
-    throw new Error("NO live CLAIMS: Real image generation API is not connected.");
+    toast.error("Image generation provider is not configured in this workspace.");
   };
 
   const handleGenerateVideo = () => {
-    const finalPrompt = prompt.trim() || PRESET_VIDEO_PROMPTS[0];
-    setIsGenerating(true);
-    setGenerationProgress(15);
+    void prompt;
+    void videoDuration;
+    setIsGenerating(false);
+    setGenerationProgress(0);
     setGeneratedItem(null);
-
-    const durationObj = VIDEO_DURATIONS.find((d) => d.id === videoDuration) || VIDEO_DURATIONS[2];
-
-    const progressInterval = setInterval(() => {
-      setGenerationProgress((prev) => {
-        if (prev >= 92) {
-          clearInterval(progressInterval);
-          return 92;
-        }
-        return prev + 20;
-      });
-    }, 280);
-
-    const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
-
-    throw new Error("NO live CLAIMS: Real video generation API is not connected.");
+    toast.error("Video generation provider is not configured in this workspace.");
   };
 
   const handleGenerateMultiScene = () => {
-    setIsGenerating(true);
-    setGenerationProgress(10);
+    void multiScenes;
+    setIsGenerating(false);
+    setGenerationProgress(0);
     setGeneratedItem(null);
-
-    const totalSeconds = multiScenes.reduce((acc, s) => acc + s.duration, 0);
-
-    const progressInterval = setInterval(() => {
-      setGenerationProgress((prev) => (prev >= 90 ? 90 : prev + 15));
-    }, 250);
-
-    const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
-
-    throw new Error("NO live CLAIMS: Real multi-scene generation API is not connected.");
+    toast.error("Multi-scene video generation provider is not configured in this workspace.");
   };
 
   const handleDeleteVaultItem = (id: string) => {
@@ -426,7 +383,7 @@ export function AiMediaStudioModal({
                     />
                     {watermarkBrand && (
                       <div className="absolute bottom-3 right-3 rounded-lg bg-black/75 px-2.5 py-1 border border-amber-500/50 backdrop-blur text-[10px] font-bold text-amber-300">
-                        ⚡ OrderKing Founder Studio Edition
+                        AI OrderKing Founder Studio Edition
                       </div>
                     )}
                   </div>
@@ -645,7 +602,7 @@ export function AiMediaStudioModal({
               {generatedItem && generatedItem.type === "video" && (
                 <div className="rounded-xl border border-emerald-500/40 bg-black/60 p-4 space-y-3 shadow-xl animate-fadeIn">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-emerald-400">✓ Video Rendering Complete (60FPS UHD)</span>
+                    <span className="text-xs font-bold text-emerald-400">Video Rendering Complete (60FPS UHD)</span>
                     <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">
                       {generatedItem.durationSeconds}s · {(generatedItem.sizeBytes / (1024 * 1024)).toFixed(2)} MB · MP4
                     </Badge>
@@ -761,7 +718,7 @@ export function AiMediaStudioModal({
               {generatedItem && generatedItem.isMultiScene && (
                 <div className="rounded-xl border border-emerald-500/40 bg-black/60 p-4 space-y-3 shadow-xl animate-fadeIn">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-emerald-400">✓ Multi-Scene Commercial Stitched ({generatedItem.scenesCount} Scenes)</span>
+                    <span className="text-xs font-bold text-emerald-400">Multi-Scene Commercial Stitched ({generatedItem.scenesCount} Scenes)</span>
                     <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">
                       {generatedItem.durationSeconds}s Total Runtime
                     </Badge>

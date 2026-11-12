@@ -168,13 +168,13 @@ function Home() {
           {/* Quick Links & Existing Partner Login */}
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm text-gray-600">
             <a href="#onboarding-form" className="hover:text-[#E23744] font-semibold underline underline-offset-4">
-              Or fill 3-step self-serve details below ↓
+              Or fill 3-step self-serve details below
             </a>
             <span className="text-gray-300">•</span>
             <div className="flex items-center gap-1.5">
               <span>Already registered?</span>
               <Link to="/login" className="font-bold text-[#E23744] hover:underline">
-                Partner Login →
+                Partner Login
               </Link>
             </div>
           </div>
@@ -546,9 +546,8 @@ function Home() {
                   >
                     <span>{faq.question}</span>
                     <ChevronDown
-                      className={`size-4 shrink-0 text-gray-400 transition-transform duration-200 ${
-                        isOpen ? "rotate-180 text-[#E23744]" : ""
-                      }`}
+                      className={`size-4 shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180 text-[#E23744]" : ""
+                        }`}
                     />
                   </button>
                   {isOpen && (

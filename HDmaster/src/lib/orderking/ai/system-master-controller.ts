@@ -345,12 +345,14 @@ export class SystemMasterController {
   // 1. SOFT REFRESH (Zero Disconnection, Glitch Fix, Audio Engine Resync)
   public performSoftRefresh(): SystemRefreshResult {
     const startTime = performance.now();
+    let clearedCount = 0;
 
     // Re-sync Web Speech synthesis
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       try {
         window.speechSynthesis.cancel();
         window.speechSynthesis.resume();
+        clearedCount++;
       } catch {
         // Fallback
       }
@@ -362,12 +364,12 @@ export class SystemMasterController {
     return {
       success: true,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-      audioResynced: true,
+      audioResynced: clearedCount > 0,
       speechRecognitionActive: true,
       memoryPreserved: true,
-      glitchesClearedCount: 4,
+      glitchesClearedCount: clearedCount,
       latencyMs: Math.max(1, latency),
-      message: "Soft Refresh Complete: Audio buffer resynced, DOM glitches cleared. 100% connected with zero data loss.",
+      message: "Soft Refresh Complete: Audio buffer resynced, DOM state refreshed. Zero data loss.",
     };
   }
 
@@ -434,11 +436,23 @@ export class SystemMasterController {
     suggestions.push("Run 1-Click Cache Purge to clear ephemeral browser render caches.");
     suggestions.push("Auto-Clean is currently ACTIVE to eliminate failed background chunks automatically.");
 
+    let staleKeysCount = 0;
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      try {
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const k = sessionStorage.key(i);
+          if (k && (k.startsWith("temp_") || k.startsWith("stale_") || k.includes("cache"))) {
+            staleKeysCount++;
+          }
+        }
+      } catch {}
+    }
+
     return {
       duplicateItemsCount: duplicatesList.length,
       duplicateSizeBytes,
       formattedDuplicateSize: `${mb} MB`,
-      staleCachesCount: 6,
+      staleCachesCount: staleKeysCount,
       problematicItemsCount: 0,
       duplicatesList,
       suggestions,
@@ -497,7 +511,7 @@ export class SystemMasterController {
     };
   }
 
-  // 6. AUTO-CLEAN MISTAKES & PROBLEMATIC ITEMS (Zero Tolerance)
+  // 6. AUTO-CLEAN MISTAKES & PROBLEMATIC ITEMS
   public performAutoFixMistakes(): {
     mistakesFixedCount: number;
     fixedItems: string[];
@@ -505,7 +519,7 @@ export class SystemMasterController {
     status: string;
   } {
     const fixedItems: string[] = [];
-    const memoryReclaimedBytes = 1450000; // ~1.45 MB reclaimed
+    let memoryReclaimedBytes = 0;
 
     // 1. Audio context lock clearing
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -518,7 +532,7 @@ export class SystemMasterController {
     // 2. Storage integrity check
     if (typeof window !== "undefined" && window.sessionStorage) {
       try {
-        const keysToRemove = [];
+        const keysToRemove: string[] = [];
         for (let i = 0; i < sessionStorage.length; i++) {
           const k = sessionStorage.key(i);
           if (k && (k.startsWith("temp_") || k.startsWith("stale_") || k.includes("corrupt"))) {
@@ -526,6 +540,8 @@ export class SystemMasterController {
           }
         }
         for (const k of keysToRemove) {
+          const val = sessionStorage.getItem(k);
+          if (val) memoryReclaimedBytes += val.length * 2;
           sessionStorage.removeItem(k);
         }
         if (keysToRemove.length > 0) {
@@ -540,23 +556,21 @@ export class SystemMasterController {
     for (const item of items) {
       if (!item.url || item.url === "#" || (!item.title && !item.prompt)) {
         mediaStorageVault.deleteItem(item.id);
+        memoryReclaimedBytes += item.sizeBytes || 0;
         corruptCount++;
       }
     }
     if (corruptCount > 0) {
       fixedItems.push(`Eliminated ${corruptCount} corrupted media vault records`);
     } else {
-      fixedItems.push("Validated all 100% of media vault records integrity");
+      fixedItems.push("Validated all media vault records integrity");
     }
-
-    // 4. Memory leak cleanup
-    fixedItems.push("Flushed orphaned canvas WebGL & 2D buffer contexts");
 
     return {
       mistakesFixedCount: fixedItems.length,
       fixedItems,
       memoryReclaimedBytes,
-      status: "ALL_MISTAKES_AUTO_FIXED_ZERO_TOLERANCE",
+      status: "SYSTEM_CHECK_COMPLETE",
     };
   }
 }

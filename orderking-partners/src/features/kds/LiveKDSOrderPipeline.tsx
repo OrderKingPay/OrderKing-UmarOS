@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 export type OrderStatus = "NEW" | "ACCEPTED" | "PREPARING" | "READY_FOR_PICKUP" | "DISPATCHED" | "DELIVERED";
 export interface OrderItem {
   id: string;
@@ -160,7 +160,15 @@ export const LiveKDSOrderPipeline: React.FC<LiveKDSOrderPipelineProps> = ({
                 {order.items.map((item, idx) => (
                   <div key={idx} style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", fontSize: "14px" }}>
                     <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span style={{ color: item.isVeg ? "#22C55E" : "#EF4444", fontSize: "10px" }}>●</span>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          width: "8px",
+                          height: "8px",
+                          borderRadius: "9999px",
+                          backgroundColor: item.isVeg ? "#22C55E" : "#EF4444",
+                        }}
+                      />
                       <strong>{item.quantity}x</strong> {item.name}
                       {item.variant && <span style={{ fontSize: "12px", color: "#94A3B8" }}>({item.variant})</span>}
                     </span>
@@ -225,7 +233,7 @@ export const LiveKDSOrderPipeline: React.FC<LiveKDSOrderPipelineProps> = ({
                 style={{ padding: "10px 14px", backgroundColor: "#334155", color: "#FFF", border: "none", borderRadius: "6px", fontWeight: 600, cursor: "pointer" }}
                 title="Print KOT"
               >
-                🖨️
+                Print KOT
               </button>
             </div>
           </div>

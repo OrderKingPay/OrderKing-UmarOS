@@ -103,7 +103,7 @@ describe("Partner King AI Autonomous Multilingual Action Dispatcher", () => {
       ticketId: "tkt_12345",
       ticketNumber: "TKT-2026-9999",
       status: "AI_INVESTIGATING",
-      aiResolutionSummary: "Your T+1 bank payout of ₹5,130 is in transit to your HDFC bank account.",
+      aiResolutionSummary: "Your T+1 bank payout of ₹5,130 is in transit to your linked settlement bank account.",
     } as any);
 
     const res = await tryExecutePartnerAiCommand(
@@ -115,7 +115,7 @@ describe("Partner King AI Autonomous Multilingual Action Dispatcher", () => {
     expect(res.action).toBe("CREATE_SUPPORT_TICKET");
     expect(res.createdTicketId).toBe("tkt_12345");
     expect(res.replyText).toContain("TKT-2026-9999");
-    expect(res.replyText).toContain("Instant AI Resolution");
+    expect(res.replyText).toContain("AI Resolution");
     expect(spyCreateTicket).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({

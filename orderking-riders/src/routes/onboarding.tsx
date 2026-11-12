@@ -73,7 +73,7 @@ export function RiderOnboardingPage() {
           setUpiId((prev) => prev || r.payoutUpi || "");
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const isExemptVehicle = vehicleCategory === "CYCLE" || vehicleCategory === "EV";
@@ -210,10 +210,10 @@ export function RiderOnboardingPage() {
       });
 
       await submitKycFn();
-      toast.success("Account saved. Redirecting to orders...");
+      toast.success("Account verified! Redirecting to orders...");
       window.location.assign("/");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Profile was not saved.";
+      const msg = err instanceof Error ? err.message : "Failed to save rider onboarding. Please check your details and try again.";
       setError(msg);
       toast.error(msg);
     } finally {
@@ -254,24 +254,22 @@ export function RiderOnboardingPage() {
               onClick={() => {
                 if (s.n < step) setStep(s.n as any);
               }}
-              className={`flex flex-col items-center gap-1 transition-all ${
-                step === s.n
-                  ? "text-primary"
-                  : step > s.n
+              className={`flex flex-col items-center gap-1 transition-all ${step === s.n
+                ? "text-primary"
+                : step > s.n
                   ? "text-emerald-400"
                   : "text-slate-500"
-              }`}
+                }`}
             >
               <div
-                className={`flex size-7 items-center justify-center rounded-full text-xs font-bold ${
-                  step === s.n
-                    ? "bg-primary text-primary-foreground text-black"
-                    : step > s.n
+                className={`flex size-7 items-center justify-center rounded-full text-xs font-bold ${step === s.n
+                  ? "bg-primary text-primary-foreground text-black"
+                  : step > s.n
                     ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
                     : "bg-background border border-slate-800 text-slate-500"
-                }`}
+                  }`}
               >
-                {step > s.n ? "✓" : s.n}
+                {step > s.n ? <CheckCircle2 className="size-3.5" /> : s.n}
               </div>
               <span className="text-[10px] font-semibold">{s.label}</span>
             </button>
@@ -453,11 +451,10 @@ export function RiderOnboardingPage() {
                       setVehicleCategory(v.id as any);
                       setError(null);
                     }}
-                    className={`rounded-xl border p-3.5 text-xs font-semibold transition-all ${
-                      vehicleCategory === v.id
-                        ? "border-primary bg-primary text-primary-foreground/20 text-primary"
-                        : "border-border bg-background text-slate-300"
-                    }`}
+                    className={`rounded-xl border p-3.5 text-xs font-semibold transition-all ${vehicleCategory === v.id
+                      ? "border-primary bg-primary text-primary-foreground/20 text-primary"
+                      : "border-border bg-background text-slate-300"
+                      }`}
                   >
                     <Bike className="size-5 mx-auto mb-1.5" />
                     <div>{v.label}</div>
@@ -633,7 +630,7 @@ export function RiderOnboardingPage() {
 
               <div className="rounded-xl border border-border bg-background p-3 flex items-center justify-between text-xs">
                 <span className="text-slate-300">Delivery Bag Ready</span>
-                <span className="text-emerald-400 font-bold">Verified ✓</span>
+                <span className="text-emerald-400 font-bold">Verified</span>
               </div>
 
               <div className="pt-2 flex items-center justify-between">

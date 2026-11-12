@@ -79,7 +79,7 @@ export function BusinessOsCommandCenterModal({
       const result = await executeFounderCommandFn({ data: { command: cmd } });
       setLastResult(result);
       setIsExecuting(false);
-      toast.success("⚡ Autonomous Business Command Executed!");
+      toast.success("Autonomous Business Command Executed.");
 
       if (onExecuteInChat) {
         onExecuteInChat(cmd);
@@ -154,12 +154,12 @@ export function BusinessOsCommandCenterModal({
         <div className="flex items-center justify-between border-b border-white/10 bg-black/40 px-5 py-2 overflow-x-auto scrollbar-none">
           <div className="flex items-center gap-1.5 bg-[#141a22] p-1 rounded-xl border border-white/5">
             {[
-              { id: "overview" as const, label: "⚡ One-Command Center" },
-              { id: "modules" as const, label: "🏢 Business Modules (8)" },
-              { id: "workforce" as const, label: "🤖 Digital Workforce" },
-              { id: "consensus" as const, label: `🧠 Multi-Model Consensus (${adapters.length})` },
-              { id: "approvals" as const, label: `🔒 Approval Gates (${pendingApprovals.length})` },
-              { id: "audit" as const, label: `📜 Audit Chain (${auditChain.length})` },
+              { id: "overview" as const, label: "One-Command Center" },
+              { id: "modules" as const, label: "Business Modules (8)" },
+              { id: "workforce" as const, label: "Digital Workforce" },
+              { id: "consensus" as const, label: `Multi-Model Consensus (${adapters.length})` },
+              { id: "approvals" as const, label: `Approval Gates (${pendingApprovals.length})` },
+              { id: "audit" as const, label: `Audit Chain (${auditChain.length})` },
             ].map((t) => (
               <button
                 key={t.id}
@@ -178,7 +178,7 @@ export function BusinessOsCommandCenterModal({
 
           {pendingApprovals.length > 0 && (
             <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/40 text-[10px] animate-pulse">
-              ⚠️ {pendingApprovals.length} Action(s) Require Founder Approval
+              {pendingApprovals.length} Action(s) Require Founder Approval
             </Badge>
           )}
         </div>
@@ -196,7 +196,7 @@ export function BusinessOsCommandCenterModal({
                     <span>Radically Simple: Founder One-Command Execution</span>
                   </span>
                   <span className="text-[10px] text-slate-400">
-                    Auto-plans → parallel agents → cross-verifies → executes
+                    Auto-plans | parallel agents | cross-verifies | executes
                   </span>
                 </div>
 
@@ -238,7 +238,7 @@ export function BusinessOsCommandCenterModal({
                       }}
                       className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[10.5px] text-slate-300 hover:text-white transition"
                     >
-                      ⚡ {preset}
+                      {preset}
                     </button>
                   ))}
                 </div>
@@ -293,7 +293,7 @@ export function BusinessOsCommandCenterModal({
                     <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-500/50 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
                       <div>
                         <span className="text-xs font-bold text-rose-300 block">
-                          🔒 Founder Gate Paused: {lastResult.pendingApproval.title}
+                          Founder Gate Paused: {lastResult.pendingApproval.title}
                         </span>
                         <span className="text-[11px] text-slate-300">
                           {lastResult.pendingApproval.description}

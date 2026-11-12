@@ -1045,7 +1045,7 @@ const TEN_WORLDS: WorldDefinition[] = [
         label: "Rider Base Payout Per Order (₹)",
         type: "number",
         unit: "₹",
-        description: "Minimum guaranteed payout to the delivery rider per trip.",
+        description: "Base payout floor to the delivery rider per completed trip.",
         defaultValue: 30,
       },
       {
@@ -1123,7 +1123,7 @@ const TEN_WORLDS: WorldDefinition[] = [
         label: "King Pay Wallet Cashback (%)",
         type: "number",
         unit: "%",
-        description: "Instant cashback added to customer King Pay wallet.",
+        description: "Configured reward rate credited to customer King Pay wallet.",
         defaultValue: 2,
       },
       {

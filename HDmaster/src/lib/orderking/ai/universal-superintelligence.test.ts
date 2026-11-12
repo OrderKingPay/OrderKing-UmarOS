@@ -1,15 +1,15 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { UniversalAdvancedintelligenceEngine } from './universal-superintelligence-engine.server.ts';
+import { UniversalSuperintelligenceEngine } from './universal-superintelligence-engine.server.ts';
 import { getSql } from '../../db.ts';
 
-describe('Universal Advancedintelligence Engine', () => {
+describe('Universal Superintelligence Engine', () => {
   it('blocks execution when real provider credentials are missing', async () => {
     const sql = await getSql();
     await sql.query(`INSERT INTO organizations (id, name, legal_name) VALUES ('test_org', 'Test Org', 'Test Org LLC') ON CONFLICT DO NOTHING`);
 
     try {
-      await UniversalAdvancedintelligenceEngine.execute({
+      await UniversalSuperintelligenceEngine.execute({
         orgId: 'test_org',
         owner: 'test_owner',
         instruction: 'Get operations summary',

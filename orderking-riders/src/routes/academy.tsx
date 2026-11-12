@@ -211,7 +211,7 @@ function RiderAcademyPage() {
                   : "bg-[#E23744] hover:bg-amber-400 text-black"
               }`}
             >
-              {completed[selected.id] ? "Completed ✓" : "Mark as Read"}
+              {completed[selected.id] ? "Completed" : "Mark as Read"}
             </Button>
           </div>
 

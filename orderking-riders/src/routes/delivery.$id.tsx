@@ -136,12 +136,12 @@ function Page() {
   const kitchenWaitMins =
     d?.arrivedRestaurantAt && endWaitTime
       ? Math.max(
-          0,
-          Math.floor(
-            (endWaitTime - new Date(d.arrivedRestaurantAt).getTime()) /
-              60_000,
-          ),
-        )
+        0,
+        Math.floor(
+          (endWaitTime - new Date(d.arrivedRestaurantAt).getTime()) /
+          60_000,
+        ),
+      )
       : 0;
   const waitBonusPaise = calculateRestaurantWaitPayPaise(kitchenWaitMins, 6, 100);
 
@@ -162,7 +162,7 @@ function Page() {
               <div>
                 <h1 className="font-display text-2xl">Order #{d.orderCode}</h1>
                 <p className="text-xs text-muted-foreground">
-                  {d.restaurant.name} → {d.customer.area}
+                  {d.restaurant.name} to {d.customer.area}
                 </p>
               </div>
             </div>
@@ -171,8 +171,8 @@ function Page() {
                 d.state === "DELIVERED"
                   ? "online"
                   : d.state === "RIDER_CANCELLED" ||
-                      d.state === "ORDER_CANCELLED" ||
-                      d.state === "DELIVERY_FAILED"
+                    d.state === "ORDER_CANCELLED" ||
+                    d.state === "DELIVERY_FAILED"
                     ? "offline"
                     : "busy"
               }
@@ -319,11 +319,10 @@ function Page() {
                       key={item.topic}
                       type="button"
                       onClick={() => setTicketTopic(item.topic)}
-                      className={`rounded-full border px-2.5 py-1 text-[11px] transition ${
-                        ticketTopic === item.topic
+                      className={`rounded-full border px-2.5 py-1 text-[11px] transition ${ticketTopic === item.topic
                           ? "border-primary bg-primary/15 font-semibold text-primary"
                           : "border-border bg-muted/40 text-muted-foreground hover:bg-muted"
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </button>

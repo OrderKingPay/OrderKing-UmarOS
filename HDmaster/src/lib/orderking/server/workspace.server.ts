@@ -46,7 +46,7 @@ export type Workspace = {
   employee: EmployeeRow;
   email: string | null;
   displayName: string;
-  dataMode: "executeD" | "PRODUCTION";
+  dataMode: "SANDBOX" | "PRODUCTION";
   settings: PlatformSettings;
 };
 
@@ -269,7 +269,7 @@ export async function ensureWorkspace(
     employee: row,
     email,
     displayName: row.name,
-    dataMode: (meta[0]?.data_mode as "executeD" | "PRODUCTION") ?? "PRODUCTION",
+    dataMode: (meta[0]?.data_mode as "SANDBOX" | "PRODUCTION") ?? "PRODUCTION",
     settings,
   };
 }

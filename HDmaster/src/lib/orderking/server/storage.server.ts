@@ -118,7 +118,7 @@ export async function createPresignedUpload(
 ): Promise<PresignedUploadResponse> {
   const config = getStorageConfig();
   if (!config.hasCredentials) {
-    throw new Error("Storage credentials not configured. Refusing to generate a executed upload URL.");
+    throw new Error("Storage credentials not configured. Upload URL cannot be generated.");
   }
 
   if (!config.publicBaseUrl) {

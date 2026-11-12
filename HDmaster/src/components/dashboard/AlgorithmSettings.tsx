@@ -756,7 +756,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
               Rider Base Pay per Order (₹)
             </label>
             <p className="text-[11px] text-slate-500">
-              Minimum guaranteed base fare floor (Pickup + Drop).
+              Base fare floor applied per completed order (Pickup + Drop).
             </p>
             <input
               type="number"
@@ -984,7 +984,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-xs">
         <div className="flex items-center gap-2 font-bold text-slate-800 mb-3">
           <Truck className="h-4 w-4 text-emerald-600" />
-          How These Rules Work on a Sample 3 km Order
+          Rule Calculation Preview (3 km Order)
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="rounded-xl bg-white p-3 border border-slate-200">
