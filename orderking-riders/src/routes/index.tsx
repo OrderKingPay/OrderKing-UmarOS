@@ -120,7 +120,7 @@ function RiderPublicLanding() {
           </h1>
 
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Join the hyperlocal delivery fleet. Guaranteed base floor, per-kilometer compensation, and daily direct bank settlements.
+            Deliver local orders with transparent base pay, per-kilometer distance pay, and direct bank payouts.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -157,7 +157,7 @@ function RiderPublicLanding() {
               </div>
               <h3 className="font-extrabold text-white text-base">₹35.00 Base Floor</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Guaranteed minimum pay for the first 2.0 km on every completed delivery.
+                Base floor pay for the first 2.0 km on every completed delivery.
               </p>
             </div>
 

@@ -131,7 +131,7 @@ export function CuratedCollections({
                 {col.title}
               </h3>
               <p className="mt-0.5 text-[10px] text-white/80 line-clamp-1">
-                {col.placesCount} Places
+                {col.tagline}
               </p>
             </div>
           </Link>

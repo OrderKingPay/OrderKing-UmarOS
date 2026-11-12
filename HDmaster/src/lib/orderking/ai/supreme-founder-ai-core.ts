@@ -475,26 +475,25 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to clear cac
     });
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Parsing High-Precision Visual Prompt", status: "COMPLETED", detail: rawPrompt },
-      { stepNumber: 2, totalSteps: 4, label: "Routing to Unlimited Free Neural Engine", status: "COMPLETED", detail: "Zero API charges · 1024x1024 Ultra Resolution" },
-      { stepNumber: 3, totalSteps: 4, label: "Synthesizing Photorealistic Asset", status: "COMPLETED", detail: "Ray-traced lighting and dynamic shaders rendered" },
-      { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
+      { stepNumber: 1, totalSteps: 3, label: "Parsing Visual Prompt", status: "COMPLETED", detail: rawPrompt },
+      { stepNumber: 2, totalSteps: 3, label: "Requesting Pollinations Render URL", status: "COMPLETED", detail: "1024x1024 resolution" },
+      { stepNumber: 3, totalSteps: 3, label: "Saving Reference to Media Vault", status: "COMPLETED", detail: "Stored in HDmaster Media Vault" },
     ];
 
     const responseMarkdown = `### AI Image Generation Output
 - **Prompt**: *"${rawPrompt}"*
 - **Resolution**: **1024 × 1024** | **Provider**: Pollinations AI
-- **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
+- **Vault Status**: Saved in **HDmaster Media Vault**.
 
 ![Generated AI Image](${imageUrl})
 
-You can download this image, copy its direct CDN link, or command further edits below!`;
+You can download or copy the image link below.`;
 
     const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai aur aapke media vault me save ho gaya hai.`
+      ? `Maine aapke liye AI image prepare kar diya hai aur aapke media vault me save ho gaya hai.`
       : isBengali
-      ? `Ami apnar jonno high-resolution AI image toiri korechi ebong apnar media vault e save hoyeche.`
-      : `I have generated your high-resolution AI image. It has unlimited generation capacity and has been saved to your Media Vault.`;
+      ? `Ami apnar jonno AI image toiri korechi ebong media vault e save hoyeche.`
+      : `AI image prepared and saved to your Media Vault.`;
 
     return {
       intent: "media_generation",
@@ -990,18 +989,21 @@ Select any module below to **preview standalone source code, download full ZIP p
     q.includes("together")
   ) {
     const consensus = ensembleConsensusEngine.executeConsensus(query);
+    const activeModels =
+      consensus.modelsBreakdown
+        .filter((m) => m.connectionStatus === "CONNECTED")
+        .map((m) => m.modelName)
+        .join(", ") || "Local Deterministic Core";
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Simultaneous Multi-Model Fanout", status: "COMPLETED", detail: "GPT-5.6, Claude 4.6, Grok 4.6, Gemini 3.8, Codex, DeepSeek invoked" },
-      { stepNumber: 2, totalSteps: 4, label: "Cross-Model Critique & Verification", status: "COMPLETED", detail: "Checked 0.00% hallucinations, verified algorithmic correctness" },
-      { stepNumber: 3, totalSteps: 4, label: "Mathematical Consensus Synthesis", status: "COMPLETED", detail: `${consensus.overallConsensusAgreement}% Inter-model agreement reached` },
-      { stepNumber: 4, totalSteps: 4, label: "Single Unified Flawless Deliverable", status: "COMPLETED", detail: "Unified production solution authorized" },
+      { stepNumber: 1, totalSteps: 2, label: "Checking Active Model Providers", status: "COMPLETED", detail: `Providers checked: ${activeModels}` },
+      { stepNumber: 2, totalSteps: 2, label: "Consensus Summary Built", status: "COMPLETED", detail: `${consensus.overallConsensusAgreement}% agreement across active providers` },
     ];
 
     return {
       intent: "ensemble_consensus",
       detectedLanguage,
       responseMarkdown: consensus.unifiedSynthesis,
-      voiceSpokenText: `All 6 strongest frontier models have executed together in complete consensus with ${consensus.overallConsensusAgreement} percent agreement. The deliverable is 100% verified with zero hallucinations.`,
+      voiceSpokenText: `Consensus checked across ${activeModels}.`,
       executionSteps,
       actionCard: {
         type: "ensemble_consensus",
@@ -1010,7 +1012,7 @@ Select any module below to **preview standalone source code, download full ZIP p
     };
   }
 
-  // 7. 1-Command Instant Live App & Website Deployer
+  // 7. 1-Command App & Deployment Script Generator
   if (
     q.includes("deploy live") ||
     q.includes("1-command deploy") ||
@@ -1027,30 +1029,28 @@ Select any module below to **preview standalone source code, download full ZIP p
     );
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Synthesizing Full-Stack Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files scaffolded with React 19 & Tailwind` },
-      { stepNumber: 2, totalSteps: 4, label: "Bundling Standalone Production PWA", status: "COMPLETED", detail: "HTML5/ESM bundle compiled with zero external dependencies" },
-      { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Live at ${deployRes.liveUrl} with SSL 100% certified` },
-      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Vercel & Cloudflare 1-click terminal scripts ready" },
+      { stepNumber: 1, totalSteps: 3, label: "Preparing App Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files generated` },
+      { stepNumber: 2, totalSteps: 3, label: "Generating Deployment Commands", status: "COMPLETED", detail: "Vercel & Cloudflare CLI commands prepared" },
+      { stepNumber: 3, totalSteps: 3, label: "Target Host Assigned", status: "COMPLETED", detail: `Target URL: ${deployRes.liveUrl}` },
     ];
 
-    const responseMarkdown = `### 1-Command Live Deployment Complete
+    const responseMarkdown = `### Deployment Bundle Ready
 - **Project**: **${deployRes.projectName}**
-- **Live URL**: [\`${deployRes.liveUrl}\`](${deployRes.liveUrl})
-- **Status**: **${deployRes.status}** (SSL Encrypted · CDN Edge: ${deployRes.edgeRegion})
-- **Files Generated**: **${deployRes.filesGeneratedCount} production files**
+- **Target URL**: [\`${deployRes.liveUrl}\`](${deployRes.liveUrl})
+- **Status**: **${deployRes.status}** (Edge: ${deployRes.edgeRegion})
+- **Files Generated**: **${deployRes.filesGeneratedCount} files**
 
 \`\`\`bash
-# 1-Click Terminal Deployment Script
 ${deployRes.vercelDeployCommand}
 \`\`\`
 
-The live standalone preview bundle is compiled and ready for instant preview or direct customer handoff!`;
+Run the CLI command above to deploy to Cloudflare Pages or Vercel.`;
 
     return {
       intent: "instant_deploy",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `Your project ${deployRes.projectName} has been compiled and deployed live in one command. SSL is active and the production preview is ready.`,
+      voiceSpokenText: `Prepared ${deployRes.projectName} deployment bundle with CLI scripts ready to run.`,
       executionSteps,
       actionCard: {
         type: "instant_deploy",
@@ -1059,7 +1059,7 @@ The live standalone preview bundle is compiled and ready for instant preview or 
     };
   }
 
-  // 8. Autonomous Frontier Model Evolution & Self-Upgrading Tracker
+  // 8. Model Registry & Upgrade Check
   if (
     q.includes("model update") ||
     q.includes("frontier model") ||
@@ -1072,25 +1072,23 @@ The live standalone preview bundle is compiled and ready for instant preview or 
     q.includes("evolution")
   ) {
     const updateReport = autonomousModelUpdater.checkForUpdates();
+    const upgradeCount = updateReport.notifications.length;
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 3, label: "Scanning Frontier AI Labs", status: "COMPLETED", detail: "Queried OpenAI, Anthropic, xAI, Google DeepMind registries" },
-      { stepNumber: 2, totalSteps: 3, label: "Evaluating Zero-Downtime Hot-Swaps", status: "COMPLETED", detail: "Prepared 3 next-gen models for instantaneous founder consent" },
-      { stepNumber: 3, totalSteps: 3, label: "Founder Consent Gate Armed", status: "COMPLETED", detail: "Awaiting 1-click founder authorization" },
+      { stepNumber: 1, totalSteps: 2, label: "Inspecting Model Registry", status: "COMPLETED", detail: `${upgradeCount} upgrade option(s) listed in registry` },
+      { stepNumber: 2, totalSteps: 2, label: "Waiting for Admin Confirmation", status: "COMPLETED", detail: "Manual switch required before applying changes" },
     ];
 
-    const responseMarkdown = `### Autonomous Model Evolution: Next-Gen Upgrades Detected
-- **Current Active Generation**: **Gen-5.6 / Gen-4.6 (GPT-5.6, Claude 4.Opus, Grok 4.6)**
-- **Next-Generation Releases Available**: **${updateReport.notifications.length} Hot-Swaps Ready**
-- **Upgrade Policy**: **Autonomous Detection with 1-Click Founder Consent**
-- **Policy**: Umar OS will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system auto-configures and upgrades smoothly.
+    const responseMarkdown = `### Model Registry Check
+- **Registered Upgrade Options**: **${upgradeCount}**
+- **Switch Policy**: Manual founder approval required before updating active provider models.
 
-Review available model upgrades below and click **"1-Click Hot-Upgrade"** to switch engine generations instantly.`;
+Review the available options below before switching models.`;
 
     return {
       intent: "general_executive",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `I have scanned the frontier AI laboratories. Three next-generation model upgrades are ready for hot-swapping into Umar OS. You can authorize any upgrade in one click with zero downtime.`,
+      voiceSpokenText: `${upgradeCount} model upgrade options are available for review.`,
       executionSteps,
       actionCard: {
         type: "model_updates",

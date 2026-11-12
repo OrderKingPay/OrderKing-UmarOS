@@ -1622,28 +1622,20 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
   if ( q.startsWith("/media") ) {
     const isVideo = q.includes("video");
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting AI Media Studio", status: "COMPLETED", detail: "Allocated dedicated GPU rendering cluster" },
-      { stepNumber: 2, totalSteps: 4, label: "Processing Prompt Parameters", status: "COMPLETED", detail: `Synthesizing ${isVideo ? "high-fidelity video stream" : "hyper-realistic image array"}` },
-      { stepNumber: 3, totalSteps: 4, label: "Applying Unlimited Free Tier", status: "COMPLETED", detail: "Bypassed standard token limits for founder" },
-      { stepNumber: 4, totalSteps: 4, label: "Saving to Media Vault", status: "COMPLETED", detail: "Artifacts securely cached in Sovereign Memory" },
+      { stepNumber: 1, totalSteps: 1, label: "Checking Media Provider Configuration", status: "FAILED", detail: "No live image or video generation provider API key is configured on this route" },
     ];
 
-    const promptText = query.replace(/generate image of/i, "").replace(/generate video of/i, "").replace(/create image of/i, "").trim() || "A hyper-realistic futuristic cyberpunk cityscape with neon lights and flying cars";
-    const imageUrl = "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop";
+    const promptText = query.replace(/^\/media/i, "").replace(/generate image of/i, "").replace(/generate video of/i, "").replace(/create image of/i, "").trim();
 
-    const responseMarkdown = `### AI ${isVideo ? "Video" : "Image"} Studio Execution
-- **Asset Type**: ${isVideo ? "Video Generation" : "Image Synthesis"}
-- **Prompt Extracted**: "${promptText}"
-- **Billing**: **Unlimited Free (Founder Tier)**
-- **Status**: Rendered and cached locally to Media Vault.
-
-You can preview and save the generated ${isVideo ? "video" : "image"} directly using the action card below.`;
+    const responseMarkdown = `### Media Generation Provider Required
+- **Requested Type**: ${isVideo ? "Video" : "Image"}${promptText ? `\n- **Prompt**: "${promptText}"` : ""}
+- **Status**: No live media rendering API is connected in this client session. Stock placeholder assets are disabled. Configure your image or video provider API key in the server environment to render media.`;
 
     const voiceSpokenText = isHindi
-      ? `Aapke command ke anusar, maine AI Studio me ${isVideo ? "video" : "image"} generate kar diya hai. Yeh unlimited free hai aur Media Vault me save karne ke liye ready hai.`
+      ? `Media generation ke liye live provider API key configured nahi hai.`
       : isBengali
-      ? `Apnar command onujayi, ami AI Studio te ${isVideo ? "video" : "image"} generate korechi. Eta unlimited free ebong Media Vault e save korar jonno ready ache.`
-      : `I have generated your requested ${isVideo ? "video" : "image"} using the AI Media Studio. It is rendered with unlimited free execution and is ready to be saved to the Media Vault.`;
+      ? `Media generation er jonno live provider API key set kora nei.`
+      : `No live media provider API key is configured. Stock placeholders are disabled.`;
 
     return {
       intent: "media_generation",
@@ -1656,33 +1648,29 @@ You can preview and save the generated ${isVideo ? "video" : "image"} directly u
         data: {
           prompt: promptText,
           type: isVideo ? "video" : "image",
-          generatedUrl: imageUrl
-        }
-      }
+          generatedUrl: "",
+        },
+      },
     };
   }
 
   if ( q.startsWith("/purify") || (isShortCmd && q.includes("scan disk")) ) {
+    const inspection = mediaStorageVault.inspectSystemStorage();
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting Sovereign Cache Purifier", status: "COMPLETED", detail: "Initializing deep system scan" },
-      { stepNumber: 2, totalSteps: 4, label: "Scanning Temporary Files", status: "COMPLETED", detail: "Analyzing Next.js caches, Vite build artifacts, and local storage" },
-      { stepNumber: 3, totalSteps: 4, label: "Evaluating Protected Core", status: "COMPLETED", detail: "Isolating critical production assets & DB instances (0% Risk)" },
-      { stepNumber: 4, totalSteps: 4, label: "Purge Ready", status: "COMPLETED", detail: "Awaiting final confirmation for 1-click purge" },
+      { stepNumber: 1, totalSteps: 2, label: "Scanning Client Media Storage", status: "COMPLETED", detail: `Inspected ${inspection.itemCount} stored item(s) (${inspection.formattedTotalSize})` },
+      { stepNumber: 2, totalSteps: 2, label: "Verifying Protected Records", status: "COMPLETED", detail: "PostgreSQL database records untouched." },
     ];
 
-    const responseMarkdown = `### Sovereign Cache Purifier Scan Complete
-- **Status**: Scan successful. Protected Core mode is **ACTIVE**.
-- **Found**: 14,208 redundant temporary files across node_modules and .next cache.
-- **Potential Free Space**: **4.2 GB**
-- **Safety Status**: Critical source code and production databases are strictly isolated.
-
-Use the action card below to execute the 1-click purge.`;
+    const responseMarkdown = `### Storage Inspection Complete
+- **Cached Items Found**: ${inspection.itemCount}
+- **Measured Cache Size**: **${inspection.formattedTotalSize}**
+- **Protected Records**: Live PostgreSQL orders and ledger records are untouched.`;
 
     const voiceSpokenText = isHindi
-      ? `Sovereign Cache Purifier ne disk scan complete kar liya hai. 4 point 2 GB space free kiya ja sakta hai. Protected core check active hai, isliye purge karna bilkul safe hai.`
+      ? `Storage scan complete: ${inspection.itemCount} cached items, total ${inspection.formattedTotalSize}.`
       : isBengali
-      ? `Sovereign Cache Purifier disk scan complete koreche. 4 point 2 GB space free kora jabe. Protected core check active ache, tai purge kora completely safe.`
-      : `The Sovereign Cache Purifier has completed its disk scan. We can free up 4.2 Gigabytes of space. The protected core check is active, so you can execute the 1-click purge safely without risking critical assets.`;
+      ? `Storage scan complete: ${inspection.itemCount} ti cached item, total ${inspection.formattedTotalSize}.`
+      : `Storage scan complete. Found ${inspection.itemCount} cached items (${inspection.formattedTotalSize}).`;
 
     return {
       intent: "storage_purifier",
@@ -1693,15 +1681,15 @@ Use the action card below to execute the 1-click purge.`;
       actionCard: {
         type: "cache_purifier",
         data: {
-          scannedFiles: 14208,
-          freedSpace: "4.2 GB",
-          isProtectedCoreIntact: true
-        }
-      }
+          scannedFiles: inspection.itemCount,
+          freedSpace: inspection.formattedTotalSize,
+          isProtectedCoreIntact: true,
+        },
+      },
     };
   }
 
-  // 3. System Settings, Restart & Refresh (Glitch-Fix Without Disconnections)
+  // 3. System Settings & Local State Refresh
   if (
     q.includes("setting") ||
     q.includes("restart") ||
@@ -1715,30 +1703,21 @@ Use the action card below to execute the 1-click purge.`;
     const isRefresh = q.includes("refresh") || q.includes("glitch");
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning System State & Memory", status: "COMPLETED", detail: "Memory clean · Zero data loss protection · State snapshots verified" },
-      { stepNumber: 2, totalSteps: 4, label: isRestart ? "Executing Graceful System Restart" : "Applying Zero-Downtime Refresh", status: "COMPLETED", detail: isRestart ? "Reloading sovereign AI modules without session drop" : "Hot-fixing UI glitches & flushing stale buffers (0 disconnections)" },
-      { stepNumber: 3, totalSteps: 4, label: "Synchronizing Edge Gateways", status: "COMPLETED", detail: "All 8 connected platforms & RPC nodes healthy" },
-      { stepNumber: 4, totalSteps: 4, label: "Optimizer Verification Complete", status: "COMPLETED", detail: "Latency: 12ms · 100% Stable" },
+      { stepNumber: 1, totalSteps: 2, label: isRestart ? "Resetting Local Voice & Cache State" : "Refreshing Client Session State", status: "COMPLETED", detail: "Preserving authenticated sessions and database records" },
+      { stepNumber: 2, totalSteps: 2, label: "Settings Loaded", status: "COMPLETED", detail: "Client voice and notification preferences ready" },
     ];
 
-    const responseMarkdown = `### HDmaster System Configuration & Optimizer
-- **Operation**: **${isRestart ? "System Restart (Preserved State)" : isRefresh ? "Zero-Downtime Refresh (Glitch Fix)" : "Settings & Manual Customization"}**
-- **Status**: **100% Optimal & Connected** (0 Disconnections · Zero Data Loss)
-- **Engine Tuning**: **Sovereign Ultra (Young Female Aria Acoustic Profile)**
-- **Security**: **HMAC-SHA256 Active · Zero-Leak Sandbox Armed**
+    const responseMarkdown = `### System Settings
+- **Operation**: **${isRestart ? "Local State Reset" : isRefresh ? "Client State Refresh" : "Settings"}**
+- **Status**: Authenticated sessions and PostgreSQL records remain untouched.
 
-> [!NOTE]
-> **Zero Disconnection Mode**:
-> - **RESTART**: Gracefully reboots engine instances while permanently maintaining founder chats, invoices, and contracts.
-> - **REFRESH**: Flushes minor render glitches, resets audio contexts, and re-syncs state in **sub-5ms** without any disconnection.
-
-Manual customization controls and 1-click optimization triggers are available below!`;
+Adjust preferences below.`;
 
     const voiceSpokenText = isHindi
-      ? `HDmaster system settings aur optimization ready hain. Refresh bina kisi disconnection ke glitches theek karta hai, aur restart aapke saare data ko surakshit rakhte hue system ko reboot karta hai.`
+      ? `System settings ready hain. Aap preferences update kar sakte hain.`
       : isBengali
-      ? `HDmaster system settings ebong optimization ready ache. Refresh kono disconnection charai glitches fix kore, ebong restart apnar shob data safe rekhe system reboot kore.`
-      : `HDmaster system settings and optimizer are active. Refresh fixes UI glitches without disconnections, and Restart safely reboots all engines with 100% preserved founder state.`;
+      ? `System settings ready ache. Apni preferences change korte paren.`
+      : `System settings loaded.`;
 
     return {
       intent: "system_settings",
@@ -1894,32 +1873,29 @@ Manual customization controls and 1-click optimization triggers are available be
 
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Synthesizing Full-Stack Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files scaffolded with React 19 & Tailwind` },
-      { stepNumber: 2, totalSteps: 4, label: "Bundling Standalone Production PWA", status: "COMPLETED", detail: "HTML5/ESM bundle compiled with zero external dependencies" },
-      { stepNumber: 3, totalSteps: 4, label: "Compiling In-Browser Interactive Sandbox", status: "COMPLETED", detail: `Sandbox ready: Zero DNS latency, 100% locally interactive` },
-      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Vercel & Cloudflare 1-click terminal scripts ready" },
+      { stepNumber: 1, totalSteps: 3, label: "Preparing App Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files generated with React 19 & Tailwind` },
+      { stepNumber: 2, totalSteps: 3, label: "Building Local Preview", status: "COMPLETED", detail: "Browser preview bundle ready" },
+      { stepNumber: 3, totalSteps: 3, label: "Preparing Deployment Scripts", status: "COMPLETED", detail: "Vercel & Cloudflare CLI scripts generated" },
     ];
 
-    const responseMarkdown = `### 1-Command App Generation & Preview Ready
+    const responseMarkdown = `### App Bundle & CLI Scripts Ready
 - **Project**: **${deployRes.projectName}**
-- **Status**: **${deployRes.status}** (In-Browser Reactive Sandbox · Target Host: \`${deployRes.targetDomain}\`)
-- **Files Generated**: **${deployRes.filesGeneratedCount} production files**
+- **Status**: **${deployRes.status}** (Target Host: \`${deployRes.targetDomain}\`)
+- **Files Generated**: **${deployRes.filesGeneratedCount} files**
 
 \`\`\`bash
-# 1-Click Terminal Deployment Script (Vercel)
+# Vercel CLI
 ${deployRes.vercelDeployCommand}
 
-# 1-Click Edge CDN Deployment (Cloudflare Pages)
+# Cloudflare Pages CLI
 ${deployRes.cloudflareDeployCommand}
-\`\`\`
-
-The live standalone preview bundle is compiled and ready for instant in-browser preview or direct customer handoff!`;
+\`\`\``;
 
     return {
       intent: "instant_deploy",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `Your project ${deployRes.projectName} has been compiled and is ready for interactive sandbox preview and cloud deployment.`,
+      voiceSpokenText: `Prepared ${deployRes.projectName} bundle and deployment CLI scripts.`,
       executionSteps,
       actionCard: {
         type: "instant_deploy",
@@ -1928,7 +1904,7 @@ The live standalone preview bundle is compiled and ready for instant in-browser 
     };
   }
 
-  // 8. Autonomous Frontier Model Evolution & Self-Upgrading Tracker
+  // 8. Model Registry Check
   if (
     q.includes("model update") ||
     q.includes("frontier model") ||
@@ -1941,25 +1917,23 @@ The live standalone preview bundle is compiled and ready for instant in-browser 
     q.includes("evolution")
   ) {
     const updateReport = autonomousModelUpdater.checkForUpdates();
+    const upgradeCount = updateReport.notifications.length;
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 3, label: "Scanning Frontier AI Labs", status: "COMPLETED", detail: "Queried OpenAI, Anthropic, xAI, Google DeepMind registries" },
-      { stepNumber: 2, totalSteps: 3, label: "Evaluating Zero-Downtime Hot-Swaps", status: "COMPLETED", detail: "Prepared 3 next-gen models for instantaneous founder consent" },
-      { stepNumber: 3, totalSteps: 3, label: "Founder Consent Gate Armed", status: "COMPLETED", detail: "Awaiting 1-click founder authorization" },
+      { stepNumber: 1, totalSteps: 2, label: "Inspecting Model Registry", status: "COMPLETED", detail: `${upgradeCount} upgrade option(s) listed` },
+      { stepNumber: 2, totalSteps: 2, label: "Waiting for Admin Confirmation", status: "COMPLETED", detail: "Manual switch required before applying changes" },
     ];
 
     const responseMarkdown = `### Model Registry Inspection
-- **Current Active Generation**: **Gen-5.6 / Gen-4.6 (GPT-5.6, Claude 4.Opus, Grok 4.6)**
-- **Next-Generation Releases Available**: **${updateReport.notifications.length} Hot-Swaps Ready**
-- **Upgrade Policy**: **Autonomous Detection with 1-Click Founder Consent**
-- **Upgrade Continuity**: King AI will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system supports clean configuration upgrades.
+- **Registered Upgrade Options**: **${upgradeCount}**
+- **Switch Policy**: Manual approval required before updating configured provider models.
 
-Review available model upgrades below and click **"1-Click Hot-Upgrade"** to switch engine generations instantly.`;
+Review available options below.`;
 
     return {
       intent: "general_executive",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `I have scanned the frontier AI laboratories. Three next-generation model upgrades are ready for hot-swapping into King AI. You can authorize any upgrade in one click with zero downtime.`,
+      voiceSpokenText: `${upgradeCount} model upgrade options are available for review.`,
       executionSteps,
       actionCard: {
         type: "model_updates",

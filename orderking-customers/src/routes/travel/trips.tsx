@@ -151,7 +151,7 @@ function MyTripsPage() {
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-amber-300"><Crown className="size-5" /> OrderKing Travel Hub</p>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight">My Trips &amp; Live Tracking</h1>
             <p className="mt-2 max-w-xl text-sm text-slate-200">1-Tap Direct IRCTC PNR validation, live airport gate departures, and direct fare comparisons.</p>
-            <p className="mt-3 flex items-center gap-2 text-xs text-amber-200"><ShieldCheck className="size-4" /> 100% Verified Carrier Tracking</p>
+            <p className="mt-3 flex items-center gap-2 text-xs text-amber-200"><ShieldCheck className="size-4" /> Live carrier PNR &amp; flight status</p>
           </header>
 
           <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" aria-label="Travel bookings">

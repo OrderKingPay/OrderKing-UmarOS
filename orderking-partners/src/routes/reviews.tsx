@@ -392,7 +392,7 @@ function ReviewsPage() {
                   <div>
                     <h2 className="font-bold text-base text-gray-900">Customer Reviews &amp; Ratings</h2>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      100% verified order reviews from authenticated diners.
+                      Order reviews from verified customers.
                     </p>
                     <div className="flex items-center gap-3 text-xs font-semibold mt-1">
                       <span className="text-emerald-700">

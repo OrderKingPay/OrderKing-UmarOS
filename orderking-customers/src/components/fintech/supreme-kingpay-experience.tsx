@@ -196,8 +196,8 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   { id: "s-tu-1", category: "Tutor", title: "King AI Academic Tutor (CBSE / State)", sub: "Step-by-step Math & Science problem solver", icon: "tutor", url: "/tutor", keywords: "tutor study math cbse ncert class 10 physics exam school homework" },
 
   // Loans & Wealth
-  { id: "s-wl-1", category: "Wealth", title: "Pre-Approved Instant Credit Line (₹5,00,000)", sub: "Zero Paperwork · Instant Bank Disbursement", icon: "wealth", action: "wealth", keywords: "loan credit line money instant cash pre approved finance" },
-  { id: "s-wl-2", category: "Wealth", title: "9.10% High-Yield Fixed Deposit (FD)", sub: "CRISIL AAA-Rated · Shriram Finance & Bajaj", icon: "wealth", action: "wealth", keywords: "fd fixed deposit interest wealth investment save return" },
+  { id: "s-wl-1", category: "Wealth", title: "Personal Credit Partners (Up to ₹5,00,000)", sub: "Apply online via regulated NBFC partners", icon: "wealth", action: "wealth", keywords: "loan credit line money cash partner finance" },
+  { id: "s-wl-2", category: "Wealth", title: "High-Yield Fixed Deposit (FD) Partners", sub: "Shriram Finance & Bajaj Finance FDs", icon: "wealth", action: "wealth", keywords: "fd fixed deposit interest wealth investment save return" },
   { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "24K 99.9% Pure Gold from ₹10", icon: "wealth", action: "wealth", keywords: "gold 24k digital gold wealth savings safe" },
 ];
 
@@ -1059,36 +1059,36 @@ export function SupremeKingPayExperience() {
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
-                <span>Pre-Approved Personal Credit &amp; High-Yield FDs</span>
+                <span>Personal Credit &amp; Fixed Deposit Partners</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold uppercase">
                   RBI Regulated Partners
                 </span>
               </h3>
               <p className="text-[11px] text-slate-400">
-                10-Minute paperless disbursal up to ₹5,00,000 &amp; Fixed Deposits earning up to 9.1% p.a.
+                Compare personal loan partners up to ₹5,00,000 and Fixed Deposits via external partner portals.
               </p>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          {/* Card A: Instant Cash Loan */}
+          {/* Card A: Personal Loan Partners */}
           <div className="p-4 rounded-2xl border border-slate-800 bg-[#070b10]/90 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-white">Instant Personal Credit Line</span>
+              <span className="text-xs font-black text-white">Personal Credit Partners</span>
               <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
                 Up to ₹5,00,000
               </span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Paperless digital KYC. Funds directly transferred to your bank account in 10 minutes via MoneyView &amp; KreditBee.
+              Apply digitally on MoneyView or KreditBee. Approval and disbursal depend on lender KYC and eligibility.
             </p>
             <div className="flex items-center justify-between pt-1">
-              <span className="text-[10px] text-slate-500">Interest from 1.1% / mo</span>
+              <span className="text-[10px] text-slate-500">External Partner</span>
               <button
                 type="button"
                 onClick={() => {
-                  toast.success("Redirecting to pre-approved personal credit verification desk.");
+                  toast.success("Redirecting to MoneyView.");
                   if (typeof window !== "undefined") {
                     window.open("https://www.moneyview.in/loans", "_blank", "noopener,noreferrer");
                   }
@@ -1100,30 +1100,30 @@ export function SupremeKingPayExperience() {
             </div>
           </div>
 
-          {/* Card B: High-Yield Fixed Deposit */}
+          {/* Card B: Fixed Deposit Partners */}
           <div className="p-4 rounded-2xl border border-slate-800 bg-[#070b10]/90 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-white">High-Yield Fixed Deposits (FD)</span>
+              <span className="text-xs font-black text-white">Fixed Deposits (FD)</span>
               <span className="text-[10px] font-bold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/30">
-                Up to 9.1% p.a.
+                Shriram &amp; Bajaj
               </span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Earn significantly more than standard bank FDs (7.0%). Fully insured and AAA-rated by CRISIL with Shriram Finance &amp; Bajaj.
+              Explore Fixed Deposit plans from regulated NBFC partners directly on the provider portal.
             </p>
             <div className="flex items-center justify-between pt-1">
               <span className="text-[10px] text-slate-500">Min. Deposit ₹5,000</span>
               <button
                 type="button"
                 onClick={() => {
-                  toast.success("Redirecting to certified AAA-rated high-interest FD booking portal.");
+                  toast.success("Redirecting to Shriram Finance.");
                   if (typeof window !== "undefined") {
                     window.open("https://www.shriramfinance.in/fixed-deposit", "_blank", "noopener,noreferrer");
                   }
                 }}
                 className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm"
               >
-                Explore 9.1% FDs
+                Explore FDs
               </button>
             </div>
           </div>
