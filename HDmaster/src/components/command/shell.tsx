@@ -114,80 +114,7 @@ type FounderRemediationAlert = {
   resolved: boolean;
 };
 
-const INITIAL_FOUNDER_ALERTS: FounderRemediationAlert[] = [
-  {
-    id: "flt-emergency-1",
-    tier: "EMERGENCY",
-    title: "Gateway Webhook Signature Verification Guard",
-    rootCause:
-      "Ensure Razorpay & Cashfree webhook secrets match production environment variables before high-volume settlement batch dispatch.",
-    resolutionSteps:
-      "Zero-Harassment Resolution: Run automated HMAC-SHA256 endpoint verification and synchronize active payment gateway keys.",
-    autoFixActionLabel: "Verify & Sync Payment Webhooks",
-    targetPath: "/app/golive",
-    resolved: false,
-  },
-  {
-    id: "flt-danger-1",
-    tier: "DANGER",
-    title: "Pending Restaurant FSSAI 14-Digit License Verification",
-    rootCause:
-      "Unverified restaurant outlets cannot accept live customer orders under FSSAI Food Safety & Standards Act, 2006.",
-    resolutionSteps:
-      "Zero-Harassment Resolution: Trigger automated FoSCoS 14-digit checksum & KYC document validation across pending merchant applications.",
-    autoFixActionLabel: "Run FSSAI Batch Checksum Audit",
-    targetPath: "/app/kyc",
-    resolved: false,
-  },
-  {
-    id: "flt-critical-1",
-    tier: "CRITICAL",
-    title: "Integer-Paise Settlement & Statutory Tax Reconciliation (Sec 9(5) / 194-O)",
-    rootCause:
-      "Weekly restaurant settlement batches require pre-flight reconciliation of 5% CGST Sec 9(5), 0.5% TCS Sec 52, and 0.1% TDS Sec 194-O.",
-    resolutionSteps:
-      "Zero-Harassment Resolution: Execute deterministic integer-paise ledger audit and lock verified payout batches for NEFT/IMPS transfer.",
-    autoFixActionLabel: "Reconcile Integer-Paise Ledger",
-    targetPath: "/app/settlements",
-    resolved: false,
-  },
-  {
-    id: "flt-high-1",
-    tier: "HIGH",
-    title: "Zone Rider Dispatch & Peak Rain/Dinner Buffer Guard",
-    rootCause:
-      "High order density in core delivery zones requires proactive kitchen prep SLA buffers (+10m) to prevent rider wait-time bottlenecks.",
-    resolutionSteps:
-      "Zero-Harassment Resolution: Rebalance zone dispatch thresholds and synchronize dynamic kitchen prep SLA recommendations.",
-    autoFixActionLabel: "Auto-Balance Zone Dispatch",
-    targetPath: "/app/dispatch",
-    resolved: false,
-  },
-  {
-    id: "flt-medium-1",
-    tier: "MEDIUM",
-    title: "Catalog Dish Photo & Description Completeness Check",
-    rootCause:
-      "Partner dishes missing 4:3 studio photos or descriptions experience lower customer tap-to-cart conversion.",
-    resolutionSteps:
-      "Zero-Harassment Resolution: Dispatch automated King AI Dish Studio advisory to partner kitchens without locking their menu.",
-    autoFixActionLabel: "Dispatch Spark Advisory Notice",
-    targetPath: "/app/restaurants",
-    resolved: false,
-  },
-  {
-    id: "flt-low-1",
-    tier: "LOW",
-    title: "10-Language Benchmark Regional Localization & Telemetry Sync",
-    rootCause:
-      "10 Indian Food Delivery Benchmark Language dictionaries are active across Command, Partner, and Rider surfaces.",
-    resolutionSteps:
-      "Zero-Harassment Resolution: Refresh localized dictionary cache and verify immutable audit log indexing.",
-    autoFixActionLabel: "Refresh Localization Cache",
-    targetPath: "/app/health",
-    resolved: false,
-  },
-];
+const INITIAL_FOUNDER_ALERTS: FounderRemediationAlert[] = [];
 
 const TIER_STYLES: Record<AlertSeverityTier, { badge: string; border: string }> = {
   EMERGENCY: {
@@ -1461,55 +1388,31 @@ export function CommandShell() {
         </div>
       ) : null}
 
-      {/* LUXURY FLOATING COMMAND CONSOLE DOCK (10 WORLDS) */}
       <nav
-        aria-label="UMAR OS Operations Bottom Navigation"
+        aria-label="Admin"
         className="fixed bottom-3 inset-x-0 z-40 pointer-events-none mx-auto max-w-7xl px-3 sm:px-4"
       >
-        <div className="pointer-events-auto relative rounded-3xl bg-surface/90 backdrop-blur-2xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_1px_1px_0_rgba(255,255,255,0.1)] px-3 py-2 flex items-center justify-between gap-1.5 overflow-x-auto scrollbar-none">
-          {UMAR_OS_10_WORLDS.map((world) => {
-            const isDrawerOpen = activeWorldId === world.id;
-            const isRouteActive = currentRouteWorld.id === world.id;
-            const isPrimary = Boolean(world.isPrimary);
+        <div className="pointer-events-auto relative rounded-3xl bg-surface/90 backdrop-blur-2xl border border-border px-3 py-2 flex items-center justify-between gap-1.5 overflow-x-auto scrollbar-none">
+          {[
+            { to: "/app/orders", label: "Orders" },
+            { to: "/app/restaurants", label: "Restaurants" },
+            { to: "/app/riders", label: "Riders" },
+            { to: "/app/settlements", label: "Payouts" },
+            { to: "/app/support", label: "Support" },
+            { to: "/app/settings", label: "Settings" },
+          ].map((item) => {
+            const active = pathname === item.to || pathname.startsWith(item.to + "/");
             return (
-              <button
-                key={world.id}
-                type="button"
-                onClick={() => handleSelectBottomWorld(world)}
-                aria-expanded={isDrawerOpen}
-                title={`${world.label} — ${world.shortTitle}`}
+              <Link
+                key={item.to}
+                to={item.to}
                 className={cn(
-                  "flex shrink-0 items-center gap-1.5 rounded-2xl border px-3 py-1.5 text-left transition-all duration-200 active:scale-95",
-                  isPrimary
-                    ? isDrawerOpen || isRouteActive
-                      ? "border-amber-400 bg-amber-500/25 text-fg shadow-[0_0_15px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/40"
-                      : "border-amber-400/50 bg-amber-500/15 text-fg hover:bg-amber-500/25"
-                    : isDrawerOpen || isRouteActive
-                      ? "border-primary bg-elevated text-fg shadow-xs ring-1 ring-primary/30"
-                      : "border-border/60 bg-bg/60 text-muted hover:border-border hover:bg-elevated hover:text-fg"
+                  "flex shrink-0 items-center rounded-2xl border px-3 py-2 text-[12px] font-semibold",
+                  active ? "border-primary bg-elevated text-fg" : "border-border/60 bg-bg/60 text-muted"
                 )}
               >
-                <span className="text-sm leading-none" aria-hidden="true">
-                  {world.emoji}
-                </span>
-                <div className="leading-tight">
-                  <span
-                    className={cn(
-                      "block text-[11px] whitespace-nowrap",
-                      isPrimary
-                        ? "font-extrabold text-amber-300"
-                        : isDrawerOpen || isRouteActive
-                          ? "font-bold text-fg"
-                          : "font-semibold text-fg/90"
-                    )}
-                  >
-                    {world.label}
-                  </span>
-                  <span className="hidden text-[9px] text-muted xl:block truncate max-w-[7.5rem]">
-                    {world.shortTitle}
-                  </span>
-                </div>
-              </button>
+                {item.label}
+              </Link>
             );
           })}
         </div>
