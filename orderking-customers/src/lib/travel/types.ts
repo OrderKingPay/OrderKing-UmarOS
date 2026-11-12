@@ -38,7 +38,7 @@ export interface FlightOption {
 export interface FlightSearchResponse {
   success: boolean;
   data: FlightOption[];
-  source: "duffel_v2" | "kiwi_tequila" | "travelpayouts" | "carrier_direct_gds" | "tbo_air_gds";
+  source: "duffel_v2" | "kiwi_tequila" | "travelpayouts" | "carrier_direct_gds";
   count: number;
   origin: string;
   destination: string;

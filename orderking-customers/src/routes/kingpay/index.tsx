@@ -1,32 +1,7 @@
-import { Buffer } from "buffer";
-if (typeof globalThis !== "undefined" && !(globalThis as any).Buffer) {
-  (globalThis as any).Buffer = Buffer;
-}
-if (typeof window !== "undefined" && !(window as any).Buffer) {
-  (window as any).Buffer = Buffer;
-}
-import { createFileRoute } from "@tanstack/react-router";
-import { CustomerShell } from "@/components/market/shell";
-import { KingPayExperience } from "@/components/fintech/supreme-kingpay-experience";
-import { AppErrorComponent } from "@/lib/error-component";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/kingpay/")({
-  component: KingPayHub,
-  errorComponent: AppErrorComponent,
-  head: () => ({
-    meta: [
-      { property: "og:title", content: "KingPay — Direct UPI, Dynamic BharatQR & Instant Settlements" },
-      { property: "og:description", content: "Direct UPI pay, dynamic BharatQR, instant refunds, and double-entry mathematical ledger." },
-    ],
-  }),
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  },
 });
-
-function KingPayHub() {
-  return (
-    <CustomerShell>
-      <div className="min-h-dvh bg-gradient-to-b from-[#080a10] via-[#0d1017] to-[#080a10] pb-24 text-slate-100">
-        <KingPayExperience />
-      </div>
-    </CustomerShell>
-  );
-}
